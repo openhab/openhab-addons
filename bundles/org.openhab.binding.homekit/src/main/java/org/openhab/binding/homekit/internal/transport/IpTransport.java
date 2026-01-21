@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
 import org.openhab.binding.homekit.internal.session.EventListener;
+import org.openhab.binding.homekit.internal.session.HttpParserListener;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayload;
 import org.openhab.binding.homekit.internal.session.SecureSession;
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class IpTransport implements AutoCloseable {
+public class IpTransport implements AutoCloseable, HttpParserListener {
 
     private static final int TIMEOUT_MILLI_SECONDS = 15000; // HomeKit spec expects "around 10 seconds" so be safe
     private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(250);
@@ -69,7 +70,6 @@ public class IpTransport implements AutoCloseable {
     private volatile @Nullable SecureSession secureSession = null;
 
     private Instant earliestNextRequestTime = Instant.MIN;
-    private boolean closing;
 
     /**
      * Creates a new IpTransport instance on the given host.
@@ -84,6 +84,12 @@ public class IpTransport implements AutoCloseable {
         this.ipAddress = ipAddress;
         this.eventListener = eventListener;
 
+        outputThreadExecutor = Executors.newSingleThreadExecutor(r -> {
+            Thread t = new Thread(r, "ip-transport-output");
+            t.setDaemon(true);
+            return t;
+        });
+
         String[] parts = ipAddress.split(":");
         socket = new Socket();
         socket.setKeepAlive(true); // keep-alive forbidden for accessories but client should use it
@@ -91,35 +97,9 @@ public class IpTransport implements AutoCloseable {
         socket.setSoTimeout(500); // allow socket to be interruptible
         socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
 
-        httpPayloadParser = new HttpPayloadParser(socket.getInputStream());
-        setParserHandlers(httpPayloadParser);
-
-        outputThreadExecutor = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "ip-transport-output");
-            t.setDaemon(true);
-            return t;
-        });
-
+        httpPayloadParser = new HttpPayloadParser(socket.getInputStream(), this);
+        httpPayloadParser.start();
         logger.debug("Connected to {} alias {}", ipAddress, hostName);
-    }
-
-    /**
-     * Sets the handlers for the HTTP pay-load parser.
-     *
-     * @param httpPayloadParser the HTTP pay-load parser
-     */
-    private void setParserHandlers(HttpPayloadParser httpPayloadParser) {
-        httpPayloadParser.setPayloadHandler(this::forwardHttpPayload);
-        httpPayloadParser.setErrorHandler(t -> {
-            if (!closing) {
-                logger.warn("{} parser error: {}", ipAddress, t.getMessage());
-            }
-        });
-        httpPayloadParser.setCloseHandler(() -> {
-            if (!closing) {
-                logger.debug("{} parser closed", ipAddress);
-            }
-        });
     }
 
     /**
@@ -130,23 +110,25 @@ public class IpTransport implements AutoCloseable {
      * @throws IOException
      * @throws IllegalStateException if the secure session is already set
      */
-    public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException, IllegalStateException {
+    public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException {
         logger.trace("setSessionKeys()");
         if (secureSession != null) {
             throw new IllegalStateException("Secure session already set");
         }
-        SecureSession secureSession = new SecureSession(socket, keys);
-        this.secureSession = secureSession;
 
-        // close old parser and replace it with a new one created on the secure session stream
+        HttpPayloadParser oldParser = httpPayloadParser;
         try {
-            httpPayloadParser.close();
-        } catch (IOException e) {
-            // ignore since old parser is no longer relevant
+            oldParser.close();
+        } catch (IOException ignored) {
         }
-        httpPayloadParser = new HttpPayloadParser(secureSession.getInputStream());
-        setParserHandlers(httpPayloadParser);
-        logger.trace("setSessionKeys() {}", secureSession);
+
+        SecureSession newSession = new SecureSession(socket, keys);
+        HttpPayloadParser newParser = new HttpPayloadParser(newSession.getInputStream(), this);
+
+        secureSession = newSession;
+        httpPayloadParser = newParser;
+        newParser.start();
+        logger.trace("setSessionKeys() {}", newSession);
     }
 
     /**
@@ -277,7 +259,6 @@ public class IpTransport implements AutoCloseable {
 
     @Override
     public synchronized void close() {
-        closing = true;
         secureSession = null;
         try {
             socket.close();
@@ -300,11 +281,12 @@ public class IpTransport implements AutoCloseable {
     }
 
     /**
-     * Forwards the received HTTP pay-load to the appropriate handler based on its type.
+     * Forwards the received HTTP payload to the appropriate handler based on its type.
      *
-     * @param httpPayload the received HTTP pay-load
+     * @param httpPayload the received HTTP payload
      */
-    private void forwardHttpPayload(HttpPayload httpPayload) {
+    @Override
+    public void onHttpPayload(HttpPayload httpPayload) {
         String headers = new String(httpPayload.headers(), StandardCharsets.ISO_8859_1);
         if (logger.isTraceEnabled()) { // don't expand content trace string if not needed
             logger.trace("{} received:\n{}{}", ipAddress, headers,
@@ -327,5 +309,15 @@ public class IpTransport implements AutoCloseable {
             logger.warn("Unexpected response:\n{}{}", headers,
                     new String(httpPayload.content(), StandardCharsets.ISO_8859_1));
         }
+    }
+
+    @Override
+    public void onParserError(Throwable error) {
+        logger.warn("{} parser error: {}", ipAddress, error.getMessage());
+    }
+
+    @Override
+    public void onParserClose() {
+        logger.debug("{} parser closed", ipAddress);
     }
 }

@@ -17,37 +17,43 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
+import org.openhab.binding.homekit.internal.session.HttpParserListener;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayload;
 
 /**
- * Test helper class for {@link HttpPayloadParser}
+ * Test helper class for HttpPayloadParser
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ParserTestHarness {
+public class ParserTestHarness implements HttpParserListener {
 
     private final AtomicReference<@Nullable CompletableFuture<HttpPayload>> nextPayload = new AtomicReference<>();
 
-    ParserTestHarness(HttpPayloadParser httpPayloadParser) {
-        httpPayloadParser.setPayloadHandler(payload -> {
-            CompletableFuture<HttpPayload> futureHttpPayload = nextPayload.getAndSet(null);
-            if (futureHttpPayload != null) {
-                futureHttpPayload.complete(payload);
-            }
-        });
-        httpPayloadParser.setErrorHandler(error -> {
-            CompletableFuture<HttpPayload> futureHttpPayload = nextPayload.getAndSet(null);
-            if (futureHttpPayload != null) {
-                futureHttpPayload.completeExceptionally(error);
-            }
-        });
+    @Override
+    public void onHttpPayload(HttpPayload payload) {
+        CompletableFuture<HttpPayload> future = nextPayload.getAndSet(null);
+        if (future != null) {
+            future.complete(payload);
+        }
+    }
+
+    @Override
+    public void onParserError(Throwable error) {
+        CompletableFuture<HttpPayload> future = nextPayload.getAndSet(null);
+        if (future != null) {
+            future.completeExceptionally(error);
+        }
+    }
+
+    @Override
+    public void onParserClose() {
+        // no-op for tests
     }
 
     CompletableFuture<HttpPayload> expectPayload() {
-        CompletableFuture<HttpPayload> futureHttpPayload = new CompletableFuture<>();
-        nextPayload.set(futureHttpPayload);
-        return futureHttpPayload;
+        CompletableFuture<HttpPayload> future = new CompletableFuture<>();
+        nextPayload.set(future);
+        return future;
     }
 }

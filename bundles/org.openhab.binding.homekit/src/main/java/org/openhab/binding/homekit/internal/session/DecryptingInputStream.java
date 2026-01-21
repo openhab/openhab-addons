@@ -22,14 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * An {@link InputStream} that de-crypts data from the underlying Socket InputStream.
+ * An {@link InputStream} that decrypts data from the underlying Socket InputStream.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-// NonNullByDefault disabled since it otherwise prevents overriding methods of {@link InputStream}
-public @NonNullByDefault({}) class DecryptingInputStream extends InputStream {
+@NonNullByDefault
+public class DecryptingInputStream extends InputStream {
 
     private final InputStream inputStream;
     private final AtomicInteger readCounter;
@@ -52,12 +53,18 @@ public @NonNullByDefault({}) class DecryptingInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b) throws IOException {
+    public int read(byte @Nullable [] b) throws IOException {
+        if (b == null) {
+            throw new IOException(new NullPointerException("b is null"));
+        }
         return read(b, 0, b.length);
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(byte @Nullable [] b, int off, int len) throws IOException {
+        if (b == null) {
+            throw new IOException(new NullPointerException("b is null"));
+        }
         if (len == 0) {
             return 0;
         }
@@ -85,7 +92,7 @@ public @NonNullByDefault({}) class DecryptingInputStream extends InputStream {
         return byteCount;
     }
 
-    private byte[] receiveFrame() throws IOException {
+    private byte @Nullable [] receiveFrame() throws IOException {
         byte[] frameAad = new byte[2];
 
         // If we cannot read the 2-byte header, this is EOF

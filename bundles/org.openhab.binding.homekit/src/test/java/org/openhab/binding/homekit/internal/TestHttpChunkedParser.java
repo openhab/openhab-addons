@@ -62,9 +62,10 @@ class TestHttpChunkedParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -95,9 +96,10 @@ class TestHttpChunkedParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -130,9 +132,10 @@ class TestHttpChunkedParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);

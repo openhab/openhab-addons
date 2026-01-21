@@ -16,12 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +37,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HttpPayloadParser implements AutoCloseable {
 
+    /**
+     * Represents a complete HTTP payload with headers and content.
+     *
+     * @param headers the HTTP headers as a byte array
+     * @param content the HTTP content/body as a byte array
+     */
+    public record HttpPayload(byte[] headers, byte[] content) {
+        public HttpPayload() {
+            this(new byte[0], new byte[0]);
+        }
+    }
+
     private static final String NEWLINE_REGEX = "\\r?\\n";
     private static final int MAX_CONTENT_LENGTH = 65536;
     private static final int MAX_HEADER_BLOCK_SIZE = 2048;
@@ -46,16 +56,11 @@ public class HttpPayloadParser implements AutoCloseable {
     private static final Pattern CHUNKED_ENCODING_PATTERN = Pattern.compile("(?i)^transfer-encoding:\\s*chunked$");
     private static final Pattern STATUS_LINE_PATTERN = Pattern.compile("^(?:HTTP|EVENT)/\\d+\\.\\d+\\s+(\\d{3})");
 
-    public record HttpPayload(byte[] headers, byte[] content) {
-        public HttpPayload() {
-            this(new byte[0], new byte[0]);
-        }
-    }
-
     private final Logger logger = LoggerFactory.getLogger(HttpPayloadParser.class);
 
     private final InputStream inputStream;
     private final Thread inputThread;
+    private final HttpParserListener listener;
 
     // grow-able buffer for incoming bytes, and indexes to valid data
     private byte[] inputBuffer = new byte[8192];
@@ -74,36 +79,16 @@ public class HttpPayloadParser implements AutoCloseable {
 
     private volatile boolean closed = false;
 
-    private volatile @Nullable Consumer<HttpPayload> httpPayloadHandler = null;
-    private volatile @Nullable Consumer<Throwable> errorHandler = null;
-    private volatile @Nullable Runnable closeHandler = null;
-
-    public HttpPayloadParser(InputStream stream) {
+    public HttpPayloadParser(InputStream stream, HttpParserListener eventListener) {
         inputStream = stream;
+        listener = eventListener;
         inputThread = new Thread(this::inputTask, "http-parser-input");
         inputThread.setDaemon(true);
+    }
+
+    public HttpPayloadParser start() {
         inputThread.start();
-    }
-
-    /**
-     * Registers a handler that will be invoked for each complete HTTP pay-load.
-     */
-    public void setPayloadHandler(Consumer<HttpPayload> handler) {
-        httpPayloadHandler = handler;
-    }
-
-    /**
-     * Registers a handler that will be invoked if an error occurs in the parser thread.
-     */
-    public void setErrorHandler(Consumer<Throwable> handler) {
-        errorHandler = handler;
-    }
-
-    /**
-     * Registers a handler that will be invoked when the parser reaches EOF or is closed.
-     */
-    public void setCloseHandler(Runnable handler) {
-        closeHandler = handler;
+        return this;
     }
 
     /**
@@ -129,18 +114,13 @@ public class HttpPayloadParser implements AutoCloseable {
                     continue;
                 } catch (IOException e) {
                     logger.debug("Input stream closed or error occurred: {}", e.getMessage());
-                    if (errorHandler instanceof Consumer<Throwable> handler) {
-                        handler.accept(e);
-                    }
+                    listener.onParserError(e);
                     break;
                 }
             }
         } finally {
             closed = true;
-            Runnable task = closeHandler;
-            if (task != null) {
-                task.run();
-            }
+            listener.onParserClose();
         }
     }
 
@@ -219,7 +199,7 @@ public class HttpPayloadParser implements AutoCloseable {
                 // if the message is complete AND has no body, emit immediately.
                 // this handles: 200 without Content-Length, 204, 1xx, 4xx, 5xx.
                 if (isComplete() && contentLength <= 0 && !isChunked) {
-                    deliverPayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
+                    listener.onHttpPayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
                     resetParserState();
                     continue; // parse next message if present
                 }
@@ -242,8 +222,10 @@ public class HttpPayloadParser implements AutoCloseable {
                         inputStartIndex += remainingByteCount;
                     }
                 } else {
-                    // no content-length and not chunked; body presence decided by status code
-                    // we don't consume anything here; message is complete by headers alone
+                    // no content-length and not chunked; treat this message as header-only and emit it now
+                    listener.onHttpPayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
+                    resetParserState();
+                    continue; // parse next message if present
                 }
 
                 if (contentBuffer.size() > MAX_CONTENT_LENGTH) {
@@ -251,7 +233,7 @@ public class HttpPayloadParser implements AutoCloseable {
                 }
 
                 if (isComplete()) {
-                    deliverPayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
+                    listener.onHttpPayload(new HttpPayload(headerBuffer.toByteArray(), contentBuffer.toByteArray()));
                     resetParserState();
                     // loop to see if another message is already buffered
                 } else {
@@ -259,17 +241,6 @@ public class HttpPayloadParser implements AutoCloseable {
                     return;
                 }
             }
-        }
-    }
-
-    /**
-     * Delivers the complete HTTP pay-load to the registered handler.
-     *
-     * @param httpPayload the complete HTTP pay-load
-     */
-    private void deliverPayload(HttpPayload httpPayload) {
-        if (httpPayloadHandler instanceof Consumer<HttpPayload> handler) {
-            handler.accept(httpPayload);
         }
     }
 
@@ -365,7 +336,7 @@ public class HttpPayloadParser implements AutoCloseable {
     /**
      * Determines if the current HTTP message is complete.
      *
-     * @return true if the message is complete, false otherwise
+     * @return true if the message is complete, or has an invalid status code, false otherwise
      */
     private boolean isComplete() {
         if (!headersDone) {

@@ -90,7 +90,7 @@ public class SecureSession {
     }
 
     /**
-     * Returns the InputStream that de-crypts data from the underlying socket input stream.
+     * Returns the InputStream that decrypts data from the underlying socket input stream.
      *
      * @return an {@link InputStream} being an instance of {@link DecryptingInputStream}
      */

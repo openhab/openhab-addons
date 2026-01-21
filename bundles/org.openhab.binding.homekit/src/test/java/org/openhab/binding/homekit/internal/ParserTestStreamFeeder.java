@@ -17,20 +17,19 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
 
 /**
- * Test helper class for {@link HttpPayloadParser}
+ * Test helper class for HttpPayloadParser
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class PipedStreamFeeder {
+public class ParserTestStreamFeeder {
 
     final PipedInputStream in;
     final PipedOutputStream out;
 
-    PipedStreamFeeder() throws IOException {
+    ParserTestStreamFeeder() throws IOException {
         this.in = new PipedInputStream(8192);
         this.out = new PipedOutputStream(in);
     }

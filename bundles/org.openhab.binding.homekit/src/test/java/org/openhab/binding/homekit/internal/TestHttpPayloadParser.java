@@ -39,7 +39,7 @@ class TestHttpPayloadParser {
     private static final String HEADERS_Z = HEADERS_Z1 + HEADERS_Z2;
 
     private static final String OK_204 = "HTTP/1.1 204 No Content\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
-    private static final String ERROR_403 = "HTTP/1.1 403 Forbidden\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\\r\\nConnection: close\r\n\r\n";
+    private static final String ERROR_403 = "HTTP/1.1 403 Forbidden\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
     private static final String ERROR_404 = "HTTP/1.1 404 Not Found\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
     private static final String ERROR_500 = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
 
@@ -54,9 +54,10 @@ class TestHttpPayloadParser {
         String h = HEADERS_A + HEADERS_C + HEADERS_Z;
         String hc = h + "64\r\n" + CONTENT + CRLF + "0\r\n\r\n";
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feed(hc.getBytes());
@@ -89,9 +90,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -125,9 +127,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -147,9 +150,10 @@ class TestHttpPayloadParser {
         String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
         String hc = h + CONTENT + "EXTRA";
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feed(hc.getBytes());
@@ -178,9 +182,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -209,9 +214,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -230,9 +236,10 @@ class TestHttpPayloadParser {
         String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
         String hc = h + CONTENT;
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feed(hc.getBytes());
@@ -259,9 +266,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         // first payload
         CompletableFuture<HttpPayload> futureHttpPayload1 = harness.expectPayload();
@@ -284,9 +292,10 @@ class TestHttpPayloadParser {
         String h = HEADERS_A + HEADERS_B.formatted(0) + HEADERS_Z;
         String hc = h + CONTENT; // parser must ignore body entirely
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feed(hc.getBytes());
@@ -303,9 +312,10 @@ class TestHttpPayloadParser {
     void testOk204() throws Exception {
         List<byte[]> parts = List.of(OK_204.getBytes());
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -327,9 +337,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -351,9 +362,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
@@ -375,9 +387,10 @@ class TestHttpPayloadParser {
         // @formatter:on
         );
 
-        PipedStreamFeeder feeder = new PipedStreamFeeder();
-        HttpPayloadParser parser = new HttpPayloadParser(feeder.in);
-        ParserTestHarness harness = new ParserTestHarness(parser);
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
 
         CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
         feeder.feedAll(parts);
