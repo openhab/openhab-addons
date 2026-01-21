@@ -62,7 +62,7 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
     private final String hostName;
     private final String ipAddress;
     private final EventListener eventListener;
-    private final AtomicBoolean awaitingHttpResponse = new AtomicBoolean(false);
+    private final AtomicBoolean httpResponseWindowOpen = new AtomicBoolean(false);
     private final ExecutorService outputThreadExecutor;
     private final AtomicReference<@Nullable CompletableFuture<HttpPayload>> currentResponseFuture = new AtomicReference<>();
 
@@ -167,7 +167,6 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
         }
 
         try {
-            awaitingHttpResponse.set(true);
             byte[] request = buildRequest(method, endpoint, contentType, content);
 
             Duration delay = Duration.between(Instant.now(), earliestNextRequestTime);
@@ -199,6 +198,7 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
                 });
             }
             writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            httpResponseWindowOpen.set(true);
 
             HttpPayload response = responseFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
@@ -206,8 +206,8 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
             checkHeaders(response.headers());
             return response.content();
         } finally {
-            awaitingHttpResponse.set(false);
             currentResponseFuture.set(null);
+            httpResponseWindowOpen.set(false);
         }
     }
 
@@ -294,14 +294,14 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
         }
         if (headers.startsWith("HTTP")) { // deliver HTTP responses to execute()
             CompletableFuture<HttpPayload> future = currentResponseFuture.get();
-            if (future != null) {
+            if (httpResponseWindowOpen.get() && future != null) {
                 future.complete(httpPayload);
             } else {
-                logger.warn("{} received HTTP response but no thread was waiting", ipAddress);
+                logger.debug("{} received HTTP response outside an HTTP response window", ipAddress);
             }
         } else if (headers.startsWith("EVENT")) { // deliver EVENT messages directly to listener
-            if (awaitingHttpResponse.get()) {
-                logger.warn("{} received EVENT while waiting for HTTP response", ipAddress);
+            if (httpResponseWindowOpen.get()) {
+                logger.debug("{} received EVENT within an HTTP response window", ipAddress);
             }
             String jsonContent = new String(httpPayload.content(), StandardCharsets.UTF_8);
             eventListener.onEvent(jsonContent);
