@@ -103,8 +103,8 @@ public class SunZodiacCalcTest {
         assertEquals(expectedSign, positionBasedSign);
     }
 
-    private static Calendar toCalendar(Instant intant, ZoneId zoneId) {
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(intant, zoneId);
+    private static Calendar toCalendar(Instant instant, ZoneId zoneId) {
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, zoneId);
         return GregorianCalendar.from(zdt);
     }
 }
