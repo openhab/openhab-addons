@@ -29,19 +29,19 @@ import org.openhab.core.thing.Channel;
 @NonNullByDefault
 public final class SunPhaseJob extends AbstractJob {
 
-    private final SunPhase sunPhaseName;
+    private final SunPhase sunPhase;
 
     /**
      * Constructor
      *
      * @param handler the thing handler
-     * @param sunPhaseName {@link SunPhase} name
+     * @param sunPhase {@link SunPhase} enum value
      * @throws IllegalArgumentException
      *             if any of the arguments is {@code null}
      */
-    public SunPhaseJob(AstroThingHandler handler, SunPhase sunPhaseName) {
+    public SunPhaseJob(AstroThingHandler handler, SunPhase sunPhase) {
         super(handler);
-        this.sunPhaseName = sunPhaseName;
+        this.sunPhase = sunPhase;
     }
 
     @Override
@@ -50,7 +50,7 @@ public final class SunPhaseJob extends AbstractJob {
             Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
             if (phaseNameChannel != null) {
                 if (handler.getPlanet() instanceof Sun theSun) {
-                    theSun.setSunPhase(sunPhaseName);
+                    theSun.setSunPhase(sunPhase);
                     handler.publishChannelIfLinked(phaseNameChannel.getUID());
                 }
             } else {
@@ -65,6 +65,6 @@ public final class SunPhaseJob extends AbstractJob {
 
     @Override
     public String toString() {
-        return "Sun phase job " + handler.getThing().getUID() + "/" + sunPhaseName;
+        return "Sun phase job " + handler.getThing().getUID() + "/" + sunPhase;
     }
 }
