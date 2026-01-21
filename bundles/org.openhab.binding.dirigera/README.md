@@ -678,7 +678,7 @@ Group names are
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced  |
 |-----------------------|-----------------------|------------|----------------------------------------------|-----------|
-| `press`               | Trigger               | R          | Triggers for button press                    |           |
+| `button-press`        | Trigger               | R          | Triggers for button press                    |           |
 | `scroll-up`           | Trigger               | R          | Triggers for scroll up                       |           |
 | `scroll-down`         | Trigger               | R          | Triggers for scroll down                     |           |
 | `control-mode`        | Number                | RW         | Select which device type shall be controlled |    X      |

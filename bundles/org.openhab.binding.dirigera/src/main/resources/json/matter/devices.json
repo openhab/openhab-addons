@@ -222,7 +222,7 @@
 				"inType": "Integer",
 				"outType": "QuantityType",
 				"correction": "factor",
-				"factor": 0.01,
+				"factor": 1,
 				"transformation": "format",
 				"format": "%d lx"
 			}
