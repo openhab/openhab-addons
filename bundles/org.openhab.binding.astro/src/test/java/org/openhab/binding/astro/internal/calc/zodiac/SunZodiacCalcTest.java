@@ -61,8 +61,8 @@ public class SunZodiacCalcTest {
     public void testCalcZodiacCreatesSunZodiacWithRangeFromInstant() {
         Zodiac zodiac = ZodiacCalc.calculate(Math.toRadians(120), REFERENCE_INSTANT);
         assertEquals(ZodiacSign.LEO, zodiac.sign());
-        var start = zodiac.start();
-        var end = zodiac.end();
+        var start = zodiac.getStart();
+        var end = zodiac.getEnd();
         assertNotNull(start);
         assertNotNull(end);
         assertFalse(start.isAfter(REFERENCE_INSTANT));

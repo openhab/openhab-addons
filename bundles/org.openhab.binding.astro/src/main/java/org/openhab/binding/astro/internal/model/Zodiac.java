@@ -23,15 +23,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Immutable & Instant
  */
 @NonNullByDefault
-public record Zodiac(ZodiacSign sign, Instant start, Instant end) {
-
-    public Zodiac {
-        if (!start.isBefore(end)) {
-            throw new IllegalArgumentException("'start' must be before 'end'");
-        }
+public record Zodiac(ZodiacSign sign, InstantRange range) {
+    public Zodiac(int index, Instant start, Instant end) {
+        this(ZodiacSign.values()[index], new InstantRange(start, end));
     }
 
-    public Zodiac(int index, Instant start, Instant end) {
-        this(ZodiacSign.values()[index], start, end);
+    public Instant getStart() {
+        return range.getStart();
+    }
+
+    public Instant getEnd() {
+        return range.getEnd();
     }
 }
