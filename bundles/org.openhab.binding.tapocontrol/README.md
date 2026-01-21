@@ -73,10 +73,10 @@ The Thing has the following configuration parameters:
 
 ## Thing Configuration
 
-Wi-Fi-based things need to be configured with `ipAddress`.
+Wi-Fi-based Things need to be configured with `ipAddress`.
 RF-based things need a SmartHub (Wi-Fi device) to operate.
 
-The things have the following configuration parameters:
+The Things have the following configuration parameters:
 
 | Parameter          | Description                                                           | Things supporting parameter |
 |--------------------|-----------------------------------------------------------------------|-----------------------------|

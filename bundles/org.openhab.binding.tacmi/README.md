@@ -46,7 +46,7 @@ If you plan things mainly for user interaction the "Schema API Page" might be be
 ## Discovery
 
 Auto-discovery is not supported.
-You have to define the things manually.
+You have to define the Things manually.
 
 ## Schema API
 

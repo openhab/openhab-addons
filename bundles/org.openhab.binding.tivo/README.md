@@ -44,7 +44,7 @@ The Thing has the following configuration parameters:
 
 Some notes:
 
-- If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your TiVo, enable the **Keep Connection Open** option.This will connect and lock the port in use, preventing any other device from connecting to it. If you use some other application, disable this option. Performance is improved if the connection is kept open.
+- If openHAB is the only device or application that you have that makes use of the Network Remote Control functions of your TiVo, enable the **Keep Connection Open** option. This will connect and lock the port in use, preventing any other device from connecting to it. If you use some other application, disable this option. Performance is improved if the connection is kept open.
 - **Poll for Channel Changes** only needs to be enabled if you also plan to use the TiVo remote control or another application to change channel. If openHAB is your only method of control, you can disable this option. Turning polling off minimizes the periodic polling overhead on your hardware.
 
 ## Channels

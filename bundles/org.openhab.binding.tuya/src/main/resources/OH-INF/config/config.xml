@@ -27,10 +27,10 @@
 			<label>Switch DP</label>
 			<description>Set only on brightness channels.</description>
 		</parameter>
-		<parameter name="min" type="integer" required="true">
+		<parameter name="min" type="integer">
 			<label>Minimum</label>
 		</parameter>
-		<parameter name="max" type="integer" required="true">
+		<parameter name="max" type="integer">
 			<label>Maximum</label>
 		</parameter>
 		<parameter name="reversed" type="boolean">
@@ -45,10 +45,10 @@
 		<parameter name="dp" type="integer" required="true">
 			<label>DP</label>
 		</parameter>
-		<parameter name="min" type="integer" required="true">
+		<parameter name="min" type="integer">
 			<label>Minimum</label>
 		</parameter>
-		<parameter name="max" type="integer" required="true">
+		<parameter name="max" type="integer">
 			<label>Maximum</label>
 		</parameter>
 		<parameter name="sendAsString" type="boolean">
@@ -63,10 +63,10 @@
 		<parameter name="dp" type="integer" required="true">
 			<label>DP</label>
 		</parameter>
-		<parameter name="min" type="integer" required="true">
+		<parameter name="min" type="integer">
 			<label>Minimum</label>
 		</parameter>
-		<parameter name="max" type="integer" required="true">
+		<parameter name="max" type="integer">
 			<label>Maximum</label>
 		</parameter>
 		<parameter name="sendAsString" type="boolean">

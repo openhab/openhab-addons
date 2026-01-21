@@ -304,7 +304,7 @@
 	</channel-type>
 
 	<channel-type id="filter-check-next">
-		<item-type unitHint="min">Number:Time</item-type>
+		<item-type unitHint="day">Number:Time</item-type>
 
 		<label>Next Filter Check</label>
 		<description>The number of minutes before the next filter check (or time since check is required if below 0).</description>
@@ -330,7 +330,7 @@
 	</channel-type>
 
 	<channel-type id="filter-uptime">
-		<item-type unitHint="min">Number:Time</item-type>
+		<item-type unitHint="day">Number:Time</item-type>
 
 		<label>Filter Uptime</label>
 		<description>The duration for which the current filter was used.</description>

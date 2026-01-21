@@ -24,8 +24,7 @@
 		</parameter>
 		<parameter name="udpDiscovery" type="boolean" required="false">
 			<label>UDP Discovery</label>
-			<description>Use UDP Discovery Service to discover online devices in the local network. Includes encryption and
-				IP
+			<description>Use UDP Discovery Service to discover online devices in the local network. Includes encryption and IP
 				address</description>
 			<default>false</default>
 			<advanced>false</advanced>
