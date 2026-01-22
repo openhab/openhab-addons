@@ -62,6 +62,8 @@ Some Notes:
 
 - The values for `activeApp`, `activeAppName`, `playMode`, `timeElapsed`, `timeTotal`, `activeChannel`, `signalMode`, `signalQuality`, `channelName`, `programTitle`, `programDescription`, `programRating`, `power` & `powerState` refresh automatically per the configured `refresh` interval.
 - The `endTime` and `progress` channels may not be accurate for some streaming apps especially 'live' streams where the `timeTotal` value constantly increases.
+- After being switched off for 10 minutes, a Roku TV will shut down its network interface causing the Thing to go OFFLINE.
+- If the following setting: **Settings-> System-> Power-> Fast TV Start** is set to `On`, then the Roku TV Thing will always stay ONLINE even when the TV is switched off.
 
 **List of available button commands for Roku streaming devices:**
 
