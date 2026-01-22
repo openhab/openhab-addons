@@ -106,6 +106,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private static final Set<AccessoryCategory> CAMERA_ACCESSORY_CATEGORIES = Set.of(AccessoryCategory.IP_CAMERA,
             AccessoryCategory.VIDEO_DOORBELL);
 
+    // Characteristic iids relevant for triggering snapshot channel refreshes
+    private static final Map<Long, CharacteristicType> SNAPSHOT_REFRESH_TRIGGERS = new HashMap<>();
+
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
@@ -427,6 +430,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             Channel channel = builder.build();
             uniqueChannelsMap.put(CHANNEL_SNAPSHOT, channel);
             logChannelInformation(channel);
+            snapshotTriggersFinalize(accessory);
         }
 
         String oldLabel = thing.getLabel();
@@ -738,6 +742,28 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
+     * Sets up the map of characteristic iids that shall trigger snapshot refreshes. Checks the given
+     * accessory for any services containing MOTION_DETECTED or INPUT_EVENT characteristics.
+     *
+     * @param accessory the accessory containing the characteristics
+     */
+    private void snapshotTriggersFinalize(Accessory accessory) {
+        SNAPSHOT_REFRESH_TRIGGERS.clear();
+        for (Service service : accessory.services) {
+            for (Characteristic cxx : service.characteristics) {
+                if (cxx.type instanceof String type) {
+                    CharacteristicType cxxType = Characteristic.getCharacteristicType(type);
+                    switch (cxxType) {
+                        case MOTION_DETECTED, INPUT_EVENT:
+                            SNAPSHOT_REFRESH_TRIGGERS.put(cxx.iid, cxxType);
+                        default:
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Finalizes the polled and evented characteristics by identifying which characteristics are linked
      * and adding them to the polledCharacteristics list, and which subset of those are evented and adding
      * them also to the eventedCharacteristics list. In case of the special light model HSB channel then we
@@ -895,12 +921,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 case STATE -> updateState(channelUID, state);
                                 case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
-                            if (snapshotChannelExists && !snapshotChannelRefresh) {
-                                switch (cxx.getCharacteristicType()) {
+                            // check for snapshot refresh triggers
+                            if (snapshotChannelExists && !snapshotChannelRefresh
+                                    && SNAPSHOT_REFRESH_TRIGGERS.get(cxx.iid) instanceof CharacteristicType triggerCxxType) {
+                                switch (triggerCxxType) {
                                     case MOTION_DETECTED:
-                                        if (OpenClosedType.OPEN == state) {
-                                            snapshotChannelRefresh = true;
-                                        }
+                                        snapshotChannelRefresh |= OpenClosedType.OPEN == state;
                                         break;
                                     case INPUT_EVENT:
                                         snapshotChannelRefresh = true;
