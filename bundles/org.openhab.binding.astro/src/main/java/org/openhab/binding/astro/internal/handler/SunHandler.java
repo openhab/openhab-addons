@@ -78,12 +78,12 @@ public class SunHandler extends AstroThingHandler {
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
         ZonedDateTime now = instantSource.instant().atZone(zoneId);
-        Sun sun = getSunAt(now);
+        Sun sun = getPlanetAt(now, locale);
         double latitude = thingConfig.latitude instanceof Double value ? value : 0;
         double longitude = thingConfig.longitude instanceof Double value ? value : 0;
         double altitude = thingConfig.altitude instanceof Double value ? value : 0;
         Calendar calendar = DateTimeUtils.calFromInstantSource(instantSource, zone, locale);
-        sunCalc.setPositionalInfo(calendar, latitude, longitude, altitude, sun);
+        sunCalc.setPositionalInfo(calendar, latitude, longitude, sun);
 
         sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
         sun.setRadiation(RadiationCalc.calculate(now, sun.getPosition().getElevationAsDouble(), altitude));
@@ -298,7 +298,8 @@ public class SunHandler extends AstroThingHandler {
         return new DailyJobSun(this, zone, locale, instantSource);
     }
 
-    private Sun getSunAt(ZonedDateTime date) {
+    @Override
+    public Sun getPlanetAt(ZonedDateTime date, Locale locale) {
         double latitude = thingConfig.latitude instanceof Double value ? value : 0;
         double longitude = thingConfig.longitude instanceof Double value ? value : 0;
         double altitude = thingConfig.altitude instanceof Double value ? value : 0;
@@ -307,16 +308,15 @@ public class SunHandler extends AstroThingHandler {
     }
 
     private Sun getPositionedSunAt(ZonedDateTime date) {
-        Sun localSun = getSunAt(date);
+        Sun localSun = getPlanetAt(date, Locale.ROOT);
         double latitude = thingConfig.latitude instanceof Double value ? value : 0;
         double longitude = thingConfig.longitude instanceof Double value ? value : 0;
-        double altitude = thingConfig.altitude instanceof Double value ? value : 0;
-        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude, longitude, altitude, localSun);
+        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude, longitude, localSun);
         return localSun;
     }
 
     public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
-        Range eventRange = getSunAt(date).getAllRanges().get(sunPhase);
+        Range eventRange = getPlanetAt(date, Locale.ROOT).getAllRanges().get(sunPhase);
         if (eventRange != null) {
             Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();
             return cal == null ? null : ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());

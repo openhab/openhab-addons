@@ -73,7 +73,7 @@ public class MoonHandler extends AstroThingHandler {
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
         ZonedDateTime now = instantSource.instant().atZone(zone.toZoneId());
-        Moon moon = getMoonAt(now, locale);
+        Moon moon = getPlanetAt(now, locale);
         double latitude = thingConfig.latitude instanceof Double value ? value : 0;
         double longitude = thingConfig.longitude instanceof Double value ? value : 0;
         moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale), latitude, longitude,
@@ -176,7 +176,8 @@ public class MoonHandler extends AstroThingHandler {
         return new DailyJobMoon(this, zone, locale);
     }
 
-    private Moon getMoonAt(ZonedDateTime date, Locale locale) {
+    @Override
+    public Moon getPlanetAt(ZonedDateTime date, Locale locale) {
         double latitude = thingConfig.latitude instanceof Double value ? value : 0;
         double longitude = thingConfig.longitude instanceof Double value ? value : 0;
         return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude, longitude,
@@ -185,7 +186,7 @@ public class MoonHandler extends AstroThingHandler {
 
     @Override
     public Position getPositionAt(ZonedDateTime date) {
-        Moon localMoon = getMoonAt(date, Locale.ROOT);
+        Moon localMoon = getPlanetAt(date, Locale.ROOT);
         double latitude = thingConfig.latitude instanceof Double value ? value : 0;
         double longitude = thingConfig.longitude instanceof Double value ? value : 0;
         moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude, longitude, localMoon,

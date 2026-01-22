@@ -485,6 +485,15 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     protected abstract Job getDailyJob(TimeZone zone, Locale locale);
 
+    /**
+     * Calculates and returns the planet at the specified moment in time.
+     *
+     * @param date the moment in time.
+     * @param locale the locale to use.
+     * @return The resulting {@link Planet}.
+     */
+    public abstract Planet getPlanetAt(ZonedDateTime date, Locale locale);
+
     public abstract Position getPositionAt(ZonedDateTime date);
 
     public State getAzimuth(ZonedDateTime date) {
