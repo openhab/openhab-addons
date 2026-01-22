@@ -17,6 +17,8 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,6 +41,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link TestOccupancySensor} Tests device handler creation, initializing and refresh of channels
@@ -47,6 +51,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestOccupancySensor {
+    private final Logger logger = LoggerFactory.getLogger(TestOccupancySensor.class);
     private static String deviceId = "d6ee92fc-682a-4af0-9097-c73ed70b59fd_1";
     private static ThingTypeUID thingTypeUID = THING_TYPE_MATTER_OCCUPANCY_SENSOR;
 
@@ -95,9 +100,11 @@ class TestOccupancySensor {
                 patch, "Schedule Follow Sun");
         DirigeraAPISimu.patchMap.clear();
 
-        DateTimeType fixed = new DateTimeType(
-                Instant.now().atZone(HandlerFactoryMock.timeZoneProvider.getTimeZone()).withHour(10).withMinute(15));
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), fixed);
+        ZonedDateTime requestedStartTime = Instant.now().truncatedTo(ChronoUnit.MINUTES)
+                .atZone(HandlerFactoryMock.timeZoneProvider.getTimeZone()).withHour(10).withMinute(15);
+        logger.warn("Requested Start Time: {}", requestedStartTime);
+        DateTimeType startTime = new DateTimeType(requestedStartTime);
+        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), startTime);
         patch = DirigeraAPISimu.patchMap.get("d6ee92fc-682a-4af0-9097-c73ed70b59fd_2");
         assertNotNull(patch);
         assertEquals(
