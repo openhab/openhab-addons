@@ -389,8 +389,9 @@
 				<option value="ASTRO_DUSK">Astro dusk</option>
 				<option value="SUN_SET">Sunset</option>
 				<option value="DAYLIGHT">Daylight</option>
-				<option value="NOON">Noon</option>
+				<option value="NOON">Solar noon</option>
 				<option value="NIGHT">Night</option>
+				<option value="MIDNIGHT">Solar midnight</option>
 			</options>
 		</state>
 	</channel-type>

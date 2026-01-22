@@ -12,5 +12,19 @@
 				<type>system:color-temperature-abs</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="start" groupIds="midnight">
+				<type>astro:start</type>
+			</add-channel>
+			<add-channel id="end" groupIds="midnight">
+				<type>astro:end</type>
+			</add-channel>
+			<add-channel id="duration" groupIds="midnight">
+				<type>astro:duration</type>
+			</add-channel>
+			<add-channel id="event" groupIds="midnight">
+				<type>astro:rangeEvent</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>
