@@ -30,15 +30,7 @@ import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhase;
-<<<<<<< Upstream, based on main
-<<<<<<< Upstream, based on main
-=======
-=======
-=======
->>>>>>> f08771d Start Factorization with Zodiac Rebased
 import org.openhab.binding.astro.internal.model.Zodiac;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
->>>>>>> df51d83 Start Factorization with Zodiac
 
 /**
  * Daily scheduled jobs For Sun planet
