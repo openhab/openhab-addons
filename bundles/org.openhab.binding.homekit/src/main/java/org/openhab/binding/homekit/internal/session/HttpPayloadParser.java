@@ -113,7 +113,9 @@ public class HttpPayloadParser implements AutoCloseable {
                     // allows thread to poll closed flag or be interrupted
                     continue;
                 } catch (IOException e) {
-                    logger.debug("Input stream closed or error occurred: {}", e.getMessage());
+                    if (!closed) {
+                        logger.debug("Input stream closed or error occurred: {}", e.getMessage());
+                    }
                     listener.onParserError(e);
                     break;
                 }

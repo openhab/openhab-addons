@@ -327,6 +327,8 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
 
     @Override
     public void onParserClose() {
-        logger.debug("{} parser closed", ipAddress);
+        if (!closing) {
+            logger.debug("{} parser closed", ipAddress);
+        }
     }
 }
