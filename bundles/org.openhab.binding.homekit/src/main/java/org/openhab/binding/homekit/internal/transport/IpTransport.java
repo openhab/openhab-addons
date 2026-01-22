@@ -119,14 +119,14 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
 
         HttpPayloadParser oldParser = httpPayloadParser;
         try {
-            oldParser.close();
+            oldParser.close(); // blocks until oldParser input thread is really finished
         } catch (IOException ignored) {
         }
 
         SecureSession newSession = new SecureSession(socket, keys);
-        HttpPayloadParser newParser = new HttpPayloadParser(newSession.getInputStream(), this);
-
         secureSession = newSession;
+
+        HttpPayloadParser newParser = new HttpPayloadParser(newSession.getInputStream(), this);
         httpPayloadParser = newParser;
         newParser.start();
         logger.trace("setSessionKeys() {}", newSession);
@@ -193,13 +193,8 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
                     return null;
                 });
             }
-            try {
-                // wait for write to complete or timeout
-                writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ignored) {
-                // something causes an unexpected InterruptedException, don't know why, but proceed anyway
-                logger.trace("{} write interrupted, proceeding anyway..", ipAddress);
-            }
+            // wait for write to complete or timeout
+            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             if (logger.isTraceEnabled()) {
                 logger.trace("{} sent:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
             }
@@ -210,6 +205,12 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
 
             checkHeaders(response.headers());
             return response.content();
+        } catch (Exception e) {
+            if (!closing) {
+                // log for debugging interrupted IO tasks
+                logger.debug("{} I/O exception", ipAddress, e);
+            }
+            throw e;
         } finally {
             currentResponseFuture.set(null);
             httpResponseWindowOpen.set(false);

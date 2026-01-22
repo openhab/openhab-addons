@@ -187,7 +187,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
         }
         if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
-            task.cancel(true);
+            task.cancel(false);
         }
         connectionAttemptTask = null;
         if (ipTransport instanceof IpTransport transport) {
@@ -324,7 +324,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             sessionUpgradeInProgress.set(true);
 
             if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
-                task.cancel(true);
+                task.cancel(false); // the running task must finish, but cancel future attempts
                 connectionAttemptTask = null;
             }
 
