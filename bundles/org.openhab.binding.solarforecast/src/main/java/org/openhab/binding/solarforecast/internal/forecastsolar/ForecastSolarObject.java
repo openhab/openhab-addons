@@ -73,7 +73,7 @@ public class ForecastSolarObject implements SolarForecast {
     private volatile Instant expirationDateTime;
 
     /**
-     * Constructor delivering am empty expired forecast object
+     * Constructor delivering an empty expired forecast object
      *
      * @param id for logging
      */
@@ -87,10 +87,13 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     /**
-     * Constructor to create a new ForecastSolarObject with correction factor
+     * Constructor to create a new {@link ForecastSolarObject} based on an existing one and an
+     * observed energy production value, applying a calculated correction factor.
      *
-     * @param other The original ForecastSolarObject to copy.
-     * @param correctionFactor The correction factor to apply to the forecast data.
+     * @param other the original {@link ForecastSolarObject} to copy
+     * @param energyProduction the observed or measured energy production used to calculate the correction factor
+     * @param isHoldingTimeElapsed {@code true} if the holding time has elapsed and the correction factor
+     *            should be applied immediately, {@code false} if it should only be prepared
      */
     public ForecastSolarObject(ForecastSolarObject other, double energyProduction, boolean isHoldingTimeElapsed) {
         identifier = other.getIdentifier();

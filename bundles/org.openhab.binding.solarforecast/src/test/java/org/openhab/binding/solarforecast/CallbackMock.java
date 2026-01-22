@@ -77,7 +77,7 @@ public class CallbackMock implements ThingHandlerCallback {
         return stateList;
     }
 
-    public void waitForStateUpadtes(String cuid, int count) {
+    public void waitForStateUpdates(String cuid, int count) {
         Instant endWait = Instant.now().plus(5, ChronoUnit.SECONDS);
         synchronized (this) {
             while (getStateList(cuid).size() != count && Instant.now().isBefore(endWait)) {

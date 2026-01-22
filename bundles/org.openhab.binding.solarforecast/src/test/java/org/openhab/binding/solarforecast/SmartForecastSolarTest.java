@@ -63,10 +63,10 @@ class SmartForecastSolarTest {
     void testFirstTimestamp() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
+        ForecastSolarObject forecastObject = new ForecastSolarObject("fs-test", content,
                 queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
-        assertEquals(Instant.parse("2022-07-17T03:31:00Z"), fo.getForecastBegin(), "First entry");
-        assertEquals(Instant.parse("2022-07-17T04:00:00Z"), fo.getFirstPowerTimestamp().get(),
+        assertEquals(Instant.parse("2022-07-17T03:31:00Z"), forecastObject.getForecastBegin(), "First entry");
+        assertEquals(Instant.parse("2022-07-17T04:00:00Z"), forecastObject.getFirstPowerTimestamp().get(),
                 "First entry with positive power value");
     }
 
@@ -74,10 +74,11 @@ class SmartForecastSolarTest {
     void testSmartAdjsutment() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fol = new ForecastSolarObject("fs-test", content,
+        ForecastSolarObject forecastObject = new ForecastSolarObject("fs-test", content,
                 queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
         // set half of energy production for adjustment
-        ForecastSolarObject adjusted = new ForecastSolarObject(fol, fol.getActualEnergyValue(queryDateTime) / 2, true);
+        ForecastSolarObject adjusted = new ForecastSolarObject(forecastObject,
+                forecastObject.getActualEnergyValue(queryDateTime) / 2, true);
         Optional<SolarForecastAdjuster> adjuster = adjusted.getAdjuster();
         assertTrue(adjuster.isPresent(), "Adjuster present");
         assertEquals(0.5, adjuster.get().getCorrectionFactor(), TOLERANCE, "Factor");

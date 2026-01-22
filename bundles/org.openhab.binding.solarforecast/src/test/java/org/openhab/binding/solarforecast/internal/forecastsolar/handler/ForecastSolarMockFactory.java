@@ -55,15 +55,15 @@ public class ForecastSolarMockFactory {
         ThingImpl forecastSolarPlaneThing = new ThingImpl(SolarForecastBindingConstants.FORECAST_SOLAR_PLANE,
                 new ThingUID("test", name));
         forecastSolarPlaneThing.setBridgeUID(new ThingUID("solarforecast", "fs-site"));
-        CallbackMock forecstSolarPlaneComeback = new CallbackMock();
-        forecstSolarPlaneComeback.setBridge(bridgeHandler.getThing());
+        CallbackMock forecastSolarPlaneCallback = new CallbackMock();
+        forecastSolarPlaneCallback.setBridge(bridgeHandler.getThing());
         ForecastSolarPlaneMock forecastSolarPlane = new ForecastSolarPlaneMock(forecastSolarPlaneThing,
-                forecstSolarPlaneComeback);
-        forecastSolarPlane.setCallback(forecstSolarPlaneComeback);
+                forecastSolarPlaneCallback);
+        forecastSolarPlane.setCallback(forecastSolarPlaneCallback);
         forecastSolarPlane.updateConfiguration(getDefaultPlaneConfig());
         forecastSolarPlane.updateForecast(forecastSolarObject);
         forecastSolarPlane.initialize();
-        forecstSolarPlaneComeback.waitForStatus(ThingStatus.ONLINE);
+        forecastSolarPlaneCallback.waitForStatus(ThingStatus.ONLINE);
         return forecastSolarPlane;
     }
 

@@ -364,7 +364,7 @@ public class Utils {
         for (int i = 0; i < keys.length - 1; i++) {
             iterator = safe ? iterator.optJSONObject(keys[i]) : iterator.getJSONObject(keys[i]);
             if (iterator == null) {
-                return new Object();
+                return "";
             }
         }
         return safe ? iterator.opt(keys[keys.length - 1]) : iterator.get(keys[keys.length - 1]);

@@ -123,7 +123,6 @@ public interface SolarForecast {
 
     /**
      * Get the SolarForecastAdjuster used for adjustment
-     * {
      *
      * @return SolarForecastAdjuster object
      */

@@ -54,7 +54,7 @@ public class SmartForecastSolarPlaneHandler extends AdjustableForecastSolarPlane
      * It calculates the correction factor based on the current energy production and the forecasted energy production.
      * The factor is applied to the forecast, and the adjusted power and energy time series are sent to the channel.
      *
-     * @param fnewForecastThe forecast object containing the forecast data
+     * @param newForecast forecast object containing the forecast data
      */
     @Override
     protected void updateForecast(ForecastSolarObject newForecast) {

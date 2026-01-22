@@ -62,7 +62,7 @@ public class AdjustableForecastSolarPlaneHandler extends ForecastSolarPlaneHandl
                                 + configuration.calculationItemPersistence + "\"]");
                     }
                 } else {
-                    // persistence service not cannot be queried
+                    // persistence service cannot be queried
                     configErrorStatus("@text/solarforecast.plane.status.persistence-not-queryable" + " [\""
                             + configuration.calculationItemPersistence + "\"]");
                 }

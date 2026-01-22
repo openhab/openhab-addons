@@ -29,9 +29,9 @@ public class SolarForecastAdjuster {
     private final double forecastEnergy;
     private final boolean isHoldingTimeElapsed;
 
-    public SolarForecastAdjuster(String idetifier, double correctionFactor, double inverterEnergy,
+    public SolarForecastAdjuster(String identifier, double correctionFactor, double inverterEnergy,
             double forecastEnergy, boolean isHoldingTimeElapsed) {
-        this.identifier = idetifier;
+        this.identifier = identifier;
         this.correctionFactor = correctionFactor;
         this.inverterEnergy = inverterEnergy;
         this.forecastEnergy = forecastEnergy;
