@@ -20,14 +20,13 @@ import java.time.Instant;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
 /**
  * Immutable range class which holds a start and an end instant.
  *
- * @author Gaël L'hopital- Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class InstantRange {
@@ -59,7 +58,6 @@ public class InstantRange {
     /**
      * Returns the duration of the range.
      */
-    @Nullable
     public QuantityType<Time> getDuration() {
         return new QuantityType<>(Duration.between(start, end).toMillis(), MILLI(Units.SECOND));
     }
