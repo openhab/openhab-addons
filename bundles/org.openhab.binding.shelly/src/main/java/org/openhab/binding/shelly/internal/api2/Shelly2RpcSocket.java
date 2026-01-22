@@ -290,7 +290,7 @@ public class Shelly2RpcSocket {
                         getString(message.src), receivedMessage);
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage, e);
+            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
         }
     }
 
