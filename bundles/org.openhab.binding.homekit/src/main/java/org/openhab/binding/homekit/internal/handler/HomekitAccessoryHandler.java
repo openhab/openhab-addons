@@ -922,8 +922,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
                             // check for snapshot refresh triggers
-                            if (snapshotChannelExists && !snapshotChannelRefresh
-                                    && SNAPSHOT_REFRESH_TRIGGERS.get(cxx.iid) instanceof CharacteristicType triggerCxxType) {
+                            if (snapshotChannelExists && !snapshotChannelRefresh && SNAPSHOT_REFRESH_TRIGGERS
+                                    .get(cxx.iid) instanceof CharacteristicType triggerCxxType) {
                                 switch (triggerCxxType) {
                                     case MOTION_DETECTED:
                                         snapshotChannelRefresh |= OpenClosedType.OPEN == state;
