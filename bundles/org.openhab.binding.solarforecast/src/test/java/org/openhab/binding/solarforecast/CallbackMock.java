@@ -56,7 +56,7 @@ public class CallbackMock implements ThingHandlerCallback {
     Bridge bridge;
     Map<String, TimeSeries> seriesMap = new HashMap<>();
     Map<String, List<State>> stateMap = new HashMap<>();
-    volatile ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+    volatile ThingStatusInfo currentStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
@@ -111,7 +111,7 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        currentInfo = thingStatus;
+        currentStatusInfo = thingStatus;
         synchronized (this) {
             notifyAll();
         }
@@ -120,19 +120,20 @@ public class CallbackMock implements ThingHandlerCallback {
     public void waitForStatus(ThingStatus status) {
         Instant endWait = Instant.now().plus(5, ChronoUnit.SECONDS);
         synchronized (this) {
-            while (currentInfo.getStatus() != status && Instant.now().isBefore(endWait)) {
+            while (currentStatusInfo.getStatus() != status && Instant.now().isBefore(endWait)) {
                 try {
                     wait(100);
                 } catch (InterruptedException e) {
                     fail(e.getMessage());
                 }
             }
-            assertEquals(status, currentInfo.getStatus(), "Thing did not reach expected status " + status);
+            assertEquals(status, currentStatusInfo.getStatus(),
+                    "Thing did not reach expected " + status + ", Status reached " + currentStatusInfo);
         }
     }
 
     public ThingStatusInfo getStatus() {
-        return currentInfo;
+        return currentStatusInfo;
     }
 
     @Override
