@@ -93,6 +93,9 @@ public final class AstroBindingConstants {
     public static final String CHANNEL_ID_SUN_NIGHT_START = "night#start";
     public static final String CHANNEL_ID_SUN_NIGHT_END = "night#end";
     public static final String CHANNEL_ID_SUN_NIGHT_DURATION = "night#duration";
+    public static final String CHANNEL_ID_SUN_MIDNIGHT_START = "midnight#start";
+    public static final String CHANNEL_ID_SUN_MIDNIGHT_END = "midnight#end";
+    public static final String CHANNEL_ID_SUN_MIDNIGHT_DURATION = "midnight#duration";
     public static final String CHANNEL_ID_SUN_MORNING_NIGHT_START = "morningNight#start";
     public static final String CHANNEL_ID_SUN_MORNING_NIGHT_END = "morningNight#end";
     public static final String CHANNEL_ID_SUN_MORNING_NIGHT_DURATION = "morningNight#duration";
@@ -162,6 +165,7 @@ public final class AstroBindingConstants {
     public static final String EVENT_CHANNEL_ID_NAUTIC_DUSK = "nauticDusk#event";
     public static final String EVENT_CHANNEL_ID_CIVIL_DUSK = "civilDusk#event";
     public static final String EVENT_CHANNEL_ID_EVENING_NIGHT = "eveningNight#event";
+    public static final String EVENT_CHANNEL_ID_MIDNIGHT = "midnight#event";
     public static final String EVENT_CHANNEL_ID_DAYLIGHT = "daylight#event";
 
     // job identifiers
