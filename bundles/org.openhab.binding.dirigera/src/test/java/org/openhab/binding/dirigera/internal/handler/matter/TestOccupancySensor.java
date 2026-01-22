@@ -17,7 +17,6 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
+import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -96,7 +96,7 @@ class TestOccupancySensor {
         DirigeraAPISimu.patchMap.clear();
 
         DateTimeType fixed = new DateTimeType(
-                Instant.now().atZone(ZoneId.of("Europe/Berlin")).withHour(10).withMinute(15));
+                Instant.now().atZone(HandlerFactoryMock.timeZoneProvider.getTimeZone()).withHour(10).withMinute(15));
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), fixed);
         patch = DirigeraAPISimu.patchMap.get("d6ee92fc-682a-4af0-9097-c73ed70b59fd_2");
         assertNotNull(patch);
