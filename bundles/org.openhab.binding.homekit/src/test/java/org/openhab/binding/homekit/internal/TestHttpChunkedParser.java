@@ -147,4 +147,77 @@ class TestHttpChunkedParser {
         parser.close();
         feeder.close();
     }
+
+    @Test
+    void testChunkedPayloadWithEmptyLines() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                s0.getBytes(),
+                s1.getBytes(),
+                s2.getBytes(),
+                s3.getBytes(),
+                crlf.getBytes(),          // end of headers
+                "\r\n".getBytes(),        // <-- empty line before chunk-size
+                "\r\n".getBytes(),        // <-- another empty line
+                s5.getBytes(),            // "09\r\n"  (chunk size = 9)
+                s6.getBytes(),            // "123456789\r\n"
+                "\r\n".getBytes(),        // <-- empty line before next chunk-size
+                s7.getBytes(),            // "0f\r\n"  (chunk size = 15)
+                s8.getBytes(),            // "123456789abcdef\r\n"
+                "\r\n".getBytes(),        // <-- empty line before terminating chunk
+                s9.getBytes(),            // "0\r\n"
+                crlf.getBytes()           // final CRLF
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+
+        assertEquals(header, new String(httpPayload.headers()));
+        assertEquals("123456789123456789abcdef", new String(httpPayload.content()));
+
+        parser.close();
+        feeder.close();
+    }
+
+    @Test
+    void testIncompleteChunkedPayload() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                s0.getBytes(),
+                s1.getBytes(),
+                s2.getBytes(),
+                s3.getBytes(),
+                crlf.getBytes(),   // end of headers
+                s5.getBytes(),     // "09\r\n"
+                s6.getBytes(),     // "123456789\r\n"
+                s7.getBytes(),     // "0f\r\n"
+                s8.getBytes(),     // "123456789abcdef\r\n"
+                s9.getBytes()      // "0\r\n"  <-- TERMINATING CHUNK
+                // MISSING FINAL CRLF HERE
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        // The parser must NOT emit a payload because the message is incomplete.
+        assertThrows(Exception.class, () -> futureHttpPayload.get(500, TimeUnit.MILLISECONDS),
+                "Parser should not emit incomplete chunked payload");
+
+        parser.close();
+        feeder.close();
+    }
 }

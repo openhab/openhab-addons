@@ -123,7 +123,7 @@ public class DecryptingInputStream extends InputStream {
     /**
      * Reads buffer.length bytes unless EOF occurs.
      *
-     * @return true if buffer was fully filled, false if EOF occurred before any bytes were read.
+     * @return true if buffer was fully filled, false if EOF occurred.
      */
     private boolean readFully(byte[] buffer) throws IOException {
         int offset = 0;

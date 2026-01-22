@@ -160,7 +160,7 @@ public class HttpPayloadParser implements AutoCloseable {
             }
         }
         // grow if needed
-        int needed = inputEndIndex + byteCount;
+        int needed = inputEndIndex - inputStartIndex + byteCount;
         int newCapacity = Math.max(inputBuffer.length * 2, needed);
         byte[] newBuffer = new byte[newCapacity];
         System.arraycopy(inputBuffer, inputStartIndex, newBuffer, 0, inputEndIndex - inputStartIndex);
@@ -184,7 +184,7 @@ public class HttpPayloadParser implements AutoCloseable {
                 }
                 int headersLength = (headerEndIndex + 4) - inputStartIndex;
                 if (headersLength > MAX_HEADER_BLOCK_SIZE) {
-                    throw new SecurityException("Header buffer overload");
+                    throw new IOException("Header buffer overload");
                 }
 
                 headerBuffer.reset();
@@ -358,7 +358,8 @@ public class HttpPayloadParser implements AutoCloseable {
                     || (statusCode >= 400 && statusCode < 600)) {
                 return true;
             }
-            // 200 OK with no content-length => treat as zero-length body
+            // received 200 OK when 1) headers headers are completely received, 2) content-length is
+            // missing and 3) encoding is not chunked => treat edge case as zero-length body
             if (statusCode == 200) {
                 return true;
             }
