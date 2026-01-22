@@ -102,7 +102,6 @@ class TestOccupancySensor {
 
         ZonedDateTime requestedStartTime = Instant.now().truncatedTo(ChronoUnit.MINUTES)
                 .atZone(HandlerFactoryMock.timeZoneProvider.getTimeZone()).withHour(10).withMinute(15);
-        logger.warn("Requested Start Time: {}", requestedStartTime);
         DateTimeType startTime = new DateTimeType(requestedStartTime);
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START), startTime);
         patch = DirigeraAPISimu.patchMap.get("d6ee92fc-682a-4af0-9097-c73ed70b59fd_2");

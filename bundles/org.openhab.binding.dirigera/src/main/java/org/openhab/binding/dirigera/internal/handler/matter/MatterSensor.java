@@ -283,7 +283,6 @@ public class MatterSensor extends BaseMatterHandler {
 
     private String getTimeString(DateTimeType dateTime) {
         ZonedDateTime desired = dateTime.getZonedDateTime(gateway().getTimeZoneProvider().getTimeZone());
-        logger.warn("Converted DateTimeType {} }", desired);
         return String.format(TIME_FORMAT, desired.getHour(), desired.getMinute());
     }
 
