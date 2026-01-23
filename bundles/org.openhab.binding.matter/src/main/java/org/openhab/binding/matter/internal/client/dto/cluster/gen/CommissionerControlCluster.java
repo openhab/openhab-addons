@@ -31,10 +31,8 @@ public class CommissionerControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0751;
     public static final String CLUSTER_NAME = "CommissionerControl";
     public static final String CLUSTER_PREFIX = "commissionerControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_SUPPORTED_DEVICE_CATEGORIES = "supportedDeviceCategories";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the device categories specified in SupportedDeviceCategoryBitmap that are supported by this
      * Commissioner Control Cluster server.
@@ -51,17 +49,20 @@ public class CommissionerControlCluster extends BaseCluster {
      * &gt; The approval is valid for a period determined by the manufacturer and characteristics of the node presenting
      * the Commissioner Control Cluster. Clients SHOULD send the CommissionNode command immediately upon receiving a
      * CommissioningRequestResult event.
+     * 11.26.7.2. RequestID / ClientNodeID Fields The RequestID shall match the RequestID provided to
+     * RequestCommissioningApproval and the ClientNodeID shall match the NodeID of the client which generated the
+     * RequestCommissioningApproval command.
      */
     public static class CommissioningRequestResult {
         public BigInteger requestId; // uint64
-        public BigInteger clientNodeID; // node-id
+        public BigInteger clientNodeId; // node-id
         public Integer statusCode; // status
         public Integer fabricIndex; // FabricIndex
 
-        public CommissioningRequestResult(BigInteger requestId, BigInteger clientNodeID, Integer statusCode,
+        public CommissioningRequestResult(BigInteger requestId, BigInteger clientNodeId, Integer statusCode,
                 Integer fabricIndex) {
             this.requestId = requestId;
-            this.clientNodeID = clientNodeID;
+            this.clientNodeId = clientNodeId;
             this.statusCode = statusCode;
             this.fabricIndex = fabricIndex;
         }
@@ -152,7 +153,6 @@ public class CommissionerControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "supportedDeviceCategories : " + supportedDeviceCategories + "\n";
         return str;
     }

@@ -31,9 +31,6 @@ public class AccountLoginCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x050E;
     public static final String CLUSTER_NAME = "AccountLogin";
     public static final String CLUSTER_PREFIX = "accountLogin";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Structs
     /**
@@ -64,12 +61,12 @@ public class AccountLoginCluster extends BaseCluster {
     // commands
     /**
      * The purpose of this command is to determine if the active user account of the given Content App matches the
-     * active user account of a given Commissionee, and when it does, return a Setup PIN code which can be used for
+     * active user account of a given Commissionee, and when it does, return a Setup PIN which can be used for
      * password-authenticated session establishment (PASE) with the Commissionee.
      * For example, a Video Player with a Content App Platform may invoke this command on one of its Content App
      * endpoints to facilitate commissioning of a Phone App made by the same vendor as the Content App. If the accounts
-     * match, then the Content App may return a setup code that can be used by the Video Player to commission the Phone
-     * App without requiring the user to physically input a setup code.
+     * match, then the Content App may return a Setup PIN that can be used by the Video Player to commission the Phone
+     * App without requiring the user to physically input a Setup PIN.
      * The account match is determined by the Content App using a method which is outside the scope of this
      * specification and will typically involve a central service which is in communication with both the Content App
      * and the Commissionee. The GetSetupPIN command is needed in order to provide the Commissioner/Admin with a Setup
@@ -89,7 +86,7 @@ public class AccountLoginCluster extends BaseCluster {
      * The Setup PIN is a character string so that it can accommodate different future formats, including alpha-numeric
      * encodings. For a Commissionee it shall be populated with the Manual Pairing Code (see Manual Pairing Code section
      * in [MatterCore]) encoded as a string (11 characters) or the Passcode portion of the Manual Pairing Code (when
-     * less than 11 characters) .
+     * less than 11 characters).
      * The server shall implement rate limiting to prevent brute force attacks. No more than 10 unique requests in a 10
      * minute period shall be allowed; a command response status of FAILURE should sent for additional commands received
      * within the 10 minute period. Because access to this command is limited to nodes with Admin-level access, and the
@@ -107,7 +104,7 @@ public class AccountLoginCluster extends BaseCluster {
 
     /**
      * The purpose of this command is to allow the Content App to assume the user account of a given Commissionee by
-     * leveraging the Setup PIN code input by the user during the commissioning process.
+     * leveraging the Setup PIN input by the user during the commissioning process.
      * For example, a Video Player with a Content App Platform may invoke this command on one of its Content App
      * endpoints after the commissioning has completed of a Phone App made by the same vendor as the Content App. The
      * Content App may determine whether the Temporary Account Identifier maps to an account with a corresponding Setup
@@ -129,11 +126,11 @@ public class AccountLoginCluster extends BaseCluster {
      * uppercase letters.
      * The Setup PIN for a Commissionee may be populated with the Manual Pairing Code encoded as a string of decimal
      * numbers (11 characters) or the Passcode portion of the Manual Pairing Code encoded as a string of decimal numbers
-     * (8 characters) .
+     * (8 characters).
      * The server shall implement rate limiting to prevent brute force attacks. No more than 10 unique requests in a 10
      * minute period shall be allowed; a command response status of FAILURE should sent for additional commands received
      * within the 10 minute period. Because access to this command is limited to nodes with Admin-level access, and the
-     * user is involved when obtaining the SetupPIN, there are in place multiple obstacles to successfully mounting a
+     * user is involved when obtaining the Setup PIN, there are in place multiple obstacles to successfully mounting a
      * brute force attack. A Content App that supports this command shall ensure that the Temporary Account Identifier
      * used by its clients is not valid for more than 10 minutes.
      */
@@ -166,7 +163,6 @@ public class AccountLoginCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

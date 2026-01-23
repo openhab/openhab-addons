@@ -32,12 +32,10 @@ public class ContentLauncherCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x050A;
     public static final String CLUSTER_NAME = "ContentLauncher";
     public static final String CLUSTER_PREFIX = "contentLauncher";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ACCEPT_HEADER = "acceptHeader";
     public static final String ATTRIBUTE_SUPPORTED_STREAMING_PROTOCOLS = "supportedStreamingProtocols";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute shall provide a list of content types supported by the Video Player or Content App in the form of
@@ -147,7 +145,7 @@ public class ContentLauncherCluster extends BaseCluster {
         /**
          * This field shall indicate the color, in RGB or RGBA, used for styling different Video Player sections like
          * Logo, Watermark, etc. The value shall conform to the 6-digit or 8-digit format defined for CSS sRGB
-         * hexadecimal color notation. Examples:
+         * hexadecimal color notation [https://www.w3.org/TR/css-color-4/#hex-notation]. Examples:
          * • #76DE19 for R&#x3D;0x76, G&#x3D;0xDE, B&#x3D;0x19, A absent
          * • #76DE1980 for R&#x3D;0x76, G&#x3D;0xDE, B&#x3D;0x19, A&#x3D;0x80
          */
@@ -481,7 +479,6 @@ public class ContentLauncherCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "acceptHeader : " + acceptHeader + "\n";
         str += "supportedStreamingProtocols : " + supportedStreamingProtocols + "\n";

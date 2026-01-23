@@ -186,6 +186,9 @@ Nodes are discovered automatically (see [Discovery](#discovery) for more informa
 | Generate a new pairing code for a Matter device | Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller                                                                                                                                                        |
 | List Connected Matter Fabrics                   | This will list all the Matter fabrics this node belongs to                                                                                                                                                                                                                |
 | Remove Connected Matter Fabric                  | This removes a connected Matter fabric from a device. Use the 'List connected Matter fabrics' action to retrieve the fabric index number                                                                                                                                  |
+| OTA: Check for firmware updates                 | Queries the Matter server for available firmware updates for this device                                                                                                                                                                                                  |
+| OTA: Start firmware update                      | Starts the firmware update process for this device. Check the Thing status for download progress.                                                                                                                                                                         |
+| OTA: Cancel firmware update                     | Cancels the firmware update process for this device if the download is in progress. Updates will not be possible for approximately 10 minutes after cancellation.                                                                                                         |
 
 For nodes that contain a Thread Border Router Management Cluster, the following additional actions will be present
 
@@ -199,6 +202,63 @@ For nodes that contain a Thread Border Router Management Cluster, the following 
 A Thread operational data set is a hex encoded string which contains a Thread border router's configuration.
 Using the same operational data set across multiple Thread border routers allows those routers to form a single network where Thread devices can roam from router to router.
 Some Thread border routers allow a "pending" operational dataset to be configured, this allows routers to coordinate the configuration change with current Thread devices without requiring those devices to be reconfigured (live migration).
+
+## OTA (Over-The-Air) Firmware Updates
+
+Matter devices support OTA firmware updates, allowing devices to be updated with the latest firmware without requiring physical access or manufacturer-specific applications.
+openHAB uses the official Matter Distributed Compliance Ledger (DCL),  a cryptographically secure, distributed network that allows Matter device manufacturers and vendors to query and publish public firmware updates.
+This is the same method commercial Matter systems use to update their devices.
+
+### Checking for Updates
+
+openHAB will query the public DCL every 24 hours for available updates.
+To manually check if a firmware update is available for a device, use the "OTA: Check for firmware updates" action on the Node Thing.
+This will query the Matter server for available updates and update the Thing status if an update is found.
+
+If an update is available, the `otasoftwareupdaterequestor-updateavailable` channel will be set to ON, and the Thing status will display "Firmware update available".
+
+<img src="./doc/ota-update-available.png" alt="Firmware Update Available" width="600"/>
+
+### Starting an Update
+
+Once an update is available, use the "OTA: Start firmware update" action to begin the download and installation process.
+The Thing status will be updated with the current state of the update process:
+
+- **Downloading**: The firmware is being downloaded from the Matter server. The status will show the download progress as a percentage.
+- **Applying**: The firmware is being applied to the device.
+- **Delayed on apply**: The device is waiting to apply the firmware (may require user intervention).
+- **Delayed on user consent**: The device is waiting for user consent to proceed.
+
+<img src="./doc/ota-update-downloading.png" alt="Firmware Update Downloading" width="600"/>
+
+**Note:** During the update process, the device may become temporarily unavailable or unresponsive.
+Most devices will automatically reboot after the update is applied.
+
+### Canceling an Update
+
+If a firmware update is in progress and you need to cancel it, use the "OTA: Cancel firmware update" action.
+This will stop the download if it is in progress. If the update is in the applying state, then this action will not have any effect.
+
+**Important:** After canceling an update, the device will enter a cool down period of approximately 10 minutes during which updates cannot be initiated.
+
+### Update Available Channel
+
+Devices that support OTA updates will have an `otasoftwareupdaterequestor-updateavailable` channel that indicates whether a firmware update is available.
+This channel can be used in rules to automate notifications or actions when updates become available.
+
+Example rule:
+
+```javascript
+rules.when().item('Matter_Node_Ota_Update_Available').changed().toOn().then(e => {
+    console.log("Matter Node OTA Update Available!: {}", e);
+}).build("Matter Node OTA Update Available Rule");
+```
+
+### Troubleshooting
+
+- **No updates available**: Not all Matter devices support OTA updates, and updates are only available when the device manufacturer provides them to the Matter network.
+- **Update fails**: If an update fails, check the Thing status and logs for error messages. The device may need to be power cycled or reset.
+- **Update stuck**: If an update appears to be stuck, you can try canceling it and restarting the update process after the cool down period.
 
 ## Channels
 
@@ -243,6 +303,7 @@ Possible channels include:
 | modeselect-mode                                             | Number                   | Mode Select                  | Selection of 1 or more states                                                                                                                                                                                                                                        |                  |          | %d          |                                                                                                                                                                      |
 | occupancysensing-occupied                                   | Switch                   | Occupancy                    | Indicates if an occupancy sensor is triggered                                                                                                                                                                                                                        | Presence         | true     |             |                                                                                                                                                                      |
 | onoffcontrol-onoff                                          | Switch                   | Switch                       | Switches the power on and off                                                                                                                                                                                                                                        | Light            |          |             |                                                                                                                                                                      |
+| otasoftwareupdaterequestor-updateavailable                  | Switch                   | Update Available             | Indicates if there is a firmware update available for the device. Use the "Start Firmware Update" Thing action to start the update process.                                                                                                                          | Status           | true     |             |                                                                                                                                                                      |
 | powersource-batchargelevel                                  | Number                   | Battery Charge Level         | Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is required                                                                                                                                                        | Energy           | true     |             | 0=Ok, 1=Warning, 2=Critical                                                                                                                                          |
 | powersource-batpercentremaining                             | Number:Dimensionless     | Battery Percent Remaining    | Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to provide power to the Node                                                                                                                                 | Energy           | true     | %d %%       |                                                                                                                                                                      |
 | relativehumiditymeasurement-measuredvalue                   | Number:Dimensionless     | Humidity                     | The measured humidity                                                                                                                                                                                                                                                | Humidity         | true     | %.0f %%     |                                                                                                                                                                      |

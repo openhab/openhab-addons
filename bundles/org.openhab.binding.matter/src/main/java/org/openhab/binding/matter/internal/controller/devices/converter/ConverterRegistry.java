@@ -33,6 +33,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCl
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ModeSelectCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OtaSoftwareUpdateRequestorCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.PowerSourceCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.RelativeHumidityMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.SmokeCoAlarmCluster;
@@ -89,6 +90,8 @@ public class ConverterRegistry {
                 ThreadNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
                 ThreadBorderRouterManagementConverter.class);
+        ConverterRegistry.registerConverter(OtaSoftwareUpdateRequestorCluster.CLUSTER_ID,
+                OtaSoftwareUpdateRequestorConverter.class);
         // Robotic Vacuum Cleaner converters
         ConverterRegistry.registerConverter(
                 org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster.CLUSTER_ID,

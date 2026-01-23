@@ -29,7 +29,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x005C;
     public static final String CLUSTER_NAME = "SmokeCoAlarm";
     public static final String CLUSTER_PREFIX = "smokeCoAlarm";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_EXPRESSED_STATE = "expressedState";
     public static final String ATTRIBUTE_SMOKE_STATE = "smokeState";
@@ -45,7 +44,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     public static final String ATTRIBUTE_SMOKE_SENSITIVITY_LEVEL = "smokeSensitivityLevel";
     public static final String ATTRIBUTE_EXPIRY_DATE = "expiryDate";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the visibly- and audibly-expressed state of the alarm. When multiple alarm conditions are being
@@ -293,6 +291,9 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         }
     }
 
+    /**
+     * This value shall indicate that this alarm is not alarming.
+     */
     public enum ExpressedStateEnum implements MatterEnum {
         NORMAL(0, "Normal"),
         SMOKE_ALARM(1, "Smoke Alarm"),
@@ -369,6 +370,9 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         }
     }
 
+    /**
+     * This value shall indicate that the smoke sensor has nominal contamination levels, no customer action is required.
+     */
     public enum ContaminationStateEnum implements MatterEnum {
         NORMAL(0, "Normal"),
         LOW(1, "Low"),
@@ -440,7 +444,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "expressedState : " + expressedState + "\n";
         str += "smokeState : " + smokeState + "\n";

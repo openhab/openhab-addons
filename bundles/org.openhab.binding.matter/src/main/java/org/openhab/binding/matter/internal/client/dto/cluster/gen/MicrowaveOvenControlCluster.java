@@ -32,7 +32,6 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x005F;
     public static final String CLUSTER_NAME = "MicrowaveOvenControl";
     public static final String CLUSTER_PREFIX = "microwaveOvenControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_COOK_TIME = "cookTime";
     public static final String ATTRIBUTE_MAX_COOK_TIME = "maxCookTime";
@@ -44,7 +43,6 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_SELECTED_WATT_INDEX = "selectedWattIndex";
     public static final String ATTRIBUTE_WATT_RATING = "wattRating";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the total cook time associated with the operation of the device.
@@ -173,7 +171,6 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "cookTime : " + cookTime + "\n";
         str += "maxCookTime : " + maxCookTime + "\n";

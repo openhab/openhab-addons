@@ -32,14 +32,12 @@ public class GroupKeyManagementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x003F;
     public static final String CLUSTER_NAME = "GroupKeyManagement";
     public static final String CLUSTER_PREFIX = "groupKeyManagement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_GROUP_KEY_MAP = "groupKeyMap";
     public static final String ATTRIBUTE_GROUP_TABLE = "groupTable";
     public static final String ATTRIBUTE_MAX_GROUPS_PER_FABRIC = "maxGroupsPerFabric";
     public static final String ATTRIBUTE_MAX_GROUP_KEYS_PER_FABRIC = "maxGroupKeysPerFabric";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute is a list of GroupKeyMapStruct entries. Each entry associates a logical Group Id with a particular
@@ -48,9 +46,9 @@ public class GroupKeyManagementCluster extends BaseCluster {
     public List<GroupKeyMapStruct> groupKeyMap; // 0 list RW F VM
     /**
      * This attribute is a list of GroupInfoMapStruct entries. Each entry provides read-only information about how a
-     * given logical Group ID maps to a particular set of endpoints, and a name for the group. The content of this
-     * attribute reflects data managed via the Groups cluster (see AppClusters), and is in general terms referred to as
-     * the &#x27;node-wide Group Table&#x27;.
+     * given logical Group ID maps to a particular set of endpoints, and a name for the group.
+     * The content of this attribute reflects data managed via the Groups cluster (see AppClusters), and is in general
+     * terms referred to as the &#x27;node-wide Group Table&#x27;.
      * The GroupTable shall NOT contain any entry whose GroupInfoMapStruct has an empty Endpoints list. If a RemoveGroup
      * or RemoveAllGroups command causes the removal of a group mapping from its last mapped endpoint, the entire
      * GroupTable entry for that given GroupId shall be removed.
@@ -58,14 +56,15 @@ public class GroupKeyManagementCluster extends BaseCluster {
     public List<GroupInfoMapStruct> groupTable; // 1 list R F V
     /**
      * Indicates the maximum number of groups that this node supports per fabric. The value of this attribute shall be
-     * set to be no less than the required minimum supported groups as specified in Group Limits. The length of the
-     * GroupKeyMap and GroupTable list attributes shall NOT exceed the value of the MaxGroupsPerFabric attribute
-     * multiplied by the number of supported fabrics.
+     * set to be no less than the required minimum supported groups as specified in Section 2.11.1.2, “Group Limits”.
+     * The length of the GroupKeyMap and GroupTable list attributes shall NOT exceed the value of the MaxGroupsPerFabric
+     * attribute multiplied by the number of supported fabrics.
      */
     public Integer maxGroupsPerFabric; // 2 uint16 R V
     /**
      * Indicates the maximum number of group key sets this node supports per fabric. The value of this attribute shall
-     * be set according to the minimum number of group key sets to support as specified in Group Limits.
+     * be set according to the minimum number of group key sets to support as specified in Section 2.11.1.2, “Group
+     * Limits”.
      */
     public Integer maxGroupKeysPerFabric; // 3 uint16 R V
 
@@ -264,8 +263,8 @@ public class GroupKeyManagementCluster extends BaseCluster {
      * status code responded to the client.
      * • If the EpochStartTime0 is set to 0, then this command shall fail with an INVALID_COMMAND status code responded
      * to the client. Note that internally, a GroupKeySetStruct’s EpochStartTime0 may be set to zero, due to the
-     * behavior of the AddNOC command which synthesizes a GroupKeySetStruct (see IPKValue). However, the value 0 is
-     * illegal in the GroupKeySet field sent by a client.
+     * behavior of the AddNOC command which synthesizes a GroupKeySetStruct (see Section 11.18.6.8.1, “IPKValue Field”).
+     * However, the value 0 is illegal in the GroupKeySet field sent by a client.
      * • If the EpochKey1 field is not null, then the EpochKey0 field shall NOT be null. Otherwise this command shall
      * fail with an INVALID_COMMAND status code responded to the client.
      * • If the EpochKey1 field is not null, and the field’s length is not exactly 16 bytes, then this command shall
@@ -293,7 +292,7 @@ public class GroupKeyManagementCluster extends BaseCluster {
      * Upon completion, this command shall send a status code back to the initiator:
      * • If the Group Key Set was properly installed or updated on the Node, the status code shall be set to SUCCESS.
      * • If there are insufficient resources on the receiver to store an additional Group Key Set, the status code shall
-     * be set to RESOURCE_EXHAUSTED (see group key limits);
+     * be set to RESOURCE_EXHAUSTED (see Section 2.11.1.2, “Group Limits”);
      * • Otherwise, this status code shall be set to FAILURE.
      */
     public static ClusterCommand keySetWrite(GroupKeySetStruct groupKeySet) {
@@ -358,7 +357,6 @@ public class GroupKeyManagementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "groupKeyMap : " + groupKeyMap + "\n";
         str += "groupTable : " + groupTable + "\n";

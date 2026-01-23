@@ -47,6 +47,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnos
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.controller.devices.converter.GenericConverter;
 import org.openhab.binding.matter.internal.controller.devices.types.DeviceType;
@@ -198,6 +199,11 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         } else {
             startPolling();
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status) {
+        updateStatus(status, ThingStatusDetail.NONE, null);
     }
 
     @Override
@@ -413,6 +419,16 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
 
     public int getCurrentFabricIndex() {
         return currentFabricIndex;
+    }
+
+    /**
+     * Handle the OTA update available message.
+     * This should be overridden by the subclass to handle the OTA update available message.
+     * 
+     * @param message The OTA update available message.
+     */
+    protected void handleOtaUpdateAvailable(OtaUpdateAvailableMessage message) {
+        logger.debug("OtaUpdateAvailableMessage onEvent: node {} is {}", message.nodeId, message);
     }
 
     protected @Nullable ControllerHandler controllerHandler() {

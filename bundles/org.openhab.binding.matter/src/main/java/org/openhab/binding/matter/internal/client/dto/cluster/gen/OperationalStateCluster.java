@@ -30,7 +30,6 @@ public class OperationalStateCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0060;
     public static final String CLUSTER_NAME = "OperationalState";
     public static final String CLUSTER_PREFIX = "operationalState";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_PHASE_LIST = "phaseList";
     public static final String ATTRIBUTE_CURRENT_PHASE = "currentPhase";
     public static final String ATTRIBUTE_COUNTDOWN_TIME = "countdownTime";
@@ -38,7 +37,6 @@ public class OperationalStateCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPERATIONAL_STATE = "operationalState";
     public static final String ATTRIBUTE_OPERATIONAL_ERROR = "operationalError";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates a list of names of different phases that the device can go through for the selected function or mode.
      * The list may not be in sequence order. For example in a washing machine this could include items such as
@@ -92,8 +90,8 @@ public class OperationalStateCluster extends BaseCluster {
     public OperationalStateEnum operationalState; // 4 OperationalStateEnum R V
     /**
      * This attribute shall specify the details of any current error condition being experienced on the device when the
-     * OperationalState attribute is populated with Error. Please see ErrorStateStruct for general requirements on the
-     * population of this attribute.
+     * OperationalState attribute is populated with Error. See Section 1.14.4.4, “ErrorStateStruct Type” for general
+     * requirements on the population of this attribute.
      * When there is no error detected, this shall have an ErrorStateID of NoError.
      */
     public ErrorStateStruct operationalError; // 5 ErrorStateStruct R V
@@ -157,9 +155,8 @@ public class OperationalStateCluster extends BaseCluster {
          */
         public OperationalStateEnum operationalStateId; // OperationalStateEnum
         /**
-         * This field shall be present if the OperationalStateID is from the set reserved for Manufacturer Specific
-         * States, otherwise it shall NOT be present. If present, this shall contain a human-readable description of the
-         * operational state.
+         * This field is present when the OperationalStateID is from the set reserved for Manufacturer Specific States.
+         * If present, this shall contain a human-readable description of the operational state.
          */
         public String operationalStateLabel; // string
 
@@ -175,10 +172,8 @@ public class OperationalStateCluster extends BaseCluster {
          */
         public ErrorStateEnum errorStateId; // ErrorStateEnum
         /**
-         * This field shall be present if the ErrorStateID is from the set reserved for Manufacturer Specific Errors,
-         * otherwise it shall NOT be present. If present, this shall contain a human-readable description of the
-         * ErrorStateID; e.g. for a manufacturer specific ErrorStateID of &quot;0x80&quot; the ErrorStateLabel may
-         * contain &quot;My special error&quot;.
+         * This field is present when the ErrorStateID is from the set reserved for Manufacturer Specific errors. If
+         * present, this shall contain a human-readable description of the error state.
          */
         public String errorStateLabel; // string
         /**
@@ -382,7 +377,6 @@ public class OperationalStateCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "phaseList : " + phaseList + "\n";
         str += "currentPhase : " + currentPhase + "\n";
         str += "countdownTime : " + countdownTime + "\n";

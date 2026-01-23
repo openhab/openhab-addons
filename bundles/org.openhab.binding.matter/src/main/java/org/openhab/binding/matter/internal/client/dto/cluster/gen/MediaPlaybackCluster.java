@@ -32,7 +32,6 @@ public class MediaPlaybackCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0506;
     public static final String CLUSTER_NAME = "MediaPlayback";
     public static final String CLUSTER_PREFIX = "mediaPlayback";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CURRENT_STATE = "currentState";
     public static final String ATTRIBUTE_START_TIME = "startTime";
@@ -46,7 +45,6 @@ public class MediaPlaybackCluster extends BaseCluster {
     public static final String ATTRIBUTE_ACTIVE_TEXT_TRACK = "activeTextTrack";
     public static final String ATTRIBUTE_AVAILABLE_TEXT_TRACKS = "availableTextTracks";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the current playback state of media.
@@ -105,12 +103,12 @@ public class MediaPlaybackCluster extends BaseCluster {
      * of the media. When the media has an associated StartTime, a value of null shall indicate that a seek forward is
      * valid only until the current time within the media, using a position computed from the difference between the
      * current time offset and StartTime, in milliseconds from start of the media, truncating fractional milliseconds
-     * towards 0. A value of Nas when StartTime is not specified shall indicate that seeking forward is not allowed.
+     * towards 0. A value of NULL when StartTime is not specified shall indicate that seeking forward is not allowed.
      */
     public BigInteger seekRangeEnd; // 5 uint64 R V
     /**
      * Indicates the earliest valid position to which a client may seek back, in milliseconds from start of the media. A
-     * value of Nas shall indicate that seeking backwards is not allowed.
+     * value of NULL shall indicate that seeking backwards is not allowed.
      */
     public BigInteger seekRangeStart; // 6 uint64 R V
     /**
@@ -149,16 +147,20 @@ public class MediaPlaybackCluster extends BaseCluster {
         /**
          * This field shall indicate the updated start time as defined by the StartTime attribute, and has the same
          * constraint as that attribute.
+         * This field value shall be 0 when the value of the StartTime attribute is NULL.
          */
         public BigInteger startTime; // epoch-us
         /**
          * This field shall indicate the updated duration as defined by the Duration attribute, and has the same
          * constraint as that attribute.
+         * This field value shall be 0 when the value of the Duration attribute is NULL.
          */
         public BigInteger duration; // uint64
         /**
          * This field shall indicate the updated position of playback as defined by the SampledPosition attribute, and
          * has the same constraint as that attribute.
+         * The UpdatedAt field value of the PlaybackPositionStruct shall be 0, and the Position field value of the
+         * PlaybackPositionStruct shall be NULL, when the value of the SampledPosition attribute is NULL.
          */
         public PlaybackPositionStruct sampledPosition; // PlaybackPositionStruct
         /**
@@ -169,11 +171,13 @@ public class MediaPlaybackCluster extends BaseCluster {
         /**
          * This field shall indicate the updated start of the seek range end as defined by the SeekRangeEnd attribute,
          * and has the same constraint as that attribute.
+         * This field value shall be 0 when the value of the SeekRangeEnd attribute is NULL.
          */
         public BigInteger seekRangeEnd; // uint64
         /**
          * This field shall indicate the updated start of the seek range start as defined by the SeekRangeStart
          * attribute, and has the same constraint as that attribute.
+         * This field value shall be 0 when the value of the SeekRangeStart attribute is NULL.
          */
         public BigInteger seekRangeStart; // uint64
         /**
@@ -422,6 +426,7 @@ public class MediaPlaybackCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to start playback of the media.
      * Upon receipt, this shall play media. If content is currently in a FastForward or Rewind state. Play shall return
      * media to normal playback speed.
      */
@@ -430,13 +435,14 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
-     * Upon receipt, this shall pause playback of the media.
+     * This command is used to pause playback of the media. Upon receipt, this shall pause playback of the media.
      */
     public static ClusterCommand pause() {
         return new ClusterCommand("pause");
     }
 
     /**
+     * This command is used to stop playback of the media.
      * Upon receipt, this shall stop playback of the media. User-visible outcome is context-specific. This may navigate
      * the user back to the location from where the media was originally launched.
      */
@@ -445,13 +451,15 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
-     * Upon receipt, this shall Start Over with the current media playback item.
+     * This command is used to start playback of the media from the beginning. Upon receipt, this shall Start Over with
+     * the current media playback item.
      */
     public static ClusterCommand startOver() {
         return new ClusterCommand("startOver");
     }
 
     /**
+     * This command is used to go back to the previous media playback item.
      * Upon receipt, this shall cause the handler to be invoked for &quot;Previous&quot;. User experience is
      * context-specific. This will often Go back to the previous media playback item.
      */
@@ -460,6 +468,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to go to the next media playback item.
      * Upon receipt, this shall cause the handler to be invoked for &quot;Next&quot;. User experience is
      * context-specific. This will often Go forward to the next media playback item.
      */
@@ -468,6 +477,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to rewind the media.
      * Upon receipt, this shall start playback of the media backward in case the media is currently playing in the
      * forward direction or is not playing. If the playback is already happening in the backwards direction receipt of
      * this command shall increase the speed of the media playback backwards.
@@ -488,6 +498,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to fast forward the media.
      * Upon receipt, this shall start playback of the media in the forward direction in case the media is currently
      * playing in the backward direction or is not playing. If the playback is already happening in the forward
      * direction receipt of this command shall increase the speed of the media playback.
@@ -508,6 +519,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to skip forward in the media.
      * Upon receipt, this shall Skip forward in the media by the given number of milliseconds.
      */
     public static ClusterCommand skipForward(BigInteger deltaPositionMilliseconds) {
@@ -519,6 +531,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to skip backward in the media.
      * Upon receipt, this shall Skip backward in the media by the given number of milliseconds.
      */
     public static ClusterCommand skipBackward(BigInteger deltaPositionMilliseconds) {
@@ -530,6 +543,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to seek to a specific position in the media.
      * Upon receipt, this shall change the playback position in the media to the given position.
      */
     public static ClusterCommand seek(BigInteger position) {
@@ -541,6 +555,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to activate a specific Audio Track for the media being played.
      * Upon receipt, the server shall set the active Audio Track to the one identified by the TrackID in the Track
      * catalog for the streaming media. If the TrackID does not exist in the Track catalog, OR does not correspond to
      * the streaming media OR no media is being streamed at the time of receipt of this command, the server will return
@@ -558,6 +573,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to activate a specific Text Track for the media being played.
      * Upon receipt, the server shall set the active Text Track to the one identified by the TrackID in the Track
      * catalog for the streaming media. If the TrackID does not exist in the Track catalog, OR does not correspond to
      * the streaming media OR no media is being streamed at the time of receipt of this command, the server shall return
@@ -572,6 +588,7 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to deactivate a specific Text Track for the media being played.
      * If a Text Track is active (i.e. being displayed), upon receipt of this command, the server shall stop displaying
      * it.
      */
@@ -582,7 +599,6 @@ public class MediaPlaybackCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "currentState : " + currentState + "\n";
         str += "startTime : " + startTime + "\n";

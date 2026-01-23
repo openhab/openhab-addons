@@ -32,12 +32,10 @@ public class MediaInputCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0507;
     public static final String CLUSTER_NAME = "MediaInput";
     public static final String CLUSTER_PREFIX = "mediaInput";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_INPUT_LIST = "inputList";
     public static final String ATTRIBUTE_CURRENT_INPUT = "currentInput";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute shall provide a list of the media inputs supported by the device.
@@ -180,7 +178,6 @@ public class MediaInputCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "inputList : " + inputList + "\n";
         str += "currentInput : " + currentInput + "\n";

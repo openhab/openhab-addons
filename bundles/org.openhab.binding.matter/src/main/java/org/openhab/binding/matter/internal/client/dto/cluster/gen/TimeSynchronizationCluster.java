@@ -32,7 +32,6 @@ public class TimeSynchronizationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0038;
     public static final String CLUSTER_NAME = "TimeSynchronization";
     public static final String CLUSTER_PREFIX = "timeSynchronization";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_UTC_TIME = "utcTime";
     public static final String ATTRIBUTE_GRANULARITY = "granularity";
@@ -48,51 +47,52 @@ public class TimeSynchronizationCluster extends BaseCluster {
     public static final String ATTRIBUTE_DST_OFFSET_LIST_MAX_SIZE = "dstOffsetListMaxSize";
     public static final String ATTRIBUTE_SUPPORTS_DNS_RESOLVE = "supportsDnsResolve";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * If the node has achieved time synchronization, this shall indicate the current time as a UTC epoch-us (Epoch Time
-     * in Microseconds).
-     * If the node has not achieved time synchronization, this shall be null. This attribute may be set when a
+     * If the node has achieved time synchronization, this attribute shall indicate the current time as a UTC epoch-us
+     * (Epoch Time in Microseconds).
+     * If the node has not achieved time synchronization, this attribute shall be null. This attribute may be set when a
      * SetUTCTime is received.
      */
     public BigInteger utcTime; // 0 epoch-us R V
     /**
-     * The granularity of the error that the node is willing to guarantee on the time synchronization. It is of type
-     * GranularityEnum.
+     * Indicates granularity of the error that the node is willing to guarantee on the time synchronization. It is of
+     * type GranularityEnum.
      * This value shall be set to NoTimeGranularity if UTCTime is null and shall NOT be set to NoTimeGranularity if
      * UTCTime is non-null.
      */
     public GranularityEnum granularity; // 1 GranularityEnum R V
     /**
-     * The node’s time source. This attribute indicates what method the node is using to sync, whether the source uses
-     * NTS or not and whether the source is internal or external to the Matter network. This attribute may be used by a
-     * client to determine its level of trust in the UTCTime. It is of type TimeSourceEnum.
+     * Indicates the node’s time source. This attribute indicates what method the node is using to sync, whether the
+     * source uses NTS or not and whether the source is internal or external to the Matter network. This attribute may
+     * be used by a client to determine its level of trust in the UTCTime. It is of type TimeSourceEnum.
      * If a node is unsure if the selected NTP server is within the Matter network, it SHOULD select one of the
      * NonMatter* values.
      * This value shall be set to None if UTCTime is null and shall NOT be set to None if UTCTime is non-null.
      */
     public TimeSourceEnum timeSource; // 2 TimeSourceEnum R V
     /**
-     * A Node ID, endpoint, and associated fabric index of a Node that may be used as trusted time source. See Section
-     * 11.17.13, “Time source prioritization”. This attribute reflects the last value set by an administrator using the
-     * SetTrustedTimeSource command. If the value is null, no trusted time source has yet been set.
+     * Indicates the Node ID, endpoint, and associated fabric index of a Node that may be used as trusted time source.
+     * See Section 11.17.13, “Time source prioritization”. This attribute reflects the last value set by an
+     * administrator using the SetTrustedTimeSource command. If the value is null, no trusted time source has yet been
+     * set.
      */
     public TrustedTimeSourceStruct trustedTimeSource; // 3 TrustedTimeSourceStruct R V
     /**
-     * The default NTP server that this Node may use if other time sources are unavailable. This attribute is settable
-     * by an Administrator using the SetDefaultNTP command. It SHOULD be set by the Commissioner during commissioning.
-     * If no default NTP server is available, the Commissioner may set this value to null. The default IANA assigned NTP
-     * port of 123 shall be used to access the NTP server.
+     * Indicates the default NTP server that this Node may use if other time sources are unavailable. This attribute is
+     * settable by an Administrator using the SetDefaultNTP command. It SHOULD be set by the Commissioner during
+     * commissioning. If no default NTP server is available, the Commissioner may set this value to null. The default
+     * IANA assigned NTP port of 123 shall be used to access the NTP server.
      * If set, the format of this attribute shall be a domain name or a static IPv6 address with no port, in text
      * format, as specified in RFC 5952. The address format shall follow the recommendations in Section 4 and shall NOT
      * contain a port number.
      */
     public String defaultNtp; // 4 string R V
     /**
-     * A list of time zone offsets from UTC and when they shall take effect. This attribute uses a list of time offset
-     * configurations to allow Nodes to handle scheduled regulatory time zone changes. This attribute shall NOT be used
-     * to indicate daylight savings time changes (see DSTOffset attribute for daylight savings time).
+     * This attribute shall contain a list of time zone offsets from UTC and when they shall take effect.
+     * This attribute uses a list of time offset configurations to allow Nodes to handle scheduled regulatory time zone
+     * changes. This attribute shall NOT be used to indicate daylight savings time changes (see Section 11.17.8.7,
+     * “DSTOffset Attribute” for daylight savings time).
      * The first entry shall have a ValidAt entry of 0. If there is a second entry, it shall have a non-zero ValidAt
      * time.
      * If a node supports a TimeZoneDatabase, and it has data for the given time zone Name and the given Offset matches,
@@ -112,8 +112,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
      */
     public List<TimeZoneStruct> timeZone; // 5 list R V
     /**
-     * A list of offsets to apply for daylight savings time, and their validity period. List entries shall be sorted by
-     * ValidStarting time.
+     * This attribute shall contain a list of offsets to apply for daylight savings time, and their validity period.
+     * List entries shall be sorted by ValidStarting time.
      * A list entry shall NOT have a ValidStarting time that is smaller than the ValidUntil time of the previous entry.
      * There shall be at most one list entry with a null ValidUntil time and, if such an entry is present, it shall
      * appear last in the list.
@@ -125,10 +125,10 @@ public class TimeSynchronizationCluster extends BaseCluster {
      */
     public List<DSTOffsetStruct> dstOffset; // 6 list R V
     /**
-     * The computed current local time of the node as a epoch-us (Epoch Time in Microseconds). The value of LocalTime
-     * shall be the sum of the UTCTime, the offset of the currently valid TimeZoneStruct from the TimeZone attribute
-     * (converted to microseconds), and the offset of the currently valid DSTOffsetStruct from the DSTOffset attribute
-     * (converted to microseconds), if such an entry exists.
+     * Indicates the computed current local time of the node as a epoch-us (Epoch Time in Microseconds). The value of
+     * LocalTime shall be the sum of the UTCTime, the offset of the currently valid TimeZoneStruct from the TimeZone
+     * attribute (converted to microseconds), and the offset of the currently valid DSTOffsetStruct from the DSTOffset
+     * attribute (converted to microseconds), if such an entry exists.
      * If the node has not achieved time synchronization, this shall be null. If the node has an empty DSTOffset, this
      * shall be null.
      */
@@ -140,22 +140,22 @@ public class TimeSynchronizationCluster extends BaseCluster {
      */
     public TimeZoneDatabaseEnum timeZoneDatabase; // 8 TimeZoneDatabaseEnum R V
     /**
-     * If the node is running an RFC 5905 NTPv4 compliant server on port 123, this value shall be True. If the node is
-     * not currently running an NTP server, this value shall be False.
+     * Indicates if the node is running an RFC 5905 NTPv4 compliant server on port 123, this value shall be True.
+     * If the node is not currently running an NTP server, this value shall be False.
      */
     public Boolean ntpServerAvailable; // 9 bool R V
     /**
-     * Number of supported list entries in the TimeZone attribute. This attribute may take the value of 1 or 2, where
-     * the optional second list entry may be used to handle scheduled regulatory time zone changes.
+     * Indicates the number of supported list entries in the TimeZone attribute. This attribute may take the value of 1
+     * or 2, where the optional second list entry may be used to handle scheduled regulatory time zone changes.
      */
     public Integer timeZoneListMaxSize; // 10 uint8 R V
     /**
-     * Number of supported list entries in DSTOffset attribute. This value must be at least 1.
+     * Indicates the number of supported list entries in DSTOffset attribute. This value must be at least 1.
      */
     public Integer dstOffsetListMaxSize; // 11 uint8 R V
     /**
-     * This attribute is true if the node supports resolving a domain name. DefaultNTP Address values for these nodes
-     * may include domain names. If this is False, the Address for a DefaultNTP shall be an IPv6 address.
+     * Indicates if the node supports resolving a domain name. DefaultNTP Address values for these nodes may include
+     * domain names. If this is False, the Address for a DefaultNTP shall be an IPv6 address.
      */
     public Boolean supportsDnsResolve; // 12 bool R V
 
@@ -482,6 +482,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to set the UTC time of the node.
      * This command may be issued by Administrator to set the time. If the Commissioner does not have a valid time
      * source, it may send a Granularity of NoTimeGranularity.
      * Upon receipt of this command, the node may update its UTCTime attribute to match the time specified in the
@@ -510,7 +511,7 @@ public class TimeSynchronizationCluster extends BaseCluster {
     }
 
     /**
-     * This command shall set the TrustedTimeSource attribute. Upon receipt of this command:
+     * This command is used to set the TrustedTimeSource attribute. Upon receipt of this command:
      * • If the TrustedTimeSource field in the command is null, the node shall set the TrustedTimeSource attribute to
      * null and shall generate a MissingTrustedTimeSource event.
      * • Otherwise, the node shall set the TrustedTimeSource attribute to a struct which has NodeID and Endpoint fields
@@ -568,11 +569,12 @@ public class TimeSynchronizationCluster extends BaseCluster {
     }
 
     /**
-     * This command is used to set the DefaultNTP attribute. If the DefaultNTP Address field does not conform to the
-     * requirements in the DefaultNTP attribute description, the command shall fail with a status code of
-     * INVALID_COMMAND. If the node does not support DNS resolution (as specified in SupportsDNSResolve) and the
-     * provided Address is a domain name, the command shall fail with a status code of INVALID_COMMAND. Otherwise, the
-     * node shall set the DefaultNTP attribute to match the DefaultNTP provided in this command.
+     * This command is used to set the DefaultNTP attribute.
+     * If the DefaultNTP Address field does not conform to the requirements in the DefaultNTP attribute description, the
+     * command shall fail with a status code of INVALID_COMMAND. If the node does not support DNS resolution (as
+     * specified in SupportsDNSResolve) and the provided Address is a domain name, the command shall fail with a status
+     * code of INVALID_COMMAND. Otherwise, the node shall set the DefaultNTP attribute to match the DefaultNTP provided
+     * in this command.
      */
     public static ClusterCommand setDefaultNtp(String defaultNtp) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -585,7 +587,6 @@ public class TimeSynchronizationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "utcTime : " + utcTime + "\n";
         str += "granularity : " + granularity + "\n";

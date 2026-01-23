@@ -31,7 +31,6 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0081;
     public static final String CLUSTER_NAME = "ValveConfigurationAndControl";
     public static final String CLUSTER_PREFIX = "valveConfigurationAndControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_OPEN_DURATION = "openDuration";
     public static final String ATTRIBUTE_DEFAULT_OPEN_DURATION = "defaultOpenDuration";
@@ -45,7 +44,6 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_VALVE_FAULT = "valveFault";
     public static final String ATTRIBUTE_LEVEL_STEP = "levelStep";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the total duration, in seconds, for which the valve will remain open for this current opening.
@@ -298,7 +296,6 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "openDuration : " + openDuration + "\n";
         str += "defaultOpenDuration : " + defaultOpenDuration + "\n";

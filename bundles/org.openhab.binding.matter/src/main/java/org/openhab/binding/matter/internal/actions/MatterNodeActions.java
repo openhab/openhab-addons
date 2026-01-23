@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.MatterBindingConstants;
 import org.openhab.binding.matter.internal.client.dto.PairingCodes;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
 import org.openhab.binding.matter.internal.controller.MatterControllerClient;
 import org.openhab.binding.matter.internal.handler.NodeHandler;
 import org.openhab.binding.matter.internal.util.MatterVendorIDs;
@@ -153,6 +154,71 @@ public class MatterNodeActions implements ThingActions {
                     return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.debug("Failed to remove fabric {} {} ", handler.getNodeId(), indexNumber, e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CHECK_FIRMWARE_UPDATE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_CHECK_FIRMWARE_UPDATE)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CHECK_FIRMWARE_UPDATE_RESULT, type = "java.lang.String") }) String checkForFirmwareUpdate() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            try {
+                OtaUpdateInfo updateInfo = handler.checkForOTAUpdate().get();
+                if (updateInfo == null) {
+                    return translationService
+                            .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_FIRMWARE_UPDATE);
+                }
+                handler.checkForOTAUpdate().get();
+                return translationService.getTranslation(
+                        MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_AVAILABLE,
+                        updateInfo.softwareVersionString, updateInfo.vendorId, updateInfo.productId,
+                        updateInfo.softwareVersion);
+            } catch (InterruptedException | ExecutionException | JsonParseException e) {
+                logger.debug("Failed to check for firmware update for device {}", handler.getNodeId(), e);
+                return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+            }
+
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_START_FIRMWARE_UPDATE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_START_FIRMWARE_UPDATE)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_START_FIRMWARE_UPDATE_RESULT, type = "java.lang.String") }) String startFirmwareUpdate() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    client.otaStartUpdate(handler.getNodeId()).get();
+                    return translationService
+                            .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED);
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.debug("Failed to start firmware update for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_CANCEL_FIRMWARE_UPDATE)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE_RESULT, type = "java.lang.String") }) String cancelFirmwareUpdate() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    handler.cancelOTAUpdate().get();
+                    return translationService
+                            .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED);
+                } catch (InterruptedException | ExecutionException e) {
+                    logger.debug("Failed to cancel firmware update for device {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
             }

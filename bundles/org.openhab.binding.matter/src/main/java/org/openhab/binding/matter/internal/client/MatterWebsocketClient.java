@@ -691,7 +691,24 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         @Override
         public OctetString deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
-            return new OctetString(json.getAsString());
+            if (json.isJsonPrimitive()) {
+                // Handle hex string format: "AABBCCDD"
+                return new OctetString(json.getAsString());
+            } else if (json.isJsonObject()) {
+                // Handle Buffer object format: {"type": "Buffer", "data": [170, 187, 204, 221]}
+                JsonObject obj = json.getAsJsonObject();
+                if (obj.has("data")) {
+                    JsonArray dataArray = obj.getAsJsonArray("data");
+                    byte[] bytes = new byte[dataArray.size()];
+                    for (int i = 0; i < dataArray.size(); i++) {
+                        bytes[i] = dataArray.get(i).getAsByte();
+                    }
+                    return new OctetString(bytes);
+                }
+                throw new JsonParseException("OctetString object missing 'data' field: " + json);
+            } else {
+                throw new JsonParseException("Unexpected OctetString format: " + json);
+            }
         }
     }
 

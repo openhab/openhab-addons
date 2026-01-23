@@ -32,7 +32,6 @@ public class IcdManagementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0046;
     public static final String CLUSTER_NAME = "IcdManagement";
     public static final String CLUSTER_PREFIX = "icdManagement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_IDLE_MODE_DURATION = "idleModeDuration";
     public static final String ATTRIBUTE_ACTIVE_MODE_DURATION = "activeModeDuration";
@@ -45,7 +44,6 @@ public class IcdManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPERATING_MODE = "operatingMode";
     public static final String ATTRIBUTE_MAXIMUM_CHECK_IN_BACKOFF = "maximumCheckInBackoff";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the maximum interval in seconds the server can stay in idle mode. The IdleModeDuration shall NOT be
@@ -97,9 +95,9 @@ public class IcdManagementCluster extends BaseCluster {
      * length of 128 bytes. If the UserActiveModeTriggerHint has the ActuateSensorSeconds, ActuateSensorTimes,
      * ResetButtonSeconds, ResetButtonTimes, SetupButtonSeconds or SetupButtonTimes set, the string shall consist solely
      * of an encoding of N as a decimal unsigned integer using the ASCII digits 0-9, and without leading zeros.
-     * For example, given UserActiveModeTriggerHint&#x3D;&quot;2048&quot;, ResetButtonTimes is set which indicates
+     * For example, given UserActiveModeTriggerHint&#x3D;&quot;1024&quot;, ResetButtonSeconds is set which indicates
      * &quot;Press Reset Button for N seconds&quot;. Therefore, a value of
-     * UserActiveModeTriggerInstruction&#x3D;&quot;10&quot; would indicate that N is 10 in that context.
+     * UserActiveModeTriggerInstruction&#x3D;&quot;6&quot; would indicate that N is 6 in that context.
      * When CustomInstruction is set by the UserActiveModeTriggerHint attribute, indicating presence of a custom string,
      * the ICD SHOULD perform localization (translation to user’s preferred language, as indicated in the Device’s
      * currently configured locale). The Custom Instruction option SHOULD NOT be used by an ICD that does not have
@@ -112,7 +110,7 @@ public class IcdManagementCluster extends BaseCluster {
      */
     public String userActiveModeTriggerInstruction; // 7 string R V
     /**
-     * This attribute shall indicate the operating mode of the ICD as specified in the OperatingModeEnum.
+     * Indicates the operating mode of the ICD as specified in the OperatingModeEnum.
      * • If the ICD is operating as a LIT ICD, OperatingMode shall be LIT.
      * • If the ICD is operating as a SIT ICD, OperatingMode shall be SIT.
      */
@@ -148,6 +146,9 @@ public class IcdManagementCluster extends BaseCluster {
          * 0x0002 or higher within its NOC, then the entry matches.
          */
         public BigInteger monitoredSubject; // subject-id
+        /**
+         * This field is deprecated. Use the RegisterClient command to set the ICDToken.
+         */
         public String key;
         /**
          * This field shall indicate the client’s type to inform the ICD of the availability for communication of the
@@ -351,6 +352,16 @@ public class IcdManagementCluster extends BaseCluster {
      * client to request the server to stay active and responsive for this period to allow a sequence of message
      * exchanges during that period. The client may slightly overestimate the duration it wants the ICD to be active
      * for, in order to account for network delays.
+     * ### Effect on Receipt
+     * When receiving a StayActiveRequest command, the server shall calculate the maximum PromisedActiveDuration it can
+     * remain active as the greater of the following two values:
+     * • StayActiveDuration: Specified in the received command by the client.
+     * • Remaining Active Time: The server’s planned remaining active time based on the ActiveModeThreshold and its
+     * internal resources and power budget.
+     * A server may replace StayActiveDuration with Minimum Active Duration in the above calculation.
+     * PromisedActiveDuration represents the guaranteed minimum time the server will remain active, taking into account
+     * both the requested duration and the server’s capabilities.
+     * The ICD shall report the calculated PromisedActiveDuration in a StayActiveResponse message back to the client.
      */
     public static ClusterCommand stayActiveRequest(Integer stayActiveDuration) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -363,7 +374,6 @@ public class IcdManagementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "idleModeDuration : " + idleModeDuration + "\n";
         str += "activeModeDuration : " + activeModeDuration + "\n";
