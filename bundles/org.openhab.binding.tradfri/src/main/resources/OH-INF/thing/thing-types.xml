@@ -304,7 +304,7 @@
 	</channel-type>
 
 	<channel-type id="filter-check-next">
-		<item-type unitHint="day">Number:Time</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 
 		<label>Next Filter Check</label>
 		<description>The number of minutes before the next filter check (or time since check is required if below 0).</description>
