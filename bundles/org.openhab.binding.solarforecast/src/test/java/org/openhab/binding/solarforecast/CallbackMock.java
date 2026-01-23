@@ -56,7 +56,23 @@ public class CallbackMock implements ThingHandlerCallback {
     Bridge bridge;
     Map<String, TimeSeries> seriesMap = new HashMap<>();
     Map<String, List<State>> stateMap = new HashMap<>();
+    String name = "unknown";
     volatile ThingStatusInfo currentStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+
+    public CallbackMock() {
+        super();
+    }
+
+    public void clear() {
+        currentStatusInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
+        seriesMap.clear();
+        stateMap.clear();
+    }
+
+    public CallbackMock(String name) {
+        super();
+        this.name = name;
+    }
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
@@ -75,6 +91,10 @@ public class CallbackMock implements ThingHandlerCallback {
             stateList = new ArrayList<State>();
         }
         return stateList;
+    }
+
+    public State getLastState(String cuid) {
+        return getStateList(cuid).getLast();
     }
 
     public void waitForStateUpdates(String cuid, int count) {
@@ -128,7 +148,7 @@ public class CallbackMock implements ThingHandlerCallback {
                 }
             }
             assertEquals(status, currentStatusInfo.getStatus(),
-                    "Thing did not reach expected " + status + ", Status reached " + currentStatusInfo);
+                    "Thing " + name + " did not reach expected " + status + ", Status reached " + currentStatusInfo);
         }
     }
 

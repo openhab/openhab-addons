@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solarforecast.internal.actions;
 
+import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -32,17 +34,17 @@ import org.openhab.core.types.TimeSeries;
 @NonNullByDefault
 public interface SolarForecast {
     /**
-     * Argument can be used to query an average forecast scenario
+     * Argument can be used to query an average forecast scenario - string matches group name
      */
-    public static final String AVERAGE = "average";
+    public static final String AVERAGE = GROUP_AVERAGE;
     /**
-     * Argument can be used to query an optimistic forecast scenario
+     * Argument can be used to query an optimistic forecast scenario - string matches group name
      */
-    public static final String OPTIMISTIC = "optimistic";
+    public static final String OPTIMISTIC = GROUP_OPTIMISTIC;
     /**
-     * Argument can be used to query a pessimistic forecast scenario
+     * Argument can be used to query a pessimistic forecast scenario - string matches group name
      */
-    public static final String PESSIMISTIC = "pessimistic";
+    public static final String PESSIMISTIC = GROUP_PESSIMISTIC;
 
     /**
      * Returns electric energy production for one day

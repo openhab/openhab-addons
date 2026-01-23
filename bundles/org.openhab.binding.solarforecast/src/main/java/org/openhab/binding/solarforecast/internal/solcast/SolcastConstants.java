@@ -36,6 +36,12 @@ public class SolcastConstants {
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
     public static final List<QueryMode> MODES = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
 
+    public static final String CALL_COUNT_APPENDIX = "-count";
+    public static final String CALL_COUNT_DATE_APPENDIX = "-count-date";
+    public static final String FORECAST_APPENDIX = "-forecast";
+    public static final String CREATION_APPENDIX = "-creation";
+    public static final String EXPIRATION_APPENDIX = "-expiration";
+
     public static final String KEY_ACTUALS = "estimated_actuals";
     public static final String KEY_FORECAST = "forecasts";
     public static final String KEY_PERIOD_END = "period_end";

@@ -22,14 +22,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.TreeMap;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
@@ -38,7 +36,6 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.storage.Storage;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
 import org.slf4j.Logger;
@@ -53,10 +50,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
-    public static final String FORECAST_APPENDIX = "-forecast";
-    public static final String CREATION_APPENDIX = "-creation";
-    public static final String EXPIRATION_APPENDIX = "-expiration";
-
     private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
@@ -66,10 +59,9 @@ public class SolcastObject implements SolarForecast {
     private final TimeZoneProvider timeZoneProvider;
 
     private DateTimeFormatter dateOutputFormatter;
-    private String identifier;
-    private Optional<JSONArray> rawData = Optional.of(new JSONArray());
-    private Instant creationDateTime;
     private Instant expirationDateTime;
+    private Instant creationDateTime;
+    private String identifier;
     private long period = 30;
 
     public enum QueryMode {
@@ -90,42 +82,46 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
-    public SolcastObject(String id, @Nullable JSONArray forecast, Instant expiration, TimeZoneProvider tzp,
-            Storage<String> storage) {
-        JSONArray newForecast = forecast;
-        identifier = id;
-        creationDateTime = Utils.now();
-        expirationDateTime = expiration;
-        timeZoneProvider = tzp;
+    /**
+     * Constructor used to restore forecast data with given creation time
+     *
+     * @param id Identifier
+     * @param forecast JSONArray with forecast data
+     * @param expiration Expiration Instant
+     * @param creation Instant
+     */
+    public SolcastObject(String id, JSONArray forecast, Instant expiration, Instant creation) {
+        this.identifier = id;
+        this.creationDateTime = creation;
+        this.expirationDateTime = expiration;
+        this.timeZoneProvider = Utils.getTimeZoneProvider();
         dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
-                .withZone(tzp.getTimeZone());
-        if (newForecast == null) {
-            // try to recover data from storage during initialization in order to reduce
-            // Solcast API calls
-            if (storage.containsKey(id + FORECAST_APPENDIX)) {
-                newForecast = new JSONArray(storage.get(id + FORECAST_APPENDIX));
-                String expirationString = storage.get(id + EXPIRATION_APPENDIX);
-                String creationString = storage.get(id + CREATION_APPENDIX);
-                if (creationString != null) {
-                    creationDateTime = Instant.parse(creationString);
-                }
-                if (expirationString != null) {
-                    expirationDateTime = Instant.parse(expirationString);
-                }
-                logger.debug("Successfully recovered Forecast - will expire {}", expirationDateTime);
-            }
-        }
-        if (newForecast != null) {
-            addJSONArray(newForecast);
-            // store data in storage for later use e.g. after restart
-            storage.put(id + FORECAST_APPENDIX, newForecast.toString());
-            storage.put(id + CREATION_APPENDIX, creationDateTime.toString());
-            storage.put(id + EXPIRATION_APPENDIX, expirationDateTime.toString());
-        }
+                .withZone(timeZoneProvider.getTimeZone());
+
+        addJSONArray(forecast);
+    }
+
+    /**
+     * Constructor with new forecast data
+     *
+     * @param id Identifier
+     * @param forecast JSONArray with forecast data
+     * @param expiration Expiration Instant
+     */
+    public SolcastObject(String id, JSONArray forecast, Instant expiration) {
+        this(id, forecast, expiration, Utils.now());
+    }
+
+    /**
+     * Constructor for uninitialized forecast
+     *
+     * @param id
+     */
+    public SolcastObject(String id) {
+        this(id, new JSONArray(), Instant.MIN, Utils.now());
     }
 
     private void addJSONArray(JSONArray resultJsonArray) {
-        rawData = Optional.of(resultJsonArray);
         // sort data into TreeMaps
         for (int i = 0; i < resultJsonArray.length(); i++) {
             JSONObject jo = resultJsonArray.getJSONObject(i);
@@ -321,33 +317,13 @@ public class SolcastObject implements SolarForecast {
         return "Expiration: " + expirationDateTime + ", Data: " + estimationDataMap;
     }
 
-    public JSONArray getRaw() {
-        if (rawData.isPresent()) {
-            return rawData.get();
-        }
-        return new JSONArray();
-    }
-
     private TreeMap<ZonedDateTime, Double> getDataMap(QueryMode mode) {
-        TreeMap<ZonedDateTime, Double> returnMap = EMPTY_MAP;
-        switch (mode) {
-            case Average:
-                returnMap = estimationDataMap;
-                break;
-            case Optimistic:
-                returnMap = optimisticDataMap;
-                break;
-            case Pessimistic:
-                returnMap = pessimisticDataMap;
-                break;
-            case Error:
-                // nothing to do
-                break;
-            default:
-                // nothing to do
-                break;
-        }
-        return returnMap;
+        return switch (mode) {
+            case Average -> estimationDataMap;
+            case Optimistic -> optimisticDataMap;
+            case Pessimistic -> pessimisticDataMap;
+            default -> EMPTY_MAP;
+        };
     }
 
     /**
@@ -363,7 +339,7 @@ public class SolcastObject implements SolarForecast {
                 throw new IllegalArgumentException("Solcast doesn't support argument " + args[0]);
             }
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (date.isBefore(LocalDate.now())) {
+            if (date.isBefore(Utils.now().atZone(timeZoneProvider.getTimeZone()).toLocalDate())) {
                 throw new IllegalArgumentException(
                         "Solcast argument " + mode.toString() + " only available for future values");
             }
