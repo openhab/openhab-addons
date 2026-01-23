@@ -35,7 +35,7 @@ requests:
     end: 0x029F
     mb_functioncode: 0x03
   - start: 0x02A0
-    end: 0x02A8
+    end: 0x02A9
     mb_functioncode: 0x03
 
 parameters:
