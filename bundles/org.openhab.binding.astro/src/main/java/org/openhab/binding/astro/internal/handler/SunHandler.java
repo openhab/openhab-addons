@@ -324,23 +324,22 @@ public class SunHandler extends AstroThingHandler {
         return localSun;
     }
 
-    public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
+    public @Nullable ZonedDateTime getEventTime(SunPhase sunPhase, ZonedDateTime date, boolean begin) {
         Range eventRange = getPlanetAt(date, Locale.ROOT).getAllRanges().get(sunPhase);
         if (eventRange != null) {
             Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();
             return cal == null ? null : ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override
     public Position getPositionAt(ZonedDateTime date) {
-        return getPositionedSunAt(date, Locale.ROOT).getPosition();
+        return getPositionedSunAt(date).getPosition();
     }
 
     public @Nullable Radiation getRadiationAt(ZonedDateTime date) {
-        Sun localSun = getPositionedSunAt(date, Locale.ROOT);
+        Sun localSun = getPositionedSunAt(date);
         return RadiationCalc.calculate(date, localSun.getPosition().getElevationAsDouble(), thingConfig.altitude);
     }
 }

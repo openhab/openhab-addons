@@ -106,7 +106,7 @@ public class SunCalc {
     /**
      * Returns true, if the sun is up all day (no rise and set).
      */
-    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
+    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude) {
         Sun sun = new Sun();
         Calendar start = DateTimeUtils.truncateToMidnight(calendar);
         Calendar cal = (Calendar) start.clone();
@@ -200,7 +200,7 @@ public class SunCalc {
         sun.setRange(SunPhase.NAUTIC_DUSK, new Range(DateTimeUtils.toCalendar(jnau, zone, locale),
                 DateTimeUtils.toCalendar(jastro, zone, locale)));
 
-        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude, altitude);
+        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude);
 
         // daylight
         Range daylightRange = new Range();

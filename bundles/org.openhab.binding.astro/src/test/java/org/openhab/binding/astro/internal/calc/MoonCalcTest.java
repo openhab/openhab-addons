@@ -62,8 +62,7 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForOldDate() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
         assertNotNull(moon.getDistanceType(DistanceType.APOGEE));
         assertNotNull(moon.getDistanceType(DistanceType.PERIGEE));
@@ -79,8 +78,7 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForRiseAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
         Calendar riseStart = moon.getRise().getStart();
         assertNotNull(riseStart);
@@ -91,8 +89,7 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForSetAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
         Calendar setStart = moon.getSet().getStart();
         assertNotNull(setStart);
@@ -105,7 +102,7 @@ public class MoonCalcTest {
     public void testGetMoonInfoForMoonPositionAccuracy() {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
+        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
         moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE);
 
         var azimuth = moon.getPosition().getAzimuth();

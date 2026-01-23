@@ -323,9 +323,8 @@ public class DateTimeUtils {
 
             nextYearSeason.add(Calendar.YEAR, 1);
             return nextYearSeason;
-        } else {
-            return next;
         }
+        return next;
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {
@@ -482,12 +481,11 @@ public class DateTimeUtils {
                 try {
                     if (!HHMM_PATTERN.matcher(time).matches()) {
                         throw new NumberFormatException();
-                    } else {
-                        String[] elements = time.split(":");
-                        int hour = Integer.parseInt(elements[0]);
-                        int minutes = Integer.parseInt(elements[1]);
-                        return (hour * 60) + minutes;
                     }
+                    String[] elements = time.split(":");
+                    int hour = Integer.parseInt(elements[0]);
+                    int minutes = Integer.parseInt(elements[1]);
+                    return (hour * 60) + minutes;
                 } catch (NumberFormatException ex) {
                     LOGGER.warn(
                             "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",

@@ -180,8 +180,7 @@ public class MoonHandler extends AstroThingHandler {
     public Moon getPlanetAt(ZonedDateTime date, Locale locale) {
         double latitude = thingConfig.latitude instanceof Double value ? value : 0;
         double longitude = thingConfig.longitude instanceof Double value ? value : 0;
-        return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude, longitude,
-                TimeZone.getTimeZone(date.getZone()), locale);
+        return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude, longitude);
     }
 
     @Override

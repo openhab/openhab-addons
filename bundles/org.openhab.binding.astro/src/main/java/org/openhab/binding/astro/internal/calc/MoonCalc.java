@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.InstantSource;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -61,7 +60,7 @@ public class MoonCalc extends AstroCalc {
     /**
      * Calculates all moon data at the specified coordinates
      */
-    public Moon getMoonInfo(Calendar calendar, double latitude, double longitude, TimeZone zone, Locale locale) {
+    public Moon getMoonInfo(Calendar calendar, double latitude, double longitude) {
         Moon moon = new Moon();
 
         double[] riseSet = getRiseSet(calendar, latitude, longitude);
