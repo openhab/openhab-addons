@@ -245,15 +245,6 @@ public class SunHandler extends AstroThingHandler {
                 return toState(sun.getRadiation().getDiffuse(), channel);
             case CHANNEL_ID_SUN_RADIATION_TOTAL:
                 return toState(sun.getRadiation().getTotal(), channel);
-<<<<<<< Upstream, based on main
-            case CHANNEL_ID_SUN_ZODIAC_START:
-                return toState(sun.getZodiac().getStart(), channel);
-            case CHANNEL_ID_SUN_ZODIAC_END:
-                return toState(sun.getZodiac().getEnd(), channel);
-            case CHANNEL_ID_ZODIAC_SIGN:
-                return toState(sun.getZodiac().getSign(), channel);
-=======
->>>>>>> 8247d5c Start Factorization with Zodiac
             case CHANNEL_ID_SUN_SEASON_NAME:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getName(), channel);

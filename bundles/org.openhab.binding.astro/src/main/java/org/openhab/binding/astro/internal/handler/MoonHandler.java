@@ -156,11 +156,6 @@ public class MoonHandler extends AstroThingHandler {
                 return toState(moon.getPosition().getElevation(), channel);
             case CHANNEL_ID_MOON_POSITION_SHADE_LENGTH:
                 return toState(moon.getPosition().getShadeLength(), channel);
-<<<<<<< Upstream, based on main
-            case CHANNEL_ID_ZODIAC_SIGN:
-                return toState(moon.getZodiac().getSign(), channel);
-=======
->>>>>>> 8247d5c Start Factorization with Zodiac
             default:
                 return super.getState(channel, channel.getUID());
         }
