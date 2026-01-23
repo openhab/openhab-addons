@@ -64,8 +64,7 @@ public class MoonPhaseCalcTest {
 
     @Test
     public void testGetMoonInfoForOldDate() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
         assertNotNull(moon.getPhaseSet());
         // for an old date the phase should not be calculated
