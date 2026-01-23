@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_ID_SUN_PHASE_NAME;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_ID_PHASE_NAME;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
@@ -47,7 +47,7 @@ public final class SunPhaseJob extends AbstractJob {
     @Override
     public void run() {
         try {
-            Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
+            Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_PHASE_NAME);
             if (phaseNameChannel != null) {
                 if (handler.getPlanet() instanceof Sun theSun) {
                     theSun.setSunPhase(sunPhase);
