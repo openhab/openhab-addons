@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.HexFormat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -102,7 +103,7 @@ public class DecryptingInputStream extends InputStream {
 
         short frameLen = ByteBuffer.wrap(frameAad).order(ByteOrder.LITTLE_ENDIAN).getShort();
         if (frameLen < 0 || frameLen > 1024) {
-            throw new IOException("Invalid frame length");
+            throw new IOException("Invalid frame length: " + HexFormat.of().formatHex(frameAad));
         }
 
         byte[] cipherText = new byte[frameLen + 16];
@@ -135,5 +136,10 @@ public class DecryptingInputStream extends InputStream {
             offset += read;
         }
         return true;
+    }
+
+    @Override
+    public int available() throws IOException {
+        return inputStream.available();
     }
 }

@@ -482,6 +482,8 @@ public class HttpPayloadParser implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
+        logger.info("TODO close(): {} unparsed bytes, ca. {} unread bytes)", inputEndIndex - inputStartIndex,
+                inputStream.available());
         closed = true;
         try {
             inputThread.interrupt(); // interrupt is faster than closed flag alone
