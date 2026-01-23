@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,6 +36,7 @@ import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
+import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -56,9 +58,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SunHandler extends AstroThingHandler {
+    private static final Set<String> POSITIONAL_CHANNELS = Set.of(CHANNEL_ID_POSITION_AZIMUTH,
+            CHANNEL_ID_POSITION_ELEVATION, CHANNEL_ID_SUN_RADIATION_DIRECT, CHANNEL_ID_SUN_RADIATION_DIFFUSE,
+            CHANNEL_ID_SUN_RADIATION_TOTAL);
 
-    private final String[] positionalChannelIds = new String[] { "position#azimuth", "position#elevation",
-            "radiation#direct", "radiation#diffuse", "radiation#total" };
     private final SunCalc sunCalc;
     private final Logger logger = LoggerFactory.getLogger(SunHandler.class);
     volatile @Nullable Sun sun;
@@ -68,7 +71,7 @@ public class SunHandler extends AstroThingHandler {
      */
     public SunHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
             LocaleProvider localeProvider, InstantSource instantSource) {
-        super(thing, scheduler, timeZoneProvider, localeProvider, instantSource);
+        super(thing, scheduler, timeZoneProvider, localeProvider, instantSource, POSITIONAL_CHANNELS);
         sunCalc = new SunCalc(instantSource);
     }
 
@@ -114,17 +117,17 @@ public class SunHandler extends AstroThingHandler {
         Range r;
         Season s;
         switch (channel.getUID().getId()) {
-            case CHANNEL_ID_SUN_RISE_START:
+            case CHANNEL_ID_RISE_START:
                 return toState(sun.getRise().getStart(), channel);
-            case CHANNEL_ID_SUN_RISE_END:
+            case CHANNEL_ID_RISE_END:
                 return toState(sun.getRise().getEnd(), channel);
-            case CHANNEL_ID_SUN_RISE_DURATION:
+            case CHANNEL_ID_RISE_DURATION:
                 return toState(sun.getRise().getDuration(), channel);
-            case CHANNEL_ID_SUN_SET_START:
+            case CHANNEL_ID_SET_START:
                 return toState(sun.getSet().getStart(), channel);
-            case CHANNEL_ID_SUN_SET_END:
+            case CHANNEL_ID_SET_END:
                 return toState(sun.getSet().getEnd(), channel);
-            case CHANNEL_ID_SUN_SET_DURATION:
+            case CHANNEL_ID_SET_DURATION:
                 return toState(sun.getSet().getDuration(), channel);
             case CHANNEL_ID_SUN_NOON_START:
                 r = sun.getRange(SunPhase.NOON);
@@ -234,9 +237,9 @@ public class SunHandler extends AstroThingHandler {
             case CHANNEL_ID_SUN_DAYLIGHT_DURATION:
                 r = sun.getRange(SunPhase.DAYLIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
-            case CHANNEL_ID_SUN_POSITION_AZIMUTH:
+            case CHANNEL_ID_POSITION_AZIMUTH:
                 return toState(sun.getPosition().getAzimuth(), channel);
-            case CHANNEL_ID_SUN_POSITION_ELEVATION:
+            case CHANNEL_ID_POSITION_ELEVATION:
                 return toState(sun.getPosition().getElevation(), channel);
             case CHANNEL_ID_SUN_POSITION_SHADE_LENGTH:
                 return toState(sun.getPosition().getShadeLength(), channel);
@@ -250,42 +253,42 @@ public class SunHandler extends AstroThingHandler {
                 return toState(sun.getZodiac().getStart(), channel);
             case CHANNEL_ID_SUN_ZODIAC_END:
                 return toState(sun.getZodiac().getEnd(), channel);
-            case CHANNEL_ID_SUN_ZODIAC_SIGN:
+            case CHANNEL_ID_ZODIAC_SIGN:
                 return toState(sun.getZodiac().getSign(), channel);
             case CHANNEL_ID_SUN_SEASON_NAME:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getName(), channel);
             case CHANNEL_ID_SUN_SEASON_SPRING:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getSpring(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.SPRING), channel);
             case CHANNEL_ID_SUN_SEASON_SUMMER:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getSummer(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.SUMMER), channel);
             case CHANNEL_ID_SUN_SEASON_AUTUMN:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getAutumn(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.AUTUMN), channel);
             case CHANNEL_ID_SUN_SEASON_WINTER:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getWinter(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.WINTER), channel);
             case CHANNEL_ID_SUN_SEASON_NEXT_NAME:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getNextName(), channel);
             case CHANNEL_ID_SUN_SEASON_TIME_LEFT:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getTimeLeft(), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_TOTAL:
+            case CHANNEL_ID_ECLIPSE_TOTAL:
                 return toState(sun.getEclipseSet().getDate(EclipseKind.TOTAL), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_TOTAL_ELEVATION:
+            case CHANNEL_ID_ECLIPSE_TOTAL_ELEVATION:
                 return toState(sun.getEclipseSet().getElevation(EclipseKind.TOTAL), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_PARTIAL:
+            case CHANNEL_ID_ECLIPSE_PARTIAL:
                 return toState(sun.getEclipseSet().getDate(EclipseKind.PARTIAL), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_PARTIAL_ELEVATION:
+            case CHANNEL_ID_ECLIPSE_PARTIAL_ELEVATION:
                 return toState(sun.getEclipseSet().getElevation(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING:
                 return toState(sun.getEclipseSet().getDate(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING_ELEVATION:
                 return toState(sun.getEclipseSet().getElevation(EclipseKind.RING), channel);
-            case CHANNEL_ID_SUN_PHASE_NAME:
+            case CHANNEL_ID_PHASE_NAME:
                 return toState(sun.getSunPhase(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS:
                 return toState(sun.getCircadian().getBrightness(), channel);
@@ -296,11 +299,6 @@ public class SunHandler extends AstroThingHandler {
         }
 
         return UnDefType.UNDEF;
-    }
-
-    @Override
-    protected String[] getPositionalChannelIds() {
-        return positionalChannelIds;
     }
 
     @Override
