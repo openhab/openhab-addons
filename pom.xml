@@ -466,6 +466,7 @@ Import-Package: \\
                 </headerDefinitions>
                 <includes>
                   <include>**/org/openhab/**/*.java</include>
+                  <include>**/org/openhab/**/*.js</include>
                   <include>**/features/**/header.xml</include>
                   <!-- org.openhab.binding.matter -->
                   <include>**/code-gen/**/*.java.hbs</include>
