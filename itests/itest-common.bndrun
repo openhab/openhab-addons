@@ -23,10 +23,12 @@ Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 
 # An unused random HTTP port is used during tests to prevent resource conflicts
 # This property is set by the build-helper-maven-plugin in the itests pom.xml
+# ByteBuddy agent is required for Mockito to perform inline mocking in OSGi environment
 -runvm: \
 	-Djdk.util.zip.disableZip64ExtraFieldValidation=true,\
 	-Dorg.osgi.service.http.port=${org.osgi.service.http.port},\
-	-DJETTY_AVAILABLE_PROCESSORS=4
+	-DJETTY_AVAILABLE_PROCESSORS=4,\
+	-javaagent:"${settings.localRepository}/net/bytebuddy/byte-buddy-agent/1.17.7/byte-buddy-agent-1.17.7.jar"
 
 # The integration test itself does not export anything.
 Export-Package: 
