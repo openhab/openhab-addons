@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal.model;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,13 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-<<<<<<< Upstream, based on main
-public class Moon extends RiseSet implements Planet {
-    private final EnumMap<DistanceType, MoonDistance> distances = new EnumMap<>(DistanceType.class);
-=======
 public class Moon extends Planet {
-    private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
->>>>>>> 4ee530a Start Factorization with Zodiac
+    private final Map<DistanceType, MoonDistance> distances = new EnumMap<>(DistanceType.class);
 
     private EclipseSet eclipseSet = EclipseSet.NONE;
     private MoonPhaseSet phaseSet = MoonPhaseSet.NONE;
