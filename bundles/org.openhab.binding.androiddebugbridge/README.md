@@ -1,5 +1,7 @@
 # Android Debug Bridge Binding
 
+## _WARNING: there is much evidence that installing Debug Bridge on your Android device poses a strong security threat e.g. to enable Trojan horse software that could compromise it, or other LAN devices!!_
+
 This binding allows to connect to android devices through the adb protocol.
 
 The device needs to have **usb debugging enabled** and **allow debugging over tcp**, some devices allow to enable this in the device options but others need a previous connection through adb or even be rooted.
