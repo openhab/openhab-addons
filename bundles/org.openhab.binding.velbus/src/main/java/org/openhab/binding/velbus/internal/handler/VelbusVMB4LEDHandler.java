@@ -80,11 +80,11 @@ public class VelbusVMB4LEDHandler extends VelbusSensorWithAlarmClockHandler {
 
         super.initialize();
 
-        initializeAutomaticRefresh();
         initializeColorChannel();
         initializeFadeMode();
         initializeMode();
         initializeChannelStates();
+        initializeAutomaticRefresh();
     }
 
     private void initializeAutomaticRefresh() {

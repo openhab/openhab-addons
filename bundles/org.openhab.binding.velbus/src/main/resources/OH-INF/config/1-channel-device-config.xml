@@ -23,7 +23,7 @@
 			<description>The velbus address of the device</description>
 		</parameter>
 		<parameter name="status" type="text">
-			<label>Status channel Name</label>
+			<label>Status Channel Name</label>
 			<description>The name of the channel.</description>
 			<default>Status</default>
 			<advanced>true</advanced>
