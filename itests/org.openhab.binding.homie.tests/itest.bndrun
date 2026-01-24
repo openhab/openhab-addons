@@ -72,8 +72,8 @@ Import-Package: \
 	junit-platform-engine;version='[1.14.2,1.14.3)',\
 	junit-platform-launcher;version='[1.14.2,1.14.3)',\
 	org.opentest4j;version='[1.3.0,1.3.1)',\
-	ch.qos.logback.classic;version='[1.5.24,1.5.25)',\
-	ch.qos.logback.core;version='[1.5.24,1.5.25)',\
+	ch.qos.logback.classic;version='[1.5.25,1.5.26)',\
+	ch.qos.logback.core;version='[1.5.25,1.5.26)',\
 	io.netty.buffer;version='[4.1.130,4.1.131)',\
 	io.netty.codec;version='[4.1.130,4.1.131)',\
 	io.netty.codec-mqtt;version='[4.1.130,4.1.131)',\
