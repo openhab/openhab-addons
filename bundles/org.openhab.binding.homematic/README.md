@@ -5,7 +5,7 @@ This binding allows you to integrate, view, control and configure all Homematic 
 
 ## Configuration of the CCU
 
-Under `Home page > Settings > Control panel` with the menu `Configure Firewall` the Firewall configurations have to be adjusted.
+Under `Home page > Settings > Control panel` with the menu `Configure Firewall`, the firewall configurations have to be adjusted.
 The CCU has to be configured to have "XML-RPC" set to "Full Access" or "Restricted access".
 Also the "Remote Homematic-Script API" has to be set to "Full Access" or "Restricted access".
 When the option "Restricted access" is used, some ports have to be added to the "Port opening" list.
@@ -24,8 +24,7 @@ Also the IP of the device running openHAB has to be set to the list of "IP addre
 Also under `Home page > Settings > Control panel` with the menu `Security` the option `Authentication` has to be disabled if the option 'useAuthentication' is not set.
 This option may be enabled if the option 'useAuthentication' is set and BIN-RPC is not used.
 In this case, a user and password must be created.
-This can be done under `Home page > Settings > Control panel` with the menu `User management`.
-This can be done under `Home page > Settings > Control Panel` in the `User Management` menu.
+This can be done under `Home page > Settings > Control panel` in the `User management` menu.
 The new user should have the following configuration:
 
 - User name - button for login: No
@@ -35,7 +34,7 @@ The new user should have the following configuration:
 
 The user and password must then be entered in the 'Username' and 'Password' settings.
 
-If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception or a authentication error
+If this is not done, the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and set a timeout exception or an authentication error:
 
 ```text
 xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout
@@ -43,7 +42,7 @@ xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' c
 
 ## Supported Bridges
 
-All gateways which provides the Homematic BIN- or XML-RPC API:
+All gateways which provide the Homematic BIN- or XML-RPC API:
 
 - CCU 1, 2 and 3
 - [RaspberryMatic](https://github.com/jens-maus/RaspberryMatic)
@@ -53,7 +52,7 @@ All gateways which provides the Homematic BIN- or XML-RPC API:
 - [Windows BidCos service](https://eq-3.de/service/downloads.html?kat=download&id=125) (included in "LAN Usersoftware" download)
 - [OCCU](https://github.com/eq-3/occu)
 
-The Homematic IP Access Point **does not support** this API and and can't be used with this binding.
+The Homematic IP Access Point **does not support** this API and can't be used with this binding.
 
 Homematic IP support:
 
@@ -113,10 +112,10 @@ Gateway discovery is available:
 For all other gateways you have to manually add a bridge in a things file. Device discovery is supported for all gateways.
 
 The binding has a gateway type autodetection, but sometimes a gateway does not clearly notify the type.
-If you are using a YAHM for example, you have to manually set the gateway type in the bride configuration to CCU.
+If you are using a YAHM for example, you have to manually set the gateway type in the bridge configuration to CCU.
 
-If autodetection can not identify the gateway, the binding uses the default gateway implementation.
-The difference is, that variables, scripts and device names are not supported, everything else is the same.
+If autodetection cannot identify the gateway, the binding uses the default gateway implementation.
+The difference is that variables, scripts, and device names are not supported; everything else is the same.
 
 ### Automatic install mode during discovery
 
@@ -193,7 +192,7 @@ Bridge homematic:bridge:occu  [ gatewayAddress="..."]
 
 Things are all discovered automatically.
 
-If you really like to manually configure a thing:
+If you really like to manually configure a Thing:
 
 ```java
 Bridge homematic:bridge:ccu [ gatewayAddress="..." ]
@@ -217,9 +216,9 @@ All channels have two configs:
 - **receiveDelay**: delays a received event **from** the Homematic gateway, duplicate events are filtered out (OH 2.2)
 
 The `receiveDelay` is handy for dimmers and roller shutters for example.
-If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final has been reached.
-If you set the `receiveDelay` to some seconds, these events are filtered out and only the last position is distributed to the binding.
-The disadvantage is of course, that all events for this channel are delayed.
+If you have a slider in a UI and you move this slider to a new position, it jumps around because the gateway sends multiple events with different positions until the final position has been reached.
+If you set the `receiveDelay` to a few seconds, these events are filtered out and only the last position is distributed to the binding.
+The disadvantage is, of course, that all events for this channel are delayed.
 
 ```java
   Thing HM-LC-Dim1T-Pl-2    JEQ0999999 "Name"  @  "Location" {
@@ -231,8 +230,8 @@ The disadvantage is of course, that all events for this channel are delayed.
   }
 ```
 
-The `Type` is the device type, channel number and UPPERCASE channel name separated with an underscore.
-Note that, for Homegear devices, in contrast to the specification of the Thing above no `HG-` prefix is needed for the specification of the Type of the Channel.
+The `Type` is the device type, channel number, and UPPERCASE channel name separated with an underscore.
+Note that for Homegear devices, in contrast to the specification of the Thing above, no `HG-` prefix is needed for the specification of the type of the channel.
 
 The channel configs are optional.
 
@@ -310,12 +309,12 @@ A virtual datapoint (Switch) to remove the device from the gateway, available in
 
 A virtual datapoint (Enum) to configure the device deletion with DELETE_MODE, available in channel 0 for each device
 
-- **LOCKED:** (default) device can not be deleted
+- **LOCKED:** (default) device cannot be deleted
 - **RESET:** device is reset to factory settings before deleting
 - **FORCE:** device is also deleted if it is not reachable
-- **DEFER:** if the device can not be reached, it is deleted at the next opportunity
+- **DEFER:** if the device cannot be reached, it is deleted at the next opportunity
 
-**Note:** if you change the value and don't delete the device, the virtual datapoints resets to LOCKED after 30 seconds
+**Note:** if you change the value and don't delete the device, the virtual datapoint resets to LOCKED after 30 seconds
 
 ### ON_TIME_AUTOMATIC
 
@@ -358,7 +357,7 @@ You have several additional options to control the display.
 - SYMBOL _(BULB, SWITCH, WINDOW, DOOR, BLIND, SCENE, PHONE, BELL, CLOCK, ARROW_UP, ARROW_DOWN)_ - display symbols, multiple symbols possible
 
 You can combine any option, they must be separated by a comma.
-If you specify more than one option for BEEP, BACKLIGHT and UNIT, only the first one is taken into account and all others are ignored. For SYMBOL you can specify multiple options.
+If you specify more than one option for BEEP, BACKLIGHT, and UNIT, only the first one is taken into account and all others are ignored. For SYMBOL you can specify multiple options.
 
 **Examples:**
 
@@ -678,8 +677,8 @@ Var_1.refresh
 
 ::::
 
-**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS thing is currently not supported.
-You have to delete the thing, start a scan and add it again.
+**Note:** adding new and removing deleted variables from the GATEWAY-EXTRAS Thing is currently not supported.
+You have to delete the Thing, start a scan and add it again.
 
 **`openhab.log` contains an exception with message: `Buffering capacity 2097152 exceeded` resp. discovery detects no devices**
 

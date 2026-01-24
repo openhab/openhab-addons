@@ -6,7 +6,7 @@ Furthermore it is possible to embed `command tags` in the calendar event descrip
 
 ## Supported Things
 
-The primary thing type is the calendar.
+The primary Thing type is the calendar.
 It is based on a single iCalendar file and implemented as bridge.
 There can be multiple things having different properties representing different calendars.
 
@@ -17,7 +17,7 @@ Standard time-based filtering is done by each event's start, but it can also be 
 
 ### Configuration for `calendar`
 
-Each `calendar` thing requires the following configuration parameters:
+Each `calendar` Thing requires the following configuration parameters:
 
 | parameter name      | description                                                                                                                                                                               | optional                      |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
@@ -31,7 +31,7 @@ Each `calendar` thing requires the following configuration parameters:
 
 ### Configuration for `eventfilter`
 
-Each `eventfilter` thing requires a bridge of type `calendar` and has following configuration options:
+Each `eventfilter` Thing requires a bridge of type `calendar` and has following configuration options:
 
 | parameter name   | description                                                                                                                                                                                    | optional                                   |
 |------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
@@ -115,13 +115,13 @@ See openHAB Core definitions for [command types](https://www.openhab.org/docs/co
 
 The `Authorization_Code` may _optionally_ be used as follows:
 
-- When the thing configuration parameter `authorizationCode` is not blank, the binding will compare the `Authorization_Code` field against the `authorizationCode` configuration parameter, and it will only execute the command if the two strings are the same.
+- When the Thing configuration parameter `authorizationCode` is not blank, the binding will compare the `Authorization_Code` field against the `authorizationCode` configuration parameter, and it will only execute the command if the two strings are the same.
 
-- When the thing configuration parameter `authorizationCode` is blank, the binding will NOT check this `Authorization_Code` field, and so it will always execute the command.
+- When the Thing configuration parameter `authorizationCode` is blank, the binding will NOT check this `Authorization_Code` field, and so it will always execute the command.
 
 ## Full Example
 
-All required information must be provided in the thing definition, either via UI or in the `.things` file..
+All required information must be provided in the Thing definition, either via UI or in the `.things` file..
 
 ```java
 Bridge icalendar:calendar:deadbeef    "My calendar" @ "Internet" [ url="http://example.org/calendar.ical", refreshTime=60 ]

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.1.0-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.pythonscripting</artifactId>
@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
 
   <properties>
-    <helperlib.version>v1.0.0</helperlib.version>
+    <helperlib.version>1.0.15</helperlib.version>
   </properties>
 
   <dependencies>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.polyglot.polyglot</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
@@ -31,6 +31,22 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <outputFile>${project.build.outputDirectory}/build.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-scm-plugin</artifactId>

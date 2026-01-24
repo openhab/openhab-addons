@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,29 +13,26 @@
 package org.openhab.binding.astro.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Holds the calculated sun phase informations.
+ * All sun phases.
  *
  * @author Gerhard Riegler - Initial contribution
  */
 @NonNullByDefault
-public class SunPhase {
-    private @Nullable SunPhaseName name;
-
-    /**
-     * Returns the sun phase.
-     */
-    @Nullable
-    public SunPhaseName getName() {
-        return name;
-    }
-
-    /**
-     * Sets the sun phase.
-     */
-    public void setName(@Nullable SunPhaseName name) {
-        this.name = name;
-    }
+public enum SunPhase {
+    SUN_RISE,
+    ASTRO_DAWN,
+    NAUTIC_DAWN,
+    CIVIL_DAWN,
+    CIVIL_DUSK,
+    NAUTIC_DUSK,
+    ASTRO_DUSK,
+    SUN_SET,
+    DAYLIGHT,
+    NOON,
+    MIDNIGHT,
+    NIGHT,
+    MORNING_NIGHT,
+    EVENING_NIGHT
 }

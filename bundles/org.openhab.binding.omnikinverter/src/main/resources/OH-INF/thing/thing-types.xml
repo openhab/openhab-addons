@@ -102,7 +102,7 @@
 			</parameter>
 			<parameter name="serial" type="integer" required="true">
 				<label>Serial</label>
-				<description>The serial of the Omnik inverter's Wifi module. This the number part only.</description>
+				<description>The serial of the Omnik inverter's Wi‑Fi module. This is the number part only.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="5">
 				<label>Refresh Interval</label>
@@ -202,18 +202,12 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="hoursTotal">
 		<item-type>Number:Time</item-type>
 		<label>Running Hours</label>
 		<description>The total amount of running hours</description>
-		<state readOnly="true" pattern="%.f %unit%"/>
-	</channel-type>
-	<channel-type id="hoursTotal">
-		<item-type>Number:Time</item-type>
-		<label>Running Hours</label>
-		<description>The total amount of running hours</description>
-		<state readOnly="true" pattern="%.f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

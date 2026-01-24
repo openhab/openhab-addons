@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class HeosJsonParser {
             .create();
 
     public HeosEventObject parseEvent(String jsonBody) {
-        HeosJsonWrapper wrapper = gson.fromJson(jsonBody, HeosJsonWrapper.class);
+        HeosJsonWrapper wrapper = Objects.requireNonNull(gson.fromJson(jsonBody, HeosJsonWrapper.class));
 
         return postProcess(wrapper.heos);
     }
@@ -61,6 +61,7 @@ public class HeosJsonParser {
     }
 
     private <T> HeosResponseObject<T> postProcess(HeosJsonWrapper wrapper, Class<T> clazz) {
+        @Nullable
         T payload = gson.fromJson(wrapper.payload, clazz);
 
         return new HeosResponseObject<>(HeosCommandTuple.valueOf(wrapper.heos.command), wrapper.heos.command,

@@ -444,6 +444,7 @@
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<description>Received Signal Strength Indication</description>
+		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>RSSI</tag>

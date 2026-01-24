@@ -83,7 +83,7 @@
 		<parameter name="ipAddress" type="text" required="true" groupName="network">
 			<context>network-address</context>
 			<label>IP Address</label>
-			<description>The localIP address or hostname of the FRITZ!Powerline.</description>
+			<description>The local IP address or hostname of the FRITZ!Powerline.</description>
 			<default>fritz.powerline</default>
 		</parameter>
 		<parameter name="port" type="integer" min="1" max="65535" groupName="network">

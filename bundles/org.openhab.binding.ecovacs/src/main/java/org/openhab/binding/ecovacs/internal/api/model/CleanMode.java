@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public enum CleanMode {
     CUSTOM_AREA,
     @SerializedName("singleRoom")
     SINGLE_ROOM,
-    @SerializedName("sceneClean")
+    @SerializedName(value = "sceneClean", alternate = { "qcClean" })
     SCENE_CLEAN,
     @SerializedName("pause")
     PAUSE,
@@ -41,7 +41,7 @@ public enum CleanMode {
     STOP,
     @SerializedName(value = "going", alternate = { "goCharging" })
     RETURNING,
-    @SerializedName("autoEmpty")
+    @SerializedName(value = "autoEmpty", alternate = { "emptying" })
     EMPTYING,
     @SerializedName("washing")
     WASHING,

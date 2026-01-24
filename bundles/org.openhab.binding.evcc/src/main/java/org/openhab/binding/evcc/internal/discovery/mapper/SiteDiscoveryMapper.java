@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.JsonObject;
 
@@ -32,6 +33,7 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Goerentz - Initial contribution
  */
+@Component(service = EvccDiscoveryMapper.class)
 @NonNullByDefault
 public class SiteDiscoveryMapper implements EvccDiscoveryMapper {
 
@@ -44,8 +46,8 @@ public class SiteDiscoveryMapper implements EvccDiscoveryMapper {
         String siteTitle = state.get("siteTitle").getAsString();
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_SITE, bridgeHandler.getThing().getUID(), "site");
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(siteTitle)
-                .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_SITE)
-                .withProperty(PROPERTY_SITE_TITLE, siteTitle).withRepresentationProperty(PROPERTY_SITE_TITLE).build();
+                .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_SITE_TITLE, siteTitle)
+                .withRepresentationProperty(PROPERTY_SITE_TITLE).build();
         results.add(result);
         return results;
     }

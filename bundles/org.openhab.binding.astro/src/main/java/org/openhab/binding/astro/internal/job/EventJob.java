@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,9 +47,9 @@ public final class EventJob extends AbstractJob {
         try {
             handler.triggerEvent(channelID, event);
         } catch (Exception e) {
-            logger.warn("The triggering of event \"{}\" for \"{}\" failed: {}", event, handler.getThing().getUID(),
+            LOGGER.warn("The triggering of event \"{}\" for \"{}\" failed: {}", event, handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 

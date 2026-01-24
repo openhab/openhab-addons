@@ -1,0 +1,28 @@
+{
+  "appliances": [
+    {
+      "waterPressure": 1.5,
+      "errorStatus": "OK",
+      "waterPressureOK": true,
+      "outdoorTemperatureInformation": {
+        "internetOutdoorTemperature": 15.2
+      },
+      "climateZones": [
+        {
+          "climateZoneId": "zone123",
+          "roomTemperature": 20.5,
+          "setPoint": 21.0
+        }
+      ],
+      "hotWaterZones": [
+        {
+          "hotWaterZoneId": "zone456",
+          "dhwTemperature": 45.0,
+          "targetSetpoint": 50.0,
+          "dhwZoneMode": "schedule",
+          "dhwStatus": "heating"
+        }
+      ]
+    }
+  ]
+}

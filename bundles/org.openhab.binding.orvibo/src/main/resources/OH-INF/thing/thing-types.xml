@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="s20">
-		<label>Orvibo S20 Smart Wifi Socket</label>
-		<description>This is an Orvibo S20 Smart Wifi Socket</description>
+		<label>Orvibo S20 Smart Wi‑Fi Socket</label>
+		<description>This is an Orvibo S20 Smart Wi‑Fi Socket</description>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>

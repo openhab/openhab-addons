@@ -27,16 +27,16 @@ jobs:
     steps:
       - name: Checkout
         if: github.head_ref == ''
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Checkout merge
         if: github.head_ref != ''
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: refs/pull/${{github.event.pull_request.number}}/merge
 
       - name: Set up Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.m2/repository
@@ -71,21 +71,21 @@ jobs:
         env:
           CHANGED_FILES: ${{ steps.files.outputs.all }}
           MAVEN_OPTS: >-
-            -Xmx2g
+            -Xmx8g
             -Dmaven.wagon.http.retryHandler.count=5
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: Upload Build Log
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
           path: build.log
 
       - name: Upload SAT Summary Report
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sat-summary-report
           path: target/summary_report.html

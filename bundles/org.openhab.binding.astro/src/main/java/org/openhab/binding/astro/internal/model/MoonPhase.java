@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,9 @@
 package org.openhab.binding.astro.internal.model;
 
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
@@ -22,6 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Holds the calculates moon phase informations.
@@ -31,10 +36,8 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public class MoonPhase {
-    private @Nullable Calendar firstQuarter;
-    private @Nullable Calendar full;
-    private @Nullable Calendar thirdQuarter;
-    private @Nullable Calendar newCalendar;
+    private final Map<MoonPhaseName, @Nullable Calendar> phases = new HashMap<>(MoonPhaseName.values().length);
+
     private double age;
     private double illumination;
     private double agePercent;
@@ -42,19 +45,19 @@ public class MoonPhase {
 
     private @Nullable MoonPhaseName name;
 
+    public MoonPhase() {
+        phases.put(MoonPhaseName.FIRST_QUARTER, null);
+        phases.put(MoonPhaseName.FULL, null);
+        phases.put(MoonPhaseName.THIRD_QUARTER, null);
+        phases.put(MoonPhaseName.NEW, null);
+    }
+
     /**
      * Returns the date at which the moon is in the first quarter.
      */
     @Nullable
     public Calendar getFirstQuarter() {
-        return firstQuarter;
-    }
-
-    /**
-     * Sets the date at which the moon is in the first quarter.
-     */
-    public void setFirstQuarter(@Nullable Calendar firstQuarter) {
-        this.firstQuarter = firstQuarter;
+        return getPhaseDate(MoonPhaseName.FIRST_QUARTER);
     }
 
     /**
@@ -62,14 +65,7 @@ public class MoonPhase {
      */
     @Nullable
     public Calendar getFull() {
-        return full;
-    }
-
-    /**
-     * Sets the date of the full moon.
-     */
-    public void setFull(@Nullable Calendar full) {
-        this.full = full;
+        return getPhaseDate(MoonPhaseName.FULL);
     }
 
     /**
@@ -77,14 +73,7 @@ public class MoonPhase {
      */
     @Nullable
     public Calendar getThirdQuarter() {
-        return thirdQuarter;
-    }
-
-    /**
-     * Sets the date at which the moon is in the third quarter.
-     */
-    public void setThirdQuarter(@Nullable Calendar thirdQuarter) {
-        this.thirdQuarter = thirdQuarter;
+        return getPhaseDate(MoonPhaseName.THIRD_QUARTER);
     }
 
     /**
@@ -92,14 +81,26 @@ public class MoonPhase {
      */
     @Nullable
     public Calendar getNew() {
-        return newCalendar;
+        return getPhaseDate(MoonPhaseName.NEW);
     }
 
-    /**
-     * Sets the date of the new moon.
-     */
-    public void setNew(@Nullable Calendar newCalendar) {
-        this.newCalendar = newCalendar;
+    @Nullable
+    public Calendar getPhaseDate(MoonPhaseName moonPhase) {
+        if (!phases.containsKey(moonPhase)) {
+            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
+        }
+        return phases.get(moonPhase);
+    }
+
+    public void setPhase(MoonPhaseName moonPhase, @Nullable Calendar calendar) {
+        if (!phases.containsKey(moonPhase)) {
+            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
+        }
+        phases.put(moonPhase, calendar);
+    }
+
+    public Stream<MoonPhaseName> remarkablePhases() {
+        return phases.keySet().stream();
     }
 
     /**
@@ -119,8 +120,9 @@ public class MoonPhase {
     /**
      * Returns the illumination.
      */
-    public QuantityType<Dimensionless> getIllumination() {
-        return new QuantityType<>(illumination, Units.PERCENT);
+    public State getIllumination() {
+        return Double.isNaN(illumination) ? UnDefType.UNDEF
+                : illumination < 0 ? UnDefType.NULL : new QuantityType<>(illumination, Units.PERCENT);
     }
 
     /**

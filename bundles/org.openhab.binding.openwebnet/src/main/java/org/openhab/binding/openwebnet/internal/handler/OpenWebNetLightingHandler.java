@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -280,7 +280,6 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
         OpenWebNetBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler != null && bridgeHandler.isBusGateway()) {
             if (deviceWhere instanceof WhereLightAutom whereLightAutom && ownId != null && whereLightAutom.isAPL()) {
-
                 // First try to propagate to AREA handler (e.g., "1.1" -> area handler for area 1)
                 String areaOwnId = this.areaOwnId;
                 if (areaOwnId != null && bridgeHandler

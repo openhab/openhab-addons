@@ -1,6 +1,6 @@
 # Groovy Scripting
 
-This add-on provides support for [Groovy](https://groovy-lang.org/) 4.0.28 that can be used as a scripting language within automation rules.
+This add-on provides support for [Groovy](https://groovy-lang.org/) 4.0.29 that can be used as a scripting language within automation rules.
 
 ## Creating Groovy Scripts
 

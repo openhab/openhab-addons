@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -192,6 +192,25 @@ public class ZwaveJSTypeGeneratorTest {
 
         assertNotNull(type);
         assertEquals("Dimmer", type.getItemType());
+    }
+
+    @Test
+    public void testGenCTNode12TimeOutType() throws IOException {
+        Channel channel = getChannel("store_4.json", 12, "protection-timeout");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:protection-timeout", channel.getUID().getAsString());
+        assertEquals("Number:Time", Objects.requireNonNull(type).getItemType());
+        assertEquals("RF Protection Timeout", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+        assertNull(statePattern.getStep());
+        assertEquals("%d %unit%", statePattern.getPattern());
     }
 
     @Test

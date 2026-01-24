@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,13 +15,15 @@ package org.openhab.binding.astro.internal.job;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.scheduleEvent;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
-import org.openhab.binding.astro.internal.model.Eclipse;
+import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.Planet;
@@ -54,13 +56,13 @@ public final class DailyJobMoon extends AbstractJob {
     public void run() {
         try {
             handler.publishDailyInfo();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
             }
 
             Planet planet = handler.getPlanet();
             if (planet == null) {
-                logger.error("Planet not instantiated");
+                LOGGER.error("Planet not instantiated");
                 return;
             }
             Moon moon = (Moon) planet;
@@ -93,27 +95,20 @@ public final class DailyJobMoon extends AbstractJob {
                 scheduleEvent(handler, cal, EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
             }
 
-            Eclipse eclipse = moon.getEclipse();
-            eclipse.getKinds().forEach(eclipseKind -> {
-                Calendar eclipseDate = eclipse.getDate(eclipseKind);
-                if (eclipseDate != null) {
-                    scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false, zone,
-                            locale);
-                }
+            moon.getEclipseSet().getEclipses().forEach(eclipse -> {
+                scheduleEvent(handler, eclipse.when(), eclipse.kind().toString(), EVENT_CHANNEL_ID_ECLIPSE, false,
+                        zone.toZoneId());
             });
 
-            cal = moon.getPerigee().getDate();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_PERIGEE, EVENT_CHANNEL_ID_PERIGEE, false, zone, locale);
-            }
-            cal = moon.getApogee().getDate();
-            if (cal != null) {
-                scheduleEvent(handler, cal, EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false, zone, locale);
-            }
+            Set.of(DistanceType.APOGEE, DistanceType.PERIGEE).forEach(type -> {
+                if (moon.getDistanceType(type).getDate() instanceof Instant theMoment) {
+                    scheduleEvent(handler, theMoment, type.toString(), type.eventName(), false, zone.toZoneId());
+                }
+            });
         } catch (Exception e) {
-            logger.warn("The daily moon job execution for \"{}\" failed: {}", handler.getThing().getUID(),
+            LOGGER.warn("The daily moon job execution for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 

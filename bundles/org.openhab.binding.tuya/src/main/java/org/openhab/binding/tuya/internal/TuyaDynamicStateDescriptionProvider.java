@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,6 @@ public class TuyaDynamicStateDescriptionProvider extends BaseDynamicStateDescrip
     @Override
     protected List<StateOption> localizedStateOptions(List<StateOption> origOptions, Channel channel,
             @Nullable Locale locale) {
-
         ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService = this.channelTypeI18nLocalizationService;
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeI18nLocalizationService == null || channelTypeUID == null) {

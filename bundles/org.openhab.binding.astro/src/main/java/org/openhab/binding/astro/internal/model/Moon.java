@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -21,13 +26,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Moon extends RiseSet implements Planet {
+    private final Map<DistanceType, MoonDistance> distances = new HashMap<>(DistanceType.values().length);
+
+    private EclipseSet eclipseSet = EclipseSet.NONE;
     private MoonPhase phase = new MoonPhase();
-    private MoonDistance apogee = new MoonDistance();
-    private MoonDistance perigee = new MoonDistance();
-    private MoonDistance distance = new MoonDistance();
-    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
-    private Position position = new Position();
-    private Zodiac zodiac = new Zodiac(null);
+    private Position position = MoonPosition.NONE;
+    private Zodiac zodiac = Zodiac.NONE;
+
+    public Moon() {
+        EnumSet.allOf(DistanceType.class).forEach(d -> distances.put(d, MoonDistance.NONE));
+    }
 
     /**
      * Returns the moon phase.
@@ -43,60 +51,23 @@ public class Moon extends RiseSet implements Planet {
         this.phase = phase;
     }
 
-    /**
-     * Returns the apogee.
-     */
-    public MoonDistance getApogee() {
-        return apogee;
+    public MoonDistance getDistanceType(DistanceType type) {
+        return Objects.requireNonNull(distances.get(type));
     }
 
-    /**
-     * Sets the apogee.
-     */
-    public void setApogee(MoonDistance apogee) {
-        this.apogee = apogee;
-    }
-
-    /**
-     * Returns the perigee.
-     */
-    public MoonDistance getPerigee() {
-        return perigee;
-    }
-
-    /**
-     * Sets the perigee.
-     */
-    public void setPerigee(MoonDistance perigee) {
-        this.perigee = perigee;
+    public void setDistance(DistanceType type, MoonDistance moonDistance) {
+        distances.put(type, moonDistance);
     }
 
     /**
      * Returns the eclipses.
      */
-    public Eclipse getEclipse() {
-        return eclipse;
+    public EclipseSet getEclipseSet() {
+        return eclipseSet;
     }
 
-    /**
-     * Sets the eclipses.
-     */
-    public void setEclipse(Eclipse eclipse) {
-        this.eclipse = eclipse;
-    }
-
-    /**
-     * Returns the current distance.
-     */
-    public MoonDistance getDistance() {
-        return distance;
-    }
-
-    /**
-     * Sets the current distance.
-     */
-    public void setDistance(MoonDistance distance) {
-        this.distance = distance;
+    public void setEclipseSet(EclipseSet eclipseSet) {
+        this.eclipseSet = eclipseSet;
     }
 
     /**

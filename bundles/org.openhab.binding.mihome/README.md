@@ -76,14 +76,14 @@ There are three ways of connecting supported devices to the gateway:
     1. Gateway will flash in blue and you will hear female voice in Chinese, you have 30 seconds to include your new device
     1. Place the needle into the sensor and hold it for at least 3 seconds
     1. You will hear confirmation message in Chinese
-    1. The device appears in openHAB thing Inbox
+    1. The device appears in openHAB Thing Inbox
 - With the binding
     1. After adding the gateway make sure you have entered the right developer key
     1. In the UI, go to your Inbox and trigger a discovery for the binding
     1. The gateway flashes in blue and you hear a female voice in Chinese, you have 30 seconds to include your new device
     1. Follow the instructions for your device to pair it to the gateway
     1. You will hear a confirmation message in Chinese
-    1. The device appears in openHAB thing Inbox
+    1. The device appears in openHAB Thing Inbox
 
 **Hints:**
 
@@ -436,7 +436,7 @@ Make sure you have connected your gateway to openHAB and the communication is wo
 
 - Go through the normal procedure to add a device to the gateway
 - The device will show up in your inbox as a new unsupported device and its model name
-- Add the device as a new thing of type "basic device", now you have different channels to receive and send messages from/to the device
+- Add the device as a new Thing of type "basic device", now you have different channels to receive and send messages from/to the device
   - raw messages from the device
   - the data from the four different type of messages (see their details in the next chapter)
   - parameters you can send to the device
@@ -462,11 +462,11 @@ Post an issue in the GitHub repository with as much information as possible abou
 
 Or implement the support by yourself and submit a pull request.
 
-### Handle the message contents of a basic device thing with items
+### Handle the message contents of a basic device Thing with items
 
-You can access the whole message contents of the basic device thing with String items.
+You can access the whole message contents of the basic device Thing with String items.
 That way you can make use of your device, even if it is not supported yet!
-The following examples are a demonstration, where a basic device thing for the gateway was manually added.
+The following examples are a demonstration, where a basic device Thing for the gateway was manually added.
 
 ```java
 String Gateway_Raw { channel="mihome:basic:xxx:lastMessage" }
@@ -500,7 +500,7 @@ Switch Gateway_AddDevicesSwitch
 #### mihome.rules
 
 ```java
-rule "Enable device pairing with gateway as basic device thing"
+rule "Enable device pairing with gateway as basic device Thing"
 when
     Item Gateway_AddDevicesSwitch changed to ON
 then

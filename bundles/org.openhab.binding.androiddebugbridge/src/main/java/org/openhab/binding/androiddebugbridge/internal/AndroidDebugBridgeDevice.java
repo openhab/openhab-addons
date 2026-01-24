@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -211,12 +211,14 @@ public class AndroidDebugBridgeDevice {
         } else {
             out = runAdbShell("dumpsys", "window", "windows", "|", "grep", "mFocusedApp");
         }
-        var targetLine = Arrays.stream(out.split("\n")).findFirst().orElse("");
-        var lineParts = targetLine.split(" ");
-        if (lineParts.length >= 2) {
-            var packageActivityName = lineParts[lineParts.length - 2];
-            if (packageActivityName.contains("/")) {
-                return packageActivityName.split("/")[0];
+
+        if (Arrays.stream(out.split("\n")).findFirst().orElse("") instanceof String targetLine) {
+            var lineParts = targetLine.split(" ");
+            if (lineParts.length >= 2) {
+                var packageActivityName = lineParts[lineParts.length - 2];
+                if (packageActivityName.contains("/")) {
+                    return packageActivityName.split("/")[0];
+                }
             }
         }
         throw new AndroidDebugBridgeDeviceReadException("Unable to read package name");
@@ -760,7 +762,7 @@ public class AndroidDebugBridgeDevice {
                     do {
                         byteArrayOutputStream.writeBytes(stream.read());
                     } while (!stream.isClosed());
-                } catch (IOException e) {
+                } catch (IllegalStateException | IOException e) {
                     if (!"Stream closed".equals(e.getMessage())) {
                         throw e;
                     }

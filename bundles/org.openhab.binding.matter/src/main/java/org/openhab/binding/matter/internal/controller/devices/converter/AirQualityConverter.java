@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,8 +60,8 @@ public class AirQualityConverter extends GenericConverter<AirQualityCluster> {
             options.add(new StateOption(e.getValue().toString(), e.getLabel()));
         }
 
-        StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                .withOptions(options).build().toStateDescription();
+        StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withOptions(options).build()
+                .toStateDescription();
 
         return Collections.singletonMap(channel, stateDescription);
     }

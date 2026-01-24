@@ -6,7 +6,7 @@
 
 	<thing-type id="shelly1">
 		<label>Shelly 1</label>
-		<description>@text/thing-type.shelly.shelly1.description</description>
+		<description>Shelly 1 (Single Relay Switch)</description>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
@@ -19,7 +19,7 @@
 
 	<thing-type id="shelly1l">
 		<label>Shelly 1L</label>
-		<description>@text/thing-type.shelly.shelly1l.description</description>
+		<description>Shelly 1L (Single Relay Switch, no Neutral required)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -34,7 +34,7 @@
 
 	<thing-type id="shelly1pm">
 		<label>Shelly 1PM</label>
-		<description>@text/thing-type.shelly.shelly1pm.description</description>
+		<description>Shelly 1PM (Single Relay Switch with integrated Power Meter)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -49,14 +49,14 @@
 
 	<thing-type id="shellyem">
 		<label>Shelly EM</label>
-		<description>@text/thing-type.shelly.shellyem.description</description>
+		<description>Shelly EM (with integrated Power Meter)</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter1.label</label>
+				<label>Power Meter 1</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter2.label</label>
+				<label>Power Meter 2</label>
 			</channel-group>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -69,17 +69,17 @@
 	<!-- Shelly 3EM - device reports wrong service name: shellyem3, see README -->
 	<thing-type id="shellyem3">
 		<label>Shelly EM3</label>
-		<description>@text/thing-type.shelly.shellyem3.description</description>
+		<description>Shelly 3EM (with 3 integrated Power Meters and a relay)</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter1.label</label>
+				<label>Power Meter 1</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter2.label</label>
+				<label>Power Meter 2</label>
 			</channel-group>
 			<channel-group id="meter3" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter3.label</label>
+				<label>Power Meter 3</label>
 			</channel-group>
 			<channel-group id="nmeter" typeId="nmeter"/>
 			<channel-group id="relay" typeId="relayChannel"/>
@@ -92,14 +92,14 @@
 
 	<thing-type id="shelly2-relay">
 		<label>Shelly 2 Relay</label>
-		<description>@text/thing-type.shelly.shelly2-relay.description</description>
+		<description>Shelly 2 in Relay Mode (Double Relay Switch)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+				<label>Relay 1</label>
 			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+				<label>Relay 2</label>
 			</channel-group>
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -111,7 +111,7 @@
 
 	<thing-type id="shelly2-roller">
 		<label>Shelly 2 Roller</label>
-		<description>@text/thing-type.shelly.shelly2-roller.description</description>
+		<description>Shelly 2 in Roller Mode (Single Roller Shutter)</description>
 		<category>Rollershutter</category>
 		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channel-groups>
@@ -126,20 +126,20 @@
 
 	<thing-type id="shelly25-relay">
 		<label>Shelly 2.5 Relay</label>
-		<description>@text/thing-type.shelly.shelly25-relay.description</description>
+		<description>Shelly 2.5 in Relay Mode (Double Relay Switch with integrated Power Meter)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+				<label>Relay 1</label>
 			</channel-group>
 			<channel-group id="meter1" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter1.label</label>
+				<label>Power Meter 1</label>
 			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+				<label>Relay 2</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter2.label</label>
+				<label>Power Meter 2</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -150,7 +150,7 @@
 
 	<thing-type id="shelly25-roller">
 		<label>Shelly 2.5 Roller</label>
-		<description>@text/thing-type.shelly.shelly25-roller.description</description>
+		<description>Shelly 2.5 in Roller Mode (Single Roller Shutter with integrated Power Meter)</description>
 		<category>Rollershutter</category>
 		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channel-groups>
@@ -165,32 +165,32 @@
 
 	<thing-type id="shelly4pro">
 		<label>Shelly 4 Pro Relay</label>
-		<description>@text/thing-type.shelly.shelly4pro.description</description>
+		<description>Shelly 4 Pro (4x Relay Switch with integrated Power Meters)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+				<label>Relay 1</label>
 			</channel-group>
 			<channel-group id="meter1" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter1.label</label>
+				<label>Power Meter 1</label>
 			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+				<label>Relay 2</label>
 			</channel-group>
 			<channel-group id="meter2" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter2.label</label>
+				<label>Power Meter 2</label>
 			</channel-group>
 			<channel-group id="relay3" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel3.label</label>
+				<label>Relay 3</label>
 			</channel-group>
 			<channel-group id="meter3" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter3.label</label>
+				<label>Power Meter 3</label>
 			</channel-group>
 			<channel-group id="relay4" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel4.label</label>
+				<label>Relay 4</label>
 			</channel-group>
 			<channel-group id="meter4" typeId="meter">
-				<label>@text/channel-group-type.shelly.meter4.label</label>
+				<label>Power Meter 4</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -201,7 +201,7 @@
 
 	<thing-type id="shellyplug">
 		<label>Shelly Plug</label>
-		<description>@text/thing-type.shelly.shellyplug.description</description>
+		<description>Shelly Plug (Plug with integrated Power Meter)</description>
 		<category>PowerOutlet</category>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
@@ -216,7 +216,7 @@
 
 	<thing-type id="shellyplugs">
 		<label>Shelly Plug-S</label>
-		<description>@text/thing-type.shelly.shellyplugs.description</description>
+		<description>Shelly Plug-S (Plug with integrated Power Meter)</description>
 		<category>PowerOutlet</category>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
@@ -231,7 +231,7 @@
 
 	<thing-type id="shellyplugu1">
 		<label>Shelly Plug US</label>
-		<description>@text/thing-type.shelly.shellyplugu1.description</description>
+		<description>Shelly Plug-US (Plug (US) with integrated Power Meter (110V))</description>
 		<category>PowerOutlet</category>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
@@ -246,14 +246,14 @@
 
 	<thing-type id="shellyuni">
 		<label>Shelly UNI</label>
-		<description>@text/thing-type.shelly.shellyuni.description</description>
+		<description>Shelly UNI (Universal Module)</description>
 
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
+				<label>Relay 1</label>
 			</channel-group>
 			<channel-group id="relay2" typeId="relayChannel">
-				<label>@text/channel-group-type.shelly.relayChannel2.label</label>
+				<label>Relay 2</label>
 			</channel-group>
 			<channel-group id="sensors" typeId="sensorData"/>
 			<channel-group id="device" typeId="deviceStatus"/>
@@ -265,7 +265,7 @@
 
 	<thing-type id="shellydimmer">
 		<label>Shelly Dimmer</label>
-		<description>@text/thing-type.shelly.shellydimmer.description</description>
+		<description>Shelly Dimmer (Dimmer Functionality)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
@@ -279,7 +279,7 @@
 
 	<thing-type id="shellydimmer2">
 		<label>Shelly Dimmer 2</label>
-		<description>@text/thing-type.shelly.shellydimmer2.description</description>
+		<description>Shelly Dimmer 2 (Dimmer Functionality, 2nd Generation)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
@@ -293,16 +293,16 @@
 
 	<thing-type id="shellyix3">
 		<label>Shelly ix3</label>
-		<description>@text/thing-type.shelly.shellyix3.description</description>
+		<description>Shelly ix3 (Activation Device with 3 inputs)</description>
 		<channel-groups>
 			<channel-group id="status1" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.iXChannel1.label</label>
+				<label>Input 1</label>
 			</channel-group>
 			<channel-group id="status2" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.iXChannel2.label</label>
+				<label>Input 2</label>
 			</channel-group>
 			<channel-group id="status3" typeId="ixChannel">
-				<label>@text/channel-group-type.shelly.iXChannel3.label</label>
+				<label>Input 3</label>
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
@@ -312,73 +312,73 @@
 	</thing-type>
 
 	<channel-group-type id="relayChannel">
-		<label>@text/channel-group-type.shelly.relayChannel.label</label>
-		<description>@text/channel-group-type.shelly.relayChannel.description</description>
+		<label>Relay</label>
+		<description>A Shelly relay channel</description>
 	</channel-group-type>
 
 	<channel-group-type id="relayChannelPlug">
-		<label>@text/channel-group-type.shelly.relayChannel.label</label>
-		<description>@text/channel-group-type.shelly.relayChannel.description</description>
+		<label>Relay</label>
+		<description>A Shelly relay channel</description>
 	</channel-group-type>
 
 	<channel-group-type id="dimmerChannel">
-		<label>@text/channel-group-type.shelly.dimmerChannel.label</label>
-		<description>@text/channel-group-type.shelly.dimmerChannel.description</description>
+		<label>Dimmer</label>
+		<description>A Shelly Dimmer channel</description>
 	</channel-group-type>
 
 	<channel-group-type id="ixChannel">
-		<label>@text/channel-group-type.shelly.iXChannel.label</label>
-		<description>@text/channel-group-type.shelly.iXChannel.description</description>
+		<label>Input</label>
+		<description>Input Status</description>
 	</channel-group-type>
 
 	<channel-group-type id="rollerControl">
-		<label>@text/channel-group-type.shelly.rollerControl.label</label>
-		<description>@text/channel-group-type.shelly.rollerControl.description</description>
+		<label>Roller Control</label>
+		<description>Controlling the roller mode</description>
 	</channel-group-type>
 
 	<channel-group-type id="meter">
-		<label>@text/channel-group-type.shelly.meter.label</label>
-		<description>@text/channel-group-type.shelly.meter.description</description>
+		<label>Power Meter</label>
+		<description>Power consumption for the relay</description>
 	</channel-group-type>
 
 	<channel-group-type id="nmeter">
-		<label>@text/channel-group-type.shelly.nmeter.label</label>
-		<description>@text/channel-group-type.shelly.nmeter.description</description>
+		<label>Neutral Current</label>
+		<description>Based measurements based on the N clamp (has to be calibrated)</description>
 	</channel-group-type>
 
 	<channel-group-type id="externalSensors">
-		<label>@text/channel-group-type.shelly.externalSensors.label</label>
-		<description>@text/channel-group-type.shelly.externalSensors.description</description>
+		<label>External Sensors</label>
+		<description>Temperatures from external sensors connected to the optional Addon</description>
 	</channel-group-type>
 
 	<channel-type id="outputName">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.outputName.label</label>
-		<description>@text/channel-type.shelly.outputName.description</description>
+		<label>Output Name</label>
+		<description>Output/Channel Name as configured in the Shelly App</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="timerAutoOn" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>@text/channel-type.shelly.timerAutoOn.label</label>
-		<description>@text/channel-type.shelly.timerAutoOn.description</description>
+		<label>Auto-ON Timer</label>
+		<description>When the output of the relay is switched off, it will be switched back on automatically after n seconds</description>
 		<category>Time</category>
-		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="timerAutoOff" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>@text/channel-type.shelly.timerAutoOff.label</label>
-		<description>@text/channel-type.shelly.timerAutoOff.description</description>
+		<label>Auto-OFF Timer</label>
+		<description>When the output of the relay is switched on, it will be switched back off automatically after n seconds</description>
 		<category>Time</category>
-		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"></state>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="timerActive" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.timerActive.label</label>
-		<description>@text/channel-type.shelly.timerActive.description</description>
+		<label>Auto ON/OFF timer active</label>
+		<description>ON: A timer is active, OFF: no timer active</description>
 		<category>Status</category>
 		<state readOnly="true">
 		</state>
@@ -386,8 +386,8 @@
 
 	<channel-type id="rollerShutter">
 		<item-type>Rollershutter</item-type>
-		<label>@text/channel-type.shelly.rollerShutter.label</label>
-		<description>@text/channel-type.shelly.rollerShutter.description</description>
+		<label>Roller Control (0=open, 100=closed)</label>
+		<description>Control the Roller Shutter: UP, DOWN, STOP, Position (0=open, 100=closed)</description>
 		<category>Blinds</category>
 		<tags>
 			<tag>Control</tag>
@@ -397,8 +397,8 @@
 
 	<channel-type id="rollerPosition" advanced="true">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.rollerPosition.label</label>
-		<description>@text/channel-type.shelly.rollerPosition.description</description>
+		<label>Roller Position (100=open, 0=closed)</label>
+		<description>Position the Roller Shutter (100-0 in percent, where 100%=open, 0%=closed)</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>OpenLevel</tag>
@@ -408,87 +408,87 @@
 
 	<channel-type id="rollerFavorite">
 		<item-type>Number</item-type>
-		<label>@text/channel-type.shelly.rollerFavorite.label</label>
-		<description>@text/channel-type.shelly.rollerFavorite.description</description>
+		<label>Position Favorite</label>
+		<description>Set roller position by selecting favorite 1-4 (needs to be defined in the Shelly App, 0=n/a)</description>
 		<state readOnly="false" min="0" max="4"/>
 	</channel-type>
 
 	<channel-type id="rollerState">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.rollerState.label</label>
-		<description>@text/channel-type.shelly.rollerState.description</description>
+		<label>Roller State</label>
+		<description>State of the roller (open/close/stop)</description>
 		<category>Status</category>
 		<state readOnly="true">
 			<options>
-				<option value="open">@text/channel-type.shelly.rollerState.state.option.open</option>
-				<option value="close">@text/channel-type.shelly.rollerState.state.option.close</option>
-				<option value="stop">@text/channel-type.shelly.rollerState.state.option.stop</option>
+				<option value="open">open</option>
+				<option value="close">closed</option>
+				<option value="stop">stopped</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="rollerStop">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.rollerStop.label</label>
-		<description>@text/channel-type.shelly.rollerStop.description</description>
+		<label>Roller stop reason</label>
+		<description>Last reason for stopping the Roller Shutter (normal, safety switch, obstacle detected)</description>
 		<state readOnly="true">
 			<options>
-				<option value="normal">@text/channel-type.shelly.rollerStop.state.option.normal</option>
-				<option value="safety_switch">@text/channel-type.shelly.rollerStop.state.option.safety_switch</option>
-				<option value="obstacle">@text/channel-type.shelly.rollerStop.state.option.obstacle</option>
+				<option value="normal">normal</option>
+				<option value="safety_switch">safety switch</option>
+				<option value="obstacle">obstacle detected</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="rollerDirection">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.rollerDirection.label</label>
-		<description>@text/channel-type.shelly.rollerDirection.description</description>
+		<label>Last Roller Direction</label>
+		<description>Last direction: open/close/stopped</description>
 		<state readOnly="true">
 			<options>
-				<option value="open">@text/channel-type.shelly.rollerDirection.state.option.open</option>
-				<option value="close">@text/channel-type.shelly.rollerDirection.state.option.close</option>
-				<option value="stop">@text/channel-type.shelly.rollerDirection.state.option.stop</option>
+				<option value="open">open</option>
+				<option value="close">close</option>
+				<option value="stop">stopped</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="rollerSafety" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.rollerSafety.label</label>
-		<description>@text/channel-type.shelly.rollerSafety.description</description>
+		<label>Safety Switch</label>
+		<description>Status of the safety switch</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="inputState">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.inputState.label</label>
-		<description>@text/channel-type.shelly.inputState.description</description>
+		<label>Input/Button</label>
+		<description>Current state of the Input/Button</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="inputState1" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.inputState1.label</label>
-		<description>@text/channel-type.shelly.inputState1.description</description>
+		<label>Input #1</label>
+		<description>Current state of the Input #1</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="inputState2" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.inputState2.label</label>
-		<description>@text/channel-type.shelly.inputState2.description </description>
+		<label>Input #2</label>
+		<description>Current state of the Input #2</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 
 	<channel-type id="dimmerBrightness">
 		<item-type>Dimmer</item-type>
-		<label>@text/channel-type.shelly.dimmerBrightness.label</label>
-		<description>@text/channel-type.shelly.dimmerBrightness.description</description>
+		<label>Brightness</label>
+		<description>Light Brightness in percent (0-100%, 0=OFF)</description>
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
@@ -498,8 +498,8 @@
 
 	<channel-type id="meterWatts">
 		<item-type>Number:Power</item-type>
-		<label>@text/channel-type.shelly.meterWatts.label</label>
-		<description>@text/channel-type.shelly.meterWatts.description</description>
+		<label>Power Consumption</label>
+		<description>Current Power Consumption in Watts</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -511,8 +511,8 @@
 
 	<channel-type id="meterAccuWatts" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>@text/channel-type.shelly.meterAccuWatts.label</label>
-		<description>@text/channel-type.shelly.meterAccuWatts.description</description>
+		<label>Accumulated Power Consumption</label>
+		<description>Accumulated Power Consumption in Watts of the device (including all meters)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -524,8 +524,8 @@
 
 	<channel-type id="meterAccuTotal" advanced="true">
 		<item-type>Number:Energy</item-type>
-		<label>@text/channel-type.shelly.meterAccuTotal.label</label>
-		<description>@text/channel-type.shelly.meterAccuTotal.description</description>
+		<label>Accumulated Total Power</label>
+		<description>Accumulated Total Power in kW/h of the device (including all meters)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -537,8 +537,8 @@
 
 	<channel-type id="meterAccuReturned" advanced="true">
 		<item-type>Number:Energy</item-type>
-		<label>@text/channel-type.shelly.meterAccuReturned.label</label>
-		<description>@text/channel-type.shelly.meterAccuReturned.description</description>
+		<label>Accumulated Apparent Power</label>
+		<description>Accumulated Apparent Power in kW/h of the device (including all meters)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -550,8 +550,8 @@
 
 	<channel-type id="totalKWH">
 		<item-type>Number:Energy</item-type>
-		<label>@text/channel-type.shelly.totalKWH.label</label>
-		<description>@text/channel-type.shelly.totalKWH.description</description>
+		<label>Total Energy Consumption Device</label>
+		<description>Total energy consumption of the device in kW/h since the device powered up (resets on restart)</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -563,8 +563,8 @@
 
 	<channel-type id="meterReactive">
 		<item-type>Number:Power</item-type>
-		<label>@text/channel-type.shelly.meterReactive.label</label>
-		<description>@text/channel-type.shelly.meterReactive.description</description>
+		<label>Reactive Energy</label>
+		<description>Instantaneous reactive power in Watts (W)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -575,8 +575,8 @@
 
 	<channel-type id="lastPower1" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>@text/channel-type.shelly.lastPower1.label</label>
-		<description>@text/channel-type.shelly.lastPower1.description</description>
+		<label>Last Power</label>
+		<description>Last power consumption #1 - one rounded minute</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -588,8 +588,8 @@
 
 	<channel-type id="meterTotal">
 		<item-type>Number:Energy</item-type>
-		<label>@text/channel-type.shelly.meterTotal.label</label>
-		<description>@text/channel-type.shelly.meterTotal.description</description>
+		<label>Total Energy Consumption</label>
+		<description>Total energy consumption in kW/h since the device powered up (resets on restart)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -600,8 +600,8 @@
 
 	<channel-type id="meterReturned">
 		<item-type>Number:Energy</item-type>
-		<label>@text/channel-type.shelly.meterReturned.label</label>
-		<description>@text/channel-type.shelly.meterReturned.description</description>
+		<label>Total Returned Energy</label>
+		<description>Total returned energy in kW/h</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -613,8 +613,8 @@
 
 	<channel-type id="meterVoltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>@text/channel-type.shelly.meterVoltage.label</label>
-		<description>@text/channel-type.shelly.meterVoltage.description</description>
+		<label>Voltage</label>
+		<description>RMS voltage in Volt</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -626,8 +626,8 @@
 
 	<channel-type id="meterCurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>@text/channel-type.shelly.meterCurrent.label</label>
-		<description>@text/channel-type.shelly.meterCurrent.description</description>
+		<label>Current</label>
+		<description>Current in A</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -639,30 +639,30 @@
 
 	<channel-type id="meterFrequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
-		<label>@text/channel-type.shelly.meterFrequency.label</label>
-		<description>@text/channel-type.shelly.meterFrequency.description</description>
+		<label>Frequency</label>
+		<description>Current frequency in Hertz (Hz)</description>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
 
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
-		<label>@text/channel-type.shelly.meterPowerFactor.label</label>
-		<description>@text/channel-type.shelly.meterPowerFactor.description</description>
+		<label>Power Factor</label>
+		<description>Power Factor in percent for photovoltaic</description>
 		<state readOnly="true" pattern="%.3f">
 		</state>
 	</channel-type>
 
 	<channel-type id="meterResetTotals">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.meterResetTotals.label</label>
-		<description>@text/channel-type.shelly.meterResetTotals.description</description>
+		<label>Reset Energy Measurements</label>
+		<description>Resets totals measurement data</description>
 	</channel-type>
 
 	<channel-type id="ncurrent">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>@text/channel-type.shelly.ncurrent.label</label>
-		<description>@text/channel-type.shelly.ncurrent.description</description>
+		<label>Neutral Current</label>
+		<description>Measured neutral current</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -674,8 +674,8 @@
 
 	<channel-type id="ixsum">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>@text/channel-type.shelly.ixsum.label</label>
-		<description>@text/channel-type.shelly.ixsum.description</description>
+		<label>Accumulated Current</label>
+		<description>Sum of measured current on all phases</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -687,8 +687,8 @@
 
 	<channel-type id="nmTreshhold">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>@text/channel-type.shelly.nmTreshhold.label</label>
-		<description>@text/channel-type.shelly.nmTreshhold.description</description>
+		<label>Mismatch Treshhold</label>
+		<description>Mismatch becomes ON when treshhold is exceeded</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -700,14 +700,14 @@
 
 	<channel-type id="nmismatch">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.nmismatch.label</label>
-		<description>@text/channel-type.shelly.nmismatch.description</description>
+		<label>N-Current Mismatch</label>
+		<description>ON: Sum of all signed currents of the 4 wires is greater than the configured N Current Treshhold</description>
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>@text/channel-type.shelly.timestamp.label</label>
-		<description>@text/channel-type.shelly.timestamp.description</description>
+		<label>Last Update</label>
+		<description>Timestamp of last measurement</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -719,20 +719,20 @@
 
 	<channel-type id="ledStatusDisable">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.ledStatusDisable.label</label>
-		<description>@text/channel-type.shelly.ledStatusDisable.description</description>
+		<label>Disable Status LED</label>
+		<description>Disable LED indication for network status</description>
 	</channel-type>
 
 	<channel-type id="ledPowerDisable">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.ledPowerDisable.label</label>
-		<description>@text/channel-type.shelly.ledPowerDisable.description</description>
+		<label>Disable Power LED</label>
+		<description>Disable LED indication for output status</description>
 	</channel-type>
 
 	<channel-type id="lastUpdate" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>@text/channel-type.shelly.lastUpdate.label</label>
-		<description>@text/channel-type.shelly.lastUpdate.description</description>
+		<label>Last Update</label>
+		<description>Timestamp of last status update</description>
 		<category>Time</category>
 		<state readOnly="true">
 		</state>
@@ -740,13 +740,13 @@
 
 	<channel-type id="eventTrigger">
 		<kind>trigger</kind>
-		<label>@text/channel-type.shelly.eventTrigger.label</label>
-		<description>@text/channel-type.shelly.eventTrigger.description</description>
+		<label>Event</label>
+		<description>Event Trigger (ROLLER_OPEN/ROLLER_CLOSE/ROLLER_STOP)</description>
 		<event>
 			<options>
-				<option value="ROLLER_OPEN">@text/channel-type.shelly.eventTrigger.option.ROLLER_OPEN</option>
-				<option value="ROLLER_CLOSE">@text/channel-type.shelly.eventTrigger.option.ROLLER_CLOSE</option>
-				<option value="ROLLER_STOP">@text/channel-type.shelly.eventTrigger.option.ROLLER_STOP</option>
+				<option value="ROLLER_OPEN">Roller is open</option>
+				<option value="ROLLER_CLOSE">Roller is closed</option>
+				<option value="ROLLER_STOP">Roller has stopped</option>
 			</options>
 		</event>
 	</channel-type>

@@ -29,12 +29,4 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Port Channel Type -->
-	<channel-type id="port">
-		<item-type>Number</item-type>
-		<label>Output Port</label>
-		<description>The port channel allows to set or read the number of the input port that is connected to the output port.
-			Valid values are 1 to 4</description>
-	</channel-type>
-
 </thing:thing-descriptions>

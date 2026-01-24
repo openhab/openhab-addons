@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,10 +69,9 @@ public class TuyaDynamicCommandDescriptionProvider extends BaseDynamicCommandDes
                 options, channel, locale);
     }
 
-    static public List<CommandOption> localizedCommandOptions(Bundle bundle,
+    public static List<CommandOption> localizedCommandOptions(Bundle bundle,
             @Nullable ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService,
             List<CommandOption> origOptions, Channel channel, @Nullable Locale locale) {
-
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeI18nLocalizationService == null || channelTypeUID == null) {
             return origOptions;

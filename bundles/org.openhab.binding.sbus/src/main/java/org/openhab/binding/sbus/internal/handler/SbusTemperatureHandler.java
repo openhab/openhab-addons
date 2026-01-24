@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -138,7 +138,8 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadTemperatureResponse tempResponse)) {
-            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
         InputRegister[] registers = tempResponse.getRegisters();
         float[] temperatures = new float[registers.length];

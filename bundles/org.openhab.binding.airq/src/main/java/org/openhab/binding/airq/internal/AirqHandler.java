@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -496,6 +496,8 @@ public class AirqHandler extends BaseThingHandler {
                 processType(decObj, "timestamp", "timestamp", "datetime");
                 processType(decObj, "uptime", "uptime", "numberTimePeriod");
                 processType(decObj, "tvoc", "tvoc", "pairPPB");
+                processType(decObj, "virus", "virus_free", "pair");
+                processType(decObj, "mold", "mold_free", "pair");
 
                 updateStatus(ThingStatus.ONLINE);
             } catch (JsonSyntaxException e) {

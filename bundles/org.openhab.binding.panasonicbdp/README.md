@@ -7,9 +7,9 @@ This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray p
 **Supported UHD models:** DP-UB420/424, DP-UB820/824 & DP-UB9000/9004.
 
 **Please note:** The player must be on the same IP subnet as the openHAB server for this binding to function.
-If the connection to the player originates from a different subnet, 404 response errors are sent in response to all requests.
+If the connection to the player originates from a different subnet, HTTP 404 errors are returned for all requests.
 
-To enable network remote control of the Blu-ray model players, configure the following settings:
+To enable network remote control of the Blu-ray players (`bd-player`), configure the following settings:
 
 - **Player Settings/Network/Network Settings/Remote Device Settings**
 
@@ -18,36 +18,36 @@ Then make sure you have the following values set:
 - **Remote Device Operation: On**
 - **Registration Type: Automatic**
 
-For the UHD models, Voice Control must be enabled for the player's http interface to be active:
+For the UHD models (`uhd-player`), Voice Control must be enabled for the player's HTTP interface to be active:
 
 - **Player Settings/Network/Voice Control: On**
 
-To enable the binding to control the player while off (network active while off), Quick Start mode must be On as follows:
+To allow the binding to control the player while it is off (network active in standby), set Quick Start to On:
 
 - **Player Settings/System/Quick Start: On**
 
 **UHD Model Command Authentication:**
 
 The UHD models require authentication to use the control API.
-A player key must be specified in the thing configuration in order for the `power`, `button` and `control` channels to work.
+A player key must be specified in the Thing configuration in order for the `power`, `button` and `control` channels to work.
 
 UHD model players that are patched do not require a player key.
 See the [AVForums discussions](https://www.avforums.com/forums/blu-ray-dvd-player-multiregion-hacks.126/) of the DP-UB420/820/9000 players for more information.
 
 ## Supported Things
 
-There are two supported thing types, which represent either a BD player or a UHD player.
+There are two supported Thing types, which represent either a BD player or a UHD player.
 A supported Blu-ray player uses the `bd-player` id and a supported UHD Blu-ray player uses the `uhd-player` id.
 Multiple Things can be added if more than one player is to be controlled.
 
 ## Discovery
 
 Auto-discovery is supported if the player can be located on the local network using UPnP.
-Otherwise the Thing must be manually added.
+Otherwise, the Thing must be added manually.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing level.
+The binding has no configuration options; all configuration is done at the Thing level.
 
 ## Thing Configuration
 
@@ -56,16 +56,16 @@ The Thing has a few configuration parameters:
 | Name      | Type    | Description                                                                                           | Default | Required |
 |-----------|---------|-------------------------------------------------------------------------------------------------------|---------|----------|
 | hostName  | text    | The host name or IP address of the player.                                                            | N/A     | yes      |
-| refresh   | integer | Overrides the refresh interval of the player status. Minimum interval is 5 seconds.                   | 5       | no       |
-| playerKey | text    | For UHD models, to enable authentication of control commands, a key for the player must be specified. | N/A     | no       |
+| refresh   | integer | Overrides the refresh interval for the player status. The minimum interval is 5 seconds.              | 5       | no       |
+| playerKey | text    | For UHD models, to enable authentication of control commands, specify the player's key.               | N/A     | no       |
 
 Some notes:
 
-- The control protocol of these players is undocumented and may not work consistently in all situations
-- The UHD models only support playback elapsed time (not title total time or chapter information) reporting
+- The control protocol for these players is undocumented and may not work consistently in all situations.
+- The UHD models only report playback elapsed time (not total title time or chapter information).
 - The time and chapter information is only available when playing a Blu-ray disc (not DVD or CD)
-- There are reports in forum postings that not all commands work on all of the older models (i.e.: Power does not work on DMP-BDT110)
-- Not all status information is available from all BD models (i.e.: playback elapsed time not reported by some models)
+- There are reports in forum postings that not all commands work on all of the older models (e.g., Power does not work on the DMP-BDT110).
+- Not all status information is available from all BD models (e.g., playback elapsed time is not reported by some models).
 - Netflix is no longer supported on the BD models.
 
 ## Channels
@@ -76,12 +76,12 @@ The following channels are available:
 |-----------------|-------------|------------|---------------------------------------------------------------------------------------|
 | power           | Switch      | RW         | Turn the power for the player ON or OFF.                                              |
 | button          | String      | W          | Sends a command to the player. See lists of available commands in Appendix A below.   |
-| control         | Player      | RW         | Control Playback e.g. Play/Pause/Next/Previous/FForward/Rewind.                       |
-| player-status   | String      | R          | The player status i.e.: Power Off, Tray Open, Stopped, Playback, Pause Playback, etc. |
+| control         | Player      | RW         | Control playback, e.g., Play/Pause/Next/Previous/Fast Forward/Rewind.                 |
+| player-status   | String      | R          | The player status, such as Power Off, Tray Open, Stopped, Playback, Pause Playback.   |
 | time-elapsed    | Number:Time | R          | The total playback time elapsed.                                                      |
-| time-total      | Number:Time | R          | The total length of the current playing title. Not on UHD models.                     |
-| chapter-current | Number      | R          | The current chapter number. Not on UHD models.                                        |
-| chapter-total   | Number      | R          | The total number of chapters in the current title. Not on UHD models.                 |
+| time-total      | Number:Time | R          | The total length of the current playing title. Not available on UHD models.           |
+| chapter-current | Number      | R          | The current chapter number. Not available on UHD models.                              |
+| chapter-total   | Number      | R          | The total number of chapters in the current title. Not available on UHD models.       |
 
 ## Full Example
 
@@ -128,7 +128,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
         Text item=Player_TimeTotal icon="time"
         Text item=Player_ChapterCurrent icon="time"
         Text item=Player_ChapterTotal icon="time"
-        Buttongrid label="Remote Control" staticIcon=material:tv_remote item=Player_Button buttons=[1:1:POWER="Power"=switch-off, 1:3:OP_CL="Open"=f7:eject, 2:1:D1="1", 2:2:D2="2", 2:3:D3="3", 3:1:D4="4", 3:2:D5="5", 3:3:D6="6", 4:1:D7="7", 4:2:D8="8", 4:3:D9="9", 5:1:SHARP="# [_]", 5:2:D0="0", 5:3:CLEAR="* Cancel", 6:1:NETFLIX="Netflix", 6:2:MLTNAVI="Home"=f7:house, 6:3:NETWORK="Internet", 7:1:PUPMENU="Pop-Up Menu", 7:2:UP="UP"=f7:arrowtriangle_up, 7:3:TITLE="Top Menu", 8:1:LEFT="Left"=f7:arrowtriangle_left, 8:2:SELECT="OK", 8:3:RIGHT="Right"=f7:arrowtriangle_right, 9:1:MENU="Option", 9:2:DOWN="Down"=f7:arrowtriangle_down, 9:3:RETURN="Return", 10:1:REV="Rev"=f7:backward, 10:2:PLAYBACK="Play"=f7:play, 10:3:CUE="Fwd"=f7:forward,  11:1:SKIPREV="Prev"=f7:backward_end_alt, 11:2:PAUSE="Pause"=f7:pause, 11:3:SKIPFWD="Next"=f7:forward_end_alt, 12:1:CLOSED_CAPTION="CC", 12:2:STOP="Stop"=f7:stop, 12:3:MIRACAST="Mirroring", 13:1:RED="Red", 13:2:GREEN="Green", 13:3:YELLOW="Yellow", 14:1:BLUE="Blue", 14:2:DSPSEL="Status", 14:3:PLAYBACKINFO="Playback Info", 15:1:TITLEONOFF="Subtitle", 15:2:AUDIOSEL="Audio", 15:3:PICTURESETTINGS="Video Setting", 16:1:HDR_PICTUREMODE="HDR Setting", 16:2:SOUNDEFFECT="Sound Effect", 16:3:HIGHCLARITY="High Clarity", 17:2:SKIP_THE_TRAILER="Skip The Trailer"]
+        Buttongrid label="Remote Control" staticIcon=material:tv_remote item=Player_Button buttons=[1:1:POWER="Power"=switch-off, 1:3:OP_CL="Open"=f7:eject, 2:1:D1="1", 2:2:D2="2", 2:3:D3="3", 3:1:D4="4", 3:2:D5="5", 3:3:D6="6", 4:1:D7="7", 4:2:D8="8", 4:3:D9="9", 5:1:SHARP="# [_]", 5:2:D0="0", 5:3:CLEAR="* Cancel", 6:1:NETFLIX="Netflix", 6:2:MLTNAVI="Home"=f7:house, 6:3:NETWORK="Internet", 7:1:PUPMENU="Pop-up Menu", 7:2:UP="UP"=f7:arrowtriangle_up, 7:3:TITLE="Top Menu", 8:1:LEFT="Left"=f7:arrowtriangle_left, 8:2:SELECT="OK", 8:3:RIGHT="Right"=f7:arrowtriangle_right, 9:1:MENU="Option", 9:2:DOWN="Down"=f7:arrowtriangle_down, 9:3:RETURN="Return", 10:1:REV="Rev"=f7:backward, 10:2:PLAYBACK="Play"=f7:play, 10:3:CUE="Fwd"=f7:forward,  11:1:SKIPREV="Prev"=f7:backward_end_alt, 11:2:PAUSE="Pause"=f7:pause, 11:3:SKIPFWD="Next"=f7:forward_end_alt, 12:1:CLOSED_CAPTION="CC", 12:2:STOP="Stop"=f7:stop, 12:3:MIRACAST="Mirroring", 13:1:RED="Red", 13:2:GREEN="Green", 13:3:YELLOW="Yellow", 14:1:BLUE="Blue", 14:2:DSPSEL="Status", 14:3:PLAYBACKINFO="Playback Info", 15:1:TITLEONOFF="Subtitle", 15:2:AUDIOSEL="Audio", 15:3:PICTURESETTINGS="Video Setting", 16:1:HDR_PICTUREMODE="HDR Setting", 16:2:SOUNDEFFECT="Sound Effect", 16:3:HIGHCLARITY="High Clarity", 17:2:SKIP_THE_TRAILER="Skip The Trailer"]
     }
 }
 ```
@@ -152,7 +152,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 | Open/Close               | OP_CL    |
 | Status                   | DSPSEL   |
 | Top Menu                 | TITLE    |
-| Pop-Up Menu              | PUPMENU  |
+| Pop-up Menu              | PUPMENU  |
 | Up                       | UP       |
 | Down                     | DOWN     |
 | Left                     | LEFT     |
@@ -179,7 +179,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 | Yellow                   | YELLOW   |
 | Home                     | MLTNAVI  |
 | Netflix (broken/too old) | NETFLIX  |
-| VIERA Cast               | V_CAST   |
+| Viera Cast               | V_CAST   |
 | Network                  | NETWORK  |
 | Setup                    | SETUP    |
 | Exit                     | EXIT     |
@@ -238,7 +238,7 @@ sitemap panasonicbdp label="Panasonic Blu-ray" {
 | Yellow           | YELLOW           |
 | Home             | MLTNAVI          |
 | Netflix          | NETFLIX          |
-| VIERA Cast       | V_CAST           |
+| Viera Cast       | V_CAST           |
 | Network          | NETWORK          |
 | Setup            | SETUP            |
 | Exit             | EXIT             |

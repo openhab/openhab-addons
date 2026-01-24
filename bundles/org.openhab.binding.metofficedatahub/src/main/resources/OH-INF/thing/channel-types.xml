@@ -552,7 +552,7 @@
 
 	<channel-type id="feels-like-min-night-type">
 		<item-type>Number:Temperature</item-type>
-		<label>Night Feels Light Min.</label>
+		<label>Night Feels Like Min.</label>
 		<description>Night Minimum Feels Like Air Temperature - This is the most likely minimum value over the night based on
 			the ensemble spread. This is the temperature it feels like taking into account humidity and wind chill but not
 			radiation. Night-time is defined as those forecast times that fall between local dusk and dawn.</description>

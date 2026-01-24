@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,16 +98,16 @@ public class WindowCoveringDevice extends BaseDevice {
                 int targetPercent = percentType.intValue();
                 Metadata primaryItemMetadata = this.primaryItemMetadata;
                 if (primaryItem instanceof GroupItem groupItem) {
-                    groupItem.send(percentType);
+                    groupItem.send(percentType, MATTER_SOURCE);
                 } else if (primaryItem instanceof DimmerItem dimmerItem) {
-                    dimmerItem.send(percentType);
+                    dimmerItem.send(percentType, MATTER_SOURCE);
                 } else if (primaryItem instanceof RollershutterItem rollerShutterItem) {
                     if (targetPercent == 100) {
-                        rollerShutterItem.send(UpDownType.DOWN);
+                        rollerShutterItem.send(UpDownType.DOWN, MATTER_SOURCE);
                     } else if (targetPercent == 0) {
-                        rollerShutterItem.send(UpDownType.UP);
+                        rollerShutterItem.send(UpDownType.UP, MATTER_SOURCE);
                     } else {
-                        rollerShutterItem.send(percentType);
+                        rollerShutterItem.send(percentType, MATTER_SOURCE);
                     }
                 } else if (primaryItem instanceof SwitchItem switchItem) {
                     // anything > 0 is considered partially open and ON , otherwise completely open and OFF (unless
@@ -116,13 +116,13 @@ public class WindowCoveringDevice extends BaseDevice {
                     if (invert) {
                         isOn = !isOn;
                     }
-                    switchItem.send(isOn ? OnOffType.ON : OnOffType.OFF);
+                    switchItem.send(isOn ? OnOffType.ON : OnOffType.OFF, MATTER_SOURCE);
                 } else if (primaryItem instanceof StringItem stringItem) {
                     Object value = targetPercent == 0 ? "OPEN" : "CLOSED";
                     if (primaryItemMetadata != null) {
                         value = primaryItemMetadata.getConfiguration().getOrDefault(value, value);
                     }
-                    stringItem.send(new StringType(value.toString()));
+                    stringItem.send(new StringType(value.toString()), MATTER_SOURCE);
                 }
                 lastTargetPercent = targetPercent;
                 break;
@@ -130,10 +130,13 @@ public class WindowCoveringDevice extends BaseDevice {
                 if (data instanceof AbstractMap treeMap) {
                     @SuppressWarnings("unchecked")
                     AbstractMap<String, Object> map = (AbstractMap<String, Object>) treeMap;
-                    if (map.get("global") instanceof Integer value) {
-                        if (WindowCoveringCluster.MovementStatus.STOPPED.getValue().equals(value)
-                                && primaryItem instanceof RollershutterItem rollerShutterItem) {
-                            rollerShutterItem.send(StopMoveType.STOP);
+                    if (map.get("global") instanceof Number value) {
+                        if (WindowCoveringCluster.MovementStatus.STOPPED.getValue().equals(value.intValue())) {
+                            if (primaryItem instanceof RollershutterItem rollerShutterItem) {
+                                rollerShutterItem.send(StopMoveType.STOP, MATTER_SOURCE);
+                            } else if (primaryItem instanceof GroupItem groupItem) {
+                                groupItem.send(StopMoveType.STOP, MATTER_SOURCE);
+                            }
                             cancelTimer();
                         }
                     }

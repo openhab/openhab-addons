@@ -26,8 +26,8 @@ If switching from a previous release, you will need to reconfigure your Insteon 
 You can follow the [migration guide](#migration-guide).
 
 However, the new version is fully backward compatible by supporting the legacy things.
-On the first start, existing `device` things connected to a `network` bridge will be migrated to the `legacy-device` thing type while still keeping the same ids to prevent any breakage.
-For textual configuration with defined thing channels, the channel types must be manually updated to the new ones by adding the `legacy` prefix and capitalizing the first letter, as shown in [these examples](#full-example).
+On the first start, existing `device` things connected to a `network` bridge will be migrated to the `legacy-device` Thing type while still keeping the same ids to prevent any breakage.
+For textual configuration with defined Thing channels, the channel types must be manually updated to the new ones by adding the `legacy` prefix and capitalizing the first letter, as shown in [these examples](#full-example).
 It is important to note that once the migration has occurred, downgrading to an older version will not be possible.
 
 ## Supported Things
@@ -690,7 +690,7 @@ Now do exactly the reverse: press and hold the "Set" button on the remote device
 
 Alternatively, the binding can link a device to the modem programmatically using the `insteon modem addDevice` console command.
 Based on the initial set button pressed event received, the device will be linked one or both ways.
-Once the newly linked device is added as a thing, additional links for more complex devices can be added using the `insteon device addMissingLinks` console command.
+Once the newly linked device is added as a Thing, additional links for more complex devices can be added using the `insteon device addMissingLinks` console command.
 
 ## Insteon Devices
 
@@ -731,7 +731,7 @@ And percent commands will trigger what is defined in the Insteon protocol as ins
 As far as the previously known `manualChange` channel, it has been rolled into the `rollershutter` channel for [window covering](#window-coverings) using `UP`, `DOWN` and `STOP` commands.
 For the `dimmer` channel, the `INCREASE` and `DECREASE` commands can be used instead.
 
-Ultimately, the `dimmer` channel parameters can be used to create custom channels via a thing file that can work as an alternative to having to configure an Insteon scene for a single device.
+Ultimately, the `dimmer` channel parameters can be used to create custom channels via a Thing file that can work as an alternative to having to configure an Insteon scene for a single device.
 
 ```java
 Thing device 23b0d9 [address="23.B0.D9"] {
@@ -1514,18 +1514,18 @@ Only one command per channel is queued, this mean that subsequent requests will 
 ### Heartbeat Timeout
 
 Sensor devices that support heartbeats have a timeout.
-If a broadcast message is not received within a specific interval, the associated thing's status will change to offline.
+If a broadcast message is not received within a specific interval, the associated Thing's status will change to offline.
 This status persists until the binding receives a broadcast message from that device.
 While most sensor devices have a hardcoded heartbeat interval of 24 hours, some allow modification via the `heartbeat-interval` channel.
 This timeout feature is enabled by default on supporting devices and disabled on devices that can have their heartbeat turned off using the `heartbeat-on-off` channel.
 Proper linking of the heartbeat group (typically group 4) to the modem is crucial; use the `insteon device addMissingLinks` console command to ensure this.
 If the link is missing, the timeout feature will be disabled.
-The heartbeat timeout can be manually reset, if necessary, by disabling and then re-enabling the associated device thing.
+The heartbeat timeout can be manually reset, if necessary, by disabling and then re-enabling the associated device Thing.
 
 ### Response Timeout
 
 Non-battery powered devices have a response timeout.
-If a successful response message is not received within a specific interval, the associated thing's status will change to offline.
+If a successful response message is not received within a specific interval, the associated Thing's status will change to offline.
 While the device is offline, the binding will ignore commands sent to it.
 This status persists until a valid response is received.
 The response timeout can be increased from 30 minutes (default) up to 6 hours by updating the associated bridge parameter `deviceResponseTimeoutInMinutes`.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.openhab.core.thing.internal.ThingImpl;
  * The {@link ForecastSolarPlaneMock} mocks Plane Handler for solar.forecast
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Constructor correction
  */
 @NonNullByDefault
 public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {

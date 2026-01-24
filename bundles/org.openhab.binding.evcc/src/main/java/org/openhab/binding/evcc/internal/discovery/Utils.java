@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal.discovery;
 
 import java.text.Normalizer;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -36,6 +37,6 @@ public class Utils {
             result = Normalizer.normalize(name, Normalizer.Form.NFKD);
             result = result.replaceAll("\\p{M}", "");
         }
-        return result.replaceAll("[^a-zA-Z0-9_]", "-").toLowerCase();
+        return result.replaceAll("[^a-zA-Z0-9_]", "-").toLowerCase(Locale.ROOT);
     }
 }

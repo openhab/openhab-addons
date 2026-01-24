@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ecoflow.internal.handler;
 
 import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.PowerStreamChannels.*;
@@ -81,7 +80,7 @@ public class PowerStreamHandler extends AbstractEcoflowHandler {
             new ChannelMapping("20_1", "pv2CtrlMpptOffFlag", CHANNEL_ID_PV2_MPPT_ACTIVE, INV_SWITCH_CONVERTER));
 
     public PowerStreamHandler(Thing thing) {
-        super(thing, MAPPINGS, "param");
+        super(thing, MAPPINGS);
     }
 
     @Override

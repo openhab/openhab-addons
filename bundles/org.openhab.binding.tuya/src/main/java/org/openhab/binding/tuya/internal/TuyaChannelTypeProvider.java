@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -167,7 +167,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         channelTypeId = channelTypeId.substring(i + 1);
 
         // Build with a channelTypeId of just the lower-cased DP identifier and set defaults for all text.
-        channelType = channelTypeFromSchema(channelTypeUID, productId, channelTypeId.toLowerCase());
+        channelType = channelTypeFromSchema(channelTypeUID, productId, channelTypeId);
         if (channelType != null) {
             // Localize that (e.g. using channel-type.tuya.cur_voltage.label = ...)
             channelType = localizationService.createLocalizedChannelType(bundle, channelType, locale);

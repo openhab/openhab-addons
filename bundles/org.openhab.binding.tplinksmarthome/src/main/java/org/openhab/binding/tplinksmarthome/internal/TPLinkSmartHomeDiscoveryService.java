@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -69,6 +70,19 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService im
 
     public TPLinkSmartHomeDiscoveryService() throws UnknownHostException {
         super(SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS);
+        final InetAddress broadcast = InetAddress.getByName(BROADCAST_IP);
+        final byte[] discoverbuffer = CryptUtil.encrypt(Commands.getSysinfo());
+        discoverPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcast,
+                Connection.TP_LINK_SMART_HOME_PORT);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    TPLinkSmartHomeDiscoveryService(ScheduledExecutorService scheduler) throws UnknownHostException {
+        super(scheduler, SUPPORTED_THING_TYPES, DISCOVERY_TIMEOUT_SECONDS, true, null, null);
         final InetAddress broadcast = InetAddress.getByName(BROADCAST_IP);
         final byte[] discoverbuffer = CryptUtil.encrypt(Commands.getSysinfo());
         discoverPacket = new DatagramPacket(discoverbuffer, discoverbuffer.length, broadcast,

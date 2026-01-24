@@ -31,6 +31,7 @@
 				<label>Average 24h</label>
 				<description>Average price from last 24 hours</description>
 			</channel>
+			<channel id="event" typeId="event"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

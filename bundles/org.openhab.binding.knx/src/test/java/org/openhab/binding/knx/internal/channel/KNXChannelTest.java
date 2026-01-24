@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,8 +38,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.KNXFormatException;
+import io.calimero.GroupAddress;
+import io.calimero.KNXFormatException;
 
 /**
  *

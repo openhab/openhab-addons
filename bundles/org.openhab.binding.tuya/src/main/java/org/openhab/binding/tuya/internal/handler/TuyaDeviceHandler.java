@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -177,7 +177,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             }
         }
 
-        if (needRefresh) {
+        if (needRefresh && configuration.pollingInterval > 0) {
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
                 ScheduledFuture<?> pollingJob = this.pollingJob;
@@ -562,6 +562,18 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void initialize() {
         configuration = getConfigAs(DeviceConfiguration.class);
 
+        boolean hasStatusDps = false;
+        for (var e : schemaDps.values()) {
+            if (e.readOnly) {
+                hasStatusDps = true;
+                break;
+            }
+        }
+        if (!hasStatusDps) {
+            logger.debug("{}: no status DPs - polling disabled", thing.getUID().getId());
+            configuration.pollingInterval = 0;
+        }
+
         // check if we have channels and add them if available
         if (thing.getChannels().isEmpty()) {
             addChannels();
@@ -600,6 +612,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
                 configuration.ip = deviceInfo.ip;
                 configuration.protocol = deviceInfo.protocolVersion;
+
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
                 this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
                         configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip,

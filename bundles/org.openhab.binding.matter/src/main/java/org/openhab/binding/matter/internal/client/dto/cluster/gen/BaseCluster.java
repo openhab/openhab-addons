@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
 
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -68,6 +68,10 @@ public class BaseCluster {
 
         public OctetString(byte[] value) {
             this.value = value;
+        }
+
+        public OctetString(String string, Charset charset) {
+            this.value = string.getBytes(charset);
         }
 
         public OctetString(String hexString) {

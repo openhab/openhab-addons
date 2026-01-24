@@ -17,6 +17,18 @@
 			<channel id="string1-dc-output" typeId="string1-dc-output-channel"/>
 			<channel id="string2-dc-output" typeId="string2-dc-output-channel"/>
 			<channel id="string3-dc-output" typeId="string3-dc-output-channel"/>
+			<channel id="string1-perf-ratio" typeId="perf-ratio-channel">
+				<label>String 1 Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</channel>
+			<channel id="string2-perf-ratio" typeId="perf-ratio-channel">
+				<label>String 2 Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</channel>
+			<channel id="string3-perf-ratio" typeId="perf-ratio-channel">
+				<label>String 3 Ratio</label>
+				<description>Performance ratio of actual energy produced and installed kWp</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

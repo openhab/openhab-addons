@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.automower.internal.bridge;
 
 import java.io.IOException;
@@ -112,7 +111,7 @@ public class AutomowerWebSocketAdapter {
                 JsonObject event = JsonParser.parseString(message).getAsJsonObject();
                 if (event.has("id")) {
                     String id = event.get("id").getAsString();
-                    AutomowerHandler automowerHandler = handler.getAutomowerHandlerByThingId(id);
+                    AutomowerHandler automowerHandler = handler.getAutomowerHandlerByMowerId(id);
                     if (automowerHandler != null) {
                         logger.debug("Message from WebSocket for known AutomowerHandler: {}", message);
                         automowerHandler.processWebSocketMessage(event);
