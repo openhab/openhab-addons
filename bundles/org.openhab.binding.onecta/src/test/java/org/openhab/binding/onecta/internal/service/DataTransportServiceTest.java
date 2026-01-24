@@ -70,7 +70,8 @@ public class DataTransportServiceTest {
     @Test
     public void firstClimateControlTest() throws NoSuchFieldException, IllegalAccessException {
         final String UNITID = "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6";
-        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.CLIMATECONTROL);
+        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.CLIMATECONTROL,
+                onectaConnectionClientMock);
         Field privateField = DataTransportService.class.getDeclaredField("onectaConnectionClient");
         privateField.setAccessible(true);
         privateField.set(dataTransportService, onectaConnectionClientMock);
@@ -127,7 +128,8 @@ public class DataTransportServiceTest {
     @Test
     public void secondClimateControlTest() throws NoSuchFieldException, IllegalAccessException {
         final String UNITID = "5e41c4af-a5b8-4175-ac76-a1b2c3d4e5f6";
-        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.CLIMATECONTROL);
+        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.CLIMATECONTROL,
+                onectaConnectionClientMock);
         Field privateField = DataTransportService.class.getDeclaredField("onectaConnectionClient");
         privateField.setAccessible(true);
         privateField.set(dataTransportService, onectaConnectionClientMock);
@@ -144,7 +146,8 @@ public class DataTransportServiceTest {
     @Test
     public void firstGatewayControlTest() throws NoSuchFieldException, IllegalAccessException {
         final String UNITID = "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6";
-        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.GATEWAY);
+        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.GATEWAY,
+                onectaConnectionClientMock);
         Field privateField = DataTransportService.class.getDeclaredField("onectaConnectionClient");
         privateField.setAccessible(true);
         privateField.set(dataTransportService, onectaConnectionClientMock);
@@ -174,7 +177,8 @@ public class DataTransportServiceTest {
     @Test
     public void firstIndoorunitTest() throws NoSuchFieldException, IllegalAccessException {
         final String UNITID = "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6";
-        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.INDOORUNIT);
+        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.INDOORUNIT,
+                onectaConnectionClientMock);
         Field privateField = DataTransportService.class.getDeclaredField("onectaConnectionClient");
         privateField.setAccessible(true);
         privateField.set(dataTransportService, onectaConnectionClientMock);
@@ -212,7 +216,8 @@ public class DataTransportServiceTest {
     @Test
     public void hotWaterTankCLIMATECONTROLTest() throws NoSuchFieldException, IllegalAccessException {
         final String UNITID = "c9cd8376-a32d-423b-acff-a1b2c3d4e5f6";
-        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.WATERTANK);
+        dataTransportService = new DataTransportService(UNITID, Enums.ManagementPoint.WATERTANK,
+                onectaConnectionClientMock);
         Field privateField = DataTransportService.class.getDeclaredField("onectaConnectionClient");
         privateField.setAccessible(true);
         privateField.set(dataTransportService, onectaConnectionClientMock);
@@ -241,7 +246,7 @@ public class DataTransportServiceTest {
         assertEquals(null, dataTransportService.getHolidayMode());
 
         dataTransportService = new DataTransportService("c9cd8376-a32d-423b-acff-a1b2c3d4e5f6",
-                Enums.ManagementPoint.CLIMATECONTROL);
+                Enums.ManagementPoint.CLIMATECONTROL, onectaConnectionClientMock);
         privateField.set(dataTransportService, onectaConnectionClientMock);
         when(onectaConnectionClientMock.getUnit("c9cd8376-a32d-423b-acff-a1b2c3d4e5f6"))
                 .thenReturn(onectaData.findById("c9cd8376-a32d-423b-acff-a1b2c3d4e5f6"));
@@ -263,7 +268,7 @@ public class DataTransportServiceTest {
         final String UNITID = "1ce8c13f-5271-4343-ac9f-a1b2c3d4e5f6";
         final Enums.ManagementPoint MANAGEMENTPOINT = Enums.ManagementPoint.CLIMATECONTROL;
 
-        dataTransportService = new DataTransportService(UNITID, MANAGEMENTPOINT);
+        dataTransportService = new DataTransportService(UNITID, MANAGEMENTPOINT, onectaConnectionClientMock);
         Field privateField = DataTransportService.class.getDeclaredField("onectaConnectionClient");
         privateField.setAccessible(true);
         privateField.set(dataTransportService, onectaConnectionClientMock);
@@ -316,7 +321,7 @@ public class DataTransportServiceTest {
         final String UNITID = "c9cd8376-a32d-423b-acff-a1b2c3d4e5f6";
         final Enums.ManagementPoint MANAGEMENTPOINT = Enums.ManagementPoint.WATERTANK;
 
-        dataTransportService = new DataTransportService(UNITID, MANAGEMENTPOINT);
+        dataTransportService = new DataTransportService(UNITID, MANAGEMENTPOINT, onectaConnectionClientMock);
         Field privateField = DataTransportService.class.getDeclaredField("onectaConnectionClient");
         privateField.setAccessible(true);
         privateField.set(dataTransportService, onectaConnectionClientMock);

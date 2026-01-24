@@ -48,16 +48,18 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
     public static final String PROPERTY_AC_NAME = "name";
     private final Logger logger = LoggerFactory.getLogger(OnectaDeviceHandler.class);
 
-    private @Nullable OnectaConfiguration config;
+    private @Nullable OnectaConfiguration onectaConfiguration;
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private final DataTransportService dataTransService;
     private @Nullable ChannelsRefreshDelay channelsRefreshDelay;
 
-    public OnectaDeviceHandler(Thing thing) {
+    public OnectaDeviceHandler(Thing thing, OnectaConfiguration onectaConfiguration) {
         super(thing);
-        this.dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.CLIMATECONTROL);
+        this.onectaConfiguration = onectaConfiguration;
+        this.dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.CLIMATECONTROL,
+                onectaConfiguration.getOnectaConnectionClient());
     }
 
     @Override
@@ -141,7 +143,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(OnectaConfiguration.class);
         channelsRefreshDelay = new ChannelsRefreshDelay(
                 Long.parseLong(thing.getConfiguration().get("refreshDelay").toString()) * 1000);
         if (dataTransService.isAvailable()) {
@@ -279,9 +280,9 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
 
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
             getThing().setProperty(PROPERTY_AC_NAME,
-                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
         }
     }
 

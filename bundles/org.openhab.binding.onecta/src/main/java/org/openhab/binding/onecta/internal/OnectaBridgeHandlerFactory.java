@@ -49,17 +49,13 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
             THING_TYPE_CLIMATECONTROL, THING_TYPE_GATEWAY, THING_TYPE_WATERTANK);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final OnectaTranslationProvider translation;
+    private final OnectaConfiguration onectaConfiguration;
 
     @Activate
     public OnectaBridgeHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference OAuthTokenRefresher openHabOAuthTokenRefresher,
             @Reference OnectaTranslationProvider translation) {
-        this.translation = translation;
-        OnectaConfiguration.setTranslation(translation);
-        OnectaConfiguration.setHttpClientFactory(httpClientFactory);
-        OnectaConfiguration.setOAuthTokenRefresher(openHabOAuthTokenRefresher);
-        OnectaConfiguration.getOnectaConnectionClient().openConnecttion();
+        onectaConfiguration = new OnectaConfiguration(httpClientFactory, openHabOAuthTokenRefresher, translation);
     }
 
     @Override
@@ -72,15 +68,15 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals((THING_TYPE_BRIDGE))) {
-            OnectaBridgeHandler bridgeHandler = new OnectaBridgeHandler((Bridge) thing);
-            OnectaConfiguration.setBridgeThing((Bridge) thing);
+            OnectaBridgeHandler bridgeHandler = new OnectaBridgeHandler((Bridge) thing, onectaConfiguration);
+            onectaConfiguration.setBridgeThing(thing);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_CLIMATECONTROL)) {
-            return new OnectaDeviceHandler(thing);
+            return new OnectaDeviceHandler(thing, onectaConfiguration);
         } else if (thingTypeUID.equals((THING_TYPE_GATEWAY))) {
-            return new OnectaGatewayHandler(thing);
+            return new OnectaGatewayHandler(thing, onectaConfiguration);
         } else if (thingTypeUID.equals((THING_TYPE_WATERTANK))) {
-            return new OnectaWaterTankHandler(thing);
+            return new OnectaWaterTankHandler(thing, onectaConfiguration);
         }
         return null;
     }

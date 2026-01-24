@@ -24,7 +24,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.OnectaConfiguration;
+import org.openhab.binding.onecta.internal.OnectaTranslationProvider;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
+import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.api.dto.units.Units;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.binding.onecta.internal.service.DeviceDiscoveryService;
@@ -49,9 +51,14 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
 
     private Units units = new Units();
     private OnectaConnectionClient onectaConnectionClient;
+    private OnectaConfiguration onectaConfiguration;
 
-    public Units getUnits() {
-        return units;
+    public List<Unit> getUnits() {
+        return onectaConnectionClient.getUnits().getAll();
+    }
+
+    public OnectaTranslationProvider getOnectaTranslationProvider() {
+        return onectaConfiguration.getTranslation();
     }
 
     private @Nullable DeviceDiscoveryService deviceDiscoveryService;
@@ -68,9 +75,10 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    public OnectaBridgeHandler(Bridge bridge) {
+    public OnectaBridgeHandler(Bridge bridge, OnectaConfiguration onectaConfiguration) {
         super(bridge);
-        onectaConnectionClient = OnectaConfiguration.getOnectaConnectionClient();
+        this.onectaConfiguration = onectaConfiguration;
+        onectaConnectionClient = onectaConfiguration.getOnectaConnectionClient();
     }
 
     @Override
@@ -80,13 +88,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("initialize.");
-        updateStatus(ThingStatus.UNKNOWN);
-        if (onectaConnectionClient.isOnline()) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
-        }
+        syncStatus();
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0,
                 Integer.parseInt(thing.getConfiguration().get(CONFIG_PAR_REFRESHINTERVAL).toString()),
@@ -103,11 +105,25 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private void syncStatus() {
+        updateStatus(ThingStatus.UNKNOWN);
+        if (onectaConnectionClient.isOnline()) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            onectaConfiguration.getOnectaConnectionClient().openConnecttion();
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "@text/offline.communication-error");
+        }
+    }
+
     private void pollDevices() {
         logger.debug("pollDevices.");
 
-        if (getThing().getStatus().equals(ThingStatus.ONLINE)) {
+        if (!onectaConnectionClient.isOnline()) {
+            syncStatus();
+        }
 
+        if (getThing().getStatus().equals(ThingStatus.ONLINE) || getThing().getStatus().equals(ThingStatus.UNKNOWN)) {
             try {
                 onectaConnectionClient.refreshUnitsData();
                 updateStatus(ThingStatus.ONLINE);
@@ -120,7 +136,7 @@ public class OnectaBridgeHandler extends BaseBridgeHandler {
                 }
             } catch (DaikinCommunicationException e) {
                 logger.debug("DaikinCommunicationException: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (NullPointerException e) {
                 logger.debug("NullPointerException: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, e.getMessage());

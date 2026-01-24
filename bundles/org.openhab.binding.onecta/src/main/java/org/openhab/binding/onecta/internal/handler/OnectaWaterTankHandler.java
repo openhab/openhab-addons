@@ -53,16 +53,18 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OnectaWaterTankHandler.class);
 
-    private @Nullable OnectaConfiguration config;
+    private @Nullable OnectaConfiguration onectaConfiguration;
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private final DataTransportService dataTransService;
     private @Nullable ChannelsRefreshDelay channelsRefreshDelay;
 
-    public OnectaWaterTankHandler(Thing thing) {
+    public OnectaWaterTankHandler(Thing thing, OnectaConfiguration onectaConfiguration) {
         super(thing);
-        dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.WATERTANK);
+        this.onectaConfiguration = onectaConfiguration;
+        dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.WATERTANK,
+                onectaConfiguration.getOnectaConnectionClient());
     }
 
     @Override
@@ -96,7 +98,6 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(OnectaConfiguration.class);
         channelsRefreshDelay = new ChannelsRefreshDelay(
                 Long.parseLong(thing.getConfiguration().get("refreshDelay").toString()) * 1000);
         if (dataTransService.isAvailable()) {
@@ -178,9 +179,9 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
             updateState(CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR, getEnergyHeatingCurrentYear());
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
             getThing().setProperty(PROPERTY_HWT_NAME,
-                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
         }
     }
 

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onecta.internal.DummyThing;
+import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.exception.DaikinCommunicationException;
 import org.openhab.core.config.core.Configuration;
@@ -58,6 +59,8 @@ public class OnectaBridgeHandlerTest {
 
     @Mock
     private OnectaConnectionClient onectaConnectionClientMock;
+    @Mock
+    private OnectaConfiguration onectaConfigurationMock;
 
     @Mock
     private OnectaDeviceHandler onectaDeviceHandlerMock;
@@ -74,7 +77,7 @@ public class OnectaBridgeHandlerTest {
         thingConfiguration.setProperties(bridgeProperties);
         lenient().when(bridgeMock.getConfiguration()).thenReturn(thingConfiguration);
 
-        handler = new OnectaBridgeHandler(bridgeMock);
+        handler = new OnectaBridgeHandler(bridgeMock, onectaConfigurationMock);
         handler.setCallback(callbackMock);
 
         // add Mock dataTransServiceMock to handler

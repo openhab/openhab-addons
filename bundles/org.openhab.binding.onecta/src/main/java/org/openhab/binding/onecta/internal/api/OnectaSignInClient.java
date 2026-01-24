@@ -32,14 +32,16 @@ public class OnectaSignInClient implements OAuthTokenRefreshListener {
     private final Logger logger = LoggerFactory.getLogger(OnectaSignInClient.class);
 
     private @Nullable OAuthTokenRefresher oAuthTokenRefresher;
+    private OnectaConfiguration onectaConfiguration;
 
-    public OnectaSignInClient() {
+    public OnectaSignInClient(OnectaConfiguration onectaConfiguration) {
         super();
+        this.onectaConfiguration = onectaConfiguration;
     }
 
     public void SignIn() throws DaikinCommunicationException {
         try {
-            this.oAuthTokenRefresher = OnectaConfiguration.getOAuthTokenRefresher();
+            this.oAuthTokenRefresher = onectaConfiguration.getOAuthTokenRefresher();
             oAuthTokenRefresher.unsetRefreshListener(OAUTH2_SERVICE_HANDLE);
             oAuthTokenRefresher.setRefreshListener(this, OAUTH2_SERVICE_HANDLE);
         } catch (Throwable e) {

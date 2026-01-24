@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.onecta.internal.OnectaConfiguration;
-import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.Unit;
 import org.openhab.binding.onecta.internal.handler.OnectaBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
@@ -47,11 +45,8 @@ import org.slf4j.LoggerFactory;
 public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<OnectaBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(DeviceDiscoveryService.class);
     private static final int REFRESH_MINUTES = 5;
-
     private Map<ManagementPoint, ThingTypeUID> discoveryMap = new HashMap<>();
 
-    @Nullable
-    private final OnectaConnectionClient onectaConnectionClient = OnectaConfiguration.getOnectaConnectionClient();;
     private @Nullable ScheduledFuture<?> backgroundDiscoveryFuture;
 
     @Activate
@@ -103,9 +98,7 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
     protected void scan() {
         logger.debug("Scanning for devices");
 
-        List<Unit> units = onectaConnectionClient.getUnits().getAll();
-
-        for (Unit unit : units) {
+        for (Unit unit : thingHandler.getUnits()) {
             thingDiscover(unit);
         }
     }
@@ -128,7 +121,7 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
 
                 ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, unitId);
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withBridge(bridgeUID).withLabel(OnectaConfiguration.getTranslation()
+                        .withBridge(bridgeUID).withLabel(thingHandler.getOnectaTranslationProvider()
                                 .getText("discovery.found.thing.inbox", onectaManagementPoint.getValue(), unitName))
                         .build();
 

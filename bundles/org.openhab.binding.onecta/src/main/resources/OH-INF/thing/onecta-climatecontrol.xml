@@ -9,7 +9,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Device climateControl</label>
+		<label>Onecta device climatecontrol</label>
 		<description>Daikin Onecta device climateControl</description>
 
 		<channel-groups>

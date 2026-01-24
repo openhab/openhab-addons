@@ -42,15 +42,17 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OnectaGatewayHandler.class);
 
-    private @Nullable OnectaConfiguration config;
+    private @Nullable OnectaConfiguration onectaConfiguration;
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private final DataTransportService dataTransService;
 
-    public OnectaGatewayHandler(Thing thing) {
+    public OnectaGatewayHandler(Thing thing, OnectaConfiguration onectaConfiguration) {
         super(thing);
-        dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.GATEWAY);
+        this.onectaConfiguration = onectaConfiguration;
+        dataTransService = new DataTransportService(getUnitID(), Enums.ManagementPoint.GATEWAY,
+                onectaConfiguration.getOnectaConnectionClient());
     }
 
     @Override
@@ -59,7 +61,6 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(OnectaConfiguration.class);
         if (dataTransService.isAvailable()) {
             refreshDevice();
         }
@@ -93,9 +94,9 @@ public class OnectaGatewayHandler extends AbstractOnectaHandler {
 
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
             getThing().setProperty(PROPERTY_GW_NAME,
-                    OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
+                    onectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
         }
     }
 

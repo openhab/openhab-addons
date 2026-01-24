@@ -15,7 +15,6 @@ package org.openhab.binding.onecta.internal.service;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import org.openhab.binding.onecta.internal.OnectaConfiguration;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
 import org.openhab.binding.onecta.internal.api.dto.units.*;
@@ -35,11 +34,13 @@ public class DataTransportService {
     private Enums.ManagementPoint managementPointType;
     private Unit unit;
     private JsonObject rawData;
-    private final OnectaConnectionClient onectaConnectionClient = OnectaConfiguration.getOnectaConnectionClient();
+    private OnectaConnectionClient onectaConnectionClient;
 
-    public DataTransportService(String unitId, Enums.ManagementPoint managementPointType) {
+    public DataTransportService(String unitId, Enums.ManagementPoint managementPointType,
+            OnectaConnectionClient onectaConnectionClient) {
         this.unitId = unitId;
         this.managementPointType = managementPointType;
+        this.onectaConnectionClient = onectaConnectionClient;
         this.refreshUnit();
     }
 

@@ -31,50 +31,49 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class OnectaConfiguration {
 
-    private @Nullable static Thing bridgeThing = null;
-    private @Nullable static HttpClientFactory httpClientFactory = null;
+    private @Nullable Thing bridgeThing = null;
+    private @Nullable HttpClientFactory httpClientFactory = null;
 
-    private @Nullable static HttpClient httpClient = null;
-    private @Nullable static OAuthTokenRefresher openHabOAuthTokenRefresher = null;
+    private @Nullable HttpClient httpClient = null;
+    private @Nullable OAuthTokenRefresher openHabOAuthTokenRefresher = null;
 
-    private @NonNull static OnectaConnectionClient onectaConnectionClient = new OnectaConnectionClient();
-    private @Nullable static OnectaTranslationProvider translation;
+    private @NonNull OnectaConnectionClient onectaConnectionClient;
+    private @Nullable OnectaTranslationProvider translation;
 
-    public static void setTranslation(OnectaTranslationProvider translationPar) {
+    public OnectaConfiguration(HttpClientFactory httpClientFactory, OAuthTokenRefresher openHabOAuthTokenRefresher,
+            OnectaTranslationProvider translation) {
+        this.httpClientFactory = httpClientFactory;
+        this.openHabOAuthTokenRefresher = openHabOAuthTokenRefresher;
+        this.translation = translation;
+        this.onectaConnectionClient = new OnectaConnectionClient(this);
+    }
+
+    public void setTranslation(OnectaTranslationProvider translationPar) {
         translation = translationPar;
     }
 
-    public static OnectaTranslationProvider getTranslation() {
+    public OnectaTranslationProvider getTranslation() {
         Optional<OnectaTranslationProvider> optionalTranslation = Optional.ofNullable(translation);
         return optionalTranslation.orElseThrow(() -> new RuntimeException("Translation provider is not available"));
     }
 
-    public static void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        OnectaConfiguration.httpClientFactory = httpClientFactory;
-        httpClient = httpClientFactory.getCommonHttpClient();
+    public @Nullable HttpClient getHttpClient() {
+        return httpClientFactory.getCommonHttpClient();
     }
 
-    public static void setBridgeThing(Thing bridgeThing) {
-        OnectaConfiguration.bridgeThing = bridgeThing;
-    }
-
-    public static @Nullable HttpClient getHttpClient() {
-        return httpClient;
-    }
-
-    public static @Nullable HttpClientFactory getHttpClientFactory() {
+    public @Nullable HttpClientFactory getHttpClientFactory() {
         return httpClientFactory;
     }
 
-    public static void setOAuthTokenRefresher(OAuthTokenRefresher openHabOAuthTokenRefresher) {
-        OnectaConfiguration.openHabOAuthTokenRefresher = openHabOAuthTokenRefresher;
-    }
-
-    public static OnectaConnectionClient getOnectaConnectionClient() {
+    public OnectaConnectionClient getOnectaConnectionClient() {
         return onectaConnectionClient;
     }
 
-    public static @Nullable OAuthTokenRefresher getOAuthTokenRefresher() {
+    public @Nullable OAuthTokenRefresher getOAuthTokenRefresher() {
         return openHabOAuthTokenRefresher;
+    }
+
+    public void setBridgeThing(Thing bridgeThing) {
+        this.bridgeThing = bridgeThing;
     }
 }

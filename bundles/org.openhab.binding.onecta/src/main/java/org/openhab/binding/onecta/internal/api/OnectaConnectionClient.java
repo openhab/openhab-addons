@@ -57,7 +57,13 @@ public class OnectaConnectionClient {
 
     private static JsonArray onectaCompleteJsonArrayData = new JsonArray();
     private static Units onectaUnitsData = new Units();
-    private static OnectaSignInClient onectaSignInClient = new OnectaSignInClient();
+    private OnectaSignInClient onectaSignInClient;
+    private OnectaConfiguration onectaConfiguration;
+
+    public OnectaConnectionClient(OnectaConfiguration onectaConfiguration) {
+        this.onectaConfiguration = onectaConfiguration;
+        onectaSignInClient = new OnectaSignInClient(onectaConfiguration);
+    }
 
     public void openConnecttion() {
         try {
@@ -94,7 +100,7 @@ public class OnectaConnectionClient {
         logger.debug("doBearerRequestGet : Accesstoken refreshed {}", refreshed.toString());
         try {
             String testUrl = getBaseUrl("");
-            response = OnectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
+            response = onectaConfiguration.getHttpClient().newRequest(testUrl).method(HttpMethod.GET)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
                     .header(HTTPHEADER_X_API_KEY, HTTPHEADER_X_API_KEY_VALUE).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
@@ -131,7 +137,7 @@ public class OnectaConnectionClient {
     private Response doBearerRequestPatch(String url, Object body, Boolean refreshed) {
         Response response = null;
         try {
-            response = OnectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
+            response = onectaConfiguration.getHttpClient().newRequest(url).method(HttpMethod.PATCH)
                     .content(new StringContentProvider(new Gson().toJson(body)), MediaType.APPLICATION_JSON)
                     .header(HttpHeader.AUTHORIZATION, String.format(HTTPHEADER_BEARER, onectaSignInClient.getToken()))
                     .header(HttpHeader.USER_AGENT, USER_AGENT_VALUE)
