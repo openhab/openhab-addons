@@ -81,13 +81,12 @@ public class SunCalc {
     /**
      * Calculates the sun position (azimuth and elevation).
      */
-    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
-            Sun sun) {
-        Position sunPosition = getPosition(calendar, latitude, longitude, altitude);
+    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Sun sun) {
+        Position sunPosition = getPosition(calendar, latitude, longitude);
         sun.setPosition(sunPosition);
     }
 
-    public Position getPosition(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
+    public Position getPosition(Calendar calendar, double latitude, double longitude) {
         double lw = Math.toRadians(-longitude);
         double phi = Math.toRadians(latitude);
 
@@ -107,13 +106,13 @@ public class SunCalc {
     /**
      * Returns true, if the sun is up all day (no rise and set).
      */
-    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
+    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude) {
         Sun sun = new Sun();
         Calendar start = DateTimeUtils.truncateToMidnight(calendar);
         Calendar cal = (Calendar) start.clone();
         var numberOfSamples = 24 * 60 / CURVE_TIME_INTERVAL;
         for (int i = 0; i <= numberOfSamples; i++) {
-            setPositionalInfo(cal, latitude, longitude, altitude, sun);
+            setPositionalInfo(cal, latitude, longitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
             }
@@ -201,7 +200,7 @@ public class SunCalc {
         sun.setRange(SunPhase.NAUTIC_DUSK, new Range(DateTimeUtils.toCalendar(jnau, zone, locale),
                 DateTimeUtils.toCalendar(jastro, zone, locale)));
 
-        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude, altitude);
+        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude);
 
         // daylight
         Range daylightRange = new Range();
@@ -259,7 +258,7 @@ public class SunCalc {
         if (sun.getEclipseSet().needsRecalc(j)) {
             sun.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(j).stream().map(eclipse -> {
                 Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(eclipse.when(), zone, locale));
-                return eclipse.withPosition(getPosition(eclipseCal, latitude, longitude, altitude));
+                return eclipse.withPosition(getPosition(eclipseCal, latitude, longitude));
             })));
         }
 

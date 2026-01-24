@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
 import java.time.InstantSource;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -26,9 +27,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
+import org.openhab.binding.astro.internal.model.MoonPhase;
+import org.openhab.binding.astro.internal.model.MoonPhaseSet;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.core.types.UnDefType;
 
 /***
  * Specific unit tests to check if {@link MoonCalc} generates correct data for
@@ -36,22 +39,21 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * covered:
  * <ul>
  * <li>checks if generated data are the same (with some accuracy) as produced by
- * haevens-above.com</li>
+ * heavens-above.com</li>
  * </ul>
  *
  * @author Leo Siepel - Initial contribution
  * @see <a href="https://www.heavens-above.com/Moon.aspx">Heavens Above Moon</a>
  */
 @NonNullByDefault
-public class MoonCalcTest {
-
+public class MoonPhaseCalcTest {
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Europe/Amsterdam");
-    private static final Calendar FEB_27_2019 = MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 1, 0, TIME_ZONE);
+    private static final ZoneId ZONE = TIME_ZONE.toZoneId();
+    private static final Calendar FEB_27_2019 = newCalendar(2019, Calendar.FEBRUARY, 27, 1, 0, TIME_ZONE);
     private static final double AMSTERDAM_LATITUDE = 52.367607;
     private static final double AMSTERDAM_LONGITUDE = 4.8978293;
 
     private static final int ACCURACY_IN_MILLIS = 5 * 60 * 1000;
-    private static final double ACCURACY_IN_DEGREE = 0.3;
 
     private @Nullable MoonCalc moonCalc;
 
@@ -64,55 +66,53 @@ public class MoonCalcTest {
     public void testGetMoonInfoForOldDate() {
         Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
-        assertNotNull(moon.getDistanceType(DistanceType.APOGEE));
-        assertNotNull(moon.getDistanceType(DistanceType.PERIGEE));
-        assertNotNull(moon.getDistanceType(DistanceType.CURRENT));
-
-        assertNotNull(moon.getEclipseSet());
-
-        assertNotNull(moon.getPosition());
-        assertNotNull(moon.getRise());
-        assertNotNull(moon.getSet());
-        assertNotNull(moon.getZodiac());
+        assertNotNull(moon.getPhaseSet());
+        // for an old date the phase should not be calculated
+        assertTrue(moon.getPhaseSet().getName() instanceof UnDefType);
     }
 
     @Test
-    public void testGetMoonInfoForRiseAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
+    public void testGetMoonInfoForMoonPhaseAccuracy() {
+        InstantSource instantSource = InstantSource.fixed(Instant.ofEpochMilli(1551225600000L));
+        MoonPhaseSet moonPhase = MoonPhaseCalc.calculate(instantSource, DateTimeUtils.dateToJulianDate(FEB_27_2019),
+                MoonPhaseSet.NONE, ZONE);
 
-        Calendar riseStart = moon.getRise().getStart();
-        assertNotNull(riseStart);
-        // expected result from heavens-above.com is 03:00
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 3, 0, TIME_ZONE).getTimeInMillis(),
-                riseStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
-    }
+        // New moon 06 March 2019 17:04 - jd : 2458549.1702492456
+        // First quarter 14 March 2019 11:27 - jd : 2458556.936169754
+        // Full moon 21 March 2019 02:43 - jd : 2458563.572182703
+        // Last quarter 28 March 2019 05:10 - jd : 2458570.6742177564
+        Instant phaseNew = moonPhase.getPhase(MoonPhase.NEW);
+        assertNotNull(phaseNew);
+        assertEquals(newCalendar(2019, Calendar.MARCH, 06, 17, 04, TIME_ZONE).getTimeInMillis(),
+                phaseNew.toEpochMilli(), ACCURACY_IN_MILLIS);
+        Instant phaseFQ = moonPhase.getPhase(MoonPhase.FIRST_QUARTER);
+        assertNotNull(phaseFQ);
+        assertEquals(newCalendar(2019, Calendar.MARCH, 14, 11, 27, TIME_ZONE).getTimeInMillis(), phaseFQ.toEpochMilli(),
+                ACCURACY_IN_MILLIS);
+        Instant phaseFull = moonPhase.getPhase(MoonPhase.FULL);
+        assertNotNull(phaseFull);
+        assertEquals(newCalendar(2019, Calendar.MARCH, 21, 02, 43, TIME_ZONE).getTimeInMillis(),
+                phaseFull.toEpochMilli(), ACCURACY_IN_MILLIS);
+        Instant phaseTQ = moonPhase.getPhase(MoonPhase.THIRD_QUARTER);
+        assertNotNull(phaseTQ);
+        assertEquals(newCalendar(2019, Calendar.MARCH, 28, 05, 10, TIME_ZONE).getTimeInMillis(), phaseTQ.toEpochMilli(),
+                ACCURACY_IN_MILLIS);
 
-    @Test
-    public void testGetMoonInfoForSetAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseNew), DateTimeUtils.instantToJulianDay(phaseNew),
+                MoonPhaseSet.NONE, ZONE);
+        assertEquals(0, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        Calendar setStart = moon.getSet().getStart();
-        assertNotNull(setStart);
-        // expected result from heavens-above.com is 11:35
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 11, 35, TIME_ZONE).getTimeInMillis(),
-                setStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
-    }
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseFull), DateTimeUtils.instantToJulianDay(phaseFull),
+                MoonPhaseSet.NONE, ZONE);
+        assertEquals(1, moonPhase.getIllumination().doubleValue(), 0.01);
 
-    @Test
-    public void testGetMoonInfoForMoonPositionAccuracy() {
-        MoonCalc moonCalc = this.moonCalc;
-        assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE);
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseTQ), DateTimeUtils.instantToJulianDay(phaseTQ),
+                MoonPhaseSet.NONE, ZONE);
+        assertEquals(0.5, moonPhase.getIllumination().doubleValue(), 0.01);
 
-        var azimuth = moon.getPosition().getAzimuth();
-        var elevation = moon.getPosition().getElevation();
-        assertNotNull(azimuth);
-        assertNotNull(elevation);
-
-        // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
-        assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
+        moonPhase = MoonPhaseCalc.calculate(InstantSource.fixed(phaseFQ), DateTimeUtils.instantToJulianDay(phaseFQ),
+                MoonPhaseSet.NONE, ZONE);
+        assertEquals(0.5, moonPhase.getIllumination().doubleValue(), 0.01);
     }
 
     /***
@@ -136,7 +136,8 @@ public class MoonCalcTest {
      *            the calendar.
      * @param zone
      *            the given time zone.
-     * @return
+     * @return a {@link Calendar} set to the given date and time in the specified
+     *         time zone, truncated to minute precision.
      */
     private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
         Calendar result = new GregorianCalendar(zone, Locale.ROOT);
