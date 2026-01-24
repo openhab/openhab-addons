@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 /**
  * Converts the device-specific data from ioBroker.tuya to a binding compatible JSON
  *
@@ -412,7 +411,7 @@ function normalizeUnit(productKey, orig_code, properties, orig_unit) {
     return "";
 }
 
-const prevSchemas = require('../../../src/main/resources/schema.json');
+const prevSchemas = require('../../../../resources/schema.json');
 
 const schemaJson = fs.createWriteStream("../../../target/in-schema.json");
 http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/schema.json", function(response) {
