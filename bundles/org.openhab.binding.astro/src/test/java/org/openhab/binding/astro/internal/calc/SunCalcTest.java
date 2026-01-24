@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /***
@@ -71,28 +71,28 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        assertNotNull(sun.getNight());
+        assertNotNull(sun.getRange(SunPhase.NIGHT));
 
-        assertNotNull(sun.getAstroDawn());
-        assertNotNull(sun.getNauticDawn());
-        assertNotNull(sun.getCivilDawn());
+        assertNotNull(sun.getRange(SunPhase.ASTRO_DAWN));
+        assertNotNull(sun.getRange(SunPhase.NAUTIC_DAWN));
+        assertNotNull(sun.getRange(SunPhase.CIVIL_DAWN));
 
         assertNotNull(sun.getRise());
 
-        assertNotNull(sun.getDaylight());
-        assertNotNull(sun.getNoon());
+        assertNotNull(sun.getRange(SunPhase.DAYLIGHT));
+        assertNotNull(sun.getRange(SunPhase.NOON));
         assertNotNull(sun.getSet());
 
-        assertNotNull(sun.getCivilDusk());
-        assertNotNull(sun.getNauticDusk());
-        assertNotNull(sun.getAstroDusk());
-        assertNotNull(sun.getNight());
+        assertNotNull(sun.getRange(SunPhase.CIVIL_DUSK));
+        assertNotNull(sun.getRange(SunPhase.NAUTIC_DUSK));
+        assertNotNull(sun.getRange(SunPhase.ASTRO_DUSK));
+        assertNotNull(sun.getRange(SunPhase.NIGHT));
 
-        assertNotNull(sun.getMorningNight());
-        assertNotNull(sun.getEveningNight());
+        assertNotNull(sun.getRange(SunPhase.MORNING_NIGHT));
+        assertNotNull(sun.getRange(SunPhase.EVENING_NIGHT));
 
         // for an old date the phase should also be calculated
-        assertNotNull(sun.getPhase().getName());
+        assertNotNull(sun.getSunPhase());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAstroDawn();
+        Range range = sun.getRange(SunPhase.ASTRO_DAWN);
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
@@ -118,7 +118,7 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getNauticDawn();
+        Range range = sun.getRange(SunPhase.NAUTIC_DAWN);
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
@@ -136,7 +136,7 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getCivilDawn();
+        Range range = sun.getRange(SunPhase.CIVIL_DAWN);
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
@@ -168,7 +168,7 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getNoon();
+        Range range = sun.getRange(SunPhase.NOON);
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
@@ -198,7 +198,7 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getCivilDusk();
+        Range range = sun.getRange(SunPhase.CIVIL_DUSK);
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
@@ -218,7 +218,7 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getNauticDusk();
+        Range range = sun.getRange(SunPhase.NAUTIC_DUSK);
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
@@ -238,7 +238,7 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAstroDusk();
+        Range range = sun.getRange(SunPhase.ASTRO_DUSK);
         assertNotNull(range);
         Calendar cal = range.getStart();
         assertNotNull(cal);
@@ -258,9 +258,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.NIGHT);
+        Range range = sun.getAllRanges().get(SunPhase.NIGHT);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.ASTRO_DAWN);
+        Range range2 = sun.getAllRanges().get(SunPhase.ASTRO_DAWN);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -270,9 +270,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.MORNING_NIGHT);
+        Range range = sun.getAllRanges().get(SunPhase.MORNING_NIGHT);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.ASTRO_DAWN);
+        Range range2 = sun.getAllRanges().get(SunPhase.ASTRO_DAWN);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -282,9 +282,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.ASTRO_DAWN);
+        Range range = sun.getAllRanges().get(SunPhase.ASTRO_DAWN);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.NAUTIC_DAWN);
+        Range range2 = sun.getAllRanges().get(SunPhase.NAUTIC_DAWN);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -294,9 +294,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.NAUTIC_DAWN);
+        Range range = sun.getAllRanges().get(SunPhase.NAUTIC_DAWN);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.CIVIL_DAWN);
+        Range range2 = sun.getAllRanges().get(SunPhase.CIVIL_DAWN);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -306,9 +306,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.CIVIL_DAWN);
+        Range range = sun.getAllRanges().get(SunPhase.CIVIL_DAWN);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.SUN_RISE);
+        Range range2 = sun.getAllRanges().get(SunPhase.SUN_RISE);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -318,9 +318,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.SUN_RISE);
+        Range range = sun.getAllRanges().get(SunPhase.SUN_RISE);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.DAYLIGHT);
+        Range range2 = sun.getAllRanges().get(SunPhase.DAYLIGHT);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -330,9 +330,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.DAYLIGHT);
+        Range range = sun.getAllRanges().get(SunPhase.DAYLIGHT);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.SUN_SET);
+        Range range2 = sun.getAllRanges().get(SunPhase.SUN_SET);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -342,9 +342,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.SUN_SET);
+        Range range = sun.getAllRanges().get(SunPhase.SUN_SET);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.CIVIL_DUSK);
+        Range range2 = sun.getAllRanges().get(SunPhase.CIVIL_DUSK);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -354,9 +354,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.CIVIL_DUSK);
+        Range range = sun.getAllRanges().get(SunPhase.CIVIL_DUSK);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.NAUTIC_DUSK);
+        Range range2 = sun.getAllRanges().get(SunPhase.NAUTIC_DUSK);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -366,9 +366,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.NAUTIC_DUSK);
+        Range range = sun.getAllRanges().get(SunPhase.NAUTIC_DUSK);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.ASTRO_DUSK);
+        Range range2 = sun.getAllRanges().get(SunPhase.ASTRO_DUSK);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -378,9 +378,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.ASTRO_DUSK);
+        Range range = sun.getAllRanges().get(SunPhase.ASTRO_DUSK);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.NIGHT);
+        Range range2 = sun.getAllRanges().get(SunPhase.NIGHT);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -390,9 +390,9 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
                 AMSTERDAM_ALTITUDE, false, AMSTERDAM_TIME_ZONE, Locale.ROOT);
 
-        Range range = sun.getAllRanges().get(SunPhaseName.ASTRO_DUSK);
+        Range range = sun.getAllRanges().get(SunPhase.ASTRO_DUSK);
         assertNotNull(range);
-        Range range2 = sun.getAllRanges().get(SunPhaseName.EVENING_NIGHT);
+        Range range2 = sun.getAllRanges().get(SunPhase.EVENING_NIGHT);
         assertNotNull(range2);
         assertEquals(range.getEnd(), range2.getStart());
     }
@@ -404,7 +404,7 @@ public class SunCalcTest {
 
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
                 Locale.ROOT);
-        assertEquals(SunPhaseName.CIVIL_DAWN, sun.getPhase().getName());
+        assertEquals(SunPhase.CIVIL_DAWN, sun.getSunPhase());
     }
 
     @Test
@@ -416,7 +416,7 @@ public class SunCalcTest {
 
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
                 Locale.ROOT);
-        assertEquals(SunPhaseName.SUN_RISE, sun.getPhase().getName());
+        assertEquals(SunPhase.SUN_RISE, sun.getSunPhase());
     }
 
     @Test
@@ -426,7 +426,7 @@ public class SunCalcTest {
 
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
                 Locale.ROOT);
-        assertEquals(SunPhaseName.DAYLIGHT, sun.getPhase().getName());
+        assertEquals(SunPhase.DAYLIGHT, sun.getSunPhase());
     }
 
     /***

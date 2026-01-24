@@ -25,6 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Holds the calculates moon phase informations.
@@ -118,8 +120,9 @@ public class MoonPhase {
     /**
      * Returns the illumination.
      */
-    public QuantityType<Dimensionless> getIllumination() {
-        return new QuantityType<>(illumination, Units.PERCENT);
+    public State getIllumination() {
+        return Double.isNaN(illumination) ? UnDefType.UNDEF
+                : illumination < 0 ? UnDefType.NULL : new QuantityType<>(illumination, Units.PERCENT);
     }
 
     /**

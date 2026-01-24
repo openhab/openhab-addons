@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Season;
+import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -116,11 +117,11 @@ public class SeasonCalcTest {
 
         var season = meteoSun.getSeason();
         assertNotNull(season);
-        ZonedDateTime cal = season.getSpring().atZone(AMSTERDAM_TZ.toZoneId());
+        ZonedDateTime cal = season.getSeasonStart(SeasonName.SPRING).atZone(AMSTERDAM_TZ.toZoneId());
         assertNotNull(cal);
         var season2 = equiSun.getSeason();
         assertNotNull(season2);
-        ZonedDateTime cal2 = season2.getSpring().atZone(AMSTERDAM_TZ.toZoneId());
+        ZonedDateTime cal2 = season2.getSeasonStart(SeasonName.SPRING).atZone(AMSTERDAM_TZ.toZoneId());
         assertNotNull(cal2);
         assertEquals(cal.getMonth(), cal2.getMonth());
         assertEquals(cal.getYear(), cal2.getYear());
@@ -132,21 +133,21 @@ public class SeasonCalcTest {
     public void testGetSeasonAmsterdam() {
         final Season season = SeasonCalc.calculate(2020, AMSTERDAM_LATITUDE, true, AMSTERDAM_TZ, INSTANT_SOURCE);
 
-        assertNextSeason(season.getSpring(), 2020, JAN_20_2020, season, AMSTERDAM_TZ);
-        assertNextSeason(season.getSummer(), 2020, MAY_20_2020, season, AMSTERDAM_TZ);
-        assertNextSeason(season.getWinter(), 2020, SEPT_20_2020, season, AMSTERDAM_TZ);
-        assertNextSeason(SeasonCalc.calculate(2021, AMSTERDAM_LATITUDE, true, AMSTERDAM_TZ, INSTANT_SOURCE).getSpring(),
-                2021, DEC_10_2020, season, AMSTERDAM_TZ);
+        assertNextSeason(season.getSeasonStart(SeasonName.SPRING), 2020, JAN_20_2020, season, AMSTERDAM_TZ);
+        assertNextSeason(season.getSeasonStart(SeasonName.SUMMER), 2020, MAY_20_2020, season, AMSTERDAM_TZ);
+        assertNextSeason(season.getSeasonStart(SeasonName.WINTER), 2020, SEPT_20_2020, season, AMSTERDAM_TZ);
+        assertNextSeason(SeasonCalc.calculate(2021, AMSTERDAM_LATITUDE, true, AMSTERDAM_TZ, INSTANT_SOURCE)
+                .getSeasonStart(SeasonName.SPRING), 2021, DEC_10_2020, season, AMSTERDAM_TZ);
     }
 
     @Test
     public void testGetSeasonSydney() {
         final Season season = SeasonCalc.calculate(2020, SYDNEY_LATITUDE, true, SYDNEY_TZ, INSTANT_SOURCE);
 
-        assertNextSeason(season.getAutumn(), 2020, JAN_20_2020, season, SYDNEY_TZ);
-        assertNextSeason(season.getWinter(), 2020, MAY_20_2020, season, SYDNEY_TZ);
-        assertNextSeason(season.getSummer(), 2020, SEPT_20_2020, season, SYDNEY_TZ);
-        assertNextSeason(SeasonCalc.calculate(2021, SYDNEY_LATITUDE, true, SYDNEY_TZ, INSTANT_SOURCE).getAutumn(), 2021,
-                DEC_10_2020, season, SYDNEY_TZ);
+        assertNextSeason(season.getSeasonStart(SeasonName.AUTUMN), 2020, JAN_20_2020, season, SYDNEY_TZ);
+        assertNextSeason(season.getSeasonStart(SeasonName.WINTER), 2020, MAY_20_2020, season, SYDNEY_TZ);
+        assertNextSeason(season.getSeasonStart(SeasonName.SUMMER), 2020, SEPT_20_2020, season, SYDNEY_TZ);
+        assertNextSeason(SeasonCalc.calculate(2021, SYDNEY_LATITUDE, true, SYDNEY_TZ, INSTANT_SOURCE)
+                .getSeasonStart(SeasonName.AUTUMN), 2021, DEC_10_2020, season, SYDNEY_TZ);
     }
 }

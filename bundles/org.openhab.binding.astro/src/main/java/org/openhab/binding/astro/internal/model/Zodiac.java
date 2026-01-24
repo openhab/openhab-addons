@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Zodiac {
-    public static final Zodiac NULL = new Zodiac();
+    public static final Zodiac NONE = new Zodiac();
 
     private final @Nullable ZodiacSign sign;
     private final @Nullable Instant start;

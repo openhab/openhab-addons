@@ -12,25 +12,14 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
-import java.util.Collections;
-import java.util.Map;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.CarbonDioxideConcentrationMeasurementCluster;
-import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelGroupUID;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.types.StateDescription;
-import org.openhab.core.types.UnDefType;
 
 /**
  * A converter for translating {@link CarbonDioxideConcentrationMeasurementCluster} events and attributes to openHAB
@@ -40,43 +29,40 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class CarbonDioxideConcentrationMeasurementConverter
-        extends GenericConverter<CarbonDioxideConcentrationMeasurementCluster> {
+        extends AbstractConcentrationMeasurementConverter<CarbonDioxideConcentrationMeasurementCluster> {
 
     public CarbonDioxideConcentrationMeasurementConverter(CarbonDioxideConcentrationMeasurementCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
-        super(cluster, handler, endpointNumber, labelPrefix);
+        super(cluster, handler, endpointNumber, labelPrefix,
+                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_DESC_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE,
+                CHANNEL_CONCENTRATIONMEASUREMENT_LEVELVALUE,
+                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
+                CHANNEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
+                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE,
+                CHANNEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
     }
 
     @Override
-    public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
-        Channel channel = ChannelBuilder
-                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE),
-                        "Number:Dimensionless")
-                .withType(CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE).build();
-        return Collections.singletonMap(channel, null);
+    protected Unit<?> getDefaultUnit() {
+        return Units.PARTS_PER_MILLION;
     }
 
     @Override
-    public void onEvent(AttributeChangedMessage message) {
-        switch (message.path.attributeName) {
-            case CarbonDioxideConcentrationMeasurementCluster.ATTRIBUTE_MEASURED_VALUE:
-                if (message.value instanceof Number number) {
-                    updateState(CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                            new QuantityType<>(number, Units.PARTS_PER_MILLION));
-                }
-                break;
-        }
-        super.onEvent(message);
+    protected boolean hasLevelIndication() {
+        return initializingCluster.featureMap != null && initializingCluster.featureMap.levelIndication;
     }
 
     @Override
-    public void initState() {
-        Float measuredValue = initializingCluster.measuredValue;
-        if (measuredValue != null) {
-            updateState(CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                    new QuantityType<>(measuredValue, Units.PARTS_PER_MILLION));
-        } else {
-            updateState(CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE, UnDefType.NULL);
-        }
+    protected boolean hasPeakMeasurement() {
+        return initializingCluster.featureMap != null && initializingCluster.featureMap.peakMeasurement;
+    }
+
+    @Override
+    protected boolean hasAverageMeasurement() {
+        return initializingCluster.featureMap != null && initializingCluster.featureMap.averageMeasurement;
     }
 }

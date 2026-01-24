@@ -431,7 +431,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-host-name");
             return null;
         }
-        if (!HOST_PATTERN.matcher(hostName).matches()) {
+        if (!hostName.isBlank() && !HOST_PATTERN.matcher(hostName).matches()) {
             logger.warn("{} host name '{}' does not match expected pattern; using anyway..", thing.getUID(), hostName);
         }
         return hostName.replace(" ", "\\032"); // escape mDNS spaces

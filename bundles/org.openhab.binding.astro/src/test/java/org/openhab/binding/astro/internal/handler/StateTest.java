@@ -22,13 +22,9 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.InstantSource;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.measure.Unit;
 
@@ -68,9 +64,6 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class StateTest {
 
-    // These test result timestamps are adapted for the +03:00 time zone
-    private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Asia/Baghdad");
-    private static final ZoneId ZONE_ID = TIME_ZONE.toZoneId();
     private static final Locale LOCALE = Locale.of("ar", "iq");
 
     private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
@@ -81,33 +74,28 @@ public class StateTest {
 
     @BeforeEach
     public void init() {
-        when(timeZoneProvider.getTimeZone()).thenReturn(TIME_ZONE.toZoneId());
         when(localeProvider.getLocale()).thenReturn(LOCALE);
-        Configuration c = new Configuration(
-                Map.of("geolocation", Double.toString(TEST_LATITUDE) + ',' + Double.toString(TEST_LONGITUDE),
-                        "latitude", Double.valueOf(TEST_LATITUDE), "longitude", Double.valueOf(TEST_LONGITUDE),
-                        INTERVAL_PROPERTY, INTERVAL_DEFAULT_VALUE));
-        when(thing.getConfiguration()).thenReturn(c);
     }
 
-    public static List<Object[]> data() {
+    public static List<StateTestCase> data() {
         ParametrizedStateTestCases cases = new ParametrizedStateTestCases();
         return cases.getCases();
     }
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testParametrized(String thingID, String channelId, State expectedState) throws Exception {
-        assertStateUpdate(thingID, channelId, expectedState);
-    }
+    public void stateTest(StateTestCase testCase) throws Exception {
+        when(timeZoneProvider.getTimeZone()).thenReturn(testCase.timeZone());
+        Configuration c = new Configuration(
+                Map.of("geolocation", testCase.location().toString(), INTERVAL_PROPERTY, INTERVAL_DEFAULT_VALUE));
+        when(thing.getConfiguration()).thenReturn(c);
 
-    private void assertStateUpdate(String thingID, String channelId, State expectedState) throws Exception {
-        AstroThingHandler handler = getHandler(thingID);
+        AstroThingHandler handler = getHandler(testCase.thingId(), testCase.testMoment());
         if (handler == null) {
-            throw new IllegalStateException("hander should not be null");
+            throw new IllegalStateException("handler should not be null");
         }
 
-        when(channel.getUID()).thenReturn(new ChannelUID(getThingUID(thingID), channelId));
+        when(channel.getUID()).thenReturn(new ChannelUID(getThingUID(testCase.thingId()), testCase.channelId()));
         when(channel.getConfiguration()).thenReturn(new Configuration());
 
         State state = handler.getState(channel);
@@ -119,7 +107,7 @@ public class StateTest {
             state = new QuantityType<>(quantity.toBigDecimal().round(new MathContext(3, RoundingMode.HALF_UP)), unit);
         }
 
-        assertEquals(expectedState, state);
+        assertEquals(testCase.expectedState(), state);
         handler.dispose();
     }
 
@@ -134,10 +122,8 @@ public class StateTest {
         }
     }
 
-    private @Nullable AstroThingHandler getHandler(String thingID) {
-        LocalDateTime time = LocalDateTime.of(TEST_YEAR, TEST_MONTH, TEST_DAY, 0, 0);
-        ZonedDateTime zonedTime = ZonedDateTime.ofLocal(time, ZONE_ID, null);
-        InstantSource instantSource = InstantSource.fixed(zonedTime.toInstant());
+    private @Nullable AstroThingHandler getHandler(String thingID, Instant testMoment) {
+        InstantSource instantSource = InstantSource.fixed(testMoment);
         when(thing.getUID()).thenReturn(getThingUID(thingID));
         switch (thingID) {
             case (TEST_SUN_THING_ID):
