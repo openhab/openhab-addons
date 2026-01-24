@@ -35,11 +35,77 @@ public class MatterBindingConstants {
     public static final ChannelTypeUID CHANNEL_AIRQUALITY_AIRQUALITY = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_AIRQUALITY_AIRQUALITY);
     public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbondioxideconcentrationmeasurement-measuredvalue";
-    public static final ChannelTypeUID CHANNEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
-            BINDING_ID, CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
     public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-measuredvalue";
-    public static final ChannelTypeUID CHANNEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(
-            BINDING_ID, CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm1concentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm10concentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm25concentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "ozoneconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "formaldehydeconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "radonconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "carbondioxideconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "carbondioxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "carbondioxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "carbonmonoxideconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm1concentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm1concentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm1concentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm10concentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm10concentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm10concentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm25concentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm25concentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm25concentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_LEVELVALUE = "ozoneconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "ozoneconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "ozoneconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "nitrogendioxideconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_LEVELVALUE = "formaldehydeconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "formaldehydeconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "formaldehydeconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_LEVELVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_LEVELVALUE = "radonconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "radonconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "radonconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "concentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_LEVELVALUE = "concentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_CONCENTRATIONMEASUREMENT_LEVELVALUE);
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "concentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "concentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbondioxideconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbondioxideconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbonmonoxideconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbonmonoxideconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm1concentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm1concentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm10concentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm10concentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm25concentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm25concentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.ozoneconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.ozoneconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.nitrogendioxideconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.nitrogendioxideconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.formaldehydeconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.formaldehydeconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.radonconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.radonconcentrationmeasurement-measuredvalue.description";
     public static final String CHANNEL_ID_SMOKECOALARM_EXPRESSEDSTATE = "smokecoalarm-expressedstate";
     public static final ChannelTypeUID CHANNEL_SMOKECOALARM_EXPRESSEDSTATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_SMOKECOALARM_EXPRESSEDSTATE);
