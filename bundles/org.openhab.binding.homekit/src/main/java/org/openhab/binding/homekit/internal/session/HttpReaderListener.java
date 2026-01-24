@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public interface HttpParserListener {
+public interface HttpReaderListener {
 
     /**
      * Invoked when the parser has produced a complete HTTP payload
@@ -30,14 +30,14 @@ public interface HttpParserListener {
     void onHttpPayload(HttpPayloadParser.HttpPayload httpPayload);
 
     /**
-     * Invoked when the parser encounters an error
+     * Invoked when the reader encounters an error
      *
-     * @param error The error that occurred
+     * @param error the error that occurred
      */
-    void onParserError(Throwable error);
+    void onHttpReaderError(Throwable error);
 
     /**
      * Invoked when the parser is closed
      */
-    void onParserClose();
+    void onHttpReaderClose();
 }

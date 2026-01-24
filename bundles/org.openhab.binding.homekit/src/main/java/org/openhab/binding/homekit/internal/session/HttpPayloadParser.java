@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +62,8 @@ public class HttpPayloadParser implements AutoCloseable {
 
     private final InputStream inputStream;
     private final Thread inputThread;
-    private final HttpParserListener listener;
+    private final CountDownLatch inputThreadRunning = new CountDownLatch(1);
+    private final HttpReaderListener listener;
 
     // grow-able buffer for incoming bytes, and indexes to valid data
     private byte[] inputBuffer = new byte[8192];
@@ -79,16 +82,24 @@ public class HttpPayloadParser implements AutoCloseable {
 
     private volatile boolean closed = false;
 
-    public HttpPayloadParser(InputStream stream, HttpParserListener eventListener) {
+    public HttpPayloadParser(InputStream stream, HttpReaderListener eventListener) {
         inputStream = stream;
         listener = eventListener;
         inputThread = new Thread(this::inputTask, "http-parser-input");
         inputThread.setDaemon(true);
     }
 
-    public HttpPayloadParser start() {
+    /**
+     * Starts the input thread and blocks until the signal that it is actually running.
+     */
+    public void start() {
         inputThread.start();
-        return this;
+        try {
+            inputThreadRunning.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.warn("Input thread failed to start");
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
@@ -98,6 +109,7 @@ public class HttpPayloadParser implements AutoCloseable {
     private void inputTask() {
         try {
             byte[] buffer = new byte[4096];
+            inputThreadRunning.countDown();
             while (!closed) {
                 try {
                     int byteCount = inputStream.read(buffer);
@@ -113,16 +125,13 @@ public class HttpPayloadParser implements AutoCloseable {
                     // allows thread to poll closed flag or be interrupted
                     continue;
                 } catch (IOException e) {
-                    if (!closed) {
-                        logger.debug("Input stream closed or error occurred: {}", e.getMessage());
-                    }
-                    listener.onParserError(e);
+                    listener.onHttpReaderError(e);
                     break;
                 }
             }
         } finally {
             closed = true;
-            listener.onParserClose();
+            listener.onHttpReaderClose();
         }
     }
 
@@ -482,8 +491,6 @@ public class HttpPayloadParser implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        logger.info("TODO close(): {} unparsed bytes, ca. {} unread bytes)", inputEndIndex - inputStartIndex,
-                inputStream.available());
         closed = true;
         try {
             inputThread.interrupt(); // interrupt is faster than closed flag alone

@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal.transport;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -30,14 +31,13 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
 import org.openhab.binding.homekit.internal.session.EventListener;
-import org.openhab.binding.homekit.internal.session.HttpParserListener;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayload;
+import org.openhab.binding.homekit.internal.session.HttpReaderListener;
 import org.openhab.binding.homekit.internal.session.SecureSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class IpTransport implements AutoCloseable, HttpParserListener {
+public class IpTransport implements AutoCloseable, HttpReaderListener {
 
     private static final int TIMEOUT_MILLI_SECONDS = 15000; // HomeKit spec expects "around 10 seconds" so be safe
     private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(250);
@@ -68,6 +68,7 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
 
     private volatile HttpPayloadParser httpPayloadParser;
     private volatile @Nullable SecureSession secureSession = null;
+    private volatile OutputStream outputStream;
 
     private Instant earliestNextRequestTime = Instant.MIN;
     private boolean closing;
@@ -98,6 +99,8 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
         socket.setSoTimeout(500); // allow socket to be interruptible
         socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
 
+        outputStream = socket.getOutputStream();
+
         httpPayloadParser = new HttpPayloadParser(socket.getInputStream(), this);
         httpPayloadParser.start();
         logger.debug("Connected to {} alias {}", ipAddress, hostName);
@@ -123,12 +126,17 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
         } catch (IOException ignored) {
         }
 
+        flushSocketAvailableBytes();
+
         SecureSession newSession = new SecureSession(socket, keys);
         secureSession = newSession;
 
+        outputStream = newSession.getOutputStream();
+
         HttpPayloadParser newParser = new HttpPayloadParser(newSession.getInputStream(), this);
         httpPayloadParser = newParser;
-        newParser.start();
+        newParser.start(); // blocks until input thread is fully running
+
         logger.trace("setSessionKeys() {}", newSession);
     }
 
@@ -175,26 +183,12 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
                 Thread.sleep(delay.toMillis()); // rate limit the HTTP requests
             }
 
-            Future<@Nullable Void> writeFuture;
-            if (secureSession instanceof SecureSession secureSession) {
-                writeFuture = outputThreadExecutor.submit(() -> {
-                    try {
-                        secureSession.send(request);
-                    } catch (InvalidCipherTextException e) {
-                        throw new IOException("Encryption failed", e);
-                    }
-                    return null;
-                });
-            } else {
-                writeFuture = outputThreadExecutor.submit(() -> {
-                    OutputStream out = socket.getOutputStream();
-                    out.write(request);
-                    out.flush();
-                    return null;
-                });
-            }
-            // wait for write to complete or timeout
-            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            Future<@Nullable Void> writeFuture = outputThreadExecutor.submit(() -> {
+                outputStream.write(request);
+                outputStream.flush();
+                return null;
+            });
+            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS); // wait for write to complete or timeout
             if (logger.isTraceEnabled()) {
                 logger.trace("{} sent:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
             }
@@ -319,16 +313,47 @@ public class IpTransport implements AutoCloseable, HttpParserListener {
     }
 
     @Override
-    public void onParserError(Throwable error) {
+    public void onHttpReaderError(Throwable error) {
         if (!closing) {
-            logger.warn("{} parser error: {}", ipAddress, error.getMessage());
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} HTTP reader error", ipAddress, error);
+            } else {
+                logger.warn("{} HTTP reader error: {}", ipAddress, error.getMessage());
+            }
         }
     }
 
     @Override
-    public void onParserClose() {
+    public void onHttpReaderClose() {
         if (!closing) {
-            logger.debug("{} parser closed", ipAddress);
+            logger.debug("{} HTTP reader closed", ipAddress);
+        }
+    }
+
+    /**
+     * Flush any remaining unread data from the socket raw input stream. This is used when switching to a
+     * secure session to ensure no leftover unencrypted data remains in the stream. It only reads data
+     * that is immediately available without blocking.
+     * 
+     * @throws IOException
+     */
+    private void flushSocketAvailableBytes() throws IOException {
+        InputStream in = socket.getInputStream();
+        byte[] buffer = new byte[8192];
+        int totalFlushed = 0;
+        int available;
+
+        while ((available = in.available()) > 0) {
+            int toRead = Math.min(available, buffer.length);
+            int n = in.read(buffer, 0, toRead);
+            if (n <= 0) {
+                break; // EOF
+            }
+            totalFlushed += n;
+        }
+
+        if (totalFlushed > 0) {
+            logger.debug("Flushed {} bytes of available unread data", totalFlushed);
         }
     }
 }

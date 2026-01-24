@@ -16,9 +16,6 @@ import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.HexFormat;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -26,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * An {@link InputStream} that decrypts data from the underlying Socket InputStream.
+ * An {@link InputStream} that decrypts data from an underlying Socket InputStream.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -70,7 +67,7 @@ public class DecryptingInputStream extends InputStream {
             return 0;
         }
 
-        // serve leftover plaintext first
+        // serve leftover plain text first
         if (plainTextPos < plainText.length) {
             int byteCount = Math.min(len, plainText.length - plainTextPos);
             System.arraycopy(plainText, plainTextPos, b, off, byteCount);
@@ -78,7 +75,7 @@ public class DecryptingInputStream extends InputStream {
             return byteCount;
         }
 
-        // no leftover plaintext; read next frame
+        // no leftover plain text; read next frame
         byte[] frame = receiveFrame();
         if (frame == null) {
             return -1; // EOF
@@ -93,27 +90,31 @@ public class DecryptingInputStream extends InputStream {
         return byteCount;
     }
 
+    /**
+     * Receives and decrypts a single data frame from the input stream.
+     *
+     * @return the decrypted plain text, or null if EOF is reached.
+     * @throws IOException
+     */
     private byte @Nullable [] receiveFrame() throws IOException {
         byte[] frameAad = new byte[2];
-
-        // If we cannot read the 2-byte header, this is EOF
         if (!readFully(frameAad)) {
-            return null;
+            return null; // if we cannot read the 2-byte header, this is EOF
         }
 
-        short frameLen = ByteBuffer.wrap(frameAad).order(ByteOrder.LITTLE_ENDIAN).getShort();
+        short frameLen = (short) ((frameAad[0] & 0xFF) | ((frameAad[1] & 0xFF) << 8));
         if (frameLen < 0 || frameLen > 1024) {
-            throw new IOException("Invalid frame length: " + HexFormat.of().formatHex(frameAad));
+            throw new IOException(
+                    "Invalid frame length {0x%02x, 0x%02x}".formatted(frameAad[0] & 0xFF, frameAad[1] & 0xFF));
         }
 
         byte[] cipherText = new byte[frameLen + 16];
-
-        // If ciphertext cannot be fully read, this is EOF
         if (!readFully(cipherText)) {
-            return null;
+            return null; // if cipher text cannot be fully read, this is EOF
         }
 
         byte[] nonce64 = generateNonce64(readCounter.getAndIncrement());
+
         try {
             return decrypt(keys.getReadKey(), nonce64, cipherText, frameAad);
         } catch (InvalidCipherTextException e) {
@@ -136,10 +137,5 @@ public class DecryptingInputStream extends InputStream {
             offset += read;
         }
         return true;
-    }
-
-    @Override
-    public int available() throws IOException {
-        return inputStream.available();
     }
 }

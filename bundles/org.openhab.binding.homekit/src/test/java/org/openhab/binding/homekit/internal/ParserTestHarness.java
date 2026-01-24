@@ -17,8 +17,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.session.HttpParserListener;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayload;
+import org.openhab.binding.homekit.internal.session.HttpReaderListener;
 
 /**
  * Test helper class for HttpPayloadParser
@@ -26,7 +26,7 @@ import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayloa
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class ParserTestHarness implements HttpParserListener {
+public class ParserTestHarness implements HttpReaderListener {
 
     private final AtomicReference<@Nullable CompletableFuture<HttpPayload>> nextPayload = new AtomicReference<>();
 
@@ -39,7 +39,7 @@ public class ParserTestHarness implements HttpParserListener {
     }
 
     @Override
-    public void onParserError(Throwable error) {
+    public void onHttpReaderError(Throwable error) {
         CompletableFuture<HttpPayload> future = nextPayload.getAndSet(null);
         if (future != null) {
             future.completeExceptionally(error);
@@ -47,7 +47,7 @@ public class ParserTestHarness implements HttpParserListener {
     }
 
     @Override
-    public void onParserClose() {
+    public void onHttpReaderClose() {
         // no-op for tests
     }
 
