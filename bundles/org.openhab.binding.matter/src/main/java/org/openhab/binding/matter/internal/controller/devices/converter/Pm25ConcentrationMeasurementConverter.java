@@ -17,38 +17,36 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.matter.internal.client.dto.cluster.gen.CarbonDioxideConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.Pm25ConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.library.unit.Units;
 
 /**
- * A converter for translating {@link CarbonDioxideConcentrationMeasurementCluster} events and attributes to openHAB
+ * A converter for translating {@link Pm25ConcentrationMeasurementCluster} events and attributes to openHAB
  * channels.
  *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class CarbonDioxideConcentrationMeasurementConverter
-        extends AbstractConcentrationMeasurementConverter<CarbonDioxideConcentrationMeasurementCluster> {
+public class Pm25ConcentrationMeasurementConverter
+        extends AbstractConcentrationMeasurementConverter<Pm25ConcentrationMeasurementCluster> {
 
-    public CarbonDioxideConcentrationMeasurementConverter(CarbonDioxideConcentrationMeasurementCluster cluster,
+    public Pm25ConcentrationMeasurementConverter(Pm25ConcentrationMeasurementCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {
-        super(cluster, handler, endpointNumber, labelPrefix,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+        super(cluster, handler, endpointNumber, labelPrefix, CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE,
                 CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                CHANNEL_DESC_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE,
-                CHANNEL_CONCENTRATIONMEASUREMENT_LEVELVALUE,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
+                CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_DESC_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE,
+                CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE, CHANNEL_CONCENTRATIONMEASUREMENT_LEVELVALUE,
+                CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
                 CHANNEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE,
-                CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE,
+                CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE,
                 CHANNEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
     }
 
     @Override
     protected Unit<?> getDefaultUnit() {
-        return Units.PARTS_PER_MILLION;
+        return Units.MICROGRAM_PER_CUBICMETRE;
     }
 
     @Override

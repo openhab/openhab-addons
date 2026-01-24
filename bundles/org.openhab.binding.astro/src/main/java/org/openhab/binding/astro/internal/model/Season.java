@@ -78,37 +78,9 @@ public class Season {
         return year;
     }
 
-    private Instant getSeasonStart(SeasonName season) {
+    public Instant getSeasonStart(SeasonName season) {
         return seasons.stream().filter(s -> s.name.equals(season) && s.year == year).map(s -> s.startsOn).findFirst()
                 .orElseThrow(NoSuchElementException::new);
-    }
-
-    /**
-     * Returns the date of the beginning of spring.
-     */
-    public Instant getSpring() {
-        return getSeasonStart(SeasonName.SPRING);
-    }
-
-    /**
-     * Returns the date of the beginning of summer.
-     */
-    public Instant getSummer() {
-        return getSeasonStart(SeasonName.SUMMER);
-    }
-
-    /**
-     * Returns the date of the beginning of autumn.
-     */
-    public Instant getAutumn() {
-        return getSeasonStart(SeasonName.AUTUMN);
-    }
-
-    /**
-     * Returns the date of the beginning of winter.
-     */
-    public Instant getWinter() {
-        return getSeasonStart(SeasonName.WINTER);
     }
 
     private LocalSeason getSeason(Instant when) {
