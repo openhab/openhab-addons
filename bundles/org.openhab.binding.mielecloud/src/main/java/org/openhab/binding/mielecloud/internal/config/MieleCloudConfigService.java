@@ -68,8 +68,9 @@ public final class MieleCloudConfigService {
     private static final String IMG_ALIAS = ROOT_ALIAS + "/assets/img";
 
     private static final String WEBSITE_RESOURCE_BASE_PATH = "org/openhab/binding/mielecloud/internal/config";
-    private static final String WEBSITE_CSS_RESOURCE_PATH = WEBSITE_RESOURCE_BASE_PATH + "/assets/css";
-    private static final String WEBSITE_JS_RESOURCE_PATH = WEBSITE_RESOURCE_BASE_PATH + "/assets/js";
+    private static final String WEBSITE_3RD_PARTY_RESOURCE_BASE_PATH = "3rdparty";
+    private static final String WEBSITE_CSS_RESOURCE_PATH = WEBSITE_3RD_PARTY_RESOURCE_BASE_PATH + "/assets/css";
+    private static final String WEBSITE_JS_RESOURCE_PATH = WEBSITE_3RD_PARTY_RESOURCE_BASE_PATH + "/assets/js";
     private static final String WEBSITE_IMG_RESOURCE_PATH = WEBSITE_RESOURCE_BASE_PATH + "/assets/img";
 
     private final Logger logger = LoggerFactory.getLogger(MieleCloudConfigService.class);
