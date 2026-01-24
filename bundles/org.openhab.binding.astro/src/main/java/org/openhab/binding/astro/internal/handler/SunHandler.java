@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,13 +30,15 @@ import org.openhab.binding.astro.internal.calc.RadiationCalc;
 import org.openhab.binding.astro.internal.calc.SunCalc;
 import org.openhab.binding.astro.internal.job.DailyJobSun;
 import org.openhab.binding.astro.internal.job.Job;
+import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
+import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -55,9 +58,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SunHandler extends AstroThingHandler {
+    private static final Set<String> POSITIONAL_CHANNELS = Set.of(CHANNEL_ID_POSITION_AZIMUTH,
+            CHANNEL_ID_POSITION_ELEVATION, CHANNEL_ID_SUN_RADIATION_DIRECT, CHANNEL_ID_SUN_RADIATION_DIFFUSE,
+            CHANNEL_ID_SUN_RADIATION_TOTAL);
 
-    private final String[] positionalChannelIds = new String[] { "position#azimuth", "position#elevation",
-            "radiation#direct", "radiation#diffuse", "radiation#total" };
     private final SunCalc sunCalc;
     private final Logger logger = LoggerFactory.getLogger(SunHandler.class);
     volatile @Nullable Sun sun;
@@ -67,7 +71,7 @@ public class SunHandler extends AstroThingHandler {
      */
     public SunHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
             LocaleProvider localeProvider, InstantSource instantSource) {
-        super(thing, scheduler, timeZoneProvider, localeProvider, instantSource);
+        super(thing, scheduler, timeZoneProvider, localeProvider, instantSource, POSITIONAL_CHANNELS);
         sunCalc = new SunCalc(instantSource);
     }
 
@@ -77,17 +81,14 @@ public class SunHandler extends AstroThingHandler {
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
         ZonedDateTime now = instantSource.instant().atZone(zoneId);
-        Sun sun = getSunAt(now);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        Double altitude = thingConfig.altitude;
+        Sun sun = getPlanetAt(now, locale);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        double altitude = thingConfig.altitude instanceof Double value ? value : 0;
         Calendar calendar = DateTimeUtils.calFromInstantSource(instantSource, zone, locale);
-        sunCalc.setPositionalInfo(calendar, latitude != null ? latitude : 0, longitude != null ? longitude : 0,
-                altitude != null ? altitude : 0, sun);
+        sunCalc.setPositionalInfo(calendar, latitude, longitude, sun);
 
-        sun.getEclipse().setElevations(this, timeZoneProvider);
-
-        sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getNoon()));
+        sun.setCircadian(CircadianCalc.calculate(calendar, sun.getRise(), sun.getSet(), sun.getRange(SunPhase.NOON)));
         sun.setRadiation(RadiationCalc.calculate(now, sun.getPosition().getElevationAsDouble(), altitude));
 
         this.sun = sun;
@@ -115,120 +116,129 @@ public class SunHandler extends AstroThingHandler {
         Range r;
         Season s;
         switch (channel.getUID().getId()) {
-            case CHANNEL_ID_SUN_RISE_START:
+            case CHANNEL_ID_RISE_START:
                 return toState(sun.getRise().getStart(), channel);
-            case CHANNEL_ID_SUN_RISE_END:
+            case CHANNEL_ID_RISE_END:
                 return toState(sun.getRise().getEnd(), channel);
-            case CHANNEL_ID_SUN_RISE_DURATION:
+            case CHANNEL_ID_RISE_DURATION:
                 return toState(sun.getRise().getDuration(), channel);
-            case CHANNEL_ID_SUN_SET_START:
+            case CHANNEL_ID_SET_START:
                 return toState(sun.getSet().getStart(), channel);
-            case CHANNEL_ID_SUN_SET_END:
+            case CHANNEL_ID_SET_END:
                 return toState(sun.getSet().getEnd(), channel);
-            case CHANNEL_ID_SUN_SET_DURATION:
+            case CHANNEL_ID_SET_DURATION:
                 return toState(sun.getSet().getDuration(), channel);
             case CHANNEL_ID_SUN_NOON_START:
-                r = sun.getNoon();
+                r = sun.getRange(SunPhase.NOON);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NOON_END:
-                r = sun.getNoon();
+                r = sun.getRange(SunPhase.NOON);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NOON_DURATION:
-                r = sun.getNoon();
+                r = sun.getRange(SunPhase.NOON);
+                return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
+            case CHANNEL_ID_SUN_MIDNIGHT_START:
+                r = sun.getRange(SunPhase.MIDNIGHT);
+                return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
+            case CHANNEL_ID_SUN_MIDNIGHT_END:
+                r = sun.getRange(SunPhase.MIDNIGHT);
+                return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
+            case CHANNEL_ID_SUN_MIDNIGHT_DURATION:
+                r = sun.getRange(SunPhase.MIDNIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_NIGHT_START:
-                r = sun.getNight();
+                r = sun.getRange(SunPhase.NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NIGHT_END:
-                r = sun.getNight();
+                r = sun.getRange(SunPhase.NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NIGHT_DURATION:
-                r = sun.getNight();
+                r = sun.getRange(SunPhase.NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_MORNING_NIGHT_START:
-                r = sun.getMorningNight();
+                r = sun.getRange(SunPhase.MORNING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_MORNING_NIGHT_END:
-                r = sun.getMorningNight();
+                r = sun.getRange(SunPhase.MORNING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_MORNING_NIGHT_DURATION:
-                r = sun.getMorningNight();
+                r = sun.getRange(SunPhase.MORNING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_ASTRO_DAWN_START:
-                r = sun.getAstroDawn();
+                r = sun.getRange(SunPhase.ASTRO_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_ASTRO_DAWN_END:
-                r = sun.getAstroDawn();
+                r = sun.getRange(SunPhase.ASTRO_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_ASTRO_DAWN_DURATION:
-                r = sun.getAstroDawn();
+                r = sun.getRange(SunPhase.ASTRO_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DAWN_START:
-                r = sun.getNauticDawn();
+                r = sun.getRange(SunPhase.NAUTIC_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DAWN_END:
-                r = sun.getNauticDawn();
+                r = sun.getRange(SunPhase.NAUTIC_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DAWN_DURATION:
-                r = sun.getNauticDawn();
+                r = sun.getRange(SunPhase.NAUTIC_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_CIVIL_DAWN_START:
-                r = sun.getCivilDawn();
+                r = sun.getRange(SunPhase.CIVIL_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_CIVIL_DAWN_END:
-                r = sun.getCivilDawn();
+                r = sun.getRange(SunPhase.CIVIL_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_CIVIL_DAWN_DURATION:
-                r = sun.getCivilDawn();
+                r = sun.getRange(SunPhase.CIVIL_DAWN);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_ASTRO_DUSK_START:
-                r = sun.getAstroDusk();
+                r = sun.getRange(SunPhase.ASTRO_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_ASTRO_DUSK_END:
-                r = sun.getAstroDusk();
+                r = sun.getRange(SunPhase.ASTRO_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_ASTRO_DUSK_DURATION:
-                r = sun.getAstroDusk();
+                r = sun.getRange(SunPhase.ASTRO_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DUSK_START:
-                r = sun.getNauticDusk();
+                r = sun.getRange(SunPhase.NAUTIC_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DUSK_END:
-                r = sun.getNauticDusk();
+                r = sun.getRange(SunPhase.NAUTIC_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_NAUTIC_DUSK_DURATION:
-                r = sun.getNauticDusk();
+                r = sun.getRange(SunPhase.NAUTIC_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_CIVIL_DUSK_START:
-                r = sun.getCivilDusk();
+                r = sun.getRange(SunPhase.CIVIL_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_CIVIL_DUSK_END:
-                r = sun.getCivilDusk();
+                r = sun.getRange(SunPhase.CIVIL_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_CIVIL_DUSK_DURATION:
-                r = sun.getCivilDusk();
+                r = sun.getRange(SunPhase.CIVIL_DUSK);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_EVENING_NIGHT_START:
-                r = sun.getEveningNight();
+                r = sun.getRange(SunPhase.EVENING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_EVENING_NIGHT_END:
-                r = sun.getEveningNight();
+                r = sun.getRange(SunPhase.EVENING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_EVENING_NIGHT_DURATION:
-                r = sun.getEveningNight();
+                r = sun.getRange(SunPhase.EVENING_NIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
             case CHANNEL_ID_SUN_DAYLIGHT_START:
-                r = sun.getDaylight();
+                r = sun.getRange(SunPhase.DAYLIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getStart(), channel);
             case CHANNEL_ID_SUN_DAYLIGHT_END:
-                r = sun.getDaylight();
+                r = sun.getRange(SunPhase.DAYLIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getEnd(), channel);
             case CHANNEL_ID_SUN_DAYLIGHT_DURATION:
-                r = sun.getDaylight();
+                r = sun.getRange(SunPhase.DAYLIGHT);
                 return r == null ? UnDefType.UNDEF : toState(r.getDuration(), channel);
-            case CHANNEL_ID_SUN_POSITION_AZIMUTH:
+            case CHANNEL_ID_POSITION_AZIMUTH:
                 return toState(sun.getPosition().getAzimuth(), channel);
-            case CHANNEL_ID_SUN_POSITION_ELEVATION:
+            case CHANNEL_ID_POSITION_ELEVATION:
                 return toState(sun.getPosition().getElevation(), channel);
             case CHANNEL_ID_SUN_POSITION_SHADE_LENGTH:
                 return toState(sun.getPosition().getShadeLength(), channel);
@@ -242,43 +252,43 @@ public class SunHandler extends AstroThingHandler {
                 return toState(sun.getZodiac().getStart(), channel);
             case CHANNEL_ID_SUN_ZODIAC_END:
                 return toState(sun.getZodiac().getEnd(), channel);
-            case CHANNEL_ID_SUN_ZODIAC_SIGN:
+            case CHANNEL_ID_ZODIAC_SIGN:
                 return toState(sun.getZodiac().getSign(), channel);
             case CHANNEL_ID_SUN_SEASON_NAME:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getName(), channel);
             case CHANNEL_ID_SUN_SEASON_SPRING:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getSpring(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.SPRING), channel);
             case CHANNEL_ID_SUN_SEASON_SUMMER:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getSummer(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.SUMMER), channel);
             case CHANNEL_ID_SUN_SEASON_AUTUMN:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getAutumn(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.AUTUMN), channel);
             case CHANNEL_ID_SUN_SEASON_WINTER:
                 s = sun.getSeason();
-                return s == null ? UnDefType.UNDEF : toState(s.getWinter(), channel);
+                return s == null ? UnDefType.UNDEF : toState(s.getSeasonStart(SeasonName.WINTER), channel);
             case CHANNEL_ID_SUN_SEASON_NEXT_NAME:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getNextName(), channel);
             case CHANNEL_ID_SUN_SEASON_TIME_LEFT:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getTimeLeft(), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_TOTAL:
-                return toState(sun.getEclipse().getTotal(), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_TOTAL_ELEVATION:
-                return toState(sun.getEclipse().getTotalElevation(), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_PARTIAL:
-                return toState(sun.getEclipse().getPartial(), channel);
-            case CHANNEL_ID_SUN_ECLIPSE_PARTIAL_ELEVATION:
-                return toState(sun.getEclipse().getPartialElevation(), channel);
+            case CHANNEL_ID_ECLIPSE_TOTAL:
+                return toState(sun.getEclipseSet().getDate(EclipseKind.TOTAL), channel);
+            case CHANNEL_ID_ECLIPSE_TOTAL_ELEVATION:
+                return toState(sun.getEclipseSet().getElevation(EclipseKind.TOTAL), channel);
+            case CHANNEL_ID_ECLIPSE_PARTIAL:
+                return toState(sun.getEclipseSet().getDate(EclipseKind.PARTIAL), channel);
+            case CHANNEL_ID_ECLIPSE_PARTIAL_ELEVATION:
+                return toState(sun.getEclipseSet().getElevation(EclipseKind.PARTIAL), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING:
-                return toState(sun.getEclipse().getRing(), channel);
+                return toState(sun.getEclipseSet().getDate(EclipseKind.RING), channel);
             case CHANNEL_ID_SUN_ECLIPSE_RING_ELEVATION:
-                return toState(sun.getEclipse().getRingElevation(), channel);
-            case CHANNEL_ID_SUN_PHASE_NAME:
-                return toState(sun.getPhase().getName(), channel);
+                return toState(sun.getEclipseSet().getElevation(EclipseKind.RING), channel);
+            case CHANNEL_ID_PHASE_NAME:
+                return toState(sun.getSunPhase(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS:
                 return toState(sun.getCircadian().getBrightness(), channel);
             case CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE:
@@ -291,48 +301,39 @@ public class SunHandler extends AstroThingHandler {
     }
 
     @Override
-    protected String[] getPositionalChannelIds() {
-        return positionalChannelIds;
-    }
-
-    @Override
     protected Job getDailyJob(TimeZone zone, Locale locale) {
         return new DailyJobSun(this, zone, locale, instantSource);
     }
 
-    private Sun getSunAt(ZonedDateTime date) {
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        Double altitude = thingConfig.altitude;
-        return sunCalc.getSunInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, altitude != null ? altitude : 0, thingConfig.useMeteorologicalSeason,
-                TimeZone.getTimeZone(timeZoneProvider.getTimeZone()), Locale.ROOT);
+    @Override
+    public Sun getPlanetAt(ZonedDateTime date, Locale locale) {
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        double altitude = thingConfig.altitude instanceof Double value ? value : 0;
+        return sunCalc.getSunInfo(GregorianCalendar.from(date), latitude, longitude, altitude,
+                thingConfig.useMeteorologicalSeason, TimeZone.getTimeZone(timeZoneProvider.getTimeZone()), Locale.ROOT);
     }
 
     private Sun getPositionedSunAt(ZonedDateTime date) {
-        Sun localSun = getSunAt(date);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        Double altitude = thingConfig.altitude;
-        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, altitude != null ? altitude : 0, localSun);
+        Sun localSun = getPlanetAt(date, Locale.ROOT);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        sunCalc.setPositionalInfo(GregorianCalendar.from(date), latitude, longitude, localSun);
         return localSun;
     }
 
-    public @Nullable ZonedDateTime getEventTime(SunPhaseName sunPhase, ZonedDateTime date, boolean begin) {
-        Range eventRange = getSunAt(date).getAllRanges().get(sunPhase);
+    public @Nullable ZonedDateTime getEventTime(SunPhase sunPhase, ZonedDateTime date, boolean begin) {
+        Range eventRange = getPlanetAt(date, Locale.ROOT).getAllRanges().get(sunPhase);
         if (eventRange != null) {
             Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();
             return cal == null ? null : ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override
-    public @Nullable Position getPositionAt(ZonedDateTime date) {
-        Sun localSun = getPositionedSunAt(date);
-        return localSun.getPosition();
+    public Position getPositionAt(ZonedDateTime date) {
+        return getPositionedSunAt(date).getPosition();
     }
 
     public @Nullable Radiation getRadiationAt(ZonedDateTime date) {

@@ -44,7 +44,7 @@ public class CircadianCalc {
 
         // If we have no rise or no set, there's no point calculating a Circadian Cycle
         if (rise == null || set == null || noon == null) {
-            return Circadian.DEFAULT;
+            return Circadian.NONE;
         }
         return calculate(calendar, rise, set, noon);
     }
@@ -85,14 +85,14 @@ public class CircadianCalc {
         long dx = h - x;
         if (dx == 0L) {
             LOGGER.debug("Degenerate circadian parabola (h == x), returning default values");
-            return Circadian.DEFAULT;
+            return Circadian.NONE;
         }
         double a = (y - k) / (dx * dx);
-        double percentage = a * Math.pow(now - h, 2) + k;
+        double percentage = Math.max(Math.min(a * Math.pow(now - h, 2) + k, 100.0), 0.0);
         double colorTemp = percentage > 0 ? (DELTA_TEMP * percentage / 100) + MIN_COLOR_TEMP : MIN_COLOR_TEMP;
 
         LOGGER.debug("Percentage: {}, ColorTemp: {}", percentage, colorTemp);
 
-        return new Circadian(Math.min(100, Math.abs(percentage)), colorTemp);
+        return new Circadian(percentage, colorTemp);
     }
 }

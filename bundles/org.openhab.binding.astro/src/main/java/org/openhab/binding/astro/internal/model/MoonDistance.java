@@ -32,7 +32,7 @@ import org.openhab.core.library.types.QuantityType;
  */
 @NonNullByDefault
 public class MoonDistance {
-    public static final MoonDistance NULL = new MoonDistance();
+    public static final MoonDistance NONE = new MoonDistance();
 
     private final @Nullable Instant date;
     private final double distance;

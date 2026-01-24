@@ -23,7 +23,7 @@ import org.openhab.binding.astro.internal.AstroBindingConstants;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.handler.SunHandler;
 import org.openhab.binding.astro.internal.model.Radiation;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -86,9 +86,8 @@ public class AstroActions implements ThingActions {
                 return qta;
             }
             return null;
-        } else {
-            logger.info("Astro Action service ThingHandler is null!");
         }
+        logger.info("Astro Action service ThingHandler is null!");
         return null;
     }
 
@@ -104,9 +103,8 @@ public class AstroActions implements ThingActions {
                 return qta;
             }
             return null;
-        } else {
-            logger.info("Astro Action service ThingHandler is null!");
         }
+        logger.info("Astro Action service ThingHandler is null!");
         return null;
     }
 
@@ -120,9 +118,8 @@ public class AstroActions implements ThingActions {
                 Radiation radiation = sunHandler
                         .getRadiationAt(date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()));
                 return radiation == null ? null : radiation.getTotal();
-            } else {
-                logger.info("Astro Action service ThingHandler is not a SunHandler!");
             }
+            logger.info("Astro Action service ThingHandler is not a SunHandler!");
         } else {
             logger.info("Astro Action service ThingHandler is null!");
         }
@@ -139,13 +136,12 @@ public class AstroActions implements ThingActions {
             AstroThingHandler theHandler = this.handler;
             if (theHandler != null) {
                 if (theHandler instanceof SunHandler sunHandler) {
-                    SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase(Locale.ROOT));
+                    SunPhase phase = SunPhase.valueOf(phaseName.toUpperCase(Locale.ROOT));
                     return sunHandler.getEventTime(phase,
                             date != null ? date : ZonedDateTime.now(timeZoneProvider.getTimeZone()),
                             moment == null || AstroBindingConstants.EVENT_START.equalsIgnoreCase(moment));
-                } else {
-                    logger.info("Astro Action service ThingHandler is not a SunHandler!");
                 }
+                logger.info("Astro Action service ThingHandler is not a SunHandler!");
             } else {
                 logger.info("Astro Action service ThingHandler is null!");
             }
@@ -172,8 +168,7 @@ public class AstroActions implements ThingActions {
             @Nullable ZonedDateTime date, @Nullable String moment) {
         if (phaseName != null) {
             return ((AstroActions) actions).getEventTime(phaseName, date, moment);
-        } else {
-            throw new IllegalArgumentException("phaseName can not be null");
         }
+        throw new IllegalArgumentException("phaseName can not be null");
     }
 }

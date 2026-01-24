@@ -7,13 +7,13 @@
 	<config-description uri="channel-type:tacmi:schemaApiDefaults">
 		<parameter name="updatePolicy" type="integer" min="0" max="2">
 			<label>Update Policy</label>
-			<description>Update policy for this channel. Default means "On-Change" for channels that can be modified and
-				"On-Fetch" for read-only channels.</description>
+			<description>Update policy for this channel. Default means "On-Fetch" for read-only channels and "On-Change" for
+				channels that can be modified.</description>
 			<default>0</default>
 			<options>
 				<option value="0">Default</option>
 				<option value="1">On-Fetch</option>
-				<option value="2">On-Update</option>
+				<option value="2">On-Change</option>
 			</options>
 		</parameter>
 	</config-description>

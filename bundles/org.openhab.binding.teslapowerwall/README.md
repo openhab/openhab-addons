@@ -15,8 +15,8 @@ The binding does not support auto discovery.
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
 | hostname        | N/A           | Yes      | No       | The IP or hostname of the Tesla Powerwall                                            |
-| email           | N/A           | Yes      | No       | the email of the local account on the Powerwall that the installer provided          |
-| password        | N/A           | Yes      | No       | the password of the local account on the Powerwall that the installer provided       |
+| email           | N/A           | Yes      | No       | The email of the local account on the Powerwall that the installer provided          |
+| password        | N/A           | Yes      | No       | The password of the local account on the Powerwall that the installer provided       |
 | refresh         | 10            | No       | Yes      | The frequency with which to refresh information from the Powerwall (in seconds)      |
 
 ## Channels
@@ -55,7 +55,7 @@ teslapowerwall:tesla-powerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
 ```java
 String TeslaPowerwall_grid-status { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-status" }
 Switch TeslaPowerwall_grid-services { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-services" }
-Number:Dimensionless TeslaPowerwall_battery-soe { channel="tesla-powerwall:teslapowerwall:TeslaPowerwall:battery-soe", unit="%" }
+Number:Dimensionless TeslaPowerwall_battery-soe { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:battery-soe", unit="%" }
 String TeslaPowerwall_mode { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:mode" }
 Number:Dimensionless TeslaPowerwall_reserve { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:reserve", unit="%" }
 Number:Power TeslaPowerwall_grid-inst-power { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-inst-power" }
@@ -89,7 +89,7 @@ Text item=TeslaPowerwall_solar-inst-power label="Solar Power [%.1f W]"
 Text item=TeslaPowerwall_grid-energy-exported label="Grid Energy Exported [%.1f kWh]"
 Text item=TeslaPowerwall_grid-energy-imported label="Grid Energy Imported [%.1f kWh]"
 Text item=TeslaPowerwall_battery-energy-exported label="Battery Energy Exported [%.1f kWh]"
-Text item=TeslaPowerwall_battery-energyi-mported label="Battery Energy Imported [%.1f kWh]"
+Text item=TeslaPowerwall_battery-energy-imported label="Battery Energy Imported [%.1f kWh]"
 Text item=TeslaPowerwall_home-energy-exported label="Home Energy Exported [%.1f kWh]"
 Text item=TeslaPowerwall_home-energy-imported label="Home Energy Imported [%.1f kWh]"
 Text item=TeslaPowerwall_solar-energy-exported label="Solar Energy Exported [%.1f kWh]"

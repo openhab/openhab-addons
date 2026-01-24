@@ -10,28 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.astro.internal.model;
+package org.openhab.io.hueemulation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * All sun phases.
+ * Interface for listening to binding configuration changes.
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public enum SunPhaseName {
-    SUN_RISE,
-    ASTRO_DAWN,
-    NAUTIC_DAWN,
-    CIVIL_DAWN,
-    CIVIL_DUSK,
-    NAUTIC_DUSK,
-    ASTRO_DUSK,
-    SUN_SET,
-    DAYLIGHT,
-    NOON,
-    NIGHT,
-    MORNING_NIGHT,
-    EVENING_NIGHT
+public interface ConfigurationListener {
+    void bindingConfigurationChanged();
 }

@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast.internal.actions;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -119,4 +120,13 @@ public interface SolarForecast {
      * @return Instant of the forecast creation
      */
     Instant getCreationInstant();
+
+    /**
+     * Get the SolarForecastAdjuster used for adjustment
+     *
+     * @return SolarForecastAdjuster object
+     */
+    default Optional<SolarForecastAdjuster> getAdjuster() {
+        return Optional.empty();
+    }
 }
