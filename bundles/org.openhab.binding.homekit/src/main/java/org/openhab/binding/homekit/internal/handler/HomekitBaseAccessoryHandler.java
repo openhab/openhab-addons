@@ -46,6 +46,7 @@ import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
+import org.openhab.binding.homekit.internal.dto.ImageResourceDescription;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.hapservices.CharacteristicReadWriteClient;
@@ -56,13 +57,17 @@ import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +101,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private volatile @Nullable IpTransport ipTransport;
     private volatile @Nullable ScheduledFuture<?> refreshTask;
     private volatile @Nullable Future<?> manualRefreshTask;
+    private volatile @Nullable Future<?> snapshotRefreshTask;
 
     private @NonNullByDefault({}) Long accessoryId;
 
@@ -773,8 +779,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 if (refreshIntervalSeconds > 0) {
                     ScheduledFuture<?> task = refreshTask;
                     if (task == null || task.isCancelled() || task.isDone()) {
-                        refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, refreshIntervalSeconds,
-                                refreshIntervalSeconds, TimeUnit.SECONDS);
+                        refreshTask = scheduler.scheduleWithFixedDelay(() -> {
+                            refresh();
+                            refreshSnapshot();
+                        }, refreshIntervalSeconds, refreshIntervalSeconds, TimeUnit.SECONDS);
                     }
                 }
             } catch (NumberFormatException e) {
@@ -787,7 +795,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Cancels the refresh tasks if either is running.
+     * Cancels the refresh tasks if any are running.
      */
     private void cancelRefreshTasks() {
         if (refreshTask instanceof ScheduledFuture<?> task) {
@@ -796,8 +804,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (manualRefreshTask instanceof Future<?> task) {
             task.cancel(true);
         }
+        if (snapshotRefreshTask instanceof Future<?> task) {
+            task.cancel(true);
+        }
         refreshTask = null;
         manualRefreshTask = null;
+        snapshotRefreshTask = null;
     }
 
     /**
@@ -868,4 +880,68 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Subclasses MUST override this to perform any extra processing required.
      */
     protected abstract void initializeNotReadyThings();
+
+    /**
+     * Refreshes the snapshot channel image if the Channel exists and it is linked to an Item. Executes an
+     * HTTP POST request to fetch the IP camera snapshot image for this accessory, according to the Apple
+     * specification chapter '11.5 Image Snapshot'. The requested image size is taken from the channel
+     * configuration parameters CONFIG_SNAPSHOT_WIDTH and CONFIG_SNAPSHOT_HEIGHT, defaulting to 640x360 if
+     * not provided. The request body is a JSON SnapshotImageRequest object, and the response body results
+     * are JPEGs. If the image is successfully fetched, the snapshot channel state is updated with a RawType.
+     * And if an error occurs it is updated to UnDefType.UNDEF / UnDefType.NULL accordingly.
+     */
+    private synchronized void refreshSnapshot() {
+        if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel channel && isLinked(channel.getUID())
+                && getAccessoryId() instanceof Long aid) {
+            try {
+                Configuration conf = channel.getConfiguration();
+                Map.Entry<Long, Long> imageSize = Map.entry( //
+                        getConfigurationLong(conf, CONFIG_SNAPSHOT_WIDTH, 640L),
+                        getConfigurationLong(conf, CONFIG_SNAPSHOT_HEIGHT, 360L));
+                ImageResourceDescription request = new ImageResourceDescription(aid, imageSize);
+                byte[] requestBytes = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
+                byte[] responseBytes = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, requestBytes);
+                if (responseBytes.length > 0) {
+                    updateState(channel.getUID(), new RawType(responseBytes, CONTENT_TYPE_JPEG));
+                } else {
+                    logger.warn("{} snapshot is empty", thing.getUID());
+                    updateState(channel.getUID(), UnDefType.NULL);
+                }
+            } catch (NumberFormatException | IllegalStateException | IllegalAccessException | IOException
+                    | InterruptedException | ExecutionException | TimeoutException e) {
+                logger.warn("{} error '{}' fetching snapshot", thing.getUID(), e.getMessage(), e);
+                updateState(channel.getUID(), UnDefType.UNDEF);
+            }
+        }
+    }
+
+    /**
+     * Get a long configuration parameter from a (channel) configuration.
+     * 
+     * @param cfg the configuration
+     * @param key the configuration key
+     * @param def the default value
+     * 
+     * @return the long value
+     * @throws NumberFormatException if the value cannot be parsed as a long
+     */
+    private Long getConfigurationLong(Configuration cfg, String key, long def) throws NumberFormatException {
+        Object object = cfg.get(key);
+        if (object instanceof Number number) {
+            return number.longValue();
+        } else if (object != null) {
+            return Long.parseLong(object.toString());
+        }
+        return def;
+    }
+
+    /**
+     * Schedules a snapshot refresh task if not already scheduled.
+     */
+    protected void scheduleSnapshotRefresh() {
+        Future<?> snapshotRefreshTask = this.snapshotRefreshTask;
+        if (snapshotRefreshTask == null || snapshotRefreshTask.isDone()) {
+            this.snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
+        }
+    }
 }
