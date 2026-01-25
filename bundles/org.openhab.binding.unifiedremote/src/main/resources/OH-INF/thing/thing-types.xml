@@ -12,7 +12,7 @@
 			<channel id="mouse-move" typeId="mouse-move-channel"/>
 			<channel id="send-key" typeId="send-key-channel"/>
 		</channels>
-		<representation-property>host</representation-property>
+		<representation-property>macAddress</representation-property>
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>

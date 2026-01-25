@@ -2,11 +2,12 @@
 
 The Video Disk Recorder (VDR) binding allows openHAB to control your own [Video Disk Recorder](https://www.tvdr.de).
 
-The binding is based on VDR's own SVDRP (Simple VDR Protocol) connectivity. It supports remote control actions like changing volume and channels as well as sending key commands to your VDR. Current and next EPG event data is also available.
+The binding is based on VDR's own SVDRP (Simple VDR Protocol) connectivity.
+It supports remote control actions like changing volume and channels as well as sending key commands to your VDR.
+Current and next EPG event data is also available.
 
-## Supported Things
-
-The binding provides only one Thing type: `vdr`. You can create one Thing for each VDR instance in your home.
+The binding provides only one Thing type: `vdr`.
+You can create one Thing for each VDR instance in your home.
 
 ## Thing Configuration
 
@@ -67,24 +68,24 @@ Thing vdr:vdr:livingRoom "VDR" @ "LivingRoom"    [ host="192.168.0.77", port=641
 ### Items
 
 ```java
-Switch   VDR_LivingRoom_Power                "Power"                                     {channel="vdr:vdr:livingRoom:power" }
-Number   VDR_LivingRoom_Channel              "Channel Number"                            {channel="vdr:vdr:livingRoom:channel" }
-String   VDR_LivingRoom_ChannelName          "Channel Name"                              {channel="vdr:vdr:livingRoom:channelName" }
-Dimmer   VDR_LivingRoom_Volume               "Volume"                                    {channel="vdr:vdr:livingRoom:volume" }
-Number   VDR_LivingRoom_DiskUsage            "Disk [%d %%]"                              {channel="vdr:vdr:livingRoom:diskUsage" }
-Switch   VDR_LivingRoom_Recording            "Recording"                                 {channel="vdr:vdr:livingRoom:recording" }
-String   VDR_LivingRoom_Message              "Message"                                   {channel="vdr:vdr:livingRoom:message" }
-String   VDR_LivingRoom_Key                  "Key Code"                                  {channel="vdr:vdr:livingRoom:keyCode" }
-String   VDR_LivingRoom_CurrentEventTitle    "Title (current)"                           {channel="vdr:vdr:livingRoom:currentEventTitle" }
-String   VDR_LivingRoom_CurrentEventSubTitle "Subtitle (current)"                        {channel="vdr:vdr:livingRoom:currentEventSubTitle" }
-DateTime VDR_LivingRoom_CurrentEventBegin    "Begin (current) [%1$td.%1$tm.%1$tY %1$tR]" {channel="vdr:vdr:livingRoom:currentEventBegin" }
-DateTime VDR_LivingRoom_CurrentEventEnd      "End (current) [%1$td.%1$tm.%1$tY %1$tR]"   {channel="vdr:vdr:livingRoom:currentEventEnd" }
-Number:Time VDR_LivingRoom_CurrentEventDuration "Duration (current) [%d min]"            {channel="vdr:vdr:livingRoom:currentEventDuration" }
-String   VDR_LivingRoom_NextEventTitle       "Title (next)"                              {channel="vdr:vdr:livingRoom:nextEventTitle" }
-String   VDR_LivingRoom_NextEventSubTitle    "Subtitle (next)"                           {channel="vdr:vdr:livingRoom:nextEventSubTitle" }
-DateTime VDR_LivingRoom_NextEventBegin       "Begin (next) [%1$td.%1$tm.%1$tY %1$tR]"    {channel="vdr:vdr:livingRoom:nextEventBegin" }
-DateTime VDR_LivingRoom_NextEventEnd         "End (next) [%1$td.%1$tm.%1$tY %1$tR]"      {channel="vdr:vdr:livingRoom:nextEventEnd" }
-Number:Time VDR_LivingRoom_NextEventDuration    "Duration (next) [%d min]"               {channel="vdr:vdr:livingRoom:nextEventDuration" }
+Switch      VDR_LivingRoom_Power                "Power"                                     {channel="vdr:vdr:livingRoom:power" }
+Number      VDR_LivingRoom_Channel              "Channel Number"                            {channel="vdr:vdr:livingRoom:channel" }
+String      VDR_LivingRoom_ChannelName          "Channel Name"                              {channel="vdr:vdr:livingRoom:channelName" }
+Dimmer      VDR_LivingRoom_Volume               "Volume"                                    {channel="vdr:vdr:livingRoom:volume" }
+Number      VDR_LivingRoom_DiskUsage            "Disk [%d %%]"                              {channel="vdr:vdr:livingRoom:diskUsage" }
+Switch      VDR_LivingRoom_Recording            "Recording"                                 {channel="vdr:vdr:livingRoom:recording" }
+String      VDR_LivingRoom_Message              "Message"                                   {channel="vdr:vdr:livingRoom:message" }
+String      VDR_LivingRoom_Key                  "Key Code"                                  {channel="vdr:vdr:livingRoom:keyCode" }
+String      VDR_LivingRoom_CurrentEventTitle    "Title (current)"                           {channel="vdr:vdr:livingRoom:currentEventTitle" }
+String      VDR_LivingRoom_CurrentEventSubTitle "Subtitle (current)"                        {channel="vdr:vdr:livingRoom:currentEventSubTitle" }
+DateTime    VDR_LivingRoom_CurrentEventBegin    "Begin (current) [%1$td.%1$tm.%1$tY %1$tR]" {channel="vdr:vdr:livingRoom:currentEventBegin" }
+DateTime    VDR_LivingRoom_CurrentEventEnd      "End (current) [%1$td.%1$tm.%1$tY %1$tR]"   {channel="vdr:vdr:livingRoom:currentEventEnd" }
+Number:Time VDR_LivingRoom_CurrentEventDuration "Duration (current) [%d min]"               {channel="vdr:vdr:livingRoom:currentEventDuration" }
+String      VDR_LivingRoom_NextEventTitle       "Title (next)"                              {channel="vdr:vdr:livingRoom:nextEventTitle" }
+String      VDR_LivingRoom_NextEventSubTitle    "Subtitle (next)"                           {channel="vdr:vdr:livingRoom:nextEventSubTitle" }
+DateTime    VDR_LivingRoom_NextEventBegin       "Begin (next) [%1$td.%1$tm.%1$tY %1$tR]"    {channel="vdr:vdr:livingRoom:nextEventBegin" }
+DateTime    VDR_LivingRoom_NextEventEnd         "End (next) [%1$td.%1$tm.%1$tY %1$tR]"      {channel="vdr:vdr:livingRoom:nextEventEnd" }
+Number:Time VDR_LivingRoom_NextEventDuration    "Duration (next) [%d min]"                  {channel="vdr:vdr:livingRoom:nextEventDuration" }
 ```
 
 ### Sitemap
