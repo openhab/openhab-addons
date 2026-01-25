@@ -1,44 +1,114 @@
 # openHAB Hue Emulation Service
 
-Hue Emulation exposes openHAB items as Hue lights to other Hue API compatible applications like Amazon Echos, Google Homes or any Hue compatible application.
+Hue Emulation exposes openHAB items as Philips Hue lights to Hue API–compatible applications such as Amazon Echo, Google Home, and other Hue-compatible apps.
 
-Because Amazon Echo and Google Home control openHAB locally this way, it is a fast and reliable way to voice control your installation.
+Because Amazon Echo and Google Home communicate with openHAB locally via the Hue API, this provides a fast and reliable way to control your installation using voice commands.
 See the Troubleshoot section down below though.
 
 This service is independent of the also available Hue binding!
 
 Currently the following Hue functionality is supported:
 
-- Lights: Maps to items
-- Groups: Maps to group items
-- Rooms: Maps to group items with a specific tag
-- Scenes: Maps to rules (new rule engine) that are tagged with "scene"
-- Rules: Maps to rules (new rule engine) that are tagged with "hueemulation_rule"
-- Schedule: Maps to rules (new rule engine) that are tagged with "hueemulation_schedule"
+- **Lights**: Exposed from openHAB items
+- **Groups / Rooms**: Derived from openHAB groups or semantic locations
+- **Scenes**: Maps to rules that are tagged with `scene`
+- **Rules**: Maps to rules that are tagged with `hueemulation_rule`
+- **Schedules**: Maps to rules that are tagged with `hueemulation_schedule`
 
-You can create / modify and remove groups, rooms, scenes, rules and schedules from within Hue compatible devices and apps.
+You can create, modify, and remove groups, rooms, scenes, rules, and schedules from within Hue-compatible devices and apps.
+
+## Mapping models
+
+Hue Emulation can expose items in two different ways:
+
+1. **Classic item-based mapping** (default)
+1. **Semantic model-based mapping** (optional, recommended)
+
+The selected model affects how lights and rooms are derived.
+Only one mapping model is active at a time.
+
+## Semantic model mapping
+
+When semantic model mapping is enabled, Hue Emulation derives lights and rooms from openHAB’s semantic model instead of relying on item types and tags.
+
+This allows Hue-compatible apps to discover a structure that closely matches a real Philips Hue bridge:
+
+- **Lights** are derived from semantic *LightSource* equipment
+- **Rooms** are derived from semantic *Location* groups
+- **Light capabilities** are inferred from semantic points
+
+### Lights
+
+A Hue light is created for each semantic **LightSource** equipment.
+
+Each LightSource may expose one or more Hue lights, depending on its members:
+
+- Switch → On/Off light
+- Dimmer → Dimmable light
+- Color → Color light
+
+Only items that are:
+
+- members of a semantic LightSource equipment
+- tagged with appropriate semantic Point and Property tags
+
+are considered when deriving Hue lights.
+
+The required semantic tags for each light type are:
+
+- **On/Off lights** (Switch items): Point tag **Switch**, Property tag **Power**
+- **Dimmable lights** (Dimmer items): Point tag **Control**, Property tag **Brightness**
+- **Color lights** (Color items): Point tag **Control**, Property tag **Color**
+
+Renaming a light will change the label of the LightSource equipment.
+
+### Rooms (Hue groups)
+
+If a **LightSource** is located inside a semantic **Location** group, that location is exposed as a Hue room.
+
+Rooms are optional:
+
+- If no semantic Location exists, lights are still exposed
+- Lights without a Location simply appear without a room assignment
+
+### Mixed light types in rooms
+
+If a room contains different kinds of lights (for example switches and color lights), the room exposes the **lowest common denominator** of supported features.
+
+This matches the behavior of a real Hue bridge:
+
+- Commands are broadcast to all lights
+- Each light applies only what it supports
+- Unsupported attributes are silently ignored
+
+This means, for example, that setting a color on a mixed room will only affect color-capable lights.
+Individual lights always retain their full capabilities.
 
 ## Discovery
 
-As soon as the service is enabled, it will announce the presence of an (emulated) HUE bridge of the second generation (square bridge).
+As soon as the service is enabled, it will announce the presence of an (emulated) Hue bridge of the second generation (square bridge).
 Hue bridges are using the Universal Plug and Play (UPnP) protocol for discovery.
 
 ![Philips Hue Bridge](doc/Philips_Hue_Bridge.jpg)
 
-Like the real HUE bridge the service must be put into pairing mode before other applications can access it.
+Like the real Hue bridge the service must be put into pairing mode before other applications can access it.
 By default the pairing mode disables itself after 1 minute (can be configured).
 
-## Exposed lights
+## Classic mapping
 
-It is important to note that you are exposing _Items_ not _Things_ or _Channels_.
+### Exposed lights
+
+This section applies only when semantic model mapping is disabled.
+
+It is important to note that Hue Emulation exposes _Items_, not _Things_ or _Channels_.
 Only Color, Dimmer, Rollershutter, Switch and Group type _Items_ are supported.
 Group type items require the "Huelight" tag to be exposed as devices instead of Groups.
 
-This service can emulate 3 different devices:
+This service can emulate three different devices:
 
-- An OSRAM SMART+ Plug,
-- a dimmable white color Philips A19 bulb and
-- an a Philips Gen 3 LCT010 extended color bulb.
+- An OSRAM SMART+ Plug
+- a dimmable white color Philips A19 bulb
+- a Philips Gen 3 LCT010 extended color bulb
 
 The exposed Hue-type depends on some criteria:
 
@@ -57,16 +127,34 @@ It is the responsibility of binding developers to categories and default tag the
 
 You can tag items manually though as well.
 
-## Exposed names
+### Exposed names
+
+This section applies only when semantic model mapping is disabled.
 
 Your items labels are used for exposing!
 The default naming schema for automatically linked items unfortunately names _Items_ like their Channel names,
 so usually "Brightness" or "Color". You want to rename those.
 
+### Migrating from classic mapping
+
+Existing setups continue to work unchanged.
+
+To migrate to the semantic model:
+
+1. Define semantic LightSource equipment
+1. Assign control points (Switch, Dimmer, Color)
+1. Optionally place equipment inside Location groups
+1. Enable `useSemanticModel`
+
 ## Configuration
 
 All options are available in the graphical interface and via textual configuration.
-The following configurations can be adjusted.
+
+Semantic model mapping can be enabled via configuration:
+
+```ini
+org.openhab.hueemulation:useSemanticModel=true
+```
 
 Pairing can be turned on and off:
 
@@ -203,11 +291,35 @@ It might help to (temporarly) lower the emulated bridge version in the configura
 
 ## Text configuration example
 
-The item label will be used as the Hue device name. Please be aware that textual defined items are generally a bad idea.
+### Semantic model mapping
+
+The following example shows a semantic model where **Locations** become Hue rooms and **LightSource equipment** becomes Hue lights.
+
+```java
+// Locations (Rooms)
+Group Kitchen    "Kitchen"     ["Kitchen"]
+Group FamilyRoom "Family room" ["FamilyRoom"]
+Group Office     "Office"      ["Office"]
+
+// LightSource equipment
+Group KitchenSpots     "Kitchen spots"      (Kitchen)    ["Lightbulb"]
+Group DinnerTableLamp  "Dinner table"       (FamilyRoom) ["Pendant"]
+Group GamingLightStrip "Gaming light strip" (Office)     ["LightStrip"]
+
+// Control points
+Switch  TestSwitch     "Switch"     (KitchenSpots)     ["Switch", "Power"]       {channel="..."}
+Dimmer  TestDimmer     "Brightness" (DinnerTableLamp)  ["Control", "Brightness"] {channel="..."}
+Color   TestColor      "Color"      (GamingLightStrip) ["Control", "Color"]      {channel="..."}
+```
+
+### Classic mapping
+
+The item label will be used as the Hue device name.
+Please be aware that textual defined items are generally a bad idea.
 In this case renaming items in Hue compatible Apps will fail.
 
 ```java
-Switch  TestSwitch      "Kitchen Switch" [ "Switchable" ]    {channel="..."}
-Color   TestColorBulb   "Bathroom"       [ "ColorLighting" ] {channel="..."}
-Dimmer  TestDimmer      "Hallway"        [ "Lighting" ]      {channel="..."}
+Switch  TestSwitch     "Kitchen spots"      [ "Switchable" ]    {channel="..."}
+Dimmer  TestDimmer     "Dinner table"       [ "Lighting" ]      {channel="..."}
+Color   TestColor      "Gaming light strip" [ "ColorLighting" ] {channel="..."}
 ```

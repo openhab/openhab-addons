@@ -75,10 +75,6 @@ class ThreadsafeSimpleRuleDelegate implements Rule, SimpleRuleActionHandler {
         return delegate.getTemplateUID();
     }
 
-    public void setTemplateUID(@Nullable String templateUID) {
-        delegate.setTemplateUID(templateUID);
-    }
-
     @Override
     @Nullable
     public String getName() {

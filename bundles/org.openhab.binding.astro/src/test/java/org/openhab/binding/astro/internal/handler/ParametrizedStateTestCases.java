@@ -12,15 +12,20 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
+import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.CommonTestConstants.*;
 
-import java.util.Arrays;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
 
 /**
  * Test cases used in the {@link StateTest}
@@ -35,185 +40,181 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public final class ParametrizedStateTestCases {
 
-    public static final double TEST_LATITUDE = 22.4343;
-    public static final double TEST_LONGITUDE = 54.3225;
-    public static final int TEST_YEAR = 2016;
-    public static final int TEST_MONTH = 2;
-    public static final int TEST_DAY = 29;
+    public static final Instant LEAP_DAY_2016_SA = Instant.parse("2016-02-29T03:00:00Z");
+    public static final ZoneId BAGHDAD_ZONE = ZoneId.of("Asia/Baghdad");
+    public static final Location SHAYBAH_LOC = new Location(22.4343, 54.3225);
+    public static final Instant MARCH_16_2022_UA = Instant.parse("2022-03-16T08:04:53Z");
+    public static final ZoneId KYIV_ZONE = ZoneId.of("Europe/Kyiv");
+    public static final Location MARIUPOL_LOC = new Location(47.096059749317625, 37.548728017918116);
 
-    public Object[][] cases = new Object[42][3];
+    public record Location(double latitude, double longitude) {
 
-    public ParametrizedStateTestCases() {
-        cases[0][0] = TEST_SUN_THING_ID;
-        cases[0][1] = "rise#start";
-        cases[0][2] = new DateTimeType("2016-02-29T05:46:07+03:00");
-
-        cases[1][0] = TEST_SUN_THING_ID;
-        cases[1][1] = "rise#end";
-        cases[1][2] = new DateTimeType("2016-02-29T05:48:26+03:00");
-
-        cases[2][0] = TEST_SUN_THING_ID;
-        cases[2][1] = "rise#duration";
-        cases[2][2] = new QuantityType<>(2.32, Units.MINUTE);
-
-        cases[3][0] = TEST_SUN_THING_ID;
-        cases[3][1] = "set#start";
-        cases[3][2] = new DateTimeType("2016-02-29T17:24:56+03:00");
-
-        cases[4][0] = TEST_SUN_THING_ID;
-        cases[4][1] = "set#end";
-        cases[4][2] = new DateTimeType("2016-02-29T17:27:15+03:00");
-
-        cases[5][0] = TEST_SUN_THING_ID;
-        cases[5][1] = "set#duration";
-        cases[5][2] = new QuantityType<>(2.32, Units.MINUTE);
-
-        cases[6][0] = TEST_SUN_THING_ID;
-        cases[6][1] = "noon#start";
-        cases[6][2] = new DateTimeType("2016-02-29T11:36:41+03:00");
-
-        cases[7][0] = TEST_SUN_THING_ID;
-        cases[7][1] = "noon#end";
-        cases[7][2] = new DateTimeType("2016-02-29T11:37:41+03:00");
-
-        cases[8][0] = TEST_SUN_THING_ID;
-        cases[8][1] = "noon#duration";
-        cases[8][2] = new QuantityType<>(1, Units.MINUTE);
-
-        cases[9][0] = TEST_SUN_THING_ID;
-        cases[9][1] = "night#start";
-        cases[9][2] = new DateTimeType("2016-02-29T18:41:51+03:00");
-
-        cases[10][0] = TEST_SUN_THING_ID;
-        cases[10][1] = "night#end";
-        cases[10][2] = new DateTimeType("2016-03-01T04:30:44+03:00");
-
-        cases[11][0] = TEST_SUN_THING_ID;
-        cases[11][1] = "night#duration";
-        cases[11][2] = new QuantityType<>(589, Units.MINUTE);
-
-        cases[12][0] = TEST_SUN_THING_ID;
-        cases[12][1] = "morningNight#start";
-        cases[12][2] = new DateTimeType("2016-02-29T00:00:00+03:00");
-
-        cases[13][0] = TEST_SUN_THING_ID;
-        cases[13][1] = "morningNight#end";
-        cases[13][2] = new DateTimeType("2016-02-29T04:31:31+03:00");
-
-        cases[14][0] = TEST_SUN_THING_ID;
-        cases[14][1] = "morningNight#duration";
-        cases[14][2] = new QuantityType<>(272, Units.MINUTE);
-
-        cases[15][0] = TEST_SUN_THING_ID;
-        cases[15][1] = "astroDawn#start";
-        cases[15][2] = new DateTimeType("2016-02-29T04:31:31+03:00");
-
-        cases[16][0] = TEST_SUN_THING_ID;
-        cases[16][1] = "astroDawn#end";
-        cases[16][2] = new DateTimeType("2016-02-29T04:57:31+03:00");
-
-        cases[17][0] = TEST_SUN_THING_ID;
-        cases[17][1] = "astroDawn#duration";
-        cases[17][2] = new QuantityType<>(26, Units.MINUTE);
-
-        cases[18][0] = TEST_SUN_THING_ID;
-        cases[18][1] = "nauticDawn#start";
-        cases[18][2] = new DateTimeType("2016-02-29T04:57:31+03:00");
-
-        cases[19][0] = TEST_SUN_THING_ID;
-        cases[19][1] = "nauticDawn#end";
-        cases[19][2] = new DateTimeType("2016-02-29T05:23:34+03:00");
-
-        cases[20][0] = TEST_SUN_THING_ID;
-        cases[20][1] = "nauticDawn#duration";
-        cases[20][2] = new QuantityType<>(26.1, Units.MINUTE);
-
-        cases[21][0] = TEST_SUN_THING_ID;
-        cases[21][1] = "civilDawn#start";
-        cases[21][2] = new DateTimeType("2016-02-29T05:23:34+03:00");
-
-        cases[22][0] = TEST_SUN_THING_ID;
-        cases[22][1] = "civilDawn#end";
-        cases[22][2] = new DateTimeType("2016-02-29T05:46:07+03:00");
-
-        cases[23][0] = TEST_SUN_THING_ID;
-        cases[23][1] = "civilDawn#duration";
-        cases[23][2] = new QuantityType<>(22.5, Units.MINUTE);
-
-        cases[24][0] = TEST_SUN_THING_ID;
-        cases[24][1] = "astroDusk#start";
-        cases[24][2] = new DateTimeType("2016-02-29T18:15:52+03:00");
-
-        cases[25][0] = TEST_SUN_THING_ID;
-        cases[25][1] = "astroDusk#end";
-        cases[25][2] = new DateTimeType("2016-02-29T18:41:51+03:00");
-
-        cases[26][0] = TEST_SUN_THING_ID;
-        cases[26][1] = "astroDusk#duration";
-        cases[26][2] = new QuantityType<>(26, Units.MINUTE);
-
-        cases[27][0] = TEST_SUN_THING_ID;
-        cases[27][1] = "nauticDusk#start";
-        cases[27][2] = new DateTimeType("2016-02-29T17:49:48+03:00");
-
-        cases[28][0] = TEST_SUN_THING_ID;
-        cases[28][1] = "nauticDusk#end";
-        cases[28][2] = new DateTimeType("2016-02-29T18:15:52+03:00");
-
-        cases[29][0] = TEST_SUN_THING_ID;
-        cases[29][1] = "nauticDusk#duration";
-        cases[29][2] = new QuantityType<>(26.1, Units.MINUTE);
-
-        cases[30][0] = TEST_SUN_THING_ID;
-        cases[30][1] = "civilDusk#start";
-        cases[30][2] = new DateTimeType("2016-02-29T17:27:15+03:00");
-
-        cases[31][0] = TEST_SUN_THING_ID;
-        cases[31][1] = "civilDusk#end";
-        cases[31][2] = new DateTimeType("2016-02-29T17:49:48+03:00");
-
-        cases[32][0] = TEST_SUN_THING_ID;
-        cases[32][1] = "civilDusk#duration";
-        cases[32][2] = new QuantityType<>(22.5, Units.MINUTE);
-
-        cases[33][0] = TEST_SUN_THING_ID;
-        cases[33][1] = "eveningNight#start";
-        cases[33][2] = new DateTimeType("2016-02-29T18:41:51+03:00");
-
-        cases[34][0] = TEST_SUN_THING_ID;
-        cases[34][1] = "eveningNight#end";
-        cases[34][2] = new DateTimeType("2016-03-01T00:00:00+03:00");
-
-        cases[35][0] = TEST_SUN_THING_ID;
-        cases[35][1] = "eveningNight#duration";
-        cases[35][2] = new QuantityType<>(318, Units.MINUTE);
-
-        cases[36][0] = TEST_SUN_THING_ID;
-        cases[36][1] = "daylight#start";
-        cases[36][2] = new DateTimeType("2016-02-29T05:48:26+03:00");
-
-        cases[37][0] = TEST_SUN_THING_ID;
-        cases[37][1] = "daylight#end";
-        cases[37][2] = new DateTimeType("2016-02-29T17:24:56+03:00");
-
-        cases[38][0] = TEST_SUN_THING_ID;
-        cases[38][1] = "daylight#duration";
-        cases[38][2] = new QuantityType<>(696, Units.MINUTE);
-
-        cases[39][0] = TEST_MOON_THING_ID;
-        cases[39][1] = "rise#start";
-        cases[39][2] = new DateTimeType("2016-02-29T23:00:00+03:00");
-
-        cases[40][0] = TEST_MOON_THING_ID;
-        cases[40][1] = "rise#end";
-        cases[40][2] = new DateTimeType("2016-02-29T23:00:00+03:00");
-
-        cases[41][0] = TEST_MOON_THING_ID;
-        cases[41][1] = "rise#duration";
-        cases[41][2] = new QuantityType<>(0, Units.MINUTE);
+        @Override
+        public final String toString() {
+            return Double.toString(latitude) + ',' + Double.toString(longitude);
+        }
     }
 
-    public List<Object[]> getCases() {
-        return Arrays.asList(cases);
+    public record StateTestCase(String thingId, String channelId, Instant testMoment, State expectedState,
+            ZoneId timeZone, Location location) {
+    }
+
+    public final List<StateTestCase> cases;
+
+    public ParametrizedStateTestCases() {
+        cases = List.of(
+                new StateTestCase(TEST_SUN_THING_ID, "rise#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T05:46:07+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "rise#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T05:48:26+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "rise#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(2.32, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "set#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T17:24:56+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "set#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T17:27:15+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "set#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(2.32, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "noon#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T11:36:41+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "noon#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T11:37:41+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "noon#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(1, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "night#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T18:41:51+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "night#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-03-01T04:30:44+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "night#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(589, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "morningNight#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T00:00:00+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "morningNight#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T04:31:31+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "morningNight#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(272, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "astroDawn#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T04:31:31+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "astroDawn#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T04:57:31+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "astroDawn#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(26, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "nauticDawn#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T04:57:31+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "nauticDawn#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T05:23:34+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "nauticDawn#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(26.1, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "civilDawn#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T05:23:34+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "civilDawn#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T05:46:07+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "civilDawn#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(22.5, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "astroDusk#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T18:15:52+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "astroDusk#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T18:41:51+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "astroDusk#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(26, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "nauticDusk#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T17:49:48+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "nauticDusk#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T18:15:52+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "nauticDusk#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(26.1, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "civilDusk#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T17:27:15+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "civilDusk#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T17:49:48+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "civilDusk#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(22.5, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "eveningNight#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T18:41:51+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "eveningNight#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-03-01T00:00:00+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "eveningNight#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(318, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "midnight#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T23:36:41+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "midnight#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T23:37:41+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "midnight#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(1, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "daylight#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T05:48:26+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "daylight#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T17:24:56+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, "daylight#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(696, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_MOON_THING_ID, "rise#start", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T23:00:00+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_MOON_THING_ID, "rise#end", LEAP_DAY_2016_SA,
+                        new DateTimeType("2016-02-29T23:00:00+03:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_MOON_THING_ID, "rise#duration", LEAP_DAY_2016_SA,
+                        new QuantityType<>(0, Units.MINUTE), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Total Solar Eclipse on August 21, 2017
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#total", Instant.parse("2017-01-01T00:00:00Z"),
+                        new DateTimeType("2017-08-21T18:27:10+00:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Partial Solar Eclipse on August 11, 2018
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#partial", Instant.parse("2018-07-15T00:00:00Z"),
+                        new DateTimeType("2018-08-11T11:47:57+02:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Ring Solar Eclipse on December 26, 2019
+                new StateTestCase(TEST_SUN_THING_ID, "eclipse#ring", Instant.parse("2019-11-01T00:00:00Z"),
+                        new DateTimeType("2019-12-26T06:19:23+01:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Total Lunar Eclipse on January 21, 2019
+                new StateTestCase(TEST_MOON_THING_ID, "eclipse#total", Instant.parse("2018-12-01T00:00:00Z"),
+                        new DateTimeType("2019-01-21T05:13:02+00:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                // Partial Lunar Eclipse on July 16, 2019
+                new StateTestCase(TEST_MOON_THING_ID, "eclipse#partial", Instant.parse("2019-06-01T00:00:00Z"),
+                        new DateTimeType("2019-07-16T23:31:59+02:00"), BAGHDAD_ZONE, SHAYBAH_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS, MARCH_16_2022_UA,
+                        new PercentType(93), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE, MARCH_16_2022_UA,
+                        new QuantityType<>(5290, Units.KELVIN), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.minus(2, ChronoUnit.HOURS), new PercentType(64), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.minus(2, ChronoUnit.HOURS), new QuantityType<>(4410, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.minus(4, ChronoUnit.HOURS), new PercentType(12), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.minus(4, ChronoUnit.HOURS), new QuantityType<>(2860, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.minus(5, ChronoUnit.HOURS), new PercentType(0), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.minus(5, ChronoUnit.HOURS), new QuantityType<>(2500, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(2, ChronoUnit.HOURS), new PercentType(100), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(2, ChronoUnit.HOURS), new QuantityType<>(5490, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(4, ChronoUnit.HOURS), new PercentType(83), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(4, ChronoUnit.HOURS), new QuantityType<>(5000, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(6, ChronoUnit.HOURS), new PercentType(44), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(6, ChronoUnit.HOURS), new QuantityType<>(3820, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(8, ChronoUnit.HOURS), new PercentType(0), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(8, ChronoUnit.HOURS), new QuantityType<>(2500, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_BRIGHTNESS,
+                        MARCH_16_2022_UA.plus(14, ChronoUnit.HOURS), new PercentType(0), KYIV_ZONE, MARIUPOL_LOC),
+                new StateTestCase(TEST_SUN_THING_ID, CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE,
+                        MARCH_16_2022_UA.plus(14, ChronoUnit.HOURS), new QuantityType<>(2500, Units.KELVIN), KYIV_ZONE,
+                        MARIUPOL_LOC));
+    }
+
+    public List<StateTestCase> getCases() {
+        return cases;
     }
 }

@@ -211,15 +211,17 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
                 lastUpdateAlarm2TimeMillis = System.currentTimeMillis();
             }
 
-            VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket((byte) 0x00, alarmNumber,
-                    alarmClock);
-            byte[] packetBytes = packet.getBytes();
+            if (!alarmClock.hasDefaultValues()) {
+                VelbusSetLocalClockAlarmPacket packet = new VelbusSetLocalClockAlarmPacket((byte) 0x00, alarmNumber,
+                        alarmClock);
+                byte[] packetBytes = packet.getBytes();
 
-            // Schedule the send of the packet to see if there is another update in less than 10 secondes (reduce
-            // flooding of the bus)
-            scheduler.schedule(() -> {
-                sendAlarmPacket(alarmNumber, packetBytes);
-            }, DELAY_SEND_CLOCK_ALARM_UPDATE, TimeUnit.MILLISECONDS);
+                // Schedule the send of the packet to see if there is another update in less than 10 secondes (reduce
+                // flooding of the bus)
+                scheduler.schedule(() -> {
+                    sendAlarmPacket(alarmNumber, packetBytes);
+                }, DELAY_SEND_CLOCK_ALARM_UPDATE, TimeUnit.MILLISECONDS);
+            }
         } else {
             logger.debug("The command '{}' is not supported by this handler.", command.getClass());
         }

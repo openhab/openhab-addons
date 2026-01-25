@@ -35,6 +35,7 @@ This binding has its own IconProvider and makes available the following list of 
 | Icon Name                   | Dynamic | Illustration                                      |
 | --------------------------- | ------- | ------------------------------------------------- |
 | oh:astro:moon_day           | Yes     | ![Moon Age](doc/images/moon_day.svg)              |
+| oh:astro:moon_eclipse       | Yes     | ![Moon Age](doc/images/moon_eclipse.svg)          |
 | oh:astro:moon_phase         | Yes     | ![Moon Phase](doc/images/moon_day.svg)            |
 | oh:astro:season             | Yes     | ![Season](doc/images/season.svg)                  |
 | oh:astro:sun_eclipse        | Yes     | ![Sun Eclipse](doc/images/sun_eclipse.svg)        |
