@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.boschshc.internal.devices.thermostat;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -27,6 +27,8 @@ import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDevic
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
 import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockState;
+import org.openhab.binding.boschshc.internal.services.temperatureoffset.TemperatureOffsetService;
+import org.openhab.binding.boschshc.internal.services.temperatureoffset.dto.TemperatureOffsetServiceState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -51,6 +53,7 @@ public abstract class AbstractThermostatHandlerTest<T extends AbstractThermostat
         extends AbstractBatteryPoweredDeviceHandlerTest<T> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<ChildLockServiceState> childLockServiceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<TemperatureOffsetServiceState> temperatureOffsetCaptor;
 
     @Test
     void testHandleCommandChildLockService() throws InterruptedException, TimeoutException, ExecutionException {
@@ -112,5 +115,61 @@ public abstract class AbstractThermostatHandlerTest<T extends AbstractThermostat
         getFixture().processUpdate("Thermostat", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_LOCK), OnOffType.ON);
+    }
+
+    @Test
+    void testUpdateChannelsTemperatureOffsetService() {
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                    "@type": "temperatureOffsetState",
+                    "offset": 1.3,
+                    "stepSize": 0.1,
+                    "minOffset": -5.0,
+                    "maxOffset": 5.0
+                }\
+                """);
+        getFixture().processUpdate(TemperatureOffsetService.TEMPERATURE_OFFSET_SERVICE_NAME, jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE_OFFSET),
+                new QuantityType<>(1.3d, SIUnits.CELSIUS));
+    }
+
+    @Test
+    void testHandleCommandTemperatureOffsetServiceQuantityType()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE_OFFSET),
+                new QuantityType<>(-1.3d, SIUnits.CELSIUS));
+        verify(getBridgeHandler()).putState(eq(getDeviceID()),
+                eq(TemperatureOffsetService.TEMPERATURE_OFFSET_SERVICE_NAME), temperatureOffsetCaptor.capture());
+        TemperatureOffsetServiceState state = temperatureOffsetCaptor.getValue();
+        assertEquals(TemperatureOffsetService.MINIMUM_OFFSET.doubleValue(), state.minOffset, 0.001d);
+        assertEquals(TemperatureOffsetService.MAXIMUM_OFFSET.doubleValue(), state.maxOffset, 0.001d);
+        assertEquals(0.1d, state.stepSize, 0.001d);
+        assertEquals(-1.3d, state.offset, 0.001d);
+    }
+
+    @Test
+    void testHandleCommandTemperatureOffsetServiceDecimalType()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE_OFFSET),
+                new DecimalType(-1.3d));
+        verify(getBridgeHandler()).putState(eq(getDeviceID()),
+                eq(TemperatureOffsetService.TEMPERATURE_OFFSET_SERVICE_NAME), temperatureOffsetCaptor.capture());
+        TemperatureOffsetServiceState state = temperatureOffsetCaptor.getValue();
+        assertEquals(TemperatureOffsetService.MINIMUM_OFFSET.doubleValue(), state.minOffset, 0.001d);
+        assertEquals(TemperatureOffsetService.MAXIMUM_OFFSET.doubleValue(), state.maxOffset, 0.001d);
+        assertEquals(0.1d, state.stepSize, 0.001d);
+        assertEquals(-1.3d, state.offset, 0.001d);
+    }
+
+    @Test
+    void testHandleCommandTemperatureOffsetServiceInvalidCommand()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE_OFFSET), OnOffType.ON);
+        verify(getBridgeHandler(), times(0)).putState(eq(getDeviceID()),
+                eq(TemperatureOffsetService.TEMPERATURE_OFFSET_SERVICE_NAME), any());
     }
 }
