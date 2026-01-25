@@ -12,6 +12,16 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="1channelVirtualLight">
+		<label>Virtual light</label>
+		<description>
+			This is a generic module with 1 virtual light channel.
+		</description>
+		<channels>
+			<channel id="VL1" typeId="system.color"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="4channelAnalogInputModule">
 		<label>Analog Input</label>
 		<description>
@@ -132,6 +142,31 @@
 			<channel id="CH6" typeId="trigger-channel"/>
 			<channel id="CH7" typeId="trigger-channel"/>
 			<channel id="CH8" typeId="trigger-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="16channelInputModule">
+		<label>Input</label>
+		<description>
+			This is a generic module with 16 input channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="trigger-channel"/>
+			<channel id="CH2" typeId="trigger-channel"/>
+			<channel id="CH3" typeId="trigger-channel"/>
+			<channel id="CH4" typeId="trigger-channel"/>
+			<channel id="CH5" typeId="trigger-channel"/>
+			<channel id="CH6" typeId="trigger-channel"/>
+			<channel id="CH7" typeId="trigger-channel"/>
+			<channel id="CH8" typeId="trigger-channel"/>
+			<channel id="CH9" typeId="trigger-channel"/>
+			<channel id="CH10" typeId="trigger-channel"/>
+			<channel id="CH11" typeId="trigger-channel"/>
+			<channel id="CH12" typeId="trigger-channel"/>
+			<channel id="CH13" typeId="trigger-channel"/>
+			<channel id="CH14" typeId="trigger-channel"/>
+			<channel id="CH15" typeId="trigger-channel"/>
+			<channel id="CH16" typeId="trigger-channel"/>
 		</channels>
 	</channel-group-type>
 
@@ -734,6 +769,17 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="2channelBrightnessModule">
+		<label>Brightness</label>
+		<description>
+			This is a generic module with 2 brightness channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="system.brightness"/>
+			<channel id="CH2" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="4channelBrightnessModule">
 		<label>Brightness</label>
 		<description>
@@ -854,6 +900,16 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="1channelDimWhiteColorModule">
+		<label>Dimmer - White</label>
+		<description>
+			This is a generic module with 1 channel used as dimmer or white color.
+		</description>
+		<channels>
+			<channel id="DW1" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="4channelWhiteColorModule">
 		<label>White Color</label>
 		<description>
@@ -971,6 +1027,17 @@
 			<channel id="CH79" typeId="system.brightness"/>
 			<channel id="CH80" typeId="system.brightness"/>
 			<channel id="CH81" typeId="system.brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="2channelSceneModule">
+		<label>Scene</label>
+		<description>
+			This is a generic module with 2 scene channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="light-scene"/>
+			<channel id="CH2" typeId="light-scene"/>
 		</channels>
 	</channel-group-type>
 
@@ -1116,6 +1183,17 @@
 			<channel id="VL14" typeId="system.color"/>
 			<channel id="VL15" typeId="system.color"/>
 			<channel id="VL16" typeId="system.color"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="2channelFadeModule">
+		<label>Fade Mode</label>
+		<description>
+			This is a generic module with 2 fade mode channels.
+		</description>
+		<channels>
+			<channel id="CH1" typeId="fade-mode"/>
+			<channel id="CH2" typeId="fade-mode"/>
 		</channels>
 	</channel-group-type>
 
