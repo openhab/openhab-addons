@@ -69,6 +69,9 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -96,6 +99,9 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -123,7 +129,11 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
+			<channel-group id="snapshot" typeId="snapshotGroup"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -151,7 +161,11 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
+			<channel-group id="snapshot" typeId="snapshotGroup"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -184,6 +198,14 @@
 		<description>Device Status Information</description>
 		<channels>
 			<channel id="battery" typeId="battery"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="snapshotGroup">
+		<label>Snapshots</label>
+		<description>Device Snapshots</description>
+		<channels>
+			<channel id="snapshot" typeId="snapshot"/>
 		</channels>
 	</channel-group-type>
 
@@ -262,6 +284,16 @@
 		<tags>
 			<tag>Status</tag>
 			<tag>Level</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot">
+		<item-type>Image</item-type>
+		<label>Snapshot</label>
+		<description>Snapshot image from camera</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
 		<state readOnly="true"></state>
 	</channel-type>

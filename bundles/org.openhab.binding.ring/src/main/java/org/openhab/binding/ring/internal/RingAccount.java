@@ -31,4 +31,6 @@ public interface RingAccount {
 
     @Nullable
     RingDevice getDevice(String id);
+
+    long getSnapshotTimestamp(String id);
 }

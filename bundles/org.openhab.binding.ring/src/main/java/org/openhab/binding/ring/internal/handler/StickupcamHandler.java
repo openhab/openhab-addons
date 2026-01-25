@@ -33,6 +33,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class StickupcamHandler extends RingDeviceHandler {
     private int lastBattery = -1;
+    private long lastSnapshotTimestamp = -1;
 
     public StickupcamHandler(Thing thing) {
         super(thing);
@@ -70,6 +71,13 @@ public class StickupcamHandler extends RingDeviceHandler {
             logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
                     deviceTO.health.batteryPercentage, lastBattery);
 
+        }
+        // get last snapshot timestamp; compare to lastSnapshotTimestamp - if different - get/update snapshot image
+        long timestamp = getSnapshotTimestamp();
+        if (timestamp != lastSnapshotTimestamp) {
+            logger.info("timestamp = {} != lastSnapshotTimestamp {}, update snapshot channel", timestamp,
+                    lastSnapshotTimestamp);
+            lastSnapshotTimestamp = timestamp;
         }
     }
 }

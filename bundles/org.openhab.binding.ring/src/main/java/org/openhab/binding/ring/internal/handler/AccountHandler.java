@@ -566,6 +566,18 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     @Override
+    public long getSnapshotTimestamp(String id) {
+        try {
+            return restClient.getSnapshotTimestamp(id, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "AuthenticationException response from ring.com");
+            logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
+            return -1;
+        }
+    }
+
+    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(RingDiscoveryService.class);
     }
