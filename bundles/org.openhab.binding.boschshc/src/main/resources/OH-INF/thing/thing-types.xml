@@ -311,6 +311,10 @@
 			<channel id="displayed-temperature" typeId="displayed-temperature"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
@@ -334,6 +338,10 @@
 			<channel id="display-direction" typeId="display-direction"/>
 			<channel id="displayed-temperature" typeId="displayed-temperature"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
