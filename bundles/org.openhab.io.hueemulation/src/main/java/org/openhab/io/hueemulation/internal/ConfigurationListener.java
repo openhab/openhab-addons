@@ -10,25 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.coronastats.internal.config;
+package org.openhab.io.hueemulation.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for the
- * {@link org.openhab.binding.coronastats.internal.handler.CoronaStatsCountryHandler}
+ * Interface for listening to binding configuration changes.
  *
- * @author Johannes Ott - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class CoronaStatsCountryConfiguration {
-    private String countryCode = "";
-
-    public String getCountryCode() {
-        return countryCode.toUpperCase();
-    }
-
-    public boolean isValid() {
-        return !"".equals(countryCode);
-    }
+public interface ConfigurationListener {
+    void bindingConfigurationChanged();
 }

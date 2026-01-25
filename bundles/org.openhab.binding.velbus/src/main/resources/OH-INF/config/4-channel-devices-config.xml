@@ -72,4 +72,45 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:velbus:4channelDeviceWithVirtualLight">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="mode" type="text" required="true">
+			<label>Mode</label>
+			<description>The configured mode. 4DIM, RGB, RGBW</description>
+			<default>4DIM</default>
+			<options>
+				<option value="4DIM">4DIM</option>
+				<option value="RGB">RGB</option>
+				<option value="RGBW">RGBW</option>
+			</options>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>
