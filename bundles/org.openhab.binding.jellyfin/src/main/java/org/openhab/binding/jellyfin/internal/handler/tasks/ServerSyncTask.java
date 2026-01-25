@@ -12,26 +12,18 @@
  */
 package org.openhab.binding.jellyfin.internal.handler.tasks;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiException;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 /**
- * Task for synchronizing server state (users and sessions) with the Jellyfin server.
- * This task retrieves the list of users and their active sessions to keep the handler
- * state synchronized with the server.
+ * Task for synchronizing server state (sessions) with the Jellyfin server.
+ * Note: User synchronization was moved to {@link DiscoveryTask} to ensure user updates are
+ * performed immediately prior to discovery runs.
  *
  * @author Patrik Gfeller - Initial contribution
  */
@@ -68,34 +60,8 @@ public class ServerSyncTask extends AbstractTask {
     @Override
     public void run() {
         try {
-            // Since we couldn't find a direct method in the API, we'll use a direct HTTP request
-            // to the /Users endpoint which returns a list of users
-            // The API client's interceptoris used to leverage the configured authentication token
-            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                    .uri(URI.create(client.getBaseUri() + "/Users")).header("Accept", "application/json").GET();
-
-            // Apply the request interceptor to add authentication headers
-            Consumer<HttpRequest.Builder> interceptor = client.getRequestInterceptor();
-            if (interceptor != null) {
-                interceptor.accept(requestBuilder);
-            }
-
-            HttpRequest request = requestBuilder.build();
-            HttpResponse<String> response = client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() != 200) {
-                throw new ApiException(response.statusCode(), "Failed to retrieve users: " + response.body());
-            }
-
-            // Parse the response into a list of UserDto objects
-            List<UserDto> users = client.getObjectMapper().readValue(response.body(),
-                    new TypeReference<ArrayList<UserDto>>() {
-                    });
-
-            // Pass the result to the handler
-            this.usersHandler.accept(users);
-        } catch (IOException | InterruptedException e) {
-            this.exceptionHandler.handle(e);
+            // User synchronization has been moved to DiscoveryTask which fetches users
+            // immediately prior to discovery. No action required here.
         } catch (Exception e) {
             this.exceptionHandler.handle(e);
         }

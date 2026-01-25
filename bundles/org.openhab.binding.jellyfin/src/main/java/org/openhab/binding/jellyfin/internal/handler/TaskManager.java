@@ -262,12 +262,12 @@ public class TaskManager implements TaskManagerInterface {
 
     @Override
     public AbstractTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
-            ErrorEventBus errorEventBus) {
+            ErrorEventBus errorEventBus, ApiClient apiClient, Consumer<List<UserDto>> usersHandler) {
         if (taskFactory == null) {
             throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
         }
 
-        return taskFactory.createDiscoveryTask(serverHandler, discoveryService,
+        return taskFactory.createDiscoveryTask(serverHandler, discoveryService, apiClient, usersHandler,
                 new ContextualExceptionHandler(errorEventBus, "DiscoveryTask"));
     }
 }

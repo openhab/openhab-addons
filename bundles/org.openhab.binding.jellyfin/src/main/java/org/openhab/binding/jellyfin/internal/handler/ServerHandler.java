@@ -429,7 +429,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         this.discoveryService = discoveryService;
 
         // Now that the discovery service is available, create and register the DiscoveryTask
-        AbstractTask discoveryTask = taskManager.createDiscoveryTask(this, discoveryService, errorEventBus);
+        // Pass the apiClient and a users handler that delegates to the handler's users processing
+        AbstractTask discoveryTask = taskManager.createDiscoveryTask(this, discoveryService, errorEventBus,
+                this.apiClient, users -> this.handleUsersList(users));
         tasks.put(discoveryTask.getId(), discoveryTask);
 
         logger.debug("DiscoveryTask initialized and added to task registry");

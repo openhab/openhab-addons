@@ -45,7 +45,7 @@ public interface TaskFactoryInterface {
 
     /**
      * Creates an update task with the specified parameters.
-     * 
+     *
      * @param client The API client to use for updates
      * @param exceptionHandler The handler for exceptions
      * @return A configured update task
@@ -54,7 +54,7 @@ public interface TaskFactoryInterface {
 
     /**
      * Creates a server sync task to synchronize server state (users and sessions).
-     * 
+     *
      * @param client The API client to use for the server sync request
      * @param usersHandler The handler for processing the retrieved users list
      * @param exceptionHandler The handler for exceptions
@@ -68,9 +68,11 @@ public interface TaskFactoryInterface {
      *
      * @param serverHandler The server handler to check status
      * @param discoveryService The discovery service to trigger
+     * @param client The API client used to fetch users prior to discovery
+     * @param usersHandler The handler invoked with the retrieved users list
      * @param exceptionHandler The handler for exceptions
      * @return A configured discovery task
      */
     DiscoveryTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
-            ExceptionHandlerType exceptionHandler);
+            ApiClient client, Consumer<List<UserDto>> usersHandler, ExceptionHandlerType exceptionHandler);
 }

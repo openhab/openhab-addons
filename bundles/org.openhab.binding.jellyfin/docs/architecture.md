@@ -74,7 +74,7 @@ flowchart TD
 - **Server Handler (Bridge)**: Manages the lifecycle and state of the Jellyfin server
   bridge thing.
   Handles authentication, server polling, and maintains the list of active client
-  sessions.
+  sessions. The `DiscoveryTask` now performs user synchronization (`GET /Users`) immediately prior to discovery so the discovery process operates on up-to-date active users.
   Publishes session updates to the SessionEventBus.
 - **SessionEventBus**: Event bus for distributing session updates from ServerHandler
   to ClientHandler instances.

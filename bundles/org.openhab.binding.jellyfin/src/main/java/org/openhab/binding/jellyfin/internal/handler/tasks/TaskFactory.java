@@ -47,7 +47,7 @@ public class TaskFactory implements TaskFactoryInterface {
 
     /**
      * Creates an update task with the specified parameters.
-     * 
+     *
      * @param client The API client to use for updates
      * @param exceptionHandler The handler for exceptions
      * @return A configured update task
@@ -59,7 +59,7 @@ public class TaskFactory implements TaskFactoryInterface {
 
     /**
      * Create a server sync task to synchronize server state (users and sessions).
-     * 
+     *
      * @param client The API client to use for the server sync request
      * @param usersHandler The handler for processing the retrieved users list
      * @param exceptionHandler The handler for exceptions
@@ -81,7 +81,7 @@ public class TaskFactory implements TaskFactoryInterface {
      */
     @Override
     public DiscoveryTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
-            ExceptionHandlerType exceptionHandler) {
-        return new DiscoveryTask(serverHandler, discoveryService, exceptionHandler);
+            ApiClient client, Consumer<List<UserDto>> usersHandler, ExceptionHandlerType exceptionHandler) {
+        return new DiscoveryTask(serverHandler, discoveryService, client, usersHandler, exceptionHandler);
     }
 }

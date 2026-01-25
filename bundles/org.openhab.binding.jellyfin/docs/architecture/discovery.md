@@ -195,10 +195,11 @@ The `DiscoveryTask` follows the standard task lifecycle managed by `TaskManager`
 
 **Discovery Process:**
 
-1. **Fetch Sessions**: Query Jellyfin API for all active sessions
-2. **Filter**: Process only sessions with active playback
-3. **Create Things**: Create or update client things in openHAB inbox
-4. **Error Handling**: Log errors without stopping the discovery loop
+1. **Fetch Users (new)**: `DiscoveryTask` fetches the current users list via `GET /Users` and forwards it to the handler (`usersHandler`), which updates the `activeUserIds` after processing by `UserManager`.
+2. **Fetch Sessions**: `ClientListUpdater` (used by the handler) calls `SessionApi.getSessions(null, ...)` to retrieve all active sessions in a single call.
+3. **Filter**: Sessions are filtered client-side to include only sessions that belong to the enabled/visible users (`activeUserIds`).
+4. **Create Things**: `ClientDiscoveryService` creates or updates client things in the openHAB inbox using the filtered session information.
+5. **Error Handling**: All errors are logged (user fetch or session retrieval) and handled by the configured exception handler without stopping the periodic discovery loop.
 
 ## Summary
 

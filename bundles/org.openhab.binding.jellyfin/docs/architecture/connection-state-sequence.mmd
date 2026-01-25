@@ -29,14 +29,24 @@ else No WebSocket
 end
 
 loop ServerSync (every 60s)
-    Sync->>+HTTP: GET /Users
-    HTTP-->>-Sync: List&lt;UserDto&gt;
-    Sync->>Handler: usersHandler(users)
+    Sync->>+SM: refresh sessions
+    SM->>SessionAPI: getSessions(null,...)
+    SessionAPI-->>SM: List<SessionInfoDto>
+    SM->>Handler: updateSessions(sessions)
+end
+
+note over Disc: DiscoveryTask run (every 60s)
+    Disc->>+HTTP: GET /Users
+    HTTP-->>-Disc: List<UserDto>
+    Disc->>Handler: usersHandler.accept(users)
     Handler->>UM: processUsersList(users)
-    UM-->>Handler: userChangeResult
-    Handler->>SM: updateSessions(newSessions)
+    UM-->>Handler: UserChangeResult
+    Handler->>Updater: updateClients(apiClient, activeUserIds, clients)
+    Updater->>SessionAPI: getSessions(null,...)
+    SessionAPI-->>Updater: List<SessionInfoDto>
+    Updater->>Updater: Filter by activeUserIds & update clientMap
+    Updater-->>Handler: Client map updated
     Handler->>CDS: discoverClients()
-    CDS->>CDS: find and publish client discovery results
 end
 
 %% WebSocket fallback path

@@ -14,19 +14,26 @@ package org.openhab.binding.jellyfin.internal.handler.tasks;
 
 import static org.mockito.Mockito.*;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -46,6 +53,11 @@ class DiscoveryTaskTest {
     private @Nullable @Mock ExceptionHandlerType exceptionHandler;
     private @Nullable @Mock Bridge bridge;
 
+    private @Nullable @Mock ApiClient mockApiClient;
+    private @Nullable @Mock HttpClient mockHttpClient;
+    private @Nullable @Mock HttpResponse<String> mockResponse;
+    private @Nullable @Mock Consumer<List<UserDto>> usersHandler;
+
     private @Nullable DiscoveryTask discoveryTask;
 
     @BeforeEach
@@ -54,9 +66,25 @@ class DiscoveryTaskTest {
         when(Objects.requireNonNull(serverHandler).getThing()).thenReturn(Objects.requireNonNull(bridge));
         when(Objects.requireNonNull(bridge).getStatus()).thenReturn(ThingStatus.ONLINE);
 
-        // Create task
+        // Setup ApiClient behavior to return an empty users list without throwing
+        when(Objects.requireNonNull(mockApiClient).getBaseUri()).thenReturn("http://localhost");
+        when(mockApiClient.getRequestInterceptor()).thenReturn(null);
+        when(Objects.requireNonNull(mockApiClient).getHttpClient()).thenReturn(Objects.requireNonNull(mockHttpClient));
+        try {
+            when(Objects.requireNonNull(mockHttpClient).send(any(), any()))
+                    .thenAnswer(invocation -> Objects.requireNonNull(mockResponse));
+        } catch (Exception e) {
+            // Won't happen - mocking
+        }
+        when(Objects.requireNonNull(mockResponse).statusCode()).thenReturn(200);
+        when(Objects.requireNonNull(mockResponse).body()).thenReturn("[]");
+        when(mockApiClient.getObjectMapper())
+                .thenReturn(org.openhab.binding.jellyfin.internal.api.ApiClient.createDefaultObjectMapper());
+
+        // Create task with users handler and mocked api client
         discoveryTask = new DiscoveryTask(Objects.requireNonNull(serverHandler),
-                Objects.requireNonNull(discoveryService), Objects.requireNonNull(exceptionHandler));
+                Objects.requireNonNull(discoveryService), Objects.requireNonNull(mockApiClient),
+                Objects.requireNonNull(usersHandler), Objects.requireNonNull(exceptionHandler));
     }
 
     @Test
@@ -83,7 +111,23 @@ class DiscoveryTaskTest {
         Objects.requireNonNull(discoveryTask).run();
 
         // Assert
+        verify(Objects.requireNonNull(usersHandler), times(1)).accept(any());
         verify(Objects.requireNonNull(discoveryService), times(1)).discoverClients();
+        verify(Objects.requireNonNull(exceptionHandler), never()).handle(any());
+    }
+
+    @Test
+    void testRun_UsersHandlerBeforeDiscovery() {
+        // Arrange - ensure ONLINE
+        when(Objects.requireNonNull(bridge).getStatus()).thenReturn(ThingStatus.ONLINE);
+
+        // Act
+        Objects.requireNonNull(discoveryTask).run();
+
+        // Assert - users handler must be invoked before discovery
+        InOrder inOrder = inOrder(Objects.requireNonNull(usersHandler), Objects.requireNonNull(discoveryService));
+        inOrder.verify(Objects.requireNonNull(usersHandler)).accept(any());
+        inOrder.verify(Objects.requireNonNull(discoveryService)).discoverClients();
         verify(Objects.requireNonNull(exceptionHandler), never()).handle(any());
     }
 

@@ -113,7 +113,8 @@ class TaskManagerTest {
         lenient().when(mockTaskFactory.createConnectionTask(any(), any(), any())).thenReturn(mockConnectionTask);
         lenient().when(mockTaskFactory.createUpdateTask(any(), any())).thenReturn(mockUpdateTask);
         lenient().when(mockTaskFactory.createServerSyncTask(any(), any(), any())).thenReturn(mockServerSyncTask);
-        lenient().when(mockTaskFactory.createDiscoveryTask(any(), any(), any())).thenReturn(mockDiscoveryTask);
+        lenient().when(mockTaskFactory.createDiscoveryTask(any(), any(), any(), any(), any()))
+                .thenReturn(mockDiscoveryTask);
 
         // Setup scheduler to return mock future
         lenient().when(
@@ -158,7 +159,7 @@ class TaskManagerTest {
         verify(mockTaskFactory).createUpdateTask(eq(mockApiClient), any(ContextualExceptionHandler.class));
         verify(mockTaskFactory).createServerSyncTask(eq(mockApiClient), eq(usersHandler),
                 any(ContextualExceptionHandler.class));
-        verify(mockTaskFactory, never()).createDiscoveryTask(any(), any(), any());
+        verify(mockTaskFactory, never()).createDiscoveryTask(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -393,13 +394,15 @@ class TaskManagerTest {
     @Test
     void testCreateDiscoveryTask_CreatesTask() {
         // Act
-        AbstractTask task = taskManager.createDiscoveryTask(mockServerHandler, mockDiscoveryService, mockErrorEventBus);
+        AbstractTask task = taskManager.createDiscoveryTask(mockServerHandler, mockDiscoveryService, mockErrorEventBus,
+                mockApiClient, users -> {
+                });
 
         // Assert
         assertNotNull(task);
         assertEquals(mockDiscoveryTask, task);
-        verify(mockTaskFactory).createDiscoveryTask(eq(mockServerHandler), eq(mockDiscoveryService),
-                any(ContextualExceptionHandler.class));
+        verify(mockTaskFactory).createDiscoveryTask(eq(mockServerHandler), eq(mockDiscoveryService), eq(mockApiClient),
+                any(), any(ContextualExceptionHandler.class));
     }
 
     @Test
