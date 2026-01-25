@@ -166,7 +166,7 @@ public class RadioThermostatSchedule {
             nightMin = setPeriods.get(3).getMinutes();
         } catch (NumberFormatException nfe) {
             // if any of the times could not be parsed into minutes, the schedule is invalid
-            throw new IllegalStateException("Unable to parse time value");
+            throw new IllegalStateException("Unable to parse time value", nfe);
         }
 
         // the minute value for each period must be greater than the previous period otherwise the schedule is invalid
