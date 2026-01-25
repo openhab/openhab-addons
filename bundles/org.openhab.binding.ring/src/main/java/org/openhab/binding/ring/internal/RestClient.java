@@ -243,7 +243,11 @@ public class RestClient {
         String jsonResult = postRequest(ApiConstants.URL_SNAPSHOT_TIMESTAMPS, input, Map.of(), tokens);
         SessionTimestampTO sessionTimestamp = Objects
                 .requireNonNull(gson.fromJson(jsonResult, SessionTimestampTO.class));
-        return sessionTimestamp.data[0].timestamp;
+        if (sessionTimestamp.data.length > 0) {
+            return sessionTimestamp.data[0].timestamp;
+        } else {
+            return -1;
+        }
     }
 
     public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException, JsonParseException {
