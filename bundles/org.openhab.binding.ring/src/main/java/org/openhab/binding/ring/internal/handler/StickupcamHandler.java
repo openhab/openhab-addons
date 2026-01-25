@@ -74,9 +74,9 @@ public class StickupcamHandler extends RingDeviceHandler {
                     deviceTO.health.batteryPercentage, lastBattery);
 
         }
-        // get last snapshot timestamp; compare to lastSnapshotTimestamp - if different - get/update snapshot image
+
         long timestamp = getSnapshotTimestamp();
-        if (timestamp != lastSnapshotTimestamp) {
+        if (timestamp > lastSnapshotTimestamp) {
             logger.info("timestamp = {} != lastSnapshotTimestamp {}, update snapshot channel", timestamp,
                     lastSnapshotTimestamp);
             lastSnapshotTimestamp = timestamp;
