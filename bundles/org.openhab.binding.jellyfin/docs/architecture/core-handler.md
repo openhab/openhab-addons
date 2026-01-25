@@ -107,6 +107,8 @@ handlers, task management, and API client instantiation.
 3. For each session, ServerHandler calls `updateStateFromSession()` on the corresponding ClientHandler
 4. ClientHandler updates its channels with the session information
 
+**See also:** Diagram: `docs/architecture/connection-state-sequence.md` — sequence diagram showing connection, `CONNECTED` state, WebSocket vs polling, the `ServerSync` loop, and WebSocket fallback.
+
 #### Command Flow
 
 When a command is sent to a ClientHandler channel, it delegates to ServerHandler

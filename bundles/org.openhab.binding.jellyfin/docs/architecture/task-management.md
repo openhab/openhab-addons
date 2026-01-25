@@ -150,6 +150,8 @@ The following table shows which tasks are active for each server state:
    - `ServerSyncTask` starts to synchronize server state (users and sessions)
    - `DiscoveryTask` starts to automatically discover Jellyfin clients (if available)
 
+   **See also:** Diagram: `docs/architecture/connection-state-sequence.md` — sequence diagram showing connection, `CONNECTED` state, WebSocket vs polling, the `ServerSync` loop, and WebSocket fallback.
+
 4. **Disposal**: When the handler is disposed, `stopAllTasks()` is called to
    cancel all scheduled tasks and clear the task registry.
 
