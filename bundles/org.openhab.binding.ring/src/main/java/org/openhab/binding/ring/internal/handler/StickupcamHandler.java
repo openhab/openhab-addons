@@ -77,7 +77,7 @@ public class StickupcamHandler extends RingDeviceHandler {
 
         long timestamp = getSnapshotTimestamp();
         if (timestamp > lastSnapshotTimestamp) {
-            logger.info("timestamp = {} != lastSnapshotTimestamp {}, update snapshot channel", timestamp,
+            logger.debug("timestamp = {} != lastSnapshotTimestamp {}, update snapshot channel", timestamp,
                     lastSnapshotTimestamp);
             lastSnapshotTimestamp = timestamp;
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
