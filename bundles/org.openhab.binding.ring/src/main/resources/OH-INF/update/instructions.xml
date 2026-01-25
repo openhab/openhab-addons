@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="ring:stickycam">
+		<instruction-set targetVersion="1">
+			<add-channel-group id="snapshotGroup">
+				<type>ring:snapshotGroup</type>
+			</add-channel-group>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="ring:doorbell">
+		<instruction-set targetVersion="1">
+			<add-channel-group id="snapshotGroup">
+				<type>ring:snapshotGroup</type>
+			</add-channel-group>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
