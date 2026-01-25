@@ -63,6 +63,7 @@ xidel -e \
 | vmb6pbn       | Push-button interface module for Niko 4- or 6-fold push-button                             |
 | vmb7in        | 7-channel input module (potential-free + pulse)                                            |
 | vmb8dc-20     | 8-channel 0 to 10 V dimmer control module                                                  |
+| vmb8in-20     | 8-channel input module (potential-free + pulse)                                            |
 | vmb8ir        | Infrared remote control receiver module                                                    |
 | vmb8pb        | 8-Channel Push Button module                                                               |
 | vmb8pbu       | Push-button interface with 8 channels for universal mounting                               |
@@ -375,12 +376,21 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `button`                  | `CH1` ... `CH8`    | Pressed, Long_Pressed           |         |
 | `input`                   | `CH1` ... `CH8`    | Pressed, Released, Long_Pressed | Trigger |
 
-### Modules `vmb7in`, `vmb8in-20`, `vmb8ir`
+### Module `vmb7in`
 
 | Supported channels groups | Supported channels | Supported command types         | Remarks |
 |---------------------------|--------------------|---------------------------------|---------|
 | `button`                  | `CH1` ... `CH8`    | Pressed, Long_Pressed           |         |
 | `input`                   | `CH1` ... `CH8`    | Pressed, Released, Long_Pressed | Trigger |
+| `counter`                 | `CH1` ... `CH4`    | Number                          |         |
+
+### Module `vmb8in-20`
+
+| Supported channels groups | Supported channels | Supported command types         | Remarks |
+|---------------------------|--------------------|---------------------------------|---------|
+| `button`                  | `CH1` ... `CH8`    | Pressed, Long_Pressed           |         |
+| `input`                   | `CH1` ... `CH8`    | Pressed, Released, Long_Pressed | Trigger |
+| `counter`                 | `CH1` ... `CH8`    | Number                          |         |
 
 ### Modules `vmb2pbn`, `vmb6pbn`, `vmb8pb`, `vmb8pbu`, `vmbrfr8s`, `vmbvp1`, `vmb6pb-20`
 
