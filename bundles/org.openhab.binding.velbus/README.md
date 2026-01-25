@@ -108,11 +108,11 @@ xidel -e \
 | vmbpiro       | Outdoor motion, twilight and temperature sensor, Theben                                    |
 | vmbpiro-10    | Outdoor motion, twilight and temperature sensor, Theben                                    |
 | vmbpiro-20    | Outdoor motion, twilight and temperature sensor, Theben                                    |
-| vmbpsumngr-20 | PSU manager                                                                                |
+| vmbpsumngr-20 | PSU Manager                                                                                |
 | vmbrfr8s      | 8-channel RF receiver module                                                               |
-| vmbsig        | Signum IoT gateway module                                                                  |
-| vmbsig-20     | Signum IoT gateway module                                                                  |
-| vmbsig-21     | Signum IoT gateway module                                                                  |
+| vmbsig        | Signum IoT Gateway Module                                                                  |
+| vmbsig-20     | Signum IoT Gateway Module                                                                  |
+| vmbsig-21     | Signum IoT Gateway Module                                                                  |
 | vmbvp1        | Doorbird interface module                                                                  |
 
 ## Discovery
@@ -623,7 +623,28 @@ Thing velbus:vmbdali:1:01 [VL1="CH1,CH2,CH3,CH4", VL2="A4,A5,A6"]
 | `fade-mode`               | `CH1` ... `CH2`        | Direct, Fade_Rate, Fade_Time    |                   |
 | `scene`                   | `CH1` ... `CH2`        | Number                          | Min = 1, Max = 15 |
 
-The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED`.
+### Modules `vmbpsumngr-20`
+
+| Supported channels groups | Supported channels  | Supported command types         | Remarks |
+|---------------------------|---------------------|---------------------------------|---------|
+| `input`                   | `CH1` ... `CH16`    | Pressed, Released               | Trigger |
+
+### Module `vmbsig`
+
+| Supported channels groups | Supported channels  | Supported command types         | Remarks |
+|---------------------------|---------------------|---------------------------------|---------|
+|                           | N/A                 |                                 |         |
+
+### Modules `vmbsig-20`, `vmbsig-21`
+
+| Supported channels groups | Supported channels  | Supported command types                                         | Remarks |
+|---------------------------|---------------------|-----------------------------------------------------------------|---------|
+|                           | `status`            | UNKNOWN, NORMAL, BUS_ERROR, LOW_POWER, HIGH_POWER               | String  |
+
+The trigger channels can be used as a trigger to rules.
+The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED` for an input trigger.
+
+The `status` channel for Signum modules is a String state channel (not a trigger) with possible values: `UNKNOWN`, `NORMAL`, `BUS_ERROR`, `LOW_POWER`, or `HIGH_POWER`.
 
 To remove the state of the Item in the Sitemap for a `button` channel.
 Go to the Items list, select the Item, add a State Description Metadata, and set the Pattern value to a blank space.
