@@ -33,4 +33,6 @@ public interface RingAccount {
     RingDevice getDevice(String id);
 
     long getSnapshotTimestamp(String id);
+
+    byte[] getSnapshot(String id);
 }

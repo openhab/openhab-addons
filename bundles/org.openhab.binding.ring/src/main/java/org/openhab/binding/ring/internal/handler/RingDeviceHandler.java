@@ -100,6 +100,17 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
         return -1;
     }
 
+    protected byte[] getSnapshot() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            BridgeHandler bridgeHandler = bridge.getHandler();
+            if (bridgeHandler instanceof RingAccount ringAccount) {
+                return ringAccount.getSnapshot(config.id);
+            }
+        }
+        return new byte[0];
+    }
+
     /**
      * Link the device, and update the device with the status CONFIGURED.
      *

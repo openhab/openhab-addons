@@ -246,6 +246,21 @@ public class RestClient {
         return sessionTimestamp.data[0].timestamp;
     }
 
+    public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException, JsonParseException {
+        try {
+            ContentResponse response = httpClient.newRequest(ApiConstants.URL_SNAPSHOTS + deviceId)
+                    .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
+
+            if (response.getStatus() == 200) {
+                return response.getContent();
+            } else {
+                throw new RuntimeException("Failed with status: " + response.getStatus());
+            }
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            throw new RuntimeException("Failed");
+        }
+    }
+
     /**
      * Get the Ring devices
      *
