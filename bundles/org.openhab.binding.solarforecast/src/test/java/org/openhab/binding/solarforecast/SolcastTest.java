@@ -98,7 +98,8 @@ class SolcastTest {
 
         JSONArray forecastJson = getForecast();
         now = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
-        scfo = new SolcastObject("sc-test", forecastJson, now.toInstant(), TIMEZONEPROVIDER, mock(Storage.class));
+        scfo = new SolcastObject("sc-test", forecastJson, now.toInstant(), TIMEZONEPROVIDER,
+                (Storage<String>) mock(Storage.class));
     }
 
     static void setFixedTimeJul18() {

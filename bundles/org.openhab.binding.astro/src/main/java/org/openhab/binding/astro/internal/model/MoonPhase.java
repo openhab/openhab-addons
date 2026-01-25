@@ -12,163 +12,68 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Stream;
+import static org.openhab.binding.astro.internal.util.AstroConstants.LUNAR_SYNODIC_MONTH_DAYS;
 
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Time;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 
 /**
- * Holds the calculates moon phase informations.
+ * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
- * @author Christoph Weitkamp - Introduced UoM
+ * @author Gaël L'hopital - added age equivalence in days & cycleProgressPercentage
  */
 @NonNullByDefault
-public class MoonPhase {
-    private final Map<MoonPhaseName, @Nullable Calendar> phases = new HashMap<>(MoonPhaseName.values().length);
+public enum MoonPhase {
+    NEW(0.0, true),
+    WAXING_CRESCENT(0.125, false),
+    FIRST_QUARTER(0.25, true),
+    WAXING_GIBBOUS(0.375, false),
+    FULL(0.5, true),
+    WANING_GIBBOUS(0.625, false),
+    THIRD_QUARTER(0.75, true), // also called last quarter
+    WANING_CRESCENT(0.875, false);
 
-    private double age;
-    private double illumination;
-    private double agePercent;
-    private double ageDegree;
+    public final double cycleProgress;
+    private final boolean remarkable;
 
-    private @Nullable MoonPhaseName name;
-
-    public MoonPhase() {
-        phases.put(MoonPhaseName.FIRST_QUARTER, null);
-        phases.put(MoonPhaseName.FULL, null);
-        phases.put(MoonPhaseName.THIRD_QUARTER, null);
-        phases.put(MoonPhaseName.NEW, null);
+    MoonPhase(double cycleProgress, boolean remarkable) {
+        this.cycleProgress = cycleProgress;
+        this.remarkable = remarkable;
     }
 
-    /**
-     * Returns the date at which the moon is in the first quarter.
-     */
-    @Nullable
-    public Calendar getFirstQuarter() {
-        return getPhaseDate(MoonPhaseName.FIRST_QUARTER);
+    public int getAgeDays() {
+        return (int) ((LUNAR_SYNODIC_MONTH_DAYS - 1) * cycleProgress + 1);
     }
 
-    /**
-     * Returns the date of the full moon.
-     */
-    @Nullable
-    public Calendar getFull() {
-        return getPhaseDate(MoonPhaseName.FULL);
-    }
-
-    /**
-     * Returns the date at which the moon is in the third quarter.
-     */
-    @Nullable
-    public Calendar getThirdQuarter() {
-        return getPhaseDate(MoonPhaseName.THIRD_QUARTER);
-    }
-
-    /**
-     * Returns the date of the new moon.
-     */
-    @Nullable
-    public Calendar getNew() {
-        return getPhaseDate(MoonPhaseName.NEW);
-    }
-
-    @Nullable
-    public Calendar getPhaseDate(MoonPhaseName moonPhase) {
-        if (!phases.containsKey(moonPhase)) {
-            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
+    public static MoonPhase fromAgePercent(double agePercent) {
+        if (agePercent < 0.0 || agePercent > 1.0) {
+            throw new IllegalArgumentException("agePercent must be in [0,1]");
         }
-        return phases.get(moonPhase);
-    }
 
-    public void setPhase(MoonPhaseName moonPhase, @Nullable Calendar calendar) {
-        if (!phases.containsKey(moonPhase)) {
-            throw new IllegalArgumentException("MoonPhase does not handle %s".formatted(moonPhase.toString()));
+        if (agePercent == NEW.cycleProgress) {
+            return NEW;
+        } else if (agePercent < FIRST_QUARTER.cycleProgress) {
+            return WAXING_CRESCENT;
+        } else if (agePercent == FIRST_QUARTER.cycleProgress) {
+            return FIRST_QUARTER;
+        } else if (agePercent < FULL.cycleProgress) {
+            return WAXING_GIBBOUS;
+        } else if (agePercent == FULL.cycleProgress) {
+            return FULL;
+        } else if (agePercent < THIRD_QUARTER.cycleProgress) {
+            return WANING_GIBBOUS;
+        } else if (agePercent == THIRD_QUARTER.cycleProgress) {
+            return THIRD_QUARTER;
         }
-        phases.put(moonPhase, calendar);
+        return WANING_CRESCENT;
     }
 
-    public Stream<MoonPhaseName> remarkablePhases() {
-        return phases.keySet().stream();
-    }
-
-    /**
-     * Returns the age in days.
-     */
-    public QuantityType<Time> getAge() {
-        return new QuantityType<>(age, Units.DAY);
-    }
-
-    /**
-     * Sets the age in days.
-     */
-    public void setAge(double age) {
-        this.age = age;
-    }
-
-    /**
-     * Returns the illumination.
-     */
-    public QuantityType<Dimensionless> getIllumination() {
-        return new QuantityType<>(illumination, Units.PERCENT);
-    }
-
-    /**
-     * Sets the illumination.
-     */
-    public void setIllumination(double illumination) {
-        this.illumination = illumination;
-    }
-
-    /**
-     * Returns the phase name.
-     */
-    @Nullable
-    public MoonPhaseName getName() {
-        return name;
-    }
-
-    /**
-     * Sets the phase name.
-     */
-    public void setName(@Nullable MoonPhaseName name) {
-        this.name = name;
-    }
-
-    /**
-     * Returns the age in degree.
-     */
-    public QuantityType<Angle> getAgeDegree() {
-        return new QuantityType<>(ageDegree, Units.DEGREE_ANGLE);
-    }
-
-    /**
-     * Sets the age in degree.
-     */
-    public void setAgeDegree(double ageDegree) {
-        this.ageDegree = ageDegree;
-    }
-
-    /**
-     * Returns the age in percent.
-     */
-    public QuantityType<Dimensionless> getAgePercent() {
-        return new QuantityType<>(agePercent, Units.PERCENT);
-    }
-
-    /**
-     * Sets the age in percent.
-     */
-    public void setAgePercent(double agePercent) {
-        this.agePercent = agePercent;
+    public static List<MoonPhase> remarkables() {
+        return Arrays.stream(values()).filter(mp -> mp.remarkable).sorted(Comparator.comparing(mp -> mp.cycleProgress))
+                .toList();
     }
 }

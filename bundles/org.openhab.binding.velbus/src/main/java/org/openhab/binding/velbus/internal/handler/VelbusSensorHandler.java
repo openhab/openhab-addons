@@ -42,7 +42,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class VelbusSensorHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMB6IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB));
+            Arrays.asList(THING_TYPE_VMB6IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB, THING_TYPE_VMBPSUMNGR_20));
 
     private static final StringType SET_LED = new StringType("SET_LED");
     private static final StringType SLOW_BLINK_LED = new StringType("SLOW_BLINK_LED");

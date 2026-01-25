@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyplusht">
 		<label>ShellyPlus H&amp;T</label>
-		<description>@text/thing-type.shelly.shellyplusht.description</description>
+		<description>Shelly Plus HT - Humidity and Temperature sensor with display</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>
@@ -21,7 +21,7 @@
 
 	<thing-type id="shellyplussmoke">
 		<label>Shelly Plus Smoke</label>
-		<description>@text/thing-type.shelly.shellyplussmoke.description</description>
+		<description>Shelly Plus Smoke - Smoke Detector with Alarm</description>
 		<category>SmokeDetector</category>
 		<semantic-equipment-tag>SmokeDetector</semantic-equipment-tag>
 		<channel-groups>
@@ -36,7 +36,7 @@
 
 	<thing-type id="shellywalldisplay">
 		<label>Shelly Wall Display</label>
-		<description>@text/thing-type.shelly.shellywalldisplay.description</description>
+		<description>Shelly Wall Display with sensors and input/output</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>

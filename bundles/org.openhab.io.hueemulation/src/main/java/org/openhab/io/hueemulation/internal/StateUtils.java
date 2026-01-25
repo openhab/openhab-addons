@@ -62,37 +62,33 @@ public class StateUtils {
         AbstractHueState state;
         switch (deviceType) {
             case ColorType:
-                if (itemState instanceof HSBType) {
-                    state = new HueStateColorBulb((HSBType) itemState);
-                } else if (itemState instanceof PercentType) {
-                    state = new HueStateColorBulb((PercentType) itemState, ((PercentType) itemState).intValue() > 0);
-                } else if (itemState instanceof OnOffType) {
-                    OnOffType t = (OnOffType) itemState;
-                    state = new HueStateColorBulb(t == OnOffType.ON);
+                if (itemState instanceof HSBType hsbState) {
+                    state = new HueStateColorBulb(hsbState);
+                } else if (itemState instanceof PercentType percentState) {
+                    state = new HueStateColorBulb(percentState, percentState.intValue() > 0);
+                } else if (itemState instanceof OnOffType onOffState) {
+                    state = new HueStateColorBulb(onOffState == OnOffType.ON);
                 } else {
                     state = new HueStateColorBulb(new HSBType());
                 }
                 break;
             case WhiteType:
             case WhiteTemperatureType:
-                if (itemState instanceof HSBType) {
-                    PercentType brightness = ((HSBType) itemState).getBrightness();
+                if (itemState instanceof HSBType hsbState) {
+                    PercentType brightness = hsbState.getBrightness();
                     state = new HueStateBulb(brightness, brightness.intValue() > 0);
-                } else if (itemState instanceof PercentType) {
-                    PercentType brightness = (PercentType) itemState;
-                    state = new HueStateBulb(brightness, brightness.intValue() > 0);
-                } else if (itemState instanceof OnOffType) {
-                    OnOffType t = (OnOffType) itemState;
-                    state = new HueStateBulb(t == OnOffType.ON);
+                } else if (itemState instanceof PercentType percentState) {
+                    state = new HueStateBulb(percentState, percentState.intValue() > 0);
+                } else if (itemState instanceof OnOffType onOffState) {
+                    state = new HueStateBulb(onOffState == OnOffType.ON);
                 } else {
                     state = new HueStateBulb(new PercentType(0), false);
                 }
                 break;
             case SwitchType:
             default:
-                if (itemState instanceof OnOffType) {
-                    OnOffType t = (OnOffType) itemState;
-                    state = new HueStatePlug(t == OnOffType.ON);
+                if (itemState instanceof OnOffType onOffState) {
+                    state = new HueStatePlug(onOffState == OnOffType.ON);
                 } else {
                     state = new HueStatePlug(false);
                 }
