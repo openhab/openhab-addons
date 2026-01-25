@@ -84,9 +84,7 @@ public class MoonPhaseCalc {
      * Calculates the moon phase.
      */
     private static double calcMoonPhase(double k, MoonPhase phase) {
-        double kMod = Math.floor(k) + phase.cycleProgress;
-        LunationArguments la = new LunationArguments(kMod);
-        double t = kMod / 1236.85;
+        LunationArguments la = new LunationArguments(k, phase.cycleProgress);
         double jd = la.jde;
         switch (phase) {
             case NEW:
@@ -137,7 +135,7 @@ public class MoonPhaseCalc {
                         - .00002 * cosDeg(la.m1 - la.m) + .00002 * cosDeg(la.m1 + la.m) + .00002 * cosDeg(2 * la.f);
                 jd += MoonPhase.FIRST_QUARTER.equals(phase) ? w : -w;
         }
-        return moonCorrection(jd, t, kMod);
+        return moonCorrection(jd, la.t, la.kMod);
     }
 
     private static double moonCorrection(double jd, double t, double k) {

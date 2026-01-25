@@ -62,7 +62,7 @@ public abstract class EclipseCalc {
         do {
             double k = LunationArguments.varK(midnightJd, tz);
             tz += 1;
-            eclipseJd = getEclipse(Math.floor(k) + getJDAjust(), eclipse);
+            eclipseJd = getEclipse(k, getJDAjust(), eclipse);
         } while (eclipseJd <= midnightJd);
         return eclipseJd;
     }
@@ -76,17 +76,15 @@ public abstract class EclipseCalc {
     /**
      * Calculates the eclipse.
      */
-    protected double getEclipse(double kMod, EclipseKind eclipse) {
-        LunationArguments la = new LunationArguments(kMod);
-        double t = kMod / 1236.85;
-        double jd = la.jde;
+    protected double getEclipse(double k, double adjust, EclipseKind eclipse) {
+        LunationArguments la = new LunationArguments(k, adjust);
 
         if (sinDeg(Math.abs(la.f)) > .36) {
             return 0;
         }
 
         double f1 = la.f - .02665 * sinDeg(la.o);
-        double a1 = 299.77 + .107408 * kMod - .009173 * t * t;
+        double a1 = 299.77 + .107408 * la.kMod - .009173 * la.t2;
         double p = .207 * la.e * sinDeg(la.m) + .0024 * la.e * sinDeg(2 * la.m) - .0392 * sinDeg(la.m1)
                 + .0116 * sinDeg(2 * la.m1) - .0073 * la.e * sinDeg(la.m1 + la.m) + .0067 * la.e * sinDeg(la.m1 - la.m)
                 + .0118 * sinDeg(2 * f1);
@@ -96,6 +94,7 @@ public abstract class EclipseCalc {
         double u = .0059 + .0046 * la.e * cosDeg(la.m) - .0182 * cosDeg(la.m1) + .0004 * cosDeg(2 * la.m1)
                 - .0005 * cosDeg(la.m + la.m1);
 
+        double jd = la.jde;
         jd += .0161 * sinDeg(2 * la.m1) - .0097 * sinDeg(2 * f1) + .0073 * la.e * sinDeg(la.m1 - la.m)
                 - .005 * la.e * sinDeg(la.m1 + la.m) - .0023 * sinDeg(la.m1 - 2 * f1) + .0021 * la.e * sinDeg(2 * la.m);
         jd += .0012 * sinDeg(la.m1 + 2 * f1) + .0006 * la.e * sinDeg(2 * la.m1 + la.m) - .0004 * sinDeg(3 * la.m1)
