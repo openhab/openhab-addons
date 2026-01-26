@@ -258,10 +258,10 @@ public class RestClient {
             if (response.getStatus() == 200) {
                 return response.getContent();
             } else {
-                throw new RuntimeException("Failed with status: " + response.getStatus());
+                throw new AuthenticationException("Failed to download snapshop: " + response.getStatus());
             }
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            throw new RuntimeException("Failed");
+            throw new AuthenticationException("Failed to download snapshop.");
         }
     }
 

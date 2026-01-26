@@ -43,6 +43,7 @@ public class RingBindingConstants {
     public static final String CHANNEL_STATUS_BATTERY = "status#battery";
 
     public static final String CHANNEL_STATUS_SNAPSHOT = "snapshot#snapshot";
+    public static final String CHANNEL_STATUS_SNAPSHOT_TIMESTAMP = "snapshot#snapshot-timestamp";
 
     public static final String CHANNEL_EVENT_URL = "event#url";
     public static final String CHANNEL_EVENT_CREATED_AT = "event#createdAt";

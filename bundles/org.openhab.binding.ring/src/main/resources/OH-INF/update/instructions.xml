@@ -5,17 +5,23 @@
 
 	<thing-type uid="ring:stickycam">
 		<instruction-set targetVersion="1">
-			<add-channel-group id="snapshotGroup">
-				<type>ring:snapshotGroup</type>
-			</add-channel-group>
+			<add-channel id="snapshot" groupIds="snapshotGroup">
+				<type>ring:snapshot</type>
+			</add-channel>
+			<add-channel id="snapshot-timestamp" groupIds="snapshotGroup">
+				<type>ring:snapshot-timestamp</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="ring:doorbell">
 		<instruction-set targetVersion="1">
-			<add-channel-group id="snapshotGroup">
-				<type>ring:snapshotGroup</type>
-			</add-channel-group>
+			<add-channel id="snapshot" groupIds="snapshotGroup">
+				<type>ring:snapshot</type>
+			</add-channel>
+			<add-channel id="snapshot-timestamp" groupIds="snapshotGroup">
+				<type>ring:snapshot-timestamp</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 
