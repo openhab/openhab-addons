@@ -39,15 +39,15 @@ public class LunationArguments {
     public final double kMod;
     public final double t; // Time in Julian centuries since J2000.0.
     public final double t2;
-    public final double m; /// Mean anomaly of the Sun (degrees).
+    public final double m; // Mean anomaly of the Sun (degrees).
     public final double m1; // Mean anomaly of the Moon (degrees).
     public final double f; // Argument of latitude of the Moon (degrees).
     public final double o; // Longitude of the ascending node of the Moon's orbit (degrees).
     public final double e; // Earth orbital eccentricity correction factor.
     public final double jde; // Mean Julian Ephemeris Day of the lunation.
 
-    public LunationArguments(double jd, double adjust) {
-        this.kMod = Math.floor(jd) + adjust;
+    public LunationArguments(double k, double adjust) {
+        this.kMod = Math.floor(k) + adjust;
         this.t = kMod / DateTimeUtils.JULIAN_CENTURY_DAYS * AstroConstants.LUNAR_SYNODIC_MONTH_DAYS;
         this.t2 = t * t;
         double t3 = t2 * t;
