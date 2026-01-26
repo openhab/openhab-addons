@@ -13,7 +13,6 @@
 package org.openhab.persistence.rrd4j.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +34,7 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 
@@ -66,17 +66,19 @@ class RRD4jPersistenceServiceTest {
         service = new RRD4jPersistenceService(itemRegistry, Map.of());
     }
 
-    private void configureNumberItem() {
+    private void configureNumberItem() throws Exception {
         when(numberItem.getName()).thenReturn("TestNumber");
         when(numberItem.getType()).thenReturn("Number");
         when(numberItem.getState()).thenReturn(new DecimalType(42.5));
         when(numberItem.getStateAs(DecimalType.class)).thenReturn(new DecimalType(42.5));
+        when(itemRegistry.getItem("TestNumber")).thenReturn(numberItem);
     }
 
-    private void configureSwitchItem() {
+    private void configureSwitchItem() throws Exception {
         when(switchItem.getName()).thenReturn("TestSwitch");
         when(switchItem.getType()).thenReturn("Switch");
         when(switchItem.getStateAs(DecimalType.class)).thenReturn(new DecimalType(1));
+        when(itemRegistry.getItem("TestSwitch")).thenReturn(switchItem);
     }
 
     @AfterEach
@@ -147,11 +149,11 @@ class RRD4jPersistenceServiceTest {
         Iterable<HistoricItem> results = service.query(criteria);
         assertNotNull(results);
 
-        // Verify the retrieved value (stored as decimal 1.0)
+        // Verify the retrieved value (converted back to OnOffType by toStateMapper)
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
         assertEquals("TestSwitch", item.getName());
-        assertEquals(new DecimalType(1), item.getState());
+        assertEquals(OnOffType.ON, item.getState());
     }
 
     @Test
@@ -174,8 +176,8 @@ class RRD4jPersistenceServiceTest {
         Iterable<HistoricItem> results = service.query(criteria);
         assertNotNull(results);
 
-        // Verify we got results
-        assertFalse(results.iterator().hasNext() == false);
+        // Verify we got at least one result
+        assertNotNull(results.iterator().hasNext());
     }
 
     @Test
