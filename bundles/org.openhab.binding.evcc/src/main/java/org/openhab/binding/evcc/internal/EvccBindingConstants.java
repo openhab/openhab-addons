@@ -99,6 +99,7 @@ public class EvccBindingConstants {
     public static final String JSON_KEY_PRECONDITION = "precondition";
     public static final String JSON_KEY_PV = "pv";
     public static final String JSON_KEY_REPEATING_PLANS = "repeatingPlans";
+    public static final String JSON_KEY_SCALE = "scale";
     public static final String JSON_KEY_SMART_COST_TYPE = "smartCostType";
     public static final String JSON_KEY_SOC = "soc";
     public static final String JSON_KEY_SOLAR = "solar";

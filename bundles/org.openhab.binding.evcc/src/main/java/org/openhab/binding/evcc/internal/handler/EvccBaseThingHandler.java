@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+import static org.openhab.binding.evcc.internal.handler.Utils.getKeyFromChannelUID;
 import static org.openhab.core.util.StringUtils.capitalize;
 
 import java.io.IOException;
@@ -29,7 +30,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,7 +48,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -85,32 +87,15 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     protected void commonInitialize(JsonObject state) {
-        List<Channel> newChannels = new ArrayList<>();
-
-        for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
-            String key = entry.getKey();
-            JsonElement value = entry.getValue();
-            if (null == key || value == null) {
-                continue;
-            }
-            String thingKey = getThingKey(key);
-
-            // Skip non-primitive values
-            if (!value.isJsonPrimitive()) {
-                continue;
-            }
-
-            @Nullable
-            Channel channel = createChannel(thingKey, value);
-            if (null != channel) {
-                newChannels.add(channel);
+        List<Channel> channels = getThing().getChannels();
+        Set<String> validChannelIds = extractValidChannelIds(state);
+        if (syncThingChannels(channels, state, validChannelIds)) {
+            if (!channels.isEmpty()) {
+                // channels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
+                updateThing(editThing().withChannels(channels).build());
             }
         }
 
-        if (!newChannels.isEmpty()) {
-            newChannels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
-            updateThing(editThing().withChannels(newChannels).build());
-        }
         updateStatus(ThingStatus.ONLINE);
         isInitialized = true;
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
@@ -160,6 +145,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 JsonObject jsonState = getStateFromCachedState(handler.getCachedEvccState());
                 if (!jsonState.isEmpty()) {
                     JsonElement value = jsonState.get(key);
+                    if (value == null) {
+                        return;
+                    }
                     State state = StateResolver.getInstance().resolveState(key, value);
                     if (null != state) {
                         updateState(channelUID, state);
@@ -186,7 +174,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             String label = getChannelLabel(thingKey);
             Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey)).withLabel(label)
                     .withType(channelTypeUID).withAcceptedItemType(itemType).build();
-            if (getThing().getChannels().stream().noneMatch(c -> c.getUID().equals(channel.getUID()))) {
+            if (getThing().getChannel(channel.getUID()) == null) {
                 return channel;
             }
         } else {
@@ -224,6 +212,29 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         if (!isInitialized || jsonState.isEmpty()) {
             return;
         }
+        Set<String> validChannelIds = extractValidChannelIds(jsonState);
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        boolean channelsChanged = syncThingChannels(channels, jsonState, validChannelIds);
+        if (channelsChanged) {
+            channels.sort(Comparator.comparing(c -> c.getUID().getId()));
+            updateThing(editThing().withChannels(channels).build());
+        }
+        updateChannelStates(channels, jsonState, validChannelIds);
+        updateStatus(ThingStatus.ONLINE);
+
+        if (!isInitialized || jsonState.isEmpty()) {
+            return;
+        }
+    }
+
+    private Set<String> extractValidChannelIds(JsonObject jsonState) {
+        return jsonState.entrySet().stream()
+                .filter(e -> e.getKey() != null && e.getValue() != null && e.getValue().isJsonPrimitive())
+                .map(e -> getThingKey(e.getKey())).collect(Collectors.toSet());
+    }
+
+    private boolean syncThingChannels(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
+        boolean channelsChanged = false;
 
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : jsonState.entrySet()) {
             String key = entry.getKey();
@@ -236,20 +247,48 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
             Channel existingChannel = getThing().getChannel(channelUID.getId());
             if (existingChannel == null) {
-                ThingBuilder builder = editThing();
-                List<Channel> channels = new ArrayList<>(getThing().getChannels());
-                builder.withoutChannels(channels);
                 @Nullable
                 Channel newChannel = createChannel(thingKey, value);
                 if (null != newChannel) {
                     channels.add(newChannel);
-                    channels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
-                    updateThing(builder.withChannels(channels).build());
+                    channelsChanged = true;
                 }
             }
-            resolveAndUpdateState(channelUID, thingKey, value);
         }
-        updateStatus(ThingStatus.ONLINE);
+
+        List<Channel> filteredChannels = channels.stream().filter(c -> {
+            String id = c.getUID().getId();
+            return validChannelIds.contains(id) || isLinked(c.getUID());
+        }).collect(Collectors.toList());
+
+        boolean channelsRemoved = validChannelIds.size() != filteredChannels.size();
+
+        if (channelsRemoved) {
+            channels = filteredChannels;
+            channelsChanged = true;
+        }
+        return channelsChanged;
+    }
+
+    private void updateChannelStates(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
+        for (Channel channel : channels) {
+            ChannelUID uid = channel.getUID();
+            String id = uid.getId();
+
+            if (validChannelIds.contains(id)) {
+                // If channel is valid -> resolve state and set channel state
+                @Nullable
+                JsonElement value = jsonState.get(getKeyFromChannelUID(uid));
+                if (value != null) {
+                    resolveAndUpdateState(uid, id, value);
+                }
+            } else {
+                // else set channel state to UNDEF if channel is linked
+                if (isLinked(uid)) {
+                    updateState(uid, UnDefType.UNDEF);
+                }
+            }
+        }
     }
 
     protected void resolveAndUpdateState(ChannelUID channelUID, String key, JsonElement value) {

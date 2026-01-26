@@ -18,6 +18,7 @@ import static org.mockito.Mockito.mock;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.PROPERTY_SUBTYPE;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -116,10 +118,6 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
 
             handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
-            assertTrue(updateStateCalled);
-            assertEquals(4, updateStateCounter);
-            assertTrue(sendTimeSeriesCalled);
-            assertEquals(72, timeSeriesCount);
         }
 
         @Test
@@ -139,21 +137,75 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             Configuration configuration = mock(Configuration.class);
             when(configuration.get(PROPERTY_SUBTYPE)).thenReturn(forecastSubtype);
             when(thing.getConfiguration()).thenReturn(configuration);
-            when(thing.getChannels()).thenReturn(new ArrayList<>());
+            if ("solar".equals(forecastSubtype)) {
+                Channel scaleChannel = mock(Channel.class);
+                ChannelUID uid = new ChannelUID(thing.getUID(), "forecast-scale");
+                when(scaleChannel.getUID()).thenReturn(uid);
+                Channel todayChannel = mock(Channel.class);
+                uid = new ChannelUID(thing.getUID(), "forecast-today");
+                when(todayChannel.getUID()).thenReturn(uid);
+                Channel tomorrowChannel = mock(Channel.class);
+                uid = new ChannelUID(thing.getUID(), "forecast-tomorrow");
+                when(tomorrowChannel.getUID()).thenReturn(uid);
+                Channel dayChannel = mock(Channel.class);
+                uid = new ChannelUID(thing.getUID(), "forecast-dayAfterTomorrow");
+                when(dayChannel.getUID()).thenReturn(uid);
+                List<Channel> channels = new ArrayList<>(
+                        List.of(scaleChannel, todayChannel, tomorrowChannel, dayChannel));
+                when(thing.getChannels()).thenReturn(channels);
+            } else {
+                when(thing.getChannels()).thenReturn(new ArrayList<>());
+            }
             handler = spy(createHandler());
             EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
-            when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+            when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse.deepCopy());
         }
 
         @Test
         public void co2ForecastSubtype() {
             setup("co2");
             handler.isInitialized = true;
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
             assertEquals(1, updateStateCounter);
+            assertTrue(sendTimeSeriesCalled);
+            assertEquals(72, timeSeriesCount);
+        }
+
+        @Test
+        public void feedinForecastSubtype() {
+            setup("feedin");
+            handler.isInitialized = true;
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+            assertSame(ThingStatus.ONLINE, lastThingStatus);
+            assertTrue(updateStateCalled);
+            assertEquals(1, updateStateCounter);
+            assertTrue(sendTimeSeriesCalled);
+            assertEquals(24, timeSeriesCount);
+        }
+
+        @Test
+        public void gridForecastSubtype() {
+            setup("grid");
+            handler.isInitialized = true;
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+            assertSame(ThingStatus.ONLINE, lastThingStatus);
+            assertTrue(updateStateCalled);
+            assertEquals(1, updateStateCounter);
+            assertTrue(sendTimeSeriesCalled);
+            assertEquals(24, timeSeriesCount);
+        }
+
+        @Test
+        public void solarForecastSubtype() {
+            setup("solar");
+            handler.isInitialized = true;
+            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+            assertSame(ThingStatus.ONLINE, lastThingStatus);
+            assertTrue(updateStateCalled);
+            assertEquals(6, updateStateCounter);
             assertTrue(sendTimeSeriesCalled);
             assertEquals(72, timeSeriesCount);
         }

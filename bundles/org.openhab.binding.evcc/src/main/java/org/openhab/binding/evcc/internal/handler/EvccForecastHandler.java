@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +33,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,14 +114,19 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> forecastArray = extractCorrespondingForecast(state);
             case JSON_KEY_SOLAR -> {
                 forecastArray = extractCorrespondingForecast(state);
-                updateStatesFromApiResponse(state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType));
+                JsonObject solar = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
+                int scale = solar.get(JSON_KEY_SCALE).getAsInt();
+                propagate(forecastArray, getThingKey("scaled" + Utils.capitalizeFirstLetter(subType)),
+                        obj -> parseScaledForecast(obj, getThingKey(subType), scale));
+                updateStatesFromApiResponse(solar);
             }
             default -> {
                 logger.warn("Unknown forecast type: {}", subType);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
-        propagateForecastArrayToChannel(forecastArray);
+        propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private JsonArray extractCorrespondingForecast(JsonObject state) {
@@ -150,43 +157,63 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         }
     }
 
-    private void propagateForecastArrayToChannel(JsonArray forecastArray) {
-        TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        String thingKey = getThingKey(subType);
-        ChannelUID channelUID = new ChannelUID(thing.getUID(), thingKey);
-        if (!isLinked(channelUID)) {
+    private void propagate(JsonArray array, String key, Function<JsonObject, @Nullable ForecastData> parser) {
+        ChannelUID uid = new ChannelUID(thing.getUID(), key);
+        if (!isLinked(uid)) {
             return;
         }
+        TimeSeries ts = getTimeSeries(array, parser);
+        setForecastChannelState(ts, uid);
+        sendTimeSeries(uid, ts);
+    }
+
+    private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser) {
+        TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+
         for (JsonElement data : forecastArray) {
-            if (data instanceof JsonObject dataObj) {
-                ForecastData parsedData = parseForecast(dataObj, thingKey);
-                if (parsedData != null) {
-                    Instant time = OffsetDateTime.parse(parsedData.timestamp()).toInstant();
-                    timeSeries.add(time, parsedData.value());
+            if (data instanceof JsonObject obj) {
+                ForecastData parsed = parser.apply(obj);
+                if (parsed != null) {
+                    Instant time = OffsetDateTime.parse(parsed.timestamp()).toInstant();
+                    timeSeries.add(time, parsed.value());
                 }
             }
         }
-        if (timeSeries.size() > 0) {
-            Instant now = Instant.now();
-            List<TimeSeries.Entry> entries = timeSeries.getStates()
-                    .sorted(Comparator.comparing(TimeSeries.Entry::timestamp)).toList();
-            TimeSeries.Entry currentEntry = entries.stream().filter(e -> !e.timestamp().isAfter(now))
-                    .reduce((a, b) -> b).orElse(entries.get(0));
-            // Should not be necessary, but to be sure that the currentEntry is not null
-            Optional.ofNullable(currentEntry).ifPresent(e -> updateState(channelUID, e.state()));
+        return timeSeries;
+    }
+
+    private void setForecastChannelState(TimeSeries timeSeries, ChannelUID channelUID) {
+        if (timeSeries.size() == 0) {
+            return;
         }
-        sendTimeSeries(channelUID, timeSeries);
-        updateStatus(ThingStatus.ONLINE);
+        Instant now = Instant.now();
+        TimeSeries.Entry current = timeSeries.getStates().filter(e -> !e.timestamp().isAfter(now))
+                .max(Comparator.comparing(TimeSeries.Entry::timestamp))
+                .orElse(timeSeries.getStates().min(Comparator.comparing(TimeSeries.Entry::timestamp))
+                        .orElse(new TimeSeries.Entry(now, UnDefType.UNDEF)));
+
+        if (current != null && current.state() != UnDefType.UNDEF) {
+            updateState(channelUID, current.state());
+        }
     }
 
     @Nullable
-    private ForecastData parseForecast(JsonObject dataObj, String thingKey) {
-        return switch (subType) {
-            case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID ->
-                parseValueAndTimestamp(dataObj.get("value"), dataObj.get("start"), thingKey);
-            case JSON_KEY_SOLAR -> parseValueAndTimestamp(dataObj.get("val"), dataObj.get("ts"), thingKey);
-            default -> null;
-        };
+    private ForecastData parseForecast(JsonObject obj, String thingKey) {
+        FieldMapping m = getFieldMapping();
+        if (m == null) {
+            return null;
+        }
+        return parseValueAndTimestamp(obj.get(m.valueField()), obj.get(m.timestampField()), thingKey);
+    }
+
+    @Nullable
+    private ForecastData parseScaledForecast(JsonObject obj, String thingKey, int scale) {
+        FieldMapping m = getFieldMapping();
+        if (m == null) {
+            return null;
+        }
+        return parseValueAndTimestamp(new JsonPrimitive(obj.get(m.valueField()).getAsInt() * scale),
+                obj.get(m.timestampField()), thingKey);
     }
 
     @Nullable
@@ -212,6 +239,18 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         return state.has(JSON_KEY_FORECAST) ? state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)
                 ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
                 : new JsonObject() : new JsonObject();
+    }
+
+    private record FieldMapping(String valueField, String timestampField) {
+    }
+
+    @Nullable
+    private FieldMapping getFieldMapping() {
+        return switch (subType) {
+            case JSON_KEY_CO2, JSON_KEY_FEED_IN, JSON_KEY_GRID -> new FieldMapping("value", "start");
+            case JSON_KEY_SOLAR -> new FieldMapping("val", "ts");
+            default -> null;
+        };
     }
 
     private record ForecastData(State value, String timestamp) {

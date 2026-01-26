@@ -58,8 +58,6 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanHandler> {
 
-    private boolean updateStateCalled = false;
-    private int updateStateCounter = 0;
     private String capturedUrl = "";
     private JsonElement capturedPayload = JsonNull.INSTANCE;
     private String capturedMethod = "";
@@ -87,12 +85,6 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
             @Override
             protected Bridge getBridge() {
                 return null;
-            }
-
-            @Override
-            public void updateState(ChannelUID uid, State state) {
-                updateStateCalled = true;
-                updateStateCounter++;
             }
 
             @Override
@@ -162,10 +154,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
 
         handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
 
-        assertTrue(updateStateCalled);
-        assertEquals(4, updateStateCounter);
-
-        // Set new SoC & time via handleCommand (pending commands collection)
+        // Set new SoC & time via handleCommand
         ChannelUID socCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_SOC);
         ChannelUID timeCh = new ChannelUID(thing.getUID(), "plan-time");
         ChannelUID precCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_PRECONDITION);

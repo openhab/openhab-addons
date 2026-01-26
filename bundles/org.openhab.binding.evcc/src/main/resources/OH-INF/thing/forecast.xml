@@ -57,10 +57,10 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="forecast-scale">
+	<channel-type id="forecast-scaled">
 		<item-type>Number</item-type>
-		<label>Scale</label>
-		<description>Scaling factor for the forecast values</description>
+		<label>Scaled Solar Forecast</label>
+		<description>Holds the scaled forecast data</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-today">
