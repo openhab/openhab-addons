@@ -26,7 +26,7 @@ import org.openhab.binding.homekit.internal.session.DecryptingInputStream;
 import org.openhab.binding.homekit.internal.session.EncryptingOutputStream;
 
 /**
- * Test for {@link EncryptingInputStream} and {@link DecryptingInputStream} round trip.
+ * Test for {@link EncryptingOutputStream} and {@link DecryptingInputStream} round trip.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
