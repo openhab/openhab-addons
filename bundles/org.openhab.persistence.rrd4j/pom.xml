@@ -63,7 +63,7 @@
         <version>0.8.14</version>
         <configuration>
           <excludes>
-            <exclude>com.tomgibara/**/*</exclude>
+            <exclude>com/tomgibara/**/*</exclude>
             <exclude>eu/bengreen/**/*</exclude>
             <exclude>org/rrd4j/**/*</exclude>
           </excludes>
