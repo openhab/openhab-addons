@@ -16,18 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.ZonedDateTime;
-import java.util.Comparator;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.ItemRegistry;
@@ -45,9 +40,6 @@ import org.openhab.core.persistence.HistoricItem;
  */
 @ExtendWith(MockitoExtension.class)
 class RRD4jPersistenceServiceTest {
-
-    @TempDir
-    Path tempDir;
 
     @Mock
     private ItemRegistry itemRegistry;
@@ -85,20 +77,6 @@ class RRD4jPersistenceServiceTest {
     void tearDown() throws Exception {
         if (service != null) {
             service.deactivate();
-        }
-        // Clean up any created RRD files in temp directory
-        cleanupTempFiles();
-    }
-
-    private void cleanupTempFiles() throws IOException {
-        if (Files.exists(tempDir)) {
-            Files.walk(tempDir).sorted(Comparator.reverseOrder()).forEach(path -> {
-                try {
-                    Files.deleteIfExists(path);
-                } catch (IOException e) {
-                    // Ignore cleanup errors
-                }
-            });
         }
     }
 
