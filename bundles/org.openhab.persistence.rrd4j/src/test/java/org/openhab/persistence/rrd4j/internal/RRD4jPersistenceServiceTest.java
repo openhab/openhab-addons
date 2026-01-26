@@ -206,7 +206,7 @@ class RRD4jPersistenceServiceTest {
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
-        criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1)); 
+        criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1));
 
         Iterable<HistoricItem> results = service.query(criteria);
         assertNotNull(results);
