@@ -191,6 +191,9 @@ public class HttpPayloadParser implements AutoCloseable {
                 int headerEndIndex = indexOfDoubleCRLF(inputBuffer, inputStartIndex, inputEndIndex);
                 if (headerEndIndex < 0) {
                     // need more data
+                    if ((inputEndIndex - inputStartIndex) > MAX_HEADER_BLOCK_SIZE) {
+                        throw new IOException("Header buffer overload");
+                    }
                     return;
                 }
                 int headersLength = (headerEndIndex + 4) - inputStartIndex;
@@ -221,6 +224,9 @@ public class HttpPayloadParser implements AutoCloseable {
 
                 if (isChunked && !finalChunkSeen) {
                     chunkDataBuffer.write(inputBuffer, inputStartIndex, remainingByteCount);
+                    if (chunkDataBuffer.size() > MAX_CONTENT_LENGTH) {
+                        throw new IOException("Chunked data exceeds maximum allowed size");
+                    }
                     inputStartIndex += remainingByteCount;
                     parseChunkedBytesFromStagingBuffer();
                 } else if (contentLength >= 0) {
@@ -229,8 +235,8 @@ public class HttpPayloadParser implements AutoCloseable {
                         contentBuffer.write(inputBuffer, inputStartIndex, toCopy);
                         inputStartIndex += toCopy;
                     } else {
-                        // nothing more needed for this message
-                        inputStartIndex += remainingByteCount;
+                        // body is complete; do NOT consume extra bytes
+                        // let the main loop emit the message and continue parsing
                     }
                 } else {
                     // no content-length and not chunked; treat this message as header-only and emit it now
@@ -334,13 +340,12 @@ public class HttpPayloadParser implements AutoCloseable {
 
         // drop everything we consumed from staging buffer
         int remainingByteCount = chunkDataBuffer.size() - max;
+        chunkDataBuffer.reset();
         if (remainingByteCount > 0) {
-            byte[] restBytes = new byte[remainingByteCount];
-            System.arraycopy(chunkBuffer, max, restBytes, 0, remainingByteCount);
-            chunkDataBuffer.reset();
-            chunkDataBuffer.write(restBytes, 0, remainingByteCount);
-        } else {
-            chunkDataBuffer.reset();
+            // push leftover bytes back into the main input buffer
+            ensureCapacity(remainingByteCount);
+            System.arraycopy(chunkBuffer, max, inputBuffer, inputEndIndex, remainingByteCount);
+            inputEndIndex += remainingByteCount;
         }
     }
 

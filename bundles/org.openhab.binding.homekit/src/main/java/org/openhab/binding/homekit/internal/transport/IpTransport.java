@@ -28,7 +28,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,7 +61,6 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
     private final String hostName;
     private final String ipAddress;
     private final EventListener eventListener;
-    private final AtomicBoolean httpResponseWindowOpen = new AtomicBoolean(false);
     private final ExecutorService outputThreadExecutor;
     private final AtomicReference<@Nullable CompletableFuture<HttpPayload>> currentResponseFuture = new AtomicReference<>();
 
@@ -193,7 +191,6 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
                 logger.trace("{} sent:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
             }
 
-            httpResponseWindowOpen.set(true);
             HttpPayload response = responseFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
 
@@ -207,7 +204,6 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
             throw e;
         } finally {
             currentResponseFuture.set(null);
-            httpResponseWindowOpen.set(false);
         }
     }
 
@@ -295,13 +291,13 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
         }
         if (headers.startsWith("HTTP")) { // deliver HTTP responses to execute()
             CompletableFuture<HttpPayload> future = currentResponseFuture.get();
-            if (httpResponseWindowOpen.get() && future != null) {
+            if (future != null) {
                 future.complete(httpPayload);
             } else {
                 logger.debug("{} received HTTP response outside an HTTP response window", ipAddress);
             }
         } else if (headers.startsWith("EVENT")) { // deliver EVENT messages directly to listener
-            if (httpResponseWindowOpen.get()) {
+            if (currentResponseFuture.get() != null) {
                 logger.debug("{} received EVENT within an HTTP response window", ipAddress);
             }
             String jsonContent = new String(httpPayload.content(), StandardCharsets.UTF_8);
@@ -320,6 +316,11 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
             } else {
                 logger.warn("{} HTTP reader error: {}", ipAddress, error.getMessage());
             }
+            CompletableFuture<HttpPayload> future = currentResponseFuture.get();
+            if (future != null && !future.isDone()) {
+                future.completeExceptionally(error);
+            }
+            close();
         }
     }
 

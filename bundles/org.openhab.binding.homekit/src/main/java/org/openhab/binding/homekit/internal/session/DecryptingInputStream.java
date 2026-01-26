@@ -110,7 +110,7 @@ public class DecryptingInputStream extends InputStream {
 
         byte[] cipherText = new byte[frameLen + 16];
         if (!readFully(cipherText)) {
-            return null; // if cipher text cannot be fully read, this is EOF
+            throw new IOException("Truncated encrypted frame");
         }
 
         byte[] nonce64 = generateNonce64(readCounter.getAndIncrement());
