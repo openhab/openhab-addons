@@ -40,6 +40,7 @@ import org.openhab.core.persistence.HistoricItem;
  */
 @ExtendWith(MockitoExtension.class)
 class RRD4jPersistenceServiceTest {
+    static final int STORAGE_TIMEOUT_MS = 1000;
 
     @Mock
     private ItemRegistry itemRegistry;
@@ -88,7 +89,7 @@ class RRD4jPersistenceServiceTest {
         service.store(numberItem);
 
         // Wait for background storage to complete
-        Thread.sleep(2000);
+        Thread.sleep(STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
@@ -115,7 +116,7 @@ class RRD4jPersistenceServiceTest {
         service.store(switchItem);
 
         // Wait for background storage to complete
-        Thread.sleep(2000);
+        Thread.sleep(STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
@@ -142,7 +143,7 @@ class RRD4jPersistenceServiceTest {
         service.store(numberItem);
 
         // Wait for background storage to complete
-        Thread.sleep(2000);
+        Thread.sleep(STORAGE_TIMEOUT_MS);
 
         // Query with time range
         FilterCriteria criteria = new FilterCriteria();
