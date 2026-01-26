@@ -217,4 +217,12 @@ class RRD4jPersistenceServiceTest {
         assertEquals("TestNumber", item.getName());
         assertEquals(new DecimalType(42.5), item.getState());
     }
+
+    @Test
+    void checkRddFormatCompatibility() throws Exception {
+        PersistedItem persistedItem = service.persistedItem("KnownNumber", null);
+        assertNotNull(persistedItem);
+        assertEquals("KnownNumber", persistedItem.getName());
+        assertEquals(new DecimalType(23.5), persistedItem.getState());
+    }
 }
