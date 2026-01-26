@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.solarforecast.internal;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
-
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,7 +57,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClientFactory httpClientFactory;
     private final PersistenceServiceRegistry persistenceRegistry;
-    private Optional<PointType> location = Optional.empty();
+    private @Nullable PointType location;
     private Storage<String> storage;
 
     @Activate
@@ -70,10 +68,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
         timeZoneProvider = tzp;
         httpClientFactory = hcf;
         Utils.setTimeZoneProvider(tzp);
-        PointType pt = lp.getLocation();
-        if (pt != null) {
-            location = Optional.of(pt);
-        }
+        location = lp.getLocation();
         storage = storageService.getStorage(SolarForecastBindingConstants.BINDING_ID);
     }
 

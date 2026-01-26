@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class TasmotaPlugBindingConstants {
             VOLT_AMPERE_REACTIVE, POWER_FACTOR, ENERGY_TODAY, ENERGY_YESTERDAY, ENERGY_TOTAL, ENERGY_TOTAL_START);
 
     // Map of the channel ids to tasmota command strings
-    public static final Map<String, String> COMMAND_MAP = Map.of(POWER, "Power", POWER2, "Power2", "POWER3", "Power3",
+    public static final Map<String, String> COMMAND_MAP = Map.of(POWER, "Power", POWER2, "Power2", POWER3, "Power3",
             POWER4, "Power4", PULSE_TIME, "PulseTime", PULSE_TIME2, "PulseTime2", PULSE_TIME3, "PulseTime3",
             PULSE_TIME4, "PulseTime4");
 }

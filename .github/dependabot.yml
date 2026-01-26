@@ -39,6 +39,7 @@ updates:
     allow:
       - dependency-name: "org.apache.maven.plugins:*"
       - dependency-name: "org.codehaus.mojo:*"
+      - dependency-name: "org.codehaus.plexus:plexus-compiler-eclipse"
       - dependency-name: "*jacoco*" # code coverage tool, both tool and plugin
       - dependency-name: "*plugin*"
       - dependency-name: "org.eclipse.jdt:ecj" # eclipse compiler
@@ -50,3 +51,4 @@ updates:
       - dependency-name: "*graalvm*" # do not touch graalvm related stuff
       - dependency-name: "org.openapitools:openapi*" # updated togeter with openapi generator
       - dependency-name: "org.apache.openjpa:openjpa*" # should be done with openjpa upgrades"
+      - dependency-name: "org.apache.karaf.*" # Karaf updates are done manually

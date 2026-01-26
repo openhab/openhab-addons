@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyplusrgbwpm">
 		<label>Shelly Plus RGBW</label>
-		<description>@text/thing-type.shelly.shellyplusrgbw.description</description>
+		<description>Shelly Plus RGBW PM - LED Controller with Power Meter</description>
 		<category>ColorLight</category>
 		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
@@ -21,13 +21,13 @@
 	</thing-type>
 
 	<channel-group-type id="rgbwpmColorControl">
-		<label>@text/channel-group-type.shelly.rgbwpmColorControl.label</label>
-		<description>@text/channel-group-type.shelly.rgbwpmColorControl.description</description>
+		<label>LED Strip Control (RGBW)</label>
+		<description>Control your LED stripes</description>
 	</channel-group-type>
 
 	<channel-group-type id="colorSettingsRGBWpm">
-		<label>@text/channel-group-type.shelly.colorSettingsRGBWpm.label</label>
-		<description>@text/channel-group-type.shelly.colorSettingsRGBWpm.description</description>
+		<label>Colors</label>
+		<description>Light colors</description>
 		<channels>
 			<channel id="hsb" typeId="system.color"/>
 			<channel id="full" typeId="colorFull"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,117 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_AIRQUALITY_AIRQUALITY = "airquality-airquality";
     public static final ChannelTypeUID CHANNEL_AIRQUALITY_AIRQUALITY = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_AIRQUALITY_AIRQUALITY);
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbondioxideconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm1concentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm10concentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "pm25concentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "ozoneconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "formaldehydeconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "radonconcentrationmeasurement-measuredvalue";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "carbondioxideconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "carbondioxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_CARBONDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "carbondioxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "carbonmonoxideconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_CARBONMONOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "carbonmonoxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm1concentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm1concentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_PM1CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm1concentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm10concentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm10concentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_PM10CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm10concentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_LEVELVALUE = "pm25concentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "pm25concentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_PM25CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "pm25concentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_LEVELVALUE = "ozoneconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "ozoneconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_OZONECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "ozoneconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_LEVELVALUE = "nitrogendioxideconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "nitrogendioxideconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_LEVELVALUE = "formaldehydeconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "formaldehydeconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_FORMALDEHYDECONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "formaldehydeconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_LEVELVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "totalvolatileorganiccompoundsconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_LEVELVALUE = "radonconcentrationmeasurement-levelvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "radonconcentrationmeasurement-peakmeasuredvalue";
+    public static final String CHANNEL_ID_RADONCONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "radonconcentrationmeasurement-averagemeasuredvalue";
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "concentrationmeasurement-measuredvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_MEASUREDVALUE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_CONCENTRATIONMEASUREMENT_MEASUREDVALUE);
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_LEVELVALUE = "concentrationmeasurement-levelvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_LEVELVALUE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_CONCENTRATIONMEASUREMENT_LEVELVALUE);
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = "concentrationmeasurement-peakmeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_ID_CONCENTRATIONMEASUREMENT_PEAKMEASUREDVALUE);
+    public static final String CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = "concentrationmeasurement-averagemeasuredvalue";
+    public static final ChannelTypeUID CHANNEL_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_ID_CONCENTRATIONMEASUREMENT_AVERAGEMEASUREDVALUE);
+    public static final String CHANNEL_LABEL_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbondioxideconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_CARBONDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbondioxideconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbonmonoxideconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_CARBONMONOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.carbonmonoxideconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm1concentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_PM1CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm1concentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm10concentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_PM10CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm10concentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm25concentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_PM25CONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.pm25concentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.ozoneconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_OZONECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.ozoneconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.nitrogendioxideconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_NITROGENDIOXIDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.nitrogendioxideconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.formaldehydeconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_FORMALDEHYDECONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.formaldehydeconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_TOTALVOLATILEORGANICCOMPOUNDSCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_LABEL_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.radonconcentrationmeasurement-measuredvalue.label";
+    public static final String CHANNEL_DESC_RADONCONCENTRATIONMEASUREMENT_MEASUREDVALUE = "@text/channel-type.matter.radonconcentrationmeasurement-measuredvalue.description";
+    public static final String CHANNEL_ID_SMOKECOALARM_EXPRESSEDSTATE = "smokecoalarm-expressedstate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_EXPRESSEDSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_EXPRESSEDSTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_SMOKESTATE = "smokecoalarm-smokestate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_SMOKESTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_SMOKESTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_COSTATE = "smokecoalarm-costate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_COSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_COSTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_BATTERYALERT = "smokecoalarm-batteryalert";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_BATTERYALERT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_BATTERYALERT);
+    public static final String CHANNEL_ID_SMOKECOALARM_DEVICEMUTED = "smokecoalarm-devicemuted";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_DEVICEMUTED = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_DEVICEMUTED);
+    public static final String CHANNEL_ID_SMOKECOALARM_TESTINPROGRESS = "smokecoalarm-testinprogress";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_TESTINPROGRESS = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_TESTINPROGRESS);
+    public static final String CHANNEL_ID_SMOKECOALARM_HARDWAREFAULT = "smokecoalarm-hardwarefault";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_HARDWAREFAULT = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_HARDWAREFAULT);
+    public static final String CHANNEL_ID_SMOKECOALARM_ENDOFSERVICE = "smokecoalarm-endofservice";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_ENDOFSERVICE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_ENDOFSERVICE);
+    public static final String CHANNEL_ID_SMOKECOALARM_INTERCONNECTSMOKE = "smokecoalarm-interconnectsmoke";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_INTERCONNECTSMOKE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_INTERCONNECTSMOKE);
+    public static final String CHANNEL_ID_SMOKECOALARM_INTERCONNECTCO = "smokecoalarm-interconnectco";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_INTERCONNECTCO = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_INTERCONNECTCO);
+    public static final String CHANNEL_ID_SMOKECOALARM_CONTAMINATIONSTATE = "smokecoalarm-contaminationstate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_CONTAMINATIONSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_CONTAMINATIONSTATE);
+    public static final String CHANNEL_ID_SMOKECOALARM_SMOKESENSITIVITY = "smokecoalarm-smokesensitivity";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_SMOKESENSITIVITY = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_SMOKESENSITIVITY);
+    public static final String CHANNEL_ID_SMOKECOALARM_EXPIRYDATE = "smokecoalarm-expirydate";
+    public static final ChannelTypeUID CHANNEL_SMOKECOALARM_EXPIRYDATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_SMOKECOALARM_EXPIRYDATE);
     public static final String CHANNEL_ID_ONOFF_ONOFF = "onoffcontrol-onoff";
     public static final ChannelTypeUID CHANNEL_ONOFF_ONOFF = new ChannelTypeUID(BINDING_ID, CHANNEL_ID_ONOFF_ONOFF);
     public static final String CHANNEL_ID_LEVEL_LEVEL = "levelcontrol-level";
@@ -88,6 +199,12 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_DOORLOCK_DOORSTATE = "doorlock-doorstate";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_DOORSTATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_DOORSTATE);
+    public static final String CHANNEL_ID_DOORLOCK_ALARM = "doorlock-alarm";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_ALARM = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_ALARM);
+    public static final String CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR = "doorlock-lockoperationerror";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_LOCKOPERATIONERROR = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_LOCKOPERATIONERROR);
     public static final String CHANNEL_ID_WINDOWCOVERING_LIFT = "windowcovering-lift";
     public static final ChannelTypeUID CHANNEL_WINDOWCOVERING_LIFT = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WINDOWCOVERING_LIFT);
@@ -324,6 +441,8 @@ public class MatterBindingConstants {
 
     public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET = "@text/thing-action.otbr.pushDataset.label";
     public static final String THING_ACTION_DESC_OTBR_PUSH_DATASET = "@text/thing-action.otbr.pushDataset.description";
+    public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET_PUSH_AS_ACTIVE = "@text/thing-action.otbr.pushDataset.pushAsActive.label";
+    public static final String THING_ACTION_DESC_OTBR_PUSH_DATASET_PUSH_AS_ACTIVE = "@text/thing-action.otbr.pushDataset.pushAsActive.description";
     public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET_RESULT = "@text/thing-action.otbr.pushDataset.result.label";
     public static final String THING_ACTION_LABEL_OTBR_PUSH_DATASET_DELAY = "@text/thing-action.otbr.pushDataset.delay.label";
     public static final String THING_ACTION_DESC_OTBR_PUSH_DATASET_DELAY = "@text/thing-action.otbr.pushDataset.delay.description";
@@ -409,4 +528,51 @@ public class MatterBindingConstants {
     public static final String DISCOVERY_MATTER_UNKNOWN_NODE_LABEL = "@text/discovery.matter.unknown-node.label";
     public static final String DISCOVERY_MATTER_SCAN_INPUT_LABEL = "@text/discovery.matter.scan-input.label";
     public static final String DISCOVERY_MATTER_SCAN_INPUT_DESCRIPTION = "@text/discovery.matter.scan-input.description";
+
+    // Door Lock Configuration Keys
+    public static final String CONFIG_DOORLOCK_OPERATING_MODE = "operatingMode";
+    public static final String CONFIG_DOORLOCK_AUTO_RELOCK_TIME = "autoRelockTime";
+    public static final String CONFIG_DOORLOCK_ONE_TOUCH_LOCKING = "oneTouchLocking";
+    public static final String CONFIG_DOORLOCK_DEFAULT_LOCK_PIN = "defaultLockPin";
+    public static final String CONFIG_DOORLOCK_DISPLAYED_USER_COUNT = "displayedUserCount";
+    public static final String CONFIG_DOORLOCK_USER_NAME = "userName";
+    public static final String CONFIG_DOORLOCK_USER_TYPE = "userType";
+    public static final String CONFIG_DOORLOCK_USER_ENABLED = "userEnabled";
+    public static final String CONFIG_DOORLOCK_PIN_CREDENTIAL = "pinCredential";
+    public static final String CONFIG_DOORLOCK_DELETE_USER = "deleteUser";
+
+    // Door Lock Configuration Group Names
+    public static final String CONFIG_GROUP_DOORLOCK_MANAGEMENT = "doorLockManagement";
+    public static final String CONFIG_GROUP_DOORLOCK_USER_PREFIX = "doorLockUser";
+
+    // Door Lock Configuration Labels
+    public static final String CONFIG_LABEL_DOORLOCK_MANAGEMENT = "@text/thing-type.config.matter.node.doorlock_management.label";
+    public static final String CONFIG_LABEL_DOORLOCK_OPERATING_MODE = "@text/thing-type.config.matter.node.doorlock_operating_mode.label";
+    public static final String CONFIG_LABEL_DOORLOCK_AUTO_RELOCK_TIME = "@text/thing-type.config.matter.node.doorlock_auto_relock_time.label";
+    public static final String CONFIG_LABEL_DOORLOCK_ONE_TOUCH_LOCKING = "@text/thing-type.config.matter.node.doorlock_one_touch_locking.label";
+    public static final String CONFIG_LABEL_DOORLOCK_DEFAULT_LOCK_PIN = "@text/thing-type.config.matter.node.doorlock_default_lock_pin.label";
+    public static final String CONFIG_LABEL_DOORLOCK_DISPLAYED_USER_COUNT = "@text/thing-type.config.matter.node.doorlock_displayed_user_count.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER = "@text/thing-type.config.matter.node.doorlock_user.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER_NAME = "@text/thing-type.config.matter.node.doorlock_user_name.label";
+    public static final String CONFIG_LABEL_DOORLOCK_NO_USER_NAME = "@text/thing-type.config.matter.node.doorlock_no_user_name.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER_TYPE = "@text/thing-type.config.matter.node.doorlock_user_type.label";
+    public static final String CONFIG_LABEL_DOORLOCK_USER_ENABLED = "@text/thing-type.config.matter.node.doorlock_user_enabled.label";
+    public static final String CONFIG_LABEL_DOORLOCK_PIN_CREDENTIAL = "@text/thing-type.config.matter.node.doorlock_pin_credential.label";
+    public static final String CONFIG_LABEL_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.label";
+    public static final String CONFIG_LABEL_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.label";
+
+    // Door Lock Configuration Descriptions
+    public static final String CONFIG_DESC_DOORLOCK_MANAGEMENT = "@text/thing-type.config.matter.node.doorlock_management.description";
+    public static final String CONFIG_DESC_DOORLOCK_OPERATING_MODE = "@text/thing-type.config.matter.node.doorlock_operating_mode.description";
+    public static final String CONFIG_DESC_DOORLOCK_AUTO_RELOCK_TIME = "@text/thing-type.config.matter.node.doorlock_auto_relock_time.description";
+    public static final String CONFIG_DESC_DOORLOCK_ONE_TOUCH_LOCKING = "@text/thing-type.config.matter.node.doorlock_one_touch_locking.description";
+    public static final String CONFIG_DESC_DOORLOCK_DEFAULT_LOCK_PIN = "@text/thing-type.config.matter.node.doorlock_default_lock_pin.description";
+    public static final String CONFIG_DESC_DOORLOCK_DISPLAYED_USER_COUNT = "@text/thing-type.config.matter.node.doorlock_displayed_user_count.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER = "@text/thing-type.config.matter.node.doorlock_user.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER_NAME = "@text/thing-type.config.matter.node.doorlock_user_name.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER_TYPE = "@text/thing-type.config.matter.node.doorlock_user_type.description";
+    public static final String CONFIG_DESC_DOORLOCK_USER_ENABLED = "@text/thing-type.config.matter.node.doorlock_user_enabled.description";
+    public static final String CONFIG_DESC_DOORLOCK_PIN_CREDENTIAL = "@text/thing-type.config.matter.node.doorlock_pin_credential.description";
+    public static final String CONFIG_DESC_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.description";
+    public static final String CONFIG_DESC_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.description";
 }

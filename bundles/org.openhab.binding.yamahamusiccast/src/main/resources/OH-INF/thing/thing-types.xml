@@ -129,6 +129,16 @@
 		<label>NetRadio/USB Preset</label>
 		<description>Select Net Radio/USB Preset</description>
 	</channel-type>
+	<channel-type id="selectPresetDAB">
+		<item-type>String</item-type>
+		<label>DAB Tuner Preset</label>
+		<description>Select DAB Preset</description>
+	</channel-type>
+	<channel-type id="selectPresetFM">
+		<item-type>String</item-type>
+		<label>FM Tuner Preset</label>
+		<description>Select FM Preset</description>
+	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>NetRadio/USB Player</label>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,6 +82,8 @@ public class Range {
      * Returns true, if the given calendar matches into the range.
      */
     public boolean matches(Calendar cal) {
+        Calendar start = this.start;
+        Calendar end = this.end;
         if (start == null && end == null) {
             return false;
         }
@@ -89,6 +91,14 @@ public class Range {
                 : DateTimeUtils.truncateToMidnight(cal).getTimeInMillis();
         long matchEnd = end != null ? end.getTimeInMillis() : DateTimeUtils.endOfDayDate(cal).getTimeInMillis();
         return cal.getTimeInMillis() >= matchStart && cal.getTimeInMillis() < matchEnd;
+    }
+
+    @Override
+    public String toString() {
+        Calendar start = this.start;
+        Calendar end = this.end;
+        return new StringBuilder(70).append("Range [").append(start == null ? "undefined" : start.getTime())
+                .append(" -> ").append(end == null ? "undefined" : end.getTime()).append(']').toString();
     }
 
     private static Comparator<@Nullable Calendar> nullSafeCalendarComparator = (c1, c2) -> {

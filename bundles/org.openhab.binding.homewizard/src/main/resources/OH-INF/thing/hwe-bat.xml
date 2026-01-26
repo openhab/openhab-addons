@@ -13,7 +13,7 @@
 			<channel-group id="energy" typeId="bat-energy-group"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:homewizard:device"/>
@@ -23,7 +23,7 @@
 		<label>Recent Measurements</label>
 		<channels>
 			<channel id="power" typeId="hw-power"/>
-			<channel id="voltage_l1" typeId="hw-voltage"/>
+			<channel id="voltage" typeId="hw-voltage"/>
 			<channel id="current" typeId="hw-current"/>
 			<channel id="energy_import" typeId="hw-energy-import"/>
 			<channel id="energy_export" typeId="hw-energy-export"/>

@@ -62,7 +62,7 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 
 ## Channels
 
-| Channel Type ID       | Item Type     | Description                                                               | Available on thing                                          |
+| Channel Type ID       | Item Type     | Description                                                               | Available on Thing                                          |
 |-----------------------|---------------|---------------------------------------------------------------------------|-------------------------------------------------------------|
 | alarm                 | Switch        | Switches the alarm (ON/OFF)                                               | WSD, WSD2                                                   |
 | batteryLow            | Switch        | Indicates, if the battery is low (ON/OFF)                                 | BRC8, ISC2, RST, RST2, WDS, WMD, WMD0, WRT, WSC2, WSD, WSD2 |
@@ -110,7 +110,7 @@ When `invert` is `true` than `0` on LIVISI is `UP` and `100` is `DOWN`.
 
 ## Triggers
 
-| Trigger Type  | Description                                   | Available on thing                  |
+| Trigger Type  | Description                                   | Available on Thing                  |
 |---------------|-----------------------------------------------|-------------------------------------|
 | SHORT_PRESSED | Fired when you press a button short           | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |
 | LONG_PRESSED  | Fired when you press a button longer          | BRC8, ISC2, ISD2, ISR2, ISS2, WSC2  |

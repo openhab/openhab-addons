@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,7 @@ public class AVMFritzPowerMeterDeviceHandler extends DeviceHandler implements AV
             EnergyStats energyStats = gson.fromJson(response, EnergyStats.class);
             if (energyStats != null) {
                 updateThingChannelState(CHANNEL_ENERGY,
-                        new QuantityType<>(energyStats.getScaledEnergy(), Units.WATT_HOUR));
+                        new QuantityType<>(energyStats.getScaledEnergy(), Units.KILOWATT_HOUR));
                 updateThingChannelState(CHANNEL_POWER, new QuantityType<>(energyStats.getScaledPower(), Units.WATT));
                 updateThingChannelState(CHANNEL_VOLTAGE,
                         new QuantityType<>(energyStats.getScaledVoltage(), Units.VOLT));

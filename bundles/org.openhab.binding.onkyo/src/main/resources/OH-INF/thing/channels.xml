@@ -73,7 +73,7 @@
 	<channel-type id="control" advanced="true">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<description>Control the Zone Player, e.g. start/stop/next/previous/fast-forward/rewind</description>
 		<category>Player</category>
 	</channel-type>
 	<channel-type id="listenmode" advanced="true">
@@ -199,8 +199,8 @@
 	</channel-type>
 	<channel-type id="albumArtUrl" advanced="true">
 		<item-type>String</item-type>
-		<label>Album Art Url</label>
-		<description>Url to the image of cover art of the current song</description>
+		<label>Album Art URL</label>
+		<description>URL to the image of cover art of the current song</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>

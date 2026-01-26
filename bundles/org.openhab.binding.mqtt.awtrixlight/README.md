@@ -69,9 +69,9 @@ The button events can be used by rules to change the displayed app or perform an
 | `button-select`   | Trigger              | R          | Select button press event: Triggered when the select button is pressed/released (Event PRESSED or RELEASED).                                                                                                                                                                          |
 | `display`         | Switch               | RW         | Display on/off: Switches the display on or off. The clock will still stay on while the display is off.                                                                                                                                                                                |
 | `humidity`        | Number:Dimensionless | R          | Relative humidity: Relative humidity in percent. For the Ulanzi clock values are usually very inaccurate.                                                                                                                                                                             |
-| `indicator-1`     | Switch               | RW         | Control first indicator LED: Switches the first indicator LED on or off. The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                  |
-| `indicator-2`     | Switch               | RW         | Control second indicator LED: Switches the second indicator LED on or off.The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                 |
-| `indicator-3`     | Switch               | RW         | Control third indicator LED: Switches the third indicator LED on or off. The color of the LED will be green but can be customised by using thing actions (you can also use blinking/fading effects).                                                                                  |
+| `indicator-1`     | Switch               | RW         | Control first indicator LED: Switches the first indicator LED on or off. The color of the LED will be green but can be customised by using Thing actions (you can also use blinking/fading effects).                                                                                  |
+| `indicator-2`     | Switch               | RW         | Control second indicator LED: Switches the second indicator LED on or off.The color of the LED will be green but can be customised by using Thing actions (you can also use blinking/fading effects).                                                                                 |
+| `indicator-3`     | Switch               | RW         | Control third indicator LED: Switches the third indicator LED on or off. The color of the LED will be green but can be customised by using Thing actions (you can also use blinking/fading effects).                                                                                  |
 | `low-battery`     | Switch               | R          | Low battery warning: Will be switched ON as soon as the battery level drops below the lowBatteryThreshold set for the bridge.                                                                                                                                                         |
 | `lux`             | Number:Illuminance   | R          | Ambient light level: Ambient light level in lux as measured by the built-in light sensor.                                                                                                                                                                                             |
 | `rssi`            | Number:Dimensionless | R          | WiFi signal strength (RSSI): WiFi signal strength (RSSI) in dBm.                                                                                                                                                                                                                      |
@@ -85,10 +85,10 @@ The button events can be used by rules to change the displayed app or perform an
 | Channel               | Type                 | Read/Write | Description                                                                                                                                                                                                                        |
 |-----------------------|----------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `active`\*            | Switch               | RW         | Enable/disable the app: Switches the app on or off. Note that channels of inactive apps will be reset to their default values during a restart of openHAB.                                                                         |
-| `autoscale`           | Switch               | RW         | Enable/disable autoscaling for bar and linechart.                                                                                                                                                                                  |
+| `autoscale`           | Switch               | RW         | Enable/disable autoscaling for bar and line chart.                                                                                                                                                                                |
 | `background`          | Color                | RW         | Sets a background color.                                                                                                                                                                                                           |
 | `bar`                 | String               | RW         | Shows a bar chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                         |
-| `blink`               | Number:Time          | RW         | Blink text: Blink the text in the specified interval. Ignored if rainbow or gradient-color is  set.                                                                                                                                 |
+| `blink`               | Number:Time          | RW         | Blink text: Blink the text in the specified interval. Ignored if rainbow or gradient-color is set.                                                                                                                                |
 | `center`              | Switch               | RW         | Center short text horizontally and disable scrolling.                                                                                                                                                                              |
 | `color`               | Color                | RW         | Text, bar or line chart color.                                                                                                                                                                                                     |
 | `duration`            | Number:Time          | RW         | Display duration in seconds.                                                                                                                                                                                                       |
@@ -111,7 +111,7 @@ The button events can be used by rules to change the displayed app or perform an
 | `reset`*              | Switch               | RW         | Reset app to default state: All channels will be reset to their default values.                                                                                                                                                    |
 | `scroll-speed`        | Number:Dimensionless | RW         | Text scrolling speed: Provide as percentage value. The original speed is 100%. Values above 100% will increase the scrolling speed, values below 100% will decrease it. Setting this value to 0 will disable scrolling completely. |
 | `text`                | String               | RW         | Text to display. Supports inline color formatting with font color tags (see Text Color Tags section below for details).                                                                                                            |
-| `text-case`           | Number:Dimensionless | RW         | Set text case (0=normal, 1=uppercase, 2=lowercase).                                                                                                                                                                                |
+| `text-case`           | Number:Dimensionless | RW         | Set text case (0=default, 1=uppercase, 2=unchanged).                                                                                                                                                                              |
 | `text-offset`         | Number:Dimensionless | RW         | Text offset position: Horizontal offset of the text in pixels.                                                                                                                                                                     |
 | `top-text`            | Switch               | RW         | Draws the text on the top of the display.                                                                                                                                                                                          |
 
@@ -331,14 +331,13 @@ Bridge mqtt:broker:myBroker [ host="localhost", port=1883 ]
 // Bridge items (Living Room Display)
 Group gAwtrix "Living Room Awtrix Display" <screen>
 Dimmer Display_Brightness "Brightness [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:brightness" }
-Switch Display_Power "Power" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:power" }
 Switch Display_Screen "Screen" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:display" }
-Switch Display_Sound "Sound" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:sound" }
-Switch Display_AutoBrightness "Auto Brightness" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:autoBrightness" }
+String Display_SoundFile "Sound File" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:sound" }
+Switch Display_AutoBrightness "Auto Brightness" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:auto-brightness" }
 Number:Temperature Display_Temperature "Temperature [%.1f °C]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:temperature" }
 Number:Dimensionless Display_Humidity "Humidity [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:humidity" }
 Number Display_Battery "Battery Level [%d %%]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:battery-level" }
-Switch Display_LowBattery "Low Battery" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:lowBattery" }
+Switch Display_LowBattery "Low Battery" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:low-battery" }
 Number:Power Display_WiFi "WiFi Signal [%d dBm]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:rssi", unit="dBm" }
 String Display_CurrentApp "Active App [%s]" (gAwtrix) { channel="mqtt:awtrix-clock:myBroker:myAwtrix:app" }
 
@@ -364,10 +363,10 @@ String MediaPlayer_Text "Media Player Text" (gAwtrixMediaPlayer) { channel="mqtt
 String MediaPlayer_Icon "Media Player Icon" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:icon" }
 Color MediaPlayer_Color "Media Player Color" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:color" }
 Color MediaPlayer_Background "Background Color" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:background" }
-Number:Dimensionless MediaPlayer_ScrollSpeed "Scroll Speed" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:scrollSpeed" }
+Number:Dimensionless MediaPlayer_ScrollSpeed "Scroll Speed" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:scroll-speed" }
 Switch MediaPlayer_Center "Center Text" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:center" }
 Number:Dimensionless MediaPlayer_Progress "Progress [%d %%]" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:progress" }
-Color MediaPlayer_ProgressColor "Progress Color" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:progressColor" }
+Color MediaPlayer_ProgressColor "Progress Color" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:progress-color" }
 ```
 
 ### Sitemap

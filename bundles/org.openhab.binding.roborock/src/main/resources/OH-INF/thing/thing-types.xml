@@ -16,10 +16,9 @@
 				<label>Email Address</label>
 				<description>email address for Roborock account</description>
 			</parameter>
-			<parameter name="password" type="text">
-				<label>Password</label>
-				<description>Password for Roborock account</description>
-				<context>password</context>
+			<parameter name="twofa" type="text">
+				<label>2FA</label>
+				<description>2FA code from email. Leave blank until code is received via email</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -42,7 +41,7 @@
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
 
-		<representation-property>uniqueId</representation-property>
+		<representation-property>duid</representation-property>
 
 		<config-description>
 			<parameter name="duid" type="text" required="true">
@@ -141,7 +140,6 @@
 			<channel id="multi-maps-list" typeId="multi-maps-list"/>
 			<channel id="room-mapping" typeId="room-mapping"/>
 			<channel id="routine-mapping" typeId="routine-mapping"/>
-			<channel id="fw-features" typeId="fw-features"/>
 			<channel id="customize-clean-mode" typeId="customize-clean-mode"/>
 			<channel id="carpet-mode" typeId="carpet-mode"/>
 		</channels>

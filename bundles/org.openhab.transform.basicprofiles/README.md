@@ -8,12 +8,13 @@ This bundle provides a list of useful Profiles:
 | [Generic Toggle Switch Profile](#generic-toggle-switch-profile) | Toggles a Switch Item when an event is triggered                                             |
 | [Debounce (Counting) Profile](#debounce-counting-profile)       | Counts and skip a number of State changes                                                    |
 | [Debounce (Time) Profile](#debounce-time-profile)               | Reduces the frequency of commands/state updates                                              |
-| [Invert / Negate Profile](#invert--negate-profile)              | Inverts or negate a Command / State                                                          |
+| [Invert / Negate Profile](#invert-negate-profile)               | Inverts or negate a Command / State                                                          |
 | [Round Profile](#round-profile)                                 | Reduces the number of decimal places from input data                                         |
 | [Threshold Profile](#threshold-profile)                         | Translates numeric input data to `ON` or `OFF` based on a threshold value                    |
 | [Time Range Command Profile](#time-range-command-profile)       | An enhanced implementation of a follow profile which converts `OnOffType` to a `PercentType` |
 | [State Filter Profile](#state-filter-profile)                   | Filters input data using arithmetic comparison conditions                                    |
 | [Inactivity Profile](#inactivity-profile)                       | Sets the linked Item On or Off depending whether the Channel has recently produced data      |
+| [Time-weighted Average Profile](#time-weighted-average-profile) | Collects updates for given duration to calculate time-weighted average value                 |
 
 ## Generic Command Profile
 
@@ -81,10 +82,10 @@ It can be used to debounce Item States/Commands or prevent excessive load on net
 
 ### Debounce (Time) Profile Configuration
 
-| Configuration Parameter | Type    | Description                                   |
-|-------------------------|---------|-----------------------------------------------|
-| `toItemDelay`           | integer | Timespan in ms before a received value is send to the item. |
-| `toHandlerDelay`        | integer | Timespan in ms before a received command is passed to the handler. |
+| Configuration Parameter | Type    | Description                                                                                                                            |
+|-------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `toItemDelay`           | integer | Timespan in ms before a received value is send to the item.                                                                            |
+| `toHandlerDelay`        | integer | Timespan in ms before a received command is passed to the handler.                                                                     |
 | `mode`                  | text    | `FIRST` (sends the first value received and discards later values), `LAST` (sends the last value received, discarding earlier values). |
 
 ### Debounce (Time) Profile Example
@@ -93,7 +94,7 @@ It can be used to debounce Item States/Commands or prevent excessive load on net
 Number:Temperature debouncedSetpoint { channel="xxx" [profile="basic-profiles:debounce-time", toHandlerDelay=1000] }
 ```
 
-## Invert / Negate Profile
+## Invert / Negate Profile<a id="invert-negate-profile"></a>
 
 The Invert / Negate Profile inverts or negates a Command / State.
 It requires no specific configuration.
@@ -359,5 +360,39 @@ Switch myChannelInactivityStatus {
 
 Switch myChannelActivityStatus {
   channel="mybinding:mything:mychannel" [ profile="basic-profiles:inactivity", timeout="1d", inverted=true ]
+}
+```
+
+## Time-weighted Average Profile
+
+This profile aggregates all state updates within the configured duration and outputs a single time-weighted average value at the end of that period.
+It is useful for reducing high frequency data before it reaches your persistence database, such as measurements from:
+
+- inverters
+- smart meters
+- power plugs with electric measurement
+
+This profile is only applicable to numeric channels, with or without unit metadata.
+The average is calculated solely from state updates sent from the handler to the item.
+Commands and item updates originating from rules or the UI are not affected.
+Check the semantics of the channel if this profile fits.
+E.g. a channel providing _power measurement_ values is a valid candidate to build averages.
+A channel providing a status or accumulated value like _total energy production today_ is not a good candidate.
+
+The optional `delta` parameter is used to identify increases / decreases of state values above or equal the configured delta.
+This will break the steady time frame but reports rapid changes e.g. for power consumption immediately.
+
+### Time-weighted Average Profile Configuration
+
+| Configuration Parameter | Type    | Description                                                                                                                                         |
+|-------------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `duration`              | text    | Duration of the time frame to collect state updates. See [format examples](https://www.openhab.org/docs/configuration/items.html#parameter-expire). |
+| `delta`                 | decimal | Optional: If state change increases or decreases above configured delta it's published immediately.                                                 |
+
+### Time-weighted Average Profile Example
+
+```java
+Number:Power SmartmeterPower {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:time-weighted-average", duration="1m" ]
 }
 ```

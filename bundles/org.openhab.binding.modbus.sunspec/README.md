@@ -10,7 +10,7 @@ For a list of certified products see this page: <https://sunspec.org/product-cer
 
 ## Supported Things
 
-This bundle adds the following thing types to the Modbus binding.
+This bundle adds the following Thing types to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
 | Thing                 | Description                                                           |
@@ -43,18 +43,18 @@ Bridge modbus:tcp:modbusBridgeName [ host="10.0.0.2", port=502, id=1, enableDisc
 You need first to set up either a TCP or a Serial Modbus bridge according to the Modbus documentation.
 Things in this extension will use the selected bridge to connect to the device.
 
-For defining a thing textually, you have to find out the start address of the model block and the length of it.
+For defining a Thing textually, you have to find out the start address of the model block and the length of it.
 While the length is usually fixed, the address is not.
 Please refer to your device's vendor documentation how model blocks are laid for your equipment.
 
-The following parameters are valid for all thing types:
+The following parameters are valid for all Thing types:
 
 | Parameter | Type    | Required | Default if omitted  | Description                             |
 |-----------|---------|----------|---------------------|-----------------------------------------|
 | address   | integer | yes      | N/A                 | Start address of the model block.       |
 | length    | integer | yes      | N/A                 | Length of the model block. Setting this too short could cause problems during parsing |
 | refresh   | integer | no       | 5                   | Poll interval in seconds. Increase this if you encounter connection errors |
-| maxTries  | integer | no       | 3                   | Number of retries when before giving up reading from this thing. |
+| maxTries  | integer | no       | 3                   | Number of retries when before giving up reading from this Thing. |
 
 ## Channels
 

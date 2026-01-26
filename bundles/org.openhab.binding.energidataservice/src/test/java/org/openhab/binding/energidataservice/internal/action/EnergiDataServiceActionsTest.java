@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -419,8 +419,7 @@ public class EnergiDataServiceActionsTest {
         Map<Instant, BigDecimal> spotPrices = Arrays.stream(spotPriceRecords)
                 .collect(Collectors.toMap(SpotPrice::start, SpotPrice::spotPrice));
 
-        PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(spotPriceRecords[0].start, EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+        PriceListParser priceListParser = new PriceListParser(InstantSource.fixed(spotPriceRecords[0].start));
         DatahubPricelistRecords datahubRecords = getObjectFromJson("GridTariffs.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> gridTariffs = priceListParser
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());

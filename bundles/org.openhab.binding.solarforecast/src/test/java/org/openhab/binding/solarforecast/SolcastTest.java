@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,7 +98,8 @@ class SolcastTest {
 
         JSONArray forecastJson = getForecast();
         now = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
-        scfo = new SolcastObject("sc-test", forecastJson, now.toInstant(), TIMEZONEPROVIDER, mock(Storage.class));
+        scfo = new SolcastObject("sc-test", forecastJson, now.toInstant(), TIMEZONEPROVIDER,
+                (Storage<String>) mock(Storage.class));
     }
 
     static void setFixedTimeJul18() {

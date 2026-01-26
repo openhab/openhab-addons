@@ -109,15 +109,15 @@ Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyH
 
 ## State Channels
 
-| Channel Type ID                      | Item Type | Description                                                     |
-|--------------------------------------|-----------|-----------------------------------------------------------------|
-| lastMessageText                      | String    | The last received message                                       |
-| lastMessageURL                       | String    | The URL of the last received message content                    |
-| lastMessageDate                      | DateTime  | The date of the last received message (UTC)                     |
-| lastMessageName                      | String    | The full name of the sender of the last received message        |
-| lastMessageUsername                  | String    | The username of the sender of the last received message         |
-| chatId                               | String    | The id of the chat of the last received message                 |
-| replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |
+| Channel Type ID     | Item Type | Description                                                                      |
+|---------------------|-----------|----------------------------------------------------------------------------------|
+| lastMessageText     | String    | The last received message                                                        |
+| lastMessageURL      | String    | The URL of the last received message content                                     |
+| lastMessageDate     | DateTime  | The date of the last received message (UTC)                                      |
+| lastMessageName     | String    | The full name of the sender of the last received message                         |
+| lastMessageUsername | String    | The username of the sender of the last received message                          |
+| chatId              | String    | The chat ID of the last received message                                         |
+| replyId             | String    | The reply ID passed to sendTelegram() for unambiguous assignment of user replies |
 
 All channels are read-only.
 Either `lastMessageText` or `lastMessageURL` are populated for a given message.
@@ -178,7 +178,7 @@ This binding includes a number of rule actions, which allow the sending of Teleg
 val telegramAction = getActions("telegram","telegram:telegramBot:<uid>")
 ```
 
-where uid is the Thing UID of the Telegram thing (not the chat id!).
+where uid is the Thing UID of the Telegram Thing (not the chat id!).
 
 Once this action instance is retrieved, you can invoke the `sendTelegram' method on it:
 

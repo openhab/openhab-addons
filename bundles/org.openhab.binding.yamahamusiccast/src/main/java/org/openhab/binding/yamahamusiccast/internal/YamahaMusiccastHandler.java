@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.binding.yamahamusiccast.internal.dto.DeviceInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.DistributionInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.Features;
 import org.openhab.binding.yamahamusiccast.internal.dto.PlayInfo;
+import org.openhab.binding.yamahamusiccast.internal.dto.PlayInfoTuner;
 import org.openhab.binding.yamahamusiccast.internal.dto.PresetInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.RecentInfo;
 import org.openhab.binding.yamahamusiccast.internal.dto.Response;
@@ -273,6 +274,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 case CHANNEL_SELECTPRESET:
                     setPreset(command.toString(), zone, this.host);
                     break;
+                case CHANNEL_SELECTPRESET_DAB:
+                    setPresetTuner(command.toString(), zone, this.host, "dab");
+                    break;
+                case CHANNEL_SELECTPRESET_FM:
+                    setPresetTuner(command.toString(), zone, this.host, "fm");
+                    break;
                 case CHANNEL_PLAYER:
                     if (command.equals(PlayPauseType.PLAY)) {
                         setPlayback("play", this.host);
@@ -463,6 +470,8 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             }
         }
         updatePresets(0);
+        updatePresetsDAB();
+        updatePresetsFM();
         updateNetUSBPlayer();
         fillOptionsForMCLink();
         updateMCLinkStatus();
@@ -488,6 +497,8 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         createChannel(zone, CHANNEL_SOUNDPROGRAM, CHANNEL_TYPE_UID_SOUNDPROGRAM, "String");
         createChannel(zone, CHANNEL_SLEEP, CHANNEL_TYPE_UID_SLEEP, "Number");
         createChannel(zone, CHANNEL_SELECTPRESET, CHANNEL_TYPE_UID_SELECTPRESET, "String");
+        createChannel(zone, CHANNEL_SELECTPRESET_DAB, CHANNEL_TYPE_UID_SELECTPRESET_DAB, "String");
+        createChannel(zone, CHANNEL_SELECTPRESET_FM, CHANNEL_TYPE_UID_SELECTPRESET_FM, "String");
         createChannel(zone, CHANNEL_RECALLSCENE, CHANNEL_TYPE_UID_RECALLSCENE, "Number");
         createChannel(zone, CHANNEL_MCLINKSTATUS, CHANNEL_TYPE_UID_MCLINKSTATUS, "String");
     }
@@ -533,6 +544,9 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             if (Objects.nonNull(targetObject.getNetUSB())) {
                 updateStateFromUDPEvent("netusb", targetObject);
             }
+            if (Objects.nonNull(targetObject.getTuner())) {
+                updateStateFromUDPEvent("tuner", targetObject);
+            }
             if (Objects.nonNull(targetObject.getDist())) {
                 updateStateFromUDPEvent("dist", targetObject);
             }
@@ -551,6 +565,8 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         int presetNumber = 0;
         int playTime = 0;
         String distInfoUpdated = "";
+        String playInfoUpdatedTuner = "";
+        String presetInfoUpdatedTuner = "";
         logger.trace("Handling UDP for {}", zoneToUpdate);
         switch (zoneToUpdate) {
             case "main":
@@ -585,6 +601,10 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 actualVolume = targetObject.getZone4().getActualVolume();
                 statusUpdated = targetObject.getZone4().getstatusUpdated();
                 break;
+            case "tuner":
+                playInfoUpdatedTuner = targetObject.getTuner().getPlayInfoUpdated();
+                presetInfoUpdatedTuner = targetObject.getTuner().getPresetInfoUpdated();
+                break;
             case "netusb":
                 if (Objects.isNull(targetObject.getNetUSB().getPresetControl())) {
                     presetNumber = 0;
@@ -610,6 +630,8 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             logger.trace("{} - Input: {}", zoneToUpdate, inputState);
             logger.trace("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
             logger.trace("{} - Sleep: {}", zoneToUpdate, sleepState);
+            logger.trace("{} - playInfoUpdatedTuner: {}", zoneToUpdate, playInfoUpdatedTuner);
+            logger.trace("{} - presetInfoUpdatedTuner: {}", zoneToUpdate, presetInfoUpdatedTuner);
         }
 
         if (!powerState.isEmpty()) {
@@ -655,6 +677,15 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
         if ("true".equals(playInfoUpdated)) {
             updateNetUSBPlayer();
+        }
+
+        if ("true".equals(presetInfoUpdatedTuner)) {
+            updatePresetsDAB();
+            updatePresetsFM();
+        }
+
+        if ("true".equals(playInfoUpdatedTuner)) {
+            updateTunerPlayer();
         }
 
         if (!statusUpdated.isEmpty()) {
@@ -822,6 +853,119 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
     }
 
+    private void updatePresetsDAB() {
+        String inputText = "";
+        int presetCounter = 0;
+        tmpString = getPresetInfoTuner(this.host, "dab");
+
+        PresetInfo presetinfo = gson.fromJson(tmpString, PresetInfo.class);
+        if (presetinfo != null) {
+            String responseCode = presetinfo.getResponseCode();
+            if ("0".equals(responseCode)) {
+                List<StateOption> optionsPresets = new ArrayList<>();
+                inputText = getLastInput();
+                if (inputText != null) {
+                    for (JsonElement pr : presetinfo.getPresetInfo()) {
+                        JsonObject presetObject = pr.getAsJsonObject();
+                        presetCounter = presetCounter + 1;
+                        String text = presetObject.get("text").getAsString();
+                        if (!"".equals(text)) {
+                            optionsPresets.add(
+                                    new StateOption(String.valueOf(presetCounter), "#" + presetCounter + " " + text));
+                        }
+                    }
+                }
+                for (Channel channel : getThing().getChannels()) {
+                    ChannelUID channelUID = channel.getUID();
+                    channelWithoutGroup = channelUID.getIdWithoutGroup();
+                    if (isLinked(channelUID)) {
+                        switch (channelWithoutGroup) {
+                            case CHANNEL_SELECTPRESET_DAB:
+                                stateDescriptionProvider.setStateOptions(channelUID, optionsPresets);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void updatePresetsFM() {
+        String inputText = "";
+        int presetCounter = 0;
+        tmpString = getPresetInfoTuner(this.host, "fm");
+
+        PresetInfo presetinfo = gson.fromJson(tmpString, PresetInfo.class);
+        if (presetinfo != null) {
+            String responseCode = presetinfo.getResponseCode();
+            if ("0".equals(responseCode)) {
+                List<StateOption> optionsPresets = new ArrayList<>();
+                inputText = getLastInput();
+                if (inputText != null) {
+                    for (JsonElement pr : presetinfo.getPresetInfo()) {
+                        JsonObject presetObject = pr.getAsJsonObject();
+                        presetCounter = presetCounter + 1;
+                        String text = presetObject.get("text").getAsString();
+                        if (!"".equals(text)) {
+                            optionsPresets.add(
+                                    new StateOption(String.valueOf(presetCounter), "#" + presetCounter + " " + text));
+                        }
+                    }
+                }
+                for (Channel channel : getThing().getChannels()) {
+                    ChannelUID channelUID = channel.getUID();
+                    channelWithoutGroup = channelUID.getIdWithoutGroup();
+                    if (isLinked(channelUID)) {
+                        switch (channelWithoutGroup) {
+                            case CHANNEL_SELECTPRESET_FM:
+                                stateDescriptionProvider.setStateOptions(channelUID, optionsPresets);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void updateTunerPlayer() {
+        tmpString = getPlayInfoTuner(this.host);
+
+        @Nullable
+        PlayInfoTuner targetObject = gson.fromJson(tmpString, PlayInfoTuner.class);
+        if (targetObject != null) {
+            String responseCode = targetObject.getResponseCode();
+
+            if ("0".equals(responseCode)) {
+                var dab = targetObject.getDAB();
+                var fm = targetObject.getFM();
+                Integer dabPreset = null;
+                Integer fmPreset = null;
+                if (dab != null) {
+                    dabPreset = dab.getPreset();
+                }
+                if (fm != null) {
+                    fmPreset = fm.getPreset();
+                }
+                for (Channel channel : getThing().getChannels()) {
+                    ChannelUID channelUID = channel.getUID();
+                    channelWithoutGroup = channelUID.getIdWithoutGroup();
+                    if (isLinked(channelUID)) {
+                        switch (channelWithoutGroup) {
+                            case CHANNEL_SELECTPRESET_DAB:
+                                updateState(channelUID, dabPreset == null ? UnDefType.NULL
+                                        : StringType.valueOf(String.valueOf(dabPreset)));
+                                break;
+                            case CHANNEL_SELECTPRESET_FM:
+                                updateState(channelUID, fmPreset == null ? UnDefType.NULL
+                                        : StringType.valueOf(String.valueOf(fmPreset)));
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void updateNetUSBPlayer() {
         tmpString = getPlayInfo(this.host);
 
@@ -936,7 +1080,10 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         tmpString = getDistributionInfo(this.host);
         DistributionInfo targetObject = gson.fromJson(tmpString, DistributionInfo.class);
         if (targetObject != null) {
-            clients = targetObject.getClientList().size();
+            var clientList = targetObject.getClientList();
+            if (clientList != null) {
+                clients = clientList.size();
+            }
         }
 
         List<StateOption> options = new ArrayList<>();
@@ -1270,6 +1417,11 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                 host + YAMAHA_EXTENDED_CONTROL + "netusb/recallPreset?zone=" + zone + "&num=" + value);
     }
 
+    private @Nullable String setPresetTuner(String value, @Nullable String zone, @Nullable String host, String band) {
+        return makeRequest("setPresetTuner",
+                host + YAMAHA_EXTENDED_CONTROL + "tuner/recallPreset?band=" + band + "&zone=" + zone + "&num=" + value);
+    }
+
     private @Nullable String setSleep(String value, @Nullable String zone, @Nullable String host) {
         return makeRequest("setSleep", host + YAMAHA_EXTENDED_CONTROL + zone + "/setSleep?sleep=" + value);
     }
@@ -1285,12 +1437,20 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         return makeRequest("PresetInfo", host + YAMAHA_EXTENDED_CONTROL + "netusb/getPresetInfo");
     }
 
+    private @Nullable String getPresetInfoTuner(@Nullable String host, String band) {
+        return makeRequest("PresetInfoTuner", host + YAMAHA_EXTENDED_CONTROL + "tuner/getPresetInfo?band=" + band);
+    }
+
     private @Nullable String getRecentInfo(@Nullable String host) {
         return makeRequest("RecentInfo", host + YAMAHA_EXTENDED_CONTROL + "netusb/getRecentInfo");
     }
 
     private @Nullable String getPlayInfo(@Nullable String host) {
         return makeRequest("PlayInfo", host + YAMAHA_EXTENDED_CONTROL + "netusb/getPlayInfo");
+    }
+
+    private @Nullable String getPlayInfoTuner(@Nullable String host) {
+        return makeRequest("PlayInfo", host + YAMAHA_EXTENDED_CONTROL + "tuner/getPlayInfo");
     }
 
     private @Nullable String setPlayback(String value, @Nullable String host) {

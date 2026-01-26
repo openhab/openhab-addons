@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -303,7 +303,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("factory_reset")
             public Boolean factoryReset;
             @SerializedName("report_thr")
-            public Double reportTreshold; // only for type analog
+            public Double reportThreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {

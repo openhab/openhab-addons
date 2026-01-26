@@ -64,9 +64,7 @@ In this case, the item names must follow the naming convention '\<Location>_***'
 
 ## Full Examples
 
-### Prerequisites
-
-**Thing Configuration**
+### Thing Configuration
 
 ```java
 Thing chatgpt:account:1 [
@@ -88,9 +86,9 @@ Thing chatgpt:account:1 [
 
 ### Example: Improving messages
 
-**Items**
+#### Items
 
-```
+```java
 String Weather_Announcement { channel="chatgpt:account:1:chat" }
 String Morning_Message      { channel="chatgpt:account:1:morningMessage" }
 
@@ -98,7 +96,7 @@ Number Temperature_Forecast_Low
 Number Temperature_Forecast_High
 ```
 
-**Rules**
+#### Rules
 
 ```java
 rule "Weather forecast update"
@@ -136,30 +134,30 @@ The state updates can be used for a text-to-speech output and they will give you
 
 ### Example: Item control using voice
 
-**Item**
+#### Item
 
-```
+```java
 Dimmer Kitchen_Dimmer "Kitchen main light" [ "ChatGPT" ]
 ```
 
-**UI Configuration of the HLI Service**
+#### UI Configuration of the HLI Service
 
 To enable the HLI service, go to Settings -> Voice and choose "ChatGPT Human Language Interpreter".
 
-**For voice control**
+#### For voice control
 
 A text-to-speech service must be configured in the HLI Service.
 
 Use the HLI service as with e.g. a keyword recognizer, SST and a TTS module to start listening on a keyword, get from speach to text with the SST module, have it interpreted by ChatGPT through the HLI part of this plugin and read out to you via TTS.
 
-**Explanation**
+#### Explanation
 
 The binding includes a function named `items_control` which can be used by ChatGPT to send commands to items and output their status. To enable ChatGPT to access that function, the ChatGPT _Thing_ (not the channel) needs to be configured with a system message like
 
 > You are the manager of the openHAB smart home. You know how to manage devices in a smart home or provide their current status. You can also answer questions not related to the devices in the house, or, for example, compose a story upon request.
 > I will provide information about the smart home; if necessary, you can perform the requested function. If there is not enough information to perform it, ask for clarification briefly, without listing all available devices or parameters.
 > If the question is not related to devices in the smart home, answer it briefly — maximum 3 sentences in everyday language.
-> 
+>
 > The name, current status, and location of devices are listed in 'Available devices'.
 > Use the items_control function only for the requested actions, not for providing current states.
 >
@@ -171,26 +169,26 @@ The important bits of the message are to mention the list of 'Available devices'
 
 ### Example: Item control with a simple chat
 
-**UI Configuration of the HLI Service**
+#### UI Configuration of the HLI Service
 
 To enable the HLI service, go to Settings -> Voice and choose "ChatGPT Human Language Interpreter".
 
-**Items**
+#### Items
 
 For chat input and output
 
-```
+```java
 String hli_chat_input "ChatGPT HLI Input" [Setpoint]
 String hli_chat_output "ChatGPT HLI Output" [Calculation]
 ```
 
 For having something to control
 
-```
+```java
 Dimmer Kitchen_Dimmer "Kitchen main light" [ "ChatGPT" ]
 ```
 
-**Rule**
+#### Rule
 
 This (UI defined) rule will read the current text from `hli_chat_input` upon change, interpret with the _default_ interpreter (you should have set ChatGPT to be that interpreter in `UI Configuration of the HLI Service`) and write the interpretation result to the item `hli_chat_output` or, depending on the message, trigger an update for your items (never both).
 
@@ -216,6 +214,6 @@ actions:
     type: script.ScriptAction
 ```
 
-**Further Instructions**
+#### Further Instructions
 
 You can now add an input field with a "send" button to you UI, to update `hli_chat_input`, and an output field (e.g. a label) to display the response in `hli_chat_output`

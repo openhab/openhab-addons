@@ -22,7 +22,7 @@ This will give you the API key required for the bridge.
 This binding consists of a bridge for connecting to the Met Office Data Hub service with your account.
 You can then add things to get the forecast's for a specific location (site), using this bridge.
 
-This binding supports the follow thing types:
+This binding supports the follow Thing types:
 
 | Type UID | Discovery | Description                                                                                 |
 |----------|-----------|---------------------------------------------------------------------------------------------|

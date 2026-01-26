@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.homewizard.internal.devices.plug_in_battery;
+
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
@@ -36,6 +38,7 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
     public HomeWizardPlugInBatteryHandler(Thing thing) {
         super(thing);
         supportedTypes.add(HomeWizardBindingConstants.HWE_BAT);
+        supportedApiVersions = Arrays.asList(API_V2);
     }
 
     /**

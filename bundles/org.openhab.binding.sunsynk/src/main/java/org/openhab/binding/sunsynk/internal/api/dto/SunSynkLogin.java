@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,12 @@ import com.google.gson.annotations.SerializedName;
 
 @NonNullByDefault
 public class SunSynkLogin {
-    // {"username":"xxx", "password":"xxx", "grant_type":"password", "client_id":"csp-web"}
+    // {"sign":"MD5 sign", "nonce":"unix time", "username":"xxx", "password":"xxx", "grant_type":"password",
+    // "client_id":"csp-web"}
+    @SerializedName("sign")
+    private String signature = "";
+    @SerializedName("nonce")
+    private String nonce = "";
     @SerializedName("username")
     private String userName = "";
     @SerializedName("password")
@@ -38,8 +43,10 @@ public class SunSynkLogin {
     @SerializedName("source")
     private String source = "sunsynk";
 
-    public SunSynkLogin(String UserName, String PassWord) {
-        this.userName = UserName;
-        this.passWord = PassWord;
+    public SunSynkLogin(String userName, String password, String signature, Long nonce) {
+        this.userName = userName;
+        this.passWord = password;
+        this.signature = signature;
+        this.nonce = nonce.toString();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,10 +23,11 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public record CurrentConditions(@Nullable String datetime, @Nullable Long datetimeEpoch, @Nullable Double temp,
         @Nullable Double feelslike, @Nullable Double humidity, @Nullable Double dew, @Nullable Double precip,
-        @Nullable Double precipprob, @Nullable Double snow, @Nullable Double snowdepth, @Nullable String preciptype,
-        @Nullable Double windgust, @Nullable Double windspeed, @Nullable Double winddir, @Nullable Double pressure,
-        @Nullable Double visibility, @Nullable Double cloudcover, @Nullable Double solarradiation,
-        @Nullable Double solarenergy, @Nullable Double uvindex, @Nullable String conditions, @Nullable String icon,
-        @Nullable List<String> stations, @Nullable String source, @Nullable String sunrise, @Nullable Long sunriseEpoch,
-        @Nullable String sunset, @Nullable Long sunsetEpoch, @Nullable Double moonphase) {
+        @Nullable Double precipprob, @Nullable Double snow, @Nullable Double snowdepth,
+        @Nullable List<String> preciptype, @Nullable Double windgust, @Nullable Double windspeed,
+        @Nullable Double winddir, @Nullable Double pressure, @Nullable Double visibility, @Nullable Double cloudcover,
+        @Nullable Double solarradiation, @Nullable Double solarenergy, @Nullable Double uvindex,
+        @Nullable String conditions, @Nullable String icon, @Nullable List<String> stations, @Nullable String source,
+        @Nullable String sunrise, @Nullable Long sunriseEpoch, @Nullable String sunset, @Nullable Long sunsetEpoch,
+        @Nullable Double moonphase) {
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_ID_SUN_PHASE_NAME;
+import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_ID_PHASE_NAME;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
 import org.openhab.core.thing.Channel;
 
 /**
@@ -29,42 +29,42 @@ import org.openhab.core.thing.Channel;
 @NonNullByDefault
 public final class SunPhaseJob extends AbstractJob {
 
-    private final SunPhaseName sunPhaseName;
+    private final SunPhase sunPhase;
 
     /**
      * Constructor
      *
      * @param handler the thing handler
-     * @param sunPhaseName {@link SunPhaseName} name
+     * @param sunPhase {@link SunPhase} enum value
      * @throws IllegalArgumentException
      *             if any of the arguments is {@code null}
      */
-    public SunPhaseJob(AstroThingHandler handler, SunPhaseName sunPhaseName) {
+    public SunPhaseJob(AstroThingHandler handler, SunPhase sunPhase) {
         super(handler);
-        this.sunPhaseName = sunPhaseName;
+        this.sunPhase = sunPhase;
     }
 
     @Override
     public void run() {
         try {
-            Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
+            Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_PHASE_NAME);
             if (phaseNameChannel != null) {
                 if (handler.getPlanet() instanceof Sun theSun) {
-                    theSun.getPhase().setName(sunPhaseName);
+                    theSun.setSunPhase(sunPhase);
                     handler.publishChannelIfLinked(phaseNameChannel.getUID());
                 }
             } else {
-                logger.trace("Phase Name Channel for {} is null", handler.getThing().getUID());
+                LOGGER.trace("Phase Name Channel for {} is null", handler.getThing().getUID());
             }
         } catch (Exception e) {
-            logger.warn("The publishing of the sun phase for \"{}\" failed: {}", handler.getThing().getUID(),
+            LOGGER.warn("The publishing of the sun phase for \"{}\" failed: {}", handler.getThing().getUID(),
                     e.getMessage());
-            logger.trace("", e);
+            LOGGER.trace("", e);
         }
     }
 
     @Override
     public String toString() {
-        return "Sun phase job " + handler.getThing().getUID() + "/" + sunPhaseName;
+        return "Sun phase job " + handler.getThing().getUID() + "/" + sunPhase;
     }
 }

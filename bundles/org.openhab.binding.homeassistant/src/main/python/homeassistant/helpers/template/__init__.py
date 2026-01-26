@@ -36,6 +36,7 @@ from jinja2.utils import Namespace
 
 import voluptuous as vol
 
+from homeassistant.exceptions import TemplateError
 from homeassistant.util import (
     dt as dt_util,
     slugify as slugify_util,
