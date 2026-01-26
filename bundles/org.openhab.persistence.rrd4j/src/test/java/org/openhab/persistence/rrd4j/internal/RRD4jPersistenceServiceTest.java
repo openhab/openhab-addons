@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
@@ -32,11 +33,13 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.PersistedItem;
 
 /**
  * Tests for {@link RRD4jPersistenceService}.
  *
  * @author Copilot - Initial contribution
+ * @author Holger Friedrich - refactoring and additional tests
  */
 @ExtendWith(MockitoExtension.class)
 class RRD4jPersistenceServiceTest {
@@ -133,6 +136,11 @@ class RRD4jPersistenceServiceTest {
         assertNotNull(item);
         assertEquals("TestSwitch", item.getName());
         assertEquals(OnOffType.ON, item.getState());
+
+        PersistedItem persistedItem = service.persistedItem("TestSwitch", null);
+        assertNotNull(persistedItem);
+        assertEquals("TestSwitch", persistedItem.getName());
+        assertEquals(OnOffType.ON, persistedItem.getState());
     }
 
     @Test
@@ -148,8 +156,8 @@ class RRD4jPersistenceServiceTest {
         // Query with time range
         FilterCriteria criteria = new FilterCriteria();
         criteria.setItemName("TestNumber");
-        criteria.setBeginDate(ZonedDateTime.now().minusHours(1));
-        criteria.setEndDate(ZonedDateTime.now().plusHours(1));
+        criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1));
+        criteria.setEndDate(ZonedDateTime.now(ZoneId.systemDefault()).plusHours(1));
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
 
         Iterable<HistoricItem> results = service.query(criteria);
@@ -177,5 +185,36 @@ class RRD4jPersistenceServiceTest {
         } finally {
             simpleService.deactivate();
         }
+    }
+
+    // just to increase test coverage, supply an invalid DB config which will be ignored
+    @Test
+    void storeAndRetrieveWithInvalidDBConfig() throws Exception {
+        service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
+
+        configureNumberItem();
+
+        // Store a value
+        service.store(numberItem);
+
+        // Wait for background storage to complete
+        Thread.sleep(STORAGE_TIMEOUT_MS);
+
+        // Query the value back
+        FilterCriteria criteria = new FilterCriteria();
+        criteria.setItemName("TestNumber");
+        criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
+        criteria.setPageSize(1);
+        criteria.setPageNumber(0);
+        criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1)); 
+
+        Iterable<HistoricItem> results = service.query(criteria);
+        assertNotNull(results);
+
+        // Verify the retrieved value
+        HistoricItem item = results.iterator().next();
+        assertNotNull(item);
+        assertEquals("TestNumber", item.getName());
+        assertEquals(new DecimalType(42.5), item.getState());
     }
 }

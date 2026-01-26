@@ -36,7 +36,6 @@ import org.openhab.persistence.rrd4j.internal.RRD4jPersistenceService;
  * 
  * @author Copilot - Initial contribution
  * @author Holger Friedrich - refactoring and additional tests
- *
  */
 @ExtendWith(MockitoExtension.class)
 class RRD4jCommandExtensionTest {

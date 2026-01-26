@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Instant;
 import java.time.ZoneId;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -26,8 +27,8 @@ import org.openhab.core.types.State;
  * 
  * @author Copilot - Initial contribution
  * @author Holger Friedrich - refactoring and additional tests
- * 
  */
+@NonNullByDefault
 class RRD4jItemTest {
 
     @Test
