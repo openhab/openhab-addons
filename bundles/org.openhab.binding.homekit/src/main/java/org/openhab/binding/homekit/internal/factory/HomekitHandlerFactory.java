@@ -25,6 +25,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -55,18 +56,20 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     private final HomekitKeyStore keyStore;
     private final TranslationProvider i18nProvider;
     private final Bundle bundle;
+    private final ThingRegistry thingRegistry;
 
     @Activate
     public HomekitHandlerFactory(@Reference HomekitTypeProvider typeProvider,
             @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore,
-            @Reference TranslationProvider translationProvider) {
+            @Reference TranslationProvider translationProvider, @Reference ThingRegistry thingRegistry) {
         this.typeProvider = typeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.keyStore = keyStore;
         this.i18nProvider = translationProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -77,11 +80,11 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, typeProvider, keyStore, i18nProvider, bundle);
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID) && thing instanceof Bridge bridge) {
+            return new HomekitBridgeHandler(bridge, typeProvider, keyStore, i18nProvider, bundle);
         } else if (THING_TYPE_BRIDGED_ACCESSORY.equals(thingTypeUID) || THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry,
-                    keyStore, i18nProvider, bundle);
+                    keyStore, i18nProvider, bundle, thingRegistry);
         }
         return null;
     }
