@@ -320,6 +320,10 @@
 	<channel-type id="radon" advanced="false">
 		<item-type unitHint="Bq/m³">Number:RadiationSpecificActivity</item-type>
 		<label>Radon</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Radon</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
