@@ -3,12 +3,12 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
-	<thing-type uid="ring:stickycam">
+	<thing-type uid="ring:stickupcam">
 		<instruction-set targetVersion="1">
-			<add-channel id="snapshot" groupIds="snapshotGroup">
+			<add-channel id="snapshot" groupIds="status">
 				<type>ring:snapshot</type>
 			</add-channel>
-			<add-channel id="snapshot-timestamp" groupIds="snapshotGroup">
+			<add-channel id="snapshot-timestamp" groupIds="status">
 				<type>ring:snapshot-timestamp</type>
 			</add-channel>
 		</instruction-set>
@@ -16,10 +16,10 @@
 
 	<thing-type uid="ring:doorbell">
 		<instruction-set targetVersion="1">
-			<add-channel id="snapshot" groupIds="snapshotGroup">
+			<add-channel id="snapshot" groupIds="status">
 				<type>ring:snapshot</type>
 			</add-channel>
-			<add-channel id="snapshot-timestamp" groupIds="snapshotGroup">
+			<add-channel id="snapshot-timestamp" groupIds="status">
 				<type>ring:snapshot-timestamp</type>
 			</add-channel>
 		</instruction-set>

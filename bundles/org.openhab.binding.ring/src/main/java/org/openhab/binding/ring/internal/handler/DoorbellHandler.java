@@ -87,7 +87,7 @@ public class DoorbellHandler extends RingDeviceHandler {
             updateState(channelUID, new RawType(getSnapshot(), "image/jpeg"));
             channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
             updateState(channelUID, new DateTimeType(
-                    ZonedDateTime.ofInstant(java.time.Instant.ofEpochSecond(timestamp), ZoneId.systemDefault())));
+                    ZonedDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())));
         }
     }
 }

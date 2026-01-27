@@ -129,7 +129,6 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
-			<channel-group id="snapshot" typeId="snapshotGroup"/>
 		</channel-groups>
 		<properties>
 			<property name="thingTypeVersion">1</property>
@@ -161,7 +160,6 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
-			<channel-group id="snapshot" typeId="snapshotGroup"/>
 		</channel-groups>
 		<properties>
 			<property name="thingTypeVersion">1</property>
@@ -198,16 +196,8 @@
 		<description>Device Status Information</description>
 		<channels>
 			<channel id="battery" typeId="battery"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="snapshotGroup">
-		<label>Snapshots</label>
-		<description>Device Snapshots</description>
-		<channels>
 			<channel id="snapshot" typeId="snapshot"/>
 			<channel id="snapshot-timestamp" typeId="snapshot-timestamp"/>
-
 		</channels>
 	</channel-group-type>
 
