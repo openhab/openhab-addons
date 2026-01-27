@@ -233,16 +233,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     private boolean syncThingChannels(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
         boolean channelsChanged = addNonExistingChannels(channels, jsonState);
 
-        for (Channel channel : channels) {
-            if (!validChannelIds.contains(channel.getUID().getId())) {
-                if (!isLinked(channel.getUID())) {
-                    channels.remove(channel);
-                    channelsChanged = true;
-                }
-            }
-        }
+        boolean removed = channels.removeIf(c -> {
+            String id = c.getUID().getId();
+            return !validChannelIds.contains(id) && !isLinked(c.getUID());
+        });
 
-        return channelsChanged;
+        return channelsChanged || removed;
     }
 
     private boolean addNonExistingChannels(List<Channel> channels, JsonObject jsonState) {
