@@ -16,6 +16,7 @@ import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -123,18 +124,31 @@ public class DecryptingInputStream extends InputStream {
     }
 
     /**
-     * Reads buffer.length bytes unless EOF occurs.
-     *
+     * Reads buffer.length bytes unless EOF occurs. If a SocketTimeoutException occurs before any bytes have
+     * been read, it is propagated. If some bytes have already been read, the read operation is forced to continue
+     * until the buffer is fully filled or EOF occurs.
+     * 
+     * @param buffer the buffer to fill
+     * @throws IOException
      * @return true if buffer was fully filled, false if EOF occurred.
      */
     private boolean readFully(byte[] buffer) throws IOException {
         int offset = 0;
         while (offset < buffer.length) {
-            int read = inputStream.read(buffer, offset, buffer.length - offset);
-            if (read == -1) {
-                return false; // EOF
+            try {
+                int read = inputStream.read(buffer, offset, buffer.length - offset);
+                if (read == -1) {
+                    return false; // EOF
+                }
+                offset += read;
+            } catch (SocketTimeoutException e) {
+                // propagate the exception if nothing has been read yet
+                if (offset == 0) {
+                    throw e;
+                }
+                // if a partial frame has already been read, we must continue reading until done
+                continue;
             }
-            offset += read;
         }
         return true;
     }
