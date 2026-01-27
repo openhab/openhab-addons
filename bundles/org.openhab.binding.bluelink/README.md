@@ -1,12 +1,15 @@
-# Bluelink Binding (Hyundai/Genesis)
+# Bluelink Binding (Hyundai/Kia/Genesis)
 
-This binding integrates Hyundai vehicles equipped with Bluelink connected car services.
+This binding integrates these telematics systems for connected vehicles:
+
+* Hyundai Bluelink (US and Canada)
+* Kia Connect (Canada only, also formerly known as UVO)
+* Genesis Connected Services (US and Canada)
+
 It allows you to monitor your vehicle's status and control various features remotely.
 
-Genesis vehicles may also work, though this has not been tested.
-
-**NOTE: The binding only support the US region at the moment, because the Bluelink API
-differs by region.**
+**NOTE: Due to regional differences, only the above brand/region combinations are supported.
+Not all combinations have been tested.**
 
 ## Supported Things
 
@@ -29,7 +32,8 @@ registered to your account.
 | `username` | Yes      | Bluelink account email                                   |
 | `password` | Yes      | Bluelink account password                                |
 | `pin`      | No       | Bluelink service PIN (required for lock/unlock commands) |
-| `region`   | No       | Country code (`US`), autodetected if absent              |
+| `region`   | No       | Country code (`US` or `CA`), autodetected if absent      |
+| `brand`    | No       | One of `hyundai`, `kia`, `genesis`                       |
 
 ### `vehicle` Thing
 
