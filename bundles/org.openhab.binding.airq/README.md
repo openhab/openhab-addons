@@ -74,7 +74,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
 | fineDustConc10            | Number               |    | Fine Dust concentration >10 µm                                      |
 | pressure                  | Number:Pressure      |    | Barometric Pressure                                                 |
-| Radon                     | Number:Dimensionless |    | Radon concentration                                                 |
+| Radon                     | Number:RadiationSpecificActivity |    | Radon concentration                                                 |
 | so2                       | Number               |    | Sulfur dioxide (SO₂) concentration                                  |
 | sound                     | Number:Dimensionless |    | Noise                                                               |
 | temperature               | Number:Temperature   |    | Temperature                                                         |
