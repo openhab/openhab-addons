@@ -285,4 +285,18 @@ class TestModel {
         assertEquals(25 - 1, discovery.discoveries.size(), "One more discovery");
         assertEquals(1, discovery.deletes.size(), "One deletion");
     }
+
+    @Test
+    void testNewMatterDevices() {
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/matter-home.json", true,
+                List.of());
+        Gateway gateway = (Gateway) hubBridge.getHandler();
+        assertNotNull(gateway);
+        List<String> all = gateway.model().getAllDeviceIds();
+        List<String> resolved = gateway.model().getResolvedDeviceList();
+        DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
+        assertEquals(66, all.size(), "All Devices");
+        assertEquals(54, resolved.size(), "All Resolved Devices");
+        assertEquals(59, discovery.discoveries.size(), "Discovery Devices");
+    }
 }
