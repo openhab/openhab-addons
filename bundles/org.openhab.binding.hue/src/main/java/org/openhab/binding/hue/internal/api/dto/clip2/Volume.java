@@ -14,23 +14,23 @@ package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
+import org.openhab.core.library.types.PercentType;
 
 /**
- * DTO for mute state of a sound.
+ * DTO for a chime volume level.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Mute {
-    private @Nullable String mute;
+public class Volume {
+    private @Nullable Integer level;
 
-    public @Nullable MuteType getMuteType() {
-        return mute instanceof String m ? MuteType.of(m) : null;
+    public @Nullable PercentType getLevel() {
+        return level instanceof Integer percentValue ? new PercentType(percentValue) : null;
     }
 
-    public Mute setMuteType(MuteType muteType) {
-        mute = muteType.name().toLowerCase();
+    public Volume setVolumeLevel(PercentType volumeLevel) {
+        level = volumeLevel.intValue();
         return this;
     }
 }
