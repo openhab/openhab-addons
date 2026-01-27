@@ -318,7 +318,7 @@
 	</channel-type>
 
 	<channel-type id="radon" advanced="false">
-		<item-type unitHint="Bq/m³">Number:Dimensionless</item-type>
+		<item-type unitHint="Bq/m³">Number:RadiationSpecificActivity</item-type>
 		<label>Radon</label>
 		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
