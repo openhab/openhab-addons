@@ -40,7 +40,7 @@
 			<channel id="fineDustConc02_5" typeId="pm2_5"/>
 			<channel id="fineDustConc10" typeId="pm10"/>
 			<channel id="pressure" typeId="pressure"/>
-			<channel id="radon" typeID="radon"/>
+			<channel id="radon" typeId="radon"/>
 			<channel id="so2" typeId="so2"/>
 			<channel id="sound" typeId="sound"/>
 			<channel id="temperature" typeId="temperature"/>
