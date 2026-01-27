@@ -148,7 +148,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
                 uid = new ChannelUID(thing.getUID(), "forecast-tomorrow");
                 when(tomorrowChannel.getUID()).thenReturn(uid);
                 Channel dayChannel = mock(Channel.class);
-                uid = new ChannelUID(thing.getUID(), "forecast-dayAfterTomorrow");
+                uid = new ChannelUID(thing.getUID(), "forecast-day-after-tomorrow");
                 when(dayChannel.getUID()).thenReturn(uid);
                 List<Channel> channels = new ArrayList<>(
                         List.of(scaleChannel, todayChannel, tomorrowChannel, dayChannel));

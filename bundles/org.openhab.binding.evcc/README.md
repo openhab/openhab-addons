@@ -77,7 +77,7 @@ These channels are dynamically added to the Thing during their initialization; t
 ### `demo.things` Example
 
 ```java
-Bridge evcc:server:demo-server "Demo" [scheme="https", host="demo.evcc.io", port=443, refreshInterval=30] {
+Bridge evcc:server:demo-server "Demo" [scheme="http", host="evcc.local", port=7070, refreshInterval=30] {
     // This thing will only exist once per evcc instance
     Thing site demo-site "Site - evcc Demo"
     // You can define as many Battery things as you have batteries configured in your evcc instance
@@ -117,7 +117,7 @@ String               Evcc_Battery_Title "Title [%s]"                       { cha
 
 ```java
 Number:Energy            Evcc_Forecast_Solar                     "Solar Forecast"                { channel="evcc:forecast:demo-server:solar:forecast-solar" }
-Number:Energy            Evcc_Forecast_Solar                     "Scaled Solar Forecast"         { channel="evcc:forecast:demo-server:solar:forecast-scaled" }
+Number:Energy            Evcc_Forecast_Scaled_Forecast           "Scaled Solar Forecast"         { channel="evcc:forecast:demo-server:solar:forecast-scaled" }
 Number                   Evcc_Forecast_Solar_Scale               "Solar Forecast Scale"          { channel="evcc:forecast:demo-server:solar:forecast-scale" }
 Number:Energy            Evcc_Forecast_Solar_Todays              "Today's Forecast"              { channel="evcc:forecast:demo-server:solar:forecast-today" }
 Number:Energy            Evcc_Forecast_Solar_Tomorrows           "Tomorrow's Forecast"           { channel="evcc:forecast:demo-server:solar:forecast-tomorrow" }

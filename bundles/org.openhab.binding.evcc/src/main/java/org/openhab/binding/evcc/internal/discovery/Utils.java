@@ -51,12 +51,14 @@ public class Utils {
      *
      * @param values list of strings to create the ID from
      * @return a stable ID string
-     * @throws NoSuchAlgorithmException if SHA-256 algorithm is not available
      */
-    public static String createIdString(List<String> values) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] digest = md.digest((String.join("", values)).getBytes(StandardCharsets.UTF_8));
-        // Use first 10 hex chars of the SHA to generate a stable, compact plan ID
-        return HexUtils.bytesToHex(digest).substring(0, 10);
+    public static String createIdString(List<String> values) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(String.join("", values).getBytes(StandardCharsets.UTF_8));
+            return HexUtils.bytesToHex(digest).substring(0, 10);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
     }
 }

@@ -15,7 +15,6 @@ package org.openhab.binding.evcc.internal.discovery.mapper;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import static org.openhab.binding.evcc.internal.handler.Utils.capitalizeFirstLetter;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,8 +27,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -42,8 +39,6 @@ import com.google.gson.JsonObject;
 @Component(service = EvccDiscoveryMapper.class)
 @NonNullByDefault
 public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
-
-    private final Logger logger = LoggerFactory.getLogger(ForecastDiscoveryMapper.class);
 
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
@@ -60,13 +55,7 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(THING_TYPE_FORECAST, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(forecastType));
             String label = "Forecast " + capitalizeFirstLetter(forecastType);
-            String id = "";
-            try {
-                id = Utils.createIdString(List.of(label));
-            } catch (NoSuchAlgorithmException e) {
-                // should not happen
-                logger.warn("Could not get hash algorithm instance");
-            }
+            String id = Utils.createIdString(List.of(label));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(label)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_FORECAST)
                     .withProperty(PROPERTY_SUBTYPE, forecastType).withProperty(PROPERTY_ID, id)

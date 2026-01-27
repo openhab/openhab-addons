@@ -215,7 +215,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
         boolean channelsChanged = syncThingChannels(channels, jsonState, validChannelIds);
         if (channelsChanged) {
-            channels.sort(Comparator.comparing(c -> c.getUID().getId()));
             updateThing(editThing().withChannels(channels).build());
             updateStatus(ThingStatus.ONLINE);
             return;
@@ -252,7 +251,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
             String thingKey = getThingKey(key);
             ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
-            Channel existingChannel = getThing().getChannel(channelUID.getId());
+            Channel existingChannel = getThing().getChannel(channelUID);
             if (existingChannel == null) {
                 @Nullable
                 Channel newChannel = createChannel(thingKey, value);
@@ -261,6 +260,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     channelsAdded = true;
                 }
             }
+        }
+        if (channelsAdded) {
+            channels.sort(Comparator.comparing(c -> c.getUID().getId()));
         }
         return channelsAdded;
     }
