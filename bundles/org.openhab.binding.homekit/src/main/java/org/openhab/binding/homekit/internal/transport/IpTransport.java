@@ -320,7 +320,6 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
             if (future != null && !future.isDone()) {
                 future.completeExceptionally(error);
             }
-            close();
         }
     }
 
