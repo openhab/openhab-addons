@@ -55,11 +55,11 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 
 ### Device Status (Video Doorbell Binding Thing, Stickup Cam Binding Thing, Other Binding Thing only):
 
-| Channel Type ID  | Item Type | Description             |
-|------------------|-----------|-------------------------|
-| battery          | Number    | Battery level in %      |
-| snapshot         | Image     | Image Snapshot ^        |
-| snapshot         | Date-TIme | Timestamp of Snapshot ^ |
+| Channel Type ID    | Item Type | Description             |
+|--------------------|-----------|-------------------------|
+| battery            | Number    | Battery level in %      |
+| snapshot           | Image     | Image Snapshot ^        |
+| snapshot-timestamp | DateTime  | Timestamp of Snapshot ^ |
 ^ Video Doorbell and Stickup Cam only
 
 ## Full Example
@@ -90,17 +90,17 @@ String     RingEventKind                  "Ring Event Kind"                 { ch
 String     RingEventDeviceID              "Ring Device ID"                  { channel="ring:account:ringAccount:event#doorbotId" }
 String     RingEventDeviceDescription     "Ring Device Description"         { channel="ring:account:ringAccount:event#doorbotDescription" }
 
-Switch     RingDoorbellEnabled            "Ring Doorbell Polling Enabled"   { channel="ring:doorbell:<ring_device_id>:control#enabled" }
-Number     RingDoorbellBattery            "Ring Doorbell Battery [%s]%"     { channel="ring:doorbell:<ring_device_id>:status#battery"}
-Image      RingDoorbellSnapshot           "Ring Doorbell Snapshot           { channel="ring:doorbell:<ring_device_id>:status#snapshot"}
-DateTime   RingDoorbellSnapshotTimeStamp  "Ring Doorbell Snapshot Timestamp { channel="ring:doorbell:<ring_device_id>:status#snapshot-timestamp"}
+Switch     RingDoorbellEnabled            "Ring Doorbell Polling Enabled"    { channel="ring:doorbell:<ring_device_id>:control#enabled" }
+Number     RingDoorbellBattery            "Ring Doorbell Battery [%s]%"      { channel="ring:doorbell:<ring_device_id>:status#battery"}
+Image      RingDoorbellSnapshot           "Ring Doorbell Snapshot"           { channel="ring:doorbell:<ring_device_id>:status#snapshot"}
+DateTime   RingDoorbellSnapshotTimeStamp  "Ring Doorbell Snapshot Timestamp" { channel="ring:doorbell:<ring_device_id>:status#snapshot-timestamp"}
 
 Switch     RingChimeEnabled               "Ring Chime Polling Enabled"      { channel="ring:chime:<ring_device_id>:control#enabled" }
 
-Switch     RingStickupEnabled             "Ring Stickup Polling Enabled"   { channel="ring:stickupcam:<ring_device_id>:control#enabled" }
-Number     RingStickupBattery             "Ring Stickup Battery [%s]%"     { channel="ring:stickupcam:<ring_device_id>:status#battery"}
-Image      RingStickupSnapshot            "Ring Stickup Snapshot           { channel="ring:doorbell:<ring_device_id>:status#snapshot"}
-DateTime   RingStickupSnapshotTimeStamp   "Ring Stickup Snapshot Timestamp { channel="ring:doorbell:<ring_device_id>:status#snapshot-timestamp"}
+Switch     RingStickupEnabled             "Ring Stickup Polling Enabled"    { channel="ring:stickupcam:<ring_device_id>:control#enabled" }
+Number     RingStickupBattery             "Ring Stickup Battery [%s]%"      { channel="ring:stickupcam:<ring_device_id>:status#battery"}
+Image      RingStickupSnapshot            "Ring Stickup Snapshot"           { channel="ring:stickupcam:<ring_device_id>:status#snapshot"}
+DateTime   RingStickupSnapshotTimeStamp   "Ring Stickup Snapshot Timestamp" { channel="ring:stickupcam:<ring_device_id>:status#snapshot-timestamp"}
 
 Switch     RingOtherEnabled               "Ring Other Polling Enabled"   { channel="ring:other:<ring_device_id>:control#enabled" }
 Number     RingOtherBattery               "Ring Other Battery [%s]%"     { channel="ring:other:<ring_device_id>:status#battery"}

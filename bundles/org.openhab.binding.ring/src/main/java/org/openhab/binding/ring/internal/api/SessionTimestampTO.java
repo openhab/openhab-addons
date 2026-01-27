@@ -25,7 +25,7 @@ public class SessionTimestampTO {
     @SerializedName("timestamps")
     public @NonNullByDefault({}) Data[] data;
 
-    public class Data {
+    public static class Data {
         public int doorbot_id;
         public long timestamp;
     }

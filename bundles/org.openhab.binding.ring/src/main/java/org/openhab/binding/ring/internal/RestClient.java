@@ -237,8 +237,7 @@ public class RestClient {
         return session.profile;
     }
 
-    public long getSnapshotTimestamp(String deviceId, Tokens tokens)
-            throws AuthenticationException, JsonParseException {
+    public long getSnapshotTimestamp(String deviceId, Tokens tokens) throws AuthenticationException {
         String input = "{\"doorbot_ids\":[" + deviceId + "]}";
         String jsonResult = postRequest(ApiConstants.URL_SNAPSHOT_TIMESTAMPS, input, Map.of(), tokens);
         SessionTimestampTO sessionTimestamp = Objects
@@ -250,7 +249,7 @@ public class RestClient {
         }
     }
 
-    public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException, JsonParseException {
+    public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException {
         try {
             ContentResponse response = httpClient.newRequest(ApiConstants.URL_SNAPSHOTS + deviceId)
                     .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
@@ -258,10 +257,10 @@ public class RestClient {
             if (response.getStatus() == 200) {
                 return response.getContent();
             } else {
-                throw new AuthenticationException("Failed to download snapshop: " + response.getStatus());
+                throw new AuthenticationException("Failed to download snapshot: " + response.getStatus());
             }
         } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            throw new AuthenticationException("Failed to download snapshop.");
+            throw new AuthenticationException("Failed to download snapshot.");
         }
     }
 
