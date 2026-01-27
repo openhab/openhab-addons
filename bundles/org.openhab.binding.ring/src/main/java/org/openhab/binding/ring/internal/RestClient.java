@@ -46,6 +46,7 @@ import org.openhab.binding.ring.internal.api.ProfileTO;
 import org.openhab.binding.ring.internal.api.RingDevicesTO;
 import org.openhab.binding.ring.internal.api.RingEventTO;
 import org.openhab.binding.ring.internal.api.SessionTO;
+import org.openhab.binding.ring.internal.api.SessionTimestampTO;
 import org.openhab.binding.ring.internal.api.TokenTO;
 import org.openhab.binding.ring.internal.data.ParamBuilder;
 import org.openhab.binding.ring.internal.data.Tokens;
@@ -236,8 +237,35 @@ public class RestClient {
         return session.profile;
     }
 
+    public long getSnapshotTimestamp(String deviceId, Tokens tokens) throws AuthenticationException {
+        String input = "{\"doorbot_ids\":[" + deviceId + "]}";
+        String jsonResult = postRequest(ApiConstants.URL_SNAPSHOT_TIMESTAMPS, input, Map.of(), tokens);
+        SessionTimestampTO sessionTimestamp = Objects
+                .requireNonNull(gson.fromJson(jsonResult, SessionTimestampTO.class));
+        if (sessionTimestamp.data.length > 0) {
+            return sessionTimestamp.data[0].timestamp;
+        } else {
+            return -1;
+        }
+    }
+
+    public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException {
+        try {
+            ContentResponse response = httpClient.newRequest(ApiConstants.URL_SNAPSHOTS + deviceId)
+                    .header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken()).send();
+
+            if (response.getStatus() == 200) {
+                return response.getContent();
+            } else {
+                throw new AuthenticationException("Failed to download snapshot: " + response.getStatus());
+            }
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            throw new AuthenticationException("Failed to download snapshot.");
+        }
+    }
+
     /**
-     * Get get the Ring devices
+     * Get the Ring devices
      *
      * @param tokens the tokens previously retrieved when authenticating.
      * @return the RingDevices instance filled with all available data.
