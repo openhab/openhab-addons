@@ -16,7 +16,6 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -24,12 +23,10 @@ import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
@@ -75,25 +72,17 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 return;
             }
             if (stateOpt.has(JSON_KEY_FORECAST) && stateOpt.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
-                String thingKey = getThingKey(subType);
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
-                Channel existingChannel = getThing().getChannel(channelUID.getId());
-                if (existingChannel == null) {
-                    ThingBuilder builder = editThing();
-                    List<Channel> channels = new ArrayList<>(getThing().getChannels());
-                    builder.withoutChannels(channels);
-                    @Nullable
-                    Channel newChannel = createChannel(thingKey, new JsonPrimitive(0));
-                    if (null != newChannel) {
-                        channels.add(newChannel);
-                        channels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
-                        updateThing(builder.withChannels(channels).build());
-                    }
+                JsonObject state = new JsonObject();
+                if (JSON_KEY_SOLAR.equals(subType)) {
+                    state = stateOpt.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType).deepCopy();
+                    modifyJSON(state);
+                    state.addProperty("scaled", 0);
+                    state.addProperty("solar", 0);
                 }
+                commonInitialize(state);
                 isInitialized = true;
                 handler.register(this);
                 updateStatus(ThingStatus.ONLINE);
-                prepareApiResponseForChannelStateUpdate(stateOpt);
             } else {
                 logger.warn("Forecast data for type {} is not available in the evcc state.", subType);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -115,10 +104,11 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
             case JSON_KEY_SOLAR -> {
                 forecastArray = extractCorrespondingForecast(state);
                 JsonObject solar = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
-                int scale = solar.get(JSON_KEY_SCALE).getAsInt();
-                propagate(forecastArray, getThingKey("scaled" + Utils.capitalizeFirstLetter(subType)),
-                        obj -> parseScaledForecast(obj, getThingKey(subType), scale));
+                modifyJSON(solar);
                 updateStatesFromApiResponse(solar);
+                float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
+                propagate(forecastArray, getThingKey("scaled"),
+                        obj -> parseScaledForecast(obj, getThingKey(subType), scale));
             }
             default -> {
                 logger.warn("Unknown forecast type: {}", subType);
@@ -133,7 +123,6 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         if (state.has(JSON_KEY_FORECAST) && state.getAsJsonObject(JSON_KEY_FORECAST).has(subType)) {
             if (JSON_KEY_SOLAR.equals(subType)) {
                 JsonObject solarObject = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
-                modifyJSON(solarObject);
                 return solarObject.has("timeseries") ? solarObject.getAsJsonArray("timeseries") : new JsonArray();
             } else {
                 return state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonArray(subType);
@@ -207,7 +196,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     }
 
     @Nullable
-    private ForecastData parseScaledForecast(JsonObject obj, String thingKey, int scale) {
+    private ForecastData parseScaledForecast(JsonObject obj, String thingKey, float scale) {
         FieldMapping m = getFieldMapping();
         if (m == null) {
             return null;

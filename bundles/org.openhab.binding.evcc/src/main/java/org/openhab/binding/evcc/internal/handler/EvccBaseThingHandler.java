@@ -87,11 +87,10 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     protected void commonInitialize(JsonObject state) {
-        List<Channel> channels = getThing().getChannels();
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
         Set<String> validChannelIds = extractValidChannelIds(state);
         if (syncThingChannels(channels, state, validChannelIds)) {
             if (!channels.isEmpty()) {
-                // channels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
                 updateThing(editThing().withChannels(channels).build());
             }
         }
@@ -218,13 +217,11 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         if (channelsChanged) {
             channels.sort(Comparator.comparing(c -> c.getUID().getId()));
             updateThing(editThing().withChannels(channels).build());
-        }
-        updateChannelStates(channels, jsonState, validChannelIds);
-        updateStatus(ThingStatus.ONLINE);
-
-        if (!isInitialized || jsonState.isEmpty()) {
+            updateStatus(ThingStatus.ONLINE);
             return;
         }
+        updateChannelStates(getThing().getChannels(), jsonState, validChannelIds);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private Set<String> extractValidChannelIds(JsonObject jsonState) {
@@ -234,8 +231,22 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     private boolean syncThingChannels(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
-        boolean channelsChanged = false;
+        boolean channelsChanged = addNonExistingChannels(channels, jsonState);
 
+        for (Channel channel : channels) {
+            if (!validChannelIds.contains(channel.getUID().getId())) {
+                if (!isLinked(channel.getUID())) {
+                    channels.remove(channel);
+                    channelsChanged = true;
+                }
+            }
+        }
+
+        return channelsChanged;
+    }
+
+    private boolean addNonExistingChannels(List<Channel> channels, JsonObject jsonState) {
+        boolean channelsAdded = false;
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : jsonState.entrySet()) {
             String key = entry.getKey();
             JsonElement value = entry.getValue();
@@ -251,23 +262,11 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 Channel newChannel = createChannel(thingKey, value);
                 if (null != newChannel) {
                     channels.add(newChannel);
-                    channelsChanged = true;
+                    channelsAdded = true;
                 }
             }
         }
-
-        List<Channel> filteredChannels = channels.stream().filter(c -> {
-            String id = c.getUID().getId();
-            return validChannelIds.contains(id) || isLinked(c.getUID());
-        }).collect(Collectors.toList());
-
-        boolean channelsRemoved = validChannelIds.size() != filteredChannels.size();
-
-        if (channelsRemoved) {
-            channels = filteredChannels;
-            channelsChanged = true;
-        }
-        return channelsChanged;
+        return channelsAdded;
     }
 
     private void updateChannelStates(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {

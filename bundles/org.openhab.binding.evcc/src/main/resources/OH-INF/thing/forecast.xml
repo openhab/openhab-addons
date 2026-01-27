@@ -61,6 +61,16 @@
 		<item-type>Number</item-type>
 		<label>Scaled Solar Forecast</label>
 		<description>Holds the scaled forecast data</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Calculation</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="forecast-scale">
+		<item-type>Number</item-type>
+		<label>Scale</label>
+		<description>Scaling factor for the forecast values</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-today">
