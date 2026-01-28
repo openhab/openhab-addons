@@ -53,7 +53,7 @@ public class InMemoryPersistenceTests {
     private static final String ALIAS = "alias";
 
     private @NonNullByDefault({}) InMemoryPersistenceService service;
-    private @NonNullByDefault({}) @Mock GenericItem item;
+    private @Mock @NonNullByDefault({}) GenericItem item;
 
     private @NonNullByDefault({}) FilterCriteria filterCriteria;
 
