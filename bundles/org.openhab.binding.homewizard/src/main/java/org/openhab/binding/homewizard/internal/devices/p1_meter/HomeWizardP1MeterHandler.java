@@ -19,7 +19,8 @@ import java.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
-import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardDeviceHandler;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterSubHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -39,9 +40,7 @@ import org.openhab.core.types.RefreshType;
  * @author Gearrel Welvaart - Adapted to new structure
  */
 @NonNullByDefault
-public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
-    protected HomeWizardBatteriesSubHandler batteriesHandler;
-
+public class HomeWizardP1MeterHandler extends HomeWizardDeviceHandler {
     private String meterModel = "";
     private int meterVersion = 0;
     private TimeZoneProvider timeZoneProvider;
@@ -57,21 +56,21 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
         this.timeZoneProvider = timeZoneProvider;
         supportedTypes.add(HomeWizardBindingConstants.HWE_P1);
         supportedApiVersions = Arrays.asList(API_V1, API_V2);
-
-        batteriesHandler = new HomeWizardBatteriesSubHandler(this);
     }
 
     @Override
     protected void retrieveData() {
         super.retrieveData();
-        if (config.isUsingApiVersion2()) {
-            try {
-                batteriesHandler.retrieveBatteriesData();
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.comm-error-device-offline");
-                return;
+
+        try {
+            if (config.isUsingApiVersion2()) {
+                handleBatteriesData(getBatteriesData());
             }
+        } catch (Exception ex) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-device-offline");
+            logger.debug("Unable to get data from the API", ex);
+            return;
         }
     }
 
@@ -83,9 +82,9 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
         }
 
         if (channelUID.getIdWithoutGroup().equals(HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE)) {
-            batteriesHandler.handleCommand(command);
+            HomeWizardBatteriesSubHandler.handleCommand(command, this);
         } else {
-            logger.warn("Unhandled command for channel: {} command: {}", channelUID.getIdWithoutGroup(), command);
+            super.handleCommand(channelUID, command);
         }
     }
 
@@ -96,7 +95,7 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
      */
     @Override
     protected void handleMeasurementData(String data) {
-        super.handleMeasurementData(data);
+        HomeWizardEnergyMeterSubHandler.handleMeasurementData(data, this);
 
         var payload = gson.fromJson(data, HomeWizardP1MeterMeasurementPayload.class);
         if (payload != null) {
@@ -167,5 +166,16 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
                 }
             }
         }
+        super.handleMeasurementData(data);
+    }
+
+    /**
+     * Device specific handling of the returned batteries data.
+     *
+     * @param data The data obtained from the API call
+     */
+    @Override
+    protected void handleBatteriesData(String data) {
+        HomeWizardBatteriesSubHandler.handleBatteriesData(data, this);
     }
 }
