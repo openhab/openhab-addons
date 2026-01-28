@@ -402,7 +402,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             TService service, TState state) {
         try {
             service.setState(state);
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
                     "Error while trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
         } catch (InterruptedException e) {
