@@ -21,6 +21,10 @@
 			<channel id="last_update" typeId="last_update"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<config-description>
 			<parameter-group name="source">
 				<label>Source Settings</label>
@@ -62,7 +66,6 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-
 	</bridge-type>
 
 	<channel-type id="event_current_title">
