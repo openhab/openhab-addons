@@ -14,7 +14,6 @@ package org.openhab.binding.boschshc.internal.services.temperatureoffset.dto;
 
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -25,7 +24,6 @@ import org.openhab.core.library.unit.SIUnits;
  * @author David Pace - Initial contribution
  *
  */
-@NonNullByDefault
 public class TemperatureOffsetServiceState extends BoschSHCServiceState {
 
     public TemperatureOffsetServiceState() {
@@ -33,9 +31,13 @@ public class TemperatureOffsetServiceState extends BoschSHCServiceState {
     }
 
     public double offset;
-    public double stepSize;
-    public double minOffset;
-    public double maxOffset;
+
+    // Note: the following members are Double objects intentionally in order to make them nullable.
+    // Those members must NOT be serialized for outgoing status updates, otherwise they will be rejected
+    // by the Smart Home Controller, but they are needed for incoming service state updates
+    public Double stepSize;
+    public Double minOffset;
+    public Double maxOffset;
 
     public QuantityType<Temperature> getOffsetState() {
         return new QuantityType<>(offset, SIUnits.CELSIUS);

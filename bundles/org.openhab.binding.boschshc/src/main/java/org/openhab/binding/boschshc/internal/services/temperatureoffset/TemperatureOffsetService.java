@@ -53,9 +53,6 @@ public class TemperatureOffsetService extends BoschSHCService<TemperatureOffsetS
 
     private TemperatureOffsetServiceState createNewTemperatureOffsetState(BigDecimal offset) {
         TemperatureOffsetServiceState state = new TemperatureOffsetServiceState();
-        state.minOffset = MINIMUM_OFFSET.doubleValue();
-        state.maxOffset = MAXIMUM_OFFSET.doubleValue();
-        state.stepSize = 0.1;
         state.offset = sanitizeOffsetValue(offset);
         return state;
     }

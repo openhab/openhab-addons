@@ -143,9 +143,9 @@ public abstract class AbstractThermostatHandlerTest<T extends AbstractThermostat
         verify(getBridgeHandler()).putState(eq(getDeviceID()),
                 eq(TemperatureOffsetService.TEMPERATURE_OFFSET_SERVICE_NAME), temperatureOffsetCaptor.capture());
         TemperatureOffsetServiceState state = temperatureOffsetCaptor.getValue();
-        assertEquals(TemperatureOffsetService.MINIMUM_OFFSET.doubleValue(), state.minOffset, 0.001d);
-        assertEquals(TemperatureOffsetService.MAXIMUM_OFFSET.doubleValue(), state.maxOffset, 0.001d);
-        assertEquals(0.1d, state.stepSize, 0.001d);
+        assertNull(state.minOffset);
+        assertNull(state.maxOffset);
+        assertNull(state.stepSize);
         assertEquals(-1.3d, state.offset, 0.001d);
     }
 
@@ -158,9 +158,9 @@ public abstract class AbstractThermostatHandlerTest<T extends AbstractThermostat
         verify(getBridgeHandler()).putState(eq(getDeviceID()),
                 eq(TemperatureOffsetService.TEMPERATURE_OFFSET_SERVICE_NAME), temperatureOffsetCaptor.capture());
         TemperatureOffsetServiceState state = temperatureOffsetCaptor.getValue();
-        assertEquals(TemperatureOffsetService.MINIMUM_OFFSET.doubleValue(), state.minOffset, 0.001d);
-        assertEquals(TemperatureOffsetService.MAXIMUM_OFFSET.doubleValue(), state.maxOffset, 0.001d);
-        assertEquals(0.1d, state.stepSize, 0.001d);
+        assertNull(state.minOffset);
+        assertNull(state.maxOffset);
+        assertNull(state.stepSize);
         assertEquals(-1.3d, state.offset, 0.001d);
     }
 
