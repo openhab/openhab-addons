@@ -6,40 +6,41 @@
 
 	<bridge-type id="xmppBridge" extensible="publishTrigger">
 		<label>XMPP Client</label>
-		<description>A connection to a XMPP server</description>
+		<description>A connection to an XMPP server</description>
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<description>The XMPP Username (the left side of JID, e.g. user for JID user@example.com)</description>
+				<description>The XMPP username (the left part of the JID, e.g., "user" for user@example.com)</description>
 			</parameter>
 			<parameter name="nickname" type="text" required="false">
 				<label>Nickname</label>
-				<description>The XMPP Nickname to use in multi user chats. (Defaults to Username)</description>
+				<description>The XMPP nickname to use in multi-user chats (defaults to the username)</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="domain" type="text" required="true">
 				<label>Domain</label>
-				<description>The XMPP Domain (the right side of JID, e.g. example.com for JID user@example.com)</description>
+				<description>The XMPP domain (the right part of the JID, e.g., example.com for user@example.com)</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>The XMPP Password</description>
+				<description>The XMPP password</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="host" type="text">
 				<label>Server Hostname/IP</label>
-				<description>The IP/Hostname of the XMPP server (if not specified, the Domain will be used)</description>
+				<description>The IP address or hostname of the XMPP server (if not specified, the domain will be used)</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>XMPP Server Port</label>
-				<description>The default port is 5222.</description>
+				<description>Port for the XMPP server</description>
+				<default>5222</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="securityMode" type="text" required="true">
 				<label>Security Mode</label>
-				<description>An enumeration for TLS security modes that are available when making a connection to the XMPP server.</description>
+				<description>TLS security modes available when connecting to the XMPP server</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="required">Required</option>
@@ -61,13 +62,13 @@
 		<config-description>
 			<parameter name="payload" type="text" required="false">
 				<label>Payload Condition</label>
-				<description>An optional condition on the value</description>
+				<description>Optional condition on the payload value</description>
 			</parameter>
 			<parameter name="separator" type="text" required="false">
 				<label>Separator Character</label>
 				<description>The trigger channel payload usually only contains the received text. If you define a separator
-					character, for example '#', the sender UID and received text will be in the trigger channel payload. For example:
-					pavel@example.com#My Message Text.</description>
+					character (e.g., '#'), the sender UID and received text will both be included. For example: "pavel@example.com#My
+					Message Text".</description>
 			</parameter>
 		</config-description>
 	</channel-type>
