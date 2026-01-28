@@ -21,7 +21,7 @@ import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayloa
 import org.openhab.binding.homekit.internal.session.HttpReaderListener;
 
 /**
- * Test helper class for HttpPayloadParser
+ * Test helper class for {@link org.openhab.binding.homekit.internal.session.HttpPayloadParser}
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
