@@ -112,7 +112,7 @@ Import-Package: \
 	org.openhab.core.test;version='[5.2.0,5.2.1)',\
 	org.openhab.core.thing;version='[5.2.0,5.2.1)',\
 	org.openhab.core.transform;version='[5.2.0,5.2.1)',\
-	biz.aQute.tester.junit-platform;version='[7.1.0,7.1.1)',\
+	biz.aQute.tester.junit-platform;version='[7.2.1,7.2.2)',\
 	jakarta.annotation-api;version='[2.1.1,2.1.2)',\
 	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
 	org.openhab.core.semantics;version='[5.2.0,5.2.1)',\
