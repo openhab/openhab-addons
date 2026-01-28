@@ -85,7 +85,7 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
         this.eventListener = eventListener;
 
         outputThreadExecutor = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "ip-transport-output");
+            Thread t = new Thread(r, "OH-binding-" + HomekitBindingConstants.BINDING_ID + "-ip-transport-output");
             t.setDaemon(true);
             return t;
         });
