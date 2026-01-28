@@ -320,7 +320,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize();
+        api.initialize(thingName, config);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && config.password.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -328,9 +328,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(device.hostname).toLowerCase();
+            api.setConfig(thingName, config); // update config
         }
 
-        api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
         String mode = getString(tmpPrf.device.mode);
