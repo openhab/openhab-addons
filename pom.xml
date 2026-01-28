@@ -644,7 +644,7 @@ Import-Package: \\
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.6.3</version>
+                  <version>3.9.6</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>[21.0,22.0)</version>
