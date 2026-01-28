@@ -85,7 +85,7 @@ public class HttpPayloadParser implements AutoCloseable {
     public HttpPayloadParser(InputStream stream, HttpReaderListener eventListener) {
         inputStream = stream;
         listener = eventListener;
-        inputThread = new Thread(this::inputTask, "http-parser-input");
+        inputThread = new Thread(this::inputTask, "OH-binding-" + HomekitBindingConstants.BINDING_ID + "-http-parser-input");
         inputThread.setDaemon(true);
     }
 
