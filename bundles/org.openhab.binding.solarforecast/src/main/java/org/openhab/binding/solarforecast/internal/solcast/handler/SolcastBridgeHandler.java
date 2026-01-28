@@ -105,18 +105,13 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         if (command instanceof RefreshType) {
             String channel = channelUID.getIdWithoutGroup();
             switch (channel) {
-                case CHANNEL_ENERGY_ACTUAL:
-                case CHANNEL_ENERGY_REMAIN:
-                case CHANNEL_ENERGY_TODAY:
-                case CHANNEL_POWER_ACTUAL:
-                case CHANNEL_API_COUNT:
-                case CHANNEL_LATEST_UPDATE:
-                    updateData();
-                    break;
-                case CHANNEL_POWER_ESTIMATE:
-                case CHANNEL_ENERGY_ESTIMATE:
-                    updateTimeseries();
-                    break;
+                case CHANNEL_ENERGY_ACTUAL, CHANNEL_ENERGY_REMAIN, CHANNEL_ENERGY_TODAY, CHANNEL_POWER_ACTUAL,
+                        CHANNEL_API_COUNT, CHANNEL_LATEST_UPDATE -> {
+                    sequentialScheduler.execute(() -> updateData());
+                }
+                case CHANNEL_POWER_ESTIMATE, CHANNEL_ENERGY_ESTIMATE -> {
+                    sequentialScheduler.execute(() -> updateTimeseries());
+                }
             }
         }
     }

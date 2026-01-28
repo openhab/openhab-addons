@@ -68,8 +68,21 @@ public class SolcastCache {
             return;
         }
 
+        assureValues(newForecastArray);
         cache = merge(cache, newForecastArray);
         compactCache();
+    }
+
+    public void assureValues(JSONArray newForecastArray) {
+        newForecastArray.forEach(entry -> {
+            JSONObject forecastEntry = (JSONObject) entry;
+            if (!forecastEntry.has(KEY_ESTIMATE10)) {
+                forecastEntry.put(KEY_ESTIMATE10, forecastEntry.getDouble(KEY_ESTIMATE));
+            }
+            if (!forecastEntry.has(KEY_ESTIMATE90)) {
+                forecastEntry.put(KEY_ESTIMATE90, forecastEntry.getDouble(KEY_ESTIMATE));
+            }
+        });
     }
 
     private void restore() {

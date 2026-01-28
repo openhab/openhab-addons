@@ -30,7 +30,6 @@ import org.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
-import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.binding.solarforecastinternal.solcast.mock.SolcastPlaneMock;
@@ -88,23 +87,23 @@ class SolcastForecastTest {
     @Test
     void testForecastObject() {
         // test one day, step ahead in time and cross check channel values
-        double dayTotal = solcastForecast.getDayTotal(now.toLocalDate(), QueryMode.Average);
-        double actual = solcastForecast.getActualEnergyValue(now, QueryMode.Average);
-        double remain = solcastForecast.getRemainingProduction(now, QueryMode.Average);
+        double dayTotal = solcastForecast.getDayTotal(now.toLocalDate(), QueryMode.AVERAGE);
+        double actual = solcastForecast.getActualEnergyValue(now, QueryMode.AVERAGE);
+        double remain = solcastForecast.getRemainingProduction(now, QueryMode.AVERAGE);
         assertEquals(0.0, actual, TOLERANCE, "Begin of day actual");
         assertEquals(23.107, remain, TOLERANCE, "Begin of day remaining");
         assertEquals(23.107, dayTotal, TOLERANCE, "Day total");
-        assertEquals(0.0, solcastForecast.getActualPowerValue(now, QueryMode.Average), TOLERANCE, "Begin of day power");
+        assertEquals(0.0, solcastForecast.getActualPowerValue(now, QueryMode.AVERAGE), TOLERANCE, "Begin of day power");
         double previousPower = 0;
         for (int i = 0; i < 47; i++) {
             now = now.plusMinutes(30);
-            double power = solcastForecast.getActualPowerValue(now, QueryMode.Average) / 2.0;
+            double power = solcastForecast.getActualPowerValue(now, QueryMode.AVERAGE) / 2.0;
             double powerAddOn = ((power + previousPower) / 2.0);
             actual += powerAddOn;
-            assertEquals(actual, solcastForecast.getActualEnergyValue(now, QueryMode.Average), TOLERANCE,
+            assertEquals(actual, solcastForecast.getActualEnergyValue(now, QueryMode.AVERAGE), TOLERANCE,
                     "Actual at " + now);
             remain -= powerAddOn;
-            assertEquals(remain, solcastForecast.getRemainingProduction(now, QueryMode.Average), TOLERANCE,
+            assertEquals(remain, solcastForecast.getRemainingProduction(now, QueryMode.AVERAGE), TOLERANCE,
                     "Remain at " + now);
             assertEquals(dayTotal, actual + remain, TOLERANCE, "Total sum at " + now);
             previousPower = power;
@@ -114,38 +113,38 @@ class SolcastForecastTest {
     @Test
     void testPower() {
         ZonedDateTime now = LocalDateTime.of(2022, 7, 23, 16, 00).atZone(timeZoneProvider.getTimeZone());
-        assertEquals(1.9176, solcastForecast.getActualPowerValue(now, QueryMode.Average), TOLERANCE,
+        assertEquals(1.9176, solcastForecast.getActualPowerValue(now, QueryMode.AVERAGE), TOLERANCE,
                 "Estimate power " + now);
         assertEquals(1.9176, solcastForecast.getPower(now.toInstant(), "average").doubleValue(), TOLERANCE,
                 "Estimate power " + now);
-        assertEquals(1.754, solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.Average), TOLERANCE,
+        assertEquals(1.754, solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.AVERAGE), TOLERANCE,
                 "Estimate power " + now.plusMinutes(30));
 
-        assertEquals(2.046, solcastForecast.getActualPowerValue(now, QueryMode.Optimistic), TOLERANCE,
+        assertEquals(2.046, solcastForecast.getActualPowerValue(now, QueryMode.OPTIMISTIC), TOLERANCE,
                 "Optimistic power " + now);
-        assertEquals(1.864, solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.Optimistic), TOLERANCE,
+        assertEquals(1.864, solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.OPTIMISTIC), TOLERANCE,
                 "Optimistic power " + now.plusMinutes(30));
 
-        assertEquals(0.864, solcastForecast.getActualPowerValue(now, QueryMode.Pessimistic), TOLERANCE,
+        assertEquals(0.864, solcastForecast.getActualPowerValue(now, QueryMode.PESSIMISTIC), TOLERANCE,
                 "Pessimistic power " + now);
-        assertEquals(0.771, solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.Pessimistic), TOLERANCE,
+        assertEquals(0.771, solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.PESSIMISTIC), TOLERANCE,
                 "Pessimistic power " + now.plusMinutes(30));
 
         // get same values for optimistic / pessimistic and estimate in the past
         ZonedDateTime past = LocalDateTime.of(2022, 7, 17, 16, 30).atZone(timeZoneProvider.getTimeZone());
-        assertEquals(1.932, solcastForecast.getActualPowerValue(past, QueryMode.Average), TOLERANCE,
+        assertEquals(1.932, solcastForecast.getActualPowerValue(past, QueryMode.AVERAGE), TOLERANCE,
                 "Estimate power " + past);
-        assertEquals(1.724, solcastForecast.getActualPowerValue(past.plusMinutes(30), QueryMode.Average), TOLERANCE,
+        assertEquals(1.724, solcastForecast.getActualPowerValue(past.plusMinutes(30), QueryMode.AVERAGE), TOLERANCE,
                 "Estimate power " + now.plusMinutes(30));
 
-        assertEquals(1.932, solcastForecast.getActualPowerValue(past, QueryMode.Optimistic), TOLERANCE,
+        assertEquals(1.932, solcastForecast.getActualPowerValue(past, QueryMode.OPTIMISTIC), TOLERANCE,
                 "Optimistic power " + past);
-        assertEquals(1.724, solcastForecast.getActualPowerValue(past.plusMinutes(30), QueryMode.Optimistic), TOLERANCE,
+        assertEquals(1.724, solcastForecast.getActualPowerValue(past.plusMinutes(30), QueryMode.OPTIMISTIC), TOLERANCE,
                 "Optimistic power " + past.plusMinutes(30));
 
-        assertEquals(1.932, solcastForecast.getActualPowerValue(past, QueryMode.Pessimistic), TOLERANCE,
+        assertEquals(1.932, solcastForecast.getActualPowerValue(past, QueryMode.PESSIMISTIC), TOLERANCE,
                 "Pessimistic power " + past);
-        assertEquals(1.724, solcastForecast.getActualPowerValue(past.plusMinutes(30), QueryMode.Pessimistic), TOLERANCE,
+        assertEquals(1.724, solcastForecast.getActualPowerValue(past.plusMinutes(30), QueryMode.PESSIMISTIC), TOLERANCE,
                 "Pessimistic power " + past.plusMinutes(30));
     }
 
@@ -153,9 +152,9 @@ class SolcastForecastTest {
     void testForecastTreeMap() {
         setFixedTimeJul17();
         now = LocalDateTime.of(2022, 7, 17, 7, 0).atZone(timeZoneProvider.getTimeZone());
-        assertEquals(0.42, solcastForecast.getActualEnergyValue(now, QueryMode.Average), TOLERANCE,
+        assertEquals(0.42, solcastForecast.getActualEnergyValue(now, QueryMode.AVERAGE), TOLERANCE,
                 "Actual estimation");
-        assertEquals(25.413, solcastForecast.getDayTotal(now.toLocalDate(), QueryMode.Average), TOLERANCE, "Day total");
+        assertEquals(25.413, solcastForecast.getDayTotal(now.toLocalDate(), QueryMode.AVERAGE), TOLERANCE, "Day total");
     }
 
     @Test
@@ -184,46 +183,33 @@ class SolcastForecastTest {
 
     @Test
     void testOptimisticPessimistic() {
-        assertEquals(19.389, solcastForecast.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Average), TOLERANCE,
+        assertEquals(19.389, solcastForecast.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.AVERAGE), TOLERANCE,
                 "Estimation");
-        assertEquals(7.358, solcastForecast.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Pessimistic),
+        assertEquals(7.358, solcastForecast.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.PESSIMISTIC),
                 TOLERANCE, "Estimation");
-        assertEquals(22.283, solcastForecast.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.Optimistic),
+        assertEquals(22.283, solcastForecast.getDayTotal(now.toLocalDate().plusDays(2), QueryMode.OPTIMISTIC),
                 TOLERANCE, "Estimation");
-        assertEquals(23.316, solcastForecast.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.Average), TOLERANCE,
+        assertEquals(23.316, solcastForecast.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.AVERAGE), TOLERANCE,
                 "Estimation");
-        assertEquals(9.8, solcastForecast.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.Pessimistic), TOLERANCE,
+        assertEquals(9.8, solcastForecast.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.PESSIMISTIC), TOLERANCE,
                 "Estimation");
-        assertEquals(23.949, solcastForecast.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.Optimistic),
+        assertEquals(23.949, solcastForecast.getDayTotal(now.toLocalDate().plusDays(6), QueryMode.OPTIMISTIC),
                 TOLERANCE, "Estimation");
 
-        // access in past shall be rejected
         Instant past = Utils.now().minus(5, ChronoUnit.MINUTES);
-        try {
-            solcastForecast.getPower(past, SolarForecast.OPTIMISTIC);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("Solcast argument optimistic only available for future values", e.getMessage(),
-                    "Optimistic Power");
-        }
-        try {
-            solcastForecast.getPower(past, SolarForecast.PESSIMISTIC);
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("Solcast argument pessimistic only available for future values", e.getMessage(),
-                    "Pessimistic Power");
-        }
         try {
             solcastForecast.getPower(past, "total", "rubbish");
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Solcast doesn't support 2 arguments", e.getMessage(), "Too many qrguments");
+            assertEquals("Too many arguments [total, rubbish]", e.getMessage(), "Too many qrguments");
         }
         try {
             solcastForecast.getPower(past.plus(2, ChronoUnit.HOURS), "rubbish");
             fail();
         } catch (IllegalArgumentException e) {
-            assertEquals("Solcast doesn't support argument rubbish", e.getMessage(), "Rubbish argument");
+            assertEquals(
+                    "No enum constant org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode.RUBBISH",
+                    e.getMessage(), "Rubbish argument");
         }
         try {
             solcastForecast.getPower(Utils.now().plus(8, ChronoUnit.DAYS));
@@ -240,7 +226,7 @@ class SolcastForecastTest {
     void testInavlid() {
         ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
         try {
-            double d = solcastForecast.getActualEnergyValue(now, QueryMode.Average);
+            double d = solcastForecast.getActualEnergyValue(now, QueryMode.AVERAGE);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
@@ -249,7 +235,7 @@ class SolcastForecastTest {
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
-            double d = solcastForecast.getActualEnergyValue(now, QueryMode.Average);
+            double d = solcastForecast.getActualEnergyValue(now, QueryMode.AVERAGE);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
@@ -258,7 +244,7 @@ class SolcastForecastTest {
                     "Expected: " + TOO_LATE_INDICATOR + " Received: " + sfe.getMessage());
         }
         try {
-            double d = solcastForecast.getDayTotal(now.toLocalDate(), QueryMode.Average);
+            double d = solcastForecast.getDayTotal(now.toLocalDate(), QueryMode.AVERAGE);
             fail("Exception expected instead of " + d);
         } catch (SolarForecastException sfe) {
             String message = sfe.getMessage();
@@ -270,12 +256,12 @@ class SolcastForecastTest {
 
     @Test
     void testPowerInterpolation() {
-        double startValue = solcastForecast.getActualPowerValue(now, QueryMode.Average);
-        double endValue = solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.Average);
+        double startValue = solcastForecast.getActualPowerValue(now, QueryMode.AVERAGE);
+        double endValue = solcastForecast.getActualPowerValue(now.plusMinutes(30), QueryMode.AVERAGE);
         for (int i = 0; i < 31; i++) {
             double interpolation = i / 30.0;
             double expected = ((1 - interpolation) * startValue) + (interpolation * endValue);
-            assertEquals(expected, solcastForecast.getActualPowerValue(now.plusMinutes(i), QueryMode.Average),
+            assertEquals(expected, solcastForecast.getActualPowerValue(now.plusMinutes(i), QueryMode.AVERAGE),
                     TOLERANCE, "Step " + i);
         }
     }
@@ -285,13 +271,13 @@ class SolcastForecastTest {
         double maxDiff = 0;
         double productionExpected = 0;
         for (int i = 0; i < 1000; i++) {
-            double forecast = solcastForecast.getActualEnergyValue(now.plusMinutes(i), QueryMode.Average);
-            double addOnExpected = solcastForecast.getActualPowerValue(now.plusMinutes(i), QueryMode.Average) / 60.0;
+            double forecast = solcastForecast.getActualEnergyValue(now.plusMinutes(i), QueryMode.AVERAGE);
+            double addOnExpected = solcastForecast.getActualPowerValue(now.plusMinutes(i), QueryMode.AVERAGE) / 60.0;
             productionExpected += addOnExpected;
             double diff = forecast - productionExpected;
             maxDiff = Math.max(diff, maxDiff);
             assertEquals(productionExpected,
-                    solcastForecast.getActualEnergyValue(now.plusMinutes(i), QueryMode.Average), 100 * TOLERANCE,
+                    solcastForecast.getActualEnergyValue(now.plusMinutes(i), QueryMode.AVERAGE), 100 * TOLERANCE,
                     "Step " + i);
         }
     }
@@ -305,7 +291,7 @@ class SolcastForecastTest {
     @Test
     void testPowerTimeSeries() {
         setFixedTimeJul18();
-        TimeSeries powerSeries = solcastForecast.getPowerTimeSeries(QueryMode.Average);
+        TimeSeries powerSeries = solcastForecast.getPowerTimeSeries(QueryMode.AVERAGE);
         List<QuantityType<?>> estimateL = new ArrayList<>();
         assertEquals(303, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
@@ -320,7 +306,7 @@ class SolcastForecastTest {
             }
         });
 
-        TimeSeries powerSeries10 = solcastForecast.getPowerTimeSeries(QueryMode.Pessimistic);
+        TimeSeries powerSeries10 = solcastForecast.getPowerTimeSeries(QueryMode.PESSIMISTIC);
         List<QuantityType<?>> estimate10 = new ArrayList<>();
         assertEquals(303, powerSeries10.size());
         powerSeries10.getStates().forEachOrdered(entry -> {
@@ -335,7 +321,7 @@ class SolcastForecastTest {
             }
         });
 
-        TimeSeries powerSeries90 = solcastForecast.getPowerTimeSeries(QueryMode.Optimistic);
+        TimeSeries powerSeries90 = solcastForecast.getPowerTimeSeries(QueryMode.OPTIMISTIC);
         List<QuantityType<?>> estimate90 = new ArrayList<>();
         assertEquals(303, powerSeries90.size());
         powerSeries90.getStates().forEachOrdered(entry -> {
@@ -362,7 +348,7 @@ class SolcastForecastTest {
     void testEnergyTimeSeries() {
         setFixedTimeJul18();
 
-        TimeSeries energySeries = solcastForecast.getEnergyTimeSeries(QueryMode.Average);
+        TimeSeries energySeries = solcastForecast.getEnergyTimeSeries(QueryMode.AVERAGE);
         List<QuantityType<?>> estimateL = new ArrayList<>();
         assertEquals(303, energySeries.size()); // 48 values each day for next 7 days
         energySeries.getStates().forEachOrdered(entry -> {
@@ -377,7 +363,7 @@ class SolcastForecastTest {
             }
         });
 
-        TimeSeries energySeries10 = solcastForecast.getEnergyTimeSeries(QueryMode.Pessimistic);
+        TimeSeries energySeries10 = solcastForecast.getEnergyTimeSeries(QueryMode.PESSIMISTIC);
         List<QuantityType<?>> estimate10 = new ArrayList<>();
         assertEquals(303, energySeries10.size()); // 48 values each day for next 7 days
         energySeries10.getStates().forEachOrdered(entry -> {
@@ -392,7 +378,7 @@ class SolcastForecastTest {
             }
         });
 
-        TimeSeries energySeries90 = solcastForecast.getEnergyTimeSeries(QueryMode.Optimistic);
+        TimeSeries energySeries90 = solcastForecast.getEnergyTimeSeries(QueryMode.OPTIMISTIC);
         List<QuantityType<?>> estimate90 = new ArrayList<>();
         assertEquals(303, energySeries90.size()); // 48 values each day for next 7 days
         energySeries90.getStates().forEachOrdered(entry -> {

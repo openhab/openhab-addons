@@ -14,12 +14,14 @@ package org.openhab.binding.solarforecast.internal.solcast;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.GROUP_AVERAGE;
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -86,6 +88,36 @@ class SolcastHandlerTest {
     }
 
     @Test
+    void testQueryMode() {
+        try {
+            QueryMode.valueOf("nonsense");
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException iae) {
+        }
+
+        QueryMode averageMode = QueryMode.valueOf("average".toUpperCase(Locale.ENGLISH));
+        assertEquals(GROUP_AVERAGE, averageMode.toString(), "Average mode group");
+    }
+
+    @Test
+    void testAssuredValues() {
+        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        JSONArray actualsJson = (new JSONObject(actuals)).getJSONArray(KEY_ACTUALS);
+        actualsJson.forEach(entry -> {
+            JSONObject forecastEntry = (JSONObject) entry;
+            assertFalse(forecastEntry.has(KEY_ESTIMATE10));
+            assertFalse(forecastEntry.has(KEY_ESTIMATE90));
+        });
+        SolcastCache cache = new SolcastCache("", store);
+        cache.assureValues(actualsJson);
+        actualsJson.forEach(entry -> {
+            JSONObject forecastEntry = (JSONObject) entry;
+            assertTrue(forecastEntry.getDouble(KEY_ESTIMATE10) >= 0.0, "Pessimistic estimate present");
+            assertTrue(forecastEntry.getDouble(KEY_ESTIMATE90) >= 0.0, "Optimistic estimate present");
+        });
+    }
+
+    @Test
     void testCacheRead() {
         String identifier = "solcast-test";
         store.put(identifier + FORECAST_APPENDIX, SolcastPlaneMock.getPreparedForecast().toString());
@@ -138,6 +170,26 @@ class SolcastHandlerTest {
                 .getLastState("solarforecast:sc-plane:solcast-site-test:sc-plane-1-test:update#api-count");
         assertTrue(counterState instanceof StringType);
         assertEquals("{\"200\":2,\"other\":0,\"429\":0}", ((StringType) counterState).toFullString(), "API call count");
+        ScheduledFuture<?> result = bridgeMock.getScheduler().schedule(this::getResult, 2, TimeUnit.SECONDS);
+        try {
+            System.out.println("Waiting for async update..." + result.get().getClass().getName());
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    Boolean getResult() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Test
@@ -300,28 +352,28 @@ class SolcastHandlerTest {
         callbackPlane2.waitForStatus(ThingStatus.ONLINE);
 
         assertEquals(Instant.parse("2022-07-17T11:30:00Z"),
-                bridgeMock.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getBegin(),
+                bridgeMock.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.AVERAGE).getBegin(),
                 "Bridge forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
-                bridgeMock.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getEnd(),
+                bridgeMock.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.AVERAGE).getEnd(),
                 "Bridge forecast begin");
         assertEquals(Instant.parse("2022-07-17T11:30:00Z"),
-                bridgeMock.getSolarForecasts().get(1).getPowerTimeSeries(QueryMode.Average).getBegin(),
+                bridgeMock.getSolarForecasts().get(1).getPowerTimeSeries(QueryMode.AVERAGE).getBegin(),
                 "Bridge forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
-                bridgeMock.getSolarForecasts().get(1).getPowerTimeSeries(QueryMode.Average).getEnd(),
+                bridgeMock.getSolarForecasts().get(1).getPowerTimeSeries(QueryMode.AVERAGE).getEnd(),
                 "Bridge forecast begin");
         assertEquals(Instant.parse("2022-07-17T11:30:00Z"),
-                planeMock1.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getBegin(),
+                planeMock1.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.AVERAGE).getBegin(),
                 "Plane 1 forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
-                planeMock1.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getEnd(),
+                planeMock1.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.AVERAGE).getEnd(),
                 "Plane 1 forecast begin");
         assertEquals(Instant.parse("2022-07-17T11:30:00Z"),
-                planeMock2.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getBegin(),
+                planeMock2.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.AVERAGE).getBegin(),
                 "Plane 2 forecast begin");
         assertEquals(Instant.parse("2022-07-24T21:00:00Z"),
-                planeMock2.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.Average).getEnd(),
+                planeMock2.getSolarForecasts().get(0).getPowerTimeSeries(QueryMode.AVERAGE).getEnd(),
                 "Plane 2 forecast begin");
         bridgeMock.dispose();
         planeMock1.dispose();

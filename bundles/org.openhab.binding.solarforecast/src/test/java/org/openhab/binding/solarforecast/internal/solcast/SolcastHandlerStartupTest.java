@@ -95,7 +95,6 @@ class SolcastHandlerStartupTest {
     @MethodSource
     public void testFirstStartupNoStorage(@Nullable JSONArray storageContent, Map<String, Object> configuration,
             int httpStatus, ThingStatus expectedThingStatus, Map<String, Integer> expectedApiCounts) {
-
         SolcastBridgeMock bridgeMock = SolcastMockFactory.createBridgeHandler();
         HttpClient httpMock = mock(HttpClient.class);
 

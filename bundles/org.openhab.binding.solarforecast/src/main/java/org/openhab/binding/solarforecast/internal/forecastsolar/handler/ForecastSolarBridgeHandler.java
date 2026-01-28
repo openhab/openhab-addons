@@ -238,9 +238,9 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         final Instant commonStart = Utils.getCommonStartTime(forecastObjects);
         final Instant commonEnd = Utils.getCommonEndTime(forecastObjects);
         for (SolarForecast fo : forecastObjects) {
-            TimeSeries powerTS = fo.getPowerTimeSeries(QueryMode.Average);
+            TimeSeries powerTS = fo.getPowerTimeSeries(QueryMode.AVERAGE);
             Utils.addAll(combinedPowerForecast, powerTS, commonStart, commonEnd);
-            TimeSeries energyTS = fo.getEnergyTimeSeries(QueryMode.Average);
+            TimeSeries energyTS = fo.getEnergyTimeSeries(QueryMode.AVERAGE);
             Utils.addAll(combinedEnergyForecast, energyTS, commonStart, commonEnd);
         }
         sendTimeSeries(CHANNEL_POWER_ESTIMATE, Utils.toTimeseries(combinedPowerForecast));

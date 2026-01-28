@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarforecast.internal.solcast;
 
+import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
 import java.time.Duration;
@@ -21,6 +22,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -50,35 +52,33 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
-    private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<>();
-
     private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
     private final TreeMap<ZonedDateTime, Double> estimationDataMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> optimisticDataMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> pessimisticDataMap = new TreeMap<>();
     private final TimeZoneProvider timeZoneProvider;
 
+    private volatile Instant expirationDateTime;
     private DateTimeFormatter dateOutputFormatter;
-    private Instant expirationDateTime;
     private Instant creationDateTime;
     private String identifier;
     private long period = 30;
 
+    // ensure to deliver corresponding group name with to String
     public enum QueryMode {
-        Average(SolarForecast.AVERAGE),
-        Optimistic(SolarForecast.OPTIMISTIC),
-        Pessimistic(SolarForecast.PESSIMISTIC),
-        Error("Error");
+        AVERAGE(GROUP_AVERAGE),
+        OPTIMISTIC(GROUP_OPTIMISTIC),
+        PESSIMISTIC(GROUP_PESSIMISTIC);
 
-        String modeDescirption;
+        String groupName;
 
-        QueryMode(String description) {
-            modeDescirption = description;
+        QueryMode(String group) {
+            groupName = group;
         }
 
         @Override
         public String toString() {
-            return modeDescirption;
+            return groupName;
         }
     }
 
@@ -146,9 +146,6 @@ public class SolcastObject implements SolarForecast {
             } else {
                 optimisticDataMap.put(periodEndZdt, estimate);
             }
-            if (jo.has("period")) {
-                period = Duration.parse(jo.getString("period")).toMinutes();
-            }
         }
     }
 
@@ -158,7 +155,7 @@ public class SolcastObject implements SolarForecast {
 
     public double getActualEnergyValue(ZonedDateTime query, QueryMode mode) {
         // calculate energy from day begin to latest entry BEFORE query
-        ZonedDateTime iterationDateTime = query.withHour(0).withMinute(0).withSecond(0);
+        ZonedDateTime iterationDateTime = query.truncatedTo(ChronoUnit.DAYS);
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         Entry<ZonedDateTime, Double> nextEntry = dtm.higherEntry(iterationDateTime);
         if (nextEntry == null) {
@@ -168,8 +165,7 @@ public class SolcastObject implements SolarForecast {
         double forecastValue = 0;
         double previousEstimate = 0;
         while (nextEntry.getKey().isBefore(query) || nextEntry.getKey().isEqual(query)) {
-            // value are reported in PT30M = 30 minutes interval with kw value
-            // for kw/h it's half the value
+            // values are reported in PT30M = 30 minutes interval with kw value
             Double endValue = nextEntry.getValue();
             // production during period is half of previous and next value
             double addedValue = ((endValue.doubleValue() + previousEstimate) / 2.0) * period / 60.0;
@@ -319,10 +315,13 @@ public class SolcastObject implements SolarForecast {
 
     private TreeMap<ZonedDateTime, Double> getDataMap(QueryMode mode) {
         return switch (mode) {
-            case Average -> estimationDataMap;
-            case Optimistic -> optimisticDataMap;
-            case Pessimistic -> pessimisticDataMap;
-            default -> EMPTY_MAP;
+            case AVERAGE -> estimationDataMap;
+            case OPTIMISTIC -> optimisticDataMap;
+            case PESSIMISTIC -> pessimisticDataMap;
+            default -> {
+                logger.info("Unknown QueryMode {}", mode);
+                yield new TreeMap<>();
+            }
         };
     }
 
@@ -332,18 +331,6 @@ public class SolcastObject implements SolarForecast {
     @Override
     public QuantityType<Energy> getDay(LocalDate date, String... args) throws IllegalArgumentException {
         QueryMode mode = evalArguments(args);
-        if (mode.equals(QueryMode.Error)) {
-            if (args.length > 1) {
-                throw new IllegalArgumentException("Solcast doesn't support " + args.length + " arguments");
-            } else {
-                throw new IllegalArgumentException("Solcast doesn't support argument " + args[0]);
-            }
-        } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (date.isBefore(Utils.now().atZone(timeZoneProvider.getTimeZone()).toLocalDate())) {
-                throw new IllegalArgumentException(
-                        "Solcast argument " + mode.toString() + " only available for future values");
-            }
-        }
         double measure = getDayTotal(date, mode);
         return Utils.getEnergyState(measure);
     }
@@ -358,14 +345,6 @@ public class SolcastObject implements SolarForecast {
             }
         }
         QueryMode mode = evalArguments(args);
-        if (mode.equals(QueryMode.Error)) {
-            return Utils.getEnergyState(-1);
-        } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (end.isBefore(Utils.now())) {
-                throw new IllegalArgumentException(
-                        "Solcast argument " + mode.toString() + " only available for future values");
-            }
-        }
         LocalDate beginDate = start.atZone(timeZoneProvider.getTimeZone()).toLocalDate();
         LocalDate endDate = end.atZone(timeZoneProvider.getTimeZone()).toLocalDate();
         double measure = -1;
@@ -395,18 +374,6 @@ public class SolcastObject implements SolarForecast {
     public QuantityType<Power> getPower(Instant timestamp, String... args) throws IllegalArgumentException {
         // eliminate error cases and return immediately
         QueryMode mode = evalArguments(args);
-        if (mode.equals(QueryMode.Error)) {
-            if (args.length > 1) {
-                throw new IllegalArgumentException("Solcast doesn't support " + args.length + " arguments");
-            } else {
-                throw new IllegalArgumentException("Solcast doesn't support argument " + args[0]);
-            }
-        } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (timestamp.isBefore(Utils.now().minus(1, ChronoUnit.MINUTES))) {
-                throw new IllegalArgumentException(
-                        "Solcast argument " + mode.toString() + " only available for future values");
-            }
-        }
         double measure = getActualPowerValue(ZonedDateTime.ofInstant(timestamp, timeZoneProvider.getTimeZone()), mode);
         return Utils.getPowerState(measure);
     }
@@ -433,26 +400,15 @@ public class SolcastObject implements SolarForecast {
         expirationDateTime = Instant.MIN;
     }
 
-    private QueryMode evalArguments(String[] args) {
+    public static QueryMode evalArguments(String[] args) throws IllegalArgumentException {
         if (args.length > 0) {
             if (args.length > 1) {
-                logger.info("Too many arguments {}", Arrays.toString(args));
-                return QueryMode.Error;
+                throw new IllegalArgumentException("Too many arguments " + Arrays.toString(args));
             }
-
-            if (SolarForecast.OPTIMISTIC.equals(args[0])) {
-                return QueryMode.Optimistic;
-            } else if (SolarForecast.PESSIMISTIC.equals(args[0])) {
-                return QueryMode.Pessimistic;
-            } else if (SolarForecast.AVERAGE.equals(args[0])) {
-                return QueryMode.Average;
-            } else {
-                logger.info("Argument {} not supported", args[0]);
-                return QueryMode.Error;
-            }
-        } else {
-            return QueryMode.Average;
+            // evaluate mode throws IllegalArgumentException if not valid
+            return QueryMode.valueOf(args[0].toUpperCase(Locale.ENGLISH));
         }
+        return QueryMode.AVERAGE;
     }
 
     @Override

@@ -34,7 +34,7 @@ public class SolcastConstants {
     public static final String CURRENT_ESTIMATE_URL = BASE_URL + "%s/estimated_actuals?format=json";
     public static final String BEARER = "Bearer ";
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
-    public static final List<QueryMode> MODES = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
+    public static final List<QueryMode> MODES = List.of(QueryMode.AVERAGE, QueryMode.PESSIMISTIC, QueryMode.OPTIMISTIC);
 
     public static final String CALL_COUNT_APPENDIX = "-count";
     public static final String CALL_COUNT_DATE_APPENDIX = "-count-date";

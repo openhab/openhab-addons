@@ -16,11 +16,11 @@ import static org.openhab.binding.solarforecast.internal.SolarForecastBindingCon
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +38,7 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastCache;
+import org.openhab.binding.solarforecast.internal.solcast.SolcastCounter;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.solcast.config.SolcastPlaneConfiguration;
@@ -67,27 +68,26 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class SolcastPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
-
     private final Logger logger = LoggerFactory.getLogger(SolcastPlaneHandler.class);
     private final AtomicBoolean dirty = new AtomicBoolean(false);
     private final Storage<String> storage;
     private final HttpClient httpClient;
     private final String identifier;
     private SolcastPlaneConfiguration configuration = new SolcastPlaneConfiguration();
-    private Instant lastCounterReset = Utils.now();
-    private SolcastCache cache;
-    private JSONObject counterJson;
+    private SolcastCounter counter;
     private SolcastObject forecast;
+    private SolcastCache cache;
+
     private @Nullable SolcastBridgeHandler bridgeHandler;
 
     public SolcastPlaneHandler(Thing thing, HttpClient hc, Storage<String> storage) {
         super(thing);
         httpClient = hc;
         this.storage = storage;
-        counterJson = getNewCounter();
         identifier = thing.getUID().getAsString();
         forecast = new SolcastObject(identifier);
         cache = new SolcastCache(identifier, storage);
+        counter = new SolcastCounter(identifier, storage);
     }
 
     @Override
@@ -104,7 +104,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             if (handler != null) {
                 if (handler instanceof SolcastBridgeHandler solcastBridgeHandler) {
                     bridgeHandler = solcastBridgeHandler;
-                    restoreCounter();
                     restoreForecast();
                     solcastBridgeHandler.addPlane(this);
                 } else {
@@ -163,36 +162,32 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            if (CHANNEL_API_COUNT.equals(channelUID.getIdWithoutGroup())) {
-                checkCounterReset();
-                updateState(CHANNEL_API_COUNT, StringType.valueOf(counterJson.toString()));
-            } else {
-                String group = channelUID.getGroupId();
-                if (group == null) {
-                    return;
-                }
-                String channel = channelUID.getIdWithoutGroup();
-                var mode = switch (group) {
-                    case GROUP_OPTIMISTIC -> QueryMode.Optimistic;
-                    case GROUP_PESSIMISTIC -> QueryMode.Pessimistic;
-                    default -> QueryMode.Average;
-                };
+            String channel = channelUID.getIdWithoutGroup();
+            String group = channelUID.getGroupId();
+            if (group != null) {
+                bridge().getScheduler().execute(() -> doRefresh(group, channel));
+            }
+        }
+    }
+
+    private void doRefresh(String group, String channel) {
+        switch (group) {
+            case GROUP_UPDATE -> updateSupervisorChannels();
+            case GROUP_OPTIMISTIC, GROUP_PESSIMISTIC, GROUP_AVERAGE -> {
+                QueryMode mode = QueryMode.valueOf(group.toUpperCase(Locale.ENGLISH));
                 switch (channel) {
-                    case CHANNEL_ENERGY_ESTIMATE ->
-                        sendTimeSeries(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ESTIMATE,
-                                getForecast().getEnergyTimeSeries(mode));
-                    case CHANNEL_POWER_ESTIMATE ->
-                        sendTimeSeries(group + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ESTIMATE,
-                                getForecast().getPowerTimeSeries(mode));
-                    default -> updateChannels();
+                    case CHANNEL_ENERGY_ACTUAL, CHANNEL_ENERGY_REMAIN, CHANNEL_ENERGY_TODAY, CHANNEL_POWER_ACTUAL ->
+                        updateForecastChannels(mode);
+                    case CHANNEL_POWER_ESTIMATE, CHANNEL_ENERGY_ESTIMATE -> updateTimeseries();
                 }
+            }
+            default -> {
+                logger.trace("{} Unknown group {} for refresh command", identifier, group);
             }
         }
     }
 
     public void updateData() {
-        // check count, maybe fetching will increase counter
-        checkCounterReset();
         SolcastObject localForecast = getForecast();
         // 1) fetch new data if expired
         if (localForecast.isExpired()) {
@@ -221,9 +216,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     logger.debug("{} Cache not used {} or not filled {}", identifier, !configuration.guessActuals,
                             cache.toString());
                     fetchData(CURRENT_ESTIMATE_URL);
-                    if (!cache.isFilled()) {
-                        logger.debug("{} Cache still not filled after fetch {}", identifier, cache.toString());
-                    }
                 }
                 fetchData(FORECAST_URL);
                 Instant expiration = getExpirationTime();
@@ -247,7 +239,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         fetchRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge().getApiKey());
         ContentResponse response = fetchRequest.send();
         int callStatus = response.getStatus();
-        count(callStatus);
+        counter.count(callStatus);
 
         if (callStatus == HttpStatus.OK_200) {
             JSONObject actualJson = new JSONObject(response.getContentAsString());
@@ -262,67 +254,13 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 : Utils.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MINUTES);
     }
 
-    /**
-     * ### Counter functionality ####
-     */
-
-    private void restoreCounter() {
-        String counterString = storage.get(identifier + CALL_COUNT_APPENDIX);
-        counterJson = getNewCounter();
-        if (counterString != null) {
-            try {
-                counterJson = new JSONObject(counterString);
-            } catch (Exception e) {
-                logger.debug("{} Could not restore counter: {}", identifier, e.getMessage());
-            }
-        }
-        String lastResetString = storage.get(identifier + CALL_COUNT_DATE_APPENDIX);
-        if (lastResetString != null) {
-            lastCounterReset = Instant.parse(lastResetString);
-        }
-        // immediately check counter if it's still valid
-        checkCounterReset();
-    }
-
-    private void count(int status) {
-        // check first regarding day switch before increasing
-        checkCounterReset();
-        switch (status) {
-            case 200 -> counterJson.put(HTTP_OK, counterJson.getInt(HTTP_OK) + 1);
-            case 429 -> counterJson.put(HTTP_TOO_MANY_REQUESTS, counterJson.getInt(HTTP_TOO_MANY_REQUESTS) + 1);
-            default -> counterJson.put(HTTP_OTHER, counterJson.getInt(HTTP_OTHER) + 1);
-        }
-        storeCounter();
-    }
-
-    /**
-     * Solcast API counter is reseted daily at 00:00 ZTC
-     */
-    private void checkCounterReset() {
-        Instant now = Utils.now();
-        if (lastCounterReset.atZone(ZoneId.of("UTC")).getDayOfMonth() != now.atZone(ZoneId.of("UTC")).getDayOfMonth()) {
-            counterJson = getNewCounter();
-            storeCounter();
-            lastCounterReset = now;
-        }
-    }
-
-    private void storeCounter() {
-        storage.put(identifier + CALL_COUNT_DATE_APPENDIX, lastCounterReset.toString());
-        storage.put(identifier + CALL_COUNT_APPENDIX, counterJson.toString());
-    }
-
-    private JSONObject getNewCounter() {
-        return new JSONObject("{\"200\":0,\"429\":0,\"other\":0}");
-    }
-
     public JSONObject getCounter() {
-        return counterJson;
+        return counter.get();
     }
 
     private void apiCallFailure(String url, int status) {
         updateState(GROUP_UPDATE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_API_COUNT,
-                StringType.valueOf(counterJson.toString()));
+                StringType.valueOf(getCounter().toString()));
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "@text/solarforecast.plane.status.http-status [\"" + status + "\"]");
     }
@@ -333,27 +271,35 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
      * @param Forecast object
      */
     protected void updateChannels() throws SolarForecastException {
-        SolcastObject localForecast = getForecast();
-        ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
+        updateSupervisorChannels();
+        MODES.forEach(mode -> {
+            updateForecastChannels(mode);
+        });
+    }
+
+    private void updateSupervisorChannels() {
         updateState(GROUP_UPDATE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_API_COUNT,
-                StringType.valueOf(counterJson.toString()));
+                StringType.valueOf(getCounter().toString()));
+        SolcastObject localForecast = getForecast();
         Instant creationInstant = localForecast.getCreationInstant();
         if (creationInstant != Instant.MIN && creationInstant != Instant.MAX) {
             updateState(GROUP_UPDATE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_LATEST_UPDATE,
                     new DateTimeType(creationInstant));
         }
-        MODES.forEach(mode -> {
-            double energyDay = localForecast.getDayTotal(now.toLocalDate(), mode);
-            double energyProduced = localForecast.getActualEnergyValue(now, mode);
-            updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
-                    Utils.getEnergyState(energyProduced));
-            updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
-                    Utils.getEnergyState(energyDay - energyProduced));
-            updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY,
-                    Utils.getEnergyState(energyDay));
-            updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
-                    Utils.getPowerState(localForecast.getActualPowerValue(now, QueryMode.Average)));
-        });
+    }
+
+    private void updateForecastChannels(QueryMode mode) {
+        ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
+        SolcastObject localForecast = getForecast();
+        double energyDay = localForecast.getDayTotal(now.toLocalDate(), mode);
+        double energyProduced = localForecast.getActualEnergyValue(now, mode);
+        updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_ACTUAL,
+                Utils.getEnergyState(energyProduced));
+        updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_REMAIN,
+                Utils.getEnergyState(energyDay - energyProduced));
+        updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
+        updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
+                Utils.getPowerState(localForecast.getActualPowerValue(now, QueryMode.AVERAGE)));
     }
 
     /**
