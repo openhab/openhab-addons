@@ -256,7 +256,7 @@
 	<channel-type id="wlanEnable">
 		<item-type>Switch</item-type>
 		<label>Enable</label>
-		<description>Enable status of the wLAN</description>
+		<description>Enable status of the WLAN</description>
 	</channel-type>
 
 	<channel-type id="wlanEssid">
@@ -304,7 +304,7 @@
 	<channel-type id="qrcodeEncoding">
 		<item-type>String</item-type>
 		<label>QR Code Encoding</label>
-		<description>MECARD like encoding to generate a QRCode for easy access to the Wi-Fi network</description>
+		<description>MECARD-like encoding to generate a QR code for easy access to the Wi-Fi network</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -395,13 +395,13 @@
 	<channel-type id="blocked">
 		<item-type>Switch</item-type>
 		<label>Blocked</label>
-		<description>Is device blocked</description>
+		<description>Whether the device is blocked</description>
 	</channel-type>
 
 	<channel-type id="guest">
 		<item-type>Switch</item-type>
 		<label>Guest</label>
-		<description>Is the client connected a guest</description>
+		<description>Whether the client is a guest</description>
 	</channel-type>
 
 	<channel-type id="experience">

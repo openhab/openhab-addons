@@ -55,7 +55,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBEL4PIR-20</label>
-		<description>Edge-lit Motion detector with four touch button</description>
+		<description>Edge-lit Motion detector with four touch buttons</description>
 		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
