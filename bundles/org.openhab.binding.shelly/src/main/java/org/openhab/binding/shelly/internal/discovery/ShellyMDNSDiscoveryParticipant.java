@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -66,6 +67,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     private final Logger logger = LoggerFactory.getLogger(ShellyMDNSDiscoveryParticipant.class);
     private final ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
     private final ShellyTranslationProvider messages;
+    private final ShellyThingTable thingTable;
     private final HttpClient httpClient;
     private final ConfigurationAdmin configurationAdmin;
 
@@ -79,11 +81,13 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
     @Activate
     public ShellyMDNSDiscoveryParticipant(@Reference ConfigurationAdmin configurationAdmin,
             @Reference HttpClientFactory httpClientFactory, @Reference LocaleProvider localeProvider,
-            @Reference ShellyTranslationProvider translationProvider, ComponentContext componentContext) {
+            @Reference ShellyTranslationProvider translationProvider, @Reference ShellyThingTable thingTable,
+            ComponentContext componentContext) {
         logger.debug("Activating Shelly mDNS discovery service");
         this.configurationAdmin = configurationAdmin;
         this.messages = translationProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.thingTable = thingTable;
         bindingConfig.updateFromProperties(componentContext.getProperties());
     }
 
@@ -143,7 +147,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
                     || ShellyDeviceProfile.isGeneration2(serviceName);
             return ShellyBasicDiscoveryService.createResult(gen2, serviceName, address, bindingConfig, httpClient,
-                    messages);
+                    messages, thingTable);
         } catch (IOException e) {
             logger.debug("{}: Exception on processing serviceInfo '{}'", serviceName, service.getNiceTextString(), e);
             return null;

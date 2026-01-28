@@ -610,7 +610,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String secondaryIp = config.deviceIp + ":" + client.mport.toString();
                 String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
                 DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
-                        bindingConfig, httpClient, messages);
+                        bindingConfig, httpClient, messages, thingTable);
                 if (result != null) {
                     thingTable.discoveredResult(result);
                 }
