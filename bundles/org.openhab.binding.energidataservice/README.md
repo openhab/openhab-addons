@@ -90,7 +90,7 @@ rules.when()
         // Short delay because persistence is asynchronous.
         setTimeout(() => {
             var timeSeries = new items.TimeSeries('REPLACE');
-            var start = time.LocalDate.now().atStartOfDay().atZone(time.ZoneId.systemDefault());
+            var start = time.toZDT('00:00');
             var spotPrices = items.SpotPrice.persistence.getAllStatesBetween(start, start.plusDays(2));
             for (var spotPrice of spotPrices) {
                 var totalPrice = spotPrice.quantityState
