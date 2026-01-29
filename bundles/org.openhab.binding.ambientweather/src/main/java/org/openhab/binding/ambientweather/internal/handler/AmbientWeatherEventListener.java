@@ -42,7 +42,7 @@ import io.socket.emitter.Emitter;
  */
 public class AmbientWeatherEventListener {
     // URL used to get the realtime event stream
-    private static final String REALTIME_URL = "https://api.ambientweather.net/?api=1&applicationKey=%APPKEY%";
+    private static final String REALTIME_URL = "https://rt2.ambientweather.net/?api=1&applicationKey=%APPKEY%";
 
     // JSON used to subscribe or unsubscribe from weather data events
     private static final String SUB_UNSUB_JSON = "{ apiKeys: [ '%APIKEY%' ] }";
