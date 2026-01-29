@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.HomekitBindingConstants;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
@@ -55,6 +56,7 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
 
     private static final int TIMEOUT_MILLI_SECONDS = 15000; // HomeKit spec expects "around 10 seconds" so be safe
     private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(250);
+    private static final int SOCKET_READ_TIMEOUT_MILLI_SECONDS = 500;
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
     private final Socket socket;
@@ -94,7 +96,7 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
         socket = new Socket();
         socket.setKeepAlive(true); // keep-alive forbidden for accessories but client should use it
         socket.setTcpNoDelay(true); // disable Nagle algorithm to force immediate flushing of packets
-        socket.setSoTimeout(500); // allow socket to be interruptible
+        socket.setSoTimeout(SOCKET_READ_TIMEOUT_MILLI_SECONDS); // allow socket to be interruptible
         socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
 
         outputStream = socket.getOutputStream();
@@ -181,12 +183,18 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
                 Thread.sleep(delay.toMillis()); // rate limit the HTTP requests
             }
 
-            Future<@Nullable Void> writeFuture = outputThreadExecutor.submit(() -> {
-                outputStream.write(request);
-                outputStream.flush();
-                return null;
+            Future<@Nullable Exception> writeFuture = outputThreadExecutor.submit(() -> {
+                try {
+                    outputStream.write(request);
+                    outputStream.flush();
+                    return null;
+                } catch (Exception e) {
+                    return e; // returned by get() below
+                }
             });
-            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS); // wait for write to complete or timeout
+            if (writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS) instanceof Exception e) {
+                throw new IOException("HTTP write error", e); // message gets logged via catch below
+            }
             if (logger.isTraceEnabled()) {
                 logger.trace("{} sent:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
             }
@@ -196,6 +204,12 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
 
             checkHeaders(response.headers());
             return response.content();
+        } catch (InterruptedException e) {
+            if (!closing) {
+                logger.debug("{} Interrupted exception", ipAddress, e);
+            }
+            Thread.currentThread().interrupt();
+            throw e;
         } catch (Exception e) {
             if (!closing) {
                 // log for debugging interrupted IO tasks
@@ -311,11 +325,7 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
     @Override
     public void onHttpReaderError(Throwable error) {
         if (!closing) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{} HTTP reader error", ipAddress, error);
-            } else {
-                logger.warn("{} HTTP reader error: {}", ipAddress, error.getMessage());
-            }
+            logger.debug("{} HTTP reader error", ipAddress, error);
             CompletableFuture<HttpPayload> future = currentResponseFuture.get();
             if (future != null && !future.isDone()) {
                 future.completeExceptionally(error);

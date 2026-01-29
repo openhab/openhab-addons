@@ -54,7 +54,7 @@ public class DecryptingInputStream extends InputStream {
     @Override
     public int read(byte @Nullable [] b) throws IOException {
         if (b == null) {
-            throw new IOException(new NullPointerException("b is null"));
+            throw new IllegalArgumentException("b is null");
         }
         return read(b, 0, b.length);
     }
@@ -62,7 +62,7 @@ public class DecryptingInputStream extends InputStream {
     @Override
     public int read(byte @Nullable [] b, int off, int len) throws IOException {
         if (b == null) {
-            throw new IOException(new NullPointerException("b is null"));
+            throw new IllegalArgumentException("b is null");
         }
         if (len == 0) {
             return 0;

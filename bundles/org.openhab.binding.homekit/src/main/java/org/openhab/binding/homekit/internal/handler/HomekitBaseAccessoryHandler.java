@@ -187,7 +187,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
         }
         if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
-            task.cancel(false);
+            task.cancel(true);
         }
         connectionAttemptTask = null;
         if (ipTransport instanceof IpTransport transport) {

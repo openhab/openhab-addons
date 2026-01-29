@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.HomekitBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,7 @@ public class HttpPayloadParser implements AutoCloseable {
     private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("(?i)^content-length:\\s*(\\d+)$");
     private static final Pattern CHUNKED_ENCODING_PATTERN = Pattern.compile("(?i)^transfer-encoding:\\s*chunked$");
     private static final Pattern STATUS_LINE_PATTERN = Pattern.compile("^(?:HTTP|EVENT)/\\d+\\.\\d+\\s+(\\d{3})");
+    private static final int READER_START_TIMEOUT_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(HttpPayloadParser.class);
 
@@ -85,7 +87,8 @@ public class HttpPayloadParser implements AutoCloseable {
     public HttpPayloadParser(InputStream stream, HttpReaderListener eventListener) {
         inputStream = stream;
         listener = eventListener;
-        inputThread = new Thread(this::inputTask, "OH-binding-" + HomekitBindingConstants.BINDING_ID + "-http-parser-input");
+        inputThread = new Thread(this::inputTask,
+                "OH-binding-" + HomekitBindingConstants.BINDING_ID + "-http-parser-input");
         inputThread.setDaemon(true);
     }
 
@@ -95,9 +98,11 @@ public class HttpPayloadParser implements AutoCloseable {
     public void start() {
         inputThread.start();
         try {
-            inputThreadRunning.await(1, TimeUnit.SECONDS);
+            if (!inputThreadRunning.await(READER_START_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                logger.warn("Input thread failed to start within {} seconds", READER_START_TIMEOUT_SECONDS);
+            }
         } catch (InterruptedException e) {
-            logger.warn("Input thread failed to start");
+            logger.warn("Interrupted before input thread could start");
             Thread.currentThread().interrupt();
         }
     }
@@ -186,7 +191,7 @@ public class HttpPayloadParser implements AutoCloseable {
      * @throws IOException if an I/O error occurs or if the message is malformed
      */
     private void parseAvailable() throws IOException {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             if (!headersDone) {
                 int headerEndIndex = indexOfDoubleCRLF(inputBuffer, inputStartIndex, inputEndIndex);
                 if (headerEndIndex < 0) {

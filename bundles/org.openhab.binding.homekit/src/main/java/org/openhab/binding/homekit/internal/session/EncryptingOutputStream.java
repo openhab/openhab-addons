@@ -52,7 +52,7 @@ public final class EncryptingOutputStream extends OutputStream {
     @Override
     public void write(byte @Nullable [] b, int off, int len) throws IOException {
         if (b == null) {
-            throw new IOException(new NullPointerException("b is null"));
+            throw new IllegalArgumentException("b is null");
         }
         if (len == 0) {
             return;
