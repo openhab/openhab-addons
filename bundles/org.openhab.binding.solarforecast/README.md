@@ -51,8 +51,12 @@ Correct time zone is necessary to show correct forecast times in UI.
 | Name                   | Type    | Description                           | Default     | Required | Advanced |
 |------------------------|---------|---------------------------------------|-------------|----------|----------|
 | apiKey                 | text    | API Key                               | N/A         | yes      | no       |
+| timeZone               | text    | Time Zone of forecast location        | empty       | no       | yes      |
 
 `apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
+
+`timeZone` can be left empty to evaluate the Regional Settings of your openHAB installation.
+See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
 

@@ -15,7 +15,9 @@ package org.openhab.binding.solarforecast.internal.solcast.handler;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.MODES;
 
+import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -35,6 +37,7 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecastProvider;
 import org.openhab.binding.solarforecast.internal.solcast.config.SolcastBridgeConfiguration;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -73,6 +76,20 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     public void initialize() {
         configuration = getConfigAs(SolcastBridgeConfiguration.class);
         if (!configuration.apiKey.isBlank()) {
+            if (!configuration.timeZone.isBlank()) {
+                try {
+                    Utils.setTimeZoneProvider(new TimeZoneProvider() {
+                        @Override
+                        public ZoneId getTimeZone() {
+                            return ZoneId.of(configuration.timeZone);
+                        }
+                    });
+                } catch (DateTimeException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/solarforecast.site.status.timezone" + " [\"" + configuration.timeZone + "\"]");
+                    return;
+                }
+            }
             updateStatus(ThingStatus.UNKNOWN);
             refreshJob = sequentialScheduler.scheduleWithFixedDelay(this::updateData, 0, REFRESH_ACTUAL_INTERVAL,
                     TimeUnit.MINUTES);
