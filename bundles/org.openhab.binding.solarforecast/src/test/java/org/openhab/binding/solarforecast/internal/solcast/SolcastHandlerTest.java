@@ -170,26 +170,6 @@ class SolcastHandlerTest {
                 .getLastState("solarforecast:sc-plane:solcast-site-test:sc-plane-1-test:update#api-count");
         assertTrue(counterState instanceof StringType);
         assertEquals("{\"200\":2,\"other\":0,\"429\":0}", ((StringType) counterState).toFullString(), "API call count");
-        ScheduledFuture<?> result = bridgeMock.getScheduler().schedule(this::getResult, 2, TimeUnit.SECONDS);
-        try {
-            System.out.println("Waiting for async update..." + result.get().getClass().getName());
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    Boolean getResult() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return true;
     }
 
     @Test

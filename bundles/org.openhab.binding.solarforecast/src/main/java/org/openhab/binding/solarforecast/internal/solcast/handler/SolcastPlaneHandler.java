@@ -219,10 +219,10 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 }
                 fetchData(FORECAST_URL);
                 Instant expiration = getExpirationTime();
-                SolcastObject newForewcast = new SolcastObject(identifier, cache.getForecast(), expiration);
+                SolcastObject newForecast = new SolcastObject(identifier, cache.getForecast(), expiration);
                 storage.put(identifier + CREATION_APPENDIX, Utils.now().toString());
                 storage.put(identifier + EXPIRATION_APPENDIX, expiration.toString());
-                updateForecast(newForewcast);
+                updateForecast(newForecast);
             } catch (ExecutionException | TimeoutException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (InterruptedException e) {

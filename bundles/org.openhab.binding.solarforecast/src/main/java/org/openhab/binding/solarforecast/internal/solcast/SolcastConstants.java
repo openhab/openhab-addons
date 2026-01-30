@@ -44,6 +44,7 @@ public class SolcastConstants {
 
     public static final String KEY_ACTUALS = "estimated_actuals";
     public static final String KEY_FORECAST = "forecasts";
+    public static final String KEY_PERIOD = "period";
     public static final String KEY_PERIOD_END = "period_end";
     public static final String KEY_ESTIMATE = "pv_estimate";
     public static final String KEY_ESTIMATE10 = "pv_estimate10";

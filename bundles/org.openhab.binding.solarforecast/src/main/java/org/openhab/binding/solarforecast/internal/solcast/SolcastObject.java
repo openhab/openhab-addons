@@ -165,7 +165,6 @@ public class SolcastObject implements SolarForecast {
         double forecastValue = 0;
         double previousEstimate = 0;
         while (nextEntry.getKey().isBefore(query) || nextEntry.getKey().isEqual(query)) {
-            // values are reported in PT30M = 30 minutes interval with kw value
             Double endValue = nextEntry.getValue();
             // production during period is half of previous and next value
             double addedValue = ((endValue.doubleValue() + previousEstimate) / 2.0) * period / 60.0;
@@ -288,10 +287,9 @@ public class SolcastObject implements SolarForecast {
         double forecastValue = 0;
         double previousEstimate = 0;
         while (nextEntry.getKey().isBefore(endDateTime)) {
-            // value are reported in PT30M = 30 minutes interval with kw value
-            // for kw/h it's half the value
             Double endValue = nextEntry.getValue();
-            // production during period is half of previous and next value
+            // values are reported in PT30M = 30 minutes interval with kW value
+            // for k/h it's half the value
             double addedValue = ((endValue.doubleValue() + previousEstimate) / 2.0) * period / 60.0;
             forecastValue += addedValue;
             previousEstimate = endValue.doubleValue();
