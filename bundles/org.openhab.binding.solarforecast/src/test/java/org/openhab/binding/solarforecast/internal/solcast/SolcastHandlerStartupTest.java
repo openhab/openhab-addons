@@ -56,7 +56,7 @@ class SolcastHandlerStartupTest {
     private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
         public ZoneId getTimeZone() {
-            return ZoneId.systemDefault();
+            return ZoneId.of("Europe/Berlin");
         }
     };
     static String planeId = "sc-plane-1-test";

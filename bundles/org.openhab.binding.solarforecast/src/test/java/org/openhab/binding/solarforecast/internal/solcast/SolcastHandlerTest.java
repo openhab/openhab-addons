@@ -62,7 +62,7 @@ class SolcastHandlerTest {
     private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
         public ZoneId getTimeZone() {
-            return ZoneId.systemDefault();
+            return ZoneId.of("Europe/Berlin");
         }
     };
     private static Storage<String> store = new VolatileStorage<>();
