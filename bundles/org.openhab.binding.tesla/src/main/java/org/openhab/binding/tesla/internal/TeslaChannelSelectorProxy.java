@@ -911,6 +911,7 @@ public class TeslaChannelSelectorProxy {
                 return super.getState(s);
             }
         },
+        SHARE(null, "share", StringType.class, false),
         SHIFTSTATE("shift_state", "shiftstate", StringType.class, false),
         SIDEMIRROR_HEATING("side_mirror_heaters", "sidemirrorheaters", OnOffType.class, false) {
             @Override
