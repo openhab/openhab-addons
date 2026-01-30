@@ -193,7 +193,7 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
                 }
             });
             if (writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS) instanceof Exception e) {
-                throw new IOException("HTTP write error", e); // message gets logged via catch below
+                throw new IOException("HTTP write error", e); // exception cause logging gets deferred to the caller
             }
             if (logger.isTraceEnabled()) {
                 logger.trace("{} sent:\n{}", ipAddress, new String(request, StandardCharsets.ISO_8859_1));
@@ -204,17 +204,11 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
 
             checkHeaders(response.headers());
             return response.content();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e) { // note: for all exceptions the cause logging gets deferred to the caller
             if (!closing) {
                 logger.debug("{} Interrupted exception", ipAddress, e);
             }
             Thread.currentThread().interrupt();
-            throw e;
-        } catch (Exception e) {
-            if (!closing) {
-                // log for debugging interrupted IO tasks
-                logger.debug("{} I/O exception", ipAddress, e);
-            }
             throw e;
         } finally {
             currentResponseFuture.set(null);
@@ -325,10 +319,11 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
     @Override
     public void onHttpReaderError(Throwable error) {
         if (!closing) {
-            logger.debug("{} HTTP reader error", ipAddress, error);
             CompletableFuture<HttpPayload> future = currentResponseFuture.get();
             if (future != null && !future.isDone()) {
-                future.completeExceptionally(error);
+                future.completeExceptionally(error); // exception cause logging gets deferred to the caller
+            } else {
+                logger.debug("{} HTTP reader error", ipAddress, error); // otherwise it gets logged here
             }
         }
     }
