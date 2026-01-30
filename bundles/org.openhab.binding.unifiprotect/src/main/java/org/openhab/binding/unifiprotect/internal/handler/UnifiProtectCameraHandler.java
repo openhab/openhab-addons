@@ -283,10 +283,11 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             case CAMERA_MOTION:
                 maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_MOTION_SNAPSHOT, Sequence.BEFORE);
                 // Trigger motion on start and end if channel exists
-                if (hasChannel(UnifiProtectBindingConstants.CHANNEL_MOTION)) {
-                    String channelId = eventType == WSEventType.ADD ? UnifiProtectBindingConstants.CHANNEL_MOTION_START
-                            : UnifiProtectBindingConstants.CHANNEL_MOTION_UPDATE;
-                    triggerChannel(new ChannelUID(thing.getUID(), channelId));
+                String motionChannelId = eventType == WSEventType.ADD
+                        ? UnifiProtectBindingConstants.CHANNEL_MOTION_START
+                        : UnifiProtectBindingConstants.CHANNEL_MOTION_UPDATE;
+                if (hasChannel(motionChannelId)) {
+                    triggerChannel(new ChannelUID(thing.getUID(), motionChannelId));
                     updateContactChannel(UnifiProtectBindingConstants.CHANNEL_MOTION_CONTACT, OpenClosedType.OPEN);
                 }
                 maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_MOTION_SNAPSHOT, Sequence.AFTER);
