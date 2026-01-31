@@ -201,7 +201,7 @@
 	<channel-type id="home-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Home Energy Imported</label>
-		<description>Total home energy emported</description>
+		<description>Total home energy imported</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -231,7 +231,7 @@
 	<channel-type id="degradation">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Degradation</label>
-		<description>Current battery degradation %, based on 13.5kW full capacity</description>
+		<description>Current battery degradation %, based on 13.5 kWh full capacity</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>

@@ -30,6 +30,7 @@ import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.Moon;
+import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -75,10 +76,10 @@ public class MoonHandler extends AstroThingHandler {
         Locale locale = localeProvider.getLocale();
         ZonedDateTime now = instantSource.instant().atZone(zone.toZoneId());
         Moon moon = getPlanetAt(now, locale);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale),
-                latitude != null ? latitude : 0, longitude != null ? longitude : 0, moon, zone, locale);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        moonCalc.setPositionalInfo(DateTimeUtils.calFromInstantSource(instantSource, zone, locale), latitude, longitude,
+                moon, zone);
         this.moon = moon;
 
         publishPlanet();
@@ -115,23 +116,23 @@ public class MoonHandler extends AstroThingHandler {
             case CHANNEL_ID_SET_DURATION:
                 return toState(moon.getSet().getDuration(), channel);
             case CHANNEL_ID_MOON_PHASE_FIRST_QUARTER:
-                return toState(moon.getPhase().getFirstQuarter(), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.FIRST_QUARTER), channel);
             case CHANNEL_ID_MOON_PHASE_THIRD_QUARTER:
-                return toState(moon.getPhase().getThirdQuarter(), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.THIRD_QUARTER), channel);
             case CHANNEL_ID_MOON_PHASE_FULL:
-                return toState(moon.getPhase().getFull(), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.FULL), channel);
             case CHANNEL_ID_MOON_PHASE_NEW:
-                return toState(moon.getPhase().getNew(), channel);
+                return toState(moon.getPhaseSet().getPhase(MoonPhase.NEW), channel);
             case CHANNEL_ID_MOON_PHASE_AGE:
-                return toState(moon.getPhase().getAge(), channel);
+                return toState(moon.getPhaseSet().getAge(), channel);
             case CHANNEL_ID_MOON_PHASE_AGE_DEGREE:
-                return toState(moon.getPhase().getAgeDegree(), channel);
+                return toState(moon.getPhaseSet().getAgeDegree(), channel);
             case CHANNEL_ID_MOON_PHASE_AGE_PERCENT:
-                return toState(moon.getPhase().getAgePercent(), channel);
+                return toState(moon.getPhaseSet().getAgePercent(), channel);
             case CHANNEL_ID_MOON_PHASE_ILLUMINATION:
-                return toState(moon.getPhase().getIllumination(), channel);
+                return toState(moon.getPhaseSet().getIllumination(), channel);
             case CHANNEL_ID_PHASE_NAME:
-                return toState(moon.getPhase().getName(), channel);
+                return toState(moon.getPhaseSet().getName(), channel);
             case CHANNEL_ID_ECLIPSE_TOTAL:
                 return toState(moon.getEclipseSet().getDate(EclipseKind.TOTAL), channel);
             case CHANNEL_ID_ECLIPSE_TOTAL_ELEVATION:
@@ -174,19 +175,18 @@ public class MoonHandler extends AstroThingHandler {
 
     @Override
     public Moon getPlanetAt(ZonedDateTime date, Locale locale) {
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, TimeZone.getTimeZone(date.getZone()), locale);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude, longitude);
     }
 
     @Override
     public Position getPositionAt(ZonedDateTime date) {
         Moon localMoon = getPlanetAt(date, Locale.ROOT);
-        Double latitude = thingConfig.latitude;
-        Double longitude = thingConfig.longitude;
-        moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, localMoon, TimeZone.getTimeZone(date.getZone()), Locale.ROOT);
+        double latitude = thingConfig.latitude instanceof Double value ? value : 0;
+        double longitude = thingConfig.longitude instanceof Double value ? value : 0;
+        moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude, longitude, localMoon,
+                TimeZone.getTimeZone(date.getZone()));
         return localMoon.getPosition();
     }
 }

@@ -70,8 +70,8 @@
     <bnd.version>7.1.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
-    <jackson.annotations.version>2.20</jackson.annotations.version>
-    <jackson.version>2.20.1</jackson.version>
+    <jackson.annotations.version>2.21</jackson.annotations.version>
+    <jackson.version>2.21.0</jackson.version>
     <jna.version>5.18.1</jna.version>
     <karaf.version>4.4.9</karaf.version>
     <karaf.maven.plugin.version>4.4.8</karaf.maven.plugin.version>
@@ -323,7 +323,7 @@ Import-Package: \\
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
               <artifactId>plexus-compiler-eclipse</artifactId>
-              <version>2.12.1</version>
+              <version>2.16.2</version>
             </dependency>
             <dependency>
               <groupId>org.eclipse.jdt</groupId>
@@ -644,7 +644,7 @@ Import-Package: \\
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>3.6.3</version>
+                  <version>3.9.6</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>[21.0,22.0)</version>
