@@ -105,7 +105,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
     public void generate(HmDevice device) {
         if (typeProvider != null) {
             ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
-            ThingType tt = typeProvider.getThingType(thingTypeUID, null);
+            ThingType tt = typeProvider.getThingTypeCreatedSinceStartup(thingTypeUID);
 
             if (tt == null || device.isGatewayExtras()) {
                 logger.debug("Generating ThingType for device '{}' with {} datapoints", device.getType(),
@@ -121,7 +121,8 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
                         for (HmDatapoint dp : channel.getDatapoints()) {
                             if (!isIgnoredDatapoint(dp) && dp.getParamsetType() == HmParamsetType.VALUES) {
                                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                                ChannelType channelType = typeProvider.getChannelType(channelTypeUID, null);
+                                ChannelType channelType = typeProvider
+                                        .getChannelTypeCreatedSinceStartup(channelTypeUID);
                                 if (channelType == null) {
                                     channelType = createChannelType(dp, channelTypeUID);
                                     typeProvider.putChannelType(channelType);
@@ -136,7 +137,7 @@ public class HomematicTypeGeneratorImpl implements HomematicTypeGenerator {
 
                     // generate group
                     ChannelGroupTypeUID groupTypeUID = UidUtils.generateChannelGroupTypeUID(channel);
-                    ChannelGroupType groupType = typeProvider.getChannelGroupType(groupTypeUID, null);
+                    ChannelGroupType groupType = typeProvider.getChannelGroupTypeCreatedSinceStartup(groupTypeUID);
                     if (groupType == null || device.isGatewayExtras()) {
                         String groupLabel = String.format("%s", channel.getType() == null ? null
                                 : MiscUtils.capitalize(channel.getType().replace("_", " ")));

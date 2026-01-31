@@ -17,7 +17,7 @@
 				<limitToOptions>false</limitToOptions>
 				<description>@text/urtsiDevicePortDescription</description>
 			</parameter>
-			<parameter name="commandInterval" type="integer" required="false" min="50" max="5000">
+			<parameter name="commandInterval" type="integer" required="false" min="50" max="5000" unit="ms">
 				<label>@text/urtsiDeviceCommandIntervalLabel</label>
 				<description>@text/urtsiDeviceCommandIntervalDescription</description>
 				<default>100</default>
@@ -35,7 +35,7 @@
 			<channel id="position" typeId="position"/>
 		</channels>
 		<config-description>
-			<parameter name="channel" type="text" pattern="([0-9]|[A-F]|[a-f])">
+			<parameter name="channel" type="text" required="true" pattern="([0-9]|[A-F]|[a-f])">
 				<label>@text/rtsDeviceChannelLabel</label>
 				<description>@text/rtsDeviceChannelDescription</description>
 			</parameter>
