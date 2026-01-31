@@ -239,7 +239,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 // other exception; log at warn and don't try to reconnect
                 logger.warn("{} unexpected error '{}' fetching accessories", thing.getUID(), e.getMessage());
             }
-            logger.debug("Stack trace", e);
+            logger.trace("{} stack trace", thing.getUID(), e);
         }
     }
 
@@ -670,7 +670,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 // other exception; log at warn and don't try to reconnect
                 logger.warn("{} unexpected error '{}' subscribing to events", thing.getUID(), e.getMessage());
             }
-            logger.debug("Stack trace", e);
+            logger.trace("{} stack trace", thing.getUID(), e);
         }
     }
 
@@ -731,12 +731,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
                 logger.debug("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
-                        e.getMessage(), e);
+                        e.getMessage());
                 scheduleConnectionAttempt();
             } else {
                 // other exception; log at warn and don't try to reconnect
                 logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage(), e);
             }
+            logger.trace("{} stack trace", thing.getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
         }
