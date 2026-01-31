@@ -26,6 +26,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -77,8 +78,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     }
 
     protected @Nullable RingDevice getDevice() {
-        if (bridge.getHandler() instanceof RingAccount ringAccount) {
-            if (bridgeHandler instanceof RingAccount ringAccount) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
                 return ringAccount.getDevice(config.id);
             }
         }
@@ -86,8 +87,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     }
 
     protected long getSnapshotTimestamp() {
-        if (bridge.getHandler() instanceof RingAccount ringAccount) {
-            if (bridgeHandler instanceof RingAccount ringAccount) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
                 return ringAccount.getSnapshotTimestamp(config.id);
             }
         }
@@ -95,8 +96,8 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     }
 
     protected byte[] getSnapshot() {
-        if (bridge.getHandler() instanceof RingAccount ringAccount) {
-            if (bridgeHandler instanceof RingAccount ringAccount) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
                 return ringAccount.getSnapshot(config.id);
             }
         }
