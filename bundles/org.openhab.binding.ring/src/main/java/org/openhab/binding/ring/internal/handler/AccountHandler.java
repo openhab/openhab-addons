@@ -283,7 +283,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         } catch (JsonParseException e) {
             logger.debug("Invalid response from api.ring.com when initializing Ring Account handler{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.invalid-response");
+                    "@text/offline.comm-error.auth-exception");
         }
         logger.debug("doLogin RT: {}", getRefreshTokenFromFile());
         try {
@@ -291,7 +291,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/comm-error.invalid-response");
+                    "@text/offline.comm-error.auth-exception");
             logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
         } catch (JsonParseException pe1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
