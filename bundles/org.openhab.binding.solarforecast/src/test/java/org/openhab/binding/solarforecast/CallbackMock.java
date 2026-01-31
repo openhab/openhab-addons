@@ -102,7 +102,7 @@ public class CallbackMock implements ThingHandlerCallback {
         synchronized (this) {
             while (getStateList(cuid).size() != count && Instant.now().isBefore(endWait)) {
                 try {
-                    wait(500);
+                    wait(100);
                 } catch (InterruptedException e) {
                     fail(e.getMessage());
                 }

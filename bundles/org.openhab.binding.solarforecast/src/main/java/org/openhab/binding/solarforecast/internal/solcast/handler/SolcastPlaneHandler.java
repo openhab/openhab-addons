@@ -216,17 +216,21 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         if (forecastObject.isExpired()) {
             logger.debug("{} Forecast expired -> get new forecast", identifier);
             try {
+                int callStatus = HttpStatus.OK_200;
                 if (!cache.isFilled() || !configuration.guessActuals) {
                     logger.debug("{} Cache not used {} or not filled {}", identifier, !configuration.guessActuals,
                             cache.toString());
-                    fetchData(CURRENT_ESTIMATE_URL);
+                    callStatus = fetchData(CURRENT_ESTIMATE_URL);
+                    // if actuals fetch failed, do not proceed to forecast fetch
                 }
-                fetchData(FORECAST_URL);
-                Instant expiration = getExpirationTime();
-                SolcastObject newForecast = new SolcastObject(identifier, cache.getForecast(), expiration);
-                storage.put(identifier + CREATION_APPENDIX, Utils.now().toString());
-                storage.put(identifier + EXPIRATION_APPENDIX, expiration.toString());
-                updateForecast(newForecast);
+                if (callStatus == HttpStatus.OK_200) {
+                    fetchData(FORECAST_URL);
+                    Instant expiration = getExpirationTime();
+                    SolcastObject newForecast = new SolcastObject(identifier, cache.getForecast(), expiration);
+                    storage.put(identifier + CREATION_APPENDIX, Utils.now().toString());
+                    storage.put(identifier + EXPIRATION_APPENDIX, expiration.toString());
+                    updateForecast(newForecast);
+                }
             } catch (ExecutionException | TimeoutException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (InterruptedException e) {
@@ -241,7 +245,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         return true;
     }
 
-    private void fetchData(String urlPattern) throws InterruptedException, TimeoutException, ExecutionException {
+    private int fetchData(String urlPattern) throws InterruptedException, TimeoutException, ExecutionException {
         String fetchUrl = String.format(urlPattern, configuration.resourceId);
         Request fetchRequest = httpClient.newRequest(fetchUrl);
         fetchRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge().getApiKey());
@@ -256,6 +260,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         } else {
             apiCallFailure(fetchUrl, response.getStatus());
         }
+        return callStatus;
     }
 
     private Instant getExpirationTime() {
