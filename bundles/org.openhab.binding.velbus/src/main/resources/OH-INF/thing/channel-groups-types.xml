@@ -6,7 +6,7 @@
 
 	<channel-group-type id="1channelInputModuleWithTemperatureSensor">
 		<label>Input with Temperature Sensor</label>
-		<description>This is a generic module with 8 input channels and a temperature sensor.</description>
+		<description>This is a generic module with a temperature sensor.</description>
 		<channels>
 			<channel id="CH1" typeId="temperature"/>
 		</channels>
@@ -69,7 +69,7 @@
 
 	<channel-group-type id="8channelCounterModule">
 		<label>Counters</label>
-		<description>This is a generic module with 4 counter channels.</description>
+		<description>This is a generic module with 8 counter channels.</description>
 		<channels>
 			<channel id="counter1" typeId="counter"/>
 			<channel id="counter1Current" typeId="counter"/>
@@ -1228,7 +1228,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="oledDisplay">
-		<label>O-LED Display</label>
+		<label>OLED Display</label>
 		<channels>
 			<channel id="MEMO" typeId="text">
 				<label>Memo</label>

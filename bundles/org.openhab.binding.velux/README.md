@@ -45,14 +45,14 @@ The binding supports the following types of Thing.
 
 ## Discovery
 
-To simplify the initial provisioning, the binding provides one thing which can be found by autodiscovery.
+To simplify the initial provisioning, the binding provides one Thing which can be found by autodiscovery.
 The binding will automatically discover Velux Bridges within the local network, and place them in the Inbox.
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
 And once the Velux Bridge is fully configured, you need to check your Inbox for discovered scenes and actuators.
 If nothing shows up you need to trigger discovering scenes and actuators (like windows and rollershutters) of the Velux Bridge.
-For this log into the openHAB webfront go to Settings -> Things and click on the + symbol in the lower right.
+In the Main UI, go to Settings → Things and click the + (Add) button in the lower right.
 Then select the Velux Binding and click Scan.
-After the scan has completed the scences and actuators configured in the KLF 200 are placed in the Inbox.
+After the scan has completed the scenes and actuators configured in the KLF 200 are placed in the Inbox.
 
 ## Thing Configuration
 
@@ -248,14 +248,14 @@ The bridge Thing provides the following properties.
 |-------------------|-----------------------------------------------------------------|
 | address           | IP address of the Bridge                                        |
 | check             | Result of the check of current item configuration               |
-| connectionAttempt | Date-Time of last connection attampt                            |
-| connectionSuccess | Date-Time of last successful connection attampt                 |
+| connectionAttempt | Date-Time of last connection attempt                            |
+| connectionSuccess | Date-Time of last successful connection attempt                 |
 | defaultGW         | IP address of the Default Gateway of the Bridge                 |
 | DHCP              | Flag whether automatic IP configuration is enabled              |
 | firmware          | Software version of the Bridge                                  |
 | products          | List of all recognized products                                 |
 | scenes            | List of all defined scenes                                      |
-| subnetMask        | IP subnetmask of the Bridge                                     |
+| subnetMask        | IP subnet mask of the Bridge                                    |
 | vendor            | Vendor name                                                     |
 | WLANSSID          | Name of the wireless network (not supported any more)           |
 | WLANPassword      | WLAN Authentication Password (not supported any more)           |
@@ -310,7 +310,7 @@ The method returns a `Boolean` whose meaning is also described in the table belo
 
 | Argument    | Type    | Example                             | Description                                                                              |
 |-------------|---------|-------------------------------------|------------------------------------------------------------------------------------------|
-| thingName   | String  | "velux:rollershutter:hubid:thingid" | The thing name of the shutter. Must be a valid configured thing in the hub.              |
+| thingName   | String  | "velux:rollershutter:hubid:thingid" | The Thing name of the shutter. Must be a valid configured Thing in the hub.              |
 | mainPercent | Integer | 75                                  | The target main position in percent. Integer between 0 and 100.                          |
 | vanePercent | Integer | 25                                  | The target vane position in percent. Integer between 0 and 100.                          |
 | return      | Boolean | `true`                              | Is `true` if the command was sent successfully or `false` if any arguments were invalid. |
@@ -322,7 +322,7 @@ rule "Simultaneously Move Main and Vane Positions"
 when
     ...
 then
-    // note: "velux:klf200:hubid" shall be the thing name of your KLF 200 hub
+    // note: "velux:klf200:hubid" shall be the Thing name of your KLF 200 hub
     val veluxActions = getActions("velux", "velux:klf200:hubid")
     if (veluxActions !== null) {
         val succeeded = veluxActions.moveMainAndVane("velux:rollershutter:hubid:thingid", 75, 25)
@@ -388,7 +388,7 @@ then
         val isRebooting = veluxActions.rebootBridge()
         logWarn("Rules", "Velux KLF 200 rebooting: " + isRebooting)
     } else {
-        logWarn("Rules", "Velux KLF 200 actions not found, check thing ID")
+        logWarn("Rules", "Velux KLF 200 actions not found, check Thing ID")
     }
 end
 ```
@@ -519,7 +519,7 @@ However if you have set the configuration parameter isProtocolTraceEnabled to tr
 ## Supported/Tested Firmware Revisions
 
 The Velux Bridge in API version one (firmware version 0.1.1.*) allows activating a set of predefined actions, so called scenes.
-Therefore beside the bridge, only one main thing exists, the scene element.
+Therefore beside the bridge, only one main Thing exists, the scene element.
 
 The next-generation firmware version two is not backward compatible, and does not provide a public web frontend, but version two does provide full access to any IO-Home compatible devices not limited to Velux and includes many different features.
 

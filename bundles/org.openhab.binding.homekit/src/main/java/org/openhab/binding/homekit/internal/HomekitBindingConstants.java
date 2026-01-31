@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * Defines common constants which are used across the whole HomeKit binding.
@@ -45,6 +46,12 @@ public class HomekitBindingConstants {
      * example: channel-type-occupancy-detected-2694-1234567890abcdef-1
      */
     public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s-%d-%s-%s";
+
+    /**
+     * Channel ID and Channel-Type UID for IP camera snapshot channels
+     */
+    public static final String CHANNEL_SNAPSHOT = "snapshot";
+    public static final ChannelTypeUID CHANNEL_TYPE_SNAPSHOT = new ChannelTypeUID(BINDING_ID, CHANNEL_SNAPSHOT);
 
     /**
      * format string for channel-definition IDs like '[characteristicIdentifier]-[characteristicIid]'
@@ -82,9 +89,14 @@ public class HomekitBindingConstants {
     public static final String ENDPOINT_CHARACTERISTICS = "/characteristics";
     public static final String ENDPOINT_PAIR_SETUP = "/pair-setup";
     public static final String ENDPOINT_PAIR_VERIFY = "/pair-verify";
+    public static final String ENDPOINT_RESOURCE = "/resource";
 
     public static final String CONTENT_TYPE_PAIRING = "application/pairing+tlv8";
     public static final String CONTENT_TYPE_HAP = "application/hap+json";
+    public static final String CONTENT_TYPE_JPEG = "image/jpeg";
+
+    public static final String CONFIG_SNAPSHOT_WIDTH = "imageWidth";
+    public static final String CONFIG_SNAPSHOT_HEIGHT = "imageHeight";
 
     // pattern matcher for pairing code XXX-XX-XXX or XXXX-XXXX or XXXXXXXX
     public static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8}");

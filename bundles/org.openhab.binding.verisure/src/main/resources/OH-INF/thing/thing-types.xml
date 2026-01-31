@@ -503,7 +503,7 @@
 				<option value="WATER">Water alarm</option>
 				<option value="MICE">Mice alarm</option>
 				<option value="BATTERY_LOW">Battery low</option>
-				<option value="BATTERY_RESTORED">Battery low</option>
+				<option value="BATTERY_RESTORED">Battery restored</option>
 				<option value="COM_FAILURE">Communication failure</option>
 				<option value="COM_RESTORED">Communication restored</option>
 				<option value="COM_TEST">Communication test</option>
@@ -512,7 +512,7 @@
 				<option value="DOORWINDOW_OPENED">Door/Window opened</option>
 				<option value="DOORWINDOW_CLOSED">Door/Window closed</option>
 				<option value="LOCATION_AWAY">Location away</option>
-				<option value="LOCATION_HOME">Location away</option>
+				<option value="LOCATION_HOME">Location home</option>
 			</options>
 		</event>
 	</channel-type>

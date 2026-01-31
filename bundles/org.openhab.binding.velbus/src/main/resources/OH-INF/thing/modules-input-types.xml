@@ -121,7 +121,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB7IN</label>
-		<description>7-channel input module (potentialfree + pulse)</description>
+		<description>7-channel input module (potential-free + pulse)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
@@ -140,7 +140,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMB8IN-20</label>
-		<description>8-channel input module (potentialfree + pulse)</description>
+		<description>8-channel input module (potential-free + pulse)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
@@ -357,7 +357,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBELO</label>
-		<description>Edge-lit touch panel with Oled display</description>
+		<description>Edge-lit touch panel with OLED display</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -382,7 +382,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBELO-20</label>
-		<description>Edge-lit touch panel with Oled display</description>
+		<description>Edge-lit touch panel with OLED display</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -587,7 +587,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGPO</label>
-		<description>Glass control module with oled display</description>
+		<description>Glass control module with OLED display</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -608,7 +608,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGPTC</label>
-		<description>Glass control module with oled display</description>
+		<description>Glass control module with OLED display</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -629,7 +629,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGPO-20</label>
-		<description>Glass control module with oled display</description>
+		<description>Glass control module with OLED display</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -650,7 +650,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGPOD</label>
-		<description>Glass control module with oled display and temperature controller</description>
+		<description>Glass control module with OLED display and temperature controller</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -671,7 +671,7 @@
 		</supported-bridge-type-refs>
 
 		<label>VMBGPOD-2</label>
-		<description>Glass control module with oled display and temperature controller (Edition 2)</description>
+		<description>Glass control module with OLED display and temperature controller (Edition 2)</description>
 		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
@@ -744,7 +744,7 @@
 			<bridge-type-ref id="networkbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>VMPVP1</label>
+		<label>VMBVP1</label>
 		<description>Doorbird interface module</description>
 		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 		<channel-groups>
