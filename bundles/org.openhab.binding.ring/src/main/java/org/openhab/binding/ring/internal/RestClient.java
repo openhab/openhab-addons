@@ -300,9 +300,9 @@ public class RestClient {
                             JsonObject obj = JsonParser.parseString(jsonResult).getAsJsonObject();
                             if (obj.get("url").getAsString().startsWith("http")) {
                                 URL url = new URI(obj.get("url").getAsString()).toURL();
-                                InputStream in = url.openStream();
-                                Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
-                                in.close();
+                                try (InputStream in = url.openStream()) {
+                                    Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
+                                }
                                 if (!fullfilepath.isEmpty()) {
                                     urlFound = true;
                                     break;
