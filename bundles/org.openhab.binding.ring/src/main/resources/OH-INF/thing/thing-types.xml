@@ -69,6 +69,7 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -96,6 +97,7 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 		</channel-groups>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -127,6 +129,7 @@
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -158,6 +161,7 @@
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
