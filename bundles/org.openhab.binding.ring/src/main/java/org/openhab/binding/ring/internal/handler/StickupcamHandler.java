@@ -16,12 +16,12 @@ import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTE
 import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_SNAPSHOT;
 import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_SNAPSHOT_TIMESTAMP;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.Stickupcam;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.RawType;
@@ -41,9 +41,11 @@ import org.openhab.core.types.Command;
 public class StickupcamHandler extends RingDeviceHandler {
     private int lastBattery = -1;
     private long lastSnapshotTimestamp = -1;
+    private TimeZoneProvider timeZoneProvider;
 
-    public StickupcamHandler(Thing thing) {
+    public StickupcamHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -88,8 +90,8 @@ public class StickupcamHandler extends RingDeviceHandler {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
             updateState(channelUID, new RawType(getSnapshot(), "image/jpeg"));
             channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
-            updateState(channelUID, new DateTimeType(
-                    ZonedDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp), ZoneId.systemDefault())));
+            updateState(channelUID, new DateTimeType(ZonedDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp),
+                    timeZoneProvider.getTimeZone())));
         }
     }
 }
