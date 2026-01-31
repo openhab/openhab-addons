@@ -58,9 +58,10 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 | Channel Type ID    | Item Type | Description             |
 |--------------------|-----------|-------------------------|
 | battery            | Number    | Battery level in %      |
-| snapshot           | Image     | Image Snapshot ^        |
-| snapshot-timestamp | DateTime  | Timestamp of Snapshot ^ |
-^ Video Doorbell and Stickup Cam only
+| snapshot           | Image     | Image Snapshot *        |
+| snapshot-timestamp | DateTime  | Timestamp of Snapshot * |
+
+*) Video Doorbell and Stickup Cam only
 
 ## Full Example
 
