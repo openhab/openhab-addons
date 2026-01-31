@@ -303,7 +303,6 @@ public class RestClient {
                                 InputStream in = url.openStream();
                                 Files.copy(in, Paths.get(fullfilepath), StandardCopyOption.REPLACE_EXISTING);
                                 in.close();
-                                logger.info("fullfilepath.length() = {}", fullfilepath.length());
                                 if (!fullfilepath.isEmpty()) {
                                     urlFound = true;
                                     break;
