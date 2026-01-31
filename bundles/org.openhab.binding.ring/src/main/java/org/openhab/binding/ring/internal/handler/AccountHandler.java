@@ -134,6 +134,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.registry = new RingDeviceRegistry();
         this.restClient = new RestClient(httpClient);
         this.servlet = ringVideoServlet;
+        this.videoExecutorService = Executors.newSingleThreadExecutor();
     }
 
     @Override
@@ -215,7 +216,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
     protected void startAutomaticRefresh(final int refreshInterval) {
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
-        videoExecutorService = Executors.newSingleThreadExecutor();
     }
 
     protected void stopAutomaticRefresh() {
