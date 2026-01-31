@@ -42,7 +42,7 @@ public interface RingAccount {
     long getSnapshotTimestamp(String id);
 
     /**
-     * Get the timestamp of the last camera snapshot
+     * Get the image from the camera
      *
      * @param id the device id of the Ring cameras
      * @return a byte array of the camera image

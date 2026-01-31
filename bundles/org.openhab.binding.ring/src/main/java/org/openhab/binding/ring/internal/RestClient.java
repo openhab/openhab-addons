@@ -237,6 +237,13 @@ public class RestClient {
         return session.profile;
     }
 
+    /**
+     * Get the timestamp of the last camera snapshot
+     *
+     * @param id the device id of the Ring cameras
+     * @return a long of the timestamp of the last snapsnot
+     * @throws AuthenticationException when request is invalid.
+     */
     public long getSnapshotTimestamp(String deviceId, Tokens tokens) throws AuthenticationException {
         String input = "{\"doorbot_ids\":[" + deviceId + "]}";
         String jsonResult = postRequest(ApiConstants.URL_SNAPSHOT_TIMESTAMPS, input, Map.of(), tokens);
@@ -249,6 +256,13 @@ public class RestClient {
         }
     }
 
+    /**
+     * Get the image from the camera
+     *
+     * @param id the device id of the Ring cameras
+     * @return a byte array of the camera image
+     * @throws AuthenticationException when request is invalid.
+     */
     public byte[] getSnapshot(String deviceId, Tokens tokens) throws AuthenticationException {
         try {
             ContentResponse response = httpClient.newRequest(ApiConstants.URL_SNAPSHOTS + deviceId)

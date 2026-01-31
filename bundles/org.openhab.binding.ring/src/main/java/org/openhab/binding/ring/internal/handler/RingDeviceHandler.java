@@ -79,8 +79,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     }
 
     protected @Nullable RingDevice getDevice() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
+        if (getBridge() instanceof Bridge bridge) {
             BridgeHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler instanceof RingAccount ringAccount) {
                 return ringAccount.getDevice(config.id);
@@ -90,8 +89,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     }
 
     protected long getSnapshotTimestamp() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
+        if (getBridge() instanceof Bridge bridge) {
             BridgeHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler instanceof RingAccount ringAccount) {
                 return ringAccount.getSnapshotTimestamp(config.id);
@@ -101,8 +99,7 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     }
 
     protected byte[] getSnapshot() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
+        if (getBridge() instanceof Bridge bridge) {
             BridgeHandler bridgeHandler = bridge.getHandler();
             if (bridgeHandler instanceof RingAccount ringAccount) {
                 return ringAccount.getSnapshot(config.id);
