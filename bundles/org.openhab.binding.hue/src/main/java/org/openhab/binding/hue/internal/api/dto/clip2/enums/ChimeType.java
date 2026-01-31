@@ -10,27 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.internal.api.dto.clip2;
+package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.enums.MuteType;
 
 /**
- * DTO for mute state of a sound.
+ * Enum for chime sound type.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Mute {
-    private @Nullable String mute;
+public enum ChimeType {
+    ALARM,
+    ALERT,
+    CHIME;
 
-    public @Nullable MuteType getMuteType() {
-        return mute instanceof String m ? MuteType.of(m) : null;
-    }
-
-    public Mute setMuteType(MuteType muteType) {
-        mute = muteType.name().toLowerCase();
-        return this;
-    }
 }

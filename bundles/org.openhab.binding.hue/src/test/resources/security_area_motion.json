@@ -1,0 +1,26 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "eec4e35f-9480-4c9a-b466-1b176df08b0c",
+			"owner": {
+				"rid": "b5a25bdc-4963-4a7d-b2fa-a415fa0f147f",
+				"rtype": "motion_area_configuration"
+			},
+			"enabled": true,
+			"motion": {
+				"motion": false,
+				"motion_valid": false,
+				"motion_report": {
+					"changed": "2025-10-20T16:47:14.733Z",
+					"motion": false
+				}
+			},
+			"sensitivity": {
+				"sensitivity": 2,
+				"sensitivity_max": 4
+			},
+			"type": "security_area_motion"
+		}
+	]
+}
