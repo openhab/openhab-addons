@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolcastCache {
-    public static final String FORECAST_APPENDIX = "-forecast";
-
     private final Logger logger = LoggerFactory.getLogger(SolcastCache.class);
     private final Storage<String> storage;
     private final String identifier;

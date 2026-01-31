@@ -37,10 +37,10 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.CallbackMock;
 import org.openhab.binding.solarforecast.FileReader;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
+import org.openhab.binding.solarforecast.internal.solcast.mock.SolcastBridgeMock;
+import org.openhab.binding.solarforecast.internal.solcast.mock.SolcastMockFactory;
+import org.openhab.binding.solarforecast.internal.solcast.mock.SolcastPlaneMock;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
-import org.openhab.binding.solarforecastinternal.solcast.mock.SolcastBridgeMock;
-import org.openhab.binding.solarforecastinternal.solcast.mock.SolcastMockFactory;
-import org.openhab.binding.solarforecastinternal.solcast.mock.SolcastPlaneMock;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
@@ -156,9 +156,9 @@ class SolcastHandlerTest {
         SolcastBridgeMock bridgeMock = SolcastMockFactory.createBridgeHandler();
         HttpClient httpMock = mock(HttpClient.class);
         String planeId = "sc-plane-1-test";
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId, HttpStatus.OK_200,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId, HttpStatus.OK_200,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId, HttpStatus.OK_200,
                 "src/test/resources/solcast/forecasts.json");
 
         Storage<String> store = new VolatileStorage<>();
@@ -178,9 +178,9 @@ class SolcastHandlerTest {
         SolcastBridgeMock bridgeMock = SolcastMockFactory.createBridgeHandler();
         HttpClient httpMock = mock(HttpClient.class);
         String planeId = "sc-plane-1-test";
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId, HttpStatus.OK_200,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId, HttpStatus.OK_200,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId, HttpStatus.OK_200,
                 "src/test/resources/solcast/forecasts.json");
 
         Storage<String> store = new VolatileStorage<>();
@@ -220,9 +220,9 @@ class SolcastHandlerTest {
 
         HttpClient httpMock = mock(HttpClient.class);
         String planeId1 = "sc-plane-1-test";
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId1, HttpStatus.OK_200,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId1, HttpStatus.OK_200,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId1, HttpStatus.OK_200,
                 "src/test/resources/solcast/forecasts.json");
         Storage<String> store = new VolatileStorage<>();
         SolcastPlaneMock planeMock1 = SolcastMockFactory.createPlaneHandler(planeId1, bridgeMock, httpMock, store);
@@ -233,9 +233,9 @@ class SolcastHandlerTest {
         callbackBridge.clear();
 
         String planeId2 = "sc-plane-2-test";
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId2, HttpStatus.OK_200,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId2, HttpStatus.OK_200,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId2, HttpStatus.OK_200,
                 "src/test/resources/solcast/forecasts.json");
         SolcastPlaneMock planeMock2 = SolcastMockFactory.createPlaneHandler(planeId2, bridgeMock, httpMock, store);
         CallbackMock callbackPlane2 = (CallbackMock) planeMock2.getCallback();
@@ -280,9 +280,9 @@ class SolcastHandlerTest {
         Storage<String> store = new VolatileStorage<>();
         HttpClient httpMock = mock(HttpClient.class);
         String planeId1 = "sc-plane-1-test";
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId1, HttpStatus.OK_200,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId1, HttpStatus.OK_200,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId1, HttpStatus.OK_200,
                 "src/test/resources/solcast/forecasts.json");
         Configuration config1 = new Configuration();
         config1.put("resourceId", planeId1);
@@ -369,9 +369,9 @@ class SolcastHandlerTest {
 
         HttpClient httpMock = mock(HttpClient.class);
         String planeId1 = "sc-plane-1-test";
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId1, HttpStatus.OK_200,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId1, HttpStatus.OK_200,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId1, HttpStatus.OK_200,
                 "src/test/resources/solcast/forecasts.json");
         Storage<String> store = new VolatileStorage<>();
         SolcastPlaneMock planeMock1 = SolcastMockFactory.createPlaneHandler(planeId1, bridgeMock, httpMock, store);
@@ -379,9 +379,9 @@ class SolcastHandlerTest {
         assertNotNull(callbackPlane1);
 
         String planeId2 = "sc-plane-2-test";
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId2, HttpStatus.OK_200,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId2, HttpStatus.OK_200,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId2, HttpStatus.OK_200,
                 "src/test/resources/solcast/forecasts.json");
         SolcastPlaneMock planeMock2 = SolcastMockFactory.createPlaneHandler(planeId2, bridgeMock, httpMock, store);
         CallbackMock callbackPlane2 = (CallbackMock) planeMock2.getCallback();

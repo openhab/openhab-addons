@@ -74,14 +74,14 @@ public class SolcastCounter {
     }
 
     /**
-     * Solcast API counter is reseted daily at 00:00 UTC for all timezones
+     * Solcast API counter is reset daily at 00:00 UTC for all timezones
      */
     private void checkCounterReset() {
         Instant now = Utils.now();
         if (lastCounterReset.atZone(ZoneId.of("UTC")).getDayOfMonth() != now.atZone(ZoneId.of("UTC")).getDayOfMonth()) {
             counter = getNewCounter();
-            storeCounter();
             lastCounterReset = now;
+            storeCounter();
         }
     }
 

@@ -33,10 +33,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.solarforecast.CallbackMock;
+import org.openhab.binding.solarforecast.internal.solcast.mock.SolcastBridgeMock;
+import org.openhab.binding.solarforecast.internal.solcast.mock.SolcastMockFactory;
+import org.openhab.binding.solarforecast.internal.solcast.mock.SolcastPlaneMock;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
-import org.openhab.binding.solarforecastinternal.solcast.mock.SolcastBridgeMock;
-import org.openhab.binding.solarforecastinternal.solcast.mock.SolcastMockFactory;
-import org.openhab.binding.solarforecastinternal.solcast.mock.SolcastPlaneMock;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
@@ -70,7 +70,7 @@ class SolcastHandlerStartupTest {
         Utils.setTimeZoneProvider(timeZoneProvider);
     }
 
-    public static Stream<Arguments> testFirstStartupNoStorage() {
+    public static Stream<Arguments> testStartup() {
         return Stream.of( //
                 Arguments.of(null, Map.of("resourceId", planeId), HttpStatus.OK_200, ThingStatus.ONLINE,
                         Map.of("200", 2, "429", 0, "other", 0)), //
@@ -93,14 +93,13 @@ class SolcastHandlerStartupTest {
 
     @ParameterizedTest
     @MethodSource
-    public void testFirstStartupNoStorage(@Nullable JSONArray storageContent, Map<String, Object> configuration,
-            int httpStatus, ThingStatus expectedThingStatus, Map<String, Integer> expectedApiCounts) {
+    public void testStartup(@Nullable JSONArray storageContent, Map<String, Object> configuration, int httpStatus,
+            ThingStatus expectedThingStatus, Map<String, Integer> expectedApiCounts) {
         SolcastBridgeMock bridgeMock = SolcastMockFactory.createBridgeHandler();
         HttpClient httpMock = mock(HttpClient.class);
-
-        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId, httpStatus,
-                "src/test/resources/solcast/estimated-actuals.json");
         SolcastPlaneMock.httpActualResponse(httpMock, CURRENT_ESTIMATE_URL, planeId, httpStatus,
+                "src/test/resources/solcast/estimated-actuals.json");
+        SolcastPlaneMock.httpActualResponse(httpMock, FORECAST_URL, planeId, httpStatus,
                 "src/test/resources/solcast/forecasts.json");
 
         Storage<String> store = new VolatileStorage<>();

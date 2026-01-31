@@ -119,7 +119,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
 
     private boolean isConfigurationValid() {
         if (configuration.resourceId.isBlank()) {
-            configErrorStatus("@text/solarforecast.site.status.location-missing");
+            configErrorStatus("@text/solarforecast.plane.status.resource-id-missing");
             return false;
         }
         return true;
@@ -146,7 +146,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     @Override
     public void dispose() {
         super.dispose();
-        bridge().removePlane(this);
+        if (bridgeHandler != null) {
+            bridge().removePlane(this);
+        }
     }
 
     @Override
@@ -191,7 +193,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         SolcastObject localForecast = getForecast();
         // 1) fetch new data if expired
         if (localForecast.isExpired()) {
-            fetchData();
+            if (!fetchData()) {
+                return;
+            }
         }
         try {
             // 2) Update channels with current data
@@ -207,7 +211,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         }
     }
 
-    private void fetchData() {
+    private boolean fetchData() {
         SolcastObject forecastObject = getForecast();
         if (forecastObject.isExpired()) {
             logger.debug("{} Forecast expired -> get new forecast", identifier);
@@ -230,16 +234,21 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 Thread.currentThread().interrupt();
             }
         }
+        if (!cache.isFilled()) {
+            logger.info("{} Forecast data fetch did not fill the cache {}", identifier, cache.toString());
+            return false;
+        }
+        return true;
     }
 
     private void fetchData(String urlPattern) throws InterruptedException, TimeoutException, ExecutionException {
         String fetchUrl = String.format(urlPattern, configuration.resourceId);
-        logger.trace("{} fetch {}", identifier, fetchUrl);
         Request fetchRequest = httpClient.newRequest(fetchUrl);
         fetchRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge().getApiKey());
         ContentResponse response = fetchRequest.send();
         int callStatus = response.getStatus();
         counter.count(callStatus);
+        logger.debug("Fetched {} - {}", callStatus, fetchUrl);
 
         if (callStatus == HttpStatus.OK_200) {
             JSONObject actualJson = new JSONObject(response.getContentAsString());
@@ -299,7 +308,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                 Utils.getEnergyState(energyDay - energyProduced));
         updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
         updateState(mode + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_POWER_ACTUAL,
-                Utils.getPowerState(localForecast.getActualPowerValue(now, QueryMode.AVERAGE)));
+                Utils.getPowerState(localForecast.getActualPowerValue(now, mode)));
     }
 
     /**
