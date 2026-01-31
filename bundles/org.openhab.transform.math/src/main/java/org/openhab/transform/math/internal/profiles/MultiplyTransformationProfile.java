@@ -35,7 +35,7 @@ public class MultiplyTransformationProfile extends AbstractArithmeticMathTransfo
     public static final ProfileTypeUID PROFILE_TYPE_UID = new ProfileTypeUID(
             TransformationService.TRANSFORM_PROFILE_SCOPE, "MULTIPLY");
 
-    static final String MUTLIPLICAND_PARAM = "multiplicand";
+    static final String MULTIPLICAND_PARAM = "multiplicand";
 
     private final @Nullable String multiplicand;
 
@@ -43,7 +43,7 @@ public class MultiplyTransformationProfile extends AbstractArithmeticMathTransfo
             TransformationService service, ItemRegistry itemRegistry) {
         super(callback, context, service, itemRegistry, PROFILE_TYPE_UID);
 
-        multiplicand = getParam(context, MUTLIPLICAND_PARAM);
+        multiplicand = getParam(context, MULTIPLICAND_PARAM);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MultiplyTransformationProfile extends AbstractArithmeticMathTransfo
         if (localMultiplicand == null) {
             logger.warn(
                     "Please specify a multiplicand for this Profile in the '{}' parameter. Returning the original command now.",
-                    MUTLIPLICAND_PARAM);
+                    MULTIPLICAND_PARAM);
             callback.sendCommand(command);
             return;
         }
@@ -65,7 +65,7 @@ public class MultiplyTransformationProfile extends AbstractArithmeticMathTransfo
         if (localMultiplicand == null) {
             logger.warn(
                     "Please specify a multiplicand for this Profile in the '{}' parameter. Returning the original state now.",
-                    MUTLIPLICAND_PARAM);
+                    MULTIPLICAND_PARAM);
             callback.sendUpdate(state);
             return;
         }
@@ -78,7 +78,7 @@ public class MultiplyTransformationProfile extends AbstractArithmeticMathTransfo
         if (localMultiplicand == null) {
             logger.warn(
                     "Please specify a multiplicand for this Profile in the '{}' parameter. Returning the original state now.",
-                    MUTLIPLICAND_PARAM);
+                    MULTIPLICAND_PARAM);
             callback.sendTimeSeries(timeSeries);
             return;
         }

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Abstract class for {@link TransformationService}s which applies bitwise operations on the input
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Jan N. Klug - Adapted for bit operazions
+ * @author Jan N. Klug - Adapted for bit operations
  */
 @NonNullByDefault
 abstract class AbstractBitwiseTransformationService implements TransformationService {

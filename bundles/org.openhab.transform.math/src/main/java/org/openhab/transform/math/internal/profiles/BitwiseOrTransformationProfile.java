@@ -23,7 +23,7 @@ import org.openhab.transform.math.internal.BitwiseOrTransformationService;
  * Profile to offer the {@link BitwiseOrTransformationService} on a ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Jan N. Klug - Adapted To BoitwiseTransformations
+ * @author Jan N. Klug - Adapted To BitwiseTransformations
  */
 @NonNullByDefault
 public class BitwiseOrTransformationProfile extends BitwiseTransformationProfile {
