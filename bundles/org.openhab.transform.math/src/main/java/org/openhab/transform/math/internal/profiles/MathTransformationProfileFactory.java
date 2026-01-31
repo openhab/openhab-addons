@@ -189,7 +189,7 @@ public class MathTransformationProfileFactory implements ProfileFactory, Profile
     }
 
     @Reference(target = "(openhab.transform=BITOR)")
-    public void addBitrOrTransformationService(TransformationService service) {
+    public void addBitOrTransformationService(TransformationService service) {
         this.bitOrTransformationService = service;
     }
 

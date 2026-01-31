@@ -23,10 +23,10 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
 /**
- * Profile to offer the BitwiseTransformationServicss on a ItemChannelLink.
+ * Profile to offer the BitwiseTransformationServices on a ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Jan N. Klug - Adapted To BoitwiseTransformations
+ * @author Jan N. Klug - Adapted To BitwiseTransformations
  */
 @NonNullByDefault
 public abstract class BitwiseTransformationProfile extends AbstractMathTransformationProfile {

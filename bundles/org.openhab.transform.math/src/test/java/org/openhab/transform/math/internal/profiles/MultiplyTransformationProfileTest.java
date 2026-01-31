@@ -73,7 +73,9 @@ class MultiplyTransformationProfileTest {
                 Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, DecimalType.valueOf("3"),
                         DecimalType.valueOf("69.999")), //
                 Arguments.of(2, QuantityType.valueOf("230 V"), TEST_ITEM_NAME, QuantityType.valueOf("6 A"),
-                        QuantityType.valueOf("1380 W")));
+                        QuantityType.valueOf("1380 W")), //
+                Arguments.of(2, QuantityType.valueOf("10 kWh"), TEST_ITEM_NAME, QuantityType.valueOf("0.5 DEF/kWh"),
+                        QuantityType.valueOf("5.0 DEF")));
     }
 
     @BeforeEach
@@ -145,7 +147,7 @@ class MultiplyTransformationProfileTest {
         ItemRegistry mockedItemRegistry = mock(ItemRegistry.class);
         UnitProvider mockedUnitProvider = mock(UnitProvider.class);
         Configuration config = new Configuration();
-        config.put(MultiplyTransformationProfile.MUTLIPLICAND_PARAM, multiplicand);
+        config.put(MultiplyTransformationProfile.MULTIPLICAND_PARAM, multiplicand);
         if (itemName != null && state != null) {
             config.put(AbstractArithmeticMathTransformationProfile.ITEM_NAME_PARAM, itemName);
             GenericItem item;
