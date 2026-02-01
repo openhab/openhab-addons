@@ -338,7 +338,7 @@ Other device types may be supported, but with limited or missing functionality.
 | Humidity Sensor               | 0x0307           | Relative Humidity Measurement (0x0405)                                                                                                                |
 | On/Off Sensor                 | 0x0850           | On/Off (0x0006)                                                                                                                                       |
 | Air Quality Sensor            | 0x002C           | Air Quality (0x005B)                                                                                                                                  |
-| Smoke CO Alarm                | 0x0076           | Smoke CO Alarm (0x005C), Relative Humidity Measurement (0x0405), Temperature Measurement (0x0402), Concentration Measurement Clusters                 | 
+| Smoke CO Alarm                | 0x0076           | Smoke CO Alarm (0x005C), Relative Humidity Measurement (0x0405), Temperature Measurement (0x0402), Concentration Measurement Clusters                 |
 | Water Freeze Detector         | 0x0041           | Boolean State (0x0045)                                                                                                                                |
 | Water Leak Detector           | 0x0043           | Boolean State (0x0045)                                                                                                                                |
 | Rain Sensor                   | 0x0044           | Boolean State (0x0045)                                                                                                                                |
