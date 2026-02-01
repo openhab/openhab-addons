@@ -14,25 +14,42 @@ function print_reactor_summary() {
     cat "$BUILD_LOG" | sed -n "${start},${end}p" | sed 's/\[INFO\] //'
 }
 
-function emit_markdownlint_annotations() {
+gha_escape() {
+  sed -e 's/%/%25/g' -e 's/\r/%0D/g' -e 's/\n/%0A/g'
+}
+
+emit_markdownlint_annotations() {
   [[ -f "$BUILD_LOG" ]] || return 0
 
-  # Match markdownlint errors even if the line has prefixes before [INFO]
-  grep -aE '\[INFO\] .*\.md:[0-9]+(:[0-9]+)? error MD' "$BUILD_LOG" \
-  | sed -E 's/^.*\[INFO\] //' \
-  | while IFS= read -r l; do
-      file=$(echo "$l" | sed -E 's/^([^:]+\.md):.*/\1/')
-      line=$(echo "$l" | sed -E 's/^[^:]+\.md:([0-9]+).*/\1/')
+  while IFS= read -r l; do
+    file=$(echo "$l" | sed -E 's/^([^:]+\.md):.*/\1/')
+    line=$(echo "$l" | sed -E 's/^[^:]+\.md:([0-9]+).*/\1/')
 
-      if echo "$l" | grep -qE '^[^:]+\.md:[0-9]+:[0-9]+ error MD'; then
-        col=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+:([0-9]+) error .*/\1/')
-        msg=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+:[0-9]+ error (MD[^ ]+) (.*)$/\1 \2/')
-        echo "::error file=$file,line=$line,col=$col::$msg"
-      else
-        msg=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+ error (MD[^ ]+) (.*)$/\1 \2/')
-        echo "::error file=$file,line=$line::$msg"
+    # Repair path so GitHub can link it (repo-root relative)
+    if [[ ! -f "$file" ]]; then
+      if [[ -f "bundles/$file" ]]; then
+        file="bundles/$file"
+      elif [[ -f "itests/$file" ]]; then
+        file="itests/$file"
       fi
-    done
+    fi
+
+    if echo "$l" | grep -qE '^[^:]+\.md:[0-9]+:[0-9]+ error MD'; then
+      col=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+:([0-9]+) error .*/\1/')
+      rule=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+:[0-9]+ error (MD[^ ]+) .*/\1/')
+      rest=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+:[0-9]+ error MD[^ ]+ (.*)$/\1/')
+      rest_esc=$(printf '%s' "$rest" | gha_escape)
+      echo "::error file=$file,line=$line,col=$col,title=$rule::$rest_esc"
+    else
+      rule=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+ error (MD[^ ]+) .*/\1/')
+      rest=$(echo "$l" | sed -E 's/^[^:]+\.md:[0-9]+ error MD[^ ]+ (.*)$/\1/')
+      rest_esc=$(printf '%s' "$rest" | gha_escape)
+      echo "::error file=$file,line=$line,title=$rule::$rest_esc"
+    fi
+  done < <(
+    grep -aE '\[INFO\] .*\.md:[0-9]+(:[0-9]+)? error MD' "$BUILD_LOG" \
+    | sed -E 's/^.*\[INFO\] //'
+  )
 }
 
 function mvnp() {
