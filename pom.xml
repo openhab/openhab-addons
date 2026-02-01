@@ -863,7 +863,6 @@ Import-Package: \
         <maven.compiler.release>${oh.java.version}</maven.compiler.release>
       </properties>
     </profile>
-
   </profiles>
 
 </project>
