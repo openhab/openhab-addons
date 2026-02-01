@@ -189,33 +189,33 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                                 thingBuilder.withoutChannel(channel2.getUID());
                             }
                             updateThing(thingBuilder.build());
-                            STM = null;
-                            break; // STM will not be used
+                            stm = null;
+                            break; // stm will not be used
                         case ROLLERSHUTTER:
-                            STM = STMStateMachine.build(STMTransitionConfiguration.ROLLERSHUTTER, STMState.INVALID,
+                            stm = STMStateMachine.build(STMTransitionConfiguration.ROLLERSHUTTER, STMState.INVALID,
                                     thing, scheduler);
-                            if (STM != null) {
-                                STM.register(STMAction.CALIBRATION_DONE, STM::enqueueProcessCommand);
+                            if (stm != null) {
+                                stm.register(STMAction.CALIBRATION_DONE, stm::enqueueProcessCommand);
                             }
                             channel1 = thing.getChannel(CHANNEL_DIMMER);
                             if (channel1 != null) {
                                 thingBuilder.withoutChannel(channel1.getUID());
                             }
                             updateThing(thingBuilder.build());
-                            logger.debug("Elatko FSB14 will operate in rollershutter mode");
+                            logger.debug("Eltako FSB14 will operate in rollershutter mode");
                             break;
                         case BLINDS:
-                            STM = STMStateMachine.build(STMTransitionConfiguration.BLINDS, STMState.INVALID, thing,
+                            stm = STMStateMachine.build(STMTransitionConfiguration.BLINDS, STMState.INVALID, thing,
                                     scheduler);
-                            if (STM != null) {
+                            if (stm != null) {
                                 // how to fix @Nullable warning here?
-                                STM.register(STMAction.CALIBRATION_DONE, STM::enqueueProcessCommand);
-                                STM.register(STMAction.POSITION_DONE, STM::enqueueProcessCommand);
+                                stm.register(STMAction.CALIBRATION_DONE, stm::enqueueProcessCommand);
+                                stm.register(STMAction.POSITION_DONE, stm::enqueueProcessCommand);
                             }
-                            logger.debug("Elatko FSB14 will operate in blinds mode");
+                            logger.debug("Eltako FSB14 will operate in blinds mode");
                             break;
                     }
-                    logger.debug("STM initialized");
+                    logger.debug("stm initialized");
                 }
             }
 
@@ -289,7 +289,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         }
         EEP eep = EEPFactory.createEEP(sendType);
 
-        if (eep.convertFromCommand(thing, channelUID, command, id -> getCurrentState(id), STM).hasData()) {
+        if (eep.convertFromCommand(thing, channelUID, command, id -> getCurrentState(id), stm).hasData()) {
             BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
                     .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
             if (msg == null) {

@@ -78,7 +78,7 @@ public abstract class EEP {
     }
 
     public EEP convertFromCommand(Thing thing, ChannelUID channelUID, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
 
         Channel channel = thing.getChannel(channelUID);
         if (channel != null) {
@@ -95,14 +95,14 @@ public abstract class EEP {
             if (channelTypeId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
                 teachInQueryImpl(config);
             } else {
-                convertFromCommandImpl(thing, channelUID, command, getCurrentStateFunc, STM);
+                convertFromCommandImpl(thing, channelUID, command, getCurrentStateFunc, stm);
             }
         }
         return this;
     }
 
     public State convertToState(String channelId, String channelTypeId, Configuration config,
-            Function<String, @Nullable State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, @Nullable State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
@@ -125,17 +125,17 @@ public abstract class EEP {
                 return new DateTimeType();
         }
 
-        return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config, STM);
+        return convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config, stm);
     }
 
     public @Nullable String convertToEvent(String channelId, String channelTypeId, @Nullable String lastEvent,
-            Configuration config, @Nullable STMStateMachine STM) {
+            Configuration config, @Nullable STMStateMachine stm) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
         }
 
-        return convertToEventImpl(channelId, channelTypeId, lastEvent, config, STM);
+        return convertToEventImpl(channelId, channelTypeId, lastEvent, config, stm);
     }
 
     public EEP setRORG(RORG newRORG) {

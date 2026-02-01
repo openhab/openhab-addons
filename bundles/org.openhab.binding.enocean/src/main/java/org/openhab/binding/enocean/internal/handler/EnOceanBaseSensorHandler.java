@@ -67,7 +67,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
 
     protected @Nullable ScheduledFuture<?> responseFuture = null;
 
-    public @Nullable STMStateMachine STM = null;
+    public @Nullable STMStateMachine stm = null;
 
     public EnOceanBaseSensorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing, itemChannelLinkRegistry);
@@ -184,7 +184,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                         switch (channel.getKind()) {
                             case STATE:
                                 State result = eep.convertToState(channelId, channelTypeId, channelConfig,
-                                        this::getCurrentState, STM);
+                                        this::getCurrentState, stm);
 
                                 // if message can be interpreted (result != UnDefType.UNDEF) => update item state
                                 if (result != UnDefType.UNDEF) {
@@ -194,7 +194,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                             case TRIGGER:
                                 String lastEvent = lastEvents.get(channelId);
                                 String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig,
-                                        STM);
+                                        stm);
                                 if (event != null) {
                                     triggerChannel(channel.getUID(), event);
                                     lastEvents.put(channelId, event);

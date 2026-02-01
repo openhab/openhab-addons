@@ -244,7 +244,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             if (localSendType != null) {
                 EEP eep = EEPFactory.createEEP(localSendType);
                 if (eep.setSenderId(senderId).setDestinationId(destinationId)
-                        .convertFromCommand(thing, channelUID, command, id -> getCurrentState(id), STM).hasData()) {
+                        .convertFromCommand(thing, channelUID, command, id -> getCurrentState(id), stm).hasData()) {
                     BasePacket press = eep.setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
                     if (press != null) {
                         EnOceanBridgeHandler handler = getBridgeHandler();
@@ -256,7 +256,7 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                     if (channelConfig.duration > 0) {
                         releaseFuture = scheduler.schedule(() -> {
                             if (eep.convertFromCommand(thing, channelUID, convertToReleasedCommand(lastTriggerEvent),
-                                    id -> getCurrentState(id), STM).hasData()) {
+                                    id -> getCurrentState(id), stm).hasData()) {
                                 BasePacket release = eep.getERP1Message();
                                 if (release != null) {
                                     EnOceanBridgeHandler handler = getBridgeHandler();

@@ -57,7 +57,7 @@ public class PTM200Message extends _RPSMessage {
 
     @Override
     protected void convertFromCommandImpl(Thing thing, ChannelUID channelUID, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
     }
 
     // TODO: Architectural improvement - Feedback processing should be in Handler
@@ -67,50 +67,50 @@ public class PTM200Message extends _RPSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config,
-            @Nullable STMStateMachine STM) {
+            @Nullable STMStateMachine stm) {
         switch (channelId) {
             case CHANNEL_GENERAL_SWITCHING:
                 return OnOffType.from(bytes[0] == SWITCH_ON);
             case CHANNEL_ROLLERSHUTTER:
                 switch (bytes[0]) {
                     case UP:
-                        if (STM != null) {
-                            switch (STM.getState()) {
+                        if (stm != null) {
+                            switch (stm.getState()) {
                                 case INVALID:
                                     // command is coming from elsewhere (e.g. local switch) and not from stm
                                     // can be used for pushing stm into calibrated state
-                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
-                                    STM.apply(STMAction.CALIBRATION_REQUEST_UP);
+                                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    stm.apply(STMAction.CALIBRATION_REQUEST_UP);
                                     break;
                                 case MOVEMENT_POSITION_UP:
                                     // StopMoveType.MOVE is used as command for adjustment of slats
-                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     break;
                                 default:
                                     break;
                             }
-                            STM.apply(STMAction.CALIBRATION_DONE);
-                            STM.apply(STMAction.POSITION_DONE);
+                            stm.apply(STMAction.CALIBRATION_DONE);
+                            stm.apply(STMAction.POSITION_DONE);
                         }
                         return PercentType.ZERO;
                     case DOWN:
-                        if (STM != null) {
-                            switch (STM.getState()) {
+                        if (stm != null) {
+                            switch (stm.getState()) {
                                 case INVALID:
                                     // command is coming from elsewhere (e.g. local switch) and not from stm
                                     // can be used for pushing stm into calibrated state
-                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
-                                    STM.apply(STMAction.CALIBRATION_REQUEST_DOWN);
+                                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    stm.apply(STMAction.CALIBRATION_REQUEST_DOWN);
                                     break;
                                 case MOVEMENT_POSITION_DOWN:
                                     // StopMoveType.MOVE is used as command for adjustment of slats
-                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     break;
                                 default:
                                     break;
                             }
-                            STM.apply(STMAction.CALIBRATION_DONE);
-                            STM.apply(STMAction.POSITION_DONE);
+                            stm.apply(STMAction.CALIBRATION_DONE);
+                            stm.apply(STMAction.POSITION_DONE);
                         }
                         return PercentType.HUNDRED;
                     default:

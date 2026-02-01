@@ -63,7 +63,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         super(packet);
     }
 
-    private void convertDimmerImpl(int newPos, int actPos, Configuration config, STMStateMachine STM) {
+    private void convertDimmerImpl(int newPos, int actPos, Configuration config, STMStateMachine stm) {
 
         int swapTime = config.as(EnOceanChannelRollershutterConfig.class).swapTime;
 
@@ -74,24 +74,24 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
         if (duration != 0) {
             setData(duration_msb, duration_lsb, direction, CMD_100MSEC);
-            STM.apply(STMAction.SLATS_POS_REQUEST);
+            stm.apply(STMAction.SLATS_POS_REQUEST);
             return;
         } else {
-            STM.apply(STMAction.SLATS_POS_DONE); // safe way to return to IDLE
+            stm.apply(STMAction.SLATS_POS_DONE); // safe way to return to IDLE
         }
     }
 
     private void convertDimmer(PercentType decimalCommand, Configuration config,
-            Function<String, State> getCurrentStateFunc, STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, STMStateMachine stm) {
 
         State channelDimmer = getCurrentStateFunc.apply(CHANNEL_DIMMER);
         PercentType currentDimmer = channelDimmer.as(PercentType.class);
         if (currentDimmer != null) {
             int newPos = decimalCommand.intValue();
             int actPos = currentDimmer.intValue();
-            convertDimmerImpl(newPos, actPos, config, STM);
+            convertDimmerImpl(newPos, actPos, config, stm);
         } else {
-            STM.apply(STMAction.SLATS_POS_DONE);//
+            stm.apply(STMAction.SLATS_POS_DONE);//
         }
     }
 
@@ -100,7 +100,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     // processes feedback and updates the same state machine. This creates coupling across EEP classes.
     // Future: Handler should coordinate state machine, EEPs should remain stateless for message conversion.
     private void convertPosition(DecimalType percentCommand, Configuration config,
-            Function<String, State> getCurrentStateFunc, STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, STMStateMachine stm) {
 
         State channelRollershutter = getCurrentStateFunc.apply(CHANNEL_ROLLERSHUTTER);
         State channelDimmer = getCurrentStateFunc.apply(CHANNEL_DIMMER);
@@ -130,9 +130,9 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                 setData(duration_msb, duration_lsb, direction_b, (CMD_100MSEC));
 
                 if (direction) {
-                    STM.apply(STMAction.POSITION_REQUEST_UP);
+                    stm.apply(STMAction.POSITION_REQUEST_UP);
                 } else {
-                    STM.apply(STMAction.POSITION_REQUEST_DOWN);
+                    stm.apply(STMAction.POSITION_REQUEST_DOWN);
                 }
             }
 
@@ -140,27 +140,27 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     void processCmdAsPercentType(Thing thing, PercentType percentCommand, Configuration config,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
 
         int shutTime = config.as(EnOceanChannelRollershutterConfig.class).shutTime;
 
-        if (STM != null) {
-            switch (STM.getState()) {
+        if (stm != null) {
+            switch (stm.getState()) {
                 case INVALID:
                     // Can't process command immediately -> store it.
-                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
+                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, percentCommand);
                     setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
-                    STM.apply(STMAction.CALIBRATION_REQUEST_UP);
+                    stm.apply(STMAction.CALIBRATION_REQUEST_UP);
                     break;
                 case IDLE:
                     if (percentCommand.intValue() == PercentType.ZERO.intValue()) {
                         setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => move completely up
-                        STM.apply(STMAction.POSITION_REQUEST_UP);
+                        stm.apply(STMAction.POSITION_REQUEST_UP);
                     } else if (percentCommand.intValue() == PercentType.HUNDRED.intValue()) {
                         setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => move completely down
-                        STM.apply(STMAction.POSITION_REQUEST_DOWN);
+                        stm.apply(STMAction.POSITION_REQUEST_DOWN);
                     } else {
-                        convertPosition(percentCommand, config, getCurrentStateFunc, STM);
+                        convertPosition(percentCommand, config, getCurrentStateFunc, stm);
                     }
                     break;
                 default:
@@ -193,27 +193,27 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     void processCmdAsUpDownType(Thing thing, UpDownType upDownCommand, Configuration config,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
 
         int shutTime = config.as(EnOceanChannelRollershutterConfig.class).shutTime;
 
-        if (STM != null) {
-            if ((STM.getState() == STMState.IDLE) || (STM.getState() == STMState.INVALID)) {
+        if (stm != null) {
+            if ((stm.getState() == STMState.IDLE) || (stm.getState() == STMState.INVALID)) {
                 if (upDownCommand == UpDownType.UP) {
                     setData(ZERO, (byte) shutTime, MOVE_UP, TEACHIN_BIT); // => 0 percent
-                    if (STM.getState() == STMState.IDLE) {
-                        STM.apply(STMAction.POSITION_REQUEST_UP);
+                    if (stm.getState() == STMState.IDLE) {
+                        stm.apply(STMAction.POSITION_REQUEST_UP);
                     } else {
-                        STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
-                        STM.apply(STMAction.CALIBRATION_REQUEST_UP);
+                        stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                        stm.apply(STMAction.CALIBRATION_REQUEST_UP);
                     }
 
                 } else if (upDownCommand == UpDownType.DOWN) {
                     setData(ZERO, (byte) shutTime, MOVE_DOWN, TEACHIN_BIT); // => 100 percent
-                    if (STM.getState() == STMState.IDLE) {
-                        STM.apply(STMAction.POSITION_REQUEST_DOWN);
+                    if (stm.getState() == STMState.IDLE) {
+                        stm.apply(STMAction.POSITION_REQUEST_DOWN);
                     } else {
-                        STM.apply(STMAction.CALIBRATION_REQUEST_DOWN);
+                        stm.apply(STMAction.CALIBRATION_REQUEST_DOWN);
                     }
 
                 }
@@ -228,25 +228,25 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     void processCmdAsStopMoveType(Thing thing, StopMoveType stopMoveCommand, Configuration config,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
 
-        if (STM != null) {
+        if (stm != null) {
             if (stopMoveCommand == StopMoveType.STOP) {
                 setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
-                STM.apply(STMAction.INVALID_REQUEST);
+                stm.apply(STMAction.INVALID_REQUEST);
             } else if (stopMoveCommand == StopMoveType.MOVE) {
                 // if (strCmd.toString() == "CALLBACK") {
-                if (STM.getState() == STMState.POSITION_REACHED) {
+                if (stm.getState() == STMState.POSITION_REACHED) {
                     // Position has been reached, slat now needs to be adjusted
                     // Since the actual position is not persisted elsewhere, the slat position is determined based on
                     // the direction of travel
                     State channelDimmer = getCurrentStateFunc.apply(CHANNEL_DIMMER);
                     PercentType currentDimmer = channelDimmer.as(PercentType.class);
                     if (currentDimmer != null) {
-                        if (STM.getPrevState() == STMState.MOVEMENT_POSITION_UP) {
-                            convertDimmerImpl(currentDimmer.intValue(), PercentType.ZERO.intValue(), config, STM);
+                        if (stm.getPrevState() == STMState.MOVEMENT_POSITION_UP) {
+                            convertDimmerImpl(currentDimmer.intValue(), PercentType.ZERO.intValue(), config, stm);
                         } else {
-                            convertDimmerImpl(currentDimmer.intValue(), PercentType.HUNDRED.intValue(), config, STM);
+                            convertDimmerImpl(currentDimmer.intValue(), PercentType.HUNDRED.intValue(), config, stm);
                         }
                     }
                 }
@@ -260,26 +260,26 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     }
 
     void processChannelRollershutter(Thing thing, Command command, Configuration config,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
 
         if (command instanceof PercentType percentCommand) {
-            processCmdAsPercentType(thing, percentCommand, config, getCurrentStateFunc, STM);
+            processCmdAsPercentType(thing, percentCommand, config, getCurrentStateFunc, stm);
         } else if (command instanceof UpDownType upDownCommand) {
-            processCmdAsUpDownType(thing, upDownCommand, config, getCurrentStateFunc, STM);
+            processCmdAsUpDownType(thing, upDownCommand, config, getCurrentStateFunc, stm);
         } else if (command instanceof StopMoveType stopMoveCommand) {
-            processCmdAsStopMoveType(thing, stopMoveCommand, config, getCurrentStateFunc, STM);
+            processCmdAsStopMoveType(thing, stopMoveCommand, config, getCurrentStateFunc, stm);
         }
     }
 
     void processChannelDimmer(Thing thing, Command command, Configuration config,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
 
         Channel channel = null;
         if (command instanceof PercentType decimalCommand) {
-            if (STM != null) {
-                switch (STM.getState()) {
+            if (stm != null) {
+                switch (stm.getState()) {
                     case IDLE:
-                        convertDimmer(decimalCommand, config, getCurrentStateFunc, STM);
+                        convertDimmer(decimalCommand, config, getCurrentStateFunc, stm);
                         if (thing.getHandler() instanceof EnOceanBaseActuatorHandler myHandler) {
                             channel = thing.getChannel(CHANNEL_DIMMER);
                             if (channel != null) {
@@ -307,7 +307,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
     @Override
     protected void convertFromCommandImpl(Thing thing, ChannelUID channelUID, Command command,
-            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
+            Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine stm) {
 
         // always take the config from channel rollershutter, concept: global config for all channels
         Channel channel = thing.getChannel(CHANNEL_ROLLERSHUTTER);
@@ -316,10 +316,10 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
             String channelId = channelUID.getId();
             switch (channelId) {
                 case CHANNEL_ROLLERSHUTTER:
-                    processChannelRollershutter(thing, command, config, getCurrentStateFunc, STM);
+                    processChannelRollershutter(thing, command, config, getCurrentStateFunc, stm);
                     break;
                 case CHANNEL_DIMMER:
-                    processChannelDimmer(thing, command, config, getCurrentStateFunc, STM);
+                    processChannelDimmer(thing, command, config, getCurrentStateFunc, stm);
                     break;
             }
         }
@@ -328,7 +328,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config,
-            @Nullable STMStateMachine STM) {
+            @Nullable STMStateMachine stm) {
 
         if (CHANNEL_ROLLERSHUTTER.equals(channelId)) { //
             State currentState = getCurrentStateFunc.apply(channelId);
@@ -338,15 +338,15 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                 EnOceanChannelRollershutterConfig c = config.as(EnOceanChannelRollershutterConfig.class);
                 boolean move_up = getDB1() == MOVE_UP;
                 if (duration == c.shutTime) {
-                    if (STM != null) {
-                        switch (STM.getState()) {
+                    if (stm != null) {
+                        switch (stm.getState()) {
                             case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN:
                                 // StopMoveType.MOVE is used as command for adjustment of slats
-                                STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                             default:
                         }
-                        STM.apply(STMAction.POSITION_DONE);// will launch new command for adjustment of slats
-                        STM.apply(STMAction.CALIBRATION_DONE); // will launch new command for setting the position
+                        stm.apply(STMAction.POSITION_DONE);// will launch new command for adjustment of slats
+                        stm.apply(STMAction.CALIBRATION_DONE); // will launch new command for setting the position
                     }
                     return move_up ? PercentType.ZERO : PercentType.HUNDRED;
                 } else {
@@ -357,15 +357,15 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
                     int direction = getDB1() == MOVE_UP ? -1 : 1;
                     if (current != null && c.shutTime != -1 && c.shutTime != 0) {
-                        if (STM != null) {
-                            switch (STM.getState()) {
+                        if (stm != null) {
+                            switch (stm.getState()) {
                                 case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN:
-                                    STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
-                                    STM.apply(STMAction.POSITION_DONE); // will execute MOVE command, when we use blinds
+                                    stm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    stm.apply(STMAction.POSITION_DONE); // will execute MOVE command, when we use blinds
                                     return new PercentType(Math.min(100, (Math.max(0, current.intValue() + direction
                                             * ((duration * PercentType.HUNDRED.intValue()) / c.shutTime)))));
                                 case MOVEMENT_SLATS:
-                                    STM.apply(STMAction.SLATS_POS_DONE);
+                                    stm.apply(STMAction.SLATS_POS_DONE);
                                     return new PercentType(current.intValue()); // do not change the position
                                 default:
                             }
