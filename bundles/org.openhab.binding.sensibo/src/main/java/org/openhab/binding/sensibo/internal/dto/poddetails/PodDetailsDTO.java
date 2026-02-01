@@ -41,7 +41,7 @@ public class PodDetailsDTO {
     private ModeCapabilityWrapperDTO remoteCapabilities;
 
     public Map<String, ModeCapabilityDTO> getRemoteCapabilities() {
-        return remoteCapabilities.modes;
+        return remoteCapabilities != null ? remoteCapabilities.modes : null;
     }
 
     public boolean isAlive() {
