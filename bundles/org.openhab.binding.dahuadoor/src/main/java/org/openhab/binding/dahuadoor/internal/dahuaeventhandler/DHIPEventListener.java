@@ -16,8 +16,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.JsonObject;
 
+/**
+ * The {@link DHIPEventListener} interface defines the callback for DHIP protocol events.
+ *
+ * @author Sven Schad - Initial contribution
+ */
 @NonNullByDefault
 public interface DHIPEventListener {
 
+    /**
+     * Handles incoming DHIP events from the Dahua device.
+     *
+     * @param data JSON object containing the event data from the device
+     */
     public void EventHandler(JsonObject data);
 }

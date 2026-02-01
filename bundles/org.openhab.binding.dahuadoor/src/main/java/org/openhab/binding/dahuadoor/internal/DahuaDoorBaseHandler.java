@@ -83,11 +83,11 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (CHANNEL_BELL_BUTTON.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-                // TODO: handle data refresh
+                // Refresh not supported for trigger channel
             }
         }
         switch (channelUID.getId()) {
-            case CHANNEL_OPENDOOR1:
+            case CHANNEL_OPEN_DOOR_1:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
                         queries.OpenDoor(1);
@@ -95,7 +95,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                     }
                 }
                 break;
-            case CHANNEL_OPENDOOR2:
+            case CHANNEL_OPEN_DOOR_2:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
                         queries.OpenDoor(2);
@@ -104,12 +104,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                 }
                 break;
         }
-        // TODO: handle command
-
-        // Note: if communication with thing fails for some reason,
-        // indicate that by setting the status with detail information:
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-        // "Could not control device at IP address x.x.x.x");
     }
 
     public void errorInformer(String msgError) {

@@ -1,66 +1,72 @@
 # DahuaDoor Binding
 
-A small binding for VTO2202F Villastation Dahua Door controller.
-
+A binding for Dahua VTO2202F Villastation door controllers.
 
 ## Supported Things
 
-Currently only VTO2202F Villastation is supported.
-
-
+| Thing Type | Thing ID   | Description                           |
+|------------|------------|---------------------------------------|
+| VTO Device | `dahua_vth` | Dahua VTO2202F Villastation door unit |
 
 ## Discovery
 
-not supported
-
+Automatic discovery is not supported. Things must be manually configured.
 
 ## Thing Configuration
 
-Following configuration is required. Please note that you have to use a linux path where openhab has sufficient access rights.
-E.g. /var/lib/openhab/door-images. Windows is not supported yet.
+The following configuration parameters are required:
 
-### Thing Configuration
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| hostname | text | Yes | Hostname or IP address of the device |
+| username | text | Yes | Username to access the device |
+| password | text | Yes | Password to access the device |
+| snapshotpath | text | Yes | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
 
-| Name            | Type    | Description                                           
-|-----------------|---------|-------------------------------------------------------|
-| hostname        | text    | Hostname or IP address of the device                  |
-| username        | text    | Username to access the device                         |
-| password        | text    | Password to access the device                         |
-| path            | text    | Path where image files are stored Linux path required |   
+**Note:** Windows paths are not currently supported.
 
 ## Channels
 
-The following channels are provided:
-
-| Channel     | Type     | Description                              |
-|-------------|----------|------------------------------------------|
-| bell_button | Switch   | Trigger channel for Dahua Door button    |
-| door_image  | Image    | Camera image when bell button is pressed | 
-| openDoor1   | Switch   | Switch to open door 1                    |
-| openDoor2   | Switch   | Switch to open door 2                    |
-
+| Channel ID | Type | Read/Write | Description |
+|------------|------|------------|-------------|
+| bell-button | Trigger | Read | Triggers when doorbell button is pressed (event: PRESSED) |
+| door-image | Image | Read | Camera snapshot taken when doorbell is pressed |
+| open-door-1 | Switch | Write | Command to open door relay 1 |
+| open-door-2 | Switch | Write | Command to open door relay 2 |
 
 ## Full Example
 
+### Thing Configuration
+
+```java
+Thing dahuadoor:dahua_vth:frontdoor "Front Door Station" @ "Entrance" [
+    hostname="192.168.1.100",
+    username="admin",
+    password="password123",
+    snapshotpath="/var/lib/openhab/door-images"
+]
+```
 
 ### Item Configuration
 
 ```java
-Switch DoorOpener "Tueroeffner" <switch> (Eingang) ["Switch"]
-Image DahuaDoor_Binding_Thing_Door_Image "Eingangstuere" <camera> (Eingang)
+Switch OpenFrontDoor "Open Front Door" <door> { channel="dahuadoor:dahua_vth:frontdoor:open-door-1" }
+Image FrontDoorImage "Front Door Camera" <camera> { channel="dahuadoor:dahua_vth:frontdoor:door-image" }
 ```
 
 ### Rule Configuration
 
-If you have installed the openhab cloud service openhab can send you a notification to your smartphone with the captured image.
+Send smartphone notification with camera image when doorbell is pressed (requires openHAB Cloud Connector):
 
 ```java
-rule "Türklingel"
-    when 
-        Channel "dahuadoor:dahua_vth:frontdoor:bell_button" triggered PRESSED
-    then
-    sendBroadcastNotification("Besucher hat geklingelt", "door", 
-       "TagEingang", "Eingang", "eingangsnachrichten", null, "item:DahuaDoor_Binding_Thing_Door_Image", "Haustüre öffnen=command:DoorOpener:ON","Garage öffnen=command:Garage_Garagentor:ON",null)
+rule "Doorbell Notification"
+when
+    Channel "dahuadoor:dahua_vth:frontdoor:bell-button" triggered PRESSED
+then
+    sendBroadcastNotification("Visitor at the door", "door", 
+        "entrance", "Entrance", "door-notifications", null, 
+        "item:FrontDoorImage", 
+        "Open Door=command:OpenFrontDoor:ON", null)
 end
 ```
 

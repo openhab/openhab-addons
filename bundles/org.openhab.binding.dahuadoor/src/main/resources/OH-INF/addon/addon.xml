@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>DahuaDoor Binding</name>
 	<description>This is the binding for VTO2202 dahua door controller </description>
+	<connection>local</connection>
 
 </addon:addon>

@@ -16,10 +16,10 @@
 		<description>DahuaDoor Binding</description>
 
 		<channels>
-			<channel id="bell_button" typeId="bell-button"/>
-			<channel id="door_image" typeId="door-image"/>
-			<channel id="openDoor1" typeId="openDoor1"/>
-			<channel id="openDoor2" typeId="openDoor2"/>
+			<channel id="bell-button" typeId="bell-button"/>
+			<channel id="door-image" typeId="door-image"/>
+			<channel id="open-door-1" typeId="open-door-1"/>
+			<channel id="open-door-2" typeId="open-door-2"/>
 		</channels>
 
 		<config-description>
@@ -71,12 +71,12 @@
 		<description>Image of door when bell butten is pressed</description>
 	</channel-type>
 
-	<channel-type id="openDoor1">
+	<channel-type id="open-door-1">
 		<item-type>Switch</item-type>
 		<label>Open Door 1</label>
 		<description>Open door 1</description>
 	</channel-type>
-	<channel-type id="openDoor2">
+	<channel-type id="open-door-2">
 		<item-type>Switch</item-type>
 		<label>Open Door 2</label>
 		<description>Open Door 2</description>
