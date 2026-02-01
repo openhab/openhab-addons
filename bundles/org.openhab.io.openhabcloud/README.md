@@ -380,7 +380,7 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
 rule "Motion Detected Notification" do
   changed Apartment_MotionSensor, to: ON
   run do
-    HTTP.setImage('Apartment_Camera_Snapshot', 'http://camera.local/camera-snapshot.jpg')
+    HTTP.setImage("Apartment_Camera_Snapshot", "http://camera.local/camera-snapshot.jpg")
     Notification.send "Motion detected in the apartment!",
                       icon: "motion",
                       tag: "Motion Tag",

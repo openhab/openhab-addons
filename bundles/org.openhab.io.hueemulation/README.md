@@ -123,7 +123,7 @@ The following default tags are set up:
 - "Lighting": Item will be exposed as a dimmable white bulb.
 - "ColorLighting": Item will be exposed as a color bulb.
 
-It is the responsibility of binding developers to categorize and default-tag their available _Channels_ so that linked items are automatically exposed with this service.
+It is the responsibility of binding developers to categorize and default-tag their available _Channels_ so that linked Items are automatically exposed with this service.
 
 You can tag items manually as well.
 

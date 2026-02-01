@@ -26,7 +26,7 @@ Please note that there might be charges from Amazon when using this service to q
 See [Amazon DynamoDB pricing pages](https://aws.amazon.com/dynamodb/pricing/) for more details.
 Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 
-### Setting up an Amazon Account
+### Setting Up an Amazon Account
 
 <!-- markdownlint-disable-next-line no-emphasis-as-heading -->
 **Login to AWS web console**

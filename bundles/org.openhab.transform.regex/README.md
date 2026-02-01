@@ -20,12 +20,12 @@ The special characters `\.[]{}()*+-?^$|` have to be escaped when they should be 
 
 ### Basic Examples
 
-| Input String                | Regular Expression       | Output String | Explanation                                                                                                 |
-| --------------------------- | ------------------------ | ------------- | ----------------------------------------------------------------------------------------------------------- |
-| `My network does not work.` | `s/work/cast/g`          | `My netcast does not cast.` | Replaces all matches of the string "work" with the string "cast".                                         |
-| `My network does not work.` | `.*(\snot).*`            | not (leading space) | Returns the first capture group (" not"); `\s` matches a whitespace.                                      |
-| `temp=44.0'C`               | `temp=(.*?)'C`           | `44.0`        | Matches the whole string and returns the content of the capture group `(.*?)`.                             |
-| `48312`                     | `s/(.{2})(.{3})/$1.$2/g` | `48.312`      | Captures two and three characters, returns the first capture group, adds a dot, then the second capture group. |
+| Input String                | Regular Expression       | Output String               | Explanation                                                                                                    |
+|-----------------------------|--------------------------|-----------------------------|----------------------------------------------------------------------------------------------------------------|
+| `My network does not work.` | `s/work/cast/g`          | `My netcast does not cast.` | Replaces all matches of the string "work" with the string "cast".                                              |
+| `My network does not work.` | `.*(\snot).*`            | not (leading space)         | Returns the first capture group (" not"); `\s` matches a whitespace.                                           |
+| `temp=44.0'C`               | `temp=(.*?)'C`           | `44.0`                      | Matches the whole string and returns the content of the capture group `(.*?)`.                                 |
+| `48312`                     | `s/(.{2})(.{3})/$1.$2/g` | `48.312`                    | Captures two and three characters, returns the first capture group, adds a dot, then the second capture group. |
 
 ### Example setup
 
@@ -75,9 +75,9 @@ then
 end
 ```
 
-Now the resulting Number can also be used in the label to [change the color](https://www.openhab.org/docs/configuration/sitemaps.html#label-and-value-colors) or in a rule as a value for comparison.
+Now the resulting Number can also be used in the label to [change the color](https://www.openhab.org/docs/ui/sitemaps.html#label-value-and-icon-colors) or in a rule as a value for comparison.
 
-## Differences to plain regex
+## Differences to Plain Regex
 
 The regex is embedded in a string, so when double quotes `"` are used in a regex they need to be escaped as `\"` to keep the string intact.
 Because the escape character in strings is the backslash, it must itself be escaped.
@@ -100,7 +100,7 @@ If omitted, the default is `%s`, so the input value will be put into the transfo
 
 Please note: This profile is a one-way transformation, i.e., only values from a device towards the item are changed; the other direction is left untouched.
 
-## Further reading
+## Further Reading
 
 - A full [introduction](https://www.w3schools.com/jsref/jsref_obj_regexp.asp) to regular expressions is available at W3Schools.
 - Online validators help check the syntax of a regex and provide hints on how to design it.

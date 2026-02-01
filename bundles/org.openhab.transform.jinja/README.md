@@ -2,7 +2,8 @@
 
 Transforms a value using a Jinja template.
 
-The main purpose of this transformer is use in Home Assistant discovery. Therefore, not all features of the Home Assistant templating engine are supported.
+The main purpose of this transformer is use in Home Assistant discovery.
+Therefore, not all features of the Home Assistant templating engine are supported.
 See also: [Processing incoming data](https://www.home-assistant.io/docs/configuration/templating/#processing-incoming-data).
 
 ## Available variables

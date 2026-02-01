@@ -49,8 +49,8 @@ Attention: The file-based configuration overrides the UI configuration.
 | db              | openhab               | No       | Name of the database for V1 and name of the organization for V2                                                                                           |
 | retentionPolicy | autogen               | No       | Name of the retention policy for V1 and name of the bucket for V2                                                                                         |
 
-(\*) For the 1.X version, you must provide user and password; for 2.X, you can use user and password or a token. That means
-that if you use all default values, at minimum you must provide a password or a token.
+(\*) For the 1.X version, you must provide user and password; for 2.X, you can use user and password or a token.
+That means that if you use all default values, at minimum you must provide a password or a token.
 
 All item- and event-related configuration is defined in the file `persistence/influxdb.persist`.
 Please consider [persistence documentation](https://www.openhab.org/docs/configuration/persistence.html#persistence) for further information.

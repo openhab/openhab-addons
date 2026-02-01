@@ -27,9 +27,8 @@
 		</parameter>
 		<parameter name="mismatchState" type="text">
 			<label>State for Filter Rejects</label>
-			<description>State to pass to the item if conditions are NOT met. Use quotes to treat as `StringType`. If not
-				defined,
-				the state update will not be passed to the item when conditions are not met.</description>
+			<description>State to pass to the Item if conditions are NOT met. Use quotes to treat as `StringType`. If not
+				defined, the state update will not be passed to the Item when conditions are not met.</description>
 		</parameter>
 		<parameter name="separator" type="text">
 			<advanced>true</advanced>

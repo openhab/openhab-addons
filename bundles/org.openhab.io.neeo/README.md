@@ -87,7 +87,7 @@ The Things tab is where you specify the mappings.
 
 There are two types of devices listed here:
 
-1. openHAB things - any openHAB Thing in the openHAB system and optionally (see configuration), any NEEO binding Thing.
+1. openHAB things - any openHAB 2 Thing in the openHAB system and optionally (see configuration), any NEEO binding Thing.
 1. virtual things - these are things you defined that can mix/match any openHAB 1 or openHAB 2 item.
 
 openHAB things can be mapped to a NEEO device and the items within the thing can be mapped to NEEO device capabilities (buttons, lists, switches, sliders, etc.).

@@ -4,7 +4,7 @@ Transforms an [XML](https://www.w3.org/XML/) input using an [XPath](https://www.
 
 ## Examples
 
-### Basic example
+### Basic Example
 
 Given a retrieved XML
 
@@ -25,7 +25,7 @@ The XPath `/PTZStatus/AbsoluteHigh/azimuth/text()` returns
 450
 ```
 
-## Advanced example
+## Advanced Example
 
 Given a retrieved XML (e.g., from a Hikvision device with the namespace `xmlns="http://www.hikvision.com/ver20/XMLSchema"`):
 
@@ -58,7 +58,7 @@ returns
 <azimuth>450</azimuth>
 ```
 
-### Example setup
+### Example Setup
 
 #### .items
 
@@ -93,7 +93,7 @@ then
 end
 ```
 
-Now the resulting Number can also be used in the label to [change the color](https://www.openhab.org/docs/configuration/sitemaps.html#label-and-value-colors) or in a rule as a value for comparison.
+Now the resulting Number can also be used in the label to [change the color](https://www.openhab.org/docs/ui/sitemaps.html#label-value-and-icon-colors) or in a rule as a value for comparison.
 
 ## Usage as a Profile
 
@@ -110,7 +110,7 @@ If omitted, the default is `%s`, so the input value will be put into the transfo
 
 Please note: This profile is a one-way transformation, i.e., only values from a device towards the item are changed; the other direction is left untouched.
 
-## Further reading
+## Further Reading
 
 - An [introduction](https://www.w3schools.com/xml/xpath_intro.asp) to XPath at W3Schools.
 - An informative explanation of [common mistakes](https://qxf2.com/blog/common-xpath-mistakes/).

@@ -28,15 +28,17 @@ The first range that includes the value is selected.
 
 Some special entries can be used in the scale file.
 
-### Catch-all entry
+### Catch-all Entry
 
 `[..]=Catchall`
 
 This entry matches all numeric values not matched by a previous range. It should be placed at the end of the scale file.
 
-### Not a number
+### Not a Number
 
-The Scale transform is designed to work with numeric or quantity states. If the value presented to the Scale transform is not numeric (often NULL or UNDEF), it will not be handled and a warning is written to openhab.log. You can handle this case with:
+The Scale transform is designed to work with numeric or quantity states.
+If the value presented to the Scale transform is not numeric (often NULL or UNDEF), it will not be handled and a warning is written to openhab.log.
+You can handle this case with:
 
 `NaN=Non-numeric state presented`
 

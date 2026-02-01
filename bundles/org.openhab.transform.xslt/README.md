@@ -18,7 +18,7 @@ For more information, see the [XPath transformation](https://www.openhab.org/add
 
 ## Examples
 
-### Basic example
+### Basic Example
 
 A simple but complete XSLT transformation looks like the following example, which was taken from [this Wikipedia article](https://en.wikipedia.org/wiki/Java_API_for_XML_Processing#Example).
 
@@ -51,7 +51,7 @@ A simple but complete XSLT transformation looks like the following example, whic
 <reRoot><reNode>hello world</reNode></reRoot>
 ```
 
-### Advanced example
+### Advanced Example
 
 This example has a namespace defined, as you would find in real-world applications, which has to be matched in the rule.
 
@@ -96,7 +96,7 @@ xmlns:h="http://www.hikvision.com/ver20/XMLSchema">
 </xsl:stylesheet>
 ```
 
-#### Output document
+#### Output Document
 
 ```text
 Fri, 18 Dec 2009 9:38 am PST
@@ -118,7 +118,7 @@ If omitted, the default is `%s`, so the input value will be put into the transfo
 
 Please note: This profile is a one-way transformation, i.e., only values from a device towards the Item are changed; the other direction is left untouched.
 
-## Further reading
+## Further Reading
 
 - Extended introduction and more [examples](https://en.wikipedia.org/wiki/XSLT#XSLT_examples) at Wikipedia.
 - A good [introduction](https://www.w3schools.com/xml/xsl_intro.asp) and [tutorial](https://www.w3schools.com/xml/xsl_transformation.asp) at W3Schools.
