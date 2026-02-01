@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.dahuadoor.internal.dahuaeventhandler;
 
 import java.io.IOException;
@@ -13,6 +25,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,28 +34,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
-/**
  * The {@link DauhaEventClient} client polls the Dahua device
  *
  *
  * @author Sven Schad - Initial contribution
  */
-
+@NonNullByDefault
 public class DahuaEventClient implements Runnable {
 
-    Logger logger;
+    private @Nullable Logger logger;
 
     private String host;
     private String username;
@@ -55,9 +56,9 @@ public class DahuaEventClient implements Runnable {
     private static boolean debug = true;
 
     private DHIPEventListener eventListener;
-    private Future<?> connectionThread;
+    private @Nullable Future<?> connectionThread;
 
-    private Socket sock;
+    private @Nullable Socket sock;
     private final Gson gson = new Gson();
     private boolean execThread = true;
     private Consumer<String> errorInformer;
@@ -95,7 +96,16 @@ public class DahuaEventClient implements Runnable {
     }
 
     public void KeepAlive(int delay) {
-        logger.trace("Started keepAlive thread");
+        final Logger localLogger = logger;
+        if (localLogger == null) {
+            return;
+        }
+        final Socket localSock = sock;
+        if (localSock == null) {
+            return;
+        }
+
+        localLogger.trace("Started keepAlive thread");
         while (execThread) {
             Map<String, Object> queryArgs = new HashMap<>();
             queryArgs.put("method", "global.keepAlive");
@@ -107,7 +117,7 @@ public class DahuaEventClient implements Runnable {
             try {
                 Send(new Gson().toJson(queryArgs));
             } catch (IOException e) {
-                logger.trace("Error sending keepAlive: " + e.getMessage());
+                logger.trace("Error sending keepAlive: {}", e.getMessage());
             }
             lastKeepAlive = System.currentTimeMillis();
             boolean keepAliveReceived = false;
@@ -130,7 +140,7 @@ public class DahuaEventClient implements Runnable {
                         }
                     }
                 } catch (IOException e) {
-                    logger.trace("Error receiving keepAlive response: " + e.getMessage());
+                    logger.trace("Error receiving keepAlive response: {}", e.getMessage());
                 }
             }
 
@@ -175,10 +185,10 @@ public class DahuaEventClient implements Runnable {
              */
             String result2 = new String(buffer.array(), StandardCharsets.UTF_8);
 
-            // logger.trace("Sending:"+result);
+            // logger.trace("Sending:" + result);
             sock.getOutputStream().write(buffer.array());
         } catch (IOException e) {
-            logger.trace(e.getMessage());
+            logger.trace("{}", e.getMessage());
         }
     }
 
@@ -266,10 +276,15 @@ public class DahuaEventClient implements Runnable {
             Map<String, Object> jsonData = new Gson().fromJson(data.get(0), Map.class);
             this.SessionID = ((Double) jsonData.get("session")).intValue();
             Map<String, Object> params = (Map<String, Object>) jsonData.get("params");
-            String RANDOM = (String) params.get("random");
-            String REALM = (String) params.get("realm");
+            String random = (String) params.get("random");
+            String realm = (String) params.get("realm");
 
-            String RANDOM_HASH = Gen_md5_hash(RANDOM, REALM, this.username, this.password);
+            if (random == null || realm == null) {
+                logger.trace("Login failed: missing random or realm");
+                return false;
+            }
+
+            String RANDOM_HASH = Gen_md5_hash(random, realm, this.username, this.password);
 
             queryArgs = new HashMap<>();
             queryArgs.put("id", 10000);
@@ -291,10 +306,10 @@ public class DahuaEventClient implements Runnable {
                         .get("keepAliveInterval")).intValue();
                 return true;
             }
-            logger.trace("Login failed: " + ((Map<String, Object>) jsonData.get("error")).get("code") + " "
-                    + ((Map<String, Object>) jsonData.get("error")).get("message"));
+            logger.trace("Login failed: {} {}", ((Map<String, Object>) jsonData.get("error")).get("code"),
+                    ((Map<String, Object>) jsonData.get("error")).get("message"));
         } catch (Exception e) {
-            logger.trace("Login error: " + e.getMessage());
+            logger.trace("Login error: {}", e.getMessage());
         }
         return false;
     }
@@ -311,7 +326,10 @@ public class DahuaEventClient implements Runnable {
                 try {
                     Thread.sleep(60000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    final Logger localLogger = logger;
+                    if (localLogger != null) {
+                        localLogger.debug("Thread interrupted during error wait", e);
+                    }
                 }
             }
             error = true;
@@ -345,15 +363,18 @@ public class DahuaEventClient implements Runnable {
                 } else {
                     for (String packet : data) {
                         JsonObject jsonPacket = gson.fromJson(packet, JsonObject.class);
-                        if ("client.notifyEventStream".equals(jsonPacket.get("method"))) {
-                            eventListener.EventHandler(jsonPacket);
+                        if (jsonPacket != null && jsonPacket.has("method")) {
+                            String method = jsonPacket.get("method").getAsString();
+                            if ("client.notifyEventStream".equals(method)) {
+                                eventListener.EventHandler(jsonPacket);
+                            }
                         }
                     }
                 }
                 KeepAlive(this.keepAliveInterval);
                 logger.trace("Failure no keep alive received");
             } catch (Exception e) {
-                logger.trace("Socket open failed: " + e.getMessage());
+                logger.trace("Socket open failed: {}", e.getMessage());
             }
         }
         try {
@@ -361,5 +382,4 @@ public class DahuaEventClient implements Runnable {
         } catch (Exception e) {
         }
     }
-
 }

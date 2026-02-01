@@ -49,7 +49,7 @@
 				<default>600</default>
 				<advanced>true</advanced>
 			</parameter>
-			
+
 		</config-description>
 	</thing-type>
 
@@ -64,7 +64,7 @@
 			</options>
 		</event>
 	</channel-type>
-	
+
 	<channel-type id="door-image">
 		<item-type>Image</item-type>
 		<label>Door Image</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
@@ -74,7 +74,7 @@
 	<channel-type id="openDoor1">
 		<item-type>Switch</item-type>
 		<label>Open Door 1</label>
-		<description>Open door 1</description>	
+		<description>Open door 1</description>
 	</channel-type>
 	<channel-type id="openDoor2">
 		<item-type>Switch</item-type>

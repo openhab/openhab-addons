@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -110,7 +110,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         // indicate that by setting the status with detail information:
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
         // "Could not control device at IP address x.x.x.x");
-
     }
 
     public void errorInformer(String msgError) {
@@ -350,122 +349,126 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     private void handleNetworkChanged(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: NetworkChange, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: NetworkChange, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleDoorNotClosed(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: DoorNotClosed, Action " + eventList.get("Action").getAsString() + ", Name"
-                + eventData.get("Name").getAsString() + ", LocaleTime " + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: DoorNotClosed, Action {}, Name{}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("Name").getAsString(), eventData.get("LocaleTime").getAsString());
     }
 
     private void handleDoorControl(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: DoorControl, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: DoorControl, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleDoorStatus(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: DoorStatus, Action " + eventList.get("Action").getAsString() + ", Status: "
-                + eventData.get("Status").getAsString() + ", LocaleTime " + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: DoorStatus, Action {}, Status: {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("Status").getAsString(), eventData.get("LocaleTime").getAsString());
     }
 
     private void handleAddCard(JsonObject eventList, JsonObject eventData) {
         JsonObject cardData = eventData.getAsJsonArray("Data").get(0).getAsJsonObject();
-        logger.debug("Event: AddCard, Action " + eventList.get("Action").getAsString() + ": CardNo "
-                + cardData.get("CardNo").getAsString() + ", UserID " + cardData.get("UserID").getAsString()
-                + ", UserName " + cardData.get("UserName").getAsString() + ", CardStatus "
-                + cardData.get("CardStatus").getAsString() + ", CardType " + cardData.get("CardType").getAsString()
-                + ", Doors: Door 0=" + cardData.getAsJsonArray("Doors").get(0).getAsString() + ", Door1="
-                + cardData.getAsJsonArray("Doors").get(1).getAsString());
+        logger.debug(
+                "Event: AddCard, Action {}: CardNo {}, UserID {}, UserName {}, CardStatus {}, CardType {}, Doors: Door 0={}, Door1={}",
+                eventList.get("Action").getAsString(), cardData.get("CardNo").getAsString(),
+                cardData.get("UserID").getAsString(), cardData.get("UserName").getAsString(),
+                cardData.get("CardStatus").getAsString(), cardData.get("CardType").getAsString(),
+                cardData.getAsJsonArray("Doors").get(0).getAsString(),
+                cardData.getAsJsonArray("Doors").get(1).getAsString());
     }
 
     private void handleSendCard(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: SendCard, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: SendCard, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleUpgrade(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: Upgrade, Action " + eventList.get("Action").getAsString() + ", with State"
-                + eventData.get("State").getAsString() + ", LocaleTime " + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: Upgrade, Action {}, with State{}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("State").getAsString(), eventData.get("LocaleTime").getAsString());
     }
 
     private void handleDSGErrorReport(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: DGSErrorReport, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: DGSErrorReport, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleSecurityImport(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: SecurityImExport, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString() + ", Status " + eventData.get("Status").getAsString());
+        logger.debug("Event: SecurityImExport, Action {}, LocaleTime {}, Status {}",
+                eventList.get("Action").getAsString(), eventData.get("LocaleTime").getAsString(),
+                eventData.get("Status").getAsString());
     }
 
     private void handleReboot(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: Reboot, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: Reboot, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleUpdateFile(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: UpdateFile, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: UpdateFile, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleNewFile(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: NewFile, Action " + eventList.get("Action").getAsString() + ", File "
-                + eventData.get("File").getAsString() + ", Folder " + eventData.get("Filter").getAsString()
-                + ", LocaleTime " + eventData.get("LocaleTime").getAsString() + " Index "
-                + eventData.get("Index").getAsString());
+        logger.debug("Event: NewFile, Action {}, File {}, Folder {}, LocaleTime {}, Index {}",
+                eventList.get("Action").getAsString(), eventData.get("File").getAsString(),
+                eventData.get("Filter").getAsString(), eventData.get("LocaleTime").getAsString(),
+                eventData.get("Index").getAsString());
     }
 
     private void handleProfileAlarmTransit(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: ProfileAlarmTransmit, Action " + eventList.get("Action").getAsString() + ", AlarmType "
-                + eventData.get("AlarmType").getAsString() + " DevSrcType " + eventData.get("DevSrcType").getAsString()
-                + ", SenseMethod " + eventData.get("SenseMethod").getAsString());
+        logger.debug("Event: ProfileAlarmTransmit, Action {}, AlarmType {}, DevSrcType {}, SenseMethod {}",
+                eventList.get("Action").getAsString(), eventData.get("AlarmType").getAsString(),
+                eventData.get("DevSrcType").getAsString(), eventData.get("SenseMethod").getAsString());
     }
 
     private void handlePassiveHungup(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: PassiveHungup, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString() + " Index " + eventData.get("Index").getAsString());
+        logger.debug("Event: PassiveHungup, Action {}, LocaleTime {}, Index {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString(), eventData.get("Index").getAsString());
     }
 
     private void handleRequestCallState(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: RequestCallState, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString() + " Index " + eventData.get("Index").getAsString());
+        logger.debug("Event: RequestCallState, Action {}, LocaleTime {}, Index {}",
+                eventList.get("Action").getAsString(), eventData.get("LocaleTime").getAsString(),
+                eventData.get("Index").getAsString());
     }
 
     private void handleAccessSnap(JsonObject eventData) {
-        logger.debug("Event: AccessSnap, FTP upload to " + eventData.get("FtpUrl").getAsString());
+        logger.debug("Event: AccessSnap, FTP upload to {}", eventData.get("FtpUrl").getAsString());
     }
 
     private void handleAlarmLocal(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: AlarmLocal, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: AlarmLocal, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleInvite(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: Invite, Action " + eventList.get("Action").getAsString() + ", CallID "
-                + eventData.get("CallID").getAsString() + " Lock Number " + eventData.get("LockNum").getAsString());
+        logger.debug("Event: Invite, Action {}, CallID {}, Lock Number {}", eventList.get("Action").getAsString(),
+                eventData.get("CallID").getAsString(), eventData.get("LockNum").getAsString());
     }
 
     private void handleHangup(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: Hungup, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: Hungup, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleHungPhone(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: HungupPhone, Action " + eventList.get("Action").getAsString() + ", LocaleTime "
-                + eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: HungupPhone, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+                eventData.get("LocaleTime").getAsString());
     }
 
     private void handleCallSnap(JsonObject eventData) {
-        logger.debug("Event: CallSnap, DeviceType " + eventData.get("DeviceType").getAsString() + " RemoteID "
-                + eventData.get("RemoteID").getAsString() + ", RemoteIP " + eventData.get("RemoteIP").getAsString()
-                + " CallStatus " + eventData.getAsJsonArray("ChannelStates").get(0).getAsString());
+        logger.debug("Event: CallSnap, DeviceType {}, RemoteID {}, RemoteIP {}, CallStatus {}",
+                eventData.get("DeviceType").getAsString(), eventData.get("RemoteID").getAsString(),
+                eventData.get("RemoteIP").getAsString(),
+                eventData.getAsJsonArray("ChannelStates").get(0).getAsString());
     }
 
     private void handleAccessControl(JsonObject eventData) {
-        logger.debug("Event: AccessControl, Name " + eventData.get("Name").getAsString() + " Method "
-                + eventData.get("Method").getAsString() + ", ReaderID " + eventData.get("ReaderID").getAsString()
-                + ", UserID " + eventData.get("UserID").getAsString());
+        logger.debug("Event: AccessControl, Name {}, Method {}, ReaderID {}, UserID {}",
+                eventData.get("Name").getAsString(), eventData.get("Method").getAsString(),
+                eventData.get("ReaderID").getAsString(), eventData.get("UserID").getAsString());
     }
 
     private void handleSIPRegisterResult(JsonObject eventList, JsonObject eventData) {
@@ -480,7 +483,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     private void handleDoorCard(JsonObject eventList, JsonObject eventData) {
         if ("Pulse".equals(eventList.get("Action").getAsString())) {
-            logger.debug("DoorCard " + eventData.get("Number").getAsString() + " was used at door");
+            logger.debug("DoorCard {} was used at door", eventData.get("Number").getAsString());
         }
     }
 
@@ -489,8 +492,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             int finger = eventData.get("FingerPrintID").getAsInt();
             Map<Integer, String> users = Map.of(0, "Papa", 1, "Mama", 2, "Kind1", 3, "Kind2");
             String name = users.get(finger);
-            logger.debug("Event FingerPrintCheck success, Finger number " + eventData.get("FingerPrintID").getAsInt()
-                    + ", User " + name);
+            logger.debug("Event FingerPrintCheck success, Finger number {}, User {}",
+                    eventData.get("FingerPrintID").getAsInt(), name);
         } else {
             logger.debug("Event FingerPrintCheck failed, unknown Finger");
         }
@@ -514,28 +517,28 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     private void handleNTPAdjust(JsonObject eventData) {
         if (eventData.get("result").getAsBoolean()) {
-            logger.debug("Event NTPAdjustTime with " + eventData.get("Address").getAsString() + " success");
+            logger.debug("Event NTPAdjustTime with {} success", eventData.get("Address").getAsString());
         } else {
             logger.debug("Event NTPAdjustTime failed");
         }
     }
 
     private void handleTimeChange(JsonObject eventData) {
-        logger.debug("Event TimeChange, BeforeModifyTime: " + eventData.get("BeforeModifyTime").getAsString()
-                + ", ModifiedTime: " + eventData.get("ModifiedTime").getAsString());
+        logger.debug("Event TimeChange, BeforeModifyTime: {}, ModifiedTime: {}",
+                eventData.get("BeforeModifyTime").getAsString(), eventData.get("ModifiedTime").getAsString());
     }
 
     private void handleBackKeyLight(JsonObject eventData) {
-        logger.debug("Event BackKeyLight with State " + eventData.get("State").getAsString() + " ");
+        logger.debug("Event BackKeyLight with State {} ", eventData.get("State").getAsString());
     }
 
     private void handleRTSPDisconnect(JsonObject eventList, JsonObject eventData) {
         if ("Start".equals(eventList.get("Action").getAsString())) {
-            logger.debug("Event Rtsp-Session from " + eventData.get("Device").getAsString().replace("::ffff:", "")
-                    + " disconnected");
+            logger.debug("Event Rtsp-Session from {} disconnected",
+                    eventData.get("Device").getAsString().replace("::ffff:", ""));
         } else if ("Stop".equals(eventList.get("Action").getAsString())) {
-            logger.debug("Event Rtsp-Session from " + eventData.get("Device").getAsString().replace("::ffff:", "")
-                    + " connected");
+            logger.debug("Event Rtsp-Session from {} connected",
+                    eventData.get("Device").getAsString().replace("::ffff:", ""));
         }
     }
 
@@ -552,5 +555,4 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         logger.debug("Event Call from VTO");
         HandleButtonPressed();
     }
-
 }

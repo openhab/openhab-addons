@@ -49,6 +49,7 @@ The following channels are provided:
 Switch DoorOpener "Tueroeffner" <switch> (Eingang) ["Switch"]
 Image DahuaDoor_Binding_Thing_Door_Image "Eingangstuere" <camera> (Eingang)
 ```
+
 ### Rule Configuration
 
 If you have installed the openhab cloud service openhab can send you a notification to your smartphone with the captured image.
