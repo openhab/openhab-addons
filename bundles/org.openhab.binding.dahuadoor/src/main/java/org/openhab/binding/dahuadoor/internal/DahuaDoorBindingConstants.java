@@ -27,7 +27,7 @@ public class DahuaDoorBindingConstants {
     private static final String BINDING_ID = "dahuadoor";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_VTO = new ThingTypeUID(BINDING_ID, "dahua_vth");
+    public static final ThingTypeUID THING_TYPE_VTO = new ThingTypeUID(BINDING_ID, "dahua_vto2202");
 
     // List of all Channel ids
     public static final String CHANNEL_BELL_BUTTON = "bell-button";

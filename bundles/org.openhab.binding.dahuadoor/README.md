@@ -6,7 +6,7 @@ A binding for Dahua VTO2202F Villastation door controllers.
 
 | Thing Type | Thing ID   | Description                           |
 |------------|------------|---------------------------------------|
-| VTO Device | `dahua_vth` | Dahua VTO2202F Villastation door unit |
+| VTO Device | `dahua_vto2202` | Dahua VTO2202F Villastation door unit |
 
 ## Discovery
 
@@ -39,7 +39,7 @@ The following configuration parameters are required:
 ### Thing Configuration
 
 ```java
-Thing dahuadoor:dahua_vth:frontdoor "Front Door Station" @ "Entrance" [
+Thing dahuadoor:dahua_vto2202:frontdoor "Front Door Station" @ "Entrance" [
     hostname="192.168.1.100",
     username="admin",
     password="password123",
@@ -50,8 +50,8 @@ Thing dahuadoor:dahua_vth:frontdoor "Front Door Station" @ "Entrance" [
 ### Item Configuration
 
 ```java
-Switch OpenFrontDoor "Open Front Door" <door> { channel="dahuadoor:dahua_vth:frontdoor:open-door-1" }
-Image FrontDoorImage "Front Door Camera" <camera> { channel="dahuadoor:dahua_vth:frontdoor:door-image" }
+Switch OpenFrontDoor "Open Front Door" <door> { channel="dahuadoor:dahua_vto2202:frontdoor:open-door-1" }
+Image FrontDoorImage "Front Door Camera" <camera> { channel="dahuadoor:dahua_vto2202:frontdoor:door-image" }
 ```
 
 ### Rule Configuration
@@ -61,7 +61,7 @@ Send smartphone notification with camera image when doorbell is pressed (require
 ```java
 rule "Doorbell Notification"
 when
-    Channel "dahuadoor:dahua_vth:frontdoor:bell-button" triggered PRESSED
+    Channel "dahuadoor:dahua_vto2202:frontdoor:bell-button" triggered PRESSED
 then
     sendBroadcastNotification("Visitor at the door", "door", 
         "entrance", "Entrance", "door-notifications", null, 
