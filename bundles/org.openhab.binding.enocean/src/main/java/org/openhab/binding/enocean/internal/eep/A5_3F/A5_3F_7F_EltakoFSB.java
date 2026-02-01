@@ -95,6 +95,10 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         }
     }
 
+    // TODO: Architectural improvement - State machine should be managed at Handler level
+    // Currently this EEP class manages state machine for sending commands, while PTM200Message
+    // processes feedback and updates the same state machine. This creates coupling across EEP classes.
+    // Future: Handler should coordinate state machine, EEPs should remain stateless for message conversion.
     private void convertPosition(DecimalType percentCommand, Configuration config,
             Function<String, State> getCurrentStateFunc, STMStateMachine STM) {
 

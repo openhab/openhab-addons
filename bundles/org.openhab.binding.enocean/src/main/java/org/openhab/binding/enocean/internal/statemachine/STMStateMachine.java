@@ -32,6 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * State machine for managing multi-stage blind movements (position + slat adjustment).
+ * 
+ * TODO: Architectural consideration - This state machine is currently shared between
+ * A5_3F_7F_EltakoFSB (command sending) and PTM200Message (feedback processing).
+ * Future improvement: Move to Handler level for better separation of concerns.
+ * 
+ * TODO: Persistence - State is currently lost on binding restart, requiring recalibration.
+ * Future improvement: Store state in Thing properties for persistence across restarts.
  *
  * @author Sven Schad - Initial contribution
  * 

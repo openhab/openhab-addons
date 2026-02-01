@@ -60,6 +60,10 @@ public class PTM200Message extends _RPSMessage {
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine STM) {
     }
 
+    // TODO: Architectural improvement - Feedback processing should be in Handler
+    // This EEP processes feedback and updates state machine that was initiated by A5_3F_7F_EltakoFSB.
+    // This creates coupling between send and receive EEP classes. Ideally, the Handler should
+    // coordinate state machine updates based on both sent commands and received feedback.
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config,
