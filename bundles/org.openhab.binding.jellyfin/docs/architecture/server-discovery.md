@@ -14,6 +14,7 @@ The process is designed to be seamless and requires no manual
 configuration from the user.
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '16px' }, 'flowchart': { 'useMaxWidth': false, 'nodeSpacing': 18, 'rankSpacing': 18 } } }%%
 flowchart TD
     Start([Start]) --> Broadcast["Send discovery broadcast on local network"]
     Broadcast --> Wait["Wait for Jellyfin server responses"]

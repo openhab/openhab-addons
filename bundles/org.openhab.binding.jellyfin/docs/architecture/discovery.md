@@ -33,6 +33,7 @@ to the user for configuration.
 ### Server Discovery Architecture
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     ServerDiscoveryService --> ServerDiscovery : uses
     ServerDiscovery ..> ServerDiscoveryResult : creates
@@ -65,6 +66,7 @@ This discovery runs continuously in the background when the server is connected.
 ### Client Discovery Architecture
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     ClientDiscoveryService --> DiscoveryTask : triggers creation
     ClientDiscoveryService --> SessionApi : uses
@@ -124,6 +126,7 @@ completes before the `ClientDiscoveryService` is available.
 #### Solution: Callback Pattern
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'sequence': { 'actorMargin': 20 } } }%%
 sequenceDiagram
     participant FW as openHAB Framework
     participant Handler as ServerHandler

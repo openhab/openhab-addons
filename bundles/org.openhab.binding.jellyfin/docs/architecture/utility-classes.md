@@ -4,6 +4,7 @@ This page documents the extracted utility classes that handle specific
 responsibilities in the Jellyfin binding.
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     %% Utility classes for separation of concerns
     ServerHandler --> UserManager : uses
@@ -32,10 +33,10 @@ classDiagram
     }
 
     class ClientStateUpdater {
-        +calculateChannelStates(SessionInfoDto$) Map~String, State~
+        +calculateChannelStates(SessionInfoDto) Map
     }
 
-    %% Records for immutable data transfer (details omitted, see Record Details section)
+    %% Records for immutable data transfer (stubs; see Record Details below)
     class UserChangeResult {
         <<record>>
     }
@@ -65,3 +66,48 @@ and services.
 - **State Calculation Flow**: See [State Calculation Architecture](state-calculation.md)
 
 See the [architecture overview](../architecture.md) for context.
+
+## Record Details
+
+The following records are used for immutable data transfer and are referenced by utility classes and handlers. The class diagram below shows fields for each record.
+
+```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
+classDiagram
+    class UserChangeResult {
+        <<record>>
+        +List~String~ currentUserIds
+        +List~String~ addedUserIds
+        +List~String~ removedUserIds
+        +List~UserDto~ enabledVisibleUsers
+    }
+    class ConfigurationUpdate {
+        <<record>>
+        +String hostname
+        +int port
+        +boolean ssl
+        +String path
+        +boolean hasChanges
+        +applyTo(Configuration) void
+    }
+    class StateAnalysis {
+        <<record>>
+        +ServerState recommendedState
+        +String reason
+        +URI serverUri
+    }
+
+    classDef openhab fill:#ff8c1a,stroke:#333,stroke-width:1px,color:#fff;
+    classDef apiGen fill:#2ca02c,stroke:#333,stroke-width:1px,color:#fff;
+    classDef internal fill:#ffffff,stroke:#333,stroke-width:1px,color:#000;
+
+    class UserChangeResult internal
+    class ConfigurationUpdate internal
+    class StateAnalysis internal
+```
+
+**Descriptions:**
+
+- **UserChangeResult**: Returned by user synchronization; contains lists of current, added, and removed user IDs and a list of enabled visible user DTOs.
+- **ConfigurationUpdate**: Produced by configuration analysis; contains fields describing changes and an `applyTo(Configuration)` helper.
+- **StateAnalysis**: Used by `ServerStateManager` to represent a recommended `ServerState`, the reason for the recommendation, and the server URI used.

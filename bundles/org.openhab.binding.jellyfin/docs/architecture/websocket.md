@@ -198,6 +198,7 @@ In the context of the openHAB Jellyfin binding:
 ### Sequence: Sessions message handling
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'sequence': { 'actorMargin': 20 } } }%%
 sequenceDiagram
   participant WS as WebSocket Client
   participant H as SessionsMessageHandler

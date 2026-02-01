@@ -3,6 +3,7 @@
 This page documents the event-driven session update system in the Jellyfin binding.
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     %% Session event handling (Observer pattern)
     ServerHandler --> SessionEventBus : publishes to
@@ -56,7 +57,7 @@ Concrete implementations:
 - Comprehensive unit tests (9/9 passing, 100% coverage)
 - Concurrency and exception handling validated
 
-See [Event Bus Implementation Plan](../implementation-plan/2025-11-28-event-bus-architecture-implementation.md)
+See [Event Bus Implementation Plan](../implementation-plan/2025-11-28/event-bus-architecture-implementation.md)
 for detailed implementation roadmap.
 
 See the [architecture overview](../architecture.md) for context.

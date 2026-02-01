@@ -3,14 +3,15 @@
 This page documents the API client and communication structure in the Jellyfin binding.
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     HandlerFactory --> ApiClientFactory : uses
     ApiClientFactory ..> ApiClient : creates
-    
+
     class ApiClientFactory {
         +createApiClient() ApiClient
     }
-    
+
     class ApiClient {
         <<interface>>
         +authenticateWithToken(String)

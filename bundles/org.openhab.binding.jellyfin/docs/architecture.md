@@ -45,12 +45,20 @@ Internal binding classes (white/default) are distinct from external libraries.
 ## Architecture Diagram
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '16px' }, 'flowchart': { 'useMaxWidth': false, 'nodeSpacing': 20, 'rankSpacing': 20 } } }%%
 flowchart TD
+    %% Color classes: openhab (orange), websocket (blue), apiGen (green), internal (white), external (gray)
+    classDef openhab fill:#ff8c1a,stroke:#333,stroke-width:1px,color:#fff;
+    classDef websocket fill:#1f77b4,stroke:#333,stroke-width:1px,color:#fff;
+    classDef apiGen fill:#2ca02c,stroke:#333,stroke-width:1px,color:#fff;
+    classDef internal fill:#ffffff,stroke:#333,stroke-width:1px,color:#000;
+    classDef external fill:#dddddd,stroke:#333,stroke-width:1px,color:#000;
+
     OH[openHAB Core]
     JB[Jellyfin Binding]
     JD[Discovery Service]
-    JH[Server Handler - Bridge]
-    JCH[Client Handler - Thing]
+    JH[Server Handler]
+    JCH[Client Handler]
     JA[API Client]
     JS[Jellyfin Server]
     SEB[SessionEventBus]
@@ -65,7 +73,16 @@ flowchart TD
     JH -->|Publishes| SEB
     SEB -->|Session Events| JCH
     JCH -->|Commands| JH
-    %% Note: Record members are omitted for clarity. See Record Details section.
+
+    %% Styling
+    class OH openhab
+    class JA apiGen
+    class JS external
+    class JB internal
+    class JD internal
+    class JH internal
+    class JCH internal
+    class SEB internal
 ```
 
 ## Main Components
@@ -112,36 +129,11 @@ For detailed diagrams and explanations, see:
 
 ## Record Details
 
-The following records are used for immutable data transfer and are detailed here
-for clarity.
-For their usage, see the
-[Utility Classes Architecture](architecture/utility-classes.md).
+The architecture overview keeps record references high-level. For full definitions and diagrams, see [Utility Classes Architecture - Record Details](architecture/utility-classes.md#record-details).
 
-```mermaid
-classDiagram
-    class UserChangeResult {
-        <<record>>
-        +List~String~ currentUserIds
-        +List~String~ addedUserIds
-        +List~String~ removedUserIds
-        +List~UserDto~ enabledVisibleUsers
-    }
-    class ConfigurationUpdate {
-        <<record>>
-        +String hostname
-        +int port
-        +boolean ssl
-        +String path
-        +boolean hasChanges
-        +applyTo(Configuration) void
-    }
-    class StateAnalysis {
-        <<record>>
-        +ServerState recommendedState
-        +String reason
-        +URI serverUri
-    }
-```
+- **UserChangeResult** — result of user synchronization: lists of current, added, and removed user IDs and enabled visible users.
+- **ConfigurationUpdate** — represents configuration extraction results and helpers (e.g., `applyTo(Configuration)`).
+- **StateAnalysis** — recommended server state, reason, and server URI used by state analysis utilities.
 
 These records are referenced by utility classes and handlers but are not shown in
 the main architecture diagram for clarity.

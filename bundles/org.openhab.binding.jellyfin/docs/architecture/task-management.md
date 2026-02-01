@@ -11,7 +11,7 @@ This page documents the task management system in the Jellyfin binding.
   - [Tasks by Server State](#tasks-by-server-state)
     - [State-Task Mapping](#state-task-mapping)
     - [Task Lifecycle](#task-lifecycle)
-    - [ServerSyncTask & Discovery Task Processing Flow](#serversynctask--discovery-task-processing-flow)
+    - [ServerSyncTask & Discovery Task Processing Flow](#serversynctask-and-discovery-task-processing-flow)
   - [Client Discovery Integration](#client-discovery-integration)
     - [Async Service Injection Pattern](#async-service-injection-pattern)
     - [Deferred Task Creation Flow](#deferred-task-creation-flow)
@@ -58,6 +58,7 @@ All tests use Mockito for mocking dependencies and verify both behavior and stat
 ## Architecture Diagram
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     %% Task management relationships
     TaskManager --> TaskFactoryInterface : uses (injected)
@@ -155,6 +156,10 @@ The following table shows which tasks are active for each server state:
 4. **Disposal**: When the handler is disposed, `stopAllTasks()` is called to
    cancel all scheduled tasks and clear the task registry.
 
+<!-- markdownlint-disable MD033 -->
+<a id="serversynctask-and-discovery-task-processing-flow"></a>
+<!-- markdownlint-enable MD033 -->
+
 ### ServerSyncTask & Discovery Task Processing Flow
 
 The user synchronization responsibility has been moved: the `DiscoveryTask` now
@@ -165,6 +170,7 @@ for periodic session refresh (polling fallback) but no longer fetches the user
 list.
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'sequence': { 'actorMargin': 20 } } }%%
 sequenceDiagram
     participant DTask as DiscoveryTask
     participant API as ApiClient
@@ -231,6 +237,7 @@ This means:
 ### Deferred Task Creation Flow
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'sequence': { 'actorMargin': 20 } } }%%
 sequenceDiagram
     participant FW as openHAB Framework
     participant Handler as ServerHandler

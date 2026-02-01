@@ -4,6 +4,7 @@ This page documents the main handler structure and dependency injection in the
 Jellyfin binding.
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     %% Core handler relationships
     HandlerFactory --> ServerHandler : creates

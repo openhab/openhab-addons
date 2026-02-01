@@ -5,6 +5,7 @@ This diagram shows the interaction flow from initial connection (SystemInfo retr
 > Diagram source: `connection-state-sequence.mmd` (Mermaid sequence diagram)
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'sequence': { 'actorMargin': 20 } } }%%
 sequenceDiagram
 autonumber
 participant Conn as ConnectionTask

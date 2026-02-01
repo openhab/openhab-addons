@@ -12,6 +12,7 @@ from the thing handler, enabling independent testing and reusability.
 ## Architecture
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     ClientHandler --> ClientStateUpdater : uses
     ClientStateUpdater --> SessionInfoDto : analyzes
@@ -63,6 +64,7 @@ classDiagram
 ## Calculation Flow
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '16px' }, 'flowchart': { 'useMaxWidth': false, 'nodeSpacing': 20, 'rankSpacing': 20 } } }%%
 flowchart TD
     A["ClientHandler.updateStateFromSession<br/>(SessionInfoDto)"] -->|Call| B["ClientStateUpdater<br/>.calculateChannelStates"]
     B -->|Session is null| C["Return all channels<br/>as UnDefType.NULL"]

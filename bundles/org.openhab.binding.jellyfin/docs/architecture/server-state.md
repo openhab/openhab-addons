@@ -40,6 +40,7 @@ The main states are:
 ## State Transition Diagram
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '16px' }, 'flowchart': { 'useMaxWidth': false, 'nodeSpacing': 20, 'rankSpacing': 20 } } }%%
 flowchart TD
     Start([Handler Initialization])
     DetermineState[Determine State]
@@ -64,6 +65,7 @@ flowchart TD
 ### State Determination Flow
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '16px' }, 'flowchart': { 'useMaxWidth': false, 'nodeSpacing': 18, 'rankSpacing': 18 } } }%%
 flowchart TD
     Start([Current State])
     CheckDisposed{Is state DISPOSED?}

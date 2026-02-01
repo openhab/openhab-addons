@@ -31,6 +31,7 @@ configuration extraction logic from configuration management.
 ## Architecture Diagram
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     %% Main manager and strategy interface
     class ConfigurationManager {

@@ -2,6 +2,8 @@ node_modules
 package-lock.json
 package.json
 logs
+mkdocs.yml
+/.venv-docs/
 /.apt_generated/
 /.apt_generated_tests/
 # Temporary (wip)

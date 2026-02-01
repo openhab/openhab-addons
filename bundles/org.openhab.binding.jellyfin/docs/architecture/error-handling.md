@@ -3,6 +3,7 @@
 This page documents the event-driven error handling system in the Jellyfin binding.
 
 ```mermaid
+%%{init: { 'themeVariables': { 'fontSize': '14px' }, 'class': { 'useMaxWidth': false } } }%%
 classDiagram
     %% Error handling (Observer pattern)
     AbstractTask --> ContextualExceptionHandler : uses
