@@ -119,7 +119,6 @@ public class PTM200Message extends _RPSMessage {
         }
 
         return UnDefType.UNDEF;
-
     }
 
     @Override

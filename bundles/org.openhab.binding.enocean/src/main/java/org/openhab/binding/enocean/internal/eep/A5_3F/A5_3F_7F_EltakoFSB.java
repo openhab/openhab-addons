@@ -186,7 +186,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
             }
 
         }
-
     }
 
     void processCmdAsUpDownType(Thing thing, UpDownType upDownCommand, Configuration config,
@@ -266,7 +265,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
         } else if (command instanceof StopMoveType stopMoveCommand) {
             processCmdAsStopMoveType(thing, stopMoveCommand, config, getCurrentStateFunc, STM);
         }
-
     }
 
     void processChannelDimmer(Thing thing, Command command, Configuration config,

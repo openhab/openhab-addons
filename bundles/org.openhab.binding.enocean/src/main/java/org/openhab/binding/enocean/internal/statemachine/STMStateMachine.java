@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.enocean.internal.statemachine;
 
 import java.util.HashMap;
@@ -6,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.EnOceanBindingConstants;
 import org.openhab.binding.enocean.internal.handler.EnOceanBaseActuatorHandler;
@@ -23,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author Sven Schad - Initial contribution
  * 
  */
-
+@NonNullByDefault
 public class STMStateMachine {
 
     private List<STMTransition> transitions;
@@ -31,8 +44,8 @@ public class STMStateMachine {
     private STMState state;
     private STMState prevState;
     private Thing thing;
-    private String channel;
-    private Command command;
+    private @Nullable String channel;
+    private @Nullable Command command;
 
     private final ScheduledExecutorService scheduler;
 
@@ -60,14 +73,16 @@ public class STMStateMachine {
 
     public void ProcessCommand() {
 
-        if (command != null) {
-            logger.debug("STM: ProcessCommand {}", command);
-            Channel cmdChannel = thing.getChannel(channel);
+        Command cmd = command;
+        String ch = channel;
+        if (cmd != null && ch != null) {
+            logger.debug("STM: ProcessCommand {}", cmd);
+            Channel cmdChannel = thing.getChannel(ch);
             if (cmdChannel != null) {
                 ChannelUID channelUID = cmdChannel.getUID();
                 ThingHandler handler = thing.getHandler();
                 if (handler != null) {
-                    handler.handleCommand(channelUID, command);
+                    handler.handleCommand(channelUID, cmd);
                 }
             }
         }

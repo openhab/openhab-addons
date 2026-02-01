@@ -295,7 +295,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 handler.sendMessage(msg, null);
             }
         }
-
     }
 
     @Override
