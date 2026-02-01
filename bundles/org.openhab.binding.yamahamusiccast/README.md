@@ -162,7 +162,9 @@ If the device/model is the server, the group will be disbanded.
 String YamahaMCLinkStatus "" {channel="yamahamusiccast:device:Living:main#mclinkStatus"}
 ```
 
-During testing with the Yamaha MusicCast app, when removing a slave from the group, the status of the client remained _client_ and **input** stayed on _mclink_. Only when changing input was the slave set to _standalone_. Therefore you can set the parameter **defaultAfterMCLink** to an input value supported by your device to break the whole MusicCast Link in openHAB.
+During testing with the Yamaha MusicCast app, when removing a slave from the group, the status of the client remained _client_ and **input** stayed on _mclink_.
+Only when changing input was the slave set to _standalone_.
+Therefore you can set the parameter **defaultAfterMCLink** to an input value supported by your device to break the whole MusicCast Link in openHAB.
 
 #### How to use this in a rule?
 
