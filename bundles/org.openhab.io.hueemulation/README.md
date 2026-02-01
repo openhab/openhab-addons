@@ -33,8 +33,8 @@ When semantic model mapping is enabled, Hue Emulation derives lights and rooms f
 
 This allows Hue-compatible apps to discover a structure that closely matches a real Philips Hue bridge:
 
-- **Lights** are derived from semantic *LightSource* equipment
-- **Rooms** are derived from semantic *Location* groups
+- **Lights** are derived from semantic _LightSource_ equipment
+- **Rooms** are derived from semantic _Location_ groups
 - **Light capabilities** are inferred from semantic points
 
 ### Lights
