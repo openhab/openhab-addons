@@ -78,8 +78,7 @@
 		<parameter name="discoveryHttpPort" type="integer" required="false">
 			<label>Optional Discovery Web Port</label>
 			<description>Some Hue applications require a different port (80) than what openHAB runs on by default (8080). This
-				option will only advertise a different port than what we are listening on. Useful if you have an iptables rule
-				that
+				option will only advertise a different port than what we are listening on. Useful if you have an iptables rule that
 				redirects traffic from this port to the openHAB port.</description>
 			<advanced>true</advanced>
 		</parameter>

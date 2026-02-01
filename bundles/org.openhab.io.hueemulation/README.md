@@ -131,7 +131,7 @@ You can tag items manually as well.
 
 This section applies only when semantic model mapping is disabled.
 
-Your items label are used for exposing!
+Your Item labels are exposed.
 The default naming schema for automatically linked items unfortunately names _Items_ like their channel names, so usually "Brightness" or "Color".
 You will want to rename those.
 

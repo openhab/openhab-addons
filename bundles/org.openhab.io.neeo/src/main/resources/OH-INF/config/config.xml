@@ -21,7 +21,7 @@
 			<default>12</default>
 		</parameter>
 		<parameter name="checkStatusInterval" type="integer" required="false" min="1">
-			<label>Check Status Interval (Seconds)</label>
+			<label>Check Status Interval</label>
 			<description>The interval (in seconds) to check the status of the brain.</description>
 			<advanced>true</advanced>
 			<default>10</default>
