@@ -119,8 +119,8 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
 
             if (currentDimmer != null) {
                 int actPos_dimmer = currentDimmer.intValue();
-                duration = direction ? duration + actPos_dimmer / 100 * swapTime
-                        : duration + (100 - actPos_dimmer) / 100 * swapTime; // Correction for blinds
+                duration = direction ? duration + (actPos_dimmer * swapTime) / 100
+                        : duration + ((100 - actPos_dimmer) * swapTime) / 100; // Correction for blinds
             }
 
             byte duration_lsb = (byte) (duration & 0xFF); // lsb

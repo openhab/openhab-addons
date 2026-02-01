@@ -81,10 +81,13 @@ public class PTM200Message extends _RPSMessage {
                                     // can be used for pushing stm into calibrated state
                                     STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     STM.apply(STMAction.CALIBRATION_REQUEST_UP);
+                                    break;
                                 case MOVEMENT_POSITION_UP:
                                     // StopMoveType.MOVE is used as command for adjustment of slats
                                     STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    break;
                                 default:
+                                    break;
                             }
                             STM.apply(STMAction.CALIBRATION_DONE);
                             STM.apply(STMAction.POSITION_DONE);
@@ -98,10 +101,13 @@ public class PTM200Message extends _RPSMessage {
                                     // can be used for pushing stm into calibrated state
                                     STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
                                     STM.apply(STMAction.CALIBRATION_REQUEST_DOWN);
+                                    break;
                                 case MOVEMENT_POSITION_DOWN:
                                     // StopMoveType.MOVE is used as command for adjustment of slats
                                     STM.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                    break;
                                 default:
+                                    break;
                             }
                             STM.apply(STMAction.CALIBRATION_DONE);
                             STM.apply(STMAction.POSITION_DONE);

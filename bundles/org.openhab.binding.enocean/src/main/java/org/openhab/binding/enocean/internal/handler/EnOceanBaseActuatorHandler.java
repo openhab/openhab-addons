@@ -169,12 +169,18 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 Channel channel = thing.getChannel(CHANNEL_ROLLERSHUTTER);
                 if (channel != null) {
                     Configuration channelConfig = channel.getConfiguration();
-                    ConfigMode channelcfg = channelConfig.as(EnOceanChannelRollershutterConfig.class).getConfigMode();
+                    ConfigMode channelcfg;
+                    try {
+                        channelcfg = channelConfig.as(EnOceanChannelRollershutterConfig.class).getConfigMode();
+                    } catch (IllegalArgumentException e) {
+                        configurationErrorDescription = "Invalid rollershutter configuration: " + e.getMessage();
+                        return false;
+                    }
                     ThingBuilder thingBuilder = editThing();
                     Channel channel1, channel2;
                     switch (channelcfg) {
                         case LEGACY:
-                            logger.debug("Elatko FSB14 will operate in leagcy mode");
+                            logger.debug("Eltako FSB14 will operate in legacy mode");
 
                             channel1 = thing.getChannel(CHANNEL_DIMMER);
                             channel2 = thing.getChannel(CHANNEL_STATEMACHINESTATE);
@@ -189,7 +195,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                             STM = STMStateMachine.build(STMTransitionConfiguration.ROLLERSHUTTER, STMState.INVALID,
                                     thing, scheduler);
                             if (STM != null) {
-                                STM.register(STMAction.CALIBRATION_DONE, STM::EnqueueProcessCommand);
+                                STM.register(STMAction.CALIBRATION_DONE, STM::enqueueProcessCommand);
                             }
                             channel1 = thing.getChannel(CHANNEL_DIMMER);
                             if (channel1 != null) {
@@ -203,8 +209,8 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                                     scheduler);
                             if (STM != null) {
                                 // how to fix @Nullable warning here?
-                                STM.register(STMAction.CALIBRATION_DONE, STM::EnqueueProcessCommand);
-                                STM.register(STMAction.POSITION_DONE, STM::EnqueueProcessCommand);
+                                STM.register(STMAction.CALIBRATION_DONE, STM::enqueueProcessCommand);
+                                STM.register(STMAction.POSITION_DONE, STM::enqueueProcessCommand);
                             }
                             logger.debug("Elatko FSB14 will operate in blinds mode");
                             break;

@@ -67,24 +67,24 @@ public class STMStateMachine {
         return new STMStateMachine(config, initState, thing, scheduler);
     }
 
-    public STMStateMachine register(STMAction action, Runnable callback) {
+    public synchronized STMStateMachine register(STMAction action, Runnable callback) {
 
         this.callbackActions.put(action, callback);
         return this;
     }
 
-    public void storeCommand(String channel, Command command) {
+    public synchronized void storeCommand(String channel, Command command) {
 
         this.channel = channel;
         this.command = command;
     }
 
-    public void ProcessCommand() {
+    public synchronized void processCommand() {
 
         Command cmd = command;
         String ch = channel;
         if (cmd != null && ch != null) {
-            logger.debug("STM: ProcessCommand {}", cmd);
+            logger.debug("STM: processCommand {}", cmd);
             Channel cmdChannel = thing.getChannel(ch);
             if (cmdChannel != null) {
                 ChannelUID channelUID = cmdChannel.getUID();
@@ -97,11 +97,11 @@ public class STMStateMachine {
     }
 
     @SuppressWarnings("null")
-    public void EnqueueProcessCommand() {
+    public void enqueueProcessCommand() {
 
         // Send response after 100ms
         if (responseFuture == null || responseFuture.isDone()) {
-            this.responseFuture = scheduler.schedule(this::ProcessCommand, 100, TimeUnit.MILLISECONDS);
+            this.responseFuture = scheduler.schedule(this::processCommand, 100, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -115,16 +115,16 @@ public class STMStateMachine {
         this.thing = thing;
     }
 
-    public STMState getState() {
+    public synchronized STMState getState() {
         return state;
     }
 
-    public STMState getPrevState() {
+    public synchronized STMState getPrevState() {
         return prevState;
     }
 
     @SuppressWarnings("null")
-    public STMStateMachine apply(STMAction action) {
+    public synchronized STMStateMachine apply(STMAction action) {
         for (STMTransition transition : transitions) {
             boolean currentStateMatches = transition.from.equals(state);
             boolean conditionsMatch = transition.action.equals(action);
