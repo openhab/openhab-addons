@@ -152,7 +152,7 @@ Bridge warmup:my-warmup:MyWarmup [ username="test@example.com", password="test",
 ### .items file
 
 ```java
-Number:Temperature bathroom_temperature "Temperature [%.1f °C]" <temperature> (GF_Bathroom, Temperature)    ["Measurement", "Temperature"] {channel="warmup:room:MyWarmup:bathroom:currentTemperature"}
+Number:Temperature bathroom_temperature "Temperature [%.1f °C]" <temperature> (GF_Bathroom, Temperature) ["Measurement", "Temperature"] {channel="warmup:room:MyWarmup:bathroom:currentTemperature"}
 Number:Temperature bathroom_setpoint    "Setpoint [%.1f °C]" <temperature> (GF_Bathroom) ["Setpoint", "Temperature"] {channel="warmup:room:MyWarmup:bathroom:targetTemperature"}
 Number:Time bathroom_overrideRemaining  "Override Remaining [%d minutes]" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:overrideRemaining"}
 String bathroom_runMode "Run Mode [%s]" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:runMode"}
