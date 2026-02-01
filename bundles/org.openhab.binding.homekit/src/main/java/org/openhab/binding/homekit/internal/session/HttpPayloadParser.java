@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -136,7 +137,8 @@ public class HttpPayloadParser implements AutoCloseable {
             }
         } finally {
             closed = true;
-            listener.onHttpReaderClose();
+            listener.onHttpReaderClose(
+                    Arrays.copyOfRange(inputBuffer, inputStartIndex, Math.max(inputStartIndex, inputEndIndex - 1)));
         }
     }
 

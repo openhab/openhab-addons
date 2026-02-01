@@ -38,6 +38,8 @@ public interface HttpReaderListener {
 
     /**
      * Invoked when the parser is closed
+     * 
+     * @param remainingData any remaining data that was not processed
      */
-    void onHttpReaderClose();
+    void onHttpReaderClose(byte[] remainingData);
 }

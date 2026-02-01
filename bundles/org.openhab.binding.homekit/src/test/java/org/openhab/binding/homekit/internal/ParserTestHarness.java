@@ -47,7 +47,7 @@ public class ParserTestHarness implements HttpReaderListener {
     }
 
     @Override
-    public void onHttpReaderClose() {
+    public void onHttpReaderClose(byte[] remainingData) {
         // no-op for tests
     }
 

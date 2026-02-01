@@ -236,16 +236,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' fetching accessories, reconnecting..", thing.getUID(),
-                        e.getMessage());
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' fetching accessories", thing.getUID(), e.getMessage());
-            }
+            logger.warn("{} communication error '{}' fetching accessories, reconnecting..", thing.getUID(),
+                    e.getMessage());
             logger.trace("{} stack trace", thing.getUID(), e);
+            scheduleConnectionAttempt();
         }
     }
 
@@ -605,20 +599,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Determines if the given throwable is an IOException or TimeoutException, including checking the cause
-     * if it is wrapped in an ExecutionException. Used to identify communication-related exceptions that can
-     * potentially be recovered.
-     *
-     * @param throwable the exception to check
-     * @return true if it's an IOException or TimeoutException, false otherwise
-     */
-    protected boolean isCommunicationException(Throwable throwable) {
-        return (throwable instanceof IOException || throwable instanceof TimeoutException) ? true
-                : (throwable instanceof ExecutionException outer) && (outer.getCause() instanceof Throwable inner)
-                        && (inner instanceof IOException || inner instanceof TimeoutException) ? true : false;
-    }
-
-    /**
      * Creates properties for the accessory based on the characteristics within the ACCESSORY_INFORMATION
      * service (if any).
      */
@@ -667,16 +647,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' subscribing to events, reconnecting..", thing.getUID(),
-                        e.getMessage());
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' subscribing to events", thing.getUID(), e.getMessage());
-            }
+            logger.warn("{} communication error '{}' subscribing to events, reconnecting..", thing.getUID(),
+                    e.getMessage());
             logger.trace("{} stack trace", thing.getUID(), e);
+            scheduleConnectionAttempt();
         }
     }
 
@@ -734,16 +708,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
-                        e.getMessage());
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage(), e);
-            }
+            logger.warn("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
+                    e.getMessage());
             logger.trace("{} stack trace", thing.getUID(), e);
+            scheduleConnectionAttempt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
         }

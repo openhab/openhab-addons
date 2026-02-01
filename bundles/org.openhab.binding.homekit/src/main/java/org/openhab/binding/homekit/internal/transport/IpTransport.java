@@ -21,6 +21,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -329,9 +330,14 @@ public class IpTransport implements AutoCloseable, HttpReaderListener {
     }
 
     @Override
-    public void onHttpReaderClose() {
+    public void onHttpReaderClose(byte[] remainingData) {
         if (!closing) {
-            logger.debug("{} HTTP reader closed", ipAddress);
+            if (remainingData.length > 0) {
+                logger.warn("{} HTTP reader closed with remaining data:\n{}", ipAddress,
+                        HexFormat.of().formatHex(remainingData));
+            } else {
+                logger.debug("{} HTTP reader closed normally", ipAddress);
+            }
         }
     }
 
