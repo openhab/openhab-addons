@@ -33,7 +33,7 @@ Things are linked to a bridge (Thing Type ID: `yamahamusiccast:bridge`) for rece
 ## Discovery
 
 Auto-discovery via UPnP is supported for Yamaha devices that advertise as MediaRenderer.
-You can also add things manually.
+You can also add Things manually.
 
 ## Thing Configuration
 
