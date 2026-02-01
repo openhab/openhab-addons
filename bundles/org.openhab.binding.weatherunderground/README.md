@@ -10,7 +10,12 @@ To use this binding, you first need to [register and get your API key](https://w
 
 ## Supported Things
 
-There are exactly two supported Thing types. The first one is the Bridge Thing, which represents the connection to the Weather Underground service through the API key. It has the ID `bridge`. The second one is the Weather Thing, which represents the weather information for an observed location. It has the ID `weather`. Each `weather` Thing uses a `bridge` Thing; it cannot be set online if no `bridge` Thing is defined.
+There are exactly two supported Thing types.
+The first one is the Bridge Thing, which represents the connection to the Weather Underground service through the API key.
+It has the ID `bridge`.
+The second one is the Weather Thing, which represents the weather information for an observed location.
+It has the ID `weather`.
+Each `weather` Thing uses a `bridge` Thing; it cannot be set online if no `bridge` Thing is defined.
 
 ## Discovery
 
@@ -46,14 +51,17 @@ For the location parameter, different syntaxes are possible:
 |--------------------|------------------|
 | US state/city      | CA/San_Francisco |
 | US zipcode         | 60290            |
-| country/city       | Australia/Sydney |
 | latitude,longitude | 37.8,-122.4      |
 | airport code       | KJFK             |
 | PWS id             | pws:KCASANFR70   |
 
-It can happen that the service is not able to determine the station to use, for example when you select as the location a city in which several stations are registered. In this case, the Thing configuration will fail because the service will not return the data expected by the binding. The best solution in this case is to use latitude and longitude; the service will automatically select a station based on this position.
+It can happen that the service is not able to determine the station to use, for example when you select as the location a city in which several stations are registered.
+In this case, the Thing configuration will fail because the service will not return the data expected by the binding.
+The best solution in this case is to use latitude and longitude; the service will automatically select a station based on this position.
 
-For the language parameter, Weather Underground uses a special set of language codes that are different from the ISO 639-1 standard. For example, for German use `DL`, or for Swedish use `SW`. See the [Weather Underground language support documentation](https://www.wunderground.com/weather/api/d/docs?d=language-support) for a detailed list.
+For the language parameter, Weather Underground uses a special set of language codes that are different from the ISO 639-1 standard.
+For example, for German use `DL`, or for Swedish use `SW`.
+See the [Weather Underground language support documentation](https://www.wunderground.com/weather/api/d/docs?d=language-support) for a detailed list.
 
 ## Channels
 

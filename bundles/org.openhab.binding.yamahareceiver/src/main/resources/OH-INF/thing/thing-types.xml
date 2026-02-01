@@ -59,13 +59,9 @@
 				<label>Input Mapping</label>
 				<description>
 					Some Yamaha models return different input values on status update than required in the change input
-					commands.
-					For example, an HDMI1 command may be reported as HDMI_1 after status update. There are other related edge
-					cases
-					(USB, iPad_USB). This setting allows you to customize the return input mapping to meet your AVR model
-					requirements.
-					The setting is a comma-separated list of value mappings in the format from=to.
-					Example:
+					commands. For example, an HDMI1 command may be reported as HDMI_1 after status update. There are other related edge
+					cases (USB, iPad_USB). This setting allows you to customize the return input mapping to meet your AVR model
+					requirements. The setting is a comma-separated list of value mappings in the format from=to. Example:
 					HDMI_1=HDMI1,HDMI 1=HDMI1,HDMI1=HDMI1
 				</description>
 				<default></default>
@@ -478,10 +474,8 @@
 	<channel-type id="navigation_menu">
 		<item-type>String</item-type>
 		<label>Menu</label>
-		<description>Shows the current navigation menu and allows changing to a channel by a full path.
-			For example, for Net
-			Radio: Bookmarks/__My_Favorites/radio_station_name. You can also just use the station name
-			without a full path if the
+		<description>Shows the current navigation menu and allows changing to a channel by a full path. For example, for Net
+			Radio: Bookmarks/__My_Favorites/radio_station_name. You can also just use the station name without a full path if the
 			AVR is in that navigation menu already.
 		</description>
 		<category>Navigation</category>

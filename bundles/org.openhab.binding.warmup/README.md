@@ -58,7 +58,9 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 
 ### `room` Thing Configuration
 
-Rooms are configured automatically with a serial number upon discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. Changing the target temperature results in a temporary override to that temperature for the duration configured on the Thing. This defaults to 60 minutes.
+Rooms are configured automatically with a serial number upon discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters.
+Changing the target temperature results in a temporary override to that temperature for the duration configured on the Thing.
+This defaults to 60 minutes.
 
 | config parameter | type    | description                                                        | required | default |
 |------------------|---------|--------------------------------------------------------------------|----------|---------|

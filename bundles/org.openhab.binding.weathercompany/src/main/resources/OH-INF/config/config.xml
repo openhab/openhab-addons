@@ -42,11 +42,7 @@
 		<parameter name="geocode" type="text" required="false">
 			<context>location</context>
 			<label>Location</label>
-			<description><![CDATA[
-<p>The location of this weather forecast.</p>
-<p>Coordinates as &lt;latitude&gt;,&lt;longitude&gt;[&lt;altitude&gt;]</p>
-<p>Example: "52.5200066,13.4049540" (Berlin)</p>
-]]>
+			<description><![CDATA[ The location of this weather forecast. Coordinates as &lt;latitude&gt;,&lt;longitude&gt;[&lt;altitude&gt;]. Example: "52.5200066,13.4049540" (Berlin) ]]>
 			</description>
 		</parameter>
 		<parameter name="iataCode" type="text" required="false">

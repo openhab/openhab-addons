@@ -27,11 +27,13 @@ The Yamaha Receiver will send update messages to UDP port 41100.
 
 ## Supported Things
 
-Each model (AV receiver, etc.) is a Thing (Thing Type ID: `yamahamusiccast:device`). Things are linked to a bridge (Thing Type ID: `yamahamusiccast:bridge`) for receiving UDP events.
+Each model (AV receiver, etc.) is a Thing (Thing Type ID: `yamahamusiccast:device`).
+Things are linked to a bridge (Thing Type ID: `yamahamusiccast:bridge`) for receiving UDP events.
 
 ## Discovery
 
-Auto-discovery via UPnP is supported for Yamaha devices that advertise as MediaRenderer. You can also add things manually.
+Auto-discovery via UPnP is supported for Yamaha devices that advertise as MediaRenderer.
+You can also add things manually.
 
 ## Thing Configuration
 
