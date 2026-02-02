@@ -570,7 +570,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             return restClient.getSnapshotTimestamp(id, tokens);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.auth-exception");
+                    "@text/offline.comm-error.invalid-response");
             return -1;
         }
     }
