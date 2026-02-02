@@ -125,7 +125,7 @@ The following default tags are set up:
 
 It is the responsibility of binding developers to categorize and default-tag their available _Channels_ so that linked Items are automatically exposed with this service.
 
-You can tag items manually as well.
+You can tag Items manually as well.
 
 ### Exposed names
 
