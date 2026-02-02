@@ -281,7 +281,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
         } catch (JsonParseException e) {
-            logger.debug("Invalid response from api.ring.com when initializing Ring Account handler{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.auth-exception");
         }
@@ -292,11 +291,9 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error.auth-exception");
-            logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
         } catch (JsonParseException pe1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "JsonParseException response from ring.com");
-            logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
         }
     }
 
@@ -573,8 +570,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             return restClient.getSnapshotTimestamp(id, tokens);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "AuthenticationException response from ring.com");
-            logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
+                    "@text/offline.comm-error.auth-exception");
             return -1;
         }
     }
@@ -585,8 +581,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             return restClient.getSnapshot(id, tokens);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "AuthenticationException response from ring.com");
-            logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
+                    "@text/offline.comm-error.auth-exception");
         }
         return new byte[0];
     }
