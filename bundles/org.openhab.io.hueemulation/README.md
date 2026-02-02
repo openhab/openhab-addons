@@ -224,7 +224,7 @@ org.openhab.hueemulation:restrictToTagsWhiteLights=Lighting,Switchable
 org.openhab.hueemulation:restrictToTagsColorLights=ColorLighting
 ```
 
-The service tries to expose as many items as possible (greedy), based on some criteria as explained in the section above.
+The service tries to expose as many Items as possible (greedy), based on some criteria as explained in the section above.
 If you want to exclude Items, you need to tag them.
 Define the tags with the following option:
 
