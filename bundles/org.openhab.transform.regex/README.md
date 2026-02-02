@@ -51,7 +51,7 @@ The regex pattern is defined as follows:
 - `()` capture group match
   - `\d*` match a digit (equal to [0-9]), zero and unlimited times
   - `\.` match the dot literally
-  - `\d*` match a digit (equal to [0-9]), zero and unlimited times
+  - `\w*` match a word character (equal to [a-zA-Z_0-9]), zero and unlimited times
 - `.*` match any character, zero and unlimited times
 
 Note: the backslashes have to be escaped. See [string vs plain](#differences-to-plain-regex).
