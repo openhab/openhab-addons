@@ -55,6 +55,7 @@ import com.google.gson.JsonObject;
 public class ChannelFactory {
     private final Logger logger = LoggerFactory.getLogger(ChannelFactory.class);
 
+    private static final String DECIMAL_VALIDATION_EXPRESSION = "[0-9]+(\\.[0-9]+)?";
     private final MyUplinkChannelTypeProvider channelTypeProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
 
@@ -248,7 +249,7 @@ public class ChannelFactory {
         if (scaleValue != null && scaleValue.scale() > 0
                 && scaleValue.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) != 0) {
             // scaleValue has decimals (e.g., 0.5), so allow decimal input
-            return "[0-9]+(\\.[0-9]+)?";
+            return DECIMAL_VALIDATION_EXPRESSION;
         }
         // Default: only integers allowed
         return DEFAULT_VALIDATION_EXPRESSION;
