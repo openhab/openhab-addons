@@ -546,7 +546,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         stopSessionRefresh();
         stopAutomaticRefresh();
         ExecutorService service = this.videoExecutorService;
-        if (service != null) {
+        if (!service.isShutdown()) {
             service.shutdownNow();
         }
         this.videoExecutorService = null;
