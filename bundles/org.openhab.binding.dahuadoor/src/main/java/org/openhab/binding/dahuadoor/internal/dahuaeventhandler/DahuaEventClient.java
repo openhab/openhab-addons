@@ -135,7 +135,7 @@ public class DahuaEventClient implements Runnable {
                                 }
                                 keepAliveReceived = true;
                             } else if ("client.notifyEventStream".equals(jsonPacket.get("method").getAsString())) {
-                                eventListener.EventHandler(jsonPacket);
+                                eventListener.eventHandler(jsonPacket);
                             }
                         }
                     }
@@ -366,7 +366,7 @@ public class DahuaEventClient implements Runnable {
                         if (jsonPacket != null && jsonPacket.has("method")) {
                             String method = jsonPacket.get("method").getAsString();
                             if ("client.notifyEventStream".equals(method)) {
-                                eventListener.EventHandler(jsonPacket);
+                                eventListener.eventHandler(jsonPacket);
                             }
                         }
                     }

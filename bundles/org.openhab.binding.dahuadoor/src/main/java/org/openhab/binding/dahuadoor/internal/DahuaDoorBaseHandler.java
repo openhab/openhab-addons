@@ -107,7 +107,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     public void errorInformer(String msgError) {
-
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msgError);
     }
 
@@ -207,7 +206,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     @Override
-    public void EventHandler(@Nullable JsonObject data) {
+    public void eventHandler(@Nullable JsonObject data) {
         try {
             logger.trace("JSON{}", data);
             JsonObject jsonObj = data.getAsJsonObject("params");

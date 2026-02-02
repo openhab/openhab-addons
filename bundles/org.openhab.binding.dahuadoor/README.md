@@ -1,38 +1,41 @@
 # DahuaDoor Binding
 
-A binding for Dahua VTO2202F Villastation door controllers.
+This binding integrates Dahua VTO2202F Villastation door controllers with openHAB, enabling doorbell notifications, camera snapshots, and remote door control.
 
 ## Supported Things
 
-| Thing Type | Thing ID   | Description                           |
-|------------|------------|---------------------------------------|
-| VTO Device | `dahua_vto2202` | Dahua VTO2202F Villastation door unit |
+| Thing Type | Thing ID        | Description                                      |
+|------------|-----------------|--------------------------------------------------|
+| VTO Device | `dahua_vto2202` | Dahua VTO2202F Villastation door unit with camera and door relays |
 
 ## Discovery
 
-Automatic discovery is not supported. Things must be manually configured.
+Automatic discovery is not supported.
+Things must be manually configured.
 
 ## Thing Configuration
 
-The following configuration parameters are required:
+### VTO Device (`dahua_vto2202`)
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| hostname | text | Yes | Hostname or IP address of the device |
-| username | text | Yes | Username to access the device |
-| password | text | Yes | Password to access the device |
-| snapshotpath | text | Yes | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
+| Parameter    | Type | Required | Default | Description                                                   |
+|--------------|------|----------|---------|---------------------------------------------------------------|
+| hostname     | text | Yes      | -       | Hostname or IP address of the device (e.g., 192.168.1.100)   |
+| username     | text | Yes      | -       | Username to access the device                                 |
+| password     | text | Yes      | -       | Password to access the device                                 |
+| snapshotpath | text | Yes      | -       | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
 
 **Note:** Windows paths are not currently supported.
 
 ## Channels
 
-| Channel ID | Type | Read/Write | Description |
-|------------|------|------------|-------------|
-| bell-button | Trigger | Read | Triggers when doorbell button is pressed (event: PRESSED) |
-| door-image | Image | Read | Camera snapshot taken when doorbell is pressed |
-| open-door-1 | Switch | Write | Command to open door relay 1 |
-| open-door-2 | Switch | Write | Command to open door relay 2 |
+### VTO Device Channels
+
+| Channel ID   | Type    | Read/Write | Description                                        |
+|--------------|---------|------------|----------------------------------------------------|
+| bell-button  | Trigger | Read       | Triggers when doorbell button is pressed (event: PRESSED) |
+| door-image   | Image   | Read       | Camera snapshot taken when doorbell is pressed     |
+| open-door-1  | Switch  | Write      | Command to open door relay 1                       |
+| open-door-2  | Switch  | Write      | Command to open door relay 2                       |
 
 ## Full Example
 
@@ -69,6 +72,3 @@ then
         "Open Door=command:OpenFrontDoor:ON", null)
 end
 ```
-
-
-

@@ -29,5 +29,5 @@ public interface DHIPEventListener {
      *
      * @param data JSON object containing the event data from the device
      */
-    public void EventHandler(JsonObject data);
+    void eventHandler(JsonObject data);
 }
