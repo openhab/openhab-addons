@@ -208,7 +208,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                             stm = STMStateMachine.build(STMTransitionConfiguration.BLINDS, STMState.INVALID, thing,
                                     scheduler);
                             if (stm != null) {
-                                // how to fix @Nullable warning here?
                                 stm.register(STMAction.CALIBRATION_DONE, stm::enqueueProcessCommand);
                                 stm.register(STMAction.POSITION_DONE, stm::enqueueProcessCommand);
                             }
