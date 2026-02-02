@@ -102,7 +102,7 @@ This section applies only when semantic model mapping is disabled.
 
 It is important to note that you are exposing _Items_, not _Things_ or _Channels_.
 Only Color, Dimmer, Rollershutter, Switch, and Group type _Items_ are supported.
-Group type items require the "Huelight" tag to be exposed as devices instead of groups.
+Group type Items require the "Huelight" tag to be exposed as devices instead of groups.
 
 This service can emulate three different devices:
 
@@ -112,8 +112,8 @@ This service can emulate three different devices:
 
 The exposed Hue type depends on some criteria:
 
-- If the item has the category "ColorLight": It will be exposed as a color bulb.
-- If the item has the category "Light": It will be exposed as a switch.
+- If the Item has the category "ColorLight": It will be exposed as a color bulb.
+- If the Item has the category "Light": It will be exposed as a switch.
 
 This initial type determination is overridden if the item is tagged.
 
