@@ -114,4 +114,10 @@ public class HomekitBindingConstants {
     public static final String ACTION_RESULT_OK_FORMAT = ACTION_RESULT_OK + " (%s)";
     public static final String ACTION_RESULT_ERROR = "ERROR";
     public static final String ACTION_RESULT_ERROR_FORMAT = ACTION_RESULT_ERROR + " (%s)";
+
+    // short suffixes that we expand to identify the i18n text id for displaying communication error messages
+    public static final String I18N_SUFFIX_POLLING_ERROR = "polling error"; // yields i18n id 'error.polling-error'
+    public static final String I18N_SUFFIX_EVENT_SUBSCRIBE_ERROR = "event subscribe error";
+    public static final String I18N_SUFFIX_ACCESSORY_FETCH_ERROR = "accessory fetch error";
+    public static final String I18N_SUFFIX_ERROR_SENDING_COMMAND = "error sending command";
 }

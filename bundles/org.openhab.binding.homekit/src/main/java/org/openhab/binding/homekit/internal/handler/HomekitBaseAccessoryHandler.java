@@ -236,10 +236,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            logger.warn("{} communication error '{}' fetching accessories, reconnecting..", thing.getUID(),
-                    e.getMessage());
-            logger.trace("{} stack trace", thing.getUID(), e);
-            scheduleConnectionAttempt();
+            onCommunicationError(e, I18N_SUFFIX_ACCESSORY_FETCH_ERROR);
         }
     }
 
@@ -647,10 +644,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            logger.warn("{} communication error '{}' subscribing to events, reconnecting..", thing.getUID(),
-                    e.getMessage());
-            logger.trace("{} stack trace", thing.getUID(), e);
-            scheduleConnectionAttempt();
+            onCommunicationError(e, I18N_SUFFIX_EVENT_SUBSCRIBE_ERROR);
         }
     }
 
@@ -708,12 +702,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            logger.warn("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
-                    e.getMessage());
-            logger.trace("{} stack trace", thing.getUID(), e);
-            scheduleConnectionAttempt();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
+            onCommunicationError(e, I18N_SUFFIX_POLLING_ERROR);
         }
     }
 
@@ -948,5 +937,22 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (snapshotRefreshTask == null || snapshotRefreshTask.isDone()) {
             this.snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
         }
+    }
+
+    /**
+     * Common communication error handler that logs the exception, updates the thing status to OFFLINE
+     * with COMMUNICATION_ERROR detail, and schedules a reconnection attempt.
+     *
+     * @param exception the communication exception that was thrown
+     * @param i18nSuffix suffix of an i18n identifier; for example "event subscribe error" which gets
+     *            expanded to the i18n text id "error.event-subscribe-error" for the UI
+     */
+    protected void onCommunicationError(Exception exception, String i18nSuffix) {
+        String message = exception.getMessage();
+        logger.warn("{} {} {}, reconnecting..", thing.getUID(), i18nSuffix, message);
+        logger.trace("{} stack trace", thing.getUID(), exception);
+        String description = THING_STATUS_FMT.formatted("error." + i18nSuffix.replace(' ', '-'), message);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+        scheduleConnectionAttempt();
     }
 }
