@@ -115,7 +115,7 @@ The exposed Hue type depends on some criteria:
 - If the Item has the category "ColorLight": It will be exposed as a color bulb.
 - If the Item has the category "Light": It will be exposed as a switch.
 
-This initial type determination is overridden if the item is tagged.
+This initial type determination is overridden if the Item is tagged.
 
 The following default tags are set up:
 
