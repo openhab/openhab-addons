@@ -225,7 +225,8 @@ org.openhab.hueemulation:restrictToTagsColorLights=ColorLighting
 ```
 
 The service tries to expose as many items as possible (greedy), based on some criteria as explained in the section above.
-If you want to exclude items, you need to tag them. Define the tags with the following option:
+If you want to exclude Items, you need to tag them.
+Define the tags with the following option:
 
 ```ini
 org.openhab.hueemulation:ignoreItemsWithTags=internal
