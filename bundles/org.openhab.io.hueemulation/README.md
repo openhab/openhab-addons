@@ -205,7 +205,7 @@ org.openhab.hueemulation:discoveryIp=192.168.1.100,::FFFF:A9DB:0D85
 ```
 
 The Hue emulation service supports three types of emulated bulbs.
-You need to tell the service which item tag corresponds to which emulated bulb type.
+You need to tell the service which Item tag corresponds to which emulated bulb type.
 One of the comma-separated tags must match for the item to be exposed.
 Can be empty to match an Item based on other criteria.
 
