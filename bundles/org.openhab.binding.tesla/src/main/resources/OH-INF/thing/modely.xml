@@ -110,6 +110,7 @@
 			<channel id="scheduledchargingstart" typeId="scheduledchargingstart"/>
 			<channel id="sentrymode" typeId="sentrymode"/>
 			<channel id="sentrymodeavailable" typeId="sentrymodeavailable"/>
+			<channel id="share" typeId="share"/>
 			<channel id="shiftstate" typeId="shiftstate"/>
 			<channel id="sidemirrorheaters" typeId="sidemirrorheaters"/>
 			<channel id="smartpreconditioning" typeId="smartpreconditioning"/>
@@ -131,7 +132,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>

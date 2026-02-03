@@ -10,7 +10,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassId" type="integer">
-			<label>Command Class Id</label>
+			<label>Command Class ID</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassName" type="text">
@@ -28,11 +28,11 @@
 			<default>1</default>
 		</parameter>
 		<parameter name="propertyKeyStr" type="text">
-			<label>Property Key Str</label>
+			<label>Property Key (String)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="propertyKeyInt" type="integer">
-			<label>Property Key Int</label>
+			<label>Property Key (Integer)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="readProperty" type="text">
@@ -40,11 +40,11 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writePropertyStr" type="text">
-			<label>Write Property Str</label>
+			<label>Write Property (String)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writePropertyInt" type="integer">
-			<label>Write Property Int</label>
+			<label>Write Property (Integer)</label>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -55,7 +55,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassId" type="integer">
-			<label>Command Class Id</label>
+			<label>Command Class ID</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassName" type="text">
@@ -73,11 +73,11 @@
 			<default>1</default>
 		</parameter>
 		<parameter name="propertyKeyStr" type="text">
-			<label>Property Key Str</label>
+			<label>Property Key (String)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="propertyKeyInt" type="integer">
-			<label>Property Key Int</label>
+			<label>Property Key (Integer)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="readProperty" type="text">
@@ -85,16 +85,16 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writePropertyStr" type="text">
-			<label>Write Property Str</label>
+			<label>Write Property (String)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writePropertyInt" type="integer">
-			<label>Write Property Int</label>
+			<label>Write Property (Integer)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="inverted" type="boolean">
 			<label>Inverted</label>
-			<description>When True the value will be inverted for OpenClose, OnOff and Percentage types.</description>
+			<description>When true, the value will be inverted for OpenClose, OnOff, and Percentage types.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
@@ -105,7 +105,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassId" type="integer">
-			<label>Command Class Id</label>
+			<label>Command Class ID</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="commandClassName" type="text">
@@ -123,11 +123,11 @@
 			<default>1</default>
 		</parameter>
 		<parameter name="propertyKeyStr" type="text">
-			<label>Property Key Str</label>
+			<label>Property Key (String)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="propertyKeyInt" type="integer">
-			<label>Property Key Int</label>
+			<label>Property Key (Integer)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="readProperty" type="text">
@@ -135,21 +135,21 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writePropertyStr" type="text">
-			<label>Write Property Str</label>
+			<label>Write Property (String)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="writePropertyInt" type="integer">
-			<label>Write Property Int</label>
+			<label>Write Property (Integer)</label>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="inverted" type="boolean">
 			<label>Inverted</label>
-			<description>When True the position of the RollerShutter will be inverted.</description>
+			<description>When true, the position of the rollershutter will be inverted.</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="isUpDownInverted" type="boolean">
 			<label>Up/Down Inverted</label>
-			<description>When True the Up/Down commands will be inverted.</description>
+			<description>When true, the Up/Down commands will be inverted.</description>
 			<default>false</default>
 		</parameter>
 	</config-description>
