@@ -148,7 +148,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private static final int MIGRATION_TASK_DELAY_SECONDS = 1;
     private static final int MIGRATION_TASK_TIMEOUT_SECONDS = 10;
     private volatile @Nullable ScheduledFuture<?> migrationTask = null;
-    private final AtomicBoolean migrating = new AtomicBoolean(false);
+    private final AtomicBoolean isMigrating = new AtomicBoolean(false);
     private final AtomicBoolean disposing = new AtomicBoolean(false);
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
@@ -568,7 +568,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         eventedCharacteristics.clear();
         polledCharacteristics.clear();
         super.dispose();
-        if (migrating.get() && migrationTask instanceof ScheduledFuture<?> task && !task.isDone()) {
+        if (isMigrating.get() && migrationTask instanceof ScheduledFuture<?> task && !task.isDone()) {
             try {
                 task.get(MIGRATION_TASK_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             } catch (Exception e) {
@@ -996,8 +996,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     protected void onConnectedThingAccessoriesLoaded() {
         createProperties(); // we need the properties before eventually starting a migration
-        startMigrationFromThingToBridgeIfRequired(thing);
-        if (migrating.get()) {
+        if (startMigrationFromThingToBridgeIfRequired() && isMigrating.get()) {
             return; // skip further processing if migrating
         }
         createChannels();
@@ -1097,30 +1096,30 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * This migration is only started if the existing Thing is of type Accessory and has embedded accessories (i.e.
      * child accessories). Does not execute if either of the 'disposing' or 'migrating' flags are set, and sets the
      * 'migrating' flag to prevent overlapping calls. The migration is performed asynchronously after a short delay.
-     * 
-     * @param fromThing the existing Thing to be migrated to a Bridge
      */
-    private void startMigrationFromThingToBridgeIfRequired(Thing fromThing) {
+    private boolean startMigrationFromThingToBridgeIfRequired() {
         if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1 && !disposing.get()
-                && !migrating.getAndSet(true)) {
+                && !isMigrating.getAndSet(true)) {
 
             logger.info("Thing '{}' has embedded accessories; migrating it to a Bridge", thing.getUID());
-
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/status.migrating-accessory-to-bridge");
 
             // create new Bridge with old Thing's Id and all its attributes -- except channels and tags
-            Bridge toBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, fromThing.getUID().getId()) //
-                    .withLabel(fromThing.getLabel()) //
-                    .withLocation(fromThing.getLocation()) //
-                    .withProperties(fromThing.getProperties()) //
-                    .withConfiguration(fromThing.getConfiguration()) //
+            Bridge toBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, thing.getUID().getId()) //
+                    .withLabel(thing.getLabel()) //
+                    .withLocation(thing.getLocation()) //
+                    .withProperties(thing.getProperties()) //
+                    .withConfiguration(thing.getConfiguration()) //
                     .build();
 
             // schedule registry actions to asynchronously migrate the Thing to a Bridge
-            migrationTask = getScheduler().schedule(() -> migrateFromThingToBridge(thingRegistry, fromThing, toBridge),
+            migrationTask = getScheduler().schedule(() -> migrateFromThingToBridge(thingRegistry, thing, toBridge),
                     MIGRATION_TASK_DELAY_SECONDS, TimeUnit.SECONDS);
+
+            return true;
         }
+        return false;
     }
 
     /**
@@ -1169,23 +1168,25 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      */
     private void migrateFromThingToBridge(ThingRegistry registry, Thing fromThing, Bridge toBridge) {
         try {
-            if (!disposing.get() && migrating.get()) {
+            if (!disposing.get() && isMigrating.get()) {
+                suppressDiscoveryForThingId(fromThing.getUID().getId(), true); // suppress mDNS (re-) discovery
                 registry.add(toBridge);
                 registry.remove(fromThing.getUID()); // remove only after a successful add
                 logger.info("{} successfully migrated to {}", fromThing.getUID(), toBridge.getUID());
             }
         } catch (IllegalStateException e) {
+            suppressDiscoveryForThingId(fromThing.getUID().getId(), false); // re-enable mDNS discovery
             logger.warn("{} while migrating {} to Bridge. Try deleting Thing and creating Bridge manually.",
                     e.getMessage(), fromThing.getUID());
         } finally {
-            migrating.set(false);
+            isMigrating.set(false);
         }
     }
 
     @Override
     public String unpair() {
         // prevent un-pairing (thus bilaterally deleting pairing keys) while migration is in progress
-        return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("migration in progress") : super.unpair();
+        return isMigrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("migration in progress") : super.unpair();
     }
 
     /**

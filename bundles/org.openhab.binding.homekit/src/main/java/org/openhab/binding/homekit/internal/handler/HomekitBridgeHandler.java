@@ -170,4 +170,11 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     public Bundle getBundle() {
         return bundle;
     }
+
+    @Override
+    public void handleRemoval() {
+        // a Bridge may have been a migrated accessory Thing => remove discovery suppression for this id (if any)
+        suppressDiscoveryForThingId(thing.getUID().getId(), false);
+        super.handleRemoval();
+    }
 }

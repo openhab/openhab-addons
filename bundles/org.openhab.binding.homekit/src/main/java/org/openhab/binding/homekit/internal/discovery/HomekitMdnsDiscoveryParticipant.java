@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
 
@@ -50,10 +51,11 @@ import org.osgi.service.component.annotations.Component;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MDNSDiscoveryParticipant.class, immediate = true)
+@Component(service = MDNSDiscoveryParticipant.class, immediate = true, property = { "class.id=homekit" })
 public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
+    private static final Set<String> SUPPRESSED_IDS = ConcurrentHashMap.newKeySet();
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -71,6 +73,10 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             Map<String, String> properties = getProperties(service);
 
             String uniqueId = properties.get("id"); // unique id
+            if (SUPPRESSED_IDS.contains(uniqueId)) {
+                return null; // suppress discovery
+            }
+
             String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
                     .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
             int port = service.getPort();
@@ -171,5 +177,20 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             hostName += ":" + port;
         }
         return hostName;
+    }
+
+    /**
+     * Suppresses/enables discovery of Things with the given Thing ID. Used to suppress duplicate Things from
+     * being re- discovered after an accessory Thing has been migrated to a Bridge.
+     *
+     * @param id the Thing ID
+     * @param suppress true to suppress, false to enable
+     */
+    public void suppressDiscoveryForThingId(String id, boolean suppress) {
+        if (suppress) {
+            SUPPRESSED_IDS.add(id);
+        } else {
+            SUPPRESSED_IDS.remove(id);
+        }
     }
 }

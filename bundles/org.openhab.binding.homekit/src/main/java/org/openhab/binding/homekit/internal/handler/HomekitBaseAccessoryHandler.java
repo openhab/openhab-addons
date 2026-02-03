@@ -43,6 +43,7 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
+import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
@@ -58,6 +59,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
@@ -69,6 +71,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,6 +128,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
+
+    @Reference(target = "(class.id=homekit)") // binds specifically to HomekitMdnsDiscoveryParticipant instance
+    private MDNSDiscoveryParticipant mdnsDiscoveryParticipant;
 
     /**
      * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
@@ -942,6 +948,21 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         Future<?> snapshotRefreshTask = this.snapshotRefreshTask;
         if (snapshotRefreshTask == null || snapshotRefreshTask.isDone()) {
             this.snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
+        }
+    }
+
+    /**
+     * Suppresses/enables discovery of Things with the given Thing ID. Used to suppress duplicate Things from
+     * being re- discovered after an accessory Thing has been migrated to a Bridge.
+     * 
+     * @param id the Thing ID
+     * @param suppress true to suppress, false to enable
+     */
+    protected void suppressDiscoveryForThingId(String id, boolean suppress) {
+        if (mdnsDiscoveryParticipant instanceof HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+            discoveryParticipant.suppressDiscoveryForThingId(id, suppress);
+        } else {
+            logger.warn("Cannot {}suppress discovery for {}", id, suppress ? "" : "un-");
         }
     }
 }
