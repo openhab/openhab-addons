@@ -16,6 +16,7 @@ All channels are available for thing type `service`.
 | --------------------- | ------- | -------------------------------------------------------------------- | ------------- | -------- |
 | priceArea             | text    | Price area for spot prices (same as bidding zone)                    |               | yes      |
 | currencyCode          | text    | Currency code in which to obtain spot prices                         | DKK           | no       |
+| hourlySpotPrices      | boolean | Recalculate spot prices to hourly average based on quarter hourly    | false         | no       |
 | gridCompanyGLN        | integer | Global Location Number of the Grid Company                           |               | no       |
 | energinetGLN          | integer | Global Location Number of Energinet                                  | 5790000432752 | no       |
 | reducedElectricityTax | boolean | Reduced electricity tax applies. For electric heating customers only | false         | no       |
