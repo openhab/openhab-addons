@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.easee.internal.EaseeBindingConstants;
 import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.site.GetSite;
+import org.openhab.binding.easee.internal.command.site.GetSiteUsers;
 import org.openhab.binding.easee.internal.connector.CommunicationStatus;
 import org.openhab.binding.easee.internal.handler.EaseeSiteHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
@@ -53,6 +54,7 @@ public class EaseeSiteDiscoveryService extends AbstractThingHandlerDiscoveryServ
     @Override
     protected void startScan() {
         thingHandler.enqueueCommand(new GetSite(thingHandler, this::processSiteDiscoveryResult));
+        thingHandler.enqueueCommand(new GetSiteUsers(thingHandler, this::processSiteUsersDiscoveryResult));
     }
 
     @Override
@@ -152,5 +154,55 @@ public class EaseeSiteDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
         return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperty(THING_CONFIG_ID, deviceId).withRepresentationProperty(THING_CONFIG_ID);
+    }
+
+    /**
+     * callback that handles json result data for site users discovery.
+     *
+     * @param status
+     * @param siteUsers
+     */
+    private void processSiteUsersDiscoveryResult(CommunicationStatus status, JsonObject siteUsers) {
+        logger.debug("processSiteUsersDiscoveryResult {}", siteUsers);
+
+        JsonArray users = siteUsers.getAsJsonArray(JSON_KEY_SITE_USERS);
+        if (users == null) {
+            logger.info("Site users discovery failed, no users found.");
+        } else {
+            users.forEach(this::handleUserDiscovery);
+        }
+    }
+
+    /**
+     * handles each user discovery result.
+     *
+     * @param user
+     */
+    private void handleUserDiscovery(JsonElement json) {
+        logger.debug("handleUserDiscovery {}", json);
+
+        JsonObject user = json.getAsJsonObject();
+        String userId = Utils.getAsString(user, JSON_KEY_USER_ID);
+        String userName = Utils.getAsString(user, JSON_KEY_GENERIC_NAME);
+        String userEmail = Utils.getAsString(user, JSON_KEY_USER_EMAIL);
+        String userPhoneNumber = Utils.getAsString(user, JSON_KEY_USER_PHONE_NUMBER);
+
+        if (userId != null) {
+            String userLabel = userName != null ? userName : (userEmail != null ? userEmail : userId);
+
+            DiscoveryResultBuilder builder = initDiscoveryResultBuilder(DEVICE_USER, userId, userLabel);
+
+            if (userEmail != null) {
+                builder.withProperty(JSON_KEY_USER_EMAIL, userEmail);
+            }
+            if (userName != null) {
+                builder.withProperty(JSON_KEY_GENERIC_NAME, userName);
+            }
+            if (userPhoneNumber != null) {
+                builder.withProperty(JSON_KEY_USER_PHONE_NUMBER, userPhoneNumber);
+            }
+
+            thingDiscovered(builder.build());
+        }
     }
 }
