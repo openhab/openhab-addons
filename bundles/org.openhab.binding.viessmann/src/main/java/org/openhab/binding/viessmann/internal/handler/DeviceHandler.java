@@ -68,6 +68,7 @@ import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -93,7 +94,7 @@ public class DeviceHandler extends ViessmannThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
 
     private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
-    private static final Set<String> BASE_ALLOWED_SUFFIXES = Set.of("active");
+    private static final Set<String> BASE_ALLOWED_SUFFIXES = Set.of("active", "enabled");
 
     private ThingsConfig config = new ThingsConfig();
 
@@ -288,6 +289,10 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            return;
+        }
+
         Channel ch = thing.getChannel(channelUID.getId());
         if (ch == null) {
             logger.warn("Invalid or missing ChannelUID: {}", channelUID);
@@ -309,6 +314,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         String[] com = commands.split(",");
 
         logger.trace("ChannelUID: {} | Properties: {} | Params {}", ch.getUID(), prop, params);
+        storedChannelValues.putProperty(ch.getUID().getId(), command.toString());
 
         if (command instanceof OnOffType onOff) {
             handleOnOff(channelUID, channelId, suffix, prop, params, com, onOff);
@@ -317,7 +323,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         } else if (command instanceof QuantityType<?> qty) {
             handleNumeric(channelUID, channelId, suffix, prop, params, com, qty.doubleValue());
         } else if (command instanceof StringType str) {
-            handleString(channelUID, channelId, suffix, prop, com, str);
+            handleString(channelUID, channelId, suffix, prop, params, com, str);
         }
     }
 
@@ -349,7 +355,7 @@ public class DeviceHandler extends ViessmannThingHandler {
             return;
         }
 
-        UriParam up = resolveNumericCommand(prop, channelId, suffix, params, com, value);
+        UriParam up = resolveCommand(prop, channelId, suffix, params, com, value);
         if (up == null) {
             logger.trace("No matching numeric command for Channel {}", channelUID);
             return;
@@ -358,45 +364,127 @@ public class DeviceHandler extends ViessmannThingHandler {
     }
 
     private void handleString(ChannelUID channelUID, String channelId, String suffix, Map<String, String> prop,
-            String[] com, StringType command) {
-        logger.trace("Received StringType Command for Channel {} value={}", channelUID, command);
+            String[] params, String[] com, StringType value) {
+        logger.trace("Received StringType Command for Channel {} value={}", channelUID, value);
         if (!checkCommandType(prop, "string")) {
             logger.warn("StringType Command not executable for Channel: {}", channelUID);
             return;
         }
 
-        String value = command.toString();
-        String lcSuffix = suffix.toLowerCase(Locale.ROOT);
+        UriParam up = resolveCommand(prop, channelId, suffix, params, com, value);
+
+        if (up == null) {
+            logger.trace("No matching StringType command for Channel {}", channelUID);
+            return;
+        }
+        sendChannelCommand(up.uri(), up.param(), 0, false);
+    }
+
+    private @Nullable UriParam resolveCommand(Map<String, String> prop, String channelId, String suffix,
+            String[] params, String[] com, Object commandOrValue) {
+
+        final String valueStr;
+        final @Nullable Double valueNum;
+
+        if (commandOrValue instanceof StringType st) {
+            valueStr = st.toString();
+            valueNum = null;
+        } else if (commandOrValue instanceof Number n) {
+            valueStr = Double.toString(n.doubleValue());
+            valueNum = n.doubleValue();
+        } else {
+            // unsupported
+            return null;
+        }
+
+        final String lcSuffix = Objects.requireNonNull(ViessmannUtil.hyphenToCamel(suffix, false))
+                .toLowerCase(Locale.ROOT);
 
         String uri = null;
         String paramsDef = null;
+        String cmd = null;
+
+        final JsonObject json = new JsonObject();
 
         for (String c : com) {
-            String p = prop.get(c + "Params");
-            if ((p != null && p.contains(lcSuffix)) || c.toLowerCase(Locale.ROOT).contains(lcSuffix)) {
-                uri = prop.get(c + "Uri");
-                paramsDef = p;
+            cmd = c;
+            paramsDef = prop.get(cmd + "Params");
+
+            final boolean matchesSuffix = (paramsDef != null && paramsDef.toLowerCase(Locale.ROOT).contains(lcSuffix))
+                    || cmd.toLowerCase(Locale.ROOT).contains(lcSuffix);
+
+            final boolean matchesQuantity = (valueNum != null) && isQuantityCommand(cmd);
+
+            if (matchesSuffix || matchesQuantity) {
+                uri = prop.get(cmd + "Uri");
+
+                if (valueNum != null && paramsDef != null
+                        && paramsDef.matches(".*(Temperature|setHysteresis|setMin|setMax|temperature).*")) {
+                    if (uri == null) {
+                        return null;
+                    }
+                    json.addProperty(paramsDef, valueNum);
+                    return new UriParam(uri, json.toString());
+                }
+                if (channelId.contains("hygiene-trigger")) {
+                    if (valueStr.contains(",")) {
+                        cmd = "triggerDaily";
+                        uri = prop.get(cmd + "Uri");
+                    } else {
+                        String v = storedChannelValues.getProperty(channelId + "#weekday");
+                        if (!v.contains(",")) {
+                            break;
+                        }
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        if (uri == null || cmd == null) {
+            return null;
+        }
+
+        if (channelId.contains("hygiene-trigger") && cmd.equals("triggerDaily")) {
+            params = prop.getOrDefault("triggerDailyParams", "{}").split(",");
+        }
+
+        for (String p : params) {
+            final String hyphenParam = ViessmannUtil.camelToHyphen(p);
+            String v = storedChannelValues.getProperty(channelId + "#" + hyphenParam);
+            final @Nullable String type = prop.get(p + "Type");
+
+            final boolean overrideWithIncoming = hyphenParam.equals(suffix) // numeric
+                    || p.equals(suffix) // string
+                    || v == null;
+
+            if (overrideWithIncoming) {
+                if ("number".equals(type)) {
+                    if (valueNum == null) {
+                        json.addProperty(p, valueStr);
+                    } else {
+                        json.addProperty(p, valueNum);
+                    }
+                } else {
+                    json.addProperty(p, valueStr);
+                }
+            } else {
+                final String nn = Objects.requireNonNull(v);
+
+                if ("number".equals(type)) {
+                    json.addProperty(p, Double.parseDouble(nn));
+                } else {
+                    json.addProperty(p, nn);
+                }
+            }
+
+            if (valueNum != null && (cmd.toLowerCase(Locale.ROOT).contains(lcSuffix) || isQuantityCommand(cmd))) {
                 break;
             }
         }
 
-        if (uri == null || paramsDef == null) {
-            logger.trace("No matching StringType command for Channel {}", channelUID);
-            return;
-        }
-
-        JsonObject json = new JsonObject();
-        String[] params = paramsDef.split(",");
-
-        for (String p : params) {
-            String v = storedChannelValues.getProperty(channelId + "#" + p);
-            if (p.equals(suffix) || v == null) {
-                json.addProperty(p, value);
-            } else {
-                json.addProperty(p, v);
-            }
-        }
-        sendChannelCommand(uri, json.toString(), 0, false);
+        return new UriParam(uri, json.toString());
     }
 
     private void sendChannelCommand(String uri, String param, int delaySeconds, boolean reloadFeatures) {
@@ -446,64 +534,16 @@ public class DeviceHandler extends ViessmannThingHandler {
             }
             return new UriParam(uri, json.toString());
         }
-
-        // Simple activate / deactivate
-        String uri = prop.get(isOn ? "activateUri" : "deactivateUri");
+        String uri;
+        if (isOn) {
+            uri = prop.get("activateUri");
+        } else {
+            uri = prop.get("deactivateUri");
+            if (uri == null) {
+                uri = prop.get("disableUri");
+            }
+        }
         return uri != null ? new UriParam(uri, "{}") : null;
-    }
-
-    private @Nullable UriParam resolveNumericCommand(Map<String, String> prop, String channelId, String suffix,
-            String[] params, String[] com, double value) {
-        String lcSuffix = Objects.requireNonNull(ViessmannUtil.hyphenToCamel(suffix, false)).toLowerCase(Locale.ROOT);
-        String uri = null;
-        String paramsDef = null;
-        String cmd = null;
-        JsonObject json = new JsonObject();
-
-        for (String c : com) {
-            cmd = c;
-
-            paramsDef = prop.get(cmd + "Params");
-
-            if ((paramsDef != null && paramsDef.toLowerCase(Locale.ROOT).contains(lcSuffix))
-                    || cmd.toLowerCase(Locale.ROOT).contains(lcSuffix) || isQuantityCommand(cmd)) {
-                uri = prop.get(cmd + "Uri");
-
-                if ((paramsDef != null
-                        && paramsDef.matches(".*(Temperature|setHysteresis|setMin|setMax|temperature).*"))) {
-                    json.addProperty(paramsDef, value);
-                    if (uri == null) {
-                        return null;
-                    }
-                    return new UriParam(uri, json.toString());
-                }
-                break;
-            }
-        }
-
-        if (uri == null || cmd == null) {
-            return null;
-        }
-
-        for (String p : params) {
-            String v = storedChannelValues.getProperty(channelId + "#" + p);
-            String type = prop.get(p + "Type");
-
-            if (v == null || p.equals(suffix)) {
-                v = Double.toString(value);
-            }
-
-            if ("number".equals(type)) {
-                json.addProperty(p, Double.parseDouble(v));
-            } else {
-                json.addProperty(p, v);
-            }
-
-            if (cmd.toLowerCase(Locale.ROOT).contains(lcSuffix) || isQuantityCommand(cmd)) {
-                break;
-            }
-        }
-        return new UriParam(uri, json.toString());
     }
 
     @Override
@@ -541,6 +581,7 @@ public class DeviceHandler extends ViessmannThingHandler {
             String valueEntry = "";
             String typeEntry = "";
             boolean bool = false;
+            boolean setStateDescription = true;
             String viUnit = "";
             String unit = null;
             msg.setFeatureName(getFeatureName(featureDataDTO.feature));
@@ -790,7 +831,43 @@ public class DeviceHandler extends ViessmannThingHandler {
                     typeEntry = "power-energy";
                     valueEntry = prop.lastYear.value.toString();
                     break;
+                case "target":
+                    typeEntry = "percent";
+                    valueEntry = prop.target.value.toString();
+                    viUnit = prop.target.unit;
+                    break;
+                case "current":
+                    typeEntry = "percent";
+                    valueEntry = prop.current.value.toString();
+                    viUnit = prop.current.unit;
+                    break;
+                case "weekdays":
+                    typeEntry = prop.weekdays.type;
+                    valueEntry = prop.weekdays.value.toString().replace("[", "").replace("]", "");
+                    viUnit = prop.weekdays.unit;
+                    msg.setSuffix("weekday");
+                    break;
+                case "startHour":
+                    typeEntry = "start-hour";
+                    valueEntry = prop.startHour.value.toString();
+                    viUnit = prop.startHour.unit;
+                    setStateDescription = false;
+                    break;
+                case "startMinute":
+                    typeEntry = "start-minute";
+                    valueEntry = prop.startMinute.value.toString();
+                    viUnit = prop.startMinute.unit;
+                    setStateDescription = false;
+                    break;
                 default:
+                    AdditionalProperty additionalProperty = resolveAdditionalProperty(prop, entry);
+                    if (additionalProperty == null) {
+                        continue;
+                    }
+                    typeEntry = additionalProperty.type();
+                    valueEntry = additionalProperty.value();
+                    bool = additionalProperty.boolValue();
+                    viUnit = nvl(additionalProperty.unit(), "");
                     break;
             }
             msg.setType(typeEntry);
@@ -843,7 +920,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                         }
                     }
                 }
-                setStateDescriptionOptions(msg);
+                setStateDescriptionOptions(msg, setStateDescription);
 
                 ThingMessageDTO subMsg = new ThingMessageDTO();
                 subMsg.setDeviceId(featureDataDTO.deviceId);
@@ -928,6 +1005,10 @@ public class DeviceHandler extends ViessmannThingHandler {
                     case "volt":
                     case "ampere":
                     case "power-energy":
+                    case "target":
+                    case "current":
+                    case "start-hour":
+                    case "start-minute":
                         updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                         break;
                     case "boolean":
@@ -943,6 +1024,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                         break;
                     case "string":
                     case "array":
+                    case "weekdays":
                         updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
                         String[] parts = msg.getValue().replace("[", "").replace("]", "").replace(" ", "").split(",");
                         if (parts.length > 1) {
@@ -982,10 +1064,77 @@ public class DeviceHandler extends ViessmannThingHandler {
                         updateState(channelId, parseSchedule(msg.getValue()));
                         break;
                     default:
+                        if (logger.isDebugEnabled()) {
+                            logger.warn(
+                                    "This is only shown in [DEBUG] => Unknown property {}, type: {}, value: {}, unit: {}, feature: {} JSON: \r\n{}",
+                                    entry, typeEntry, valueEntry, viUnit, featureDataDTO.feature,
+                                    featureDataDTO.toPrettyJson());
+                        }
+                        updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
                         break;
                 }
             }
         }
+    }
+
+    private @Nullable AdditionalProperty resolveAdditionalProperty(FeatureProperties properties, String entry) {
+        JsonElement additional = properties.additionalProperties.get(entry);
+        if (additional == null) {
+            return null;
+        }
+        String typeEntry = "string";
+        String valueEntry = "";
+        String unit = null;
+        boolean boolValue = false;
+        if (additional.isJsonObject()) {
+            JsonObject obj = additional.getAsJsonObject();
+            JsonElement typeElement = obj.get("type");
+            if (typeElement != null && typeElement.isJsonPrimitive()) {
+                typeEntry = typeElement.getAsString();
+            }
+            JsonElement unitElement = obj.get("unit");
+            if (unitElement != null && unitElement.isJsonPrimitive()) {
+                unit = unitElement.getAsString();
+            }
+            JsonElement valueElement = obj.get("value");
+            if (valueElement != null) {
+                if (valueElement.isJsonPrimitive()) {
+                    if ("boolean".equals(typeEntry) && valueElement.getAsJsonPrimitive().isBoolean()) {
+                        boolValue = valueElement.getAsBoolean();
+                        valueEntry = boolValue ? "true" : "false";
+                    } else {
+                        valueEntry = valueElement.getAsString();
+                    }
+                } else {
+                    valueEntry = valueElement.toString();
+                    if (valueElement.isJsonArray() && typeElement == null) {
+                        typeEntry = "array";
+                    }
+                }
+            } else {
+                valueEntry = obj.toString();
+            }
+        } else if (additional.isJsonPrimitive()) {
+            if (additional.getAsJsonPrimitive().isBoolean()) {
+                typeEntry = "boolean";
+                boolValue = additional.getAsBoolean();
+                valueEntry = boolValue ? "true" : "false";
+            } else {
+                valueEntry = additional.getAsString();
+            }
+        } else {
+            valueEntry = additional.toString();
+            if (additional.isJsonArray()) {
+                typeEntry = "array";
+            }
+        }
+        if (valueEntry.isBlank()) {
+            valueEntry = additional.toString();
+        }
+        return new AdditionalProperty(typeEntry, valueEntry, unit, boolValue);
+    }
+
+    private record AdditionalProperty(String type, String value, @Nullable String unit, boolean boolValue) {
     }
 
     /**
@@ -1007,15 +1156,18 @@ public class DeviceHandler extends ViessmannThingHandler {
                 properties.put("feature", msg.getFeatureClear());
             }
 
-            Channel channel = cb.createChannelBuilder(channelUID, typeUID)
-                    .withLabel(nvl(msg.getFeatureName(), msg.getChannelId()))
-                    .withDescription(nvl(msg.getFeatureDescription(), "")).withType(typeUID).withProperties(properties)
-                    .build();
-
-            Thing edited = editThing().withoutChannel(channelUID).withChannel(channel).build();
-            updateThing(edited);
-            logger.debug("{} {} created/updated on Thing {}", msg.isSubChannel ? "Sub-Channel" : "Channel", channelUID,
-                    getThing().getUID());
+            try {
+                Channel channel = cb.createChannelBuilder(channelUID, typeUID)
+                        .withLabel(nvl(msg.getFeatureName(), msg.getChannelId()))
+                        .withDescription(nvl(msg.getFeatureDescription(), "")).withType(typeUID)
+                        .withProperties(properties).build();
+                Thing edited = editThing().withoutChannel(channelUID).withChannel(channel).build();
+                updateThing(edited);
+                logger.debug("{} {} created/updated on Thing {}", msg.isSubChannel ? "Sub-Channel" : "Channel",
+                        channelUID, getThing().getUID());
+            } catch (IllegalArgumentException e) {
+                logger.warn(e.getMessage());
+            }
         });
     }
 
@@ -1182,11 +1334,14 @@ public class DeviceHandler extends ViessmannThingHandler {
             }
 
             List<String> allParams = fc.getAllParams();
+            List<String> lcAllParams = allParams.stream().map(p -> p.toLowerCase(Locale.ROOT)).toList();
             Set<String> allowedSuffixes = new HashSet<>(BASE_ALLOWED_SUFFIXES);
-            allowedSuffixes.addAll(allParams);
+            allowedSuffixes.addAll(lcAllParams);
 
-            if (!lcSuffix.isBlank() && !lcCommand.contains(lcSuffix) && !allowedSuffixes.contains(lcSuffix)) {
-                continue;
+            if (!command.equals("triggerDaily")) {
+                if (!lcSuffix.isBlank() && !lcCommand.contains(lcSuffix) && !allowedSuffixes.contains(lcSuffix)) {
+                    continue;
+                }
             }
 
             for (String param : allParams) {
@@ -1223,6 +1378,12 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private String convertChannelType(ThingMessageDTO msg) {
         String channelType = msg.getChannelType();
+        if (channelType.isBlank() || "object".equals(channelType)) {
+            channelType = "string";
+        }
+        if ("meter".equals(msg.getUnit()) || "degree".equals(msg.getUnit())) {
+            channelType = msg.getUnit();
+        }
 
         List<String> com = msg.getAllCommands();
         if (com == null) {
@@ -1277,7 +1438,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         return channelType.toLowerCase(Locale.ROOT);
     }
 
-    private void setStateDescriptionOptions(ThingMessageDTO msg) {
+    private void setStateDescriptionOptions(ThingMessageDTO msg, boolean set) {
         Locale locale = localeProvider.getLocale();
         List<StateOption> stateOptions = new ArrayList<>();
 
@@ -1290,21 +1451,28 @@ public class DeviceHandler extends ViessmannThingHandler {
             p.forEach(param -> {
                 FeatureCommandParams fcp = command.params.get(param);
                 Map<String, Object> constraints = fcp.getConstraints();
-                if (constraints.containsKey("enumValue")) {
-                    List<String> modes = Optional.ofNullable(command.params.get(param))
-                            .map(FeatureCommandParams::getConstraints).map(c -> c.get("enumValue"))
-                            .filter(List.class::isInstance).map(v -> (List<?>) v)
-                            .map(l -> l.stream().filter(String.class::isInstance).map(String.class::cast).toList())
-                            .orElse(List.of());
+                if (set) {
+                    if (constraints.containsKey("enumValue")) {
+                        final List<String> modes = new ArrayList<>();
 
-                    for (String cmd : modes) {
-                        String commandLabel = Objects.requireNonNull(
-                                i18Provider.getText(bundle, "viessmann.command.label." + cmd, cmd, locale));
-                        StateOption stateOption = new StateOption(cmd, commandLabel);
-                        stateOptions.add(stateOption);
+                        Optional.ofNullable(command.params.get(param)).map(FeatureCommandParams::getConstraints)
+                                .map(c -> c.get("enumValue")).filter(List.class::isInstance).map(v -> (List<?>) v)
+                                .ifPresent(list -> list.stream().filter(String.class::isInstance)
+                                        .map(String.class::cast).forEach(modes::add));
+
+                        if (msg.getFeatureClear().contains("hygiene")) {
+                            modes.add("Sun, Mon, Tue, Wed, Thu, Fri, Sat");
+                        }
+
+                        for (String cmd : modes) {
+                            String commandLabel = Objects.requireNonNull(
+                                    i18Provider.getText(bundle, "viessmann.command.label." + cmd, cmd, locale));
+                            StateOption stateOption = new StateOption(cmd, commandLabel);
+                            stateOptions.add(stateOption);
+                        }
+                        ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
+                        setChannelStateDescription(channelUID, stateOptions);
                     }
-                    ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
-                    setChannelStateDescription(channelUID, stateOptions);
                 }
             });
         });

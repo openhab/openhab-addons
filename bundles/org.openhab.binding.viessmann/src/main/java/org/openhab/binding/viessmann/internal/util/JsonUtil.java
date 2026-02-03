@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.viessmann.internal.util;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.google.gson.JsonElement;
 
 /**
  * The {@link JsonUtil} class provides utility methods for JSON serialization
@@ -24,14 +28,27 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public final class JsonUtil {
 
+    /**
+     * Module that teaches Jackson how to serialize Gson's JsonElement tree types (JsonObject/JsonArray/...).
+     * Without this, Jackson may reflect into Gson internals (e.g. "asDouble") and fail.
+     */
+    private static final SimpleModule GSON_MODULE = createGsonModule();
+
     private static final ObjectMapper COMPACT_MAPPER = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL).registerModule(GSON_MODULE);
 
     private static final ObjectMapper PRETTY_MAPPER = new ObjectMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT);
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL).enable(SerializationFeature.INDENT_OUTPUT)
+            .registerModule(GSON_MODULE);
 
     private JsonUtil() {
         // utility class
+    }
+
+    private static @NonNull SimpleModule createGsonModule() {
+        SimpleModule m = new SimpleModule("gson-json");
+        m.addSerializer(JsonElement.class, new GsonJsonElementSerializer());
+        return m;
     }
 
     /**

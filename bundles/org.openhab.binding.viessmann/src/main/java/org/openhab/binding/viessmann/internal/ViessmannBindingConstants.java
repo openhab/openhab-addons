@@ -90,6 +90,8 @@ public class ViessmannBindingConstants {
             entry("milliAmpere", MetricPrefix.MILLI(Units.AMPERE).toString()), //
             entry("volt", Units.VOLT.toString()), //
             entry("revolutionsPerSecond", Units.HERTZ.toString()), //
+            entry("meter", SIUnits.METRE.toString()), //
+            entry("degree", Units.DEGREE_ANGLE.toString()), //
             entry("kiloJoule", MetricPrefix.KILO(Units.JOULE).toString()));
 
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //

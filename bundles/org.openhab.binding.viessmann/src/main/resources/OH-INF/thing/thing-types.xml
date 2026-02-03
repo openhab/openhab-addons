@@ -635,4 +635,44 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="start-hour">
+		<item-type>Number</item-type>
+		<label>Start Time Hour</label>
+		<category>Time</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag> <!-- Workaround UI stepper-card -->
+		</tags>
+		<state min="0" max="23" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="start-minute">
+		<item-type>Number</item-type>
+		<label>Start Time Minute</label>
+		<category>Time</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag> <!-- Workaround UI stepper-card -->
+		</tags>
+		<state min="0" max="50" step="10" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="meter">
+		<item-type>Number:Length</item-type>
+		<label>Length</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="degree">
+		<item-type>Number:Angle</item-type>
+		<label>Angle</label>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.14f %unit%" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
