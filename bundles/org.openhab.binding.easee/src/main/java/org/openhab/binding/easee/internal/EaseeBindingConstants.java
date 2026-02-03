@@ -33,11 +33,13 @@ public class EaseeBindingConstants {
     public static final String DEVICE_SITE = "site";
     public static final String DEVICE_MASTER_CHARGER = "mastercharger";
     public static final String DEVICE_CHARGER = "charger";
+    public static final String DEVICE_USER = "user";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SITE = new ThingTypeUID(BINDING_ID, DEVICE_SITE);
     public static final ThingTypeUID THING_TYPE_MASTER_CHARGER = new ThingTypeUID(BINDING_ID, DEVICE_MASTER_CHARGER);
     public static final ThingTypeUID THING_TYPE_CHARGER = new ThingTypeUID(BINDING_ID, DEVICE_CHARGER);
+    public static final ThingTypeUID THING_TYPE_USER = new ThingTypeUID(BINDING_ID, DEVICE_USER);
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_NONE = "";
@@ -104,6 +106,10 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_CIRCUIT_STATES = "circuitStates";
     public static final String JSON_KEY_CHARGER_STATES = "chargerStates";
     public static final String JSON_KEY_CHARGER_STATE = "chargerState";
+    public static final String JSON_KEY_SITE_USERS = "siteUsers";
+    public static final String JSON_KEY_USER_ID = "userId";
+    public static final String JSON_KEY_USER_EMAIL = "email";
+    public static final String JSON_KEY_USER_PHONE_NUMBER = "phoneNumber";
 
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
@@ -132,6 +138,7 @@ public class EaseeBindingConstants {
     public static final String LOGIN_URL = API_BASE_URL + "/accounts/login";
     public static final String REFRESH_TOKEN_URL = API_BASE_URL + "/accounts/refresh_token";
     public static final String GET_SITE_URL = API_BASE_URL + "/sites/{siteId}";
+    public static final String GET_SITE_USERS_URL = API_BASE_URL + "/sites/{siteId}/users";
     public static final String CHARGER_URL = API_BASE_URL + "/chargers/{id}";
     public static final String SITE_STATE_URL = API_BASE_URL + "/sites/{siteId}/state";
     public static final String GET_CONFIGURATION_URL = API_BASE_URL + "/chargers/{id}/config";
@@ -173,5 +180,5 @@ public class EaseeBindingConstants {
     public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SITE,
-            THING_TYPE_MASTER_CHARGER, THING_TYPE_CHARGER);
+            THING_TYPE_MASTER_CHARGER, THING_TYPE_CHARGER, THING_TYPE_USER);
 }
