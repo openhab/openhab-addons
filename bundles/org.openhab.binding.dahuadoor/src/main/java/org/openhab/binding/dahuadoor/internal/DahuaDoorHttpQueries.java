@@ -37,7 +37,7 @@ public class DahuaDoorHttpQueries {
         this.httpClient = httpClient;
     }
 
-    public byte @Nullable [] RequestImage() {
+    public byte @Nullable [] requestImage() {
 
         // HttpClient httpClient = new HttpClient();
 
@@ -65,7 +65,7 @@ public class DahuaDoorHttpQueries {
         return null;
     }
 
-    public void OpenDoor(int doorNo) {
+    public void openDoor(int doorNo) {
 
         // HttpClient httpClient = new HttpClient();
         try {

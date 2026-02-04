@@ -82,7 +82,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             logger.warn("HTTP queries not initialized, cannot handle command");
             return;
         }
-        
+
         if (CHANNEL_BELL_BUTTON.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // Refresh not supported for trigger channel
@@ -92,7 +92,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             case CHANNEL_OPEN_DOOR_1:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        queries.OpenDoor(1);
+                        queries.openDoor(1);
                         updateState(channelUID, OnOffType.OFF);
                     }
                 }
@@ -100,7 +100,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             case CHANNEL_OPEN_DOOR_2:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        queries.OpenDoor(2);
+                        queries.openDoor(2);
                         updateState(channelUID, OnOffType.OFF);
                     }
                 }
@@ -209,12 +209,12 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             return;
         }
         triggerChannel(channel.getUID(), "PRESSED");
-        
+
         if (queries == null) {
             logger.warn("HTTP queries not initialized, cannot retrieve doorbell image");
             return;
         }
-        byte[] buffer = queries.RequestImage();
+        byte[] buffer = queries.requestImage();
         updateChannelImage(buffer);
         saveSnapshot(buffer);
     }

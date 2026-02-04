@@ -76,7 +76,7 @@ public class DahuaEventClient implements Runnable {
         this.execThread = false;
     }
 
-    public String Gen_md5_hash(String Dahua_random, String Dahua_realm, String username, String password)
+    public String genMd5Hash(String Dahua_random, String Dahua_realm, String username, String password)
             throws Exception {
         String PWDDB_HASH = md5(username + ":" + Dahua_realm + ":" + password).toUpperCase();
         String PASS = username + ":" + Dahua_random + ":" + PWDDB_HASH;
@@ -93,7 +93,7 @@ public class DahuaEventClient implements Runnable {
         return sb.toString();
     }
 
-    public void KeepAlive(int delay) {
+    public void keepAlive(int delay) {
         final Logger localLogger = logger;
         if (localLogger == null) {
             return;
@@ -113,7 +113,7 @@ public class DahuaEventClient implements Runnable {
             queryArgs.put("session", this.SessionID);
 
             try {
-                Send(new Gson().toJson(queryArgs));
+                send(new Gson().toJson(queryArgs));
             } catch (IOException e) {
                 logger.trace("Error sending keepAlive: {}", e.getMessage());
             }
@@ -123,7 +123,7 @@ public class DahuaEventClient implements Runnable {
             while (lastKeepAlive + delay * 1000 > System.currentTimeMillis()) {
                 ArrayList<String> data;
                 try {
-                    data = Receive();
+                    data = receive();
                     if (data != null) {
                         for (String packet : data) {
                             JsonObject jsonPacket = gson.fromJson(packet, JsonObject.class);
@@ -149,7 +149,7 @@ public class DahuaEventClient implements Runnable {
         }
     }
 
-    public void Send(String packet) throws IOException {
+    public void send(String packet) throws IOException {
         if (packet == null) {
             packet = "";
         }
@@ -190,7 +190,7 @@ public class DahuaEventClient implements Runnable {
         }
     }
 
-    public ArrayList<String> Receive() throws IOException {
+    public ArrayList<String> receive() throws IOException {
 
         ArrayList<String> p2pReturnData = new ArrayList<String>();
         byte[] buffer = new byte[8192];
@@ -242,7 +242,7 @@ public class DahuaEventClient implements Runnable {
         return p2pReturnData;
     }
 
-    public boolean Login() {
+    public boolean login() {
         logger.trace("Start login");
 
         Map<String, Object> queryArgs = new HashMap<>();
@@ -254,8 +254,8 @@ public class DahuaEventClient implements Runnable {
         queryArgs.put("session", 0);
 
         try {
-            Send(new Gson().toJson(queryArgs));
-            ArrayList<String> data = Receive();
+            send(new Gson().toJson(queryArgs));
+            ArrayList<String> data = receive();
             if (data == null) {
                 logger.trace("global.login [random]");
                 return false;
@@ -271,7 +271,7 @@ public class DahuaEventClient implements Runnable {
                 return false;
             }
 
-            String RANDOM_HASH = Gen_md5_hash(random, realm, this.username, this.password);
+            String RANDOM_HASH = genMd5Hash(random, realm, this.username, this.password);
 
             queryArgs = new HashMap<>();
             queryArgs.put("id", 10000);
@@ -281,8 +281,8 @@ public class DahuaEventClient implements Runnable {
             queryArgs.put("params", Map.of("userName", this.username, "password", RANDOM_HASH, "clientType",
                     this.clientType, "ipAddr", this.FakeIPaddr, "loginType", "Direct", "authorityType", "Default"));
 
-            Send(new Gson().toJson(queryArgs));
-            data = Receive();
+            send(new Gson().toJson(queryArgs));
+            data = receive();
             if (data == null) {
                 return false;
             }
@@ -326,7 +326,7 @@ public class DahuaEventClient implements Runnable {
                 sock.setSoTimeout(5000); // Set timeout to 5 seconds
                 error = false;
 
-                if (!Login()) {
+                if (!login()) {
                     loginTries++;
                     if (loginTries > 4) {
                         errorInformer.accept("can't login, check host setting and credentials");
@@ -342,8 +342,8 @@ public class DahuaEventClient implements Runnable {
                 queryArgs.put("params", Map.of("codes", new String[] { "All" }));
                 queryArgs.put("session", this.SessionID);
 
-                Send(new Gson().toJson(queryArgs));
-                ArrayList<String> data = Receive();
+                send(new Gson().toJson(queryArgs));
+                ArrayList<String> data = receive();
                 if (data.isEmpty() || !gson.fromJson(data.get(0), JsonObject.class).has("result")) {
                     logger.trace("Failure eventManager.attach");
                     continue;
@@ -358,7 +358,7 @@ public class DahuaEventClient implements Runnable {
                         }
                     }
                 }
-                KeepAlive(this.keepAliveInterval);
+                keepAlive(this.keepAliveInterval);
                 logger.trace("Failure no keep alive received");
             } catch (Exception e) {
                 logger.trace("Socket open failed: {}", e.getMessage());
