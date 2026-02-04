@@ -1185,7 +1185,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Atomically removes the given existing accessory Thing from the registry and adds the new Bridge.
+     * Task to remove the given existing accessory Thing from the registry and add the new Bridge.
      * <p>
      * NOTE: There is currently no dedicated framework API to migrate an existing Thing to a Bridge
      * while preserving its identifier and configuration. In this specific migration scenario we are

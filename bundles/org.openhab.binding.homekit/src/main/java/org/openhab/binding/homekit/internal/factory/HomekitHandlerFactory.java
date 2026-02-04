@@ -77,12 +77,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
             @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore,
             @Reference TranslationProvider translationProvider, @Reference ThingRegistry thingRegistry,
-            @Reference(target = "(class.id=homekit)") MDNSDiscoveryParticipant mdnsDiscoveryParticipant)
-            throws IllegalArgumentException {
-        if (!(mdnsDiscoveryParticipant instanceof HomekitMdnsDiscoveryParticipant)) {
-            throw new IllegalArgumentException(
-                    "MDNSDiscoveryParticipant is not an instance of HomekitMdnsDiscoveryParticipant");
-        }
+            @Reference(target = "(class.id=homekit)") MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
         this.typeProvider = typeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;

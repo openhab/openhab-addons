@@ -56,7 +56,14 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
 
-    // just one instance of this service class should ever be instantiated but make the set static just in case
+    /**
+     * This is a set of Thing ids whose discovery shall be suppressed. It is intentionally declared as a
+     * static set so that it is shared across all instances of this class, and so that the suppression
+     * state is retained even if the discovery participant instance is deactivated and reactivated during
+     * the life cycle of the binding. This allows us to suppress discovery of "duplicate" accessory Things
+     * if they had been auto-migrated to Bridge things, and to enable discovery again if the Bridge thing
+     * is removed.
+     */
     private static final Set<String> SUPPRESSED_IDS = ConcurrentHashMap.newKeySet();
 
     @Override
@@ -182,11 +189,12 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     }
 
     /**
-     * Suppresses/enables discovery of Things with the given Thing ID. Used to suppress duplicate Things from
-     * being re- discovered after an accessory Thing has been migrated to a Bridge.
+     * Suppresses/enables discovery of accessory Things with the given id. When an accessory Thing is auto-migrated
+     * to a Bridge thing then the bridge re-uses the same id as the prior accessory Thing. So we need to suppress
+     * re-discovery of a "duplicate" accessory Thing having the same id and parameters.
      *
-     * @param id the Thing ID
-     * @param suppress true to suppress, false to enable
+     * @param id the Thing ID for which to suppress or enable discovery
+     * @param suppress true to suppress discovery of that id, false to enable discovery again
      */
     public void suppressId(String id, boolean suppress) {
         if (suppress) {
