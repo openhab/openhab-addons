@@ -512,15 +512,15 @@ Thing enocean:rollershutter:gateway:device "My Blinds" (enocean:bridge:gateway) 
 
 ### Channel Configuration Parameters
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| shutTime | int | Yes | - | Full travel time from 0% to 100% (seconds) |
-| swapTime | int | No | 0 | Slat rotation time in 100ms units (e.g., 14 = 1.4s) |
-| configMode | string | No | - | Set to "blinds" for advanced control, omit for legacy rollershutter mode |
-| enoceanId | string | Yes | - | EnOcean device ID |
-| senderIdOffset | int | Yes | - | Offset for sender ID |
-| sendingEEPId | string | Yes | - | Must be "A5_3F_7F_EltakoFSB" |
-| receivingEEPId | string | Yes | - | Must include "F6_00_00" and "A5_3F_7F_EltakoFSB" |
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| shutTime | int | Yes | Full travel time from 0% to 100% (seconds) |
+| swapTime | int | No | Slat rotation time in 100ms units (e.g., 14 = 1.4s) |
+| configMode | string | No | Set to "blinds" for advanced control, omit for legacy rollershutter mode |
+| enoceanId | string | Yes | EnOcean device ID |
+| senderIdOffset | int | Yes | Offset for sender ID |
+| sendingEEPId | string | Yes | Must be "A5_3F_7F_EltakoFSB" |
+| receivingEEPId | string | Yes | Must include "F6_00_00" and "A5_3F_7F_EltakoFSB" |
 
 ### Items Configuration
 
