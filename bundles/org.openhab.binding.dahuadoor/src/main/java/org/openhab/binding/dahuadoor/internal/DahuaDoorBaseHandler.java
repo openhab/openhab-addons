@@ -117,8 +117,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         config = getConfigAs(DahuaDoorConfiguration.class);
 
         // Validate required configuration
-        if (config.hostname == null || config.hostname.isBlank() || config.username == null
-                || config.username.isBlank() || config.password == null || config.password.isBlank()) {
+        if (config.hostname == null || config.hostname.isBlank() || config.username == null || config.username.isBlank()
+                || config.password == null || config.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Hostname, username and password must be configured.");
             return;
