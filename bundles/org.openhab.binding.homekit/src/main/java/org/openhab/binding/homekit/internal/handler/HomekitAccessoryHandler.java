@@ -575,7 +575,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             try {
                 task.get(MIGRATION_TASK_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             } catch (Exception e) {
-                // closing; ignore all exceptions
+                logger.warn("{}: Migration task did not complete within timeout during dispose", thing.getUID(), e);
             }
         }
     }
