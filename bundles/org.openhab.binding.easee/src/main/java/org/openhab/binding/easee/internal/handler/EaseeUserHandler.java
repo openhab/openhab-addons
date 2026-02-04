@@ -42,7 +42,7 @@ public class EaseeUserHandler extends EaseeBaseThingHandler {
     private final AtomicReference<@Nullable Future<?>> dataPollingJobReference;
 
     public EaseeUserHandler(Thing thing) {
-        super(thing);
+        super(thing, true);
         this.dataPollingJobReference = new AtomicReference<>(null);
     }
 

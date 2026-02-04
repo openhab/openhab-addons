@@ -44,11 +44,18 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public abstract class EaseeBaseThingHandler extends BaseThingHandler implements EaseeThingHandler, AtomicReferenceTrait {
+public abstract class EaseeBaseThingHandler extends BaseThingHandler
+        implements EaseeThingHandler, AtomicReferenceTrait {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final boolean bridgeSetsThingOnline;
+
+    protected EaseeBaseThingHandler(Thing thing, boolean bridgeSetsThingOnline) {
+        super(thing);
+        this.bridgeSetsThingOnline = bridgeSetsThingOnline;
+    }
 
     protected EaseeBaseThingHandler(Thing thing) {
-        super(thing);
+        this(thing, false);
     }
 
     @Override
@@ -57,6 +64,9 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler implements 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
             logger.debug("bridgeStatusChanged: ONLINE");
             if (isInitialized()) {
+                if (bridgeSetsThingOnline) {
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                }
                 startPolling();
             }
         } else {
@@ -89,10 +99,10 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler implements 
         switch (status.getHttpCode()) {
             case OK:
             case ACCEPTED:
-                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 break;
             default:
-                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
         }
     }
 
