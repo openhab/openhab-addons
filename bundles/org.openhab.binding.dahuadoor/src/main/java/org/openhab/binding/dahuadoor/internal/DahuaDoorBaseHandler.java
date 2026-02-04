@@ -47,7 +47,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link DahuaDoorBaseHandler} is responsible for handling commands, which are
+ * The {@link DahuaDoorBaseHandler} is responsible for handling commands, which
+ * are
  * sent to one of the channels.
  *
  * @author Sven Schad - Initial contribution
@@ -130,36 +131,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
         // Status will be updated to ONLINE once connection is established
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting to device...");
-
-        // Example for background initialization:
-        /*
-         * scheduler.execute(() -> {
-         * boolean thingReachable = true; // <background task with long running initialization here>
-         * // when done do:
-         * if (thingReachable) {
-         * updateStatus(ThingStatus.ONLINE);
-         * } else {
-         * updateStatus(ThingStatus.OFFLINE);
-         * }
-         * });
-         *
-         * connectorTask = scheduler.scheduleWithFixedDelay(
-         * new DahuaEventClient(config.hostname, config.username, config.password, this, scheduler), 0, 60,
-         * TimeUnit.SECONDS);
-         */
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-        //
-        // Logging to INFO should be avoided normally.
-        // See https://www.openhab.org/docs/developer/guidelines.html#f-logging
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     @Override
@@ -230,7 +201,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     @Override
     public void eventHandler(@Nullable JsonObject data) {
-        // Set thing ONLINE when first event is received (confirms successful connection)
+        // Set thing ONLINE when first event is received (confirms successful
+        // connection)
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }

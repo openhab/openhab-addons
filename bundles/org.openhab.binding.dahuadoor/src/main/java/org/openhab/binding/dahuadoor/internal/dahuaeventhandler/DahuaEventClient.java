@@ -17,7 +17,6 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -173,21 +172,13 @@ public class DahuaEventClient implements Runnable {
 
         ID += 1;
 
-        try {
-            buffer.put(packet.getBytes());
-            /*
-             * buffer.flip();
-             * byte[] byteArray = new byte[buffer.remaining()];
-             * buffer.get(byteArray);
-             * String result = new String(byteArray, StandardCharsets.UTF_8);
-             */
-            String result2 = new String(buffer.array(), StandardCharsets.UTF_8);
-
-            // logger.trace("Sending:" + result);
-            sock.getOutputStream().write(buffer.array());
-        } catch (IOException e) {
-            logger.trace("{}", e.getMessage());
+        final Socket localSock = sock;
+        if (localSock == null) {
+            throw new IOException("Socket is not connected");
         }
+
+        buffer.put(packet.getBytes());
+        localSock.getOutputStream().write(buffer.array());
     }
 
     public ArrayList<String> receive() throws IOException {
