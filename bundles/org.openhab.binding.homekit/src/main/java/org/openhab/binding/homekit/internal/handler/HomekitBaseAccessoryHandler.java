@@ -129,8 +129,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
 
-    @Reference(target = "(class.id=homekit)") // binds specifically to HomekitMdnsDiscoveryParticipant instance
-    private MDNSDiscoveryParticipant mdnsDiscoveryParticipant;
+    private volatile @Nullable HomekitMdnsDiscoveryParticipant discoveryParticipant;
 
     /**
      * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
@@ -959,10 +958,27 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @param suppress true to suppress, false to enable
      */
     protected void suppressDiscoveryForThingId(String id, boolean suppress) {
-        if (mdnsDiscoveryParticipant instanceof HomekitMdnsDiscoveryParticipant discoveryParticipant) {
-            discoveryParticipant.suppressDiscoveryForThingId(id, suppress);
+        if (discoveryParticipant instanceof HomekitMdnsDiscoveryParticipant discovery) {
+            discovery.suppressDiscoveryForThingId(id, suppress);
         } else {
-            logger.warn("Cannot {}suppress discovery for {}", id, suppress ? "" : "un-");
+            logger.warn("Error {}suppressing discovery for {}", id, suppress ? "" : "un-");
         }
+    }
+
+    /**
+     * OSGi reference that imports a specific {@link MDNSDiscoveryParticipant} service instance that has a target
+     * filter that guarantees it is indeed an {@link HomekitMdnsDiscoveryParticipant} service instance.
+     * 
+     * @param mdnsDiscoveryParticipant the MDNSDiscoveryParticipant service
+     */
+    @Reference(target = "(class.id=homekit)")
+    public void addMDNSDiscoveryParticipant(MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
+        if (mdnsDiscoveryParticipant instanceof HomekitMdnsDiscoveryParticipant discovery) {
+            discoveryParticipant = discovery;
+        }
+    }
+
+    public void removeMDNSDiscoveryParticipant(MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
+        discoveryParticipant = null;
     }
 }

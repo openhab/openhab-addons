@@ -55,6 +55,8 @@ import org.osgi.service.component.annotations.Component;
 public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
+
+    // just one instance of this service class should ever be instantiated but make the set static just in case
     private static final Set<String> SUPPRESSED_IDS = ConcurrentHashMap.newKeySet();
 
     @Override

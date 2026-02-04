@@ -60,6 +60,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -148,7 +149,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private static final int MIGRATION_TASK_DELAY_SECONDS = 1;
     private static final int MIGRATION_TASK_TIMEOUT_SECONDS = 10;
     private volatile @Nullable ScheduledFuture<?> migrationTask = null;
-    private final AtomicBoolean isMigrating = new AtomicBoolean(false);
+    private final AtomicBoolean migrating = new AtomicBoolean(false);
     private final AtomicBoolean disposing = new AtomicBoolean(false);
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
@@ -568,7 +569,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         eventedCharacteristics.clear();
         polledCharacteristics.clear();
         super.dispose();
-        if (isMigrating.get() && migrationTask instanceof ScheduledFuture<?> task && !task.isDone()) {
+        if (migrating.get() && migrationTask instanceof ScheduledFuture<?> task && !task.isDone()) {
             try {
                 task.get(MIGRATION_TASK_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             } catch (Exception e) {
@@ -996,7 +997,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     protected void onConnectedThingAccessoriesLoaded() {
         createProperties(); // we need the properties before eventually starting a migration
-        if (startMigrationFromThingToBridgeIfRequired() && isMigrating.get()) {
+        if (startMigrationFromThingToBridgeIfRequired() && migrating.get()) {
             return; // skip further processing if migrating
         }
         createChannels();
@@ -1099,18 +1100,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      */
     private boolean startMigrationFromThingToBridgeIfRequired() {
         if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1 && !disposing.get()
-                && !isMigrating.getAndSet(true)) {
+                && !migrating.getAndSet(true)) {
 
             logger.info("Thing '{}' has embedded accessories; migrating it to a Bridge", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/status.migrating-accessory-to-bridge");
 
-            // create new Bridge with old Thing's Id and all its attributes -- except channels and tags
+            // create new Bridge with old Thing's Id and all its attributes -- except channels and equipment tag
             Bridge toBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, thing.getUID().getId()) //
+                    .withConfiguration(thing.getConfiguration()) //
                     .withLabel(thing.getLabel()) //
                     .withLocation(thing.getLocation()) //
                     .withProperties(thing.getProperties()) //
-                    .withConfiguration(thing.getConfiguration()) //
+                    .withSemanticEquipmentTag(Equipment.NETWORK_APPLIANCE) //
                     .build();
 
             // schedule registry actions to asynchronously migrate the Thing to a Bridge
@@ -1132,61 +1134,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
                     channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
         }
-    }
-
-    /**
-     * <<<<<<< HEAD
-     * Introduce this getter so we can override it in the JUnit test class.
-     */
-    protected ScheduledExecutorService getScheduler() {
-        return scheduler;
-    }
-
-    /**
-     * Atomically removes the given existing ThingUID from the registry and adds the new Bridge.
-     * 
-     * NOTE: There is currently no dedicated framework API to migrate an existing Thing to a Bridge
-     * while preserving its identifier and configuration. In this specific migration scenario we therefore
-     * perform an explicit remove+add on the ThingRegistry:
-     *
-     * - The old Thing is first removed using its current UID.
-     * - A new Bridge with the same id-part of the UID, configuration, properties, label and location is
-     * then added.
-     *
-     * This operation is executed asynchronously and only when the handler has determined that the
-     * existing Thing must be upgraded to a Bridge (for accessories with child accessories). The caller
-     * has set the handler status to OFFLINE before the conversion starts to reflect that the conversion
-     * is in progress. Because the original attributes are deliberately copied to the new Bridge, and
-     * because the change is a one-time structural migration, this direct registry manipulation is considered
-     * safe in this context.
-     * 
-     * Clears the 'migrating' flag when done.
-     * 
-     * @param registry the ThingRegistry to perform the conversion on
-     * @param fromThing the existing Thing to be removed
-     * @param toBridge the new Bridge instance to be added
-     */
-    private void migrateFromThingToBridge(ThingRegistry registry, Thing fromThing, Bridge toBridge) {
-        try {
-            if (!disposing.get() && isMigrating.get()) {
-                suppressDiscoveryForThingId(fromThing.getUID().getId(), true); // suppress mDNS (re-) discovery
-                registry.add(toBridge);
-                registry.remove(fromThing.getUID()); // remove only after a successful add
-                logger.info("{} successfully migrated to {}", fromThing.getUID(), toBridge.getUID());
-            }
-        } catch (IllegalStateException e) {
-            suppressDiscoveryForThingId(fromThing.getUID().getId(), false); // re-enable mDNS discovery
-            logger.warn("{} while migrating {} to Bridge. Try deleting Thing and creating Bridge manually.",
-                    e.getMessage(), fromThing.getUID());
-        } finally {
-            isMigrating.set(false);
-        }
-    }
-
-    @Override
-    public String unpair() {
-        // prevent un-pairing (thus bilaterally deleting pairing keys) while migration is in progress
-        return isMigrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("migration in progress") : super.unpair();
     }
 
     /**
@@ -1226,5 +1173,62 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             }
         }
         return false;
+    }
+
+    /**
+     * Introduce this getter so we can override it in the JUnit test class.
+     */
+    protected ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    /**
+     * Atomically removes the given existing accessory Thing from the registry and adds the new Bridge.
+     * <p>
+     * NOTE: There is currently no dedicated framework API to migrate an existing Thing to a Bridge
+     * while preserving its identifier and configuration. In this specific migration scenario we are
+     * therefore forced perform an explicit remove+add ourself on the ThingRegistry:
+     *
+     * <ul>
+     * <li>The old accessory Thing is first removed using its current UID.</li>
+     * <li>A new Bridge with the same id, configuration, properties, label, location and tag is then added.</li>
+     * <li>Suppress mDNS discovery for the old Thing id (being identically the new Bridge id) so as to prevent
+     * re-discovery of the original accessory Thing.</li>
+     * </ul>
+     *
+     * This operation is executed asynchronously and only when the handler has determined that the
+     * existing accessory Thing must be upgraded to a Bridge (for accessories with child accessories). The
+     * caller has set the handler status to OFFLINE before the conversion starts to reflect that the
+     * conversion is in progress. Because the original attributes are deliberately copied to the new Bridge,
+     * and because the change is a one-time structural migration, this direct registry manipulation is
+     * considered safe in this context.
+     * <p>
+     * Clears the 'migrating' flag when done.
+     * 
+     * @param registry the ThingRegistry to perform the conversion on
+     * @param fromThing the existing Thing to be removed
+     * @param toBridge the new Bridge instance to be added
+     */
+    private void migrateFromThingToBridge(ThingRegistry registry, Thing fromThing, Bridge toBridge) {
+        try {
+            if (!disposing.get() && migrating.get()) {
+                registry.add(toBridge);
+                registry.remove(fromThing.getUID()); // remove only after a successful add
+                suppressDiscoveryForThingId(fromThing.getUID().getId(), true); // suppress mDNS (re-) discovery
+                logger.info("Successfully migrated {} => {}", fromThing.getUID(), toBridge.getUID());
+            }
+        } catch (IllegalStateException e) {
+            suppressDiscoveryForThingId(fromThing.getUID().getId(), false); // re-enable mDNS discovery
+            logger.warn("{} while migrating {} => {}. Try deleting Thing and creating Bridge manually.", e.getMessage(),
+                    fromThing.getUID(), toBridge.getUID());
+        } finally {
+            migrating.set(false);
+        }
+    }
+
+    @Override
+    public String unpair() {
+        // prevent un-pairing (which would erase the pairing keys) while migration is in progress
+        return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("migration in progress") : super.unpair();
     }
 }
