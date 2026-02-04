@@ -116,11 +116,20 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     public void initialize() {
         config = getConfigAs(DahuaDoorConfiguration.class);
 
+        // Validate required configuration
+        if (config.hostname == null || config.hostname.isBlank() || config.username == null
+                || config.username.isBlank() || config.password == null || config.password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Hostname, username and password must be configured.");
+            return;
+        }
+
         client = new DahuaEventClient(config.hostname, config.username, config.password, this, scheduler,
                 this::errorInformer);
         queries = new DahuaDoorHttpQueries(httpClient, config);
 
-        updateStatus(ThingStatus.ONLINE);
+        // Status will be updated to ONLINE once connection is established
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting to device...");
 
         // Example for background initialization:
         /*
@@ -221,6 +230,11 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     @Override
     public void eventHandler(@Nullable JsonObject data) {
+        // Set thing ONLINE when first event is received (confirms successful connection)
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+
         try {
             logger.trace("JSON{}", data);
             JsonObject jsonObj = data.getAsJsonObject("params");
