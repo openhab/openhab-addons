@@ -38,7 +38,9 @@ public class GetUserTotalConsumption extends AbstractCommand {
     private final String url;
 
     public GetUserTotalConsumption(EaseeThingHandler handler, String userId, JsonResultProcessor resultProcessor) {
-        super(handler, RetryOnFailure.NO, ProcessFailureResponse.NO, resultProcessor);
+        // retry does not make much sense as it is a polling command, command should always succeed therefore update
+        // handler on failure.
+        super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
         this.url = USER_TOTAL_CONSUMPTION_URL.replaceAll("\\{userId\\}", userId).replaceAll("\\{from\\}", EPOCH_START)
                 .replaceAll("\\{to\\}", Instant.now().toString());
     }
