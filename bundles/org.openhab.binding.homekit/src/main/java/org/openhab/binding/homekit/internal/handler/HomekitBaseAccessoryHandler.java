@@ -949,7 +949,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     protected void onCommunicationError(Exception exception, String i18nSuffix) {
         String message = exception.getMessage();
-        logger.warn("{} {} {}, reconnecting..", thing.getUID(), i18nSuffix, message);
+        logger.debug("{} {} {}, reconnecting..", thing.getUID(), i18nSuffix, message);
         logger.trace("{} stack trace", thing.getUID(), exception);
         String description = THING_STATUS_FMT.formatted("error." + i18nSuffix.replace(' ', '-'), message);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
