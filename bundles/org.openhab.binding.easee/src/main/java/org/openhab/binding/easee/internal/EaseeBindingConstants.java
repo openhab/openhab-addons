@@ -112,6 +112,7 @@ public class EaseeBindingConstants {
     public static final String JSON_KEY_USER_ID = "userId";
     public static final String JSON_KEY_USER_EMAIL = "email";
     public static final String JSON_KEY_USER_PHONE_NUMBER = "phoneNumber";
+    public static final String JSON_KEY_TOTAL_ENERGY_USAGE = "totalEnergyUsage";
 
     // Write Commands
     public static final String COMMAND_CHANGE_CONFIGURATION = "ChangeConfiguration";
@@ -150,7 +151,7 @@ public class EaseeBindingConstants {
     public static final String DYNAMIC_CIRCUIT_CURRENT_URL = API_BASE_URL
             + "/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
     public static final String CIRCUIT_SETTINGS_URL = API_BASE_URL + "/sites/{siteId}/circuits/{circuitId}/settings";
-    public static final String USER_TOTAL_CONSUMPTION_URL = API_BASE_URL + "/sessions/user/{userId}/total/{from}/{to}";
+    public static final String USER_TOTAL_CONSUMPTION_URL = API_BASE_URL + "/sites/{siteId}/users/{userId}/yearly";
 
     // Status Keys
     public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";

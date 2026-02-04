@@ -14,8 +14,6 @@ package org.openhab.binding.easee.internal.command.account;
 
 import static org.openhab.binding.easee.internal.EaseeBindingConstants.*;
 
-import java.time.Instant;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
@@ -24,16 +22,17 @@ import org.openhab.binding.easee.internal.command.AbstractCommand;
 import org.openhab.binding.easee.internal.command.JsonResultProcessor;
 import org.openhab.binding.easee.internal.handler.EaseeThingHandler;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * implements the get total kWh amount by user api call.
+ * implements the get yearly consumption by user api call and computes a total sum.
  *
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
 public class GetUserTotalConsumption extends AbstractCommand {
-    private static final String EPOCH_START = "2018-01-01T00:00:00Z";
 
     private final String url;
 
@@ -41,8 +40,8 @@ public class GetUserTotalConsumption extends AbstractCommand {
         // retry does not make much sense as it is a polling command, command should always succeed therefore update
         // handler on failure.
         super(handler, RetryOnFailure.NO, ProcessFailureResponse.YES, resultProcessor);
-        this.url = USER_TOTAL_CONSUMPTION_URL.replaceAll("\\{userId\\}", userId).replaceAll("\\{from\\}", EPOCH_START)
-                .replaceAll("\\{to\\}", Instant.now().toString());
+        String siteId = handler.getBridgeConfiguration().getSiteId();
+        this.url = USER_TOTAL_CONSUMPTION_URL.replaceAll("\\{siteId\\}", siteId).replaceAll("\\{userId\\}", userId);
     }
 
     @Override
@@ -63,16 +62,20 @@ public class GetUserTotalConsumption extends AbstractCommand {
 
     @Override
     protected void onCompleteCodeOk(@Nullable String json) {
-        if (json != null) {
-            try {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty(CHANNEL_USER_TOTAL_CONSUMPTION, Double.parseDouble(json.trim()));
-                handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
-                processResult(jsonObject);
-            } catch (NumberFormatException ex) {
-                // response was not a plain number, try default handling
-                super.onCompleteCodeOk(json);
+        JsonArray yearlyData = transform(json, JsonArray.class);
+        if (yearlyData != null) {
+            double totalConsumption = 0;
+            for (JsonElement element : yearlyData) {
+                JsonObject yearEntry = element.getAsJsonObject();
+                if (yearEntry.has(JSON_KEY_TOTAL_ENERGY_USAGE)) {
+                    totalConsumption += yearEntry.get(JSON_KEY_TOTAL_ENERGY_USAGE).getAsDouble();
+                }
             }
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty(CHANNEL_USER_TOTAL_CONSUMPTION, totalConsumption);
+            handler.updateChannelStatus(transformer.transform(jsonObject, getChannelGroup()));
+            processResult(jsonObject);
         }
     }
 }
