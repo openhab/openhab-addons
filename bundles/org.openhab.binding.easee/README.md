@@ -5,19 +5,20 @@ This allows you to dynamically adjust the charge current for your car depending 
 
 ## Supported Things
 
-This binding provides three thing types:
+This binding provides four thing types:
 
 | Thing/Bridge        | Thing Type          | Description                                                                                   |
 |---------------------|---------------------|-----------------------------------------------------------------------------------------------|
 | bridge              | site                | cloud connection to a site within an Easee account                                            |
 | thing               | charger             | the physical charger which is connected to a circuit within the given site                    |
 | thing               | mastercharger       | like the "normal" charger but with additional capability to control the circuit               |
+| thing               | user                | a user with access to the Easee site                                                          |
 
 Basically any Easee wallbox that supports the Cloud API should automatically be supported by this binding.
 
 ## Discovery
 
-Auto-discovery is supported and will discover all circuits and chargers assigned to a given site.
+Auto-discovery is supported and will discover all circuits, chargers and users assigned to a given site.
 
 ## Bridge Configuration
 
@@ -50,6 +51,14 @@ If manual configuration is preferred you need to specify configuration as below.
 |-------------------------|----------|------------------------------------------------------------------------------------------------------------------------|
 | id                      | yes      | The id of the charger that will be represented by this thing.                                                          |
 | circuitId               | yes      | The id of the circuit that is controlled by this charger.                                                              |
+
+### User
+
+| Configuration Parameter | Required | Description                                                                                                            |
+|-------------------------|----------|------------------------------------------------------------------------------------------------------------------------|
+| id                      | yes      | The id of the user.                                                                                                    |
+
+Discovered user things have the following properties: `email`, `name`, `phoneNumber`.
 
 ## Channels
 
@@ -132,6 +141,12 @@ The Master Charger is like the "normal" charger but has some extra channels to c
 | settings#enableIdleCurrent                  | Switch                   | yes      |                                                      | ON/OFF                                                                                                                                                   |
 | settings#allowOfflineMaxCircuitCurrent      | Switch                   | no       |                                                      |                                                                                                                                                              |
 
+### User Channels
+
+| Channel                                     | Item Type                | Writable | Description                                          | Allowed Values (write access)                                                                                                                                |
+|---------------------------------------------|--------------------------|----------|------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| consumption#totalConsumption                | Number:Energy            | no       | Total energy consumption across all charging sessions |                                                                                                                                                              |
+
 ## Full Example
 
 ### Thing
@@ -142,12 +157,13 @@ The Master Charger is like the "normal" charger but has some extra channels to c
 Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="123456" ]
 ```
 
-#### Manual configuration with two chargers, pollingInterval set to 60 seconds.
+#### Manual configuration with two chargers and a user, pollingInterval set to 60 seconds.
 
 ```java
 Bridge easee:site:mysite1 [ username="abc@def.net", password="secret", siteId="471111", dataPollingInterval=60 ] {
         Thing mastercharger myCharger1 [ id="EHXXXXX1", circuitId="1234567" ]
         Thing charger myCharger2 [ id="EHXXXXX2" ]
+        Thing user myUser1 [ id="123456" ]
 }
 ```
 
@@ -159,6 +175,7 @@ Number:ElectricCurrent  Easee_Circuit_Phase2                  "Phase 2"         
 Number:ElectricCurrent  Easee_Circuit_Phase3                  "Phase 3"                                   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#phase3" }
 String                  Easee_Circuit_Dynamic_Phases          "Dynamic Power [MAP(easeePhases.map):%s]"   { channel="easee:mastercharger:mysite1:myCharger1:dynamicCurrent#dynamicCurrents" }
 Switch                  Easee_Charger_Start_Stop              "Start / Stop"                              { channel="easee:mastercharger:mysite1:myCharger1:commands#startStop" }
+Number:Energy           Easee_User_Total_Consumption          "Total Consumption"                         { channel="easee:user:mysite1:myUser1:consumption#totalConsumption" }
 ```
 
 ### Sitemap
