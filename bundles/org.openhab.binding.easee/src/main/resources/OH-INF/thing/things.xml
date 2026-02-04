@@ -56,6 +56,9 @@
 		<label>Easee User</label>
 		<description>A user with access to the Easee site.</description>
 
+		<channel-groups>
+			<channel-group typeId="user-consumption" id="consumption"/>
+		</channel-groups>
 		<properties>
 			<property name="thingTypeVersion">1</property>
 		</properties>

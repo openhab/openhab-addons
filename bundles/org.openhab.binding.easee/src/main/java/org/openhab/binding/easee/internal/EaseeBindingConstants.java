@@ -51,6 +51,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_GROUP_CHARGER_LATEST_SESSION = "latestSession";
     public static final String CHANNEL_GROUP_CIRCUIT_DYNAMIC_CURRENT = "dynamicCurrent";
     public static final String CHANNEL_GROUP_CIRCUIT_SETTINGS = "settings";
+    public static final String CHANNEL_GROUP_USER_CONSUMPTION = "consumption";
 
     // Channel types
     public static final String CHANNEL_TYPE_SWITCH = "Switch";
@@ -85,6 +86,7 @@ public class EaseeBindingConstants {
     public static final String CHANNEL_CIRCUIT_OFFLINE_MAX_CURRENT_PHASE1 = "offlineMaxCircuitCurrentP1";
     public static final String CHANNEL_CIRCUIT_OFFLINE_MAX_CURRENT_PHASE2 = "offlineMaxCircuitCurrentP2";
     public static final String CHANNEL_CIRCUIT_OFFLINE_MAX_CURRENT_PHASE3 = "offlineMaxCircuitCurrentP3";
+    public static final String CHANNEL_USER_TOTAL_CONSUMPTION = "totalConsumption";
 
     // JSON Keys
     public static final String JSON_KEY_GENERIC_ID = "id";
@@ -148,6 +150,7 @@ public class EaseeBindingConstants {
     public static final String DYNAMIC_CIRCUIT_CURRENT_URL = API_BASE_URL
             + "/sites/{siteId}/circuits/{circuitId}/dynamicCurrent";
     public static final String CIRCUIT_SETTINGS_URL = API_BASE_URL + "/sites/{siteId}/circuits/{circuitId}/settings";
+    public static final String USER_TOTAL_CONSUMPTION_URL = API_BASE_URL + "/sessions/user/{userId}/total/{from}/{to}";
 
     // Status Keys
     public static final String STATUS_TOKEN_VALIDATED = "@text/status.token.validated";
