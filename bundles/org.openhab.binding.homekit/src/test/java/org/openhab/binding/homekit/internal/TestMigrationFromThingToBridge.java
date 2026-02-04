@@ -1801,7 +1801,7 @@ class TestMigrationFromThingToBridge {
             } catch (NoSuchFieldException e) {
                 current = current.getSuperclass();
             } catch (IllegalAccessException e) {
-                fail("Failed to inject field:  " + fieldName, e);
+                fail("Failed to inject field: " + fieldName, e);
             }
         }
         fail("Could not find field '" + fieldName + "' in class hierarchy");
