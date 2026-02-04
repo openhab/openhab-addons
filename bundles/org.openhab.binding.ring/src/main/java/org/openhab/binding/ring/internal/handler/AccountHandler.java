@@ -282,7 +282,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             }
         } catch (JsonParseException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.comm-error.auth-exception");
+                    "@text/offline.comm-error.invalid-response");
         }
         logger.debug("doLogin RT: {}", getRefreshTokenFromFile());
         try {
