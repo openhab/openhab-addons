@@ -28,10 +28,6 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * <li>lunar eclipses</li>
  * </ul>
  *
- * <p>
- * All angular values are expressed in <strong>degrees</strong>.
- * </p>
- *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
@@ -48,7 +44,7 @@ public class LunationArguments {
 
     public LunationArguments(double k, double adjust) {
         this.kMod = Math.floor(k) + adjust;
-        this.t = kMod / DateTimeUtils.JULIAN_CENTURY_DAYS * AstroConstants.LUNAR_SYNODIC_MONTH_DAYS;
+        this.t = kMod / 1236.85;
         this.t2 = t * t;
         double t3 = t2 * t;
         double t4 = t3 * t;
@@ -56,7 +52,7 @@ public class LunationArguments {
         this.m = 2.5534 + 29.10535669 * kMod - 0.0000218 * t2 - 0.00000011 * t3;
         this.m1 = 201.5643 + 385.81693528 * kMod + 0.1017438 * t2 + 0.00001239 * t3 - 0.000000058 * t4;
         this.f = 160.7108 + 390.67050274 * kMod - 0.0016341 * t2 - 0.00000227 * t3 + 0.000000011 * t4;
-        this.o = 124.7746 - 1.56375588 * kMod + 0.0020691 * t2 + 0.00000215 * t3;
+        this.o = 124.7746 - 1.5637558 * kMod + 0.0020691 * t2 + 0.00000215 * t3;
         this.e = 1 - 0.002516 * t - 0.0000074 * t2;
         this.jde = 2451550.09765 + 29.530588853 * kMod + 0.0001337 * t2 - 0.00000015 * t3 + 0.00000000073 * t4;
     }
