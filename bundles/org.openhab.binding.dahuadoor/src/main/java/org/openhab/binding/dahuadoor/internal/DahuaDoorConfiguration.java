@@ -23,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class DahuaDoorConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Configuration parameters for the Dahua door device, including hostname, authentication
+     * credentials, snapshot path, and the refresh interval in seconds.
      */
     public String hostname = "";
     public String username = "";
     public String password = "";
     public String snapshotpath = "";
-    public int refreshInterval = 600;
 }

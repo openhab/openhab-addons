@@ -53,7 +53,7 @@ public class DahuaDoorHttpQueries {
                 return response.getContent();
             }
         } catch (Exception e) {
-            logger.warn("Could not make http connection");
+            logger.warn("Could not make http connection to retrieve snapshot from {}", config.hostname, e);
         } /*
            * finally {
            * try {
@@ -84,7 +84,7 @@ public class DahuaDoorHttpQueries {
                 logger.info("Open Door Success");
             }
         } catch (Exception e) {
-            logger.warn("Could not make http connection");
+            logger.warn("Could not make http connection to open door {} on {}", doorNo, config.hostname, e);
         } /*
            * finally {
            * try {

@@ -4,14 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="dahua_vto2202">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="DahuaDoorBridge" />
-			</supported-bridge-type-refs>
-		-->
-
 		<label>DahuaDoor Binding</label>
 		<description>DahuaDoor Binding</description>
 
@@ -41,13 +34,7 @@
 			<parameter name="snapshotpath" type="text" required="true">
 				<context>snapshotpath</context>
 				<label>Path</label>
-				<description>Path for snap shots</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
+				<description>Path for snapshots</description>
 			</parameter>
 
 		</config-description>

@@ -18,17 +18,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DHIPEventListener;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
@@ -58,14 +57,12 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     private final Logger logger = LoggerFactory.getLogger(DahuaDoorBaseHandler.class);
     private @Nullable DahuaDoorConfiguration config;
-    private @Nullable ScheduledFuture<?> connectorTask; // is used for reconnection if something goes wrong
 
     private Gson gson = new Gson();
 
     private @Nullable DahuaEventClient client = null;
     private @Nullable DahuaDoorHttpQueries queries = null;
     private @Nullable HttpClient httpClient = null;
-    private @Nullable HttpClientFactory httpClientFactory = null;
 
     public DahuaDoorBaseHandler(Thing thing) {
         super(thing);
@@ -81,6 +78,11 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (queries == null) {
+            logger.warn("HTTP queries not initialized, cannot handle command");
+            return;
+        }
+        
         if (CHANNEL_BELL_BUTTON.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // Refresh not supported for trigger channel
@@ -163,12 +165,14 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
         config = getConfigAs(DahuaDoorConfiguration.class);
         if (config.snapshotpath == null || config.snapshotpath.isEmpty()) {
-            logger.warn("Path for Snapshots is invald");
-            errorInformer("Path for Snapshots is invald");
+            logger.warn("Path for Snapshots is invalid");
+            errorInformer("Path for Snapshots is invalid");
             return;
         }
         if (buffer == null) {
-            logger.warn("cannot safe empty buffer");
+            logger.warn("cannot save empty buffer");
+            errorInformer("Cannot save empty snapshot buffer");
+            return;
         }
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
@@ -181,25 +185,35 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         }
 
         try {
-            Files.copy(Paths.get(filename), Paths.get(config.snapshotpath + "/Doorbell.jpg"));
+            Files.copy(Paths.get(filename), Paths.get(config.snapshotpath + "/Doorbell.jpg"),
+                    StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             logger.warn("Could not copy file, check permissions and path");
         }
     }
 
     private void updateChannelImage(byte @Nullable [] buffer) {
-        Channel channel;
-        if (buffer.length > 0) {
-            channel = this.getThing().getChannel(CHANNEL_DOOR_IMAGE);
-            RawType image = new RawType(buffer, "image/jpg");
-            updateState(CHANNEL_DOOR_IMAGE, (image != null) ? image : UnDefType.UNDEF);
+        if (buffer == null || buffer.length == 0) {
+            updateState(CHANNEL_DOOR_IMAGE, UnDefType.UNDEF);
+            return;
         }
+        Channel channel = this.getThing().getChannel(CHANNEL_DOOR_IMAGE);
+        RawType image = new RawType(buffer, "image/jpg");
+        updateState(CHANNEL_DOOR_IMAGE, image);
     }
 
     public void HandleButtonPressed() {
-
         Channel channel = this.getThing().getChannel(CHANNEL_BELL_BUTTON);
+        if (channel == null) {
+            logger.warn("Bell button channel not found");
+            return;
+        }
         triggerChannel(channel.getUID(), "PRESSED");
+        
+        if (queries == null) {
+            logger.warn("HTTP queries not initialized, cannot retrieve doorbell image");
+            return;
+        }
         byte[] buffer = queries.RequestImage();
         updateChannelImage(buffer);
         saveSnapshot(buffer);
@@ -325,8 +339,9 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                 }
             }
         } catch (Exception e) {
+            String rawPayload = (data != null) ? data.toString() : "null";
+            logger.debug("Exception while handling DahuaDoor event. Raw payload: {}", rawPayload, e);
         }
-        ;
     }
 
     private void handleNetworkChanged(JsonObject eventList, JsonObject eventData) {

@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
@@ -34,7 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * The {@link DauhaEventClient} client polls the Dahua device
+ * The {@link DahuaEventClient} client polls the Dahua device
  *
  *
  * @author Sven Schad - Initial contribution
@@ -56,7 +55,6 @@ public class DahuaEventClient implements Runnable {
     private static boolean debug = true;
 
     private DHIPEventListener eventListener;
-    private @Nullable Future<?> connectionThread;
 
     private @Nullable Socket sock;
     private final Gson gson = new Gson();
@@ -192,21 +190,6 @@ public class DahuaEventClient implements Runnable {
         }
     }
 
-    private String pack(int value) {
-
-        ByteBuffer buffer = ByteBuffer.allocate(4).putInt(value);
-        String teststring = new String(buffer.array(), 0, 4); // buffer.array().toString();
-        return teststring;
-    }
-
-    private int unpackShort(byte[] bytes, int offset) {
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        buffer.position(offset);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        int myInt = buffer.getShort();
-        return myInt;
-    }
-
     public ArrayList<String> Receive() throws IOException {
 
         ArrayList<String> p2pReturnData = new ArrayList<String>();
@@ -221,7 +204,11 @@ public class DahuaEventClient implements Runnable {
             sock.setSoTimeout(timeout * 1000); // Set timeout in milliseconds
             InputStream input = sock.getInputStream();
             int bytesRead = input.read(buffer);
-            bbuffer = ByteBuffer.wrap(buffer).limit(bytesRead);
+            if (bytesRead < 0) {
+                // End of stream - connection closed
+                return new ArrayList<>();
+            }
+            bbuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
             // // logger.trace("Buffer: {}",HexFormat.of().formatHex(buffer));
             // logger.trace("Bytes read:{}",bytesRead);
         } catch (IOException e) {
