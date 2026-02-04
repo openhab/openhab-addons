@@ -128,10 +128,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public final void onSuccess(Response response) {
         super.onSuccess(response);
-        if (response != null) {
-            communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
-            logger.debug("HTTP response {}", response.getStatus());
-        }
+        communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
+        logger.debug("HTTP response {}", response.getStatus());
     }
 
     /**
@@ -166,7 +164,8 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     @Override
     public void onContent(Response response, ByteBuffer content) {
         super.onContent(response, content);
-        logger.debug("received content, length: {}", getContentAsString().length());
+        String contentAsString = getContentAsString();
+        logger.debug("received content, length: {}", contentAsString != null ? contentAsString.length() : 0);
     }
 
     /**
