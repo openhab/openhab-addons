@@ -59,7 +59,6 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
@@ -71,7 +70,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +93,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
     private final Map<Long, Accessory> accessories = new ConcurrentHashMap<>();
     private final HomekitKeyStore keyStore;
+
+    protected final HomekitMdnsDiscoveryParticipant discoveryParticipant;
 
     private boolean isConfigured = false;
     private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
@@ -128,8 +128,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     protected boolean isBridgedAccessory = false;
     protected final Throttler throttler = new Throttler();
-
-    private volatile @Nullable HomekitMdnsDiscoveryParticipant discoveryParticipant;
 
     /**
      * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
@@ -174,12 +172,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
-            TranslationProvider translationProvider, Bundle bundle) {
+            TranslationProvider translationProvider, Bundle bundle,
+            HomekitMdnsDiscoveryParticipant discoveryParticipant) {
         super(thing);
         this.typeProvider = typeProvider;
         this.keyStore = keyStore;
         this.i18nProvider = translationProvider;
         this.bundle = bundle;
+        this.discoveryParticipant = discoveryParticipant;
     }
 
     @Override
@@ -948,37 +948,5 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (snapshotRefreshTask == null || snapshotRefreshTask.isDone()) {
             this.snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
         }
-    }
-
-    /**
-     * Suppresses/enables discovery of Things with the given Thing ID. Used to suppress duplicate Things from
-     * being re- discovered after an accessory Thing has been migrated to a Bridge.
-     * 
-     * @param id the Thing ID
-     * @param suppress true to suppress, false to enable
-     */
-    protected void suppressDiscoveryForThingId(String id, boolean suppress) {
-        if (discoveryParticipant instanceof HomekitMdnsDiscoveryParticipant discovery) {
-            discovery.suppressDiscoveryForThingId(id, suppress);
-        } else {
-            logger.warn("Error {}suppressing discovery for {}", id, suppress ? "" : "un-");
-        }
-    }
-
-    /**
-     * OSGi reference that imports a specific {@link MDNSDiscoveryParticipant} service instance that has a target
-     * filter that guarantees it is indeed an {@link HomekitMdnsDiscoveryParticipant} service instance.
-     * 
-     * @param mdnsDiscoveryParticipant the MDNSDiscoveryParticipant service
-     */
-    @Reference(target = "(class.id=homekit)")
-    public void addMDNSDiscoveryParticipant(MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
-        if (mdnsDiscoveryParticipant instanceof HomekitMdnsDiscoveryParticipant discovery) {
-            discoveryParticipant = discovery;
-        }
-    }
-
-    public void removeMDNSDiscoveryParticipant(MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
-        discoveryParticipant = null;
     }
 }

@@ -188,7 +188,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
      * @param id the Thing ID
      * @param suppress true to suppress, false to enable
      */
-    public void suppressDiscoveryForThingId(String id, boolean suppress) {
+    public void suppressId(String id, boolean suppress) {
         if (suppress) {
             SUPPRESSED_IDS.add(id);
         } else {

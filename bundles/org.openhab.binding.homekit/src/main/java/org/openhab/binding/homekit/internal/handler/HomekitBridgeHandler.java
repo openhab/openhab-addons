@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitBridgedAccessoryDiscoveryService;
+import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
@@ -48,8 +49,8 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     private @Nullable HomekitBridgedAccessoryDiscoveryService bridgedAccessoryDiscoveryService;
 
     public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
-            TranslationProvider i18nProvider, Bundle bundle) {
-        super(bridge, typeProvider, keyStore, i18nProvider, bundle);
+            TranslationProvider i18nProvider, Bundle bundle, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+        super(bridge, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
     }
 
     @Override
@@ -174,7 +175,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     @Override
     public void handleRemoval() {
         // a Bridge may have been a migrated accessory Thing => remove discovery suppression for this id (if any)
-        suppressDiscoveryForThingId(thing.getUID().getId(), false);
+        discoveryParticipant.suppressId(thing.getUID().getId(), false);
         super.handleRemoval();
     }
 }

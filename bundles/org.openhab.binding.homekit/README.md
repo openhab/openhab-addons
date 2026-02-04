@@ -81,6 +81,57 @@ The Pairing Code must match the format `XXX-XX-XXX` or `XXXX-XXXX` or `XXXXXXXX`
 For case 1. above, the `With External Authentication` switch must be `OFF`.
 Whereas for case 2. above, must be `ON`.
 
+## Thing and Bridge Architecture
+
+The architecture comprises three types of Things `accessory`, `bridge`, and `bridged-accessory` which may be nested according to the architecture shown below.
+
+Case 1: Simple accessory device.
+
+```
+homekit:accessory (with Ethernet connection)
+    |_channel 1
+    |_..
+    |_channel N
+```
+
+Case 2: Bridge accessory with external child accessories connected e.g. by Zigbee.
+
+```
+homekit:bridge (with Ethernet connection)
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+```
+
+Case 2a: Bridge accessory with external child accessories connected e.g. by Zigbee, **AND** it's own internal channels.
+In this case an extra 'virtual' `bridged-accessory` is created that hosts the device's own internal channels.
+
+```
+homekit:bridge (with Ethernet connection)
+    |_ homekit:bridged-accessory ('virtual' accessory with device's own internal channels)
+        |_channel 1
+        |_..
+        |_channel N
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+    |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
+        |_channel 1
+        |_..
+        |_channel N
+```
+
+Sometimes devices confusingly advertise themself as a simple accessory device (case 1 above) when in fact they have child accessories too.
+Initially such Things are discovered in the Inbox as an `accessory`, but after the Inbox Thing has been instantiated and paired, it may subsequently discover that it has child accessories as well.
+In such a case the binding will try to auto-migrate the Thing from being a case 1 `accessory` to being a case 2a `bridge`.
+Such an auto-migrated 'bridge' will have both a 'virtual' `bridged-accessory` for its own internal channels, plus additional `bridged-accessory` Thing(s) for the remote child accessories.
+
 ## Channels
 
 For `accessory` and `bridged-accessory` Things, the Channels are auto-created depending on the services and characteristics published by the HomeKit accessory.

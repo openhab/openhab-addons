@@ -33,6 +33,7 @@ import javax.measure.quantity.Angle;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
@@ -154,8 +155,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
-            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle, ThingRegistry thingRegistry) {
-        super(thing, typeProvider, keyStore, i18nProvider, bundle);
+            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle, ThingRegistry thingRegistry,
+            HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+        super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.thingRegistry = thingRegistry;
@@ -1090,41 +1092,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Starts migration of an accessory Thing to a Bridge. Removes the current Thing from the registry and creates a new
-     * Bridge that inherits the current Thing's attributes. The channels and tags are not inherited because the new
-     * Bridge handler recreates them dynamically (albeit with different ChannelUIDs). Critically it inherits the same IP
-     * network configuration and HomeKit UniqueID so the new Bridge continues to use the old Thing's stored pairing key.
-     * This migration is only started if the existing Thing is of type Accessory and has embedded accessories (i.e.
-     * child accessories). Does not execute if either of the 'disposing' or 'migrating' flags are set, and sets the
-     * 'migrating' flag to prevent overlapping calls. The migration is performed asynchronously after a short delay.
-     */
-    private boolean startMigrationFromThingToBridgeIfRequired() {
-        if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1 && !disposing.get()
-                && !migrating.getAndSet(true)) {
-
-            logger.info("Thing '{}' has embedded accessories; migrating it to a Bridge", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/status.migrating-accessory-to-bridge");
-
-            // create new Bridge with old Thing's Id and all its attributes -- except channels and equipment tag
-            Bridge toBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, thing.getUID().getId()) //
-                    .withConfiguration(thing.getConfiguration()) //
-                    .withLabel(thing.getLabel()) //
-                    .withLocation(thing.getLocation()) //
-                    .withProperties(thing.getProperties()) //
-                    .withSemanticEquipmentTag(Equipment.NETWORK_APPLIANCE) //
-                    .build();
-
-            // schedule registry actions to asynchronously migrate the Thing to a Bridge
-            migrationTask = getScheduler().schedule(() -> migrateFromThingToBridge(thingRegistry, thing, toBridge),
-                    MIGRATION_TASK_DELAY_SECONDS, TimeUnit.SECONDS);
-
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Logs detailed trace information about the given channel if trace logging is enabled.
      */
     private void logChannelInformation(Channel channel) {
@@ -1183,6 +1150,41 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
+     * Starts migration of an accessory Thing to a Bridge. Removes the current Thing from the registry and creates a new
+     * Bridge that inherits the current Thing's attributes. The channels and tags are not inherited because the new
+     * Bridge handler recreates them dynamically (albeit with different ChannelUIDs). Critically it inherits the same IP
+     * network configuration and HomeKit UniqueID so the new Bridge continues to use the old Thing's stored pairing key.
+     * This migration is only started if the existing Thing is of type Accessory and has embedded accessories (i.e.
+     * child accessories). Does not execute if either of the 'disposing' or 'migrating' flags are set, and sets the
+     * 'migrating' flag to prevent overlapping calls. The migration is performed asynchronously after a short delay.
+     */
+    private boolean startMigrationFromThingToBridgeIfRequired() {
+        if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1 && !disposing.get()
+                && !migrating.getAndSet(true)) {
+
+            logger.info("Thing '{}' has embedded accessories; migrating it to a Bridge", thing.getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "@text/status.migrating-accessory-to-bridge");
+
+            // create new Bridge with old Thing's Id and all its attributes -- except channels and equipment tag
+            Bridge toBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, thing.getUID().getId()) //
+                    .withConfiguration(thing.getConfiguration()) //
+                    .withLabel(thing.getLabel()) //
+                    .withLocation(thing.getLocation()) //
+                    .withProperties(thing.getProperties()) //
+                    .withSemanticEquipmentTag(Equipment.NETWORK_APPLIANCE) //
+                    .build();
+
+            // schedule registry actions to asynchronously migrate the Thing to a Bridge
+            migrationTask = getScheduler().schedule(() -> migrateFromThingToBridge(thingRegistry, thing, toBridge),
+                    MIGRATION_TASK_DELAY_SECONDS, TimeUnit.SECONDS);
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Atomically removes the given existing accessory Thing from the registry and adds the new Bridge.
      * <p>
      * NOTE: There is currently no dedicated framework API to migrate an existing Thing to a Bridge
@@ -1214,13 +1216,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (!disposing.get() && migrating.get()) {
                 registry.add(toBridge);
                 registry.remove(fromThing.getUID()); // remove only after a successful add
-                suppressDiscoveryForThingId(fromThing.getUID().getId(), true); // suppress mDNS (re-) discovery
-                logger.info("Successfully migrated {} => {}", fromThing.getUID(), toBridge.getUID());
+                discoveryParticipant.suppressId(fromThing.getUID().getId(), true); // suppress re-discovery of Thing id
+                logger.info("Successfully migrated '{}' to '{}'", fromThing.getUID(), toBridge.getUID());
             }
         } catch (IllegalStateException e) {
-            suppressDiscoveryForThingId(fromThing.getUID().getId(), false); // re-enable mDNS discovery
-            logger.warn("{} while migrating {} => {}. Try deleting Thing and creating Bridge manually.", e.getMessage(),
-                    fromThing.getUID(), toBridge.getUID());
+            logger.warn("{} while migrating '{}' to '{}' => try deleting Thing and creating Bridge manually.",
+                    e.getMessage(), fromThing.getUID(), toBridge.getUID());
         } finally {
             migrating.set(false);
         }
