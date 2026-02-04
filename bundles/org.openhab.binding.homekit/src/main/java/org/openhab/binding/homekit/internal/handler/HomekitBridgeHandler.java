@@ -173,8 +173,23 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+        /*
+         * If the Bridge was the result of a migration from an accessory Thing then mDNS re-discovery of
+         * accessory Things having the same id must be suppressed. For simplicity we always suppress
+         * discovery of this id here.
+         */
+        discoveryParticipant.suppressId(thing.getUID().getId(), true);
+    }
+
+    @Override
     public void handleRemoval() {
-        // a Bridge may have been a migrated accessory Thing => remove discovery suppression for this id (if any)
+        /*
+         * If the Bridge was the result of a migration from an accessory Thing then mDNS re-discovery of
+         * accessory Things having the same id will have been suppressed. However since this Bridge is
+         * now being removed again, we must make sure that suppression of this id is also removed again.
+         */
         discoveryParticipant.suppressId(thing.getUID().getId(), false);
         super.handleRemoval();
     }
