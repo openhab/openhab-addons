@@ -19,7 +19,7 @@ Given a retrieved XML
 </PTZStatus>
 ```
 
-The XPath `/PTZStatus/AbsoluteHigh/azimuth/text()` returns the document
+The XPath `/PTZStatus/AbsoluteHigh/azimuth/text()` returns
 
 ```text
 450
@@ -27,7 +27,7 @@ The XPath `/PTZStatus/AbsoluteHigh/azimuth/text()` returns the document
 
 ## Advanced Example
 
-Given a retrieved XML (e.g. from an HIK Vision device with the namespace `xmlns="http://www.hikvision.com/ver20/XMLSchema"`):
+Given a retrieved XML (e.g., from a Hikvision device with the namespace `xmlns="http://www.hikvision.com/ver20/XMLSchema"`):
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -40,12 +40,12 @@ Given a retrieved XML (e.g. from an HIK Vision device with the namespace `xmlns=
 </PTZStatus>
 ```
 
-A simple xpath query to fetch the Azimut value does not work as it does not address the namespace.
+A simple XPath query to fetch the azimuth value does not work because it does not address the namespace.
 
-There are two ways to address the namespace.
+There are two ways to address the namespace:
 
-- Simple path which may not work in complex XML.
-- With full qualified path.
+- Simple path, which may not work in complex XML.
+- Fully qualified path.
 
 The XPath
 
@@ -58,12 +58,12 @@ returns
 <azimuth>450</azimuth>
 ```
 
-### In Setup
+### Example Setup
 
 #### .items
 
 ```java
-String  Temperature_xml "Temperature [XPATH(/*[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/):%s °C]" {...}
+String  Temperature_xml "Temperature [XPATH(/*[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/text()):%s °C]" {...}
 Number  Temperature "Temperature [%.1f °C]"
 ```
 
@@ -93,7 +93,7 @@ then
 end
 ```
 
-Now the resulting Number can also be used in the label to [change the color](https://docs.openhab.org/configuration/sitemaps.html#label-and-value-colors) or in a rule as value for comparison.
+Now the resulting Number can also be used in the label to [change the color](https://www.openhab.org/docs/ui/sitemaps.html#label-value-and-icon-colors) or in a rule as a value for comparison.
 
 ## Usage as a Profile
 
@@ -105,13 +105,13 @@ String <itemName> { channel="<channelUID>"[profile="transform:XPATH", function="
 ```
 
 The XPath expression to be executed has to be set in the `function` parameter.
-The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, i.e. `%.3f`.
-If omitted the default is `%s`, so the input value will be put into the transformation without any format changes.
+The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, e.g., `%.3f`.
+If omitted, the default is `%s`, so the input value will be put into the transformation without any format changes.
 
-Please note: This profile is a one-way transformation, i.e. only values from a device towards the item are changed, the other direction is left untouched.
+Please note: This profile is a one-way transformation, i.e., only values from a device towards the item are changed; the other direction is left untouched.
 
 ## Further Reading
 
-- An [introduction](https://www.w3schools.com/xml/xpath_intro.asp) to XPath at W3School
+- An [introduction](https://www.w3schools.com/xml/xpath_intro.asp) to XPath at W3Schools.
 - An informative explanation of [common mistakes](https://qxf2.com/blog/common-xpath-mistakes/).
 - Online validation tools like [this](https://www.freeformatter.com/xpath-tester.html) to check the syntax.

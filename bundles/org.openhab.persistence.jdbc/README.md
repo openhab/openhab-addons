@@ -108,7 +108,7 @@ user=openhab
 password=openhab_password
 ```
 
-The `TNS_ADMIN` parameter points to the directory where the the `tnsnames.ora`file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
+The `TNS_ADMIN` parameter points to the directory where the `tnsnames.ora` file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
 Other Oracle DB setups may require different connection parameters.
 
 It is advised to create a specific user with sufficient permissions and space for openHAB persistence.
@@ -159,7 +159,7 @@ tableUseRealItemNames=false
 tableIdDigitCount=0
 ```
 
-Remember to install and uninstall the services you want, and rename `persistence/mysql.persist` to `persistence/jdbc.persist`.
+Remember to install and uninstall the services you want and rename `persistence/mysql.persist` to `persistence/jdbc.persist`.
 
 ## Technical Notes
 
@@ -179,16 +179,16 @@ If this is changed, the table must be renamed manually according to new configur
 
 ### Number Precision
 
-Default openHAB number items are persisted with SQL datatype `double`.
-Internally openHAB uses `BigDecimal`.
-If better numerical precision is needed, for example set `sqltype.NUMBER = DECIMAL(max digits, max decimals)`, then on the Java side, the service works with `BigDecimal` without type conversion.
-If more come decimals as `max decimals` provides, this persisted value is rounded mathematically correctly.
+Default openHAB number items are persisted with SQL data type `double`.
+Internally, openHAB uses `BigDecimal`.
+If better numerical precision is needed, for example, set `sqltype.NUMBER = DECIMAL(max digits, max decimals)`, then on the Java side, the service works with `BigDecimal` without type conversion.
+If more decimals come than `max decimals` provides, this persisted value is rounded mathematically correctly.
 The SQL types `DECIMAL` or  `NUMERIC` are precise, but to work with `DOUBLE` is faster.
 
 ### Rounding results
 
 The results of database queries of number items are rounded to three decimal places by default.
-With `numberDecimalcount` decimals can be changed.
+With `numberDecimalcount`, decimals can be changed.
 Especially if sql types `DECIMAL` or  `NUMERIC` are used for `sqltype.NUMBER`, rounding can be disabled by setting `numberDecimalcount=-1`.
 
 ### Maintenance
@@ -198,7 +198,7 @@ Some maintenance tools are provided as console commands.
 #### List Tables
 
 Tables and corresponding items can be listed with the command `jdbc tables list`.
-Per default only tables with some kind of problem are listed.
+By default, only tables with some kind of problem are listed.
 To list all tables, use the command `jdbc tables list all`.
 
 The list contains table name, item name, row count and status, which can be one of:
@@ -259,10 +259,10 @@ Use the command `jdbc schema check` to perform an integrity check of the schema.
 
 Identified issues can be fixed automatically using the command `jdbc schema fix` (all items having issues) or `jdbc schema fix <itemName>` (single item).
 
-Issues than can be identified and possibly fixed:
+Issues that can be identified and possibly fixed:
 
 - Wrong column name case (`time` and `name`).
-- Wrong column type. Before fixing this, make sure that time-zone is correctly configured.
+- Wrong column type. Before fixing this, make sure that time zone is correctly configured.
 - Unexpected column (identify only).
 
 ### For Developers
@@ -284,9 +284,9 @@ Not necessarily representative of the performance you may experience.
 | postgresql |     8.147 |   7.072 |   6.895 |          - | ext. Server VM |
 | sqlite     |     2.406 |   1.249 |   1.137 |    0.28 MB | local embedded |
 
-- Each test ran about 20 Times every 30 seconds.
-- openHAB 1.x has ready started for about a Minute.
-- the data in seconds for the evaluation are from the console output.
+- Each test ran about 20 times every 30 seconds.
+- openHAB 1.x had already started for about a minute.
+- The data in seconds for the evaluation are from the console output.
 
 Used a script like this:
 
