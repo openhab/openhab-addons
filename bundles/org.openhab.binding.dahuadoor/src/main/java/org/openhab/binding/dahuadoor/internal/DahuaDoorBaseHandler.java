@@ -176,7 +176,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             updateState(CHANNEL_DOOR_IMAGE, UnDefType.UNDEF);
             return;
         }
-        Channel channel = this.getThing().getChannel(CHANNEL_DOOR_IMAGE);
         RawType image = new RawType(buffer, "image/jpg");
         updateState(CHANNEL_DOOR_IMAGE, image);
     }
