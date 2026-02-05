@@ -30,7 +30,7 @@ public class DahuaDoorHttpQueries {
 
     private final Logger logger = LoggerFactory.getLogger(DahuaDoorHttpQueries.class);
     private @Nullable DahuaDoorConfiguration config;
-    public @Nullable HttpClient httpClient;
+    private @Nullable HttpClient httpClient;
 
     public DahuaDoorHttpQueries(@Nullable HttpClient httpClient, @Nullable DahuaDoorConfiguration config) {
         this.config = config;

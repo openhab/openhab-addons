@@ -51,7 +51,7 @@ public class DahuaEventClient implements Runnable {
     private String clientType = ""; // WebGUI: We do not show up in logs or online users
     private int keepAliveInterval = 60;
     private long lastKeepAlive = 0;
-    private static boolean debug = true;
+    private static final boolean DEBUG = true;
 
     private DHIPEventListener eventListener;
 
@@ -127,7 +127,7 @@ public class DahuaEventClient implements Runnable {
                         for (String packet : data) {
                             JsonObject jsonPacket = gson.fromJson(packet, JsonObject.class);
                             if (jsonPacket.has("result")) {
-                                if (debug) {
+                                if (DEBUG) {
                                     logger.trace("keepAlive back");
                                 }
                                 keepAliveReceived = true;
