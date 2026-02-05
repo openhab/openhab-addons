@@ -48,7 +48,7 @@
 		"sensorType": "VEML6070",
 	-->
 	<channel-type id="uvIntensity">
-		<item-type>Number:Intensity</item-type>
+		<item-type unitHint="µW/cm²">Number:Intensity</item-type>
 		<label>UV Intensity</label>
 		<description>Current UV intensity.</description>
 		<tags>
@@ -130,7 +130,7 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter2dot5">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
 		<tags>
@@ -154,7 +154,7 @@
 		"sensorType": "SDS 011",
 	-->
 	<channel-type id="particulateMatter10">
-		<item-type>Number:Density</item-type>
+		<item-type unitHint="µg/m³">Number:Density</item-type>
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
 		<tags>
