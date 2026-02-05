@@ -432,17 +432,14 @@ public class SunCalcTest {
 
     @Test
     public void testAzimuthRange() {
-        for (int hour = 0; hour <23; hour ++) {
+        for (int hour = 0; hour < 23; hour++) {
             Calendar noonCalendar = SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, hour, 0, AMSTERDAM_TIME_ZONE);
-         // Test at solar noon (higher elevation expected)
             Position position = Objects.requireNonNull(sunCalc).getPosition(noonCalendar, AMSTERDAM_LATITUDE,
                     AMSTERDAM_LONGITUDE);
-            // Azimuth should be roughly south (around 180 degrees at northern hemisphere)
             double azimuth = position.getAzimuthAsDouble();
-            assertTrue(azimuth >= 0 && azimuth < 360, "Azimuth should be valid");        
-        }       
+            assertTrue(azimuth >= 0 && azimuth < 360, "Azimuth should be >=0 and <360");
+        }
     }
-
 
     /***
      * Constructs a <code>GregorianCalendar</code> with the given date and time set
