@@ -151,7 +151,7 @@ public class EaseeChargerHandler extends EaseeBaseThingHandler {
 
     /**
      * updates online status depending on online information received from the API. this is called by the SiteState
-     * Command which retrieves whole site data inclusing charger online status.
+     * Command which retrieves whole site data including charger online status.
      *
      */
     public void setOnline(boolean isOnline) {
