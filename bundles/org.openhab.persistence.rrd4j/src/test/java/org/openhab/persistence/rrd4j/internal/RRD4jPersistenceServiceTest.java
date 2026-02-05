@@ -14,6 +14,7 @@ package org.openhab.persistence.rrd4j.internal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
@@ -34,6 +35,8 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistedItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link RRD4jPersistenceService}.
@@ -43,7 +46,10 @@ import org.openhab.core.persistence.PersistedItem;
  */
 @ExtendWith(MockitoExtension.class)
 class RRD4jPersistenceServiceTest {
-    static final int STORAGE_TIMEOUT_MS = 1000;
+    private static final long STORAGE_TIMEOUT_MS = 20000; // 20 seconds for CI
+    private static final long POLL_INTERVAL_MS = 250; // Check every 250ms
+
+    private final Logger logger = LoggerFactory.getLogger(RRD4jPersistenceServiceTest.class);
 
     @Mock
     private ItemRegistry itemRegistry;
@@ -60,6 +66,50 @@ class RRD4jPersistenceServiceTest {
     void setUp() throws Exception {
         // Create service with empty config
         service = new RRD4jPersistenceService(itemRegistry, Map.of());
+    }
+
+    /**
+     * Waits for data to be persisted by polling the database.
+     * This is more robust than Thread.sleep() in CI environments with resource contention.
+     * 
+     * @param itemName the name of the item to check
+     * @param timeoutMs maximum time to wait in milliseconds
+     * @throws InterruptedException if interrupted while waiting
+     */
+    private void waitForStorage(String itemName, long timeoutMs) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        int attempts = 0;
+        
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            attempts++;
+            
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setItemName(itemName);
+            criteria.setPageSize(1);
+            
+            try {
+                Iterable<HistoricItem> results = service.query(criteria);
+                if (results.iterator().hasNext()) {
+                    long elapsed = System.currentTimeMillis() - startTime;
+                    logger.info("Storage completed for '{}' after {}ms ({} attempts)", 
+                               itemName, elapsed, attempts);
+                    return; // Success!
+                }
+            } catch (Exception e) {
+                // Query might fail if data not ready yet, continue polling
+                logger.debug("Query attempt {} failed: {}", attempts, e.getMessage());
+            }
+            
+            Thread.sleep(POLL_INTERVAL_MS);
+        }
+        
+        long elapsed = System.currentTimeMillis() - startTime;
+        fail(String.format(
+            "Data for item '%s' was not persisted within %dms (%d polling attempts). " +
+            "This likely indicates CI resource contention with parallel test execution (-T1.5C). " +
+            "Consider increasing STORAGE_TIMEOUT_MS or running tests sequentially.",
+            itemName, elapsed, attempts
+        ));
     }
 
     private void configureNumberItem() throws Exception {
@@ -92,7 +142,7 @@ class RRD4jPersistenceServiceTest {
         service.store(numberItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
@@ -119,7 +169,7 @@ class RRD4jPersistenceServiceTest {
         service.store(switchItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(switchItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
@@ -151,7 +201,7 @@ class RRD4jPersistenceServiceTest {
         service.store(numberItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query with time range
         FilterCriteria criteria = new FilterCriteria();
@@ -198,7 +248,7 @@ class RRD4jPersistenceServiceTest {
         service.store(numberItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
