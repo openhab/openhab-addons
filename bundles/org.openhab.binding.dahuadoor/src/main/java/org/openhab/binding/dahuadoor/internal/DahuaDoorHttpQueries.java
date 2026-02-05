@@ -38,22 +38,25 @@ public class DahuaDoorHttpQueries {
     }
 
     public byte @Nullable [] requestImage() {
+        final HttpClient localHttpClient = httpClient;
+        final DahuaDoorConfiguration localConfig = config;
 
-        // HttpClient httpClient = new HttpClient();
+        if (localHttpClient == null || localConfig == null) {
+            logger.warn("HTTP client or configuration not initialized");
+            return null;
+        }
 
         try {
-            // httpClient.start();
-
-            URI uri = new URI("http://" + config.hostname + "/cgi-bin/snapshot.cgi");
-            AuthenticationStore auth = httpClient.getAuthenticationStore();
-            auth.addAuthentication(
-                    new DigestAuthentication(uri, Authentication.ANY_REALM, config.username, config.password));
-            ContentResponse response = httpClient.newRequest(uri).send();
+            URI uri = new URI("http://" + localConfig.hostname + "/cgi-bin/snapshot.cgi");
+            AuthenticationStore auth = localHttpClient.getAuthenticationStore();
+            auth.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM, localConfig.username,
+                    localConfig.password));
+            ContentResponse response = localHttpClient.newRequest(uri).send();
             if (response.getStatus() == 200) {
                 return response.getContent();
             }
         } catch (Exception e) {
-            logger.warn("Could not make http connection to retrieve snapshot from {}", config.hostname, e);
+            logger.warn("Could not make http connection to retrieve snapshot from {}", localConfig.hostname, e);
         } /*
            * finally {
            * try {
@@ -66,15 +69,20 @@ public class DahuaDoorHttpQueries {
     }
 
     public void openDoor(int doorNo) {
+        final HttpClient localHttpClient = httpClient;
+        final DahuaDoorConfiguration localConfig = config;
 
-        // HttpClient httpClient = new HttpClient();
+        if (localHttpClient == null || localConfig == null) {
+            logger.warn("HTTP client or configuration not initialized");
+            return;
+        }
+
         try {
-            // httpClient.start();
-            URI uri = new URI("http://" + config.hostname + "/cgi-bin/accessControl.cgi");
-            AuthenticationStore auth = httpClient.getAuthenticationStore();
-            auth.addAuthentication(
-                    new DigestAuthentication(uri, Authentication.ANY_REALM, config.username, config.password));
-            Request request = httpClient.newRequest(uri);
+            URI uri = new URI("http://" + localConfig.hostname + "/cgi-bin/accessControl.cgi");
+            AuthenticationStore auth = localHttpClient.getAuthenticationStore();
+            auth.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM, localConfig.username,
+                    localConfig.password));
+            Request request = localHttpClient.newRequest(uri);
             request.param("action", "openDoor");
             request.param("UserID", "101");
             request.param("Type", "Remote");
@@ -84,7 +92,7 @@ public class DahuaDoorHttpQueries {
                 logger.info("Open Door Success");
             }
         } catch (Exception e) {
-            logger.warn("Could not make http connection to open door {} on {}", doorNo, config.hostname, e);
+            logger.warn("Could not make http connection to open door {} on {}", doorNo, localConfig.hostname, e);
         } /*
            * finally {
            * try {

@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -182,7 +181,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         updateState(CHANNEL_DOOR_IMAGE, image);
     }
 
-    public void HandleButtonPressed() {
+    public void handleButtonPressed() {
         Channel channel = this.getThing().getChannel(CHANNEL_BELL_BUTTON);
         if (channel == null) {
             logger.warn("Bell button channel not found");
@@ -472,10 +471,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     private void handleFingerPrintCheck(JsonObject eventData) {
         if (eventData.get("FingerPrintID").getAsInt() > -1) {
             int finger = eventData.get("FingerPrintID").getAsInt();
-            Map<Integer, String> users = Map.of(0, "Papa", 1, "Mama", 2, "Kind1", 3, "Kind2");
-            String name = users.get(finger);
-            logger.debug("Event FingerPrintCheck success, Finger number {}, User {}",
-                    eventData.get("FingerPrintID").getAsInt(), name);
+            logger.debug("Event FingerPrintCheck success, Finger number {}, User {}", finger, "User" + finger);
         } else {
             logger.debug("Event FingerPrintCheck failed, unknown Finger");
         }
@@ -535,6 +531,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     private void handleVTOCall() {
         logger.debug("Event Call from VTO");
-        HandleButtonPressed();
+        handleButtonPressed();
     }
 }

@@ -45,9 +45,9 @@ public class DahuaEventClient implements Runnable {
     private String host;
     private String username;
     private String password;
-    private int ID = 0; // Our Request / Response ID that must be in all requests and initiated by us
-    private int SessionID = 0; // Session ID will be returned after successful login
-    private String FakeIPaddr = "(null)"; // WebGUI: mask our real IP
+    private int id = 0; // Our Request / Response ID that must be in all requests and initiated by us
+    private int sessionId = 0; // Session ID will be returned after successful login
+    private String fakeIpAddr = "(null)"; // WebGUI: mask our real IP
     private String clientType = ""; // WebGUI: We do not show up in logs or online users
     private int keepAliveInterval = 60;
     private long lastKeepAlive = 0;
@@ -108,8 +108,8 @@ public class DahuaEventClient implements Runnable {
             queryArgs.put("method", "global.keepAlive");
             queryArgs.put("magic", "0x1234");
             queryArgs.put("params", Map.of("timeout", delay, "active", true));
-            queryArgs.put("id", this.ID);
-            queryArgs.put("session", this.SessionID);
+            queryArgs.put("id", this.id);
+            queryArgs.put("session", this.sessionId);
 
             try {
                 send(new Gson().toJson(queryArgs));
@@ -158,8 +158,8 @@ public class DahuaEventClient implements Runnable {
         buffer.putInt(0x20000000);
         buffer.putInt(0x44484950);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putInt(SessionID);
-        buffer.putInt(ID);
+        buffer.putInt(sessionId);
+        buffer.putInt(id);
         buffer.putInt(packet.length());
         buffer.putInt(0);
         buffer.putInt(packet.length());
@@ -170,7 +170,7 @@ public class DahuaEventClient implements Runnable {
             return;
         }
 
-        ID += 1;
+        id += 1;
 
         final Socket localSock = sock;
         if (localSock == null) {
@@ -240,7 +240,7 @@ public class DahuaEventClient implements Runnable {
         queryArgs.put("id", 10000);
         queryArgs.put("magic", "0x1234");
         queryArgs.put("method", "global.login");
-        queryArgs.put("params", Map.of("clientType", this.clientType, "ipAddr", this.FakeIPaddr, "loginType", "Direct",
+        queryArgs.put("params", Map.of("clientType", this.clientType, "ipAddr", this.fakeIpAddr, "loginType", "Direct",
                 "password", "", "userName", this.username));
         queryArgs.put("session", 0);
 
@@ -252,7 +252,7 @@ public class DahuaEventClient implements Runnable {
                 return false;
             }
             Map<String, Object> jsonData = new Gson().fromJson(data.get(0), Map.class);
-            this.SessionID = ((Double) jsonData.get("session")).intValue();
+            this.sessionId = ((Double) jsonData.get("session")).intValue();
             Map<String, Object> params = (Map<String, Object>) jsonData.get("params");
             String random = (String) params.get("random");
             String realm = (String) params.get("realm");
@@ -268,9 +268,9 @@ public class DahuaEventClient implements Runnable {
             queryArgs.put("id", 10000);
             queryArgs.put("magic", "0x1234");
             queryArgs.put("method", "global.login");
-            queryArgs.put("session", this.SessionID);
+            queryArgs.put("session", this.sessionId);
             queryArgs.put("params", Map.of("userName", this.username, "password", RANDOM_HASH, "clientType",
-                    this.clientType, "ipAddr", this.FakeIPaddr, "loginType", "Direct", "authorityType", "Default"));
+                    this.clientType, "ipAddr", this.fakeIpAddr, "loginType", "Direct", "authorityType", "Default"));
 
             send(new Gson().toJson(queryArgs));
             data = receive();
@@ -327,11 +327,11 @@ public class DahuaEventClient implements Runnable {
                 }
 
                 Map<String, Object> queryArgs = new HashMap<>();
-                queryArgs.put("id", this.ID);
+                queryArgs.put("id", this.id);
                 queryArgs.put("magic", "0x1234");
                 queryArgs.put("method", "eventManager.attach");
                 queryArgs.put("params", Map.of("codes", new String[] { "All" }));
-                queryArgs.put("session", this.SessionID);
+                queryArgs.put("session", this.sessionId);
 
                 send(new Gson().toJson(queryArgs));
                 ArrayList<String> data = receive();
@@ -358,6 +358,10 @@ public class DahuaEventClient implements Runnable {
         try {
             sock.close();
         } catch (Exception e) {
+            final Logger localLogger = logger;
+            if (localLogger != null) {
+                localLogger.trace("Error while closing socket", e);
+            }
         }
     }
 }
