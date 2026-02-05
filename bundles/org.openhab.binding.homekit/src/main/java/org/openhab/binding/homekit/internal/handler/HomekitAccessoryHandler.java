@@ -511,18 +511,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag but otherwise do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' sending command '{}' to '{}', reconnecting..", thing.getUID(),
-                        e.getMessage(), command, channelUID, e);
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' sending command '{}' to '{}'", thing.getUID(), e.getMessage(),
-                        command, channelUID, e);
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    THING_STATUS_FMT.formatted("error.error-sending-command", e.getMessage()));
+            onCommunicationError(e, I18N_SUFFIX_ERROR_SENDING_COMMAND);
         }
     }
 
