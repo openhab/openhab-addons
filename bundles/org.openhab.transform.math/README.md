@@ -21,7 +21,7 @@ The Item State will be prioritized if given and different from `UnDefType` and i
 
 Example Items:
 
-```
+```java
 Number multiply "Value multiplied by [MULTIPLY(1000):%s]" { channel="<channelUID>" }
 Number add "Value added [ADD(5.1):%s]" { channel="<channelUID>" }
 Number secondsToMinutes "Time [DIVIDE(60):%s]" { channel="<channelUID>" }
@@ -38,10 +38,10 @@ Number bitand "Value bitand [%s]" { channel="<channelUID>" [profile="transform:B
 
 Example in Rules:
 
-```
-transform("MULTIPLY", "1000")
-transform("ADD", "5.1")
-transform("DIVIDE", "60")
-transform("ADD", "-1")
-transform("BITXOR", "127")
+```java
+transform("MULTIPLY", "1000", myItem.state.toString)
+transform("ADD", "5.1", myItem.state.toString)
+transform("DIVIDE", "60", myItem.state.toString)
+transform("ADD", "-1", myItem.state.toString)
+transform("BITXOR", "127", myItem.state.toString)
 ```

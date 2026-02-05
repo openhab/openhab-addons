@@ -73,12 +73,12 @@ public class MathTransformationProfileFactoryTest {
     }
 
     @Test
-    public void systemProfileTypesAndUidsShouldBeAvailable() {
+    public void testProfileTypesAndUidsShouldBeAvailable() {
         Collection<ProfileTypeUID> supportedProfileTypeUIDs = profileFactory.getSupportedProfileTypeUIDs();
         assertThat(supportedProfileTypeUIDs, hasSize(NUMBER_OF_PROFILES));
 
         Collection<ProfileType> supportedProfileTypes = profileFactory.getProfileTypes(null);
-        assertThat(supportedProfileTypeUIDs, hasSize(NUMBER_OF_PROFILES));
+        assertThat(supportedProfileTypes, hasSize(NUMBER_OF_PROFILES));
 
         for (ProfileType profileType : supportedProfileTypes) {
             assertTrue(supportedProfileTypeUIDs.contains(profileType.getUID()));

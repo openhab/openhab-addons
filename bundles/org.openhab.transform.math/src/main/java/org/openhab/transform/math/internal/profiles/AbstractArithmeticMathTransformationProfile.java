@@ -20,13 +20,12 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.core.thing.profiles.TimeSeriesProfile;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * Abstract class for {@link TimeSeriesProfile}s which applies simple arithmetic math on the item state.
+ * Abstract class for {@link AbstractMathTransformationProfile}s which applies simple arithmetic math on the item state.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

@@ -12,6 +12,8 @@
  */
 package org.openhab.transform.math.internal;
 
+import javax.measure.UnconvertibleException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
@@ -42,20 +44,20 @@ abstract class AbstractMathTransformationService implements TransformationServic
         try {
             source = new QuantityType<>(sourceString);
         } catch (IllegalArgumentException e) {
-            logger.warn("Input value '{}' could not be converted to a valid number", sourceString);
-            throw new TransformationException("Math transformation can only be used with numeric inputs");
+            throw new TransformationException("Math transformation can only be used with numeric inputs", e);
         }
         QuantityType<?> value;
         try {
             value = new QuantityType<>(valueString);
         } catch (IllegalArgumentException e) {
-            logger.warn("Input value '{}' could not be converted to a valid number", valueString);
-            throw new TransformationException("Math transformation can only be used with numeric inputs");
+            throw new TransformationException("Math transformation can only be used with numeric inputs", e);
         }
         try {
             return performCalculation(source, value).toString();
-        } catch (IllegalArgumentException e) {
-            throw new TransformationException("ArithmeticException: " + e.getMessage());
+        } catch (UnconvertibleException e) {
+            throw new TransformationException("UnconvertibleException: " + e.getMessage(), e);
+        } catch (ArithmeticException e) {
+            throw new TransformationException("ArithmeticException: " + e.getMessage(), e);
         }
     }
 
