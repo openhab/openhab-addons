@@ -32,6 +32,7 @@ import org.openhab.binding.boschshc.internal.services.temperatureoffset.dto.Temp
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -135,7 +136,7 @@ public abstract class AbstractThermostatHandlerTest<T extends AbstractThermostat
     }
 
     @Test
-    void testHandleCommandTemperatureOffsetServiceQuantityType()
+    void testHandleCommandTemperatureOffsetServiceQuantityTypeCelsius()
             throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE_OFFSET),
@@ -147,6 +148,21 @@ public abstract class AbstractThermostatHandlerTest<T extends AbstractThermostat
         assertNull(state.maxOffset);
         assertNull(state.stepSize);
         assertEquals(-1.3d, state.offset, 0.001d);
+    }
+
+    @Test
+    void testHandleCommandTemperatureOffsetServiceQuantityTypeFahrenheit()
+            throws InterruptedException, TimeoutException, ExecutionException {
+        getFixture().handleCommand(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE_OFFSET),
+                new QuantityType<>(-1.3d, ImperialUnits.FAHRENHEIT));
+        verify(getBridgeHandler()).putState(eq(getDeviceID()),
+                eq(TemperatureOffsetService.TEMPERATURE_OFFSET_SERVICE_NAME), temperatureOffsetCaptor.capture());
+        TemperatureOffsetServiceState state = temperatureOffsetCaptor.getValue();
+        assertNull(state.minOffset);
+        assertNull(state.maxOffset);
+        assertNull(state.stepSize);
+        assertEquals(-0.7d, state.offset, 0.001d);
     }
 
     @Test

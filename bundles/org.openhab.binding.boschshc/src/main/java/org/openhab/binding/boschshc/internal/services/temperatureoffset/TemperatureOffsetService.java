@@ -15,12 +15,17 @@ package org.openhab.binding.boschshc.internal.services.temperatureoffset;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.temperatureoffset.dto.TemperatureOffsetServiceState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 
 /**
@@ -46,9 +51,25 @@ public class TemperatureOffsetService extends BoschSHCService<TemperatureOffsetS
         if (command instanceof DecimalType numberCommand) {
             return createNewTemperatureOffsetState(numberCommand.toBigDecimal());
         } else if (command instanceof QuantityType<?> quantityCommand) {
-            return createNewTemperatureOffsetState(quantityCommand.toBigDecimal());
+            @Nullable
+            QuantityType<Temperature> relativeValue = getRelativeTemperatureValue(quantityCommand);
+            if (relativeValue != null) {
+                return createNewTemperatureOffsetState(relativeValue.toBigDecimal());
+            }
         }
         return super.handleCommand(command);
+    }
+
+    @Nullable
+    private QuantityType<Temperature> getRelativeTemperatureValue(QuantityType<?> quantityCommand) {
+        // check if the given quantity has a temperature unit
+        if (!quantityCommand.getUnit().getSystemUnit().equals(Units.KELVIN)) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        QuantityType<Temperature> temperatureCommand = (QuantityType<Temperature>) quantityCommand;
+        return temperatureCommand.toUnitRelative(SIUnits.CELSIUS);
     }
 
     private TemperatureOffsetServiceState createNewTemperatureOffsetState(BigDecimal offset) {
