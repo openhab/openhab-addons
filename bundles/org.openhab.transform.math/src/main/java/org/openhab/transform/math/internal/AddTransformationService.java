@@ -12,6 +12,8 @@
  */
 package org.openhab.transform.math.internal;
 
+import javax.measure.UnconvertibleException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.transform.TransformationService;
@@ -29,8 +31,15 @@ public class AddTransformationService extends AbstractMathTransformationService 
     @Override
     QuantityType<?> performCalculation(QuantityType<?> source, QuantityType<?> value) {
         if (source.getUnit().isCompatible(value.getUnit())) {
+            // TODO suggested approach
+            // QuantityType<?> convertedValue = value.toUnit(source.getUnit());
+            // if (convertedValue == null) {
+            // throw new IllegalArgumentException("Units are not compatible for operation.");
+            // }
+            // return source.add(convertedValue);
+            // TODO original approach
             return new QuantityType<>(source.toBigDecimal().add(value.toBigDecimal()), source.getUnit());
         }
-        throw new IllegalArgumentException("Units are not compatible for operation.");
+        throw new UnconvertibleException("Units are not compatible for operation.");
     }
 }

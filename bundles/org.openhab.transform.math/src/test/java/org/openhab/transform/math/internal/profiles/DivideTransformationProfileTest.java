@@ -49,35 +49,34 @@ import org.openhab.core.types.TimeSeries.Entry;
 import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
-import org.openhab.transform.math.internal.MultiplyTransformationService;
+import org.openhab.transform.math.internal.DivideTransformationService;
 
 /**
- * Basic unit tests for {@link MultiplyTransformationProfile}.
+ * Basic unit tests for {@link DivideTransformationProfile}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-class MultiplyTransformationProfileTest {
+class DivideTransformationProfileTest {
 
     private static final String UNKNOWN_ITEM_NAME = "unknownItem";
     private static final String TEST_ITEM_NAME = "testItem";
 
     private static final Stream<Arguments> configurations() {
-        return Stream.of(Arguments.of(2, DecimalType.valueOf("23.333"), null, null, DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), null, DecimalType.valueOf("3"),
-                        DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, UnDefType.UNDEF,
-                        DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("3"),
-                        DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, DecimalType.valueOf("3"),
-                        DecimalType.valueOf("69.999")), //
-                Arguments.of(2, QuantityType.valueOf("230 V"), TEST_ITEM_NAME, QuantityType.valueOf("6 A"),
-                        QuantityType.valueOf("1380 W")), //
-                Arguments.of(2, QuantityType.valueOf("10 kWh"), TEST_ITEM_NAME, QuantityType.valueOf("0.5 DEF/kWh"),
-                        QuantityType.valueOf("5.0 DEF")), //
-                Arguments.of(2, QuantityType.valueOf("10 kWh"), TEST_ITEM_NAME, QuantityType.valueOf("0.25 kg/kWh"),
-                        QuantityType.valueOf("2.5 kg")));
+        return Stream.of(Arguments.of(-20, DecimalType.valueOf("-2000"), null, null, DecimalType.valueOf("100")), //
+                Arguments.of(0, DecimalType.valueOf("-2000"), null, null, DecimalType.valueOf("-2000")), //
+                Arguments.of(-20, DecimalType.valueOf("-2000"), null, DecimalType.valueOf("-20"),
+                        DecimalType.valueOf("100")), //
+                Arguments.of(-20, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, UnDefType.UNDEF,
+                        DecimalType.valueOf("100")), //
+                Arguments.of(-20, DecimalType.valueOf("-2000"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("-20"),
+                        DecimalType.valueOf("100")), //
+                Arguments.of(1, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, DecimalType.valueOf("-20"),
+                        DecimalType.valueOf("100")), //
+                Arguments.of(1, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, DecimalType.valueOf("0"),
+                        DecimalType.valueOf("-2000")), //
+                Arguments.of(1, QuantityType.valueOf("1380 W"), TEST_ITEM_NAME, QuantityType.valueOf("230 V"),
+                        QuantityType.valueOf("6 W/V")));
     }
 
     @BeforeEach
@@ -89,10 +88,10 @@ class MultiplyTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnCommandFromHandler(Integer multiplicand, Command cmd, @Nullable String itemName,
+    public void testOnCommandFromHandler(Integer divisor, Command cmd, @Nullable String itemName,
             @Nullable State itemState, Command expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
-        MultiplyTransformationProfile profile = createProfile(callback, multiplicand, itemName, itemState);
+        DivideTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
 
         profile.onCommandFromHandler(cmd);
 
@@ -105,10 +104,10 @@ class MultiplyTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnStateUpdateFromHandler(Integer multiplicand, State state, @Nullable String itemName,
+    public void testOnStateUpdateFromHandler(Integer divisor, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
-        MultiplyTransformationProfile profile = createProfile(callback, multiplicand, itemName, itemState);
+        DivideTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
 
         profile.onStateUpdateFromHandler(state);
 
@@ -121,10 +120,10 @@ class MultiplyTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testTimeSeriesFromHandlerParameterized(Integer multiplicand, State state, @Nullable String itemName,
+    public void testTimeSeriesFromHandlerParameterized(Integer divisor, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
-        MultiplyTransformationProfile profile = createProfile(callback, multiplicand, itemName, itemState);
+        DivideTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
 
         TimeSeries ts = new TimeSeries(Policy.ADD);
         Instant now = Instant.now();
@@ -143,13 +142,13 @@ class MultiplyTransformationProfileTest {
         assertThat(firstEntry.state(), is(expectedResult));
     }
 
-    private MultiplyTransformationProfile createProfile(ProfileCallback callback, Integer multiplicand,
+    private DivideTransformationProfile createProfile(ProfileCallback callback, Integer divisor,
             @Nullable String itemName, @Nullable State state) throws ItemNotFoundException {
         ProfileContext mockedProfileContext = mock(ProfileContext.class);
         ItemRegistry mockedItemRegistry = mock(ItemRegistry.class);
         UnitProvider mockedUnitProvider = mock(UnitProvider.class);
         Configuration config = new Configuration();
-        config.put(MultiplyTransformationProfile.MULTIPLICAND_PARAM, multiplicand);
+        config.put(DivideTransformationProfile.DIVISOR_PARAM, divisor);
         if (itemName != null && state != null) {
             config.put(AbstractArithmeticMathTransformationProfile.ITEM_NAME_PARAM, itemName);
             GenericItem item;
@@ -166,7 +165,7 @@ class MultiplyTransformationProfileTest {
         }
         when(mockedProfileContext.getConfiguration()).thenReturn(config);
 
-        return new MultiplyTransformationProfile(callback, mockedProfileContext, new MultiplyTransformationService(),
+        return new DivideTransformationProfile(callback, mockedProfileContext, new DivideTransformationService(),
                 mockedItemRegistry);
     }
 }

@@ -62,7 +62,7 @@ abstract class AbstractBitwiseTransformationService implements TransformationSer
                 }
             }
         } catch (NumberFormatException e) {
-            logger.warn("Input value '{}' could not converted to a valid number", str);
+            logger.warn("Input value '{}' could not be converted to a valid number", str);
             throw new TransformationException("Math transformation can only be used with numeric inputs");
         }
     }

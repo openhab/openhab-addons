@@ -87,22 +87,22 @@ public abstract class AbstractMathTransformationProfile implements TimeSeriesPro
         callback.handleCommand(command);
     }
 
-    protected Type transformState(Type state, String value) {
-        String result = state.toFullString();
+    protected Type transformState(Type source, String value) {
+        String result = source.toFullString();
         try {
             result = TransformationHelper.transform(service, value, "%s", result);
         } catch (TransformationException e) {
-            logger.warn("Could not apply '{}' transformation on state '{}' with value '{}'.", profileTypeUID.getId(),
-                    state, value);
+            logger.warn("Could not apply '{}' transformation on state '{}' with value '{}': {}", profileTypeUID.getId(),
+                    source, value, e.getMessage());
         }
-        Type resultType = state;
+        Type resultType = source;
         if (result != null) {
-            if (state instanceof DecimalType) {
+            if (source instanceof DecimalType) {
                 resultType = DecimalType.valueOf(result);
-            } else if (state instanceof QuantityType) {
+            } else if (source instanceof QuantityType) {
                 resultType = QuantityType.valueOf(result);
             }
-            logger.debug("Transformed '{}' into '{}'", state, resultType);
+            logger.debug("Transformed '{}' into '{}'", source, resultType);
         }
         return resultType;
     }

@@ -28,6 +28,10 @@ public class DivideTransformationService extends AbstractMathTransformationServi
 
     @Override
     QuantityType<?> performCalculation(QuantityType<?> source, QuantityType<?> value) {
-        return source.divide(value);
+        try {
+            return source.divide(value);
+        } catch (IllegalArgumentException e) {
+            throw new ArithmeticException("Divison by zero.");
+        }
     }
 }
