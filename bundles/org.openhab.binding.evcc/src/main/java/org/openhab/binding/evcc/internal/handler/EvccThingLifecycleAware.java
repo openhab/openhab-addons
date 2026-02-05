@@ -51,7 +51,7 @@ public interface EvccThingLifecycleAware {
 
     /**
      * This method shall handle the mini updates received from the evcc WS
-     * 
+     *
      * @param key the key of the updated value
      * @param value the updated value
      */
