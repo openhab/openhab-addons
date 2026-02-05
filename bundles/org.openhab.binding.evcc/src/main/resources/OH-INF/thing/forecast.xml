@@ -58,9 +58,9 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="forecast-scaled">
-		<item-type>Number:Energy</item-type>
+		<item-type unitHint="Wh">Number:Energy</item-type>
 		<label>Scaled Solar Forecast</label>
-		<description>Holds the scaled forecast data</description>
+		<description>Holds the scaled solar forecast data</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Calculation</tag>
