@@ -45,6 +45,12 @@
 				<label>Password</label>
 				<description>Password to access the GridBox API</description>
 			</parameter>
+			<parameter name="useEonAuthentication" type="boolean">
+				<label>E.ON Home Client Connection</label>
+				<description>Use the E.ON Home client authentication. The Viessmann client authentication is used if the parameter
+					is false. Use true if the Viessmann GridBox was already migrated to E.ON Home.</description>
+				<default>true</default>
+			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in seconds.</description>
