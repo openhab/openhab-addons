@@ -22,8 +22,8 @@
       netty. Let's ensure by listing relevant packages with dep.noembedding -->
     <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
     <!-- slf4j version matching the version specified in openhab-core/pom.xml -->
-    <slf4j.version>1.7.32</slf4j.version>
-    <jetty.version>9.4.57.v20241219</jetty.version>
+    <slf4j.version>2.0.17</slf4j.version>
+    <jetty.version>9.4.58.v20250814</jetty.version>
   </properties>
 
   <!-- Let's ensure the correct versions with dependencyManagement.
