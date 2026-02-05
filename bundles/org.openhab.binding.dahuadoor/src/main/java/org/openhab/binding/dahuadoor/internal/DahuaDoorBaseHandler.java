@@ -521,7 +521,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
     private void handleMotionEvent() {
         logger.debug("Event VideoMotion");
-        // saveSnapshot();
     }
 
     private void handleVTHAnswer() {
