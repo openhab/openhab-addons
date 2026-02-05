@@ -356,7 +356,9 @@ public class DahuaEventClient implements Runnable {
             }
         }
         try {
-            sock.close();
+            if (sock != null) {
+                sock.close();
+            }
         } catch (Exception e) {
             final Logger localLogger = logger;
             if (localLogger != null) {
