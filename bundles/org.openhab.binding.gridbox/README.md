@@ -20,8 +20,8 @@ There is another API endpoint for fetching aggregated measurement data which cou
 
 Only the Viessmann GridBox and E.ON Home Box variants are supported, other variants would need adaptions to the OAuth mechanism.
 To switch between Viessmann and E.ON authentication, set the "useEonAuthentication" parameter to true (for E.ON) or false (for Viessmann).
-The Viessmann service will be migrated to E.ON and is planned to be stopped after the December 31, 2025. After that date, only the E.ON 
-connection type will work.
+The Viessmann service will be migrated to E.ON and is planned to be stopped after the December 31, 2025.
+After that date, only the E.ON connection type will work.
 
 This binding is not endorsed or supported by Viessmann, E.ON or gridX.
 Arbitrary breaking changes to the API can happen at any time, resulting in this binding failing to retrieve the data.
