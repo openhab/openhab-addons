@@ -55,7 +55,7 @@
 	<channel-type id="door-image">
 		<item-type>Image</item-type>
 		<label>Door Image</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Image of door when bell butten is pressed</description>
+		<description>Image of door when bell button is pressed</description>
 	</channel-type>
 
 	<channel-type id="open-door-1">
