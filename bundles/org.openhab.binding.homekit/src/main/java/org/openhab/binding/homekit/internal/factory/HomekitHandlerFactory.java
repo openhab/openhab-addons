@@ -26,6 +26,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
@@ -59,6 +60,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     private final TranslationProvider i18nProvider;
     private final Bundle bundle;
     private final ThingRegistry thingRegistry;
+    private final ManagedThingProvider managedThingProvider;
     private final HomekitMdnsDiscoveryParticipant discoveryParticipant;
 
     /**
@@ -77,6 +79,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
             @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore,
             @Reference TranslationProvider translationProvider, @Reference ThingRegistry thingRegistry,
+            @Reference ManagedThingProvider managedThingProvider,
             @Reference(target = "(class.id=homekit)") MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
         this.typeProvider = typeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
@@ -85,6 +88,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
         this.i18nProvider = translationProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.thingRegistry = thingRegistry;
+        this.managedThingProvider = managedThingProvider;
         this.discoveryParticipant = (HomekitMdnsDiscoveryParticipant) mdnsDiscoveryParticipant;
     }
 
@@ -100,7 +104,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
             return new HomekitBridgeHandler(bridge, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
         } else if (THING_TYPE_BRIDGED_ACCESSORY.equals(thingTypeUID) || THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry,
-                    keyStore, i18nProvider, bundle, thingRegistry, discoveryParticipant);
+                    keyStore, i18nProvider, bundle, thingRegistry, managedThingProvider, discoveryParticipant);
         }
         return null;
     }

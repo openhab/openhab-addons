@@ -13,7 +13,7 @@
 package org.openhab.binding.homekit.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
@@ -46,6 +46,7 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
@@ -1771,9 +1772,10 @@ class TestMigrationFromThingToBridge {
         public TestHomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
                 ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
                 HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle, ThingRegistry thingRegistry,
-                ScheduledExecutorService scheduler, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+                ScheduledExecutorService scheduler, ManagedThingProvider managedThingProvider,
+                HomekitMdnsDiscoveryParticipant discoveryParticipant) {
             super(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry, keyStore, i18nProvider, bundle,
-                    thingRegistry, discoveryParticipant);
+                    thingRegistry, managedThingProvider, discoveryParticipant);
             this.injectedTestScheduler = scheduler;
         }
 
@@ -1840,7 +1842,7 @@ class TestMigrationFromThingToBridge {
 
     private HomekitAccessoryHandler createHandler(Map<Long, Accessory> accessories, ThingTypeUID thingTypeUID,
             String thingId, List<Runnable> capturedRunnables, ThingRegistry thingRegistry,
-            ThingHandlerCallback callback, HomekitMdnsDiscoveryParticipant disco) {
+            ThingHandlerCallback callback, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
 
         Thing thing = mock(Thing.class);
         ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
@@ -1851,6 +1853,9 @@ class TestMigrationFromThingToBridge {
         HomekitKeyStore keyStore = mock(HomekitKeyStore.class);
         TranslationProvider translationProvider = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
+
+        ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
+        when(managedThingProvider.get(any())).thenReturn(thing);
 
         ThingUID thingUID = new ThingUID(thingTypeUID, thingId);
         when(thing.getUID()).thenReturn(thingUID);
@@ -1880,7 +1885,8 @@ class TestMigrationFromThingToBridge {
         }).when(scheduler).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), ArgumentMatchers.any(TimeUnit.class));
 
         HomekitAccessoryHandler handler = new TestHomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry,
-                channelGroupTypeRegistry, keyStore, translationProvider, bundle, thingRegistry, scheduler, disco);
+                channelGroupTypeRegistry, keyStore, translationProvider, bundle, thingRegistry, scheduler,
+                managedThingProvider, discoveryParticipant);
 
         // Inject accessories map
         injectField(handler, "accessories", accessories);

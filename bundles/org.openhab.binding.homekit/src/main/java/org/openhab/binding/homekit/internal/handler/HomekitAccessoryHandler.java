@@ -66,6 +66,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
@@ -121,6 +122,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
     private final ThingRegistry thingRegistry;
+    private final ManagedThingProvider managedThingProvider;
 
     /*
      * Light model to manage combined light characteristics (hue, saturation, brightness, color temperature).
@@ -156,11 +158,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
             HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle, ThingRegistry thingRegistry,
-            HomekitMdnsDiscoveryParticipant discoveryParticipant) {
+            ManagedThingProvider managedThingProvider, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
         super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.thingRegistry = thingRegistry;
+        this.managedThingProvider = managedThingProvider;
     }
 
     /**
@@ -1155,14 +1158,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * Bridge handler recreates them dynamically (albeit with different ChannelUIDs). Critically it inherits the same IP
      * network configuration and HomeKit UniqueID so the new Bridge continues to use the old Thing's stored pairing key.
      * This migration is only started if the existing Thing is of type Accessory and has embedded accessories (i.e.
-     * child accessories). Does not execute if either of the 'disposing' or 'migrating' flags are set, and sets the
-     * 'migrating' flag to prevent overlapping calls. The migration is performed asynchronously after a short delay.
+     * child accessories) and it is a managed Thing. Does not execute if either of the 'disposing' or 'migrating' flags
+     * are set, and sets the 'migrating' flag to prevent overlapping calls. The migration is performed asynchronously
+     * after a short delay.
      */
     private boolean startMigrationFromThingToBridgeIfRequired() {
         if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1 && !disposing.get()
                 && !migrating.getAndSet(true)) {
 
-            logger.info("Thing '{}' has embedded accessories; migrating it to a Bridge", thing.getUID());
+            if (managedThingProvider.get(thing.getUID()) == null) {
+                logger.info("{} has embedded accessories. Try editing Thing-Type from 'accessory' to 'bridge'.",
+                        thing.getUID());
+                return false;
+            }
+
+            logger.info("{} has embedded accessories. Auto-migrating it to a Bridge", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/status.migrating-accessory-to-bridge");
 
@@ -1217,10 +1227,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 registry.add(toBridge);
                 registry.remove(fromThing.getUID()); // remove only after a successful add
                 discoveryParticipant.suppressId(fromThing.getUID().getId(), true); // suppress re-discovery of Thing id
-                logger.info("Successfully migrated '{}' to '{}'", fromThing.getUID(), toBridge.getUID());
+                logger.info("{} was successfully auto-migrated to {}", fromThing.getUID(), toBridge.getUID());
             }
         } catch (IllegalStateException e) {
-            logger.warn("{} while migrating '{}' to '{}' => try deleting Thing and creating Bridge manually.",
+            logger.warn("{} while auto-migrating {} to {}. Try editing Thing-Type from 'accessory' to 'bridge'.",
                     e.getMessage(), fromThing.getUID(), toBridge.getUID());
         } finally {
             migrating.set(false);
@@ -1230,6 +1240,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     public String unpair() {
         // prevent un-pairing (which would erase the pairing keys) while migration is in progress
-        return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("migration in progress") : super.unpair();
+        return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("auto-migration in progress") : super.unpair();
     }
 }
