@@ -54,7 +54,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.solarforecast", service = { ThingHandlerFactory.class })
 
 public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
-    private final TimeZoneProvider timeZoneProvider;
     private final HttpClientFactory httpClientFactory;
     private final PersistenceServiceRegistry persistenceRegistry;
     private @Nullable PointType location;
@@ -65,7 +64,6 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TimeZoneProvider tzp, final @Reference StorageService storageService,
             final @Reference PersistenceServiceRegistry psr) {
         persistenceRegistry = psr;
-        timeZoneProvider = tzp;
         httpClientFactory = hcf;
         Utils.setTimeZoneProvider(tzp);
         location = lp.getLocation();
@@ -93,7 +91,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
             return new SmartForecastSolarPlaneHandler(thing, httpClientFactory.getCommonHttpClient(),
                     persistenceRegistry);
         } else if (SOLCAST_SITE.equals(thingTypeUID)) {
-            return new SolcastBridgeHandler((Bridge) thing, timeZoneProvider);
+            return new SolcastBridgeHandler((Bridge) thing);
         } else if (SOLCAST_PLANE.equals(thingTypeUID)) {
             return new SolcastPlaneHandler(thing, httpClientFactory.getCommonHttpClient(), storage);
         }
