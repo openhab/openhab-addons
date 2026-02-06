@@ -15,6 +15,7 @@ package org.openhab.persistence.mapdb;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
@@ -76,7 +77,7 @@ class MapDbPersistenceServiceTest {
 
     private void configureStringItem() throws Exception {
         when(stringItem.getName()).thenReturn("TestString");
-        when(stringItem.getState()).thenReturn(new org.openhab.core.library.types.StringType("TestValue"));
+        when(stringItem.getState()).thenReturn(new StringType("TestValue"));
     }
 
     private void configureSwitchItem() throws Exception {
@@ -89,17 +90,6 @@ class MapDbPersistenceServiceTest {
         if (service != null) {
             service.deactivate();
         }
-    }
-
-    @Test
-    void storeAndRetrieveNumberValue2() throws Exception {
-        configureNumberItem();
-
-        // Store a value
-        service.store(numberItem);
-
-        // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
     }
 
     @Test
@@ -150,7 +140,7 @@ class MapDbPersistenceServiceTest {
         Iterable<HistoricItem> results = service.query(criteria);
         assertNotNull(results);
 
-        // Verify the retrieved value (converted back to OnOffType by toStateMapper)
+        // Verify the retrieved value
         // HistoricItem will anyway only return last stored value for MapDb, but this should work without errors
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
@@ -218,7 +208,11 @@ class MapDbPersistenceServiceTest {
         assertNotNull(results);
 
         // Verify we got at least one result
-        assertNotNull(results.iterator().hasNext());
+        assertTrue(results.iterator().hasNext());
+
+        // try to get a non-existing persisted item
+        PersistedItem persistedItem = service.persistedItem("UnknownTestItem", null);
+        assertNull(persistedItem);
     }
 
     @Test
@@ -241,42 +235,6 @@ class MapDbPersistenceServiceTest {
         } finally {
             simpleService.deactivate();
         }
-    }
-
-    // just to increase test coverage: instantiate and activate service
-    @Test
-    void storeAndRetrieveWithInvalidDBConfig() throws Exception {
-        service = new MapDbPersistenceService();
-        service.activate();
-        configureNumberItem();
-
-        // Store a value
-        service.store(numberItem);
-
-        // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
-
-        // Query the value back
-        FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestNumber");
-        criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
-        criteria.setPageSize(1);
-        criteria.setPageNumber(0);
-        criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1));
-
-        // HistoricItem will anyway only return last stored value for MapDb, but this should work without errors
-        Iterable<HistoricItem> results = service.query(criteria);
-        assertNotNull(results);
-
-        // Verify the retrieved value
-        HistoricItem item = results.iterator().next();
-        assertNotNull(item);
-        assertEquals("TestNumber", item.getName());
-        assertEquals(new DecimalType(42.5), item.getState());
-
-        // try to get a non-existing persisted item
-        PersistedItem persistedItem = service.persistedItem("UnknownTestItem", null);
-        assertNull(persistedItem);
     }
 
     /*
