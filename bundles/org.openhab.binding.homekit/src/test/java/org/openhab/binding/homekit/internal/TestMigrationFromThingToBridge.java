@@ -13,8 +13,9 @@
 package org.openhab.binding.homekit.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -48,7 +49,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
@@ -1771,11 +1771,11 @@ class TestMigrationFromThingToBridge {
 
         public TestHomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
                 ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
-                HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle, ThingRegistry thingRegistry,
-                ScheduledExecutorService scheduler, ManagedThingProvider managedThingProvider,
+                HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle,
+                ScheduledExecutorService scheduler, ManagedThingProvider thingProvider,
                 HomekitMdnsDiscoveryParticipant discoveryParticipant) {
             super(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry, keyStore, i18nProvider, bundle,
-                    thingRegistry, managedThingProvider, discoveryParticipant);
+                    thingProvider, discoveryParticipant);
             this.injectedTestScheduler = scheduler;
         }
 
@@ -1841,7 +1841,7 @@ class TestMigrationFromThingToBridge {
     }
 
     private HomekitAccessoryHandler createHandler(Map<Long, Accessory> accessories, ThingTypeUID thingTypeUID,
-            String thingId, List<Runnable> capturedRunnables, ThingRegistry thingRegistry,
+            String thingId, List<Runnable> capturedRunnables, ManagedThingProvider thingProvider,
             ThingHandlerCallback callback, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
 
         Thing thing = mock(Thing.class);
@@ -1854,15 +1854,17 @@ class TestMigrationFromThingToBridge {
         TranslationProvider translationProvider = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
 
-        ManagedThingProvider managedThingProvider = mock(ManagedThingProvider.class);
-        when(managedThingProvider.get(any())).thenReturn(thing);
+        when(thingProvider.get(new ThingUID(THING_TYPE_BRIDGE, thingId))).thenReturn(null);
+        when(thingProvider.get(new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, thingId))).thenReturn(null);
+        when(thingProvider.get(new ThingUID(THING_TYPE_ACCESSORY, thingId))).thenReturn(thing);
 
         ThingUID thingUID = new ThingUID(thingTypeUID, thingId);
         when(thing.getUID()).thenReturn(thingUID);
         when(thing.getThingTypeUID()).thenReturn(thingTypeUID);
-        when(thing.getLabel()).thenReturn("Test Accessory");
+        when(thing.getLabel()).thenReturn("Test Accessory (AA:BB:CC:DD)");
         when(thing.getLocation()).thenReturn("Living Room");
         when(thing.getBridgeUID()).thenReturn(null);
+        when(thing.getSemanticEquipmentTag()).thenReturn("DOORBELL");
 
         Configuration config = new Configuration();
         config.put(HomekitBindingConstants.CONFIG_IP_ADDRESS, "192.168.1.100:1234");
@@ -1871,7 +1873,6 @@ class TestMigrationFromThingToBridge {
         when(thing.getConfiguration()).thenReturn(config);
 
         Map<String, String> properties = new HashMap<>();
-        properties.put(HomekitBindingConstants.PROPERTY_UNIQUE_ID, "test-unique-property-id");
         properties.put(HomekitBindingConstants.PROPERTY_ACCESSORY_CATEGORY, "test-category");
         when(thing.getProperties()).thenReturn(properties);
 
@@ -1885,8 +1886,8 @@ class TestMigrationFromThingToBridge {
         }).when(scheduler).schedule(ArgumentMatchers.<Runnable> any(), anyLong(), ArgumentMatchers.any(TimeUnit.class));
 
         HomekitAccessoryHandler handler = new TestHomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry,
-                channelGroupTypeRegistry, keyStore, translationProvider, bundle, thingRegistry, scheduler,
-                managedThingProvider, discoveryParticipant);
+                channelGroupTypeRegistry, keyStore, translationProvider, bundle, scheduler, thingProvider,
+                discoveryParticipant);
 
         // Inject accessories map
         injectField(handler, "accessories", accessories);
@@ -1903,7 +1904,7 @@ class TestMigrationFromThingToBridge {
     @Test
     public void testMigrationNotTriggeredForSingleAccessory() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -1912,7 +1913,7 @@ class TestMigrationFromThingToBridge {
         accessories.put(1L, createAccessory(1L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -1922,7 +1923,7 @@ class TestMigrationFromThingToBridge {
     @Test
     public void testMigrationNotTriggeredForBridgeType() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -1932,7 +1933,7 @@ class TestMigrationFromThingToBridge {
         accessories.put(2L, createAccessory(2L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_BRIDGE,
-                "test-bridge", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-bridge", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -1942,7 +1943,7 @@ class TestMigrationFromThingToBridge {
     @Test
     public void testMigrationNotTriggeredForBridgedAccessoryType() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -1953,7 +1954,7 @@ class TestMigrationFromThingToBridge {
 
         HomekitAccessoryHandler handler = createHandler(accessories,
                 HomekitBindingConstants.THING_TYPE_BRIDGED_ACCESSORY, "test-bridged-accessory", capturedRunnables,
-                thingRegistry, callback, discoveryService);
+                thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -1963,7 +1964,7 @@ class TestMigrationFromThingToBridge {
     @Test
     public void testMigrationTriggeredForMultipleAccessories() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -1973,7 +1974,7 @@ class TestMigrationFromThingToBridge {
         accessories.put(2L, createAccessory(2L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -1981,9 +1982,9 @@ class TestMigrationFromThingToBridge {
     }
 
     @Test
-    public void testBridgeInheritsThingProperties() {
+    public void testBridgeAndThingInheritThingProperties() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -1993,7 +1994,7 @@ class TestMigrationFromThingToBridge {
         accessories.put(2L, createAccessory(2L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -2001,28 +2002,40 @@ class TestMigrationFromThingToBridge {
 
         capturedRunnables.get(0).run();
 
-        verify(thingRegistry).remove(ArgumentMatchers.any(ThingUID.class));
+        verify(thingProvider).remove(ArgumentMatchers.any(ThingUID.class));
         verify(discoveryService, times(1)).suppressId("test-accessory", true);
         verifyNoMoreInteractions(discoveryService);
 
-        ArgumentCaptor<Bridge> addCaptor = ArgumentCaptor.forClass(Bridge.class);
-        verify(thingRegistry).add(addCaptor.capture());
+        ArgumentCaptor<Thing> captor = ArgumentCaptor.forClass(Thing.class);
+        verify(thingProvider, times(2)).add(captor.capture());
+        List<Thing> added = captor.getAllValues();
 
-        Bridge newBridge = addCaptor.getValue();
+        assertTrue(added.get(0) instanceof Bridge);
+        Bridge newBridge = (Bridge) added.get(0);
         assertEquals(HomekitBindingConstants.THING_TYPE_BRIDGE, newBridge.getThingTypeUID());
-        assertEquals("Test Accessory", newBridge.getLabel());
+        assertEquals("Test Accessory (AA:BB:CC:DD)", newBridge.getLabel());
         assertEquals("Living Room", newBridge.getLocation());
         assertEquals(handler.getThing().getProperties(), newBridge.getProperties());
         assertEquals(handler.getThing().getConfiguration().getProperties(),
                 newBridge.getConfiguration().getProperties());
-
         assertEquals(Equipment.NETWORK_APPLIANCE.getName(), newBridge.getSemanticEquipmentTag());
+
+        assertFalse(added.get(1) instanceof Bridge);
+        assertTrue(added.get(1) instanceof Thing);
+        Thing newThing = (Thing) added.get(1);
+        assertEquals(newBridge.getUID(), newThing.getBridgeUID());
+        assertEquals(HomekitBindingConstants.THING_TYPE_BRIDGED_ACCESSORY, newThing.getThingTypeUID());
+        assertEquals("Test Accessory (AA:BB:CC:DD-1)", newThing.getLabel());
+        assertEquals("Living Room", newThing.getLocation());
+        assertEquals("DOORBELL", newThing.getSemanticEquipmentTag());
+        assertEquals("1", newThing.getConfiguration().getProperties().get(CONFIG_ACCESSORY_ID));
+        assertEquals("test-unique-id-1", newThing.getProperties().get(PROPERTY_UNIQUE_ID));
     }
 
     @Test
     public void testMigratingFlagUpdatedDuringMigration() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -2032,7 +2045,7 @@ class TestMigrationFromThingToBridge {
         accessories.put(2L, createAccessory(2L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -2046,14 +2059,12 @@ class TestMigrationFromThingToBridge {
 
         verify(discoveryService, times(1)).suppressId("test-accessory", true);
         verifyNoMoreInteractions(discoveryService);
-
-        assertFalse(((AtomicBoolean) migrating).get());
     }
 
     @Test
     public void testStatusUpdatedDuringMigration() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -2063,7 +2074,7 @@ class TestMigrationFromThingToBridge {
         accessories.put(2L, createAccessory(2L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -2080,7 +2091,7 @@ class TestMigrationFromThingToBridge {
     @Test
     public void testUnpairBlockedDuringMigration() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -2090,7 +2101,7 @@ class TestMigrationFromThingToBridge {
         accessories.put(2L, createAccessory(2L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -2105,7 +2116,7 @@ class TestMigrationFromThingToBridge {
     @Test
     public void testMigrationHandlesRegistryError() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -2115,19 +2126,20 @@ class TestMigrationFromThingToBridge {
         accessories.put(2L, createAccessory(2L));
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
         assertEquals(1, capturedRunnables.size(), "Migration task should be scheduled");
 
-        doThrow(new IllegalStateException("Registry error")).when(thingRegistry)
+        doThrow(new IllegalArgumentException("Registry error")).when(thingProvider)
                 .add(ArgumentMatchers.any(Bridge.class));
 
         capturedRunnables.get(0).run();
 
-        verify(thingRegistry).add(ArgumentMatchers.any(Bridge.class));
-        verify(thingRegistry, never()).remove(ArgumentMatchers.any(ThingUID.class));
+        verify(thingProvider).add(ArgumentMatchers.any(Bridge.class));
+        verify(thingProvider).add(ArgumentMatchers.any(Thing.class));
+        verify(thingProvider, never()).remove(ArgumentMatchers.any(ThingUID.class));
 
         Object migrating = assertDoesNotThrow(() -> getField(handler, "migrating"));
         assertTrue(migrating instanceof AtomicBoolean);
@@ -2163,7 +2175,7 @@ class TestMigrationFromThingToBridge {
     @Test
     public void testMigrationTriggeredForRealAccessoryJSON() {
         List<Runnable> capturedRunnables = new ArrayList<>();
-        ThingRegistry thingRegistry = mock(ThingRegistry.class);
+        ManagedThingProvider thingProvider = mock(ManagedThingProvider.class);
         HomekitMdnsDiscoveryParticipant discoveryService = mock(HomekitMdnsDiscoveryParticipant.class);
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         when(callback.isChannelLinked(ArgumentMatchers.any(ChannelUID.class))).thenReturn(false);
@@ -2178,7 +2190,7 @@ class TestMigrationFromThingToBridge {
         assertEquals(3, accessories.size());
 
         HomekitAccessoryHandler handler = createHandler(accessories, HomekitBindingConstants.THING_TYPE_ACCESSORY,
-                "test-accessory", capturedRunnables, thingRegistry, callback, discoveryService);
+                "test-accessory", capturedRunnables, thingProvider, callback, discoveryService);
 
         invokeMethod(handler, "onConnectedThingAccessoriesLoaded");
 
@@ -2188,5 +2200,8 @@ class TestMigrationFromThingToBridge {
 
         verify(discoveryService, times(1)).suppressId("test-accessory", true);
         verifyNoMoreInteractions(discoveryService);
+
+        verify(thingProvider, times(2)).add(ArgumentMatchers.any(Thing.class));
+        verify(thingProvider).remove(ArgumentMatchers.any(ThingUID.class));
     }
 }

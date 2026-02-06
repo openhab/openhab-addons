@@ -23,9 +23,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -48,6 +48,7 @@ import org.openhab.binding.homekit.internal.temporary.LightModel;
 import org.openhab.binding.homekit.internal.temporary.LightModel.LightCapabilities;
 import org.openhab.binding.homekit.internal.temporary.LightModel.RgbDataType;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -68,7 +69,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
@@ -121,7 +121,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
-    private final ThingRegistry thingRegistry;
     private final ManagedThingProvider managedThingProvider;
 
     /*
@@ -149,20 +148,17 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     /*
      * Assets used for migrating a Thing to a Bridge
      */
-    private static final int MIGRATION_TASK_DELAY_SECONDS = 1;
-    private static final int MIGRATION_TASK_TIMEOUT_SECONDS = 10;
-    private volatile @Nullable ScheduledFuture<?> migrationTask = null;
+    private static final int MIGRATION_DELAY_SECONDS = 1;
     private final AtomicBoolean migrating = new AtomicBoolean(false);
     private final AtomicBoolean disposing = new AtomicBoolean(false);
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
-            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle, ThingRegistry thingRegistry,
+            HomekitKeyStore keyStore, TranslationProvider i18nProvider, Bundle bundle,
             ManagedThingProvider managedThingProvider, HomekitMdnsDiscoveryParticipant discoveryParticipant) {
         super(thing, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
-        this.thingRegistry = thingRegistry;
         this.managedThingProvider = managedThingProvider;
     }
 
@@ -563,13 +559,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         eventedCharacteristics.clear();
         polledCharacteristics.clear();
         super.dispose();
-        if (migrating.get() && migrationTask instanceof ScheduledFuture<?> task && !task.isDone()) {
-            try {
-                task.get(MIGRATION_TASK_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            } catch (Exception e) {
-                logger.warn("{}: Migration task did not complete within timeout during dispose", thing.getUID(), e);
-            }
-        }
     }
 
     private @Nullable StateDescription getStateDescription(Channel channel) {
@@ -991,7 +980,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     protected void onConnectedThingAccessoriesLoaded() {
         createProperties(); // we need the properties before eventually starting a migration
-        if (startMigrationFromThingToBridgeIfRequired() && migrating.get()) {
+        if (isMigratable()) {
+            setupMigration();
             return; // skip further processing if migrating
         }
         createChannels();
@@ -1142,42 +1132,89 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Starts migration of an accessory Thing to a Bridge. Removes the current Thing from the registry and creates a new
-     * Bridge that inherits the current Thing's attributes. The channels and tags are not inherited because the new
-     * Bridge handler recreates them dynamically (albeit with different ChannelUIDs). Critically it inherits the same IP
-     * network configuration and HomeKit UniqueID so the new Bridge continues to use the old Thing's stored pairing key.
-     * This migration is only started if the existing Thing is of type Accessory and has embedded accessories (i.e.
-     * child accessories) and it is a managed Thing. Does not execute if either of the 'disposing' or 'migrating' flags
-     * are set, and sets the 'migrating' flag to prevent overlapping calls. The migration is performed asynchronously
-     * after a short delay.
+     * Determines if the existing Thing is eligible for migration to a Bridge. This is the case if the Thing is of
+     * type Accessory, has embedded accessories (i.e. child accessories), and is a managed Thing. If the Thing is not
+     * eligible for migration, logs an appropriate message to inform the user about the reason and how to fix it.
+     *
+     * @return true if the Thing is eligible for migration, false otherwise
      */
-    private boolean startMigrationFromThingToBridgeIfRequired() {
-        if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1 && !disposing.get()
-                && !migrating.getAndSet(true)) {
-
+    private boolean isMigratable() {
+        if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1) {
             if (managedThingProvider.get(thing.getUID()) == null) {
                 logger.info("{} has embedded accessories. Try editing Thing-Type from 'accessory' to 'bridge'.",
                         thing.getUID());
                 return false;
             }
+            if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) == null) {
+                logger.warn("{} is missing unique ID. Cannot migrate to Bridge.", thing.getUID());
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 
-            logger.info("{} has embedded accessories. Auto-migrating it to a Bridge", thing.getUID());
+    /**
+     * Sets up migration of an accessory Thing to a Bridge. Purpose is to remove the current Thing from the registry
+     * and create a new Bridge that inherits the current Thing's network attributes, and create a new bridged accessory
+     * Thing as a child of the Bridge that will host the current Thing's channels. The channels and tags are not
+     * directly inherited because the new Thing handler recreates them dynamically (albeit with different ChannelUIDs).
+     * Critically the Bridge inherits the same IP network configuration and HomeKit UniqueID so the new Bridge continues
+     * to use the old Thing's stored pairing key. The migration does not execute if either of the 'disposing' or
+     * 'migrating' flags are set. And this method sets the 'migrating' flag to prevent overlapping calls. The migration
+     * is performed asynchronously on a separate thread after a short delay.
+     * 
+     * @return true if the migration was successfully scheduled, false otherwise
+     */
+    private boolean setupMigration() {
+        // create a copy of the old Thing that is to be migrated
+        Thing sourceThing = ThingBuilder.create(thing).build();
+
+        // create new Bridge with old Thing's Id and all its attributes, except channels and tag
+        Bridge targetBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, sourceThing.getUID().getId()) //
+                .withConfiguration(sourceThing.getConfiguration()) //
+                .withLabel(sourceThing.getLabel()) //
+                .withLocation(sourceThing.getLocation()) //
+                .withProperties(sourceThing.getProperties()) //
+                .withSemanticEquipmentTag(Equipment.NETWORK_APPLIANCE) //
+                .build();
+
+        if (managedThingProvider.get(targetBridge.getUID()) != null) {
+            logger.warn("Cannot auto-migrate {} to a Bridge. Bridge already exists.", targetBridge.getUID());
+            return false;
+        }
+
+        // create new bridged accessory #1 child Thing that will host the old Thing's channels
+        Configuration targetConfiguration = new Configuration();
+        targetConfiguration.put(CONFIG_ACCESSORY_ID, "1");
+
+        String targetLabel = sourceThing.getLabel();
+        Matcher matcher = THING_LABEL_PATTERN.matcher(targetLabel);
+        targetLabel = matcher.matches() ? matcher.group(1).trim() + " (" + matcher.group(2) + "-1)" : targetLabel;
+
+        Object sourceUniqueId = sourceThing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID);
+        String targetUniqueId = STRING_AID_FMT.formatted(sourceUniqueId, 1);
+
+        Thing targetThing = ThingBuilder.create(THING_TYPE_BRIDGED_ACCESSORY, "1") //
+                .withBridge(targetBridge.getUID()) //
+                .withConfiguration(targetConfiguration) //
+                .withLabel(targetLabel) //
+                .withLocation(sourceThing.getLocation()) //
+                .withProperty(PROPERTY_UNIQUE_ID, targetUniqueId) //
+                .withSemanticEquipmentTag(sourceThing.getSemanticEquipmentTag()) //
+                .build();
+
+        if (managedThingProvider.get(targetThing.getUID()) != null) {
+            logger.warn("Cannot auto-migrate {} to a Bridged-Accessory. Thing already exists.", targetThing.getUID());
+            return false;
+        }
+
+        if (!disposing.get() && !migrating.getAndSet(true)) {
+            getScheduler().schedule(() -> doMigration(sourceThing, targetBridge, targetThing), MIGRATION_DELAY_SECONDS,
+                    TimeUnit.SECONDS);
+            logger.info("{} has embedded accessories. Auto-migrating it to a Bridge.", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/status.migrating-accessory-to-bridge");
-
-            // create new Bridge with old Thing's Id and all its attributes -- except channels and equipment tag
-            Bridge toBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, thing.getUID().getId()) //
-                    .withConfiguration(thing.getConfiguration()) //
-                    .withLabel(thing.getLabel()) //
-                    .withLocation(thing.getLocation()) //
-                    .withProperties(thing.getProperties()) //
-                    .withSemanticEquipmentTag(Equipment.NETWORK_APPLIANCE) //
-                    .build();
-
-            // schedule registry actions to asynchronously migrate the Thing to a Bridge
-            migrationTask = getScheduler().schedule(() -> migrateFromThingToBridge(thingRegistry, thing, toBridge),
-                    MIGRATION_TASK_DELAY_SECONDS, TimeUnit.SECONDS);
-
             return true;
         }
         return false;
@@ -1204,31 +1241,33 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * and because the change is a one-time structural migration, this direct registry manipulation is
      * considered safe in this context.
      * <p>
-     * Clears the 'migrating' flag when done.
+     * Clears the 'migrating' flag if the migration fails so thing can potentially continue to be used.
      * 
-     * @param registry the ThingRegistry to perform the conversion on
-     * @param fromThing the existing Thing to be removed
-     * @param toBridge the new Bridge instance to be added
+     * @param oldThing the existing Thing to be removed
+     * @param newBridge the new Bridge instance to be added
+     * @param newThing the new child Thing that will host the existing Thing's channels
      */
-    private void migrateFromThingToBridge(ThingRegistry registry, Thing fromThing, Bridge toBridge) {
-        try {
-            if (!disposing.get() && migrating.get()) {
-                registry.add(toBridge);
-                registry.remove(fromThing.getUID()); // remove only after a successful add
-                discoveryParticipant.suppressId(fromThing.getUID().getId(), true); // suppress re-discovery of Thing id
-                logger.info("{} was successfully auto-migrated to {}", fromThing.getUID(), toBridge.getUID());
+    private void doMigration(Thing oldThing, Bridge newBridge, Thing newThing) {
+        if (!disposing.get() && migrating.get()) {
+            try {
+                managedThingProvider.add(newBridge);
+                managedThingProvider.add(newThing);
+                managedThingProvider.remove(oldThing.getUID()); // remove existing Thing only after successful adds
+                discoveryParticipant.suppressId(oldThing.getUID().getId(), true); // and suppress its re-discovery
+                logger.info("Successfully auto-migrated {} to {} plus {}", oldThing.getUID(), newBridge.getUID(),
+                        newThing.getUID());
+            } catch (IllegalArgumentException e) {
+                migrating.set(false);
+                logger.warn("{} while auto-migrating {} to {}. Try editing Thing-Type from 'accessory' to 'bridge'.",
+                        e.getMessage(), oldThing.getUID(), newBridge.getUID());
             }
-        } catch (IllegalStateException e) {
-            logger.warn("{} while auto-migrating {} to {}. Try editing Thing-Type from 'accessory' to 'bridge'.",
-                    e.getMessage(), fromThing.getUID(), toBridge.getUID());
-        } finally {
-            migrating.set(false);
         }
     }
 
     @Override
-    public String unpair() {
+    protected String unpairInner() {
         // prevent un-pairing (which would erase the pairing keys) while migration is in progress
-        return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("auto-migration in progress") : super.unpair();
+        return migrating.get() ? ACTION_RESULT_ERROR_FORMAT.formatted("auto-migration in progress")
+                : super.unpairInner();
     }
 }

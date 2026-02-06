@@ -560,7 +560,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @return OK or ERROR with reason
      */
-    private String unpairInner() {
+    protected String unpairInner() {
         if (isBridgedAccessory) {
             logger.warn("{} forbidden to unpair a bridged accessory", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("bridged accessory");
