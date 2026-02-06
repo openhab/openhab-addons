@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,6 +47,12 @@ public class DDWRTNetwork {
     // Devices indexed by MAC for fast upsert
     private final Map<String, DDWRTDevice> devicesByMac = new ConcurrentHashMap<>();
 
+    // Failed device configurations by hostname for retry during refresh
+    private final Map<String, DDWRTDeviceConfiguration> failedDeviceConfigs = new ConcurrentHashMap<>();
+
+    // Cache for IP->device mappings to avoid repeated DNS lookups
+    private final Map<String, DDWRTDevice> devicesByIP = new ConcurrentHashMap<>();
+
     private final Logger logger = LoggerFactory.getLogger(DDWRTNetwork.class);
 
     /** Hand the entire bridge configuration to the network. */
@@ -52,6 +60,9 @@ public class DDWRTNetwork {
         if (!Objects.equals(this.config, netCfg)) {
             logger.info("Config changed.");
             this.config = netCfg;
+
+            // Clear failed device configs when configuration changes
+            failedDeviceConfigs.clear();
 
             final DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
             devCfg.port = netCfg.port;
@@ -102,6 +113,96 @@ public class DDWRTNetwork {
     }
 
     /**
+     * Lookup a device by hostname or device name.
+     * Returns null if the device is not present.
+     */
+    public @Nullable DDWRTDevice getDeviceByHostname(String hostname) {
+        try {
+            String ip = resolveHostnameToIP(hostname);
+            int port = extractPortFromHostname(hostname);
+            DDWRTDevice device = getDeviceByIPandPort(ip, port);
+            if (device != null) {
+                logger.debug("Found device by hostname {} -> IP: {} -> MAC: {}", hostname, ip, device.getMac());
+            }
+            return device;
+        } catch (Exception e) {
+            logger.debug("Failed to resolve hostname {}: {}", hostname, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Lookup a device by IP address and port.
+     * Returns null if the device is not present.
+     */
+    public @Nullable DDWRTDevice getDeviceByIPandPort(String ip, int port) {
+        String key = ip + ":" + port;
+
+        // First try the cache
+        DDWRTDevice cached = devicesByIP.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
+        // If not in cache, search through devices and update cache
+        return devicesByMac.values().stream().filter(dev -> {
+            try {
+                String deviceIP = resolveHostnameToIP(dev.getConfig().hostname);
+                int devicePort = dev.getConfig().port;
+                if (ip.equals(deviceIP) && port == devicePort) {
+                    // Update cache for future lookups
+                    devicesByIP.put(key, dev);
+                    return true;
+                }
+                return false;
+            } catch (Exception e) {
+                return false;
+            }
+        }).findFirst().orElse(null);
+    }
+
+    /**
+     * Resolve hostname to IP address. Handles both hostnames and IP addresses.
+     */
+    private String resolveHostnameToIP(String hostname) throws UnknownHostException {
+        if (hostname == null || hostname.trim().isEmpty()) {
+            throw new UnknownHostException("Empty hostname");
+        }
+
+        // Extract hostname part if port is included (e.g., "192.168.1.1:8080")
+        String hostPart = hostname.split(":")[0];
+
+        // If it's already an IP address, return as-is
+        if (hostPart.matches("^(\\d{1,3}\\.){3}\\d{1,3}$")) {
+            return hostPart;
+        }
+
+        // Resolve hostname to IP
+        InetAddress address = InetAddress.getByName(hostPart);
+        return address.getHostAddress();
+    }
+
+    /**
+     * Extract port from hostname string. Returns default SSH port (22) if not specified.
+     */
+    private int extractPortFromHostname(String hostname) {
+        if (hostname == null || hostname.trim().isEmpty()) {
+            return 22;
+        }
+
+        String[] parts = hostname.split(":");
+        if (parts.length > 1) {
+            try {
+                return Integer.parseInt(parts[1]);
+            } catch (NumberFormatException e) {
+                logger.debug("Invalid port in hostname '{}', using default 22", hostname);
+                return 22;
+            }
+        }
+        return 22;
+    }
+
+    /**
      * Upsert a device by MAC. If a device already exists for this MAC, it is returned;
      * otherwise the provided device is inserted and returned. Never returns null.
      */
@@ -114,6 +215,62 @@ public class DDWRTNetwork {
     /** Clear all currently known devices. */
     public void clearDevices() {
         devicesByMac.clear();
+        devicesByIP.clear();
+    }
+
+    /** Add a failed device configuration for retry during refresh. */
+    public void addFailedDeviceConfig(String hostname, DDWRTDeviceConfiguration config) {
+        DDWRTDeviceConfiguration existing = failedDeviceConfigs.get(hostname);
+        if (existing == null || !Objects.equals(existing.password, config.password)
+                || !Objects.equals(existing.user, config.user) || existing.port != config.port) {
+            failedDeviceConfigs.put(hostname, config);
+            logger.debug("Added/updated failed device config for hostname: {} (credentials changed: {})", hostname,
+                    existing != null);
+        }
+    }
+
+    /**
+     * Handle manual device addition or update. This method is called when a user manually
+     * adds a device that may already exist in the network (discovered or failed).
+     * Returns the device if successful, null if failed.
+     */
+    public @Nullable DDWRTDevice addOrUpdateDevice(DDWRTDeviceConfiguration config) {
+        logger.debug("Manual add/update device for hostname: {}", config.hostname);
+
+        try {
+            DDWRTDevice device = DDWRTDevice.upsertDeviceInNetwork(this, config);
+
+            // If device was successfully added to network (has MAC), remove from failed configs
+            if (!device.getMac().isEmpty()) {
+                failedDeviceConfigs.remove(config.hostname);
+                // Update IP cache
+                updateIPCache(device);
+                logger.info("Successfully connected to manually added device: {} (MAC: {})", config.hostname,
+                        device.getMac());
+                return device;
+            } else {
+                // Device failed to connect, will be tracked in upsertDeviceInNetwork
+                return null;
+            }
+        } catch (Exception e) {
+            logger.warn("Manual device addition failed for {}: {}", config.hostname, e.getMessage(), e);
+            // Track the failed configuration for retry during refresh
+            addFailedDeviceConfig(config.hostname, config);
+            return null;
+        }
+    }
+
+    /** Update the IP cache when a device is added or updated */
+    private void updateIPCache(DDWRTDevice device) {
+        try {
+            String ip = resolveHostnameToIP(device.getConfig().hostname);
+            int port = device.getConfig().port;
+            String key = ip + ":" + port;
+            devicesByIP.put(key, device);
+            logger.debug("Updated IP cache: {} -> MAC: {}", key, device.getMac());
+        } catch (Exception e) {
+            logger.debug("Failed to update IP cache for device {}: {}", device.getConfig().hostname, e.getMessage());
+        }
     }
 
     /** Normalize MAC addresses to lower-case without whitespace. */
@@ -124,9 +281,34 @@ public class DDWRTNetwork {
     public void refresh() {
         synchronized (this) {
             logger.debug("Refreshing");
+
+            // Refresh existing devices
             getDevices().forEach(device -> {
                 device.refresh();
             });
+
+            // Retry failed device configurations
+            if (!failedDeviceConfigs.isEmpty()) {
+                logger.debug("Retrying {} failed device configurations", failedDeviceConfigs.size());
+
+                // Create a copy to avoid concurrent modification
+                Map<String, DDWRTDeviceConfiguration> failedConfigsCopy = new ConcurrentHashMap<>(failedDeviceConfigs);
+
+                failedConfigsCopy.forEach((hostname, config) -> {
+                    try {
+                        logger.debug("Retrying connection to failed device: {}", hostname);
+                        DDWRTDevice device = DDWRTDevice.upsertDeviceInNetwork(this, config);
+
+                        // If device was successfully added to network (has MAC), remove from failed configs
+                        if (!device.getMac().isEmpty()) {
+                            failedDeviceConfigs.remove(hostname);
+                            logger.info("Successfully reconnected to device: {}", hostname);
+                        }
+                    } catch (Exception e) {
+                        logger.debug("Retry failed for host {}: {}", hostname, e.getMessage(), e);
+                    }
+                });
+            }
         }
     }
 }

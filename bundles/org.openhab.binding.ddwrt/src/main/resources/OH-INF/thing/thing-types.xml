@@ -39,10 +39,10 @@
 				<description>Optional default password to access the devices. To use keys instead of password place the keys in
 					$USER_DATA/ddwrt/keys</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
 				<label>Refresh Interval</label>
 				<description>Interval the devices is polled in sec.</description>
-				<default>600</default>
+				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -95,10 +95,10 @@
 				<label>Password</label>
 				<description>Password to access the devices</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
 				<label>Refresh Interval</label>
 				<description>Interval the devices is polled in sec.</description>
-				<default>600</default>
+				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

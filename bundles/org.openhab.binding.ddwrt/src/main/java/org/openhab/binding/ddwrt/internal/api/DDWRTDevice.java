@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DDWRTDevice {
+    @SuppressWarnings("null")
     private static final Logger logger = LoggerFactory.getLogger(DDWRTDevice.class);
 
     private DDWRTDeviceConfiguration config;
@@ -51,6 +52,8 @@ public class DDWRTDevice {
 
     // Persistent SSH session owned by this device
     private @Nullable SshAuthSession authSession;
+
+    private volatile @Nullable DDWRTThingUpdater updater;
 
     // // ---- autonomous refresh state ----
     // private volatile long intervalSeconds = 0;
@@ -84,10 +87,12 @@ public class DDWRTDevice {
      */
     public static DDWRTDevice upsertDeviceInNetwork(DDWRTNetwork net, DDWRTDeviceConfiguration cfg) {
         DDWRTDevice d = new DDWRTDevice(cfg);
+        SshAuthSession ssh = null;
 
-        try (SshAuthSession ssh = SshClientManager.getInstance().openAuthSession(Objects.requireNonNull(cfg.hostname),
-                cfg.port, Objects.requireNonNull(cfg.user), cfg.password, null, null,
-                Objects.requireNonNull(Duration.ofSeconds(2)))) {
+        try {
+            ssh = SshClientManager.getInstance().openAuthSession(Objects.requireNonNull(cfg.hostname),
+                    cfg.port, Objects.requireNonNull(cfg.user), cfg.password, null, null,
+                    Objects.requireNonNull(Duration.ofSeconds(2)));
 
             // Capture banner for later inspection
             String banner = safeTrim(ssh.getWelcomeBanner());
@@ -98,11 +103,17 @@ public class DDWRTDevice {
 
             SshRunner runner = ssh.createRunner();
 
-            // Example DD-WRT commands (adjust to environment as needed)
-            String mac = safeTrim(runner.exec("nvram get lan_hwaddr"));
-            String hostname = safeTrim(runner.exec("hostname"));
-            String model = safeTrim(runner.exec("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
-            String fw = safeTrim(runner.exec("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
+            // Get MAC address with fallback methods for DD-WRT/Linux hosts
+            String mac = runner.execStdout("nvram get lan_hwaddr");
+            if (mac.isEmpty()) {
+                // Fallback: Try modern Linux ip command (ethernet interfaces)
+                mac = runner.execStdout(
+                        "ip -br l | grep -E '^(en|eth|wl)' | awk '{print tolower($3)}' | LC_ALL=C sort | head -n1");
+            }
+
+            String hostname = runner.execStdout("hostname");
+            String model = runner.execStdout("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-");
+            String fw = runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2");
 
             if (!hostname.isEmpty()) {
                 d.hostname = hostname;
@@ -115,16 +126,55 @@ public class DDWRTDevice {
             }
             if (!mac.isEmpty()) {
                 d.mac = mac.toLowerCase();
-                // KEEP the session
+
+                // Check if device already exists with this MAC
+                DDWRTDevice existingDevice = net.getDeviceByMac(d.mac);
+                if (existingDevice != null) {
+                    // Device exists, check if credentials need updating
+                    DDWRTDeviceConfiguration existingConfig = existingDevice.getConfig();
+                    if (!Objects.equals(existingConfig.password, cfg.password)
+                            || !Objects.equals(existingConfig.user, cfg.user) || existingConfig.port != cfg.port) {
+
+                        logger.info("Updating credentials for existing device: {} (MAC: {})", cfg.hostname, d.mac);
+                        // Update the existing device with new configuration
+                        existingDevice.setConfig(cfg);
+                        // Close old session and attach new one
+                        existingDevice.closeSessionQuietly();
+                        existingDevice.attachSession(ssh);
+                        return existingDevice;
+                    } else {
+                        // Same credentials, use existing device
+                        logger.debug("Device already exists with same credentials: {} (MAC: {})", cfg.hostname, d.mac);
+                        return existingDevice;
+                    }
+                }
+
+                // New device, add to network
                 d.attachSession(ssh);
                 net.upsertDeviceByMac(d.mac, d);
             }
 
-            // NOTE: if you want to KEEP the session, don't use try-with-resources here; call d.attachSession(ssh).
-            // In discovery we usually *don't* persist; device handler would.
+            // Session is now attached to device for persistent use
 
         } catch (Exception e) {
             logger.warn("Failed to initialize device at host {}: {}", cfg.hostname, e.getMessage(), e);
+            // Track the failed configuration for retry during refresh
+            net.addFailedDeviceConfig(cfg.hostname, cfg);
+        } finally {
+            // Close session only if it wasn't attached to a device
+            if (ssh != null && (d.mac.isEmpty() || net.getDeviceByMac(d.mac) == null)) {
+                try {
+                    ssh.close();
+                } catch (Exception e) {
+                    logger.debug("Error closing SSH session for {}: {}", cfg.hostname, e.getMessage());
+                }
+            }
+        }
+
+        // If MAC was not successfully retrieved, track as failed
+        if (d.mac.isEmpty()) {
+            logger.debug("Device at host {} did not provide MAC address, marking as failed", cfg.hostname);
+            net.addFailedDeviceConfig(cfg.hostname, cfg);
         }
 
         return d;
@@ -325,18 +375,21 @@ public class DDWRTDevice {
      * ignore)
      * // {} logFollower = null; }
      * 
-     * private void postString(String ch, String v) {
-     * try {
-     * updateState(new ChannelUID(getThing().getUID(), ch), new StringType(v));
-     * } catch (Exception ignore) {
-     * }
-     * }
      * 
      * // private void postOnline(boolean on) {
      * // try { updateState(new ChannelUID(getThing().getUID(), CHANNEL_ONLINE), on ? OnOffType.ON : OnOffType.OFF); }
      * // catch (Exception ignore) {}
      * // }
      * 
+     */
+
+    /*
+     * private void postString(String ch, String v) {
+     * try {
+     * updateState(new ChannelUID(thingUID, ch), new StringType(v));
+     * } catch (Exception ignore) {
+     * }
+     * }
      */
 
     // -------------------- Session management --------------------
@@ -368,6 +421,10 @@ public class DDWRTDevice {
         return config;
     }
 
+    public void setConfig(DDWRTDeviceConfiguration config) {
+        this.config = config;
+    }
+
     public String getMac() {
         return mac;
     }
@@ -388,9 +445,139 @@ public class DDWRTDevice {
         return welcomeBanner;
     }
 
+    public void setUpdater(@Nullable DDWRTThingUpdater updater) {
+        this.updater = updater;
+    }
+
+    /** Check if device has an active SSH connection */
+    public boolean hasActiveConnection() {
+        SshAuthSession session = this.authSession;
+        if (session == null) {
+            return false;
+        }
+        try {
+            return session.getClientSession().isOpen();
+        } catch (Exception e) {
+            logger.debug("Error checking SSH connection status: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /** Attempt to recover SSH session if it's closed */
+    public boolean recoverSession() {
+        if (config == null) {
+            logger.debug("Cannot recover session: no configuration available");
+            return false;
+        }
+
+        try {
+            logger.debug("Attempting to recover SSH session for device: {}", getMac());
+
+            // Close any existing dead session
+            closeSessionQuietly();
+
+            // Create new session
+            SshAuthSession newSession = SshClientManager.getInstance().openAuthSession(
+                    Objects.requireNonNull(config.hostname), config.port, Objects.requireNonNull(config.user),
+                    config.password, null, null, Objects.requireNonNull(java.time.Duration.ofSeconds(2)));
+
+            // Test the new session with a simple command
+            SshRunner runner = newSession.createRunner();
+            String testResult = runner.exec("echo 'session_test'");
+
+            if ("session_test".equals(testResult.trim())) {
+                this.authSession = newSession;
+                logger.info("Successfully recovered SSH session for device: {}", getMac());
+                return true;
+            } else {
+                newSession.close();
+                logger.warn("Session recovery test failed for device: {}", getMac());
+                return false;
+            }
+
+        } catch (Exception e) {
+            logger.warn("Failed to recover SSH session for device {}: {}", getMac(), e.getMessage(), e);
+            return false;
+        }
+    }
+
     public void refresh() {
         synchronized (this) {
             logger.debug("Refreshing {} {}", getMac(), getName());
+
+            final DDWRTThingUpdater u = this.updater; // local copy for thread safety
+
+            try {
+                SshAuthSession s = this.authSession;
+                if (s == null) {
+                    logger.debug("No SSH session available, attempting recovery for device: {}", getMac());
+                    if (recoverSession()) {
+                        s = this.authSession;
+                    } else {
+                        if (u != null) {
+                            u.reportOffline("SSH session not connected and recovery failed");
+                        }
+                        return;
+                    }
+                }
+
+                // Validate session is still active before using it
+                if (!hasActiveConnection()) {
+                    logger.debug("SSH session is no longer active, attempting recovery for device: {}", getMac());
+                    if (recoverSession()) {
+                        s = this.authSession;
+                        if (s == null) {
+                            logger.error("Recovery returned null session for device: {}", getMac());
+                            if (u != null) {
+                                u.reportOffline("Session recovery failed - null session");
+                            }
+                            return;
+                        }
+                    } else {
+                        logger.debug("Session recovery failed for device: {}", getMac());
+                        this.authSession = null; // Clear dead session
+                        if (u != null) {
+                            u.reportOffline("SSH session closed and recovery failed");
+                        }
+                        return;
+                    }
+                }
+
+                // Final check that session is not null
+                if (s == null) {
+                    logger.error("SSH session is null before command execution for device: {}", getMac());
+                    if (u != null) {
+                        u.reportOffline("SSH session is null");
+                    }
+                    return;
+                }
+
+                SshRunner runner = s.createRunner();
+                String uptime = safeTrim(runner.exec("uptime -s"));
+
+                // postString(CHANNEL_UPTIME, uptime);
+                if (u != null) {
+                    u.updateChannel("uptime", new org.openhab.core.library.types.StringType(uptime));
+                    u.reportOnline();
+                }
+
+            } catch (Exception e) {
+                logger.debug("Refresh failed for device {}: {}", getMac(), e.getMessage(), e);
+
+                // Check if this is a session-related error and attempt recovery
+                if (e.getMessage() != null && (e.getMessage().contains("session is being closed")
+                        || e.getMessage().contains("Channel") || e.getMessage().contains("closed"))) {
+                    logger.warn("SSH session error during refresh for device: {}, clearing session and will retry",
+                            getMac());
+                    this.authSession = null; // Clear dead session
+                    // Note: Recovery will be attempted on next refresh cycle
+                }
+
+                if (u != null) {
+                    u.reportOffline(e.getMessage());
+                }
+            }
+
         }
     }
 }
