@@ -223,7 +223,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 updateState(RobotCapabilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
                 return;
             }
-            if (channelUID.getId().equals(CHANNEL_FAN_CONTROL) && command instanceof QuantityType) {
+            if (channelUID.getId().equals(CHANNEL_FAN_CONTROL) && command instanceof DecimalType) {
                 if (Integer.valueOf(command.toString()) > 0) {
                     sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
                 }
