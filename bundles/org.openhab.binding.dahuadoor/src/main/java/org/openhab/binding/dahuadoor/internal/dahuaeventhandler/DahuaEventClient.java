@@ -40,7 +40,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class DahuaEventClient implements Runnable {
 
-    private @Nullable Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(DahuaEventClient.class);
 
     private String host;
     private String username;
@@ -51,7 +51,6 @@ public class DahuaEventClient implements Runnable {
     private String clientType = ""; // WebGUI: We do not show up in logs or online users
     private int keepAliveInterval = 60;
     private long lastKeepAlive = 0;
-    private static final boolean DEBUG = true;
 
     private DHIPEventListener eventListener;
 
@@ -82,6 +81,11 @@ public class DahuaEventClient implements Runnable {
         return md5(PASS).toUpperCase();
     }
 
+    /**
+     * MD5 hash function for Dahua DHIP protocol authentication.
+     * Note: MD5 is cryptographically weak, but is required by the Dahua device API
+     * for digest authentication. This is a protocol limitation, not a design choice.
+     */
     private String md5(String input) throws Exception {
         java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
         byte[] array = md.digest(input.getBytes());
@@ -127,9 +131,7 @@ public class DahuaEventClient implements Runnable {
                         for (String packet : data) {
                             JsonObject jsonPacket = gson.fromJson(packet, JsonObject.class);
                             if (jsonPacket.has("result")) {
-                                if (DEBUG) {
-                                    logger.trace("keepAlive back");
-                                }
+                                logger.trace("keepAlive back");
                                 keepAliveReceived = true;
                             } else if ("client.notifyEventStream".equals(jsonPacket.get("method").getAsString())) {
                                 eventListener.eventHandler(jsonPacket);
@@ -191,19 +193,24 @@ public class DahuaEventClient implements Runnable {
         int lenExpect = 1;
         int timeout = 5;
 
+        final Socket localSock = sock;
+        if (localSock == null) {
+            logger.debug("Socket is not connected");
+            throw new IOException("Socket is not connected");
+        }
+
         try {
-            sock.setSoTimeout(timeout * 1000); // Set timeout in milliseconds
-            InputStream input = sock.getInputStream();
+            localSock.setSoTimeout(timeout * 1000); // Set timeout in milliseconds
+            InputStream input = localSock.getInputStream();
             int bytesRead = input.read(buffer);
             if (bytesRead < 0) {
                 // End of stream - connection closed
-                return new ArrayList<>();
+                throw new IOException("Connection closed by remote host");
             }
             bbuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
-            // // logger.trace("Buffer: {}",HexFormat.of().formatHex(buffer));
-            // logger.trace("Bytes read:{}",bytesRead);
         } catch (IOException e) {
-            return new ArrayList<>();
+            logger.debug("IOException in receive(): {}", e.getMessage());
+            throw e;
         }
 
         while (bbuffer.hasRemaining()) {
@@ -214,15 +221,11 @@ public class DahuaEventClient implements Runnable {
                 lenExpect = bbuffer.getShort(24);
                 bbuffer.get(header, 0, 32);
                 bbuffer = bbuffer.position(32).slice(); // cut bbuffer by 32 Bytes
-                // logger.trace("HEADER+ eventData.get(" logger.trace("LEN
-                // rec {} , LEN exp {}",lenRecved,lenExpect);
-                // logger.trace("Header: {}",HexFormat.of().formatHex(header));
 
             } else {
                 if (lenRecved > 0) {
                     String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset(), lenRecved);
                     bbuffer = bbuffer.position(lenRecved).slice(); // cut bbuffer
-                    // logger.trace("Data: {}",p2pData);
                     p2pReturnData.add(p2pData);
                     lenRecved = 0;
                 } else {
@@ -252,8 +255,22 @@ public class DahuaEventClient implements Runnable {
                 return false;
             }
             Map<String, Object> jsonData = new Gson().fromJson(data.get(0), Map.class);
-            this.sessionId = ((Double) jsonData.get("session")).intValue();
+            if (jsonData == null || !jsonData.containsKey("session") || !jsonData.containsKey("params")) {
+                logger.trace("Invalid JSON response from login");
+                return false;
+            }
+            Object sessionObj = jsonData.get("session");
+            if (sessionObj instanceof Number) {
+                this.sessionId = ((Number) sessionObj).intValue();
+            } else {
+                logger.trace("Invalid session type in response");
+                return false;
+            }
             Map<String, Object> params = (Map<String, Object>) jsonData.get("params");
+            if (params == null) {
+                logger.trace("Missing params in response");
+                return false;
+            }
             String random = (String) params.get("random");
             String realm = (String) params.get("realm");
 
@@ -278,10 +295,16 @@ public class DahuaEventClient implements Runnable {
                 return false;
             }
             jsonData = new Gson().fromJson(data.get(0), Map.class);
-            if (jsonData.containsKey("result") && (boolean) jsonData.get("result")) {
+            if (jsonData != null && jsonData.containsKey("result") && (boolean) jsonData.get("result")) {
                 logger.trace("Login success");
-                this.keepAliveInterval = ((Double) ((Map<String, Object>) jsonData.get("params"))
-                        .get("keepAliveInterval")).intValue();
+                Object paramsObj = jsonData.get("params");
+                if (paramsObj instanceof Map) {
+                    Map<String, Object> paramsMap = (Map<String, Object>) paramsObj;
+                    Object intervalObj = paramsMap.get("keepAliveInterval");
+                    if (intervalObj instanceof Number) {
+                        this.keepAliveInterval = ((Number) intervalObj).intValue();
+                    }
+                }
                 return true;
             }
             logger.trace("Login failed: {} {}", ((Map<String, Object>) jsonData.get("error")).get("code"),
@@ -294,9 +317,6 @@ public class DahuaEventClient implements Runnable {
 
     @Override
     public void run() {
-
-        logger = LoggerFactory.getLogger(DahuaEventClient.class);
-
         boolean error = false;
         int loginTries = 0;
         while (execThread) {

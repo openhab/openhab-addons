@@ -36,7 +36,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,11 +82,6 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             return;
         }
 
-        if (CHANNEL_BELL_BUTTON.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // Refresh not supported for trigger channel
-            }
-        }
         switch (channelUID.getId()) {
             case CHANNEL_OPEN_DOOR_1:
                 if (command instanceof OnOffType) {
@@ -124,6 +118,12 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             return;
         }
 
+        if (config.snapshotpath == null || config.snapshotpath.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Snapshot path must be configured.");
+            return;
+        }
+
         client = new DahuaEventClient(config.hostname, config.username, config.password, this, scheduler,
                 this::errorInformer);
         queries = new DahuaDoorHttpQueries(httpClient, config);
@@ -141,16 +141,12 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
-
-        config = getConfigAs(DahuaDoorConfiguration.class);
         if (config.snapshotpath == null || config.snapshotpath.isEmpty()) {
             logger.warn("Path for Snapshots is invalid");
-            errorInformer("Path for Snapshots is invalid");
             return;
         }
         if (buffer == null) {
             logger.warn("cannot save empty buffer");
-            errorInformer("Cannot save empty snapshot buffer");
             return;
         }
 
@@ -203,6 +199,11 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         // connection)
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
+        }
+
+        if (data == null) {
+            logger.debug("Received null JSON event payload, ignoring.");
+            return;
         }
 
         try {

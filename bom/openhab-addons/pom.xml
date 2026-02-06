@@ -433,12 +433,12 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.doorbird</artifactId>
+      <artifactId>org.openhab.binding.dahuadoor</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.binding.dahuadoor</artifactId>
+      <artifactId>org.openhab.binding.doorbird</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

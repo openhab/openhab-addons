@@ -123,8 +123,8 @@
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dolbycp</module>
     <module>org.openhab.binding.dominoswiss</module>
-    <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.dahuadoor</module>
+    <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.draytonwiser</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>

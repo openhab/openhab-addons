@@ -57,14 +57,7 @@ public class DahuaDoorHttpQueries {
             }
         } catch (Exception e) {
             logger.warn("Could not make http connection to retrieve snapshot from {}", localConfig.hostname, e);
-        } /*
-           * finally {
-           * try {
-           * httpClient.stop();
-           * } catch (Exception e) {
-           * }
-           * }
-           */
+        }
         return null;
     }
 
@@ -89,17 +82,10 @@ public class DahuaDoorHttpQueries {
             request.param("channel", Integer.toString(doorNo));
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
-                logger.info("Open Door Success");
+                logger.debug("Open Door Success");
             }
         } catch (Exception e) {
             logger.warn("Could not make http connection to open door {} on {}", doorNo, localConfig.hostname, e);
-        } /*
-           * finally {
-           * try {
-           * httpClient.stop();
-           * } catch (Exception e) {
-           * }
-           * }
-           */
+        }
     }
 }
