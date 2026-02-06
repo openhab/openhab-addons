@@ -66,6 +66,8 @@ class MultiplyTransformationProfileTest {
         return Stream.of(Arguments.of(2, DecimalType.valueOf("23.333"), null, null, DecimalType.valueOf("46.666")), //
                 Arguments.of(2, DecimalType.valueOf("23.333"), null, DecimalType.valueOf("3"),
                         DecimalType.valueOf("46.666")), //
+                Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, UnDefType.NULL,
+                        DecimalType.valueOf("46.666")), //
                 Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, UnDefType.UNDEF,
                         DecimalType.valueOf("46.666")), //
                 Arguments.of(2, DecimalType.valueOf("23.333"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("3"),

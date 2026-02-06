@@ -14,7 +14,7 @@ package org.openhab.transform.math.internal.profiles;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -27,6 +27,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -64,8 +65,9 @@ class DivideTransformationProfileTest {
 
     private static final Stream<Arguments> configurations() {
         return Stream.of(Arguments.of(-20, DecimalType.valueOf("-2000"), null, null, DecimalType.valueOf("100")), //
-                Arguments.of(0, DecimalType.valueOf("-2000"), null, null, DecimalType.valueOf("-2000")), //
                 Arguments.of(-20, DecimalType.valueOf("-2000"), null, DecimalType.valueOf("-20"),
+                        DecimalType.valueOf("100")), //
+                Arguments.of(-20, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, UnDefType.NULL,
                         DecimalType.valueOf("100")), //
                 Arguments.of(-20, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, UnDefType.UNDEF,
                         DecimalType.valueOf("100")), //
@@ -84,6 +86,12 @@ class DivideTransformationProfileTest {
         // initialize parser with ImperialUnits, otherwise units like °F are unknown
         @SuppressWarnings("unused")
         Unit<Temperature> fahrenheit = ImperialUnits.FAHRENHEIT;
+    }
+
+    @Test
+    public void testConfigurationWithZeroThrowsIllegalArgumentException() throws ItemNotFoundException {
+        ProfileCallback callback = mock(ProfileCallback.class);
+        assertThrows(IllegalArgumentException.class, () -> createProfile(callback, 0, null, null));
     }
 
     @ParameterizedTest

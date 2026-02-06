@@ -12,6 +12,8 @@
  */
 package org.openhab.transform.math.internal.profiles;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.ItemRegistry;
@@ -44,6 +46,10 @@ public class DivideTransformationProfile extends AbstractArithmeticMathTransform
         super(callback, context, service, itemRegistry, PROFILE_TYPE_UID);
 
         divisor = getParam(context, DIVISOR_PARAM);
+
+        if (BigDecimal.ZERO.compareTo(new BigDecimal(divisor)) == 0) {
+            throw new IllegalArgumentException(String.format("The divisor must be non-zero but was '%s'.", divisor));
+        }
     }
 
     @Override
