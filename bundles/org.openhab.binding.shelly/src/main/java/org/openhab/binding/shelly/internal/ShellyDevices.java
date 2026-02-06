@@ -47,7 +47,7 @@ public class ShellyDevices {
     public static final String SHELLYDT_3EM = "SHEM-3";
     public static final String SHELLYDT_HT = "SHHT-1";
     public static final String SHELLYDT_SMOKE = "SHSM-01";
-    public static final String SHELLYDT_FLOOD = "SH-FLOOD ";
+    public static final String SHELLYDT_FLOOD = "SH-FLOOD";
     public static final String SHELLYDT_DOORWINDOW = "SHDW-1";
     public static final String SHELLYDT_DOORWINDOW2 = "SHDW-2";
     public static final String SHELLYDT_UNI = "SHUNI-1";
@@ -309,7 +309,7 @@ public class ShellyDevices {
             .of(GROUP_DUO_THING_TYPES, GROUP_RGBW2_THING_TYPES, Set.of(THING_TYPE_SHELLYBULB)).flatMap(Set::stream)
             .collect(Collectors.toUnmodifiableSet());
 
-    // iX Decvices
+    // iX Devices
     public static final Set<ThingTypeUID> GROUP_IX_THING_TYPES = Set.of( //
             THING_TYPE_SHELLYIX3, THING_TYPE_SHELLYPLUSI4, THING_TYPE_SHELLYPLUSI4DC);
 
