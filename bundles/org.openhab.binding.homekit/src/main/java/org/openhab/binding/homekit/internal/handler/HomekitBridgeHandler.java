@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.CONFIG_UNIQUE_ID;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -180,7 +182,9 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
          * accessory Things having the same id must be suppressed. For simplicity we always suppress
          * discovery of this id here.
          */
-        discoveryParticipant.suppressId(thing.getUID().getId(), true);
+        if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
+            discoveryParticipant.suppressId(uniqueId, true);
+        }
     }
 
     @Override
@@ -190,7 +194,9 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
          * accessory Things having the same id will have been suppressed. However since this Bridge is
          * now being removed again, we must make sure that suppression of this id is also removed again.
          */
-        discoveryParticipant.suppressId(thing.getUID().getId(), false);
+        if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
+            discoveryParticipant.suppressId(uniqueId, false);
+        }
         super.handleRemoval();
     }
 }

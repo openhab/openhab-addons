@@ -30,10 +30,14 @@ import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Discovers new HomeKit server devices.
@@ -47,6 +51,10 @@ import org.osgi.service.component.annotations.Component;
  * Discovered Things include properties such as model name, protocol version, and IP address.
  * This class does not perform active scanning; instead, it relies on the central mDNS discovery
  * service to notify it of new services.
+ * To prevent duplicate discovery of the same device (e.g. when an accessory is migrated to
+ * a bridge) the participant maintains a set of suppressed unique ids. When a unique id is
+ * suppressed then discovery results for that id are not created and thus not published as
+ * Things. The suppression state is persisted across restarts.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -56,15 +64,14 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
 
-    /**
-     * This is a set of Thing ids whose discovery shall be suppressed. It is intentionally declared as a
-     * static set so that it is shared across all instances of this class, and so that the suppression
-     * state is retained even if the discovery participant instance is deactivated and reactivated during
-     * the life cycle of the binding. This allows us to suppress discovery of "duplicate" accessory Things
-     * if they had been auto-migrated to Bridge things, and to enable discovery again if the Bridge thing
-     * is removed.
-     */
-    private static final Set<String> SUPPRESSED_IDS = ConcurrentHashMap.newKeySet();
+    private final Storage<String> suppressedIdStore;
+    private final Set<String> suppressedIdCache = ConcurrentHashMap.newKeySet();
+
+    @Activate
+    public HomekitMdnsDiscoveryParticipant(@Reference StorageService storageService) {
+        suppressedIdStore = storageService.getStorage(getClass().getName(), getClass().getClassLoader());
+        suppressedIdCache.addAll(suppressedIdStore.getKeys());
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -87,9 +94,6 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
             Map<String, String> properties = getProperties(service);
             String uniqueId = properties.get("id"); // unique id
-            if (SUPPRESSED_IDS.contains(uniqueId)) {
-                return null; // suppress discovery
-            }
 
             int port = service.getPort();
             if (port > 0) {
@@ -142,7 +146,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             category = null;
         }
 
-        if (uniqueId != null && category != null) {
+        if (uniqueId != null && category != null && !suppressedIdCache.contains(uniqueId)) {
             return new ThingUID(AccessoryCategory.BRIDGE == category ? THING_TYPE_BRIDGE : THING_TYPE_ACCESSORY,
                     uniqueId.replace(":", "").toLowerCase()); // thing id example "a1b2c3d4e5f6"
         }
@@ -192,18 +196,20 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     }
 
     /**
-     * Suppresses/enables discovery of accessory Things with the given id. When an accessory Thing is auto-migrated
-     * to a Bridge thing then the bridge re-uses the same id as the prior accessory Thing. So we need to suppress
-     * re-discovery of a "duplicate" accessory Thing having the same id and parameters.
+     * Suppresses/enables discovery of accessory Things with the given unique id. When an accessory Thing is
+     * auto-migrated to a Bridge thing then the bridge re-uses the same id as the prior accessory Thing. So
+     * we need to suppress re-discovery of a "duplicate" accessory Thing having the same id and parameters.
      *
-     * @param id the Thing ID for which to suppress or enable discovery
+     * @param uniqueId the Thing uniqueId property for which to suppress or enable discovery
      * @param suppress true to suppress discovery of that id, false to enable discovery again
      */
-    public void suppressId(String id, boolean suppress) {
+    public void suppressId(String uniqueId, boolean suppress) {
         if (suppress) {
-            SUPPRESSED_IDS.add(id);
+            suppressedIdCache.add(uniqueId);
+            suppressedIdStore.put(uniqueId, uniqueId); // persist across restarts
         } else {
-            SUPPRESSED_IDS.remove(id);
+            suppressedIdCache.remove(uniqueId);
+            suppressedIdStore.remove(uniqueId);
         }
     }
 }

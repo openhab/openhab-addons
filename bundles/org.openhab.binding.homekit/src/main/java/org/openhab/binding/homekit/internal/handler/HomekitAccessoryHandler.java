@@ -1170,6 +1170,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         // create a copy of the old Thing that is to be migrated
         Thing sourceThing = ThingBuilder.create(thing).build();
 
+        if (!(sourceThing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String sourceUniqueId)) {
+            logger.warn("{} is missing unique ID. Cannot migrate to Bridge.", thing.getUID());
+            return false;
+        }
+
         // create new Bridge with old Thing's Id and all its attributes, except channels and tag
         Bridge targetBridge = BridgeBuilder.create(THING_TYPE_BRIDGE, sourceThing.getUID().getId()) //
                 .withConfiguration(sourceThing.getConfiguration()) //
@@ -1192,7 +1197,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Matcher matcher = THING_LABEL_PATTERN.matcher(targetLabel);
         targetLabel = matcher.matches() ? matcher.group(1).trim() + " (" + matcher.group(2) + "-1)" : targetLabel;
 
-        Object sourceUniqueId = sourceThing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID);
         String targetUniqueId = STRING_AID_FMT.formatted(sourceUniqueId, 1);
 
         Thing targetThing = ThingBuilder.create(THING_TYPE_BRIDGED_ACCESSORY, "1") //
@@ -1210,8 +1214,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
 
         if (!disposing.get() && !migrating.getAndSet(true)) {
-            getScheduler().schedule(() -> doMigration(sourceThing, targetBridge, targetThing), MIGRATION_DELAY_SECONDS,
-                    TimeUnit.SECONDS);
+            getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
+                    MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
             logger.info("{} has embedded accessories. Auto-migrating it to a Bridge.", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/status.migrating-accessory-to-bridge");
@@ -1243,17 +1247,18 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * <p>
      * Clears the 'migrating' flag if the migration fails so thing can potentially continue to be used.
      * 
+     * @param uniqueId the unique ID of both the existing Thing and the new Bridge
      * @param oldThing the existing Thing to be removed
      * @param newBridge the new Bridge instance to be added
      * @param newThing the new child Thing that will host the existing Thing's channels
      */
-    private void doMigration(Thing oldThing, Bridge newBridge, Thing newThing) {
+    private void doMigration(String uniqueId, Thing oldThing, Bridge newBridge, Thing newThing) {
         if (!disposing.get() && migrating.get()) {
             try {
                 managedThingProvider.add(newBridge);
                 managedThingProvider.add(newThing);
                 managedThingProvider.remove(oldThing.getUID()); // remove existing Thing only after successful adds
-                discoveryParticipant.suppressId(oldThing.getUID().getId(), true); // and suppress its re-discovery
+                discoveryParticipant.suppressId(uniqueId, true); // and suppress its re-discovery
                 logger.info("Successfully auto-migrated {} to {} plus {}", oldThing.getUID(), newBridge.getUID(),
                         newThing.getUID());
             } catch (IllegalArgumentException e) {
