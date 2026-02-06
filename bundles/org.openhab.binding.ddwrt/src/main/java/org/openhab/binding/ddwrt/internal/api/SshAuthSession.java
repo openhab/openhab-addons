@@ -19,6 +19,8 @@ import java.time.Duration;
 import org.apache.sshd.client.session.ClientSession;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents an already-connected, already-authenticated SSH session plus metadata (e.g. welcome banner).
@@ -31,7 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SshAuthSession implements AutoCloseable {
-
+    private final Logger logger = LoggerFactory.getLogger(SshAuthSession.class);
     private final ClientSession session;
     private final Duration defaultTimeout;
     private final @Nullable String welcomeBanner;
@@ -72,6 +74,7 @@ public class SshAuthSession implements AutoCloseable {
     @Override
     public void close() {
         // Close the session; this will terminate any open channels (runner/log follower)
+        logger.debug("Closing session {}", session.getRemoteAddress());
         session.close(false);
     }
 }

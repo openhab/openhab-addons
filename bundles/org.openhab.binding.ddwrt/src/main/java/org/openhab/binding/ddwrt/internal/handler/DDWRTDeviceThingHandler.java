@@ -15,6 +15,9 @@ package org.openhab.binding.ddwrt.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
+import org.openhab.binding.ddwrt.internal.api.DDWRTDevice;
+import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
+import org.openhab.binding.ddwrt.internal.api.DDWRTThingUpdater;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -22,6 +25,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +36,12 @@ import org.slf4j.LoggerFactory;
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTDeviceThingHandler extends BaseThingHandler {
+public class DDWRTDeviceThingHandler extends BaseThingHandler implements DDWRTThingUpdater {
     private final Logger logger = LoggerFactory.getLogger(DDWRTDeviceThingHandler.class);
 
     private DDWRTDeviceConfiguration config = new DDWRTDeviceConfiguration();
+
+    private @Nullable DDWRTDevice device;
 
     public DDWRTDeviceThingHandler(Thing thing) {
         super(thing);
@@ -64,7 +70,49 @@ public class DDWRTDeviceThingHandler extends BaseThingHandler {
             return;
         }
 
-        // TODO: need to add/update network devices list then update online/offline status or refresh
+        updateStatus(ThingStatus.UNKNOWN);
+
+        var bridge = getBridge();
+        if (bridge == null || !(bridge.getHandler() instanceof DDWRTNetworkBridgeHandler bh)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No bridge");
+            return;
+        }
+
+        DDWRTNetwork net = bh.getNetwork();
+        if (net == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge not ready");
+            return;
+        }
+
+        DDWRTDevice d = findDevice(net);
+        if (d == null) {
+            logger.debug("Device not found in network, attempting to add hostname: {}", config.hostname);
+            // Try to add the device to the network using the manual addition method
+            d = net.addOrUpdateDevice(config);
+            if (d == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to connect to device at " + config.hostname);
+                return;
+            }
+            logger.info("Successfully added device to network: {} (MAC: {})", config.hostname, d.getMac());
+        }
+
+        this.device = d;
+        d.setUpdater(this);
+        updateStatus(ThingStatus.ONLINE);
+
+        // Optional: do an immediate refresh
+        scheduler.execute(d::refresh);
+    }
+
+    @Override
+    public void dispose() {
+        DDWRTDevice d = this.device;
+        this.device = null;
+        if (d != null) {
+            d.setUpdater(null); // <— clear pointer so device stops updating
+        }
+        super.dispose();
     }
 
     @Override
@@ -92,5 +140,50 @@ public class DDWRTDeviceThingHandler extends BaseThingHandler {
 
     private static boolean isBlank(@Nullable String s) {
         return s == null || s.trim().isEmpty();
+    }
+
+    @Override
+    public void updateChannel(String channelId, State state) {
+        // safe even if called from bridge refresh thread
+        updateState(new ChannelUID(getThing().getUID(), channelId), state);
+    }
+
+    @Override
+    public void reportOffline(@Nullable String detail) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detail);
+    }
+
+    @Override
+    public void reportOnline() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    private @Nullable DDWRTDevice findDevice(DDWRTNetwork net) {
+        final @Nullable String mac = getThing().getProperties().get("mac");
+        if (mac != null && !isBlank(mac)) {
+            DDWRTDevice d = net.getDeviceByMac(mac);
+            if (d != null) {
+                logger.debug("Found device by MAC: {} -> {}", mac, d.getConfig().hostname);
+                return d;
+            }
+        }
+
+        // Fallback by hostname - handle multiple hostnames resolving to same device
+        String h = config.hostname;
+        DDWRTDevice foundDevice = net.getDeviceByHostname(h);
+
+        if (foundDevice != null) {
+            logger.debug("Found device by hostname: {} -> MAC: {}", h, foundDevice.getMac());
+
+            // If we have a MAC property but it doesn't match, update it
+            if (mac != null && !isBlank(mac) && !mac.equalsIgnoreCase(foundDevice.getMac())) {
+                logger.warn("MAC mismatch for hostname {}: thing MAC={}, device MAC={}", h, mac, foundDevice.getMac());
+                // Update the thing property with the actual MAC
+                getThing().setProperty("mac", foundDevice.getMac());
+            }
+            return foundDevice;
+        }
+
+        return null;
     }
 }
