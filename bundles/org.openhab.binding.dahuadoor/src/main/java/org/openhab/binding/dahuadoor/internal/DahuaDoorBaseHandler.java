@@ -395,7 +395,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         logger.debug("Event: NewFile, Action {}, File {}, Folder {}, LocaleTime {}, Index {}",
                 eventList.get("Action").getAsString(), eventData.get("File").getAsString(),
                 eventData.get("Filter").getAsString(), eventData.get("LocaleTime").getAsString(),
-                eventData.get("Index").getAsString());
+                eventList.get("Index").getAsString());
     }
 
     private void handleProfileAlarmTransit(JsonObject eventList, JsonObject eventData) {

@@ -209,7 +209,7 @@ public class DahuaEventClient implements Runnable {
             }
             bbuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
         } catch (IOException e) {
-            logger.debug("IOException in receive(): {}", e.getMessage());
+            logger.trace("IOException in receive(): {}", e.getMessage());
             throw e;
         }
 
