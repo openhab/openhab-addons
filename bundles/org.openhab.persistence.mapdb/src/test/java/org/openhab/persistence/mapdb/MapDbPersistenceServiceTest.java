@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
@@ -54,9 +53,6 @@ class MapDbPersistenceServiceTest {
     private static final long POLL_INTERVAL_MS = 250; // Check every 250ms
 
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceServiceTest.class);
-
-    @Mock
-    private ItemRegistry itemRegistry;
 
     @Mock
     private NumberItem numberItem;
