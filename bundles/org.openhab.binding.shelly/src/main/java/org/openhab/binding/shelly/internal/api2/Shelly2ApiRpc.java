@@ -126,8 +126,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      */
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
         super(thingName, thing);
-        this.thingName = thingName;
-        this.thing = thing;
         this.thingTable = thingTable;
     }
 
