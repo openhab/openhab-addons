@@ -17,29 +17,29 @@
 			<parameter name="host" type="text" required="true">
 				<label>Hostname</label>
 				<context>network-address</context>
-				<description>Unified Remote Server Hostname</description>
+				<description>Hostname or IP address of the Unified Remote Server</description>
 			</parameter>
 			<parameter name="tcpPort" type="integer">
 				<label>TCP Port</label>
-				<description>Unified Remote Server Port TCP</description>
+				<description>Unified Remote Server TCP port</description>
 			</parameter>
 			<parameter name="udpPort" type="integer">
 				<label>UDP Port</label>
-				<description>Unified Remote Server Port UDP</description>
+				<description>Unified Remote Server UDP port</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
 	<channel-type id="mouse-move-channel">
 		<item-type>String</item-type>
-		<label>Mouse Move Channel</label>
-		<description>Relative mouse control on the server host</description>
+		<label>Mouse Move</label>
+		<description>Relative mouse movement on the server host</description>
 	</channel-type>
 
 	<channel-type id="send-key-channel">
 		<item-type>String</item-type>
-		<label>Toggle Key Channel</label>
-		<description>Toggle Key</description>
+		<label>Send Key</label>
+		<description>Send a key command</description>
 		<state>
 			<options>
 				<!-- MOUSE -->

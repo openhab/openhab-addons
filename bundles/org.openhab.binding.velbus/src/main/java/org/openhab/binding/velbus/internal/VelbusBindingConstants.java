@@ -105,6 +105,16 @@ public class VelbusBindingConstants {
     public static final ThingTypeUID THING_TYPE_VMBGP4PIR_20 = new ThingTypeUID(BINDING_ID, "vmbgp4pir-20");
     public static final ThingTypeUID THING_TYPE_VMB4LEDPWM_20 = new ThingTypeUID(BINDING_ID, "vmb4ledpwm-20");
     public static final ThingTypeUID THING_TYPE_VMB8DC_20 = new ThingTypeUID(BINDING_ID, "vmb8dc-20");
+    public static final ThingTypeUID THING_TYPE_VMB2DC_20 = new ThingTypeUID(BINDING_ID, "vmb2dc-20");
+    public static final ThingTypeUID THING_TYPE_VMBGPTC = new ThingTypeUID(BINDING_ID, "vmbgptc");
+    public static final ThingTypeUID THING_TYPE_VMB4RYLD_20 = new ThingTypeUID(BINDING_ID, "vmb4ryld-20");
+    public static final ThingTypeUID THING_TYPE_VMB4RYNO_20 = new ThingTypeUID(BINDING_ID, "vmb4ryno-20");
+    public static final ThingTypeUID THING_TYPE_VMBPSUMNGR_20 = new ThingTypeUID(BINDING_ID, "vmbpsumngr-20");
+    public static final ThingTypeUID THING_TYPE_VMBPIRO_20 = new ThingTypeUID(BINDING_ID, "vmbpiro-20");
+    public static final ThingTypeUID THING_TYPE_VMBSIG = new ThingTypeUID(BINDING_ID, "vmbsig");
+    public static final ThingTypeUID THING_TYPE_VMBSIG_20 = new ThingTypeUID(BINDING_ID, "vmbsig-20");
+    public static final ThingTypeUID THING_TYPE_VMBSIG_21 = new ThingTypeUID(BINDING_ID, "vmbsig-21");
+    public static final ThingTypeUID THING_TYPE_VMB1RYS_20 = new ThingTypeUID(BINDING_ID, "vmb1rys-20");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE,
@@ -124,12 +134,16 @@ public class VelbusBindingConstants {
             THING_TYPE_VMB6PB_20, THING_TYPE_VMB8IN_20, THING_TYPE_VMBPIR_20, THING_TYPE_VMBEL1_20,
             THING_TYPE_VMBEL2_20, THING_TYPE_VMBEL4_20, THING_TYPE_VMBELO_20, THING_TYPE_VMBGP1_20,
             THING_TYPE_VMBGP2_20, THING_TYPE_VMBGP4_20, THING_TYPE_VMBGPO_20, THING_TYPE_VMBDALI_20,
-            THING_TYPE_VMBEL4PIR_20, THING_TYPE_VMBGP4PIR_20, THING_TYPE_VMB4LEDPWM_20, THING_TYPE_VMB8DC_20);
+            THING_TYPE_VMBEL4PIR_20, THING_TYPE_VMBGP4PIR_20, THING_TYPE_VMB4LEDPWM_20, THING_TYPE_VMB8DC_20,
+            THING_TYPE_VMB2DC_20, THING_TYPE_VMBGPTC, THING_TYPE_VMB4RYLD_20, THING_TYPE_VMB4RYNO_20,
+            THING_TYPE_VMBPSUMNGR_20, THING_TYPE_VMBPIRO_20, THING_TYPE_VMBSIG, THING_TYPE_VMBSIG_20,
+            THING_TYPE_VMBSIG_21, THING_TYPE_VMB1RYS_20);
 
     // Velbus module types
     public static final byte MODULE_TYPE_VMB8PB = 0x01;
     public static final byte MODULE_TYPE_VMB1RY = 0x02;
     public static final byte MODULE_TYPE_VMB1BL = 0x03;
+    public static final byte MODULE_TYPE_VMBPSUMNGR_20 = 0x04;
     public static final byte MODULE_TYPE_VMB6IN = 0x05;
     public static final byte MODULE_TYPE_VMB4LEDPWM_20 = 0x06;
     public static final byte MODULE_TYPE_VMB1DM = 0x07;
@@ -137,6 +151,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMB2BL = 0x09;
     public static final byte MODULE_TYPE_VMB8IR = 0x0A;
     public static final byte MODULE_TYPE_VMB1TS = 0x0C;
+    public static final byte MODULE_TYPE_VMB1RYS_20 = 0x0D;
     public static final byte MODULE_TYPE_VMB1LED = 0x0F;
     public static final byte MODULE_TYPE_VMB4RYLD = 0x10;
     public static final byte MODULE_TYPE_VMB4RYNO = 0x11;
@@ -155,6 +170,10 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBGPO = 0x21;
     public static final byte MODULE_TYPE_VMB7IN = 0x22;
     public static final byte MODULE_TYPE_VMBPIRO_10 = 0x23;
+    public static final byte MODULE_TYPE_VMB2DC_20 = 0x24;
+    public static final byte MODULE_TYPE_VMBGPTC = 0x25;
+    public static final byte MODULE_TYPE_VMB4RYLD_20 = 0x26;
+    public static final byte MODULE_TYPE_VMB4RYNO_20 = 0x27;
     public static final byte MODULE_TYPE_VMBGPOD = 0x28;
     public static final byte MODULE_TYPE_VMB1RYNOS = 0x29;
     public static final byte MODULE_TYPE_VMBPIRM = 0x2A;
@@ -172,6 +191,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBEL4 = 0x36;
     public static final byte MODULE_TYPE_VMBELO = 0x37;
     public static final byte MODULE_TYPE_VMBELPIR = 0x38;
+    public static final byte MODULE_TYPE_VMBSIG = 0x39;
     public static final byte MODULE_TYPE_VMBGP1_2 = 0x3A;
     public static final byte MODULE_TYPE_VMBGP2_2 = 0x3B;
     public static final byte MODULE_TYPE_VMBGP4_2 = 0x3C;
@@ -197,9 +217,13 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBGP2_20 = 0x55;
     public static final byte MODULE_TYPE_VMBGP4_20 = 0x56;
     public static final byte MODULE_TYPE_VMBGPO_20 = 0x57;
+    public static final byte MODULE_TYPE_VMBPIRO_20 = 0x59;
     public static final byte MODULE_TYPE_VMBDALI_20 = 0x5A;
+    public static final byte MODULE_TYPE_VMBSIG_20 = 0x5B;
     public static final byte MODULE_TYPE_VMBEL4PIR_20 = 0x5C;
     public static final byte MODULE_TYPE_VMBGP4PIR_20 = 0x5F;
+    public static final byte MODULE_TYPE_VMBSIG_21 = 0x60;
+    public static final byte MODULE_TYPE_VMB2BLE_20 = 0x61;
 
     // Velbus commands
     public static final byte COMMAND_PUSH_BUTTON_STATUS = 0x00;
@@ -280,7 +304,7 @@ public class VelbusBindingConstants {
     public static final byte SUB_ADDRESS_DISABLED = (byte) 0xFF;
     public static final byte VALUE_UNCHANGED = (byte) 0xFF;
     public static final byte SETTING_ACTUAL_LEVEL = (byte) 0x1A;
-    public static final byte DALI_MAX_VALUE = (byte) 0xFE;
+    public static final int DALI_MAX_VALUE = 254;
 
     public static final byte CURVE_TYPE_LINEAR = (byte) 0x01;
     public static final byte CURVE_TYPE_EXPONENTIAL = (byte) 0x02;
@@ -303,6 +327,8 @@ public class VelbusBindingConstants {
     public static final String VIRTUAL_LIGHT = "VL";
     public static final String SUB_ADDRESS = "subaddress";
     public static final String DIMSPEED = "dimspeed";
+    public static final String MODULE_MODE = "mode";
+    public static final String DIM_WHITE_CHANNEL = "DW";
 
     // Channel group ids
     public static final String CHANNEL_GROUP_BRIDGE_CLOCK_ALARM = "bridgeClockAlarm";
@@ -318,6 +344,7 @@ public class VelbusBindingConstants {
     public static final String CHANNEL_GROUP_SCENE = "scene";
     public static final String CHANNEL_GROUP_VIRTUAL_LIGHT = "virtual-light";
     public static final String CHANNEL_GROUP_FADE_MODE = "fade-mode";
+    public static final String CHANNEL_GROUP_DIM_WHITE = "dim-white";
 
     // Channels ids
     public static final String CHANNEL_CLOCK_ALARM1_TYPE = "clockAlarm1Type";
@@ -354,6 +381,8 @@ public class VelbusBindingConstants {
     public static final String CHANNEL_THERMOSTAT_ALARM4 = "alarm4";
 
     public static final String CHANNEL_OUTPUT = "output";
+
+    public static final String CHANNEL_STATUS = "status";
 
     // Delay
     public static final Integer DELAY_SEND_CLOCK_ALARM_UPDATE = 10000;

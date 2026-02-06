@@ -59,9 +59,11 @@ They are all read-only.
 | current_title     | String    | Title of a currently present event                                                  |
 | current_start     | DateTime  | Start of a currently present event                                                  |
 | current_end       | DateTime  | End of a currently present event                                                    |
+| current_location  | String    | Location of a currently present event                                               |
 | next_title        | String    | Title of the next event                                                             |
 | next_start        | DateTime  | Start of the next event                                                             |
 | next_end          | DateTime  | End of the next event                                                               |
+| next_location     | String    | Location of the next event                                                          |
 | last_update       | DateTime  | The time and date of the last successful update of the calendar                     |
 
 ### Channels for `eventfilter`

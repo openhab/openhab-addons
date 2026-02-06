@@ -7,7 +7,7 @@
 	<config-description uri="profile:basic-profiles:toggle-switch">
 		<parameter name="events" type="text" required="true" multiple="true">
 			<label>Events</label>
-			<description>Comma separated list of events to which the profile should listen.</description>
+			<description>Comma-separated list of events to which the profile should listen.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

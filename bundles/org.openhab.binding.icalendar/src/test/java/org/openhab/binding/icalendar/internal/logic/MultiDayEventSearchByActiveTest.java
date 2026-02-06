@@ -48,7 +48,7 @@ public class MultiDayEventSearchByActiveTest {
     @Test
     public void eventWithTime() {
         Event expectedFilteredEvent = new Event("Multi-day test event with time", Instant.parse("2023-12-05T09:00:00Z"),
-                Instant.parse("2023-12-07T15:00:00Z"), "");
+                Instant.parse("2023-12-07T15:00:00Z"), "", "");
 
         assertThat("Day before event starts",
                 calendar.getFilteredEventsBetween(Instant.parse("2023-12-04T00:00:00Z"),
@@ -99,7 +99,7 @@ public class MultiDayEventSearchByActiveTest {
     @Test
     public void eventWithoutTime() {
         Event expectedFilteredEvent = new Event("Multi-day test event without time", localDateAsInstant("2023-12-12"),
-                localDateAsInstant("2023-12-15"), "");
+                localDateAsInstant("2023-12-15"), "", "");
 
         assertThat("Day before event starts", //
                 calendar.getFilteredEventsBetween(localDateAsInstant("2023-12-11"), localDateAsInstant("2023-12-12"),

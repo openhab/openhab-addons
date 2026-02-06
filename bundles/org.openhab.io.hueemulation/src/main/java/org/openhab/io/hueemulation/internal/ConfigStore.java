@@ -87,6 +87,7 @@ public class ConfigStore {
     protected @NonNullByDefault({}) ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> pairingOffFuture;
     private @Nullable ScheduledFuture<?> writeUUIDFuture;
+    private Set<ConfigurationListener> configurationListeners = Collections.synchronizedSet(new LinkedHashSet<>());
 
     /**
      * This is the main gson instance, to be obtained by all components that operate on the dto data fields
@@ -97,7 +98,7 @@ public class ConfigStore {
             .registerTypeAdapter(HueAuthorizedConfig.class, new HueAuthorizedConfig.Serializer())
             .registerTypeAdapter(HueSuccessGeneric.class, new HueSuccessGeneric.Serializer())
             .registerTypeAdapter(HueSuccessResponseStateChanged.class, new HueSuccessResponseStateChanged.Serializer())
-            .registerTypeAdapter(HueGroupEntry.class, new HueGroupEntry.Serializer(this)).create();
+            .registerTypeAdapter(HueGroupEntry.class, new HueGroupEntry.Serializer()).create();
 
     @Reference
     protected @NonNullByDefault({}) ConfigurationAdmin configAdmin;
@@ -115,6 +116,7 @@ public class ConfigStore {
     private Set<InetAddress> discoveryIps = Collections.emptySet();
     protected volatile @NonNullByDefault({}) HueEmulationConfig config;
 
+    public boolean useSemanticModel = false;
     public Set<String> switchFilter = Collections.emptySet();
     public Set<String> colorFilter = Collections.emptySet();
     public Set<String> whiteFilter = Collections.emptySet();
@@ -159,6 +161,14 @@ public class ConfigStore {
         }
     }
 
+    public void addConfigurationListener(ConfigurationListener listener) {
+        configurationListeners.add(listener);
+    }
+
+    public void removeConfigurationListener(ConfigurationListener listener) {
+        configurationListeners.remove(listener);
+    }
+
     private @Nullable InetAddress byName(@Nullable String address) {
         if (address == null) {
             return null;
@@ -174,6 +184,8 @@ public class ConfigStore {
     @Modified
     public void modified(Map<String, Object> properties) {
         this.config = new Configuration(properties).as(HueEmulationConfig.class);
+
+        useSemanticModel = config.useSemanticModel;
 
         switchFilter = Collections.unmodifiableSet(
                 Stream.of(config.restrictToTagsSwitches.split(",")).map(String::trim).collect(Collectors.toSet()));
@@ -247,6 +259,10 @@ public class ConfigStore {
 
         if (eventAdmin != null) {
             eventAdmin.postEvent(new Event(EVENT_ADDRESS_CHANGED, Collections.emptyMap()));
+        }
+
+        for (ConfigurationListener listener : configurationListeners) {
+            listener.bindingConfigurationChanged();
         }
     }
 

@@ -33,6 +33,12 @@
 				<type>tesla:softwareupdateversion</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="share" typeId="share">
+				<type>tesla:share</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="tesla:models">
@@ -63,6 +69,12 @@
 			</add-channel>
 			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
 				<type>tesla:softwareupdateversion</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="share" typeId="share">
+				<type>tesla:share</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
@@ -97,6 +109,12 @@
 				<type>tesla:softwareupdateversion</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="share" typeId="share">
+				<type>tesla:share</type>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 	<thing-type uid="tesla:modely">
@@ -127,6 +145,12 @@
 			</add-channel>
 			<add-channel id="softwareupdateversion" typeId="softwareupdateversion">
 				<type>tesla:softwareupdateversion</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="share" typeId="share">
+				<type>tesla:share</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

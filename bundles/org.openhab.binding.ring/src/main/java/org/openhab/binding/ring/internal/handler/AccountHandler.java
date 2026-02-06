@@ -45,6 +45,7 @@ import org.openhab.binding.ring.internal.discovery.RingDiscoveryService;
 import org.openhab.binding.ring.internal.errors.AuthenticationException;
 import org.openhab.binding.ring.internal.utils.RingUtils;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -133,6 +134,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         this.registry = new RingDeviceRegistry();
         this.restClient = new RestClient(httpClient);
         this.servlet = ringVideoServlet;
+        this.videoExecutorService = ThreadPoolManager.getScheduledPool("ring");
     }
 
     @Override
@@ -279,9 +281,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             }
         } catch (JsonParseException e) {
-            logger.debug("Invalid response from api.ring.com when initializing Ring Account handler{}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Invalid response from api.ring.com");
+                    "@text/offline.comm-error.invalid-response");
         }
         logger.debug("doLogin RT: {}", getRefreshTokenFromFile());
         try {
@@ -289,12 +290,10 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.ONLINE);
         } catch (AuthenticationException ae) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "AuthenticationException response from ring.com");
-            logger.debug("RestClient reported AuthenticationException in finally block: {}", ae.getMessage());
+                    "@text/offline.comm-error.auth-exception");
         } catch (JsonParseException pe1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "JsonParseException response from ring.com");
-            logger.debug("RestClient reported JsonParseException in finally block: {}", pe1.getMessage());
         }
     }
 
@@ -547,7 +546,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
         stopSessionRefresh();
         stopAutomaticRefresh();
         ExecutorService service = this.videoExecutorService;
-        if (service != null) {
+        if (!service.isShutdown()) {
             service.shutdownNow();
         }
         this.videoExecutorService = null;
@@ -563,6 +562,28 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     @Override
     public @Nullable RingDevice getDevice(String id) {
         return registry.getRingDevice(id);
+    }
+
+    @Override
+    public long getSnapshotTimestamp(String id) {
+        try {
+            return restClient.getSnapshotTimestamp(id, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.invalid-response");
+            return -1;
+        }
+    }
+
+    @Override
+    public byte[] getSnapshot(String id) {
+        try {
+            return restClient.getSnapshot(id, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.auth-exception");
+        }
+        return new byte[0];
     }
 
     @Override
