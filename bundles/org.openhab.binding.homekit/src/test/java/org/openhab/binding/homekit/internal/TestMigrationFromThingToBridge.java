@@ -2015,10 +2015,13 @@ class TestMigrationFromThingToBridge {
         assertEquals(HomekitBindingConstants.THING_TYPE_BRIDGE, newBridge.getThingTypeUID());
         assertEquals("Test Accessory (AA:BB:CC:DD)", newBridge.getLabel());
         assertEquals("Living Room", newBridge.getLocation());
-        assertEquals(handler.getThing().getProperties(), newBridge.getProperties());
         assertEquals(handler.getThing().getConfiguration().getProperties(),
                 newBridge.getConfiguration().getProperties());
         assertEquals(Equipment.NETWORK_APPLIANCE.getName(), newBridge.getSemanticEquipmentTag());
+
+        Map<String, String> expectedProperties = handler.getThing().getProperties();
+        expectedProperties.put(PROPERTY_MIGRATED, "~");
+        assertEquals(expectedProperties, newBridge.getProperties());
 
         assertFalse(added.get(1) instanceof Bridge);
         assertTrue(added.get(1) instanceof Thing);
@@ -2137,8 +2140,7 @@ class TestMigrationFromThingToBridge {
 
         capturedRunnables.get(0).run();
 
-        verify(thingProvider).add(ArgumentMatchers.any(Bridge.class));
-        verify(thingProvider).add(ArgumentMatchers.any(Thing.class));
+        verify(thingProvider, times(1)).add(ArgumentMatchers.any(Thing.class));
         verify(thingProvider, never()).remove(ArgumentMatchers.any(ThingUID.class));
 
         Object migrating = assertDoesNotThrow(() -> getField(handler, "migrating"));

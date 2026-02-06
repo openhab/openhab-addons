@@ -108,7 +108,7 @@ homekit:bridge (with Ethernet connection)
         |_channel N
 ```
 
-Case 2a: Bridge accessory with external child accessories connected e.g. by Zigbee, **AND** it's own internal channels.
+Case 2a: Bridge accessory with external child accessories connected e.g. by Zigbee, **AND** its own internal channels.
 In this case an extra 'virtual' `bridged-accessory` is created that hosts the device's own internal channels.
 
 ```
@@ -127,7 +127,7 @@ homekit:bridge (with Ethernet connection)
         |_channel N
 ```
 
-Sometimes devices confusingly advertise themself as a simple accessory device (case 1 above) when in fact they have child accessories too.
+Sometimes devices confusingly advertise themselves as simple accessory devices (case 1 above) when in fact they have child accessories too.
 Initially such Things are discovered in the Inbox as an `accessory`, but after the Inbox Thing has been instantiated and paired, it may subsequently discover that it has child accessories as well.
 In such a case the binding will try to auto-migrate the Thing from being a case 1 `accessory` to being a case 2a `bridge`.
 Such an auto-migrated 'bridge' will have both a 'virtual' `bridged-accessory` for its own internal channels, plus additional `bridged-accessory` Thing(s) for the remote child accessories.

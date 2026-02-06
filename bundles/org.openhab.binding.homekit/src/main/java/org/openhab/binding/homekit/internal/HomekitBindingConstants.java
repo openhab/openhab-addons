@@ -79,6 +79,7 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
     public static final String PROPERTY_UNIQUE_ID = CONFIG_UNIQUE_ID;
+    public static final String PROPERTY_MIGRATED = "migrated";
 
     // channel properties
     public static final String PROPERTY_IID = "iid";

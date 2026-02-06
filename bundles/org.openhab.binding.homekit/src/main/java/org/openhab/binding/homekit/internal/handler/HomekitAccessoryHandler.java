@@ -1141,12 +1141,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private boolean isMigratable() {
         if (THING_TYPE_ACCESSORY.equals(thing.getThingTypeUID()) && getAccessories().size() > 1) {
             if (managedThingProvider.get(thing.getUID()) == null) {
-                logger.info("{} has embedded accessories. Try editing Thing-Type from 'accessory' to 'bridge'.",
+                logger.info("{} has embedded accessories; try editing Thing-Type from 'accessory' to 'bridge'.",
                         thing.getUID());
                 return false;
             }
             if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) == null) {
-                logger.warn("{} is missing unique ID. Cannot migrate to Bridge.", thing.getUID());
+                logger.warn("{} is missing unique ID; cannot auto-migrate it", thing.getUID());
                 return false;
             }
             return true;
@@ -1171,7 +1171,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Thing sourceThing = ThingBuilder.create(thing).build();
 
         if (!(sourceThing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String sourceUniqueId)) {
-            logger.warn("{} is missing unique ID. Cannot migrate to Bridge.", thing.getUID());
+            logger.warn("{} is missing unique ID; cannot auto-migrate it", thing.getUID());
             return false;
         }
 
@@ -1185,9 +1185,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 .build();
 
         if (managedThingProvider.get(targetBridge.getUID()) != null) {
-            logger.warn("Cannot auto-migrate {} to a Bridge. Bridge already exists.", targetBridge.getUID());
+            logger.warn("{} already exists; cannot auto-migrate {}", targetBridge.getUID(), thing.getUID());
             return false;
         }
+
+        // apply migrated property (value is irrelevant)
+        targetBridge.setProperty(PROPERTY_MIGRATED, "~");
 
         // create new bridged accessory #1 child Thing that will host the old Thing's channels
         Configuration targetConfiguration = new Configuration();
@@ -1209,17 +1212,22 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 .build();
 
         if (managedThingProvider.get(targetThing.getUID()) != null) {
-            logger.warn("Cannot auto-migrate {} to a Bridged-Accessory. Thing already exists.", targetThing.getUID());
+            logger.warn("{} already exists; cannot auto-migrate {}", targetThing.getUID(), thing.getUID());
             return false;
         }
 
         if (!disposing.get() && !migrating.getAndSet(true)) {
-            getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
-                    MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
-            logger.info("{} has embedded accessories. Auto-migrating it to a Bridge.", thing.getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "@text/status.migrating-accessory-to-bridge");
-            return true;
+            try {
+                getScheduler().schedule(() -> doMigration(sourceUniqueId, sourceThing, targetBridge, targetThing),
+                        MIGRATION_DELAY_SECONDS, TimeUnit.SECONDS);
+                logger.info("{} has embedded accessories; auto-migrating it", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "@text/status.migrating-accessory-to-bridge");
+                return true;
+            } catch (Exception e) {
+                migrating.set(false);
+                logger.warn("{} auto-migrating {}", e.getMessage(), thing.getUID(), e);
+            }
         }
         return false;
     }
@@ -1253,19 +1261,38 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param newThing the new child Thing that will host the existing Thing's channels
      */
     private void doMigration(String uniqueId, Thing oldThing, Bridge newBridge, Thing newThing) {
-        if (!disposing.get() && migrating.get()) {
-            try {
-                managedThingProvider.add(newBridge);
-                managedThingProvider.add(newThing);
-                managedThingProvider.remove(oldThing.getUID()); // remove existing Thing only after successful adds
-                discoveryParticipant.suppressId(uniqueId, true); // and suppress its re-discovery
-                logger.info("Successfully auto-migrated {} to {} plus {}", oldThing.getUID(), newBridge.getUID(),
-                        newThing.getUID());
-            } catch (IllegalArgumentException e) {
-                migrating.set(false);
-                logger.warn("{} while auto-migrating {} to {}. Try editing Thing-Type from 'accessory' to 'bridge'.",
-                        e.getMessage(), oldThing.getUID(), newBridge.getUID());
+        if (disposing.get() || !migrating.get()) {
+            return;
+        }
+        boolean bridgeAdded = false;
+        boolean thingAdded = false;
+        try {
+            managedThingProvider.add(newBridge);
+            bridgeAdded = true;
+            managedThingProvider.add(newThing);
+            thingAdded = true;
+            managedThingProvider.remove(oldThing.getUID()); // remove existing Thing only after successful adds
+            discoveryParticipant.suppressId(uniqueId, true); // and suppress its re-discovery
+            logger.info("Successfully auto-migrated {} to {} with {}", oldThing.getUID(), newBridge.getUID(),
+                    newThing.getUID());
+        } catch (Exception e) {
+            if (thingAdded) {
+                try {
+                    managedThingProvider.remove(newThing.getUID());
+                } catch (Exception e1) {
+                    logger.warn("{} while rolling back adding of {}", e1.getMessage(), newThing.getUID());
+                }
             }
+            if (bridgeAdded) {
+                try {
+                    managedThingProvider.remove(newBridge.getUID());
+                } catch (Exception e1) {
+                    logger.warn("{} while rolling back adding of {}", e1.getMessage(), newBridge.getUID());
+                }
+            }
+            logger.warn("{} while auto-migrating {} to {}; try editing Thing-Type from 'accessory' to 'bridge'.",
+                    e.getMessage(), oldThing.getUID(), newBridge.getUID());
+            migrating.set(false);
         }
     }
 

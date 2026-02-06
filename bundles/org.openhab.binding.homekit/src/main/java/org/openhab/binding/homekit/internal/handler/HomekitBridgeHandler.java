@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.CONFIG_UNIQUE_ID;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.Collection;
 import java.util.Map;
@@ -179,10 +179,10 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
         super.initialize();
         /*
          * If the Bridge was the result of a migration from an accessory Thing then mDNS re-discovery of
-         * accessory Things having the same id must be suppressed. For simplicity we always suppress
-         * discovery of this id here.
+         * accessory Things having the same id must be suppressed.
          */
-        if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
+        if (thing.getProperties().get(PROPERTY_MIGRATED) != null
+                && thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
             discoveryParticipant.suppressId(uniqueId, true);
         }
     }
@@ -194,7 +194,8 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
          * accessory Things having the same id will have been suppressed. However since this Bridge is
          * now being removed again, we must make sure that suppression of this id is also removed again.
          */
-        if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
+        if (thing.getProperties().get(PROPERTY_MIGRATED) != null
+                && thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
             discoveryParticipant.suppressId(uniqueId, false);
         }
         super.handleRemoval();
