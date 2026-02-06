@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.time.ZoneId;
@@ -38,6 +39,8 @@ import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistedItem;
 import org.openhab.persistence.mapdb.internal.MapDbPersistenceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests for {@link MapDbPersistenceService}.
@@ -47,7 +50,10 @@ import org.openhab.persistence.mapdb.internal.MapDbPersistenceService;
  */
 @ExtendWith(MockitoExtension.class)
 class MapDbPersistenceServiceTest {
-    static final int STORAGE_TIMEOUT_MS = 1000;
+    private static final long STORAGE_TIMEOUT_MS = 20000; // 20 seconds for CI
+    private static final long POLL_INTERVAL_MS = 250; // Check every 250ms
+
+    private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceServiceTest.class);
 
     @Mock
     private ItemRegistry itemRegistry;
@@ -68,6 +74,45 @@ class MapDbPersistenceServiceTest {
         // Create service and activate OSGi lifecycle manually for tests
         service = new MapDbPersistenceService();
         service.activate();
+    }
+
+    /**
+     * Waits for data to be persisted by polling the database.
+     * This is more robust than Thread.sleep() in CI environments with resource contention.
+     *
+     * @param itemName the name of the item to check
+     * @param timeoutMs maximum time to wait in milliseconds
+     * @throws InterruptedException if interrupted while waiting
+     */
+    private void waitForStorage(String itemName, long timeoutMs) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+        int attempts = 0;
+
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            attempts++;
+
+            FilterCriteria criteria = new FilterCriteria();
+            criteria.setItemName(itemName);
+            criteria.setPageSize(1);
+
+            try {
+                Iterable<HistoricItem> results = service.query(criteria);
+                if (results.iterator().hasNext()) {
+                    long elapsed = System.currentTimeMillis() - startTime;
+                    logger.info("Storage completed for '{}' after {}ms ({} attempts)", itemName, elapsed, attempts);
+                    return; // Success!
+                }
+            } catch (Exception e) {
+                // Query might fail if data not ready yet, continue polling
+                logger.debug("Query attempt {} failed: {}", attempts, e.getMessage());
+            }
+
+            Thread.sleep(POLL_INTERVAL_MS);
+        }
+
+        long elapsed = System.currentTimeMillis() - startTime;
+        fail(String.format("Data for item '%s' was not persisted within %dms (%d polling attempts).", itemName, elapsed,
+                attempts));
     }
 
     private void configureNumberItem() throws Exception {
@@ -100,7 +145,7 @@ class MapDbPersistenceServiceTest {
         service.store(numberItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
@@ -128,7 +173,7 @@ class MapDbPersistenceServiceTest {
         service.store(stringItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(stringItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
@@ -161,7 +206,7 @@ class MapDbPersistenceServiceTest {
         service.store(switchItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(switchItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
@@ -194,7 +239,7 @@ class MapDbPersistenceServiceTest {
         service.store(numberItem);
 
         // Wait for background storage to complete
-        Thread.sleep(STORAGE_TIMEOUT_MS);
+        waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query with time range
         FilterCriteria criteria = new FilterCriteria();
