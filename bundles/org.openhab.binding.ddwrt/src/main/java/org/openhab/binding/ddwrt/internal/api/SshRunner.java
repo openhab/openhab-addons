@@ -18,11 +18,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.EnumSet;
+import java.util.Objects;
 
 import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,35 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SshRunner {
 
+    /** Result of a remote command execution. */
+    public static class CommandResult {
+        private final @Nullable Integer exitCode;
+        private final String stdout;
+        private final String stderr;
+
+        public CommandResult(@Nullable Integer exitCode, String stdout, String stderr) {
+            this.exitCode = exitCode;
+            this.stdout = stdout;
+            this.stderr = stderr;
+        }
+
+        public @Nullable Integer getExitCode() {
+            return exitCode;
+        }
+
+        public String getStdout() {
+            return stdout;
+        }
+
+        public String getStderr() {
+            return stderr;
+        }
+
+        public boolean isSuccess() {
+            return exitCode != null && exitCode == 0;
+        }
+    }
+
     private final ClientSession session;
     private final Duration defaultTimeout;
 
@@ -47,7 +78,11 @@ public class SshRunner {
         this.defaultTimeout = defaultTimeout;
     }
 
-    public String exec(String command, Duration timeout) throws IOException {
+    /**
+     * Execute a command and return the full result (exit code, stdout, stderr).
+     * Throws {@link IOException} only for session/channel-level failures, never for non-zero exit codes.
+     */
+    public CommandResult execResult(String command, Duration timeout) throws IOException {
         logger.debug("{} executing command: {}", session.getRemoteAddress(), command);
         try (ChannelExec ch = session.createExecChannel(command)) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -57,16 +92,48 @@ public class SshRunner {
             ch.open().verify();
             ch.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), timeout.toMillis());
             Integer rc = ch.getExitStatus();
-            if (rc != null && rc == 0) {
-                logger.debug("{} {}", rc, out.toString(StandardCharsets.UTF_8));
-                return out.toString(StandardCharsets.UTF_8);
-            }
-            logger.debug("{} {}", rc, err.toString(StandardCharsets.UTF_8));
-            throw new IOException("Command failed rc=" + rc + ", stderr=" + err.toString(StandardCharsets.UTF_8));
+            String stdout = out.toString(StandardCharsets.UTF_8);
+            String stderr = err.toString(StandardCharsets.UTF_8);
+            logger.debug("rc={} stdout={} stderr={}", rc, stdout, stderr);
+            return new CommandResult(rc, stdout, stderr);
         }
+    }
+
+    public CommandResult execResult(String command) throws IOException {
+        return execResult(command, defaultTimeout);
+    }
+
+    /**
+     * Execute a command, returning stdout on success or throwing on failure.
+     * This is a convenience wrapper around {@link #execResult(String, Duration)}.
+     */
+    public String exec(String command, Duration timeout) throws IOException {
+        CommandResult result = execResult(command, timeout);
+        if (result.isSuccess()) {
+            return result.getStdout();
+        }
+        throw new IOException("Command failed rc=" + result.getExitCode() + ", stderr=" + result.getStderr());
     }
 
     public String exec(String command) throws IOException {
         return exec(command, defaultTimeout);
+    }
+
+    /**
+     * Execute a command, returning trimmed stdout regardless of exit code.
+     * Returns "" if the command produces no output or on channel-level failure.
+     */
+    public String execStdout(String command, Duration timeout) {
+        try {
+            CommandResult result = execResult(command, timeout);
+            return Objects.requireNonNull(result.getStdout().trim());
+        } catch (IOException e) {
+            logger.debug("Channel error (non-fatal): {}: {}", command, e.getMessage());
+            return "";
+        }
+    }
+
+    public String execStdout(String command) {
+        return execStdout(command, defaultTimeout);
     }
 }
