@@ -66,6 +66,8 @@ class AddTransformationProfileTest {
         return Stream.of(Arguments.of(20, DecimalType.valueOf("100"), null, null, DecimalType.valueOf("120")), //
                 Arguments.of(20, DecimalType.valueOf("100"), null, DecimalType.valueOf("-20"),
                         DecimalType.valueOf("120")), //
+                Arguments.of(20, DecimalType.valueOf("100"), TEST_ITEM_NAME, UnDefType.NULL,
+                        DecimalType.valueOf("120")), //
                 Arguments.of(20, DecimalType.valueOf("100"), TEST_ITEM_NAME, UnDefType.UNDEF,
                         DecimalType.valueOf("120")), //
                 Arguments.of(20, DecimalType.valueOf("100"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("-20"),

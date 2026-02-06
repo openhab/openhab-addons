@@ -37,7 +37,7 @@ class AddTransformationServiceTest {
                 Arguments.of("80", "100", "-20"), //
                 Arguments.of("0", "0", "0.0"), //
                 Arguments.of("23 °C", "21 °C", "2 °C"), //
-                Arguments.of("1,3 m", "1 m", "30 cm"));
+                Arguments.of("1.3 m", "1 m", "30 cm"));
     }
 
     private final TransformationService subject = new AddTransformationService();

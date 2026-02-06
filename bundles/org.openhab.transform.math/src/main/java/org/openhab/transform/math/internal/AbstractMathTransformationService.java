@@ -20,8 +20,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for {@link TransformationService}s which applies simple math on the input.
@@ -30,8 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 abstract class AbstractMathTransformationService implements TransformationService {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public @Nullable String transform(String valueString, String sourceString) throws TransformationException {
