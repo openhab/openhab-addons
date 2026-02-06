@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccForecastHandler;
 import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
 import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
 import org.openhab.binding.evcc.internal.handler.EvccPlanHandler;
@@ -96,6 +97,8 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
             handler = new EvccStatisticsHandler(thing, channelTypeRegistry);
         } else if (THING_TYPE_PLAN.equals(type)) {
             handler = new EvccPlanHandler(thing, channelTypeRegistry, timeZoneProvider.getTimeZone());
+        } else if (THING_TYPE_FORECAST.equals(type)) {
+            handler = new EvccForecastHandler(thing, channelTypeRegistry);
         }
         return handler;
     }
