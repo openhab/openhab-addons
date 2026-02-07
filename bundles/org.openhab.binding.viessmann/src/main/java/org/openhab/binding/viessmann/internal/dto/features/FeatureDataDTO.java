@@ -29,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class FeatureDataDTO {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FeatureDataDTO.class);
+    private final Logger logger = LoggerFactory.getLogger(FeatureDataDTO.class);
 
     public Integer apiVersion;
     public Boolean isEnabled;
@@ -65,7 +65,7 @@ public class FeatureDataDTO {
             }
             return json;
         } catch (Exception e) {
-            LOGGER.debug("FeatureDataDTO serialization failed", e);
+            logger.debug("FeatureDataDTO serialization failed", e);
             return null;
         }
     }
@@ -77,7 +77,7 @@ public class FeatureDataDTO {
         try {
             return JsonUtil.toJson(this);
         } catch (Exception e) {
-            LOGGER.debug("FeatureDataDTO serialization failed", e);
+            logger.debug("FeatureDataDTO serialization failed", e);
             return null;
         }
     }

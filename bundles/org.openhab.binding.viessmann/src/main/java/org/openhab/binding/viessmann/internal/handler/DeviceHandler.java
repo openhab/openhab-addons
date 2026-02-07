@@ -388,7 +388,6 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private @Nullable UriParam resolveCommand(Map<String, String> prop, String channelId, String suffix,
             String[] params, String[] com, Object commandOrValue) {
-
         final String valueStr;
         final @Nullable Double valueNum;
 
