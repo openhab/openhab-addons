@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class DahuaEventClient implements Runnable {
 
     private @Nullable Socket sock;
     private final Gson gson = new Gson();
-    private boolean execThread = true;
+    private volatile boolean execThread = true;
     private Consumer<String> errorInformer;
     private ByteBuffer residualBuffer = ByteBuffer.allocate(0); // Buffer for incomplete frames across reads
 
@@ -73,6 +74,15 @@ public class DahuaEventClient implements Runnable {
 
     public void dispose() {
         this.execThread = false;
+        // Close socket to unblock any pending read() operations
+        final Socket localSock = sock;
+        if (localSock != null) {
+            try {
+                localSock.close();
+            } catch (IOException e) {
+                logger.trace("Error closing socket during dispose: {}", e.getMessage());
+            }
+        }
     }
 
     public String genMd5Hash(String Dahua_random, String Dahua_realm, String username, String password)
@@ -180,7 +190,7 @@ public class DahuaEventClient implements Runnable {
             throw new IOException("Socket is not connected");
         }
 
-        buffer.put(packet.getBytes());
+        buffer.put(packet.getBytes(StandardCharsets.UTF_8));
         localSock.getOutputStream().write(buffer.array());
     }
 
@@ -279,7 +289,7 @@ public class DahuaEventClient implements Runnable {
         logger.trace("Start login");
 
         Map<String, Object> queryArgs = new HashMap<>();
-        queryArgs.put("id", 10000);
+        queryArgs.put("id", this.id);
         queryArgs.put("magic", "0x1234");
         queryArgs.put("method", "global.login");
         queryArgs.put("params", Map.of("clientType", this.clientType, "ipAddr", this.fakeIpAddr, "loginType", "Direct",
@@ -321,7 +331,7 @@ public class DahuaEventClient implements Runnable {
             String RANDOM_HASH = genMd5Hash(random, realm, this.username, this.password);
 
             queryArgs = new HashMap<>();
-            queryArgs.put("id", 10000);
+            queryArgs.put("id", this.id);
             queryArgs.put("magic", "0x1234");
             queryArgs.put("method", "global.login");
             queryArgs.put("session", this.sessionId);

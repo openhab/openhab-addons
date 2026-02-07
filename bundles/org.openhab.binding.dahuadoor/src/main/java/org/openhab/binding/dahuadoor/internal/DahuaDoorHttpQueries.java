@@ -13,6 +13,7 @@
 package org.openhab.binding.dahuadoor.internal;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DahuaDoorHttpQueries {
 
+    private static final int REQUEST_TIMEOUT_SECONDS = 10;
     private final Logger logger = LoggerFactory.getLogger(DahuaDoorHttpQueries.class);
     private @Nullable DahuaDoorConfiguration config;
     private @Nullable HttpClient httpClient;
@@ -35,6 +37,18 @@ public class DahuaDoorHttpQueries {
     public DahuaDoorHttpQueries(@Nullable HttpClient httpClient, @Nullable DahuaDoorConfiguration config) {
         this.config = config;
         this.httpClient = httpClient;
+
+        // Configure digest authentication once during construction to avoid unbounded growth of AuthenticationStore
+        if (httpClient != null && config != null) {
+            try {
+                URI uri = new URI("http://" + config.hostname);
+                AuthenticationStore auth = httpClient.getAuthenticationStore();
+                auth.addAuthentication(
+                        new DigestAuthentication(uri, Authentication.ANY_REALM, config.username, config.password));
+            } catch (Exception e) {
+                logger.warn("Failed to configure digest authentication for {}", config.hostname, e);
+            }
+        }
     }
 
     public byte @Nullable [] requestImage() {
@@ -48,12 +62,13 @@ public class DahuaDoorHttpQueries {
 
         try {
             URI uri = new URI("http://" + localConfig.hostname + "/cgi-bin/snapshot.cgi");
-            AuthenticationStore auth = localHttpClient.getAuthenticationStore();
-            auth.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM, localConfig.username,
-                    localConfig.password));
-            ContentResponse response = localHttpClient.newRequest(uri).send();
+            ContentResponse response = localHttpClient.newRequest(uri)
+                    .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             if (response.getStatus() == 200) {
                 return response.getContent();
+            } else {
+                logger.debug("Snapshot request failed with HTTP status {} from {}", response.getStatus(),
+                        localConfig.hostname);
             }
         } catch (Exception e) {
             logger.warn("Could not make http connection to retrieve snapshot from {}", localConfig.hostname, e);
@@ -72,10 +87,7 @@ public class DahuaDoorHttpQueries {
 
         try {
             URI uri = new URI("http://" + localConfig.hostname + "/cgi-bin/accessControl.cgi");
-            AuthenticationStore auth = localHttpClient.getAuthenticationStore();
-            auth.addAuthentication(new DigestAuthentication(uri, Authentication.ANY_REALM, localConfig.username,
-                    localConfig.password));
-            Request request = localHttpClient.newRequest(uri);
+            Request request = localHttpClient.newRequest(uri).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             request.param("action", "openDoor");
             request.param("UserID", "101");
             request.param("Type", "Remote");
@@ -83,6 +95,9 @@ public class DahuaDoorHttpQueries {
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
                 logger.debug("Open Door Success");
+            } else {
+                logger.debug("Open door request failed with HTTP status {} for door {} on {}", response.getStatus(),
+                        doorNo, localConfig.hostname);
             }
         } catch (Exception e) {
             logger.warn("Could not make http connection to open door {} on {}", doorNo, localConfig.hostname, e);
