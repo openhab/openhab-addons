@@ -214,16 +214,30 @@ public class DahuaEventClient implements Runnable {
         }
 
         while (bbuffer.hasRemaining()) {
+            // Ensure we have enough bytes for at least the magic value
+            if (bbuffer.remaining() < Long.BYTES) {
+                break;
+            }
+
             bbuffer.order(ByteOrder.BIG_ENDIAN);
             if (bbuffer.getLong(0) == 0x2000000044484950L) {
+                // Ensure we have a full header before reading it
+                if (bbuffer.remaining() < 32) {
+                    break;
+                }
                 bbuffer.order(ByteOrder.LITTLE_ENDIAN);
-                lenRecved = bbuffer.getShort(16);
-                lenExpect = bbuffer.getShort(24);
+                // Length fields are 32-bit in the header
+                lenRecved = bbuffer.getInt(16);
+                lenExpect = bbuffer.getInt(24);
                 bbuffer.get(header, 0, 32);
                 bbuffer = bbuffer.position(32).slice(); // cut bbuffer by 32 Bytes
 
             } else {
                 if (lenRecved > 0) {
+                    // Ensure we have the full payload before reading it
+                    if (bbuffer.remaining() < lenRecved) {
+                        break;
+                    }
                     String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset(), lenRecved);
                     bbuffer = bbuffer.position(lenRecved).slice(); // cut bbuffer
                     p2pReturnData.add(p2pData);
