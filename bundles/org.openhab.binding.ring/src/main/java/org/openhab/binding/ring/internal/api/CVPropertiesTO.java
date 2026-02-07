@@ -13,6 +13,7 @@
 package org.openhab.binding.ring.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,5 +27,6 @@ public class CVPropertiesTO {
     @SerializedName("person_detected")
     public boolean personDetected;
     @SerializedName("detection_type")
+    @Nullable
     public String detectionType = "";
 }
