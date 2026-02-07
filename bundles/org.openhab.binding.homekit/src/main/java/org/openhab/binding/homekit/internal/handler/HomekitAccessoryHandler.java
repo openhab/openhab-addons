@@ -981,8 +981,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     protected void onConnectedThingAccessoriesLoaded() {
         createProperties(); // we need the properties before eventually starting a migration
-        if (isMigratable()) {
-            setupMigration();
+        if (isMigratable() && setupMigration()) {
             return; // skip further processing if migrating
         }
         createChannels();
@@ -1195,11 +1194,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         // create new bridged accessory #1 child Thing that will host the old Thing's channels
         Configuration targetConfiguration = new Configuration();
-        targetConfiguration.put(CONFIG_ACCESSORY_ID, "1");
+        targetConfiguration.put(CONFIG_ACCESSORY_ID, BigDecimal.valueOf(1));
 
         String targetLabel = sourceThing.getLabel();
         Matcher matcher = THING_LABEL_PATTERN.matcher(targetLabel);
-        targetLabel = matcher.matches() ? matcher.group(1).trim() + " (" + matcher.group(2) + "-1)" : targetLabel;
+        targetLabel = matcher.matches() ? matcher.group(1).trim() + " (" + matcher.group(2) + "-1)"
+                : targetLabel + " (1)";
 
         String targetUniqueId = STRING_AID_FMT.formatted(sourceUniqueId, 1);
         ThingUID targetUID = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, targetBridge.getUID(), "1");
@@ -1294,6 +1294,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.warn("{} while auto-migrating {} to {}; try editing Thing-Type from 'accessory' to 'bridge'.",
                     e.getMessage(), oldThing.getUID(), newBridge.getUID());
             migrating.set(false);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    "@text/status.migrating-accessory-to-bridge-failed");
         }
     }
 
