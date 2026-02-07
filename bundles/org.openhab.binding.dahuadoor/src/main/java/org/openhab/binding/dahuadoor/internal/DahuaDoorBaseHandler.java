@@ -156,14 +156,16 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         try (FileOutputStream fos = new FileOutputStream(new File(filename))) {
             fos.write(buffer);
         } catch (Exception e) {
-            logger.warn("Could not write image to file, check permissions and path");
+            logger.warn("Could not write image to file '{}', check permissions and path", filename, e);
         }
 
+        String latestSnapshotFilename = config.snapshotpath + "/Doorbell.jpg";
         try {
-            Files.copy(Paths.get(filename), Paths.get(config.snapshotpath + "/Doorbell.jpg"),
+            Files.copy(Paths.get(filename), Paths.get(latestSnapshotFilename),
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
-            logger.warn("Could not copy file, check permissions and path");
+            logger.warn("Could not copy file from '{}' to '{}', check permissions and path", filename,
+                    latestSnapshotFilename, e);
         }
     }
 
