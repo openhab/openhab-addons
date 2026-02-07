@@ -166,7 +166,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     public void onEvent(String ipAddress, String deviceName, String componentIndex, String eventType,
             Map<String, String> parameters) {
         logger.trace("{}: Dispatch event to thing handler", deviceName);
-        for (Map.Entry<String, ShellyThingInterface> listener : thingTable.getTable().entrySet()) {
+        for (Map.Entry<String, ShellyThingInterface> listener : thingTable.getAll().entrySet()) {
             ShellyBaseHandler thingHandler = (ShellyBaseHandler) listener.getValue();
             if (thingHandler.onEvent(ipAddress, deviceName, componentIndex, eventType, parameters)) {
                 // event processed
@@ -181,7 +181,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
 
     public Map<String, ShellyManagerInterface> getThingHandlers() {
         Map<String, ShellyManagerInterface> table = new HashMap<>();
-        for (Map.Entry<String, ShellyThingInterface> entry : thingTable.getTable().entrySet()) {
+        for (Map.Entry<String, ShellyThingInterface> entry : thingTable.getAll().entrySet()) {
             table.put(entry.getKey(), (ShellyManagerInterface) entry.getValue());
         }
         return table;
