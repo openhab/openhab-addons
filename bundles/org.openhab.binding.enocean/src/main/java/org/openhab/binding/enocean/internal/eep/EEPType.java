@@ -419,12 +419,14 @@ public enum EEPType {
 
     // UniversalCommand(RORG._4BS, 0x3f, 0x7f, false, A5_3F_7F_Universal.class, THING_TYPE_UNIVERSALACTUATOR,
     // CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_LIGHT_SWITCHING, CHANNEL_GENERIC_DIMMER, CHANNEL_TEACHINCMD),
-    EltakoFSB(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFSB", 0, A5_3F_7F_EltakoFSB.class, THING_TYPE_ROLLERSHUTTER,
-            0, new Hashtable<>() {
+    EltakoFSB(RORG._4BS, 0x3f, 0x7f, false, false, true, "EltakoFSB", 0, A5_3F_7F_EltakoFSB.class,
+            THING_TYPE_ROLLERSHUTTER, 0, new Hashtable<>() {
                 private static final long serialVersionUID = 1L;
 
                 {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
+                    put(CHANNEL_DIMMER, new Configuration());
+                    put(CHANNEL_STATEMACHINESTATE, new Configuration());
                     put(CHANNEL_TEACHINCMD, new Configuration() {
                         {
                             put(PARAMETER_CHANNEL_TEACHINMSG, "fff80d80");
@@ -433,8 +435,8 @@ public enum EEPType {
                 }
             }),
 
-    EltakoFRM(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFRM", 0, A5_3F_7F_EltakoFRM.class, THING_TYPE_ROLLERSHUTTER,
-            0, new Hashtable<>() {
+    EltakoFRM(RORG._4BS, 0x3f, 0x7f, false, false, false, "EltakoFRM", 0, A5_3F_7F_EltakoFRM.class,
+            THING_TYPE_ROLLERSHUTTER, 0, new Hashtable<>() {
                 private static final long serialVersionUID = 1L;
 
                 {
@@ -558,6 +560,8 @@ public enum EEPType {
 
     private boolean requestsResponse;
 
+    private boolean usesSTM;
+
     EEPType(RORG rorg, int func, int type, boolean supportsRefresh, Class<? extends EEP> eepClass,
             @Nullable ThingTypeUID thingTypeUID, String... channelIds) {
         this(rorg, func, type, supportsRefresh, eepClass, thingTypeUID, -1, channelIds);
@@ -597,6 +601,7 @@ public enum EEPType {
         this.manufactorId = manufId;
         this.supportsRefresh = supportsRefresh;
         this.requestsResponse = requestsResponse;
+        this.usesSTM = false; // fix me: concept for other eeps which want to use STM
 
         for (String id : channelIds) {
             if (id != null) {
@@ -611,9 +616,9 @@ public enum EEPType {
         addDefaultChannels();
     }
 
-    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, boolean requestsResponse, String manufactorSuffix,
-            int manufId, Class<? extends EEP> eepClass, @Nullable ThingTypeUID thingTypeUID, int command,
-            Hashtable<String, Configuration> channelConfigs) {
+    EEPType(RORG rorg, int func, int type, boolean supportsRefresh, boolean requestsResponse, boolean usesSTM,
+            String manufactorSuffix, int manufId, Class<? extends EEP> eepClass, @Nullable ThingTypeUID thingTypeUID,
+            int command, Hashtable<String, Configuration> channelConfigs) {
         this.rorg = rorg;
         this.func = func;
         this.type = type;
@@ -625,6 +630,7 @@ public enum EEPType {
         this.manufactorId = manufId;
         this.supportsRefresh = supportsRefresh;
         this.requestsResponse = requestsResponse;
+        this.usesSTM = usesSTM;
 
         for (String id : channelConfigs.keySet()) {
             this.supportedChannels = addChannelDescription(supportedChannels, id, CHANNELID2CHANNELDESCRIPTION.get(id));
@@ -715,6 +721,10 @@ public enum EEPType {
 
     public boolean getRequstesResponse() {
         return requestsResponse;
+    }
+
+    public boolean getUsesSTM() {
+        return usesSTM;
     }
 
     public Map<String, EnOceanChannelDescription> getSupportedChannels() {

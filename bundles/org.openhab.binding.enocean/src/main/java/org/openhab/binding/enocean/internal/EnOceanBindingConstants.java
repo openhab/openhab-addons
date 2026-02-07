@@ -150,6 +150,8 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER = "rockerswitchListenerRollershutter";
     public static final String CHANNEL_ROCKERSWITCHLISTENER_START = "rockerswitchListener";
 
+    public static final String CHANNEL_STATEMACHINESTATE = "statemachine";
+
     public static final String CHANNEL_WINDOWHANDLESTATE = "windowHandleState";
     public static final String CHANNEL_WINDOWSASHSTATE = "windowSashState";
     public static final String CHANNEL_WINDOWCALIBRATIONSTATE = "windowCalibrationState";
@@ -412,6 +414,10 @@ public class EnOceanBindingConstants {
                     new EnOceanChannelDescription(
                             new ChannelTypeUID(BINDING_ID, CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER),
                             CoreItemFactory.ROLLERSHUTTER, "Rocker Switch Listener (Rollershutter)", true, false)),
+
+            Map.entry(CHANNEL_STATEMACHINESTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATEMACHINESTATE),
+                            CoreItemFactory.STRING)),
 
             Map.entry(CHANNEL_INSTANTPOWER,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_INSTANTPOWER),
