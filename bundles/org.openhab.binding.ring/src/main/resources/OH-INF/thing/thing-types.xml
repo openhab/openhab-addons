@@ -12,6 +12,9 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="event" typeId="eventGroup"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 		<config-description>
 			<parameter name="username" type="text" required="false">
 				<label>User Name</label>
@@ -208,6 +211,7 @@
 			<channel id="kind" typeId="kind"/>
 			<channel typeId="doorbotId" id="doorbotId"></channel>
 			<channel typeId="doorbotDescription" id="doorbotDescription"></channel>
+			<channel id="extendedDescription" typeId="extendedDescription"/>
 		</channels>
 	</channel-group-type>
 
@@ -253,6 +257,15 @@
 		<item-type>String</item-type>
 		<label>Event Type</label>
 		<description>The kind of event, usually 'motion' or 'ding'</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="extendedDescription">
+		<item-type>String</item-type>
+		<label>Extended Description</label>
+		<description>Extended description, similar to notifications from the Ring app</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
