@@ -128,8 +128,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                 this::errorInformer);
         queries = new DahuaDoorHttpQueries(httpClient, config);
 
-        // Status will be updated to ONLINE once connection is established
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting to device...");
+        // Mark thing as online; errorInformer will switch to OFFLINE on failures
+        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected to device");
     }
 
     @Override
