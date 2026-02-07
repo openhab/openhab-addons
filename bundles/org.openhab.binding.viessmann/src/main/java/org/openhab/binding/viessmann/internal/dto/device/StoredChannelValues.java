@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.viessmann.internal.dto.device;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The {@link StoredChannelValues} provides the values from a device
@@ -21,7 +21,7 @@ import java.util.Map;
  * @author Ronny Grun - Initial contribution
  */
 public class StoredChannelValues {
-    public Map<String, String> prop = new HashMap<>();
+    public Map<String, String> prop = new ConcurrentHashMap<>();
 
     public void putProperty(String key, String value) {
         prop.put(key, value);

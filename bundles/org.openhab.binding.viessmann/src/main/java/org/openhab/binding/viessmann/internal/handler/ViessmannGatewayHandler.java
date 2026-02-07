@@ -236,22 +236,27 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
 
         updateThing(editThing().withChannels(newChannels).build());
 
-        if (linkRegistry != null) {
+        ItemChannelLinkRegistry registry = linkRegistry;
+        if (registry != null) {
             for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
                 ChannelUID oldUid = e.getKey();
                 ChannelUID newUid = e.getValue();
 
-                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+                Collection<ItemChannelLink> existing = registry.getLinks(oldUid);
+                if (existing.isEmpty()) {
+                    continue;
+                }
+                Collection<ItemChannelLink> links = new ArrayList<>(existing);
 
                 for (ItemChannelLink link : links) {
                     String item = link.getItemName();
                     try {
-                        linkRegistry.remove(link.getUID());
+                        registry.remove(link.getUID());
                     } catch (Exception ex) {
                         logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
                     }
 
-                    linkRegistry.add(new ItemChannelLink(item, newUid));
+                    registry.add(new ItemChannelLink(item, newUid));
                     logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
                 }
             }

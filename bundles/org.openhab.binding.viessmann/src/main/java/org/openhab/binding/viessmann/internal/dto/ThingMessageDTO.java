@@ -16,9 +16,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.viessmann.internal.dto.features.FeatureCommand;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 
@@ -28,6 +30,7 @@ import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
  * @author Ronny Grun - Initial contribution
  */
 public class ThingMessageDTO {
+    private static final Set<String> IGNORED_SUFFIXES = Set.of("value", "name", "entries", "overlapAllowed");
     private String type;
     private String channelType;
     private String uom;
@@ -39,7 +42,7 @@ public class ThingMessageDTO {
     private String suffix;
     private String unit;
     private final Map<String, String> properties = new HashMap<>();
-    public Map<String, FeatureCommand> commands = new HashMap<>();
+    public Map<@NonNull String, @NonNull FeatureCommand> commands = new HashMap<>();
     public boolean isSubChannel = false;
 
     public String getType() {
@@ -121,11 +124,11 @@ public class ThingMessageDTO {
         this.deviceId = deviceId;
     }
 
-    public Map<String, FeatureCommand> getCommands() {
+    public Map<@NonNull String, @NonNull FeatureCommand> getCommands() {
         return commands;
     }
 
-    public void setCommands(Map<String, FeatureCommand> commands) {
+    public void setCommands(Map<@NonNull String, @NonNull FeatureCommand> commands) {
         this.commands = commands;
     }
 
@@ -142,8 +145,7 @@ public class ThingMessageDTO {
     }
 
     public void setSuffix(String suffix) {
-        if ("value".equals(suffix) || "name".equals(suffix) || "entries".equals(suffix)
-                || "overlapAllowed".equals(suffix)) {
+        if (IGNORED_SUFFIXES.contains(suffix)) {
             this.suffix = "";
         } else {
             this.suffix = suffix;
@@ -195,7 +197,7 @@ public class ThingMessageDTO {
         this.isSubChannel = bool;
     }
 
-    public ArrayList<String> getAllCommands() {
+    public ArrayList<@NonNull String> getAllCommands() {
         return new ArrayList<>(commands.keySet());
     }
 }

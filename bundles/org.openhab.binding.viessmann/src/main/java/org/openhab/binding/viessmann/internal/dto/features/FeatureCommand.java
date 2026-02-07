@@ -28,6 +28,6 @@ public class FeatureCommand {
     public Boolean isDeprecated = false;
 
     public ArrayList<String> getAllParams() {
-        return new ArrayList<>(params.keySet());
+        return params == null ? new ArrayList<>() : new ArrayList<>(params.keySet());
     }
 }

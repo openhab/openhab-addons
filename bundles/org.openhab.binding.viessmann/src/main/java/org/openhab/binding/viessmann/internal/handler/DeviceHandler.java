@@ -80,6 +80,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link DeviceHandler} is responsible for handling DeviceHandler
@@ -314,7 +315,6 @@ public class DeviceHandler extends ViessmannThingHandler {
         String[] com = commands.split(",");
 
         logger.trace("ChannelUID: {} | Properties: {} | Params {}", ch.getUID(), prop, params);
-        storedChannelValues.putProperty(ch.getUID().getId(), command.toString());
 
         if (command instanceof OnOffType onOff) {
             handleOnOff(channelUID, channelId, suffix, prop, params, com, onOff);
@@ -334,6 +334,8 @@ public class DeviceHandler extends ViessmannThingHandler {
             logger.warn("OnOffType Command not executable for Channel: {}", channelUID);
             return;
         }
+
+        storedChannelValues.putProperty(channelUID.getId(), onOff.toString());
 
         boolean isOn = onOff == OnOffType.ON;
         String feature = prop.get("feature");
@@ -355,6 +357,8 @@ public class DeviceHandler extends ViessmannThingHandler {
             return;
         }
 
+        storedChannelValues.putProperty(channelUID.getId(), Double.toString(value));
+
         UriParam up = resolveCommand(prop, channelId, suffix, params, com, value);
         if (up == null) {
             logger.trace("No matching numeric command for Channel {}", channelUID);
@@ -370,6 +374,8 @@ public class DeviceHandler extends ViessmannThingHandler {
             logger.warn("StringType Command not executable for Channel: {}", channelUID);
             return;
         }
+
+        storedChannelValues.putProperty(channelUID.getId(), value.toString());
 
         UriParam up = resolveCommand(prop, channelId, suffix, params, com, value);
 
@@ -432,7 +438,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                         uri = prop.get(cmd + "Uri");
                     } else {
                         String v = storedChannelValues.getProperty(channelId + "#weekday");
-                        if (!v.contains(",")) {
+                        if (v == null || !v.contains(",")) {
                             break;
                         }
                     }
@@ -446,11 +452,12 @@ public class DeviceHandler extends ViessmannThingHandler {
             return null;
         }
 
-        if (channelId.contains("hygiene-trigger") && cmd.equals("triggerDaily")) {
-            params = prop.getOrDefault("triggerDailyParams", "{}").split(",");
+        String[] effectiveParams = params;
+        if (channelId.contains("hygiene-trigger") && "triggerDaily".equals(cmd)) {
+            effectiveParams = prop.getOrDefault("triggerDailyParams", "{}").split(",");
         }
 
-        for (String p : params) {
+        for (String p : effectiveParams) {
             final String hyphenParam = ViessmannUtil.camelToHyphen(p);
             String v = storedChannelValues.getProperty(channelId + "#" + hyphenParam);
             final @Nullable String type = prop.get(p + "Type");
@@ -473,7 +480,12 @@ public class DeviceHandler extends ViessmannThingHandler {
                 final String nn = Objects.requireNonNull(v);
 
                 if ("number".equals(type)) {
-                    json.addProperty(p, Double.parseDouble(nn));
+                    try {
+                        json.addProperty(p, Double.parseDouble(nn));
+                    } catch (NumberFormatException e) {
+                        logger.debug("Skip param {}: invalid cached numeric value '{}'", p, nn);
+                        continue;
+                    }
                 } else {
                     json.addProperty(p, nn);
                 }
@@ -521,7 +533,12 @@ public class DeviceHandler extends ViessmannThingHandler {
                 String value = storedChannelValues.getProperty(channelId + "#" + p);
                 if (value != null) {
                     if ("number".equals(prop.get(p + "Type"))) {
-                        json.addProperty(p, Double.parseDouble(value));
+                        try {
+                            json.addProperty(p, Double.parseDouble(value));
+                        } catch (NumberFormatException e) {
+                            logger.debug("Skip param {}: invalid cached numeric value '{}'", p, value);
+                            continue;
+                        }
                     } else {
                         json.addProperty(p, value);
                     }
@@ -564,7 +581,7 @@ public class DeviceHandler extends ViessmannThingHandler {
 
         Map<String, FeatureCommand> commands = featureDataDTO.commands;
         if (commands != null) {
-            msg.setCommands(commands);
+            msg.setCommands(new HashMap<>(commands));
         }
 
         FeatureProperties prop = featureDataDTO.properties;
@@ -1166,7 +1183,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                 logger.debug("{} {} created/updated on Thing {}", msg.isSubChannel ? "Sub-Channel" : "Channel",
                         channelUID, getThing().getUID());
             } catch (IllegalArgumentException e) {
-                logger.warn(e.getMessage());
+                logger.warn("{}", e.getMessage());
             }
         });
     }
@@ -1237,48 +1254,42 @@ public class DeviceHandler extends ViessmannThingHandler {
     private OnOffType parseSchedule(String scheduleJson) {
         ZonedDateTime now = ZonedDateTime.now(ViessmannUtil.getOpenHABZoneId());
 
-        int hour = now.getHour();
-        int minute = now.getMinute();
-        int dayOfWeek = now.getDayOfWeek().getValue();
+        String curr = String.format(Locale.ROOT, "%02d:%02d", now.getHour(), now.getMinute());
+        Date currTime = parseTime(curr);
 
-        Date currTime = parseTime(hour + ":" + minute);
+        @Nullable
+        ScheduleDTO schedule;
+        try {
+            schedule = GSON.fromJson(scheduleJson, ScheduleDTO.class);
+        } catch (JsonSyntaxException e) {
+            logger.debug("Invalid schedule JSON: {}", scheduleJson, e);
+            return OnOffType.OFF;
+        }
 
-        ScheduleDTO schedule = GSON.fromJson(scheduleJson, ScheduleDTO.class);
         if (schedule == null) {
             logger.warn("Could not create schedule object and determine day.");
             return OnOffType.OFF;
         }
-        List<DaySchedule> day = schedule.getMon();
-        switch (dayOfWeek) {
-            case 1:
-                day = schedule.getMon();
-                break;
-            case 2:
-                day = schedule.getTue();
-                break;
-            case 3:
-                day = schedule.getWed();
-                break;
-            case 4:
-                day = schedule.getThu();
-                break;
-            case 5:
-                day = schedule.getFri();
-                break;
-            case 6:
-                day = schedule.getSat();
-                break;
-            case 7:
-                day = schedule.getSun();
-                break;
-            default:
-                break;
-        }
+
+        @SuppressWarnings("null")
+        List<DaySchedule> day = switch (now.getDayOfWeek()) {
+            case MONDAY -> Objects.requireNonNullElse(schedule.getMon(), List.of());
+            case TUESDAY -> Objects.requireNonNullElse(schedule.getTue(), List.of());
+            case WEDNESDAY -> Objects.requireNonNullElse(schedule.getWed(), List.of());
+            case THURSDAY -> Objects.requireNonNullElse(schedule.getThu(), List.of());
+            case FRIDAY -> Objects.requireNonNullElse(schedule.getFri(), List.of());
+            case SATURDAY -> Objects.requireNonNullElse(schedule.getSat(), List.of());
+            case SUNDAY -> Objects.requireNonNullElse(schedule.getSun(), List.of());
+        };
         for (DaySchedule daySchedule : day) {
             Date startTime = parseTime(daySchedule.getStart());
             Date endTime = parseTime(daySchedule.getEnd());
 
-            if (startTime.before(currTime) && endTime.after(currTime)) {
+            boolean spansMidnight = endTime.before(startTime);
+            boolean inWindow = spansMidnight ? (currTime.after(startTime) || currTime.before(endTime))
+                    : (currTime.after(startTime) && currTime.before(endTime));
+
+            if (inWindow) {
                 return OnOffType.ON;
             }
         }
@@ -1299,8 +1310,16 @@ public class DeviceHandler extends ViessmannThingHandler {
         if (unit != null) {
             updateState(channelId, new QuantityType<>(stateAsString + " " + unit));
         } else {
-            DecimalType s = DecimalType.valueOf(stateAsString);
-            updateState(channelId, s);
+            if (stateAsString.isBlank()) {
+                logger.debug("Skip update for {}: empty value", channelId);
+                return;
+            }
+            try {
+                DecimalType s = DecimalType.valueOf(stateAsString);
+                updateState(channelId, s);
+            } catch (IllegalArgumentException e) {
+                logger.debug("Skip update for {}: invalid numeric value '{}'", channelId, stateAsString);
+            }
         }
     }
 
@@ -1338,7 +1357,7 @@ public class DeviceHandler extends ViessmannThingHandler {
             Set<String> allowedSuffixes = new HashSet<>(BASE_ALLOWED_SUFFIXES);
             allowedSuffixes.addAll(lcAllParams);
 
-            if (!command.equals("triggerDaily")) {
+            if (!"triggerDaily".equals(command)) {
                 if (!lcSuffix.isBlank() && !lcCommand.contains(lcSuffix) && !allowedSuffixes.contains(lcSuffix)) {
                     continue;
                 }
@@ -1349,13 +1368,20 @@ public class DeviceHandler extends ViessmannThingHandler {
                 prop.put("params", addProperties(prop, "params", param));
                 prop.put(fc.name + "Params", addProperties(prop, fc.name + "Params", param));
 
+                if (fc.params == null) {
+                    continue;
+                }
                 FeatureCommandParams fcp = fc.params.get(param);
                 if (fcp == null) {
                     continue;
                 }
 
                 Map<String, Object> constraints = fcp.getConstraints();
-                prop.put(param + "RegEx", (String) constraints.getOrDefault("regEx", ""));
+                String regEx = "";
+                if (constraints != null) {
+                    regEx = (String) constraints.getOrDefault("regEx", "");
+                }
+                prop.put(param + "RegEx", regEx);
                 prop.put(param + "Type", fcp.getType());
             }
 
@@ -1439,6 +1465,10 @@ public class DeviceHandler extends ViessmannThingHandler {
     }
 
     private void setStateDescriptionOptions(ThingMessageDTO msg, boolean set) {
+        if (!set) {
+            return;
+        }
+
         Locale locale = localeProvider.getLocale();
         List<StateOption> stateOptions = new ArrayList<>();
 
@@ -1449,30 +1479,37 @@ public class DeviceHandler extends ViessmannThingHandler {
         commands.forEach((name, command) -> {
             ArrayList<String> p = command.getAllParams();
             p.forEach(param -> {
+                if (command.params == null) {
+                    return;
+                }
                 FeatureCommandParams fcp = command.params.get(param);
+                if (fcp == null) {
+                    return;
+                }
                 Map<String, Object> constraints = fcp.getConstraints();
-                if (set) {
-                    if (constraints.containsKey("enumValue")) {
-                        final List<String> modes = new ArrayList<>();
+                if (constraints == null) {
+                    return;
+                }
+                if (constraints.containsKey("enumValue")) {
+                    final List<String> modes = new ArrayList<>();
 
-                        Optional.ofNullable(command.params.get(param)).map(FeatureCommandParams::getConstraints)
-                                .map(c -> c.get("enumValue")).filter(List.class::isInstance).map(v -> (List<?>) v)
-                                .ifPresent(list -> list.stream().filter(String.class::isInstance)
-                                        .map(String.class::cast).forEach(modes::add));
+                    Optional.ofNullable(command.params.get(param)).map(FeatureCommandParams::getConstraints)
+                            .map(c -> c.get("enumValue")).filter(List.class::isInstance).map(v -> (List<?>) v)
+                            .ifPresent(list -> list.stream().filter(String.class::isInstance).map(String.class::cast)
+                                    .forEach(modes::add));
 
-                        if (msg.getFeatureClear().contains("hygiene")) {
-                            modes.add("Sun, Mon, Tue, Wed, Thu, Fri, Sat");
-                        }
-
-                        for (String cmd : modes) {
-                            String commandLabel = Objects.requireNonNull(
-                                    i18Provider.getText(bundle, "viessmann.command.label." + cmd, cmd, locale));
-                            StateOption stateOption = new StateOption(cmd, commandLabel);
-                            stateOptions.add(stateOption);
-                        }
-                        ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
-                        setChannelStateDescription(channelUID, stateOptions);
+                    if (msg.getFeatureClear().contains("hygiene")) {
+                        modes.add("Sun, Mon, Tue, Wed, Thu, Fri, Sat");
                     }
+
+                    for (String cmd : modes) {
+                        String commandLabel = Objects.requireNonNull(
+                                i18Provider.getText(bundle, "viessmann.command.label." + cmd, cmd, locale));
+                        StateOption stateOption = new StateOption(cmd, commandLabel);
+                        stateOptions.add(stateOption);
+                    }
+                    ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
+                    setChannelStateDescription(channelUID, stateOptions);
                 }
             });
         });
@@ -1533,8 +1570,9 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private boolean checkCommandType(Map<String, String> prop, String type) {
         String[] params = new String[] { "{}" };
-        if (prop.containsKey("params")) {
-            params = prop.get("params").split(",");
+        String paramsValue = prop.get("params");
+        if (paramsValue != null) {
+            params = paramsValue.split(",");
         }
 
         for (String p : params) {

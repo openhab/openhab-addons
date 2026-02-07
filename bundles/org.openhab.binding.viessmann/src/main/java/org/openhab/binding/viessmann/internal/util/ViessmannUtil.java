@@ -81,8 +81,12 @@ public final class ViessmannUtil {
         return result.toString();
     }
 
+    @SuppressWarnings("null")
     public static ZoneId getOpenHABZoneId() {
         BundleContext ctx = FrameworkUtil.getBundle(DeviceHandler.class).getBundleContext();
+        if (ctx == null) {
+            return ZoneId.systemDefault();
+        }
         ServiceReference<TimeZoneProvider> ref = ctx.getServiceReference(TimeZoneProvider.class);
         if (ref != null) {
             TimeZoneProvider tzProvider = ctx.getService(ref);

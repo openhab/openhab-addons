@@ -246,7 +246,7 @@ public class FeatureProperties {
         public FeatureProperties deserialize(JsonElement json, java.lang.reflect.Type typeOfT,
                 JsonDeserializationContext context) throws JsonParseException {
             FeatureProperties props = new FeatureProperties();
-            if (json == null || !json.isJsonObject()) {
+            if (json.isJsonNull() || !json.isJsonObject()) {
                 return props;
             }
             JsonObject obj = json.getAsJsonObject();

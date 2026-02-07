@@ -14,6 +14,8 @@ package org.openhab.binding.viessmann.internal.util;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -30,15 +32,17 @@ import com.google.gson.JsonPrimitive;
  *
  * @author Ronny Grun - Initial contribution
  */
+@NonNullByDefault
 public class GsonJsonElementSerializer extends JsonSerializer<JsonElement> {
 
     @Override
+    @NonNullByDefault({})
     public void serialize(JsonElement value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         write(value, gen);
     }
 
     private static void write(JsonElement el, JsonGenerator gen) throws IOException {
-        if (el == null || el instanceof JsonNull || el.isJsonNull()) {
+        if (el instanceof JsonNull || el.isJsonNull()) {
             gen.writeNull();
             return;
         }

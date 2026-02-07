@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.viessmann.internal.util;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +26,7 @@ import com.google.gson.JsonElement;
  *
  * @author Ronny Grun - Initial contribution
  */
+@NonNullByDefault
 public final class JsonUtil {
 
     /**
@@ -45,7 +46,7 @@ public final class JsonUtil {
         // utility class
     }
 
-    private static @NonNull SimpleModule createGsonModule() {
+    private static SimpleModule createGsonModule() {
         SimpleModule m = new SimpleModule("gson-json");
         m.addSerializer(JsonElement.class, new GsonJsonElementSerializer());
         return m;
