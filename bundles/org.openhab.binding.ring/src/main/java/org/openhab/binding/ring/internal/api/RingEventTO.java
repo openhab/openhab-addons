@@ -41,6 +41,7 @@ public class RingEventTO {
     public boolean favorite;
     @SerializedName("snapshot_url")
     public @Nullable String snapshotUrl;
+    public CVPropertiesTO cvProperties = new CVPropertiesTO();
     public Map<String, String> recording = Map.of();
     public List<Object> events = List.of();
     public DoorbotTO doorbot = new DoorbotTO();
