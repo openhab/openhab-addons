@@ -41,7 +41,7 @@
 		<item-type>Number</item-type>
 		<label>Beaufort</label>
 		<description>Wind speed in Beaufort Scale</description>
-		<category>Wind</category>
+		<category>oh:synopanalyzer:beaufort</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Speed</tag>
@@ -84,7 +84,7 @@
 		<item-type>Number</item-type>
 		<label>Octa</label>
 		<description>Cloud cover estimation.</description>
-		<category>sun_clouds</category>
+		<category>oh:synopanalyzer:octa</category>
 		<state readOnly="true" pattern="%d/8" min="0" max="8"/>
 	</channel-type>
 
@@ -93,6 +93,9 @@
 		<label>Attenuation Factor</label>
 		<description>Cloud layer attenuation factor</description>
 		<category>sun_clouds</category>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f" max="1" min="0"/>
 	</channel-type>
 
@@ -129,6 +132,10 @@
 		<label>Observation Time</label>
 		<description>Timestamp when data was observed</description>
 		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

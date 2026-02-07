@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 505 505" xmlns="http://www.w3.org/2000/svg">
+  <circle style="transform-box:fill-box;transform-origin:50% 50%" cx="252.5" cy="252.5" stroke="#000" fill="transparent" r="245" stroke-width="13"/>
+  <path d="M 145.354 330.078 L 344.614 141.743 L 395.008 190.722" stroke-width="9" fill="transparent" style="stroke: rgb(179, 171, 171);"/>
+  <ellipse cx="129.651" cy="347.052" rx="23.799" ry="23.104" fill="transparent" stroke-width="7" style="stroke: rgb(179, 171, 171);"/>
+  <path d="M 316.823 168.286 L 367.217 217.265" stroke-width="9" fill="transparent" style="stroke: rgb(179, 171, 171);"/>
+  <path d="M 288.548 195.22 L 338.942 244.199 M 258.67 223.361 L 283.867 247.85" stroke-width="9" fill="transparent" style="stroke: rgb(179, 171, 171);"/>
+  <text style="white-space:pre" transform="matrix(6.23986, 0, 0, 6.03723, -1447.916016, -1416.395996)" x="259.868" y="296.998" fill="rgba(0,0,0,.27)" font-family="Noto Sans" font-size="53" font-weight="700">?</text>
+</svg>
