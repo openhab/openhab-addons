@@ -2031,7 +2031,7 @@ class TestMigrationFromThingToBridge {
         assertEquals("Test Accessory (AA:BB:CC:DD-1)", newThing.getLabel());
         assertEquals("Living Room", newThing.getLocation());
         assertEquals("DOORBELL", newThing.getSemanticEquipmentTag());
-        assertEquals("1", newThing.getConfiguration().getProperties().get(CONFIG_ACCESSORY_ID));
+        assertEquals(BigDecimal.valueOf(1), newThing.getConfiguration().getProperties().get(CONFIG_ACCESSORY_ID));
         assertEquals("test-unique-id-1", newThing.getProperties().get(PROPERTY_UNIQUE_ID));
     }
 
