@@ -444,6 +444,8 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
+                    logger.info("Extended: {} detected on {}", lastEvents.getFirst().cvProperties.detectionType,
+                            lastEvents.getFirst().doorbot.description);
                     ExecutorService service = videoExecutorService;
                     if (service != null) {
                         service.submit(() -> getVideo(lastEvents.getFirst()));
