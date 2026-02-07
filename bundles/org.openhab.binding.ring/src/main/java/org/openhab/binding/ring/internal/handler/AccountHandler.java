@@ -444,7 +444,11 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
-                    switch (lastEvents.getFirst().cvProperties.detectionType) {
+                    String detectionType = lastEvents.getFirst().cvProperties.detectionType;
+                    if (detectionType == null) {
+                        detectionType = "";
+                    }
+                    switch (detectionType) {
                         case "human":
                             updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
                                     "There is a Person at your " + lastEvents.getFirst().doorbot.description));
