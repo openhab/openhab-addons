@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jellyfin"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="server">
+		<label>Jellyfin Server</label>
+		<description>Represents a running Jellyfin server instance</description>
+		<config-description>
+			<parameter name="serverName" type="text" required="false">
+				<label>Server Name</label>
+				<description>Human-readable name for the server (auto-discovered from server if not set)</description>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname/IP</label>
+				<description>Hostname or IP address of the server</description>
+				<default>127.0.0.1</default>
+			</parameter>
+			<parameter name="port" type="integer" min="0" max="65535" required="true">
+				<label>Port</label>
+				<description>Port of the server</description>
+				<default>8096</default>
+			</parameter>
+			<parameter name="ssl" type="boolean" required="true">
+				<label>SSL</label>
+				<description>Connect through https</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="path" type="text" required="false">
+				<label>Base Path</label>
+				<description>Base path of the server</description>
+			</parameter>
+			<parameter name="refreshSeconds" type="integer" min="10" max="300" required="true">
+				<label>Refresh Seconds</label>
+				<description>Interval to pull devices state from the server</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="clientActiveWithInSeconds" type="integer" min="0" max="950" required="true">
+				<label>Client Active Timeout</label>
+				<description>Amount off seconds allowed since the last client activity to assert it's online (0 disabled)</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="token" type="text">
+				<label>Access Token</label>
+				<description>The user access token</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
