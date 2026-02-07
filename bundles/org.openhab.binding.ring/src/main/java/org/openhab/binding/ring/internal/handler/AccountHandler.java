@@ -444,8 +444,22 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
-                    logger.info("Extended: {} detected on {}", lastEvents.getFirst().cvProperties.detectionType,
-                            lastEvents.getFirst().doorbot.description);
+                    String extendedDescription = "";
+                    switch (lastEvents.getFirst().doorbot.description) {
+                        case "human":
+                            extendedDescription = "There is a Person at your "
+                                    + lastEvents.getFirst().doorbot.description;
+                            break;
+                        case "vehicle":
+                            extendedDescription = "There is a Vehicle at your "
+                                    + lastEvents.getFirst().doorbot.description;
+                            break;
+                        default:
+                            extendedDescription = "There is motion at your "
+                                    + lastEvents.getFirst().doorbot.description;
+                            break;
+                    }
+                    updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
                     ExecutorService service = videoExecutorService;
                     if (service != null) {
                         service.submit(() -> getVideo(lastEvents.getFirst()));
@@ -458,7 +472,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "AuthenticationException response from ring.com");
             logger.debug(
-                    "RestClient reported AuthenticationExceptionfrom api.ring.com when retrying refreshRegistry for the second time: {}",
+                    "RestClient reported AuthenticationException from api.ring.com when retrying refreshRegistry for the second time: {}",
                     ex.getMessage());
         } catch (JsonParseException ignored) {
             logger.debug(
