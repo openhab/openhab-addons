@@ -444,22 +444,20 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
-                    String extendedDescription = "";
-                    switch (lastEvents.getFirst().doorbot.description) {
+                    switch (lastEvents.getFirst().cvProperties.detectionType) {
                         case "human":
-                            extendedDescription = "There is a Person at your "
-                                    + lastEvents.getFirst().doorbot.description;
+                            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                    "There is a Person at your " + lastEvents.getFirst().doorbot.description));
                             break;
                         case "vehicle":
-                            extendedDescription = "There is a Vehicle at your "
-                                    + lastEvents.getFirst().doorbot.description;
+                            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                    "There is a Vehicle at your " + lastEvents.getFirst().doorbot.description));
                             break;
                         default:
-                            extendedDescription = "There is motion at your "
-                                    + lastEvents.getFirst().doorbot.description;
+                            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                    "There is motion at your " + lastEvents.getFirst().doorbot.description));
                             break;
                     }
-                    updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(extendedDescription));
                     ExecutorService service = videoExecutorService;
                     if (service != null) {
                         service.submit(() -> getVideo(lastEvents.getFirst()));
