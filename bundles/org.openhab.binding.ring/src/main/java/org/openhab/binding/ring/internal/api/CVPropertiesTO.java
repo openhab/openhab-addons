@@ -26,5 +26,5 @@ public class CVPropertiesTO {
     @SerializedName("person_detected")
     public boolean personDetected;
     @SerializedName("detection_type")
-    public String detectionType = "1";
+    public String detectionType = "";
 }
