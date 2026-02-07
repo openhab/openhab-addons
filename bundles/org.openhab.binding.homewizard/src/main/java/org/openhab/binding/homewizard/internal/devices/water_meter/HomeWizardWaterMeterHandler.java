@@ -64,5 +64,6 @@ public class HomeWizardWaterMeterHandler extends HomeWizardDeviceHandler {
                         new QuantityType<>(payload.getTotalLiter(), SIUnits.CUBIC_METRE));
             }
         }
+        super.handleMeasurementData(data);
     }
 }

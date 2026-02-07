@@ -5,8 +5,9 @@
 
 	<type>binding</type>
 	<name>HomeWizard Binding</name>
-	<description>This binding provides access to the data provided by the API of HomeWizard devices. API version 1 is
-		supported, API version 2 (still in beta) is not yet supported.</description>
+	<description>This binding provides access to the data provided by the API of HomeWizard devices. API versions 1 and 2
+		are
+		supported.</description>
 	<connection>local</connection>
 
 </addon:addon>
