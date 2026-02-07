@@ -138,6 +138,10 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             client.dispose();
             client = null;
         }
+        if (queries != null) {
+            queries.dispose();
+            queries = null;
+        }
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {

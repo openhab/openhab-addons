@@ -33,6 +33,8 @@ public class DahuaDoorHttpQueries {
     private final Logger logger = LoggerFactory.getLogger(DahuaDoorHttpQueries.class);
     private @Nullable DahuaDoorConfiguration config;
     private @Nullable HttpClient httpClient;
+    private @Nullable DigestAuthentication digestAuth;
+    private @Nullable URI authUri;
 
     public DahuaDoorHttpQueries(@Nullable HttpClient httpClient, @Nullable DahuaDoorConfiguration config) {
         this.config = config;
@@ -41,10 +43,11 @@ public class DahuaDoorHttpQueries {
         // Configure digest authentication once during construction to avoid unbounded growth of AuthenticationStore
         if (httpClient != null && config != null) {
             try {
-                URI uri = new URI("http://" + config.hostname);
+                authUri = new URI("http://" + config.hostname);
                 AuthenticationStore auth = httpClient.getAuthenticationStore();
-                auth.addAuthentication(
-                        new DigestAuthentication(uri, Authentication.ANY_REALM, config.username, config.password));
+                digestAuth = new DigestAuthentication(authUri, Authentication.ANY_REALM, config.username,
+                        config.password);
+                auth.addAuthentication(digestAuth);
             } catch (Exception e) {
                 logger.warn("Failed to configure digest authentication for {}", config.hostname, e);
             }
@@ -102,5 +105,25 @@ public class DahuaDoorHttpQueries {
         } catch (Exception e) {
             logger.warn("Could not make http connection to open door {} on {}", doorNo, localConfig.hostname, e);
         }
+    }
+
+    /**
+     * Dispose resources and clean up authentication from shared HttpClient
+     */
+    public void dispose() {
+        final HttpClient localHttpClient = httpClient;
+        final DigestAuthentication localDigestAuth = digestAuth;
+        final URI localAuthUri = authUri;
+
+        if (localHttpClient != null && localDigestAuth != null && localAuthUri != null) {
+            AuthenticationStore auth = localHttpClient.getAuthenticationStore();
+            auth.removeAuthentication(localDigestAuth);
+            logger.debug("Removed digest authentication from shared HttpClient for URI {}", localAuthUri);
+        }
+
+        digestAuth = null;
+        authUri = null;
+        httpClient = null;
+        config = null;
     }
 }

@@ -32,9 +32,8 @@
 				<description>Password to access the device</description>
 			</parameter>
 			<parameter name="snapshotpath" type="text" required="true">
-				<context>snapshotpath</context>
-				<label>Path</label>
-				<description>Path for snapshots</description>
+				<label>Snapshot Path</label>
+				<description>Filesystem path where snapshots will be saved</description>
 			</parameter>
 
 		</config-description>

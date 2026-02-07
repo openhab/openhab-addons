@@ -166,16 +166,17 @@ public class DahuaEventClient implements Runnable {
             packet = "";
         }
 
-        ByteBuffer buffer = ByteBuffer.allocate(32 + packet.length());
+        byte[] payloadBytes = packet.getBytes(StandardCharsets.UTF_8);
+        ByteBuffer buffer = ByteBuffer.allocate(32 + payloadBytes.length);
         buffer.order(ByteOrder.BIG_ENDIAN);
         buffer.putInt(0x20000000);
         buffer.putInt(0x44484950);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt(sessionId);
         buffer.putInt(id);
-        buffer.putInt(packet.length());
+        buffer.putInt(payloadBytes.length);
         buffer.putInt(0);
-        buffer.putInt(packet.length());
+        buffer.putInt(payloadBytes.length);
         buffer.putInt(0);
 
         if (buffer.position() != 32) {
@@ -190,7 +191,7 @@ public class DahuaEventClient implements Runnable {
             throw new IOException("Socket is not connected");
         }
 
-        buffer.put(packet.getBytes(StandardCharsets.UTF_8));
+        buffer.put(payloadBytes);
         localSock.getOutputStream().write(buffer.array());
     }
 
@@ -273,7 +274,8 @@ public class DahuaEventClient implements Runnable {
                         residualBuffer.flip();
                         break;
                     }
-                    String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset() + bbuffer.position(), lenRecved);
+                    String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset() + bbuffer.position(), lenRecved,
+                            StandardCharsets.UTF_8);
                     bbuffer = bbuffer.position(bbuffer.position() + lenRecved).slice(); // cut bbuffer
                     p2pReturnData.add(p2pData);
                     lenRecved = 0;
@@ -392,6 +394,13 @@ public class DahuaEventClient implements Runnable {
                         errorInformer.accept("can't login, check host setting and credentials");
                         execThread = false;
                     }
+                    try {
+                        if (sock != null) {
+                            sock.close();
+                        }
+                    } catch (IOException e) {
+                        logger.trace("Error closing socket after login failure", e);
+                    }
                     continue;
                 }
 
@@ -406,6 +415,13 @@ public class DahuaEventClient implements Runnable {
                 ArrayList<String> data = receive();
                 if (data.isEmpty() || !gson.fromJson(data.get(0), JsonObject.class).has("result")) {
                     logger.trace("Failure eventManager.attach");
+                    try {
+                        if (sock != null) {
+                            sock.close();
+                        }
+                    } catch (IOException e) {
+                        logger.trace("Error closing socket after attach failure", e);
+                    }
                     continue;
                 } else {
                     for (String packet : data) {
