@@ -58,6 +58,7 @@ public class DahuaEventClient implements Runnable {
     private final Gson gson = new Gson();
     private boolean execThread = true;
     private Consumer<String> errorInformer;
+    private ByteBuffer residualBuffer = ByteBuffer.allocate(0); // Buffer for incomplete frames across reads
 
     public DahuaEventClient(String host, String username, String password, DHIPEventListener eventListener,
             ScheduledExecutorService scheduler, Consumer<String> errorInformer) {
@@ -207,7 +208,18 @@ public class DahuaEventClient implements Runnable {
                 // End of stream - connection closed
                 throw new IOException("Connection closed by remote host");
             }
-            bbuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
+
+            // Combine residual buffer with new data
+            if (residualBuffer.hasRemaining()) {
+                ByteBuffer combined = ByteBuffer.allocate(residualBuffer.remaining() + bytesRead);
+                combined.put(residualBuffer);
+                combined.put(buffer, 0, bytesRead);
+                combined.flip();
+                bbuffer = combined;
+                residualBuffer = ByteBuffer.allocate(0); // Clear residual
+            } else {
+                bbuffer = ByteBuffer.wrap(buffer, 0, bytesRead);
+            }
         } catch (IOException e) {
             logger.trace("IOException in receive(): {}", e.getMessage());
             throw e;
@@ -216,13 +228,21 @@ public class DahuaEventClient implements Runnable {
         while (bbuffer.hasRemaining()) {
             // Ensure we have enough bytes for at least the magic value
             if (bbuffer.remaining() < Long.BYTES) {
+                // Save remaining bytes for next read
+                residualBuffer = ByteBuffer.allocate(bbuffer.remaining());
+                residualBuffer.put(bbuffer);
+                residualBuffer.flip();
                 break;
             }
 
             bbuffer.order(ByteOrder.BIG_ENDIAN);
-            if (bbuffer.getLong(0) == 0x2000000044484950L) {
+            if (bbuffer.getLong(bbuffer.position()) == 0x2000000044484950L) {
                 // Ensure we have a full header before reading it
                 if (bbuffer.remaining() < 32) {
+                    // Save remaining bytes for next read
+                    residualBuffer = ByteBuffer.allocate(bbuffer.remaining());
+                    residualBuffer.put(bbuffer);
+                    residualBuffer.flip();
                     break;
                 }
                 bbuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -236,10 +256,15 @@ public class DahuaEventClient implements Runnable {
                 if (lenRecved > 0) {
                     // Ensure we have the full payload before reading it
                     if (bbuffer.remaining() < lenRecved) {
+                        // Save remaining bytes for next read - include current position
+                        bbuffer.position(bbuffer.position() - 32); // Go back to include header
+                        residualBuffer = ByteBuffer.allocate(bbuffer.remaining());
+                        residualBuffer.put(bbuffer);
+                        residualBuffer.flip();
                         break;
                     }
-                    String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset(), lenRecved);
-                    bbuffer = bbuffer.position(lenRecved).slice(); // cut bbuffer
+                    String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset() + bbuffer.position(), lenRecved);
+                    bbuffer = bbuffer.position(bbuffer.position() + lenRecved).slice(); // cut bbuffer
                     p2pReturnData.add(p2pData);
                     lenRecved = 0;
                 } else {

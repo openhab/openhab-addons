@@ -161,8 +161,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
 
         String latestSnapshotFilename = config.snapshotpath + "/Doorbell.jpg";
         try {
-            Files.copy(Paths.get(filename), Paths.get(latestSnapshotFilename),
-                    StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Paths.get(filename), Paths.get(latestSnapshotFilename), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
             logger.warn("Could not copy file from '{}' to '{}', check permissions and path", filename,
                     latestSnapshotFilename, e);
