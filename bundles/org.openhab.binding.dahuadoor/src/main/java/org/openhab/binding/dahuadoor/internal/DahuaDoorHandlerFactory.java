@@ -48,7 +48,6 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public DahuaDoorHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        logger.debug("setHttpClientFactory this: {}", this);
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
