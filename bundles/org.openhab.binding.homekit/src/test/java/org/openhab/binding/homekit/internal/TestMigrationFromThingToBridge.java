@@ -2020,7 +2020,7 @@ class TestMigrationFromThingToBridge {
         assertEquals(Equipment.NETWORK_APPLIANCE.getName(), newBridge.getSemanticEquipmentTag());
 
         Map<String, String> expectedProperties = handler.getThing().getProperties();
-        expectedProperties.put(PROPERTY_MIGRATED, "~");
+        expectedProperties.put(PROPERTY_MIGRATED, CHECK_MARK);
         assertEquals(expectedProperties, newBridge.getProperties());
 
         assertFalse(added.get(1) instanceof Bridge);

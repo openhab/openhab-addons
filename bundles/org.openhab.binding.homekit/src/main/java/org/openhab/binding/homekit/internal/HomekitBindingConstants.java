@@ -122,4 +122,6 @@ public class HomekitBindingConstants {
     public static final String I18N_SUFFIX_EVENT_SUBSCRIBE_ERROR = "event subscribe error";
     public static final String I18N_SUFFIX_ACCESSORY_FETCH_ERROR = "accessory fetch error";
     public static final String I18N_SUFFIX_ERROR_SENDING_COMMAND = "error sending command";
+
+    public static final String CHECK_MARK = "✓";
 }

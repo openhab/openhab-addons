@@ -194,8 +194,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
          * accessory Things having the same id will have been suppressed. However since this Bridge is
          * now being removed again, we must make sure that suppression of this id is also removed again.
          */
-        if (thing.getProperties().get(PROPERTY_MIGRATED) != null
-                && thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
+        if (thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
             discoveryParticipant.suppressId(uniqueId, false);
         }
         super.handleRemoval();

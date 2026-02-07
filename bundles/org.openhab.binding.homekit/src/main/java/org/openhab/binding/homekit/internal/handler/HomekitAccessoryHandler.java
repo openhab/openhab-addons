@@ -71,6 +71,7 @@ import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -1190,7 +1191,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
 
         // apply migrated property (value is irrelevant)
-        targetBridge.setProperty(PROPERTY_MIGRATED, "~");
+        targetBridge.setProperty(PROPERTY_MIGRATED, CHECK_MARK);
 
         // create new bridged accessory #1 child Thing that will host the old Thing's channels
         Configuration targetConfiguration = new Configuration();
@@ -1201,8 +1202,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         targetLabel = matcher.matches() ? matcher.group(1).trim() + " (" + matcher.group(2) + "-1)" : targetLabel;
 
         String targetUniqueId = STRING_AID_FMT.formatted(sourceUniqueId, 1);
-
-        Thing targetThing = ThingBuilder.create(THING_TYPE_BRIDGED_ACCESSORY, "1") //
+        ThingUID targetUID = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, targetBridge.getUID(), "1");
+        Thing targetThing = ThingBuilder.create(THING_TYPE_BRIDGED_ACCESSORY, targetUID) //
                 .withBridge(targetBridge.getUID()) //
                 .withConfiguration(targetConfiguration) //
                 .withLabel(targetLabel) //
