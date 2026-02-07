@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.plug;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,8 @@ public class SimplePlugHandler extends BaseHandler {
         super(thing, mapping);
         super.setChildHandler(this);
         // links of types which can be established towards this device
-        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
+        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR,
+                DEVICE_TYPE_OCCUPANCY_SENSOR, DEVICE_TYPE_GENERIC_SWITCH);
     }
 
     @Override

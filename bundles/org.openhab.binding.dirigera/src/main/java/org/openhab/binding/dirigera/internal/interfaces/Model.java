@@ -29,18 +29,72 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public interface Model {
 
-    static final String REACHABLE = "isReachable";
-    static final String ATTRIBUTES = "attributes";
-    static final String CAPABILITIES = "capabilities";
-    static final String PROPERTY_CAN_RECEIVE = "canReceive";
-    static final String PROPERTY_CAN_SEND = "canSend";
-    static final String SCENES = "scenes";
-    static final String CUSTOM_NAME = "customName";
-    static final String DEVICE_MODEL = "model";
-    static final String DEVICE_TYPE = "deviceType";
-    static final String PROPERTY_RELATION_ID = "relationId";
+    // Constants for JSON keys and values from DIRIGERA API
+    static final String MODEL_KEY_DEVICES = "devices";
+    static final String MODEL_KEY_SCENES = "scenes";
 
-    static final String COLOR_TEMPERATURE_CAPABILITY = "colorTemperature";
+    static final String JSON_KEY_TYPE = "type";
+    static final String JSON_KEY_DEVICE_TYPE = "deviceType";
+    static final String JSON_KEY_DEVICE_ID = "id";
+    static final String JSON_KEY_REACHABLE = "isReachable";
+    static final String JSON_KEY_ATTRIBUTES = "attributes";
+    static final String JSON_KEY_RELATION_ID = "relationId";
+    static final String JSON_KEY_CAPABILITIES = "capabilities";
+
+    static final String TYPE_USER_SCENE = "userScene";
+    static final String TYPE_CUSTOM_SCENE = "customScene";
+    static final String TYPE_CONTROLLER = "controller";
+    static final String TYPE_SENSOR = "sensor";
+
+    static final String DEVICE_TYPE_GATEWAY = "gateway";
+    static final String DEVICE_TYPE_SPEAKER = "speaker";
+    static final String DEVICE_TYPE_REPEATER = "repeater";
+    static final String DEVICE_TYPE_AIR_PURIFIER = "airPurifier";
+    static final String DEVICE_TYPE_BLINDS = "blinds";
+    static final String DEVICE_TYPE_LIGHT = "light";
+    static final String DEVICE_TYPE_MOTION_SENSOR = "motionSensor";
+    static final String DEVICE_TYPE_LIGHT_SENSOR = "lightSensor";
+    static final String DEVICE_TYPE_CONTACT_SENSOR = "openCloseSensor";
+    static final String DEVICE_TYPE_ENVIRONMENT_SENSOR = "environmentSensor";
+    static final String DEVICE_TYPE_WATER_SENSOR = "waterSensor";
+    static final String DEVICE_TYPE_OUTLET = "outlet";
+    static final String DEVICE_TYPE_OCCUPANCY_SENSOR = "occupancySensor";
+    static final String DEVICE_TYPE_GENERIC_SWITCH = "genericSwitch";
+    static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
+    static final String DEVICE_TYPE_BLIND_CONTROLLER = "blindsController";
+    static final String DEVICE_TYPE_SOUND_CONTROLLER = "soundController";
+    static final String DEVICE_TYPE_SHORTCUT_CONTROLLER = "shortcutController";
+
+    static final String CAPABILITIES_KEY_CAN_RECEIVE = "canReceive";
+    static final String CAPABILITIES_KEY_CAN_SEND = "canSend";
+    static final String CAPABILITIES_VALUE_COLOR_TEMPERATURE = "colorTemperature";
+
+    static final String ATTRIBUTES_KEY_CUSTOM_NAME = "customName";
+    static final String ATTRIBUTES_KEY_DEVICE_MODEL = "model";
+    static final String ATTRIBUTES_KEY_QRCODE = "qrCode";
+    static final String ATTRIBUTES_KEY_COLOR_TEMPERATURE = "colorTemperature";
+    static final String ATTRIBUTES_KEY_OTA_STATUS = "otaStatus";
+    static final String ATTRIBUTES_KEY_OTA_STATE = "otaState";
+    static final String ATTRIBUTES_KEY_OTA_PROGRESS = "otaProgress";
+    static final String ATTRIBUTES_KEY_BATTERY_PERCENTAGE = "batteryPercentage";
+    static final String ATTRIBUTES_KEY_PERMIT_JOIN = "permittingJoin";
+    static final String ATTRIBUTES_KEY_STARTUP_BEHAVIOR = "startupOnOff";
+    static final String ATTRIBUTES_KEY_POWER_STATE = "isOn";
+    static final String ATTRIBUTES_KEY_REMOTE_LINKS = "remoteLinks";
+    static final String ATTRIBUTES_KEY_COLOR_MODE = "colorMode";
+    static final String ATTRIBUTES_KEY_CONTROL_MODE = "controlMode";
+
+    // Websocket update types
+    static final String EVENT_TYPE_DEVICE_DISCOVERED = "deviceDiscovered";
+    static final String EVENT_TYPE_DEVICE_ADDED = "deviceAdded";
+    static final String EVENT_TYPE_DEVICE_CHANGE = "deviceStateChanged";
+    static final String EVENT_TYPE_DEVICE_REMOVED = "deviceRemoved";
+    static final String EVENT_TYPE_REMOTE_PRESS = "remotePressEvent";
+    static final String EVENT_TYPE_SCENE_CREATED = "sceneCreated";
+    static final String EVENT_TYPE_SCENE_UPDATE = "sceneUpdated";
+    static final String EVENT_TYPE_SCENE_DELETED = "sceneDeleted";
+
+    static final String EVENT_KEY_CLICK_PATTER = "clickPattern";
 
     static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
     static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";
@@ -139,6 +193,14 @@ public interface Model {
     String getRelationId(String id);
 
     /**
+     * Get device type for a given device id
+     *
+     * @param id to query
+     * @return device type as String
+     */
+    String getDeviceType(String id);
+
+    /**
      * Identify device which is present in model with openHAB ThingTypeUID.
      *
      * @param id to identify
@@ -169,13 +231,4 @@ public interface Model {
      * @return Map with attributes for Thing properties
      */
     Map<String, Object> getPropertiesFor(String id);
-
-    /**
-     * Read a resource file from this bundle. Some presets and commands sent to API shall not be implemented
-     * in code if they are just needing minor String replacements.
-     * Root path in project is src/main/resources. Line breaks and white spaces will
-     *
-     * @return
-     */
-    String getTemplate(String name);
 }
