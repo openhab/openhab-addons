@@ -13,12 +13,12 @@
 			<parameter name="clientId" type="text" required="true">
 				<label>Client ID</label>
 				<description>The apps oauth client Id)</description>
-				<default>f9fd90b7-c4bb-49c1-974f-e80b89a7327f</default>
+				<default>e91265c7-42b1-4928-ab52-67ff1f80cc5c</default>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="true">
 				<label>Client Secret</label>
 				<description>The apps oauth client Secret</description>
-				<default>ec3d221b-72f6-4612-bb92-58ae5ebfe562</default>
+				<default>85697243-75e2-4e2b-ac4e-d29e784b2116</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

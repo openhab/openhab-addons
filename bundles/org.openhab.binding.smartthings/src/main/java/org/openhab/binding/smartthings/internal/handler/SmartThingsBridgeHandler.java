@@ -188,7 +188,15 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public @Nullable AccessTokenResponse getAccessTokenResponse() {
         try {
             OAuthClientService oAuthService = this.oAuthService;
-            return oAuthService == null ? null : oAuthService.getAccessTokenResponse();
+            AccessTokenResponse response = oAuthService == null ? null : oAuthService.getAccessTokenResponse();
+            if (response != null) {
+                String appId = response.getExtraFields().get("installed_app_id");
+                if (appId != null) {
+                    this.appId = appId;
+                }
+                return response;
+            }
+            return null;
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
             return null;
@@ -224,7 +232,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 throw new OAuthException("OAuth service is not initialized");
             }
             logger.debug("Make call to SmartThings to get access token.");
-            oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode, redirectUri);
+            AccessTokenResponse accessToken = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
+                    redirectUri);
             return reqCode;
         } catch (RuntimeException | OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
