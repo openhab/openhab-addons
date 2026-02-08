@@ -25,7 +25,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,6 +81,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceService.class);
 
     private final ExecutorService threadPool = ThreadPoolManager.getPool(getClass().getSimpleName());
+    private final ConcurrentLinkedQueue<Future<?>> pendingTasks = new ConcurrentLinkedQueue<>();
+    private volatile boolean active;
 
     /**
      * holds the local instance of the MapDB database
@@ -91,6 +97,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Activate
     public void activate() {
         logger.debug("MapDB persistence service is being activated");
+        active = true;
 
         try {
             Files.createDirectories(DB_DIR);
@@ -147,6 +154,8 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Deactivate
     public void deactivate() {
         logger.debug("MapDB persistence service deactivated");
+        active = false;
+        waitForPendingTasks(30, TimeUnit.SECONDS);
         if (db != null) {
             db.close();
         }
@@ -175,6 +184,10 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(Item item, @Nullable String alias) {
+        if (!active) {
+            logger.warn("Skipping store because persistence service is not active");
+            return;
+        }
         if (item.getState() instanceof UnDefType) {
             return;
         }
@@ -192,12 +205,48 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         mItem.setTimestamp(lastStateUpdate != null ? Date.from(lastStateUpdate.toInstant()) : new Date());
         ZonedDateTime lastStateChange = item.getLastStateChange();
         mItem.setLastStateChange(lastStateChange != null ? Date.from(lastStateChange.toInstant()) : null);
-        threadPool.submit(() -> {
+        Future<?> future = threadPool.submit(() -> {
             String json = serialize(mItem);
             map.put(localAlias, json);
             db.commit();
             logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
         });
+        pendingTasks.add(future);
+        cleanupCompletedTasks();
+    }
+
+    private void cleanupCompletedTasks() {
+        pendingTasks.removeIf(Future::isDone);
+    }
+
+    private void waitForPendingTasks(long timeout, TimeUnit unit) {
+        long deadline = System.nanoTime() + unit.toNanos(timeout);
+        while (!pendingTasks.isEmpty()) {
+            Future<?> task = pendingTasks.poll();
+            if (task == null) {
+                break;
+            }
+            long remainingNanos = deadline - System.nanoTime();
+            if (remainingNanos <= 0) {
+                logger.warn("Timed out waiting for MapDB persistence tasks to finish; {} tasks remain.",
+                        pendingTasks.size() + 1);
+                return;
+            }
+            try {
+                task.get(remainingNanos, TimeUnit.NANOSECONDS);
+            } catch (TimeoutException e) {
+                pendingTasks.add(task);
+                logger.warn("Timed out waiting for MapDB persistence tasks to finish; {} tasks remain.",
+                        pendingTasks.size());
+                return;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.warn("Interrupted while waiting for MapDB persistence tasks to finish.");
+                return;
+            } catch (Exception e) {
+                logger.debug("Persistence task failed while waiting for completion: {}", e.getMessage());
+            }
+        }
     }
 
     @Override
