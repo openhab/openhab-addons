@@ -195,7 +195,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public void store(Item item, @Nullable String alias) {
         if (!active) {
-            logger.warn("Skipping store because persistence service is not active");
+            logger.info("Skipping store of item '{}' because persistence service is not active", item.getName());
             return;
         }
         if (item.getState() instanceof UnDefType) {
