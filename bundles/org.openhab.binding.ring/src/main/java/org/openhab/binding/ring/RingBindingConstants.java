@@ -13,6 +13,8 @@
 package org.openhab.binding.ring;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -96,4 +98,23 @@ public class RingBindingConstants {
     public static final Set<String> BEAM_KINDS = Set.of("beams_ct200_transformer");
 
     public static final Set<String> INTERCOM_KINDS = Set.of("intercom_handset_audio", "intercom_handset_video");
+
+    // battery kinds
+    public static final Set<String> BATTERY_KINDS = Stream
+            .of(SPOTLIGHT_CAM_BATTERY_KINDS, STICKUP_CAM_KINDS, STICKUP_CAM_BATTERY_KINDS, STICKUP_CAM_GEN3_KINDS)
+            .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
+
+    // light kinds
+    public static final Set<String> LIGHT_KINDS = Stream
+            .of(FLOODLIGHT_CAM_KINDS, FLOODLIGHT_CAM_PRO_KINDS, FLOODLIGHT_CAM_PLUS_KINDS, SPOTLIGHT_CAM_BATTERY_KINDS,
+                    SPOTLIGHT_CAM_WIRED_KINDS, SPOTLIGHT_CAM_PLUS_KINDS, SPOTLIGHT_CAM_PRO_KINDS)
+            .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
+
+    // siren kinds
+    public static final Set<String> SIREN_KINDS = Stream
+            .of(FLOODLIGHT_CAM_KINDS, FLOODLIGHT_CAM_PRO_KINDS, FLOODLIGHT_CAM_PLUS_KINDS, INDOOR_CAM_KINDS,
+                    INDOOR_CAM_GEN2_KINDS, INDOOR_CAM_PTZ_KINDS, SPOTLIGHT_CAM_BATTERY_KINDS, SPOTLIGHT_CAM_WIRED_KINDS,
+                    SPOTLIGHT_CAM_PLUS_KINDS, SPOTLIGHT_CAM_PRO_KINDS, STICKUP_CAM_BATTERY_KINDS,
+                    STICKUP_CAM_ELITE_KINDS, STICKUP_CAM_GEN3_KINDS)
+            .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 }
