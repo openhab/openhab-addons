@@ -141,11 +141,13 @@ public class DahuaEventClient implements Runnable {
                     if (data != null) {
                         for (String packet : data) {
                             JsonObject jsonPacket = gson.fromJson(packet, JsonObject.class);
-                            if (jsonPacket.has("result")) {
-                                logger.trace("keepAlive back");
-                                keepAliveReceived = true;
-                            } else if ("client.notifyEventStream".equals(jsonPacket.get("method").getAsString())) {
-                                eventListener.eventHandler(jsonPacket);
+                            if (jsonPacket != null) {
+                                if (jsonPacket.has("result")) {
+                                    logger.trace("keepAlive back");
+                                    keepAliveReceived = true;
+                                } else if ("client.notifyEventStream".equals(jsonPacket.get("method").getAsString())) {
+                                    eventListener.eventHandler(jsonPacket);
+                                }
                             }
                         }
                     }
@@ -301,7 +303,7 @@ public class DahuaEventClient implements Runnable {
         try {
             send(new Gson().toJson(queryArgs));
             ArrayList<String> data = receive();
-            if (data == null) {
+            if (data.isEmpty()) {
                 logger.trace("global.login [random]");
                 return false;
             }

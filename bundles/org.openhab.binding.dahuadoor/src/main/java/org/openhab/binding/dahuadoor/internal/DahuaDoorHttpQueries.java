@@ -55,8 +55,8 @@ public class DahuaDoorHttpQueries {
     }
 
     public byte @Nullable [] requestImage() {
-        final HttpClient localHttpClient = httpClient;
-        final DahuaDoorConfiguration localConfig = config;
+        final @Nullable HttpClient localHttpClient = httpClient;
+        final @Nullable DahuaDoorConfiguration localConfig = config;
 
         if (localHttpClient == null || localConfig == null) {
             logger.warn("HTTP client or configuration not initialized");
@@ -80,8 +80,8 @@ public class DahuaDoorHttpQueries {
     }
 
     public void openDoor(int doorNo) {
-        final HttpClient localHttpClient = httpClient;
-        final DahuaDoorConfiguration localConfig = config;
+        final @Nullable HttpClient localHttpClient = httpClient;
+        final @Nullable DahuaDoorConfiguration localConfig = config;
 
         if (localHttpClient == null || localConfig == null) {
             logger.warn("HTTP client or configuration not initialized");

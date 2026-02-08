@@ -199,16 +199,11 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     @Override
-    public void eventHandler(@Nullable JsonObject data) {
+    public void eventHandler(JsonObject data) {
         // Set thing ONLINE when first event is received (confirms successful
         // connection)
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
-        }
-
-        if (data == null) {
-            logger.debug("Received null JSON event payload, ignoring.");
-            return;
         }
 
         try {
