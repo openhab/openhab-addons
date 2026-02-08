@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.ring.internal.handler;
 
-import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTERY;
-import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_SNAPSHOT;
-import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_SNAPSHOT_TIMESTAMP;
+import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import java.time.ZonedDateTime;
 
@@ -52,6 +50,16 @@ public class StickupcamHandler extends RingDeviceHandler {
     public void initialize() {
         logger.debug("Initializing Stickupcam handler");
         super.initialize(Stickupcam.class);
+        String kind = thing.getProperties().get(THING_PROPERTY_KIND);
+        if (BATTERY_KINDS.contains(kind)) {
+            logger.info("Device {} supports battery.", kind);
+        }
+        if (LIGHT_KINDS.contains(kind)) {
+            logger.info("Device {} supports light.", kind);
+        }
+        if (SIREN_KINDS.contains(kind)) {
+            logger.info("Device {} supports siren.", kind);
+        }
     }
 
     @Override
