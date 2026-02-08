@@ -31,7 +31,9 @@ public class DivideTransformationService extends AbstractMathTransformationServi
         try {
             return source.divide(value);
         } catch (IllegalArgumentException e) {
-            throw new ArithmeticException("Divison by zero.");
+            ArithmeticException ae = new ArithmeticException("Division by zero.");
+            ae.initCause(e);
+            throw ae;
         }
     }
 }

@@ -12,11 +12,9 @@
  */
 package org.openhab.transform.math.internal.profiles;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
@@ -25,6 +23,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.transform.math.internal.DivideTransformationService;
+import org.openhab.transform.math.internal.profiles.config.DivideTransformationProfileConfiguration;
 
 /**
  * Profile to offer the {@link DivideTransformationService} on a ItemChannelLink.
@@ -39,15 +38,18 @@ public class DivideTransformationProfile extends AbstractArithmeticMathTransform
 
     static final String DIVISOR_PARAM = "divisor";
 
-    private final @Nullable String divisor;
+    private final String divisor;
 
     public DivideTransformationProfile(ProfileCallback callback, ProfileContext context, TransformationService service,
             ItemRegistry itemRegistry) {
         super(callback, context, service, itemRegistry, PROFILE_TYPE_UID);
 
-        divisor = getParam(context, DIVISOR_PARAM);
+        DivideTransformationProfileConfiguration config = getConfigAs(context,
+                DivideTransformationProfileConfiguration.class);
+        divisor = config.divisor;
 
-        if (BigDecimal.ZERO.compareTo(new BigDecimal(divisor)) == 0) {
+        if (QuantityType.ZERO.equals(QuantityType.valueOf(divisor))) {
+            logger.warn("The divisor must be non-zero but was '{}'.", divisor);
             throw new IllegalArgumentException(String.format("The divisor must be non-zero but was '%s'.", divisor));
         }
     }

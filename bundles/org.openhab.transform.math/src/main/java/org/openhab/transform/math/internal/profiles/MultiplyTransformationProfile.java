@@ -13,7 +13,6 @@
 package org.openhab.transform.math.internal.profiles;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
@@ -23,6 +22,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.transform.math.internal.MultiplyTransformationService;
+import org.openhab.transform.math.internal.profiles.config.MultiplyTransformationProfileConfiguration;
 
 /**
  * Profile to offer the {@link MultiplyTransformationService} on a ItemChannelLink.
@@ -37,13 +37,15 @@ public class MultiplyTransformationProfile extends AbstractArithmeticMathTransfo
 
     static final String MULTIPLICAND_PARAM = "multiplicand";
 
-    private final @Nullable String multiplicand;
+    private final String multiplicand;
 
     public MultiplyTransformationProfile(ProfileCallback callback, ProfileContext context,
             TransformationService service, ItemRegistry itemRegistry) {
         super(callback, context, service, itemRegistry, PROFILE_TYPE_UID);
 
-        multiplicand = getParam(context, MULTIPLICAND_PARAM);
+        MultiplyTransformationProfileConfiguration config = getConfigAs(context,
+                MultiplyTransformationProfileConfiguration.class);
+        multiplicand = config.multiplicand;
     }
 
     @Override

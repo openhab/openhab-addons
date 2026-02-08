@@ -36,6 +36,7 @@ class MultiplyTransformationServiceTest {
         return Stream.of(Arguments.of("2000", "100", "20"), //
                 Arguments.of("0", "0", "8.0"), //
                 Arguments.of("42 m", "21 m", "2"), //
+                Arguments.of("42 m", "21", "2 m"), //
                 Arguments.of("1380 A·V", "6.0 A", "230 V"), //
                 Arguments.of("NULL", "NULL", "50"), //
                 Arguments.of("UNDEF", "UNDEF", "50 V"));

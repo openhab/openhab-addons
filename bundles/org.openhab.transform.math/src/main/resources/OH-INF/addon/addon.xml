@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>Math Transformation</name>
+	<name>Math transformation</name>
 	<description>Transforms values using simple math.</description>
 	<connection>none</connection>
 

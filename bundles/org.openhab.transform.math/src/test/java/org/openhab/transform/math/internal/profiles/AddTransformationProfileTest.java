@@ -52,7 +52,7 @@ import org.openhab.core.types.util.UnitUtils;
 import org.openhab.transform.math.internal.AddTransformationService;
 
 /**
- * Basic unit tests for {@link DivideTransformationProfile}.
+ * Basic unit tests for {@link AddTransformationProfile}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -63,22 +63,30 @@ class AddTransformationProfileTest {
     private static final String TEST_ITEM_NAME = "testItem";
 
     private static final Stream<Arguments> configurations() {
-        return Stream.of(Arguments.of(20, DecimalType.valueOf("100"), null, null, DecimalType.valueOf("120")), //
-                Arguments.of(20, DecimalType.valueOf("100"), null, DecimalType.valueOf("-20"),
+        return Stream.of(Arguments.of("20", DecimalType.valueOf("100"), null, null, DecimalType.valueOf("120")), //
+                Arguments.of("20", DecimalType.valueOf("100"), null, DecimalType.valueOf("-20"),
                         DecimalType.valueOf("120")), //
-                Arguments.of(20, DecimalType.valueOf("100"), TEST_ITEM_NAME, UnDefType.NULL,
+                Arguments.of("20", DecimalType.valueOf("100"), TEST_ITEM_NAME, UnDefType.NULL,
                         DecimalType.valueOf("120")), //
-                Arguments.of(20, DecimalType.valueOf("100"), TEST_ITEM_NAME, UnDefType.UNDEF,
+                Arguments.of("20", DecimalType.valueOf("100"), TEST_ITEM_NAME, UnDefType.UNDEF,
                         DecimalType.valueOf("120")), //
-                Arguments.of(20, DecimalType.valueOf("100"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("-20"),
+                Arguments.of("20", DecimalType.valueOf("100"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("-20"),
                         DecimalType.valueOf("120")), //
-                Arguments.of(0, DecimalType.valueOf("100"), TEST_ITEM_NAME, DecimalType.valueOf("-20"),
+                Arguments.of("0", DecimalType.valueOf("100"), TEST_ITEM_NAME, DecimalType.valueOf("-20"),
                         DecimalType.valueOf("80")), //
-                Arguments.of(0, QuantityType.valueOf("21 °C"), TEST_ITEM_NAME, QuantityType.valueOf("2 °C"),
+                Arguments.of("0", DecimalType.valueOf("100"), TEST_ITEM_NAME, QuantityType.valueOf("-20"),
+                        DecimalType.valueOf("80")), //
+                Arguments.of("0", QuantityType.valueOf("100"), TEST_ITEM_NAME, DecimalType.valueOf("-20"),
+                        QuantityType.valueOf("80")), //
+                Arguments.of("0", QuantityType.valueOf("21 °C"), TEST_ITEM_NAME, QuantityType.valueOf("2 °C"),
                         QuantityType.valueOf("23 °C")), //
-                Arguments.of(0, QuantityType.valueOf("1 m"), TEST_ITEM_NAME, QuantityType.valueOf("30 cm"),
+                Arguments.of("0", QuantityType.valueOf("21 °C"), TEST_ITEM_NAME, DecimalType.valueOf("2"),
+                        QuantityType.valueOf("21 °C")), //
+                Arguments.of("0", DecimalType.valueOf("21"), TEST_ITEM_NAME, QuantityType.valueOf("2 °C"),
+                        DecimalType.valueOf("21")), //
+                Arguments.of("0", QuantityType.valueOf("1 m"), TEST_ITEM_NAME, QuantityType.valueOf("30 cm"),
                         QuantityType.valueOf("1.3 m")), //
-                Arguments.of(0, QuantityType.valueOf("2 m"), TEST_ITEM_NAME, QuantityType.valueOf("5 g"),
+                Arguments.of("0", QuantityType.valueOf("2 m"), TEST_ITEM_NAME, QuantityType.valueOf("5 g"),
                         QuantityType.valueOf("2 m")));
     }
 
@@ -91,10 +99,10 @@ class AddTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnCommandFromHandler(Integer divisor, Command cmd, @Nullable String itemName,
+    public void testOnCommandFromHandler(String addend, Command cmd, @Nullable String itemName,
             @Nullable State itemState, Command expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
-        AddTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
+        AddTransformationProfile profile = createProfile(callback, addend, itemName, itemState);
 
         profile.onCommandFromHandler(cmd);
 
@@ -107,10 +115,10 @@ class AddTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnStateUpdateFromHandler(Integer divisor, State state, @Nullable String itemName,
+    public void testOnStateUpdateFromHandler(String addend, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
-        AddTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
+        AddTransformationProfile profile = createProfile(callback, addend, itemName, itemState);
 
         profile.onStateUpdateFromHandler(state);
 
@@ -123,10 +131,10 @@ class AddTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testTimeSeriesFromHandlerParameterized(Integer divisor, State state, @Nullable String itemName,
+    public void testTimeSeriesFromHandlerParameterized(String addend, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
-        AddTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
+        AddTransformationProfile profile = createProfile(callback, addend, itemName, itemState);
 
         TimeSeries ts = new TimeSeries(Policy.ADD);
         Instant now = Instant.now();
@@ -145,7 +153,7 @@ class AddTransformationProfileTest {
         assertThat(firstEntry.state(), is(expectedResult));
     }
 
-    private AddTransformationProfile createProfile(ProfileCallback callback, Integer addend, @Nullable String itemName,
+    private AddTransformationProfile createProfile(ProfileCallback callback, String addend, @Nullable String itemName,
             @Nullable State state) throws ItemNotFoundException {
         ProfileContext mockedProfileContext = mock(ProfileContext.class);
         ItemRegistry mockedItemRegistry = mock(ItemRegistry.class);

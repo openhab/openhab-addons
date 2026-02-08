@@ -14,7 +14,7 @@ package org.openhab.transform.math.internal.profiles;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -27,6 +27,8 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -40,6 +42,7 @@ import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.types.Command;
@@ -63,22 +66,28 @@ class MultiplyTransformationProfileTest {
     private static final String TEST_ITEM_NAME = "testItem";
 
     private static final Stream<Arguments> configurations() {
-        return Stream.of(Arguments.of(2, DecimalType.valueOf("23.333"), null, null, DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), null, DecimalType.valueOf("3"),
-                        DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, UnDefType.NULL,
-                        DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, UnDefType.UNDEF,
-                        DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("3"),
-                        DecimalType.valueOf("46.666")), //
-                Arguments.of(2, DecimalType.valueOf("23.333"), TEST_ITEM_NAME, DecimalType.valueOf("3"),
-                        DecimalType.valueOf("69.999")), //
-                Arguments.of(2, QuantityType.valueOf("230 V"), TEST_ITEM_NAME, QuantityType.valueOf("6 A"),
-                        QuantityType.valueOf("1380 W")), //
-                Arguments.of(2, QuantityType.valueOf("10 kWh"), TEST_ITEM_NAME, QuantityType.valueOf("0.5 DEF/kWh"),
+        return Stream.of(Arguments.of("2", DecimalType.valueOf("23.333"), null, null, DecimalType.valueOf("46.666")), //
+                Arguments.of("0.5 DEF/kWh", QuantityType.valueOf("10 kWh"), null, null,
                         QuantityType.valueOf("5.0 DEF")), //
-                Arguments.of(2, QuantityType.valueOf("10 kWh"), TEST_ITEM_NAME, QuantityType.valueOf("0.25 kg/kWh"),
+                Arguments.of("2", DecimalType.valueOf("23.333"), null, DecimalType.valueOf("3"),
+                        DecimalType.valueOf("46.666")), //
+                Arguments.of("2", DecimalType.valueOf("23.333"), TEST_ITEM_NAME, UnDefType.NULL,
+                        DecimalType.valueOf("46.666")), //
+                Arguments.of("2", DecimalType.valueOf("23.333"), TEST_ITEM_NAME, UnDefType.UNDEF,
+                        DecimalType.valueOf("46.666")), //
+                Arguments.of("2", DecimalType.valueOf("23.333"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("3"),
+                        DecimalType.valueOf("46.666")), //
+                Arguments.of("1", DecimalType.valueOf("23.333"), TEST_ITEM_NAME, DecimalType.valueOf("3"),
+                        DecimalType.valueOf("69.999")), //
+                Arguments.of("1", DecimalType.valueOf("23.333"), TEST_ITEM_NAME, QuantityType.valueOf("3 m"),
+                        DecimalType.valueOf("23.333")), //
+                Arguments.of("1", QuantityType.valueOf("23.333 m"), TEST_ITEM_NAME, DecimalType.valueOf("3"),
+                        QuantityType.valueOf("69.999 m")), //
+                Arguments.of("1", QuantityType.valueOf("230 V"), TEST_ITEM_NAME, QuantityType.valueOf("6 A"),
+                        QuantityType.valueOf("1380 W")), //
+                Arguments.of("1", QuantityType.valueOf("10 kWh"), TEST_ITEM_NAME, QuantityType.valueOf("0.5 DEF/kWh"),
+                        QuantityType.valueOf("5.0 DEF")), //
+                Arguments.of("1", QuantityType.valueOf("10 kWh"), TEST_ITEM_NAME, QuantityType.valueOf("0.25 kg/kWh"),
                         QuantityType.valueOf("2.5 kg")));
     }
 
@@ -89,9 +98,29 @@ class MultiplyTransformationProfileTest {
         Unit<Temperature> fahrenheit = ImperialUnits.FAHRENHEIT;
     }
 
+    @Test
+    @Disabled
+    public void testMultiplicationFailure() throws ItemNotFoundException {
+        ProfileCallback callback = mock(ProfileCallback.class);
+        MultiplyTransformationProfile profile = createProfile(callback, "2", null, null);
+
+        profile.onStateUpdateFromHandler(QuantityType.valueOf(21, SIUnits.CELSIUS));
+
+        ArgumentCaptor<State> capture = ArgumentCaptor.forClass(State.class);
+        verify(callback, times(1)).sendUpdate(capture.capture());
+
+        State result = capture.getValue();
+        assertThat(result, is((State) QuantityType.valueOf(42, SIUnits.CELSIUS)));
+    }
+
+    @Test
+    public void testShouldFail() {
+        assertThrows(AssertionError.class, this::testMultiplicationFailure);
+    }
+
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnCommandFromHandler(Integer multiplicand, Command cmd, @Nullable String itemName,
+    public void testOnCommandFromHandler(String multiplicand, Command cmd, @Nullable String itemName,
             @Nullable State itemState, Command expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
         MultiplyTransformationProfile profile = createProfile(callback, multiplicand, itemName, itemState);
@@ -107,7 +136,7 @@ class MultiplyTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnStateUpdateFromHandler(Integer multiplicand, State state, @Nullable String itemName,
+    public void testOnStateUpdateFromHandler(String multiplicand, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
         MultiplyTransformationProfile profile = createProfile(callback, multiplicand, itemName, itemState);
@@ -123,7 +152,7 @@ class MultiplyTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testTimeSeriesFromHandlerParameterized(Integer multiplicand, State state, @Nullable String itemName,
+    public void testTimeSeriesFromHandlerParameterized(String multiplicand, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
         MultiplyTransformationProfile profile = createProfile(callback, multiplicand, itemName, itemState);
@@ -145,7 +174,7 @@ class MultiplyTransformationProfileTest {
         assertThat(firstEntry.state(), is(expectedResult));
     }
 
-    private MultiplyTransformationProfile createProfile(ProfileCallback callback, Integer multiplicand,
+    private MultiplyTransformationProfile createProfile(ProfileCallback callback, String multiplicand,
             @Nullable String itemName, @Nullable State state) throws ItemNotFoundException {
         ProfileContext mockedProfileContext = mock(ProfileContext.class);
         ItemRegistry mockedItemRegistry = mock(ItemRegistry.class);

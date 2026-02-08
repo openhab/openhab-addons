@@ -62,4 +62,14 @@ class AddTransformationServiceTest {
     public void testTransformInvalidUnits() {
         assertThrows(TransformationException.class, () -> subject.transform("2 m", "5 g"));
     }
+
+    @Test
+    public void testTransformNoUnitForValue() {
+        assertThrows(TransformationException.class, () -> subject.transform("2", "21 °C"));
+    }
+
+    @Test
+    public void testTransformNoUnitForSource() {
+        assertThrows(TransformationException.class, () -> subject.transform("21 °C", "2"));
+    }
 }
