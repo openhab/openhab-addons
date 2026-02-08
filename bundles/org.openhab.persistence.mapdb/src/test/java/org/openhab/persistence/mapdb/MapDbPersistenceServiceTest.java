@@ -113,18 +113,18 @@ class MapDbPersistenceServiceTest {
                 attempts));
     }
 
-    private void configureNumberItem() throws Exception {
-        when(numberItem.getName()).thenReturn("TestNumber");
+    private void configureNumberItem(String suffix) throws Exception {
+        when(numberItem.getName()).thenReturn("TestNumber" + suffix);
         when(numberItem.getState()).thenReturn(new DecimalType(42.5));
     }
 
-    private void configureStringItem() throws Exception {
-        when(stringItem.getName()).thenReturn("TestString");
+    private void configureStringItem(String suffix) throws Exception {
+        when(stringItem.getName()).thenReturn("TestString" + suffix);
         when(stringItem.getState()).thenReturn(new StringType("TestValue"));
     }
 
-    private void configureSwitchItem() throws Exception {
-        when(switchItem.getName()).thenReturn("TestSwitch");
+    private void configureSwitchItem(String suffix) throws Exception {
+        when(switchItem.getName()).thenReturn("TestSwitch" + suffix);
         when(switchItem.getState()).thenReturn(OnOffType.ON);
     }
 
@@ -142,7 +142,7 @@ class MapDbPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveNumberValue(boolean reloadAfterStore) throws Exception {
         logger.debug("Starting storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
-        configureNumberItem();
+        configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(numberItem);
@@ -157,7 +157,7 @@ class MapDbPersistenceServiceTest {
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestNumber");
+        criteria.setItemName(numberItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
@@ -169,7 +169,7 @@ class MapDbPersistenceServiceTest {
         // Verify the retrieved value
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
-        assertEquals("TestNumber", item.getName());
+        assertEquals(numberItem.getName(), item.getName());
         assertEquals(new DecimalType(42.5), item.getState());
         logger.debug("Ending storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
     }
@@ -178,7 +178,7 @@ class MapDbPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveStringValue(boolean reloadAfterStore) throws Exception {
         logger.debug("Starting storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
-        configureStringItem();
+        configureStringItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(stringItem);
@@ -193,7 +193,7 @@ class MapDbPersistenceServiceTest {
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestString");
+        criteria.setItemName(stringItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
@@ -205,12 +205,12 @@ class MapDbPersistenceServiceTest {
         // HistoricItem will anyway only return last stored value for MapDb, but this should work without errors
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
-        assertEquals("TestString", item.getName());
+        assertEquals(stringItem.getName(), item.getName());
         assertEquals(new StringType("TestValue"), item.getState());
 
-        PersistedItem persistedItem = service.persistedItem("TestString", null);
+        PersistedItem persistedItem = service.persistedItem(stringItem.getName(), null);
         assertNotNull(persistedItem);
-        assertEquals("TestString", persistedItem.getName());
+        assertEquals(stringItem.getName(), persistedItem.getName());
         assertEquals(new StringType("TestValue"), persistedItem.getState());
         logger.debug("Ending storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
     }
@@ -219,7 +219,7 @@ class MapDbPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveSwitchValue(boolean reloadAfterStore) throws Exception {
         logger.debug("Starting storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
-        configureSwitchItem();
+        configureSwitchItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(switchItem);
@@ -234,7 +234,7 @@ class MapDbPersistenceServiceTest {
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestSwitch");
+        criteria.setItemName(switchItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
@@ -246,12 +246,12 @@ class MapDbPersistenceServiceTest {
         // HistoricItem will anyway only return last stored value for MapDb, but this should work without errors
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
-        assertEquals("TestSwitch", item.getName());
+        assertEquals(switchItem.getName(), item.getName());
         assertEquals(OnOffType.ON, item.getState());
 
-        PersistedItem persistedItem = service.persistedItem("TestSwitch", null);
+        PersistedItem persistedItem = service.persistedItem(switchItem.getName(), null);
         assertNotNull(persistedItem);
-        assertEquals("TestSwitch", persistedItem.getName());
+        assertEquals(switchItem.getName(), persistedItem.getName());
         assertEquals(OnOffType.ON, persistedItem.getState());
         logger.debug("Ending storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
     }
@@ -260,7 +260,7 @@ class MapDbPersistenceServiceTest {
     @ValueSource(booleans = { true, false })
     void queryWithTimeRange(boolean reloadAfterStore) throws Exception {
         logger.debug("Starting queryWithTimeRange with reloadAfterStore={}", reloadAfterStore);
-        configureNumberItem();
+        configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(numberItem);
@@ -275,7 +275,7 @@ class MapDbPersistenceServiceTest {
 
         // Query with time range
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestNumber");
+        criteria.setItemName(numberItem.getName());
         criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1));
         criteria.setEndDate(ZonedDateTime.now(ZoneId.systemDefault()).plusHours(1));
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);

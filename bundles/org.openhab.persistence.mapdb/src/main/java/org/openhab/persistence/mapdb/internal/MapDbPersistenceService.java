@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -216,16 +217,22 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         ZonedDateTime lastStateChange = item.getLastStateChange();
         mItem.setLastStateChange(lastStateChange != null ? Date.from(lastStateChange.toInstant()) : null);
         pendingTasks.incrementAndGet();
-        threadPool.submit(() -> {
-            try {
-                String json = serialize(mItem);
-                map.put(localAlias, json);
-                db.commit();
-                logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
-            } finally {
-                pendingTasks.decrementAndGet();
-            }
-        });
+        try {
+            threadPool.submit(() -> {
+                try {
+                    String json = serialize(mItem);
+                    map.put(localAlias, json);
+                    db.commit();
+                    logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
+                } finally {
+                    pendingTasks.decrementAndGet();
+                }
+
+            });
+        } catch (RejectedExecutionException e) {
+            logger.warn("Task submission rejected for item '{}': {}", localAlias, e.getMessage());
+            pendingTasks.decrementAndGet();
+        }
     }
 
     @Override
