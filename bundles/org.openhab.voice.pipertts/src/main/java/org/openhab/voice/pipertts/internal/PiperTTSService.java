@@ -69,7 +69,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.givimad.piperjni.PiperJNI;
@@ -284,31 +283,23 @@ public class PiperTTSService extends AbstractCachedTTSService {
                 return cachedVoices;
             }
             String voiceData = Files.readString(configFile);
-            JsonNode voiceJsonRoot = new ObjectMapper().readTree(voiceData);
-            JsonNode datasetJsonNode = voiceJsonRoot.get("dataset");
-            JsonNode audioJsonNode = voiceJsonRoot.get("audio");
-            JsonNode languageJsonNode = voiceJsonRoot.get("language");
-            JsonNode numSpeakersJsonNode = voiceJsonRoot.get("num_speakers");
-            if (datasetJsonNode == null || audioJsonNode == null || languageJsonNode == null) {
-                throw new IOException("Unknown voice config structure");
-            }
-            JsonNode qualityJsonNode = audioJsonNode.get("quality");
-            JsonNode languageFamilyJsonNode = languageJsonNode.get("family");
-            JsonNode languageRegionJsonNode = languageJsonNode.get("region");
-            if (languageFamilyJsonNode == null || languageRegionJsonNode == null) {
-                throw new IOException("Unknown voice config structure");
-            }
-            String voiceName = datasetJsonNode.textValue();
+            PiperVoiceConfig voiceConfig = new ObjectMapper().readValue(voiceData, PiperVoiceConfig.class);
+
+            String voiceName = voiceConfig.dataset;
             String voiceUID = voiceName.replace(" ", "_");
-            String quality = qualityJsonNode.textValue();
-            String languageFamily = languageFamilyJsonNode.textValue();
-            String languageRegion = languageRegionJsonNode.textValue();
-            int numSpeakers = numSpeakersJsonNode != null ? numSpeakersJsonNode.intValue() : 1;
-            JsonNode speakersIdsJsonNode = voiceJsonRoot.get("speaker_id_map");
-            if (numSpeakers != 1 && speakersIdsJsonNode != null) {
+            String quality = voiceConfig.audio.quality;
+            String languageFamily = voiceConfig.language.family;
+            String languageRegion = voiceConfig.language.region;
+            int numSpeakers = voiceConfig.numSpeakers;
+            Map<String, Integer> speakerIdMap = voiceConfig.speakerIdMap;
+
+            if (voiceName.isBlank() || quality.isBlank() || languageFamily.isBlank() || languageRegion.isBlank()) {
+                throw new IOException("Unknown voice config structure");
+            }
+
+            if (numSpeakers != 1 && speakerIdMap != null) {
                 List<Voice> voices = new ArrayList<>();
-                speakersIdsJsonNode.fieldNames().forEachRemaining(field -> {
-                    JsonNode fieldNode = speakersIdsJsonNode.get(field);
+                speakerIdMap.forEach((field, id) -> {
                     voices.add(new PiperTTSVoice( //
                             voiceUID + "_" + field, //
                             capitalize(voiceName + " " + field), //
@@ -317,7 +308,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
                             languageRegion, //
                             modelPath, //
                             configFile, //
-                            Optional.of(fieldNode.longValue())));
+                            Optional.of(id.longValue())));
                 });
                 return voices;
             }
