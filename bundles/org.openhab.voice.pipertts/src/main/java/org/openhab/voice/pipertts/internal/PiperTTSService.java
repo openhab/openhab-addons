@@ -286,11 +286,13 @@ public class PiperTTSService extends AbstractCachedTTSService {
             String voiceData = Files.readString(configFile);
             JsonNode voiceJsonRoot = new ObjectMapper().readTree(voiceData);
             JsonNode datasetJsonNode = voiceJsonRoot.get("dataset");
+            JsonNode audioJsonNode = voiceJsonRoot.get("audio");
             JsonNode languageJsonNode = voiceJsonRoot.get("language");
             JsonNode numSpeakersJsonNode = voiceJsonRoot.get("num_speakers");
-            if (datasetJsonNode == null || languageJsonNode == null) {
+            if (datasetJsonNode == null || audioJsonNode == null || languageJsonNode == null) {
                 throw new IOException("Unknown voice config structure");
             }
+            JsonNode qualityJsonNode = audioJsonNode.get("quality");
             JsonNode languageFamilyJsonNode = languageJsonNode.get("family");
             JsonNode languageRegionJsonNode = languageJsonNode.get("region");
             if (languageFamilyJsonNode == null || languageRegionJsonNode == null) {
@@ -298,6 +300,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
             }
             String voiceName = datasetJsonNode.textValue();
             String voiceUID = voiceName.replace(" ", "_");
+            String quality = qualityJsonNode.textValue();
             String languageFamily = languageFamilyJsonNode.textValue();
             String languageRegion = languageRegionJsonNode.textValue();
             int numSpeakers = numSpeakersJsonNode != null ? numSpeakersJsonNode.intValue() : 1;
@@ -309,6 +312,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
                     voices.add(new PiperTTSVoice( //
                             voiceUID + "_" + field, //
                             capitalize(voiceName + " " + field), //
+                            quality, //
                             languageFamily, //
                             languageRegion, //
                             modelPath, //
@@ -317,8 +321,8 @@ public class PiperTTSService extends AbstractCachedTTSService {
                 });
                 return voices;
             }
-            return List.of(new PiperTTSVoice(voiceUID, capitalize(voiceName), languageFamily, languageRegion, modelPath,
-                    configFile, Optional.empty()));
+            return List.of(new PiperTTSVoice(voiceUID, capitalize(voiceName), quality, languageFamily, languageRegion,
+                    modelPath, configFile, Optional.empty()));
         } catch (IOException e) {
             logger.warn("IOException reading voice info: {}", e.getMessage());
             return List.of();
@@ -477,17 +481,18 @@ public class PiperTTSService extends AbstractCachedTTSService {
         return new ByteArrayAudioStream(outputStream.toByteArray(), audioFormat);
     }
 
-    private record PiperTTSVoice(String voiceId, String voiceName, String languageFamily, String languageRegion,
-            Path voiceModelPath, Path voiceModelConfigPath, Optional<Long> speakerId) implements Voice {
+    private record PiperTTSVoice(String voiceId, String voiceName, String quality, String languageFamily,
+            String languageRegion, Path voiceModelPath, Path voiceModelConfigPath,
+            Optional<Long> speakerId) implements Voice {
         @Override
         public String getUID() {
             // Voice uid should be prefixed by service id to be listed properly on the UI.
-            return SERVICE_ID + ":" + voiceId + "-" + languageFamily + "_" + languageRegion;
+            return SERVICE_ID + ":" + voiceId + "-" + quality + "-" + languageFamily + "_" + languageRegion;
         }
 
         @Override
         public String getLabel() {
-            return voiceName;
+            return voiceName + " (" + quality + ")";
         }
 
         @Override
