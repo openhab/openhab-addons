@@ -61,4 +61,39 @@ public class RingBindingConstants {
     public static final String THING_PROPERTY_KIND = "kind";
     public static final String THING_PROPERTY_DEVICE_ID = "deviceId";
     public static final String THING_PROPERTY_OWNER_ID = "ownerId";
+
+    // device model kinds
+    public static final Set<String> CHIME_KINDS = Set.of("chime", "chime_v2");
+    public static final Set<String> CHIME_PRO_KINDS = Set.of("chime_pro", "chime_pro_v2");
+
+    public static final Set<String> DOORBELL_KINDS = Set.of("doorbot", "doorbell", "doorbell_v3");
+    public static final Set<String> DOORBELL_2_KINDS = Set.of("doorbell_v4", "doorbell_v5");
+    public static final Set<String> DOORBELL_3_KINDS = Set.of("doorbell_scallop_lite");
+    public static final Set<String> DOORBELL_4_KINDS = Set.of("doorbell_oyster");
+    public static final Set<String> DOORBELL_3_PLUS_KINDS = Set.of("doorbell_scallop");
+    public static final Set<String> DOORBELL_PRO_KINDS = Set.of("lpd_v1", "lpd_v2", "lpd_v3");
+    public static final Set<String> DOORBELL_PRO_2_KINDS = Set.of("lpd_v4");
+    public static final Set<String> DOORBELL_ELITE_KINDS = Set.of("jbox_v1");
+    public static final Set<String> DOORBELL_WIRED_KINDS = Set.of("doorbell_graham_cracker");
+    public static final Set<String> DOORBELL_BATTERY_KINDS = Set.of("df_doorbell_clownfish");
+    public static final Set<String> PEEPHOLE_CAM_KINDS = Set.of("doorbell_portal");
+    public static final Set<String> DOORBELL_GEN2_KINDS = Set.of("cocoa_doorbell", "cocoa_doorbell_v2");
+
+    public static final Set<String> FLOODLIGHT_CAM_KINDS = Set.of("hp_cam_v1", "floodlight_v2");
+    public static final Set<String> FLOODLIGHT_CAM_PRO_KINDS = Set.of("floodlight_pro");
+    public static final Set<String> FLOODLIGHT_CAM_PLUS_KINDS = Set.of("cocoa_floodlight");
+    public static final Set<String> INDOOR_CAM_KINDS = Set.of("stickup_cam_mini");
+    public static final Set<String> INDOOR_CAM_GEN2_KINDS = Set.of("stickup_cam_mini_v2");
+    public static final Set<String> INDOOR_CAM_PTZ_KINDS = Set.of("stickup_cam_mini_ptz_v1");
+    public static final Set<String> SPOTLIGHT_CAM_BATTERY_KINDS = Set.of("stickup_cam_v4");
+    public static final Set<String> SPOTLIGHT_CAM_WIRED_KINDS = Set.of("hp_cam_v2", "spotlightw_v2");
+    public static final Set<String> SPOTLIGHT_CAM_PLUS_KINDS = Set.of("cocoa_spotlight");
+    public static final Set<String> SPOTLIGHT_CAM_PRO_KINDS = Set.of("stickup_cam_longfin");
+    public static final Set<String> STICKUP_CAM_KINDS = Set.of("stickup_cam", "stickup_cam_v3");
+    public static final Set<String> STICKUP_CAM_BATTERY_KINDS = Set.of("stickup_cam_lunar");
+    public static final Set<String> STICKUP_CAM_ELITE_KINDS = Set.of("stickup_cam_elite", "stickup_cam_wired");
+    public static final Set<String> STICKUP_CAM_GEN3_KINDS = Set.of("cocoa_camera");
+    public static final Set<String> BEAM_KINDS = Set.of("beams_ct200_transformer");
+
+    public static final Set<String> INTERCOM_KINDS = Set.of("intercom_handset_audio", "intercom_handset_video");
 }
