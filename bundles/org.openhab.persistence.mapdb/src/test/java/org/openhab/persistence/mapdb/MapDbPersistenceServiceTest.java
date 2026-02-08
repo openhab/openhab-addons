@@ -26,6 +26,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.library.items.NumberItem;
@@ -100,7 +102,7 @@ class MapDbPersistenceServiceTest {
                 }
             } catch (Exception e) {
                 // Query might fail if data not ready yet, continue polling
-                logger.debug("Query attempt {} failed: {}", attempts, e.getMessage());
+                logger.info("Query attempt {} failed: {}", attempts, e.getMessage());
             }
 
             Thread.sleep(POLL_INTERVAL_MS);
@@ -133,12 +135,19 @@ class MapDbPersistenceServiceTest {
         }
     }
 
-    @Test
-    void storeAndRetrieveNumberValue() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void storeAndRetrieveNumberValue(boolean reloadAfterStore) throws Exception {
+        logger.info("Starting storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
         configureNumberItem();
 
         // Store a value
         service.store(numberItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service.activate();
+        }
 
         // Wait for background storage to complete
         waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
@@ -159,14 +168,22 @@ class MapDbPersistenceServiceTest {
         assertNotNull(item);
         assertEquals("TestNumber", item.getName());
         assertEquals(new DecimalType(42.5), item.getState());
+        logger.info("Ending storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
     }
 
-    @Test
-    void storeAndRetrieveStringValue() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void storeAndRetrieveStringValue(boolean reloadAfterStore) throws Exception {
+        logger.info("Starting storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
         configureStringItem();
 
         // Store a value
         service.store(stringItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service.activate();
+        }
 
         // Wait for background storage to complete
         waitForStorage(stringItem.getName(), STORAGE_TIMEOUT_MS);
@@ -192,14 +209,22 @@ class MapDbPersistenceServiceTest {
         assertNotNull(persistedItem);
         assertEquals("TestString", persistedItem.getName());
         assertEquals(new StringType("TestValue"), persistedItem.getState());
+        logger.info("Ending storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
     }
 
-    @Test
-    void storeAndRetrieveSwitchValue() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void storeAndRetrieveSwitchValue(boolean reloadAfterStore) throws Exception {
+        logger.info("Starting storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
         configureSwitchItem();
 
         // Store a value
         service.store(switchItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service.activate();
+        }
 
         // Wait for background storage to complete
         waitForStorage(switchItem.getName(), STORAGE_TIMEOUT_MS);
@@ -225,14 +250,22 @@ class MapDbPersistenceServiceTest {
         assertNotNull(persistedItem);
         assertEquals("TestSwitch", persistedItem.getName());
         assertEquals(OnOffType.ON, persistedItem.getState());
+        logger.info("Ending storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
     }
 
-    @Test
-    void queryWithTimeRange() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void queryWithTimeRange(boolean reloadAfterStore) throws Exception {
+        logger.info("Starting queryWithTimeRange with reloadAfterStore={}", reloadAfterStore);
         configureNumberItem();
 
         // Store a value
         service.store(numberItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service.activate();
+        }
 
         // Wait for background storage to complete
         waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
@@ -254,28 +287,21 @@ class MapDbPersistenceServiceTest {
         // try to get a non-existing persisted item
         PersistedItem persistedItem = service.persistedItem("UnknownTestItem", null);
         assertNull(persistedItem);
+        logger.info("Ending queryWithTimeRange with reloadAfterStore={}", reloadAfterStore);
     }
 
     @Test
     void serviceIdIsCorrect() throws Exception {
-        MapDbPersistenceService simpleService = new MapDbPersistenceService();
-        try {
-            simpleService.activate();
-            assertEquals("mapdb", simpleService.getId());
-        } finally {
-            simpleService.deactivate();
-        }
+        logger.info("Starting serviceIdIsCorrect test");
+        assertEquals("mapdb", service.getId());
+        logger.info("Ending serviceIdIsCorrect test");
     }
 
     @Test
     void labelIsCorrect() throws Exception {
-        MapDbPersistenceService simpleService = new MapDbPersistenceService();
-        try {
-            simpleService.activate();
-            assertEquals("MapDB", simpleService.getLabel(null));
-        } finally {
-            simpleService.deactivate();
-        }
+        logger.info("Starting labelIsCorrect test");
+        assertEquals("MapDB", service.getLabel(null));
+        logger.info("Ending labelIsCorrect test");
     }
 
     /*
