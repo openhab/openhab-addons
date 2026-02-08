@@ -73,6 +73,17 @@ public abstract class AbstractMathTransformationProfile implements TimeSeriesPro
         }
     }
 
+    /**
+     * Returns the configuration of the thing and transforms it to the given
+     * class.
+     *
+     * @param configurationClass configuration class
+     * @return configuration of thing in form of the given class
+     */
+    protected <T> T getConfigAs(ProfileContext context, Class<T> configurationClass) {
+        return context.getConfiguration().as(configurationClass);
+    }
+
     @Override
     public ProfileTypeUID getProfileTypeUID() {
         return profileTypeUID;
@@ -98,7 +109,11 @@ public abstract class AbstractMathTransformationProfile implements TimeSeriesPro
         Type resultType = source;
         if (result != null) {
             if (source instanceof DecimalType) {
-                resultType = DecimalType.valueOf(result);
+                try {
+                    resultType = DecimalType.valueOf(result);
+                } catch (NumberFormatException e) {
+                    resultType = source;
+                }
             } else if (source instanceof QuantityType) {
                 resultType = QuantityType.valueOf(result);
             }

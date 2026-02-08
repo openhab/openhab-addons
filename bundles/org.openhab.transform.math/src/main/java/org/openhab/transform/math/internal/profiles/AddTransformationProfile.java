@@ -13,7 +13,6 @@
 package org.openhab.transform.math.internal.profiles;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
@@ -23,6 +22,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.transform.math.internal.AddTransformationService;
+import org.openhab.transform.math.internal.profiles.config.AddTransformationProfileConfiguration;
 
 /**
  * Profile to offer the {@link AddTransformationService} on a ItemChannelLink.
@@ -37,13 +37,15 @@ public class AddTransformationProfile extends AbstractArithmeticMathTransformati
 
     static final String ADDEND_PARAM = "addend";
 
-    private final @Nullable String addend;
+    private final String addend;
 
     public AddTransformationProfile(ProfileCallback callback, ProfileContext context, TransformationService service,
             ItemRegistry itemRegistry) {
         super(callback, context, service, itemRegistry, PROFILE_TYPE_UID);
 
-        addend = getParam(context, ADDEND_PARAM);
+        AddTransformationProfileConfiguration config = getConfigAs(context,
+                AddTransformationProfileConfiguration.class);
+        addend = config.addend;
     }
 
     @Override

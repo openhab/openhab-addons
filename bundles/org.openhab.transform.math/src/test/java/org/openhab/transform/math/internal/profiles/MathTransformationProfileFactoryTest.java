@@ -50,9 +50,9 @@ public class MathTransformationProfileFactoryTest {
     private static final int NUMBER_OF_PROFILES = 6;
 
     private static final Map<String, Object> PROPERTIES = Map.ofEntries( //
-            Map.entry(AddTransformationProfile.ADDEND_PARAM, 5.1), //
-            Map.entry(DivideTransformationProfile.DIVISOR_PARAM, 60), //
-            Map.entry(MultiplyTransformationProfile.MULTIPLICAND_PARAM, 1000), //
+            Map.entry(AddTransformationProfile.ADDEND_PARAM, "5.1"), //
+            Map.entry(DivideTransformationProfile.DIVISOR_PARAM, "60"), //
+            Map.entry(MultiplyTransformationProfile.MULTIPLICAND_PARAM, "1000"), //
             Map.entry(BitwiseTransformationProfile.MASK_PARAM, "0x00000001"));
 
     private static final Configuration CONFIG = new Configuration(PROPERTIES);

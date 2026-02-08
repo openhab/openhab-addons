@@ -64,20 +64,24 @@ class DivideTransformationProfileTest {
     private static final String TEST_ITEM_NAME = "testItem";
 
     private static final Stream<Arguments> configurations() {
-        return Stream.of(Arguments.of(-20, DecimalType.valueOf("-2000"), null, null, DecimalType.valueOf("100")), //
-                Arguments.of(-20, DecimalType.valueOf("-2000"), null, DecimalType.valueOf("-20"),
+        return Stream.of(Arguments.of("-20", DecimalType.valueOf("-2000"), null, null, DecimalType.valueOf("100")), //
+                Arguments.of("-20", DecimalType.valueOf("-2000"), null, DecimalType.valueOf("-20"),
                         DecimalType.valueOf("100")), //
-                Arguments.of(-20, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, UnDefType.NULL,
+                Arguments.of("-20", DecimalType.valueOf("-2000"), TEST_ITEM_NAME, UnDefType.NULL,
                         DecimalType.valueOf("100")), //
-                Arguments.of(-20, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, UnDefType.UNDEF,
+                Arguments.of("-20", DecimalType.valueOf("-2000"), TEST_ITEM_NAME, UnDefType.UNDEF,
                         DecimalType.valueOf("100")), //
-                Arguments.of(-20, DecimalType.valueOf("-2000"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("-20"),
+                Arguments.of("-20", DecimalType.valueOf("-2000"), UNKNOWN_ITEM_NAME, DecimalType.valueOf("-20"),
                         DecimalType.valueOf("100")), //
-                Arguments.of(1, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, DecimalType.valueOf("-20"),
+                Arguments.of("1", DecimalType.valueOf("-2000"), TEST_ITEM_NAME, DecimalType.valueOf("-20"),
                         DecimalType.valueOf("100")), //
-                Arguments.of(1, DecimalType.valueOf("-2000"), TEST_ITEM_NAME, DecimalType.valueOf("0"),
+                Arguments.of("1", DecimalType.valueOf("-2000"), TEST_ITEM_NAME, QuantityType.valueOf("-20 m"),
                         DecimalType.valueOf("-2000")), //
-                Arguments.of(1, QuantityType.valueOf("1380 W"), TEST_ITEM_NAME, QuantityType.valueOf("230 V"),
+                Arguments.of("1", QuantityType.valueOf("-2000 m"), TEST_ITEM_NAME, DecimalType.valueOf("-20"),
+                        QuantityType.valueOf("100 m")), //
+                Arguments.of("1", DecimalType.valueOf("-2000"), TEST_ITEM_NAME, DecimalType.valueOf("0"),
+                        DecimalType.valueOf("-2000")), //
+                Arguments.of("1", QuantityType.valueOf("1380 W"), TEST_ITEM_NAME, QuantityType.valueOf("230 V"),
                         QuantityType.valueOf("6 W/V")));
     }
 
@@ -91,12 +95,12 @@ class DivideTransformationProfileTest {
     @Test
     public void testConfigurationWithZeroThrowsIllegalArgumentException() throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
-        assertThrows(IllegalArgumentException.class, () -> createProfile(callback, 0, null, null));
+        assertThrows(IllegalArgumentException.class, () -> createProfile(callback, "0", null, null));
     }
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnCommandFromHandler(Integer divisor, Command cmd, @Nullable String itemName,
+    public void testOnCommandFromHandler(String divisor, Command cmd, @Nullable String itemName,
             @Nullable State itemState, Command expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
         DivideTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
@@ -112,7 +116,7 @@ class DivideTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testOnStateUpdateFromHandler(Integer divisor, State state, @Nullable String itemName,
+    public void testOnStateUpdateFromHandler(String divisor, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
         DivideTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
@@ -128,7 +132,7 @@ class DivideTransformationProfileTest {
 
     @ParameterizedTest
     @MethodSource("configurations")
-    public void testTimeSeriesFromHandlerParameterized(Integer divisor, State state, @Nullable String itemName,
+    public void testTimeSeriesFromHandlerParameterized(String divisor, State state, @Nullable String itemName,
             @Nullable State itemState, State expectedResult) throws ItemNotFoundException {
         ProfileCallback callback = mock(ProfileCallback.class);
         DivideTransformationProfile profile = createProfile(callback, divisor, itemName, itemState);
@@ -150,7 +154,7 @@ class DivideTransformationProfileTest {
         assertThat(firstEntry.state(), is(expectedResult));
     }
 
-    private DivideTransformationProfile createProfile(ProfileCallback callback, Integer divisor,
+    private DivideTransformationProfile createProfile(ProfileCallback callback, String divisor,
             @Nullable String itemName, @Nullable State state) throws ItemNotFoundException {
         ProfileContext mockedProfileContext = mock(ProfileContext.class);
         ItemRegistry mockedItemRegistry = mock(ItemRegistry.class);

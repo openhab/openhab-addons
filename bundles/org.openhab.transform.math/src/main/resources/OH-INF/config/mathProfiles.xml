@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="profile:transform:ADD">
-		<parameter name="addend" type="decimal" required="true">
+		<parameter name="addend" type="text" required="true">
 			<label>Addend</label>
 			<description>Value to be added to the Item State.</description>
 		</parameter>
@@ -18,7 +18,7 @@
 	</config-description>
 
 	<config-description uri="profile:transform:MULTIPLY">
-		<parameter name="multiplicand" type="decimal" required="true">
+		<parameter name="multiplicand" type="text" required="true">
 			<label>Multiplicand</label>
 			<description>Value to be multiplied by the Item State.</description>
 		</parameter>
@@ -31,7 +31,7 @@
 	</config-description>
 
 	<config-description uri="profile:transform:DIVIDE">
-		<parameter name="divisor" type="decimal" required="true">
+		<parameter name="divisor" type="text" required="true">
 			<label>Divisor</label>
 			<description>Value by which the Item State is divided.</description>
 		</parameter>
