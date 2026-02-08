@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Warmup Binding</name>
-	<description>This is the binding for Warmup WiFi connected Thermostats primarily used for controlling underfloor
+	<description>This is the binding for Warmup Wi‑Fi–connected thermostats, primarily used for controlling underfloor
 		heating.</description>
 	<connection>cloud</connection>
 

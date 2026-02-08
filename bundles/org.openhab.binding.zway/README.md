@@ -28,19 +28,19 @@ The Binding uses the Z-Way library for Java ([GitHub](https://github.com/pathec/
 
 ## Supported Things
 
-The Z-Way Binding provides different thing types.
+The Z-Way Binding provides different Thing types.
 The core component is the bridge which represents the Z-Way server.
-For the integration of devices, two thing types are available.
+For the integration of devices, two Thing types are available.
 In Z-Way there are devices which represent physical devices and (virtual) devices which are defined in Apps.
 The difference is that physical devices usually have several functions.
 Z-Way server constructs (virtual) devices for each function, such as motion sensors or door contacts.
 In openHAB, these functions are bundled into physical devices and represented as things with channels for each function.
-This type of thing is a _Z-Wave Device_.
+This type of Thing is a _Z-Wave Device_.
 On the other hand all virtual devices are mapped to _Z-Way Virtual Devices_ with exactly one channel.
 
 - _Z-Way Server_ (Bridge) represents a bridge with general settings and communication tasks.
-- _Z-Way Virtual Device_ represents one (virtual) device with the corresponding channel. A bridge is necessary as an intermediary between openHAB thing and Z-Way device.
-- _Z-Wave Device_ represents a device of real world. Each device function will be mapped to a separate channel. The bridge is necessary as an intermediary between openHAB thing and Z-Way device.
+- _Z-Way Virtual Device_ represents one (virtual) device with the corresponding channel. A bridge is necessary as an intermediary between openHAB Thing and Z-Way device.
+- _Z-Wave Device_ represents a device of real world. Each device function will be mapped to a separate channel. The bridge is necessary as an intermediary between openHAB Thing and Z-Way device.
 
 ## Discovery
 
@@ -161,13 +161,13 @@ Unsupported Z-Way device types: Camera, SensorMultiline, Text. The integration o
 ## Locations
 
 The locations of the Z-Way devices are loaded during the discovery.
-Based on the location ID of Z-Way device, the name of the Z-Way room is then allocated to the location property of the thing.
+Based on the location ID of Z-Way device, the name of the Z-Way room is then allocated to the location property of the Thing.
 
 ## Developer stuff
 
 ### Known issues
 
-- The Z-Way Binding only works, when simple mode of item linking is enabled during thing creation.
+- The Z-Way Binding only works, when simple mode of item linking is enabled during Thing creation.
 
 ### Structure of Z-Way Binding
 

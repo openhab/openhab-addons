@@ -7,7 +7,7 @@
 	<config-description uri="io:openhabcloud">
 		<parameter name="mode" type="text" required="true">
 			<label>Mode</label>
-			<description>What features of the openHAB Cloud service should be used.</description>
+			<description>Features of the openHAB Cloud service that should be used.</description>
 			<options>
 				<option value="notification">Notifications</option>
 				<option value="remote">Notifications &amp; Remote Access</option>

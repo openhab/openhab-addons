@@ -126,6 +126,9 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
@@ -155,6 +158,9 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
@@ -188,6 +194,8 @@
 		<description>Device Status Information</description>
 		<channels>
 			<channel id="battery" typeId="battery"/>
+			<channel id="snapshot" typeId="snapshot"/>
+			<channel id="snapshot-timestamp" typeId="snapshot-timestamp"/>
 		</channels>
 	</channel-group-type>
 
@@ -268,5 +276,25 @@
 			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot">
+		<item-type>Image</item-type>
+		<label>Snapshot</label>
+		<description>Snapshot image from camera</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Snapshot DateTime</label>
+		<description>The date and time the snapshot was created</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

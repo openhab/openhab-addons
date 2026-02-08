@@ -68,6 +68,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
@@ -160,6 +161,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
+            if (RefreshType.REFRESH == command) {
+                return;
+            }
             if (channelUID.getId().equals(CHANNEL_RPC) || channelUID.getId().equals(CHANNEL_COMMAND)) {
                 String[] commandArray = command.toFullString().split(",", 2);
                 if (commandArray.length == 1) {
@@ -219,7 +223,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 updateState(RobotCapabilities.SEGMENT_CLEAN.getChannel(), new StringType("-"));
                 return;
             }
-            if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
+            if (channelUID.getId().equals(CHANNEL_FAN_CONTROL) && command instanceof DecimalType) {
                 if (Integer.valueOf(command.toString()) > 0) {
                     sendRPCCommand(COMMAND_SET_MODE, "[" + command.toString() + "]");
                 }
