@@ -25,11 +25,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,11 +74,12 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     private static final Path DB_DIR = new File(OpenHAB.getUserDataFolder(), "persistence").toPath().resolve("mapdb");
     private static final Path BACKUP_DIR = DB_DIR.resolve("backup");
     private static final String DB_FILE_NAME = "storage.mapdb";
+    private static final long DEACTIVATE_TIMEOUT_MS = 30000; // 30 seconds
 
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceService.class);
 
     private final ExecutorService threadPool = ThreadPoolManager.getPool(getClass().getSimpleName());
-    private final ConcurrentLinkedQueue<Future<?>> pendingTasks = new ConcurrentLinkedQueue<>();
+    private final AtomicInteger pendingTasks = new AtomicInteger(0);
     private volatile boolean active;
 
     /**
@@ -155,7 +153,19 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     public void deactivate() {
         logger.debug("MapDB persistence service deactivated");
         active = false;
-        waitForPendingTasks(30, TimeUnit.SECONDS);
+        long deadline = System.currentTimeMillis() + DEACTIVATE_TIMEOUT_MS;
+        while (pendingTasks.get() > 0 && System.currentTimeMillis() < deadline) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.warn("Interrupted while waiting for MapDB persistence tasks to finish.");
+                break;
+            }
+        }
+        if (pendingTasks.get() > 0) {
+            logger.warn("Timed out waiting for MapDB persistence tasks; {} tasks still pending.", pendingTasks.get());
+        }
         if (db != null) {
             db.close();
         }
@@ -205,48 +215,17 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         mItem.setTimestamp(lastStateUpdate != null ? Date.from(lastStateUpdate.toInstant()) : new Date());
         ZonedDateTime lastStateChange = item.getLastStateChange();
         mItem.setLastStateChange(lastStateChange != null ? Date.from(lastStateChange.toInstant()) : null);
-        Future<?> future = threadPool.submit(() -> {
-            String json = serialize(mItem);
-            map.put(localAlias, json);
-            db.commit();
-            logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
-        });
-        pendingTasks.add(future);
-        cleanupCompletedTasks();
-    }
-
-    private void cleanupCompletedTasks() {
-        pendingTasks.removeIf(Future::isDone);
-    }
-
-    private void waitForPendingTasks(long timeout, TimeUnit unit) {
-        long deadline = System.nanoTime() + unit.toNanos(timeout);
-        while (!pendingTasks.isEmpty()) {
-            Future<?> task = pendingTasks.poll();
-            if (task == null) {
-                break;
-            }
-            long remainingNanos = deadline - System.nanoTime();
-            if (remainingNanos <= 0) {
-                logger.warn("Timed out waiting for MapDB persistence tasks to finish; {} tasks remain.",
-                        pendingTasks.size() + 1);
-                return;
-            }
+        pendingTasks.incrementAndGet();
+        threadPool.submit(() -> {
             try {
-                task.get(remainingNanos, TimeUnit.NANOSECONDS);
-            } catch (TimeoutException e) {
-                pendingTasks.add(task);
-                logger.warn("Timed out waiting for MapDB persistence tasks to finish; {} tasks remain.",
-                        pendingTasks.size());
-                return;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                logger.warn("Interrupted while waiting for MapDB persistence tasks to finish.");
-                return;
-            } catch (Exception e) {
-                logger.debug("Persistence task failed while waiting for completion: {}", e.getMessage());
+                String json = serialize(mItem);
+                map.put(localAlias, json);
+                db.commit();
+                logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
+            } finally {
+                pendingTasks.decrementAndGet();
             }
-        }
+        });
     }
 
     @Override

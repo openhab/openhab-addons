@@ -135,10 +135,13 @@ class MapDbPersistenceServiceTest {
         }
     }
 
+    // Test storing and retrieving a number value, with and without service reload in between.
+    // With reloadAfterStore=true, this verifies that data is correctly persisted and can be retrieved
+    // even after a restart.
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveNumberValue(boolean reloadAfterStore) throws Exception {
-        logger.info("Starting storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Starting storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
         configureNumberItem();
 
         // Store a value
@@ -168,13 +171,13 @@ class MapDbPersistenceServiceTest {
         assertNotNull(item);
         assertEquals("TestNumber", item.getName());
         assertEquals(new DecimalType(42.5), item.getState());
-        logger.info("Ending storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Ending storeAndRetrieveNumberValue with reloadAfterStore={}", reloadAfterStore);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveStringValue(boolean reloadAfterStore) throws Exception {
-        logger.info("Starting storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Starting storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
         configureStringItem();
 
         // Store a value
@@ -209,13 +212,13 @@ class MapDbPersistenceServiceTest {
         assertNotNull(persistedItem);
         assertEquals("TestString", persistedItem.getName());
         assertEquals(new StringType("TestValue"), persistedItem.getState());
-        logger.info("Ending storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Ending storeAndRetrieveStringValue with reloadAfterStore={}", reloadAfterStore);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void storeAndRetrieveSwitchValue(boolean reloadAfterStore) throws Exception {
-        logger.info("Starting storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Starting storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
         configureSwitchItem();
 
         // Store a value
@@ -250,13 +253,13 @@ class MapDbPersistenceServiceTest {
         assertNotNull(persistedItem);
         assertEquals("TestSwitch", persistedItem.getName());
         assertEquals(OnOffType.ON, persistedItem.getState());
-        logger.info("Ending storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Ending storeAndRetrieveSwitchValue with reloadAfterStore={}", reloadAfterStore);
     }
 
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void queryWithTimeRange(boolean reloadAfterStore) throws Exception {
-        logger.info("Starting queryWithTimeRange with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Starting queryWithTimeRange with reloadAfterStore={}", reloadAfterStore);
         configureNumberItem();
 
         // Store a value
@@ -287,21 +290,17 @@ class MapDbPersistenceServiceTest {
         // try to get a non-existing persisted item
         PersistedItem persistedItem = service.persistedItem("UnknownTestItem", null);
         assertNull(persistedItem);
-        logger.info("Ending queryWithTimeRange with reloadAfterStore={}", reloadAfterStore);
+        logger.debug("Ending queryWithTimeRange with reloadAfterStore={}", reloadAfterStore);
     }
 
     @Test
     void serviceIdIsCorrect() throws Exception {
-        logger.info("Starting serviceIdIsCorrect test");
         assertEquals("mapdb", service.getId());
-        logger.info("Ending serviceIdIsCorrect test");
     }
 
     @Test
     void labelIsCorrect() throws Exception {
-        logger.info("Starting labelIsCorrect test");
         assertEquals("MapDB", service.getLabel(null));
-        logger.info("Ending labelIsCorrect test");
     }
 
     /*
