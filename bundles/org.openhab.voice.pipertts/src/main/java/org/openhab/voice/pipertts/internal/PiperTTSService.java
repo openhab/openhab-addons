@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -116,7 +117,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
         activateTask = executor.submit(() -> {
             try {
                 setupNativeDependencies();
-                piper = new PiperJNI();
+                PiperJNI piper = this.piper = new PiperJNI();
                 piper.initialize(true, false);
                 logger.debug("Using Piper version {}", piper.getPiperVersion());
                 ready = true;
@@ -129,6 +130,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     @Deactivate
     private void deactivate() {
+        Future<?> activateTask = this.activateTask;
         if (activateTask != null && !activateTask.isDone()) {
             activateTask.cancel(true);
         }
@@ -337,6 +339,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
         VoiceModel voiceModel = null;
         boolean usingPreloadedModel = false;
         short[] buffer;
+        int sampleRate;
         final VoiceModel preloadedModel = this.preloadedModel;
         try {
             try {
@@ -359,6 +362,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
             try {
                 logger.debug("Generating audio for: '{}'", text);
                 buffer = getPiper().textToAudio(voiceModel.piperVoice, text);
+                sampleRate = voiceModel.sampleRate;
                 logger.debug("Generated {} samples of audio", buffer.length);
             } catch (IOException e) {
                 throw new TTSException("Voice generation failed: " + e.getMessage());
@@ -381,7 +385,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
         }
         try {
             logger.debug("Return re-encoded audio stream");
-            return getAudioStream(buffer, voiceModel.sampleRate, audioFormat);
+            return getAudioStream(buffer, sampleRate, audioFormat);
         } catch (IOException e) {
             throw new TTSException("Error while creating audio stream: " + e.getMessage());
         }
@@ -488,11 +492,14 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
         @Override
         public Locale getLocale() {
-            return new Locale(languageFamily, languageRegion);
+            return Locale.of(languageFamily, languageRegion);
         }
     }
 
     private static class LibraryNotLoaded extends Exception {
+        @Serial
+        private static final long serialVersionUID = 538222631776595180L;
+
         private LibraryNotLoaded() {
             super("Library not loaded");
         }
