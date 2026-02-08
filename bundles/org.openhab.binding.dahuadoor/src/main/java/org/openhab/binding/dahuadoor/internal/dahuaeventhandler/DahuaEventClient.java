@@ -99,7 +99,7 @@ public class DahuaEventClient implements Runnable {
      */
     private String md5(String input) throws Exception {
         java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-        byte[] array = md.digest(input.getBytes());
+        byte[] array = md.digest(input.getBytes(StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder();
         for (byte b : array) {
             sb.append(String.format("%02x", b));
