@@ -87,7 +87,13 @@ public class SmartThingsCloudBridgeHandler extends SmartThingsBridgeHandler {
     public void registerSubcriptions() {
         logger.info("registerSubcriptions()");
         SmartThingsApi api = this.getSmartThingsApi();
-        api.registerSubscription();
+
+        boolean sucess = false;
+
+        sucess = api.registerSSESubscription();
+        if (!sucess) {
+            api.registerCallbackSubscription();
+        }
     }
 
     public void initCapabilites() throws SmartThingsException {

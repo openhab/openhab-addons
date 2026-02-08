@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SmartThingsBridgeConfig {
 
-    public String clientId = "f9fd90b7-c4bb-49c1-974f-e80b89a7327f";
-    public String clientSecret = "ec3d221b-72f6-4612-bb92-58ae5ebfe562";
+    public String clientId = "e91265c7-42b1-4928-ab52-67ff1f80cc5c";
+    public String clientSecret = "85697243-75e2-4e2b-ac4e-d29e784b2116";
 
     @Override
     public String toString() {

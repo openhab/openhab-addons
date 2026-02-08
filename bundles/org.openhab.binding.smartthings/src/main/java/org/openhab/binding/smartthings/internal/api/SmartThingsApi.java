@@ -32,11 +32,14 @@ import javax.ws.rs.sse.SseEventSource;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.dto.AppRequest;
 import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.dto.Event;
 import org.openhab.binding.smartthings.internal.dto.EventRegistration;
 import org.openhab.binding.smartthings.internal.dto.OAuthConfigRequest;
+import org.openhab.binding.smartthings.internal.dto.SMEvent;
+import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsApp;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
@@ -238,7 +241,7 @@ public class SmartThingsApi {
             appRequest.classifications[0] = "AUTOMATION";
 
             String body = gson.toJson(appRequest);
-            AppResponse appResponse = doRequest(AppResponse.class, uri, body, false);
+            AppResponse appResponse = doRequest(HttpMethod.POST, AppResponse.class, uri, body);
 
             return appResponse;
         } catch (final Exception e) {
@@ -256,7 +259,7 @@ public class SmartThingsApi {
             oAuthConfig.scope[0] = "r:devices:*";
 
             String body = gson.toJson(oAuthConfig);
-            doRequest(JsonObject.class, uri, body, true);
+            doRequest(HttpMethod.PUT, JsonObject.class, uri, body);
 
             logger.info("");
 
@@ -290,7 +293,7 @@ public class SmartThingsApi {
     public void sendCommand(String deviceId, String jsonMsg) throws SmartThingsException {
         try {
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/commands";
-            doRequest(JsonObject.class, uri, jsonMsg, false);
+            doRequest(HttpMethod.POST, JsonObject.class, uri, jsonMsg);
         } catch (final Exception e) {
             throw new SmartThingsException(
                     String.format("SmartThingsApi : Unable to send command: %s %s", deviceId, jsonMsg), e);
@@ -301,7 +304,7 @@ public class SmartThingsApi {
         try {
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/status";
 
-            SmartThingsStatus res = doRequest(SmartThingsStatus.class, uri, null, false);
+            SmartThingsStatus res = doRequest(SmartThingsStatus.class, uri);
             return res;
         } catch (final Exception e) {
             throw new SmartThingsException(
@@ -310,30 +313,22 @@ public class SmartThingsApi {
     }
 
     public <T> T doRequest(Class<T> resultClass, String uri) throws SmartThingsException {
-        return doRequest(resultClass, uri, null, null, false);
+        return doRequest(HttpMethod.GET, resultClass, uri, null, null);
     }
 
     public <T> T doRequest(Class<T> resultClass, String uri, @Nullable SmartThingsNetworkCallback<T> callback)
             throws SmartThingsException {
-        return doRequest(resultClass, uri, null, callback, false);
+        return doRequest(HttpMethod.GET, resultClass, uri, null, callback);
     }
 
-    public <T> T doRequest(Class<T> resultClass, String uri, @Nullable String body, Boolean update)
+    public <T> T doRequest(HttpMethod httpMethod, Class<T> resultClass, String uri, @Nullable String body)
             throws SmartThingsException {
-        return doRequest(resultClass, uri, body, null, update);
+        return doRequest(httpMethod, resultClass, uri, body, null);
     }
 
-    public <T> T doRequest(Class<T> resultClass, String uri, @Nullable String body,
-            @Nullable SmartThingsNetworkCallback<T> callback, Boolean update) throws SmartThingsException {
+    public <T> T doRequest(HttpMethod httpMethod, Class<T> resultClass, String uri, @Nullable String body,
+            @Nullable SmartThingsNetworkCallback<T> callback) throws SmartThingsException {
         try {
-            HttpMethod httpMethod = HttpMethod.GET;
-            if (body != null) {
-                if (update) {
-                    httpMethod = HttpMethod.PUT;
-                } else {
-                    httpMethod = HttpMethod.POST;
-                }
-            }
             return networkConnector.doRequest(resultClass, uri, callback, getToken(), body, httpMethod);
         } catch (final Exception e) {
             logger.trace("Request failed : {}", uri);
@@ -341,9 +336,9 @@ public class SmartThingsApi {
         }
     }
 
-    public void registerSubscription() {
+    public boolean registerSSESubscription() {
         try {
-            String installedAppId = "22d02ddc-5794-4347-99f1-75bae79bcefe";
+            String appId = bridgeHandler.getAppId();
             String subscriptionUri = "https://api.smartthings.com/subscriptions";
 
             SmartThingsLocation[] locationsObj = this.getAllLocations();
@@ -357,7 +352,7 @@ public class SmartThingsApi {
             EventRegistration evtReg = new EventRegistration();
             evtReg.name = "openHAB sub";
             evtReg.version = 20250122;
-            evtReg.clientDeviceId = "iapp_" + installedAppId;
+            evtReg.clientDeviceId = "iapp_" + appId;
             evtReg.subscriptionFilters = new EventRegistration.SubscriptionFilters[1];
 
             evtReg.subscriptionFilters[0] = new EventRegistration.SubscriptionFilters("LOCATIONIDS", locations,
@@ -388,11 +383,57 @@ public class SmartThingsApi {
             sseEvents.put(locations[0], source);
             source.open();
 
-            logger.debug("result");
+            return true;
 
         } catch (Exception ex) {
             logger.debug("ex: {}", ex.toString());
         }
+        return false;
+    }
+
+    public boolean registerCallbackSubscription() {
+        try {
+            String appId = bridgeHandler.getAppId();
+            String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + appId + "/subscriptions";
+
+            SmartThingsLocation[] locationsObj = this.getAllLocations();
+
+            String[] locations = new String[locationsObj.length];
+            for (int idx = 0; idx < locationsObj.length; idx++) {
+                locations[idx] = locationsObj[idx].locationId;
+            }
+
+            // Remove old subscriptions before recreating them
+            doRequest(HttpMethod.DELETE, JsonObject.class, subscriptionUri, null, null);
+            doRequest(JsonObject.class, subscriptionUri);
+
+            SmartThingsApi api = bridgeHandler.getSmartThingsApi();
+
+            SmartThingsDevice[] devices = api.getAllDevices();
+            for (SmartThingsDevice dev : devices) {
+                try {
+                    if (!dev.locationId.equals(locations[0])) {
+                        continue;
+                    }
+
+                    SMEvent evt = new SMEvent();
+                    evt.sourceType = SmartThingsBindingConstants.EVT_TYPE_DEVICE;
+                    evt.device = new device(dev.deviceId, SmartThingsBindingConstants.GROUPD_ID_MAIN, true, null);
+
+                    String body = gson.toJson(evt);
+                    doRequest(HttpMethod.POST, JsonObject.class, subscriptionUri, body, null);
+                } catch (SmartThingsException ex) {
+                    logger.error("Unable to register subscriptions: {} {} ", ex.getMessage(), dev.deviceId);
+                }
+            }
+
+            return true;
+
+        } catch (SmartThingsException ex) {
+            logger.error("Unable to register subscriptions: {}", ex.getMessage());
+        }
+
+        return false;
     }
 
     public void onEvent(InboundSseEvent event) {
@@ -406,24 +447,27 @@ public class SmartThingsApi {
         try {
             final Event evt = gson.fromJson(data, Event.class);
 
-            String deviceId = evt.deviceEvent.deviceId;
-            String componentId = evt.deviceEvent.componentId;
-            String capa = evt.deviceEvent.capability;
-            String attr = evt.deviceEvent.attribute;
-            String value = evt.deviceEvent.value;
+            if (evt != null) {
+                String deviceId = evt.deviceEvent.deviceId;
+                String componentId = evt.deviceEvent.componentId;
+                String capa = evt.deviceEvent.capability;
+                String attr = evt.deviceEvent.attribute;
+                String value = evt.deviceEvent.value;
 
-            Bridge bridge = bridgeHandler.getThing();
-            List<Thing> things = bridge.getThings();
+                Bridge bridge = bridgeHandler.getThing();
+                List<Thing> things = bridge.getThings();
 
-            Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
-                    .findFirst();
-            if (theThingOpt.isPresent()) {
-                Thing theThing = theThingOpt.get();
+                Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
+                        .findFirst();
+                if (theThingOpt.isPresent()) {
+                    Thing theThing = theThingOpt.get();
 
-                ThingHandler handler = theThing.getHandler();
-                SmartThingsThingHandler smarthingsHandler = (SmartThingsThingHandler) handler;
-                if (smarthingsHandler != null) {
-                    smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr, value);
+                    ThingHandler handler = theThing.getHandler();
+                    SmartThingsThingHandler smarthingsHandler = (SmartThingsThingHandler) handler;
+                    if (smarthingsHandler != null) {
+                        smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
+                                value);
+                    }
                 }
             }
         } catch (Exception ex) {

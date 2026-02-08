@@ -223,7 +223,7 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
         if (response != null) {
             if (resultClass.isArray()) {
                 JsonObject obj = gSon.fromJson(response, JsonObject.class);
-                if (obj.has("items")) {
+                if (obj != null && obj.has("items")) {
                     final @Nullable T resultObj = gSon.fromJson(obj.get("items"), resultClass);
                     if (resultObj != null) {
                         return resultObj;

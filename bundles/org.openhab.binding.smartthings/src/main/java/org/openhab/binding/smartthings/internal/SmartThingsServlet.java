@@ -36,9 +36,6 @@ import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.Config
 import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.ConfigurationData.Page;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle;
 import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
-import org.openhab.binding.smartthings.internal.dto.SMEvent;
-import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
-import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsLocation;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
@@ -52,7 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 /**
  * Receives all HTTP data from SmartThings
@@ -70,7 +66,6 @@ public class SmartThingsServlet extends SmartThingsBaseServlet {
 
     // Page templates
 
-    private String installedAppId = "";
     private String installedLocation = "";
 
     public Boolean setupInProgress = false;
@@ -128,13 +123,19 @@ public class SmartThingsServlet extends SmartThingsBaseServlet {
             String s = rdr.lines().collect(Collectors.joining());
 
             LifeCycle resultObj = gson.fromJson(s, LifeCycle.class);
+            if (resultObj == null) {
+                return;
+            }
 
-            logger.trace("Callback called with lifeCycle: {}", resultObj.lifecycle);
+            String eventType = resultObj.getEventType();
+
+            logger.trace("Callback called with eventType: {}", eventType);
 
             // ========================================
             // Event from webhook CB
             // ========================================
-            if (resultObj.lifecycle.equals(SmartThingsBindingConstants.LIFECYCLE_EVENT)) {
+
+            if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_EVENT)) {
                 Data data = resultObj.eventData;
                 String deviceId = data.events[0].deviceEvent.deviceId;
                 String componentId = data.events[0].deviceEvent.componentId;
@@ -163,11 +164,12 @@ public class SmartThingsServlet extends SmartThingsBaseServlet {
                 }
 
                 logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
-            } else if (resultObj.lifecycle.equals(SmartThingsBindingConstants.LIFECYCLE_INSTALL)) {
-                installedAppId = resultObj.installData.installedApp.installedAppId;
+            } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_INSTALL)) {
+                String appId = resultObj.installData.installedApp.installedAppId;
                 String locationId = resultObj.installData.installedApp.locationId;
 
                 try {
+                    bridgeHandler.setAppId(appId);
                     SmartThingsLocation loc = api.getLocation(locationId);
                     installedLocation = loc.name;
                 } catch (SmartThingsException ex) {
@@ -178,17 +180,18 @@ public class SmartThingsServlet extends SmartThingsBaseServlet {
 
                 setupInProgress = false;
                 logger.info("INSTALL");
-            } else if (resultObj.lifecycle.equals(SmartThingsBindingConstants.LIFECYCLE_UPDATE)) {
-                installedAppId = resultObj.updateData.installedApp.installedAppId;
+            } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_UPDATE)) {
+                String appId = resultObj.updateData.installedApp.installedAppId;
+                bridgeHandler.setAppId(appId);
 
                 // String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
                 // + "/subscriptions";
                 // registerSubscriptions(tokenInstallUpdate, locationId);
 
                 logger.info("UPDATE");
-            } else if (resultObj.lifecycle.equals(SmartThingsBindingConstants.LIFECYCLE_EXECUTE)) {
+            } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_EXECUTE)) {
                 logger.info("EXCUTE");
-            } else if (resultObj.lifecycle.equals(SmartThingsBindingConstants.LIFECYCLE_CONFIGURATION)
+            } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_CONFIGURATION)
                     && resultObj.configurationData.phase().equals(SmartThingsBindingConstants.PHASE_INITIALIZE)) {
                 ConfigurationResponse response = new ConfigurationResponse();
                 response.configurationData = response.new ConfigurationData();
@@ -205,7 +208,7 @@ public class SmartThingsServlet extends SmartThingsBaseServlet {
 
                 String responseSt = gson.toJson(response);
                 resp.getWriter().print(responseSt);
-            } else if (resultObj.lifecycle.equals(SmartThingsBindingConstants.LIFECYCLE_CONFIGURATION)
+            } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_CONFIGURATION)
                     && resultObj.configurationData.phase().equals(SmartThingsBindingConstants.PHASE_PAGE)) {
                 ConfigurationResponse response = new ConfigurationResponse();
                 response.configurationData = response.new ConfigurationData();
@@ -220,7 +223,7 @@ public class SmartThingsServlet extends SmartThingsBaseServlet {
 
                 String responseSt = gson.toJson(response);
                 resp.getWriter().print(responseSt);
-            } else if (resultObj.lifecycle.equals("CONFIRMATION")) {
+            } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_CONFIRMATION)) {
                 String appId = resultObj.confirmationData.appId();
                 String confirmUrl = resultObj.confirmationData.confirmationUrl();
 
@@ -239,53 +242,17 @@ public class SmartThingsServlet extends SmartThingsBaseServlet {
                     logger.error("error during confirmation {}", confirmUrl);
                 }
 
-                try {
-                    api.createAppOAuth(appId);
-                } catch (SmartThingsException ex) {
-                    logger.error("Unable to setup app oauth settings!!");
-                }
+                // try {
+                // api.createAppOAuth(appId);
+                // } catch (SmartThingsException ex) {
+                // logger.error("Unable to setup app oauth settings!!");
+                // }
 
                 logger.trace("CONFIRMATION {}", confirmUrl);
             }
+
         }
         logger.trace("SmartThings servlet returning.");
-    }
-
-    protected void registerSubscriptions(String tokenInstallUpdate, String locationId) {
-        try {
-            String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
-                    + "/subscriptions";
-
-            // Remove old subscriptions before recreating them
-            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, "",
-                    HttpMethod.DELETE);
-
-            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, "", HttpMethod.GET);
-
-            SmartThingsApi api = bridgeHandler.getSmartThingsApi();
-
-            SmartThingsDevice[] devices = api.getAllDevices();
-            for (SmartThingsDevice dev : devices) {
-                try {
-                    if (!dev.locationId.equals(locationId)) {
-                        continue;
-                    }
-
-                    SMEvent evt = new SMEvent();
-                    evt.sourceType = SmartThingsBindingConstants.EVT_TYPE_DEVICE;
-                    evt.device = new device(dev.deviceId, SmartThingsBindingConstants.GROUPD_ID_MAIN, true, null);
-
-                    String body = gson.toJson(evt);
-                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, body,
-                            HttpMethod.POST);
-                } catch (SmartThingsException ex) {
-                    logger.error("Unable to register subscriptions: {} {} ", ex.getMessage(), dev.deviceId);
-                }
-            }
-
-        } catch (SmartThingsException ex) {
-            logger.error("Unable to register subscriptions: {}", ex.getMessage());
-        }
     }
 
     protected void setupApp(String redirectUrl) {

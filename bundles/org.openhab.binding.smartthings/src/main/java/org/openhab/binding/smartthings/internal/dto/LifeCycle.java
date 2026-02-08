@@ -19,11 +19,23 @@ package org.openhab.binding.smartthings.internal.dto;
  * @author Laurent ARNAL - Initial contribution
  */
 public class LifeCycle {
+    public String messageType;
     public String lifecycle;
+
     public String excutionId;
     public String appId;
     public String locale;
     public String version;
+
+    public String getEventType() {
+        if (messageType != null) {
+            return messageType;
+        }
+        if (lifecycle != null) {
+            return lifecycle;
+        }
+        return "";
+    }
 
     public record confirmationData(String appId, String confirmationUrl) {
     }

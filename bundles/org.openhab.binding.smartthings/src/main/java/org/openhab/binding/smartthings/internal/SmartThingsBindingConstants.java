@@ -129,11 +129,13 @@ public class SmartThingsBindingConstants {
     public static final String CAPABILITY = "capability";
     public static final String ATTRIBUTE = "attribute";
 
-    public static final String LIFECYCLE_EVENT = "EVENT";
-    public static final String LIFECYCLE_INSTALL = "INSTALL";
-    public static final String LIFECYCLE_UPDATE = "UPDATE";
-    public static final String LIFECYCLE_CONFIGURATION = "CONFIGURATION";
-    public static final String LIFECYCLE_EXECUTE = "EXECUTE";
+    public static final String EVENT_TYPE_EVENT = "EVENT";
+    public static final String EVENT_TYPE_INSTALL = "INSTALL";
+    public static final String EVENT_TYPE_UPDATE = "UPDATE";
+    public static final String EVENT_TYPE_CONFIGURATION = "CONFIGURATION";
+    public static final String EVENT_TYPE_CONFIRMATION = "CONFIRMATION";
+    public static final String EVENT_TYPE_EXECUTE = "EXECUTE";
+
     public static final String PHASE_PAGE = "PAGE";
     public static final String PHASE_INITIALIZE = "INITIALIZE";
 }
