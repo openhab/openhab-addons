@@ -68,13 +68,17 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (getThingUID(service) instanceof ThingUID uid) {
+            String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
+                    .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
+            if (ipAddress == null) {
+                return null;
+            }
+
             Map<String, String> properties = getProperties(service);
 
             String uniqueId = properties.get("id"); // unique id
-            String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
-                    .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
             int port = service.getPort();
-            if (port != 0) {
+            if (port > 0) {
                 ipAddress = ipAddress + ":" + port;
             }
 
