@@ -40,6 +40,9 @@ public class StickupcamHandler extends RingDeviceHandler {
     private int lastBattery = -1;
     private long lastSnapshotTimestamp = -1;
     private TimeZoneProvider timeZoneProvider;
+    private boolean batterySupport = false;
+    private boolean lightSupport = false;
+    private boolean sirenSupport = false;
 
     public StickupcamHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -52,13 +55,13 @@ public class StickupcamHandler extends RingDeviceHandler {
         super.initialize(Stickupcam.class);
         String kind = thing.getProperties().get(THING_PROPERTY_KIND);
         if (BATTERY_KINDS.contains(kind)) {
-            logger.info("Device {} supports battery.", kind);
+            batterySupport = true;
         }
         if (LIGHT_KINDS.contains(kind)) {
-            logger.info("Device {} supports light.", kind);
+            lightSupport = true;
         }
         if (SIREN_KINDS.contains(kind)) {
-            logger.info("Device {} supports siren.", kind);
+            sirenSupport = true;
         }
     }
 
@@ -78,16 +81,24 @@ public class StickupcamHandler extends RingDeviceHandler {
         if (device == null) {
             initialize();
         }
+        if (lightSupport == true) {
+            logger.info("light supported for {}", getThing().getUID().getId());
+        }
+        if (sirenSupport == true) {
+            logger.info("siren supported for {}", getThing().getUID().getId());
+        }
         RingDeviceTO deviceTO = device.getDeviceStatus();
-        if (deviceTO.health.batteryPercentage != lastBattery) {
-            logger.debug("Battery Level: {}", deviceTO.battery);
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
-            updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
-            lastBattery = deviceTO.health.batteryPercentage;
-        } else {
-            logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
-                    deviceTO.health.batteryPercentage, lastBattery);
+        if (batterySupport == true) {
+            if (deviceTO.health.batteryPercentage != lastBattery) {
+                logger.debug("Battery Level: {}", deviceTO.battery);
+                ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_BATTERY);
+                updateState(channelUID, new DecimalType(deviceTO.health.batteryPercentage));
+                lastBattery = deviceTO.health.batteryPercentage;
+            } else {
+                logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
+                        deviceTO.health.batteryPercentage, lastBattery);
 
+            }
         }
 
         long timestamp = getSnapshotTimestamp();
