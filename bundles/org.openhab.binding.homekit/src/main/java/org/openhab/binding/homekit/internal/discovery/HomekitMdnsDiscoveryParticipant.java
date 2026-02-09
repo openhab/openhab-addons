@@ -68,13 +68,17 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         if (getThingUID(service) instanceof ThingUID uid) {
+            String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
+                    .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
+            if (ipAddress == null) {
+                return null;
+            }
+
             Map<String, String> properties = getProperties(service);
 
             String uniqueId = properties.get("id"); // unique id
-            String ipAddress = Arrays.stream(service.getInet4Addresses()).filter(Objects::nonNull)
-                    .map(ipv4 -> ipv4.getHostAddress()).findFirst().orElse(null);
             int port = service.getPort();
-            if (port != 0) {
+            if (port > 0) {
                 ipAddress = ipAddress + ":" + port;
             }
 
@@ -154,14 +158,18 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     }
 
     /**
-     * Returns the fully qualified host name being the mDNS qualified service name plus, if the port is neither '0'
-     * nor the default 80, the respective suffix e.g. 'foobar._hap._tcp.local.' or 'foobar._hap._tcp.local.:12345'
+     * Returns the HomeKit host name. This is used in the 'Host' header in HAP HTTP requests. The name is based on the
+     * accessory's mDNS server name. Duplicate accessories will disambiguate their names via a '-' suffix according to
+     * the mDNS RFC. Spaces are escaped as '\032'. Any '.' suffix after the 'local' is trimmed. And if the port is
+     * neither '0' nor the default 80 then a port suffix is added. For example: my\032accessory-2.local:12345
      *
      * @param service the ServiceInfo object.
-     * @return the normalized host name.
+     * @return the HomeKit HTTP HAP Host header name.
      */
     private String getHostName(ServiceInfo service) {
-        String hostName = service.getQualifiedName();
+        String hostName = service.getServer();
+        hostName = hostName.endsWith(".") ? hostName.substring(0, hostName.length() - 1) : hostName;
+        hostName = hostName.replace(" ", "\\032");
         int port = service.getPort();
         if (port != 80 && port != 0) {
             hostName += ":" + port;

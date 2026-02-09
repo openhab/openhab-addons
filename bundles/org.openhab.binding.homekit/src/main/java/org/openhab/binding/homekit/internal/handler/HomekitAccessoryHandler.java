@@ -35,6 +35,7 @@ import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.enums.StatusCode;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
@@ -73,7 +74,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
-import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
@@ -101,6 +101,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private static final Set<CharacteristicType> LIGHT_MODEL_RELEVANT_TYPES = Set.of(CharacteristicType.HUE,
             CharacteristicType.SATURATION, CharacteristicType.BRIGHTNESS, CharacteristicType.COLOR_TEMPERATURE,
             CharacteristicType.ON);
+
+    // Accessory Categories relevant for snapshot channel
+    private static final Set<AccessoryCategory> CAMERA_ACCESSORY_CATEGORIES = Set.of(AccessoryCategory.IP_CAMERA,
+            AccessoryCategory.VIDEO_DOORBELL);
+
+    // Characteristic iids relevant for triggering snapshot channel refreshes
+    private static final Map<Long, CharacteristicType> SNAPSHOT_REFRESH_TRIGGERS = new HashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
@@ -293,7 +300,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     if (acceptedItemType.startsWith(CoreItemFactory.NUMBER)) {
                         String[] itemTypeParts = acceptedItemType.split(":");
                         if (itemTypeParts.length > 1
-                                && getStateDescription(channel) instanceof StateDescriptionFragment stateDescription
+                                && getStateDescription(channel) instanceof StateDescription stateDescription
                                 && UnitUtils.parseUnit(stateDescription.getPattern()) instanceof Unit<?> channelUnit
                                 && itemTypeParts[1].equalsIgnoreCase(UnitUtils.getDimensionName(channelUnit))) {
                             yield QuantityType.valueOf(value.getAsNumber().doubleValue(), channelUnit);
@@ -380,12 +387,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
                             Channel channel = builder.build();
                             uniqueChannelsMap.put(channelId, channel);
-
-                            logger.trace(
-                                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
-                                    channel.getDescription(), channel.getKind(), channel.getLabel(),
-                                    channel.getProperties(), channel.getUID());
+                            logChannelInformation(channel);
                         }
                     }
                 });
@@ -395,10 +397,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModelFinalize(accessory, uniqueChannelsMap);
         stopMoveFinalize(accessory, uniqueChannelsMap);
         eventingPollingFinalize(accessory, uniqueChannelsMap);
-
-        String oldLabel = thing.getLabel();
-        String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
-        List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
 
         Map<String, String> oldProperties = new HashMap<>(thing.getProperties());
         Map<String, String> getProperties = accessory.getProperties(thing.getUID(), typeProvider, i18nProvider, bundle);
@@ -410,21 +408,34 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             newProperties = null;
         }
 
-        String oldEquipmentTag = thing.getSemanticEquipmentTag();
-        SemanticTag newEquipmentTag;
-        if (oldEquipmentTag != null && oldEquipmentTag.isEmpty()) {
-            newEquipmentTag = null;
-        } else {
-            newEquipmentTag = accessory.getSemanticEquipmentTag();
-            if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
-                    && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
-                    && AccessoryCategory.OTHER != category) {
-                newEquipmentTag = accessory.getSemanticEquipmentTag(category);
-            }
-            if (newEquipmentTag == null) {
-                newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
-            }
+        SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
+        if (newEquipmentTag == null && oldProperties.get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                && AccessoryCategory.OTHER != category) {
+            newEquipmentTag = accessory.getSemanticEquipmentTag(category);
         }
+        if (newEquipmentTag == null) {
+            newEquipmentTag = accessory.getSemanticEquipmentTagFromServices();
+        }
+
+        String oldEquipmentTag = thing.getSemanticEquipmentTag();
+        if (oldEquipmentTag != null && !oldEquipmentTag.isEmpty()) {
+            newEquipmentTag = null;
+        }
+
+        if (isCamera(accessory)) {
+            ChannelBuilder builder = ChannelBuilder
+                    .create(new ChannelUID(thing.getUID(), CHANNEL_SNAPSHOT), CoreItemFactory.IMAGE)
+                    .withType(CHANNEL_TYPE_SNAPSHOT);
+            Channel channel = builder.build();
+            uniqueChannelsMap.put(CHANNEL_SNAPSHOT, channel);
+            logChannelInformation(channel);
+            snapshotTriggersFinalize(accessory);
+        }
+
+        String oldLabel = thing.getLabel();
+        String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
+        List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
 
         if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
             ThingBuilder builder = editThing();
@@ -451,7 +462,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         if (command == RefreshType.REFRESH) {
-            requestManualRefresh();
+            if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
+                scheduleSnapshotRefresh();
+            } else {
+                requestManualRefresh();
+            }
             return;
         }
         try {
@@ -496,18 +511,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag but otherwise do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' sending command '{}' to '{}', reconnecting..", thing.getUID(),
-                        e.getMessage(), command, channelUID, e);
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' sending command '{}' to '{}'", thing.getUID(), e.getMessage(),
-                        command, channelUID, e);
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    THING_STATUS_FMT.formatted("error.error-sending-command", e.getMessage()));
+            onCommunicationError(e, I18N_SUFFIX_ERROR_SENDING_COMMAND);
         }
     }
 
@@ -700,10 +704,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Channel channel = ChannelBuilder.create(uid, CoreItemFactory.COLOR)
                 .withType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR).build();
         channels.put(uid.getId(), channel); // add to channels map
-        logger.trace(
-                "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
-                channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+        logChannelInformation(channel);
         lightModelClientHSBTypeChannel = uid;
     }
 
@@ -730,11 +731,33 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
+     * Sets up the map of characteristic iids that shall trigger snapshot refreshes. Checks the given
+     * accessory for any services containing MOTION_DETECTED or INPUT_EVENT characteristics.
+     *
+     * @param accessory the accessory containing the characteristics
+     */
+    private void snapshotTriggersFinalize(Accessory accessory) {
+        SNAPSHOT_REFRESH_TRIGGERS.clear();
+        for (Service service : accessory.services) {
+            for (Characteristic cxx : service.characteristics) {
+                if (cxx.type instanceof String type) {
+                    CharacteristicType cxxType = Characteristic.getCharacteristicType(type);
+                    switch (cxxType) {
+                        case MOTION_DETECTED, INPUT_EVENT:
+                            SNAPSHOT_REFRESH_TRIGGERS.put(cxx.iid, cxxType);
+                        default:
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Finalizes the polled and evented characteristics by identifying which characteristics are linked
      * and adding them to the polledCharacteristics list, and which subset of those are evented and adding
      * them also to the eventedCharacteristics list. In case of the special light model HSB channel then we
-     * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristsics to
-     * the list of polled and evented characteristics.
+     * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristics to
+     * the list of polled and evented characteristics. The camera snapshot channel is not included.
      *
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to check for polled and evented characteristics
@@ -750,6 +773,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
+            if (CHANNEL_SNAPSHOT.equals(channelUID.getId())) {
+                continue; // skip camera snapshot channel
+            }
             if (isLinked(channelUID)) {
                 Long iid = 0L;
                 boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
@@ -864,6 +890,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Long aid = getAccessoryId();
         ChannelUID hsbChannelUID = null;
         Service service = GSON.fromJson(json, Service.class);
+        boolean snapshotChannelExists = thing.getChannel(CHANNEL_SNAPSHOT) != null;
+        boolean snapshotChannelRefresh = false;
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
                 ChannelUID channelUID = channel.getUID();
@@ -882,10 +910,25 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 case STATE -> updateState(channelUID, state);
                                 case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
+                            // check for snapshot refresh triggers
+                            if (snapshotChannelExists && !snapshotChannelRefresh && SNAPSHOT_REFRESH_TRIGGERS
+                                    .get(cxx.iid) instanceof CharacteristicType triggerCxxType) {
+                                switch (triggerCxxType) {
+                                    case MOTION_DETECTED:
+                                        snapshotChannelRefresh |= OpenClosedType.OPEN == state;
+                                        break;
+                                    case INPUT_EVENT:
+                                        snapshotChannelRefresh = true;
+                                    default:
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
+        if (snapshotChannelRefresh) {
+            scheduleSnapshotRefresh();
         }
         if (thing.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
@@ -1004,5 +1047,56 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     protected void initializeNotReadyThings() {
         notReadyThings.clear();
         notReadyThings.add(thing); // a self connected accessory requires only itself to be ready
+    }
+
+    /**
+     * Logs detailed trace information about the given channel if trace logging is enabled.
+     */
+    private void logChannelInformation(Channel channel) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                    thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+        }
+    }
+
+    /**
+     * Returns true if the given accessory has camera like functions;
+     * <ul>
+     * <li>its category as declared in its JSON is a camera category</li>
+     * <li>its category as discovered by mDNS is a camera category</li>
+     * <li>one of its JSON services supports camera RTP stream management</li>
+     * <li>one of its JSON characteristics supports video stream configuration</li>
+     * </ul>
+     * 
+     * @param accessory the accessory to check
+     * @return true if the accessory is a camera, false otherwise
+     */
+    private boolean isCamera(Accessory accessory) {
+        if (CAMERA_ACCESSORY_CATEGORIES.contains(accessory.getAccessoryType())) {
+            return true;
+        }
+        if (thing.getProperties().get(PROPERTY_ACCESSORY_CATEGORY) instanceof String catProperty
+                && AccessoryCategory.from(catProperty) instanceof AccessoryCategory category
+                && CAMERA_ACCESSORY_CATEGORIES.contains(category)) {
+            return true;
+        }
+        if (accessory.services instanceof List<Service> services) {
+            for (Service service : services) {
+                if (ServiceType.CAMERA_RTP_STREAM_MANAGEMENT == service.getServiceType()) {
+                    return true;
+                }
+                if (service.characteristics instanceof List<Characteristic> characteristics) {
+                    for (Characteristic characteristic : characteristics) {
+                        if (CharacteristicType.SUPPORTED_VIDEO_STREAM_CONFIGURATION == characteristic
+                                .getCharacteristicType()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

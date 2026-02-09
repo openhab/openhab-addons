@@ -269,8 +269,8 @@
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>Thermostat</label>
-		<description>Radiator thermostat</description>
+		<label>Radiator Thermostat</label>
+		<description>First generation radiator thermostat.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
@@ -280,6 +280,52 @@
 			<channel id="silent-mode" typeId="silent-mode"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="thermostat-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Radiator Thermostat II</label>
+		<description>Second generation radiator thermostat.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="display-direction" typeId="display-direction"/>
+			<channel id="displayed-temperature" typeId="displayed-temperature"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="thermostat-2-matter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Radiator Thermostat II [+M]</label>
+		<description>Second generation radiator thermostat with Matter support.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="display-direction" typeId="display-direction"/>
+			<channel id="displayed-temperature" typeId="displayed-temperature"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
@@ -1120,6 +1166,36 @@
 			<options>
 				<option value="ON">Enabled</option>
 				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="display-direction">
+		<item-type>Switch</item-type>
+		<label>Display Direction</label>
+		<description>Configures the display direction (NORMAL or REVERSED).</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Reversed</option>
+				<option value="OFF">Normal</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="displayed-temperature">
+		<item-type>Switch</item-type>
+		<label>Displayed Temperature</label>
+		<description>Configures whether the measured temperature or the setpoint temperature is displayed.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Setpoint</option>
+				<option value="OFF">Measured</option>
 			</options>
 		</state>
 	</channel-type>

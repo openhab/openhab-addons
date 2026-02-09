@@ -14,6 +14,8 @@ package org.openhab.binding.astro.internal.calc;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -24,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -54,34 +57,28 @@ public class MoonCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc();
+        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1551225600000L)));
     }
 
     @Test
     public void testGetMoonInfoForOldDate() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
-        assertNotNull(moon.getApogee());
-        assertNotNull(moon.getPerigee());
+        assertNotNull(moon.getDistanceType(DistanceType.APOGEE));
+        assertNotNull(moon.getDistanceType(DistanceType.PERIGEE));
+        assertNotNull(moon.getDistanceType(DistanceType.CURRENT));
 
-        assertNotNull(moon.getDistance());
-        assertNotNull(moon.getEclipse());
+        assertNotNull(moon.getEclipseSet());
 
-        assertNotNull(moon.getPhase());
         assertNotNull(moon.getPosition());
         assertNotNull(moon.getRise());
         assertNotNull(moon.getSet());
         assertNotNull(moon.getZodiac());
-
-        // for an old date the phase should not be calculated
-        assertNull(moon.getPhase().getName());
     }
 
     @Test
     public void testGetMoonInfoForRiseAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
         Calendar riseStart = moon.getRise().getStart();
         assertNotNull(riseStart);
@@ -92,8 +89,7 @@ public class MoonCalcTest {
 
     @Test
     public void testGetMoonInfoForSetAccuracy() {
-        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE,
-                TIME_ZONE, Locale.ROOT);
+        Moon moon = Objects.requireNonNull(moonCalc).getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
 
         Calendar setStart = moon.getSet().getStart();
         assertNotNull(setStart);
@@ -106,41 +102,17 @@ public class MoonCalcTest {
     public void testGetMoonInfoForMoonPositionAccuracy() {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
+        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
+        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE);
+
+        var azimuth = moon.getPosition().getAzimuth();
+        var elevation = moon.getPosition().getElevation();
+        assertNotNull(azimuth);
+        assertNotNull(elevation);
 
         // expected result from heavens-above.com is Azimuth: 100.5, altitude -17
-        assertEquals(100.5, moon.getPosition().getAzimuth().doubleValue(), ACCURACY_IN_DEGREE);
-        assertEquals(-17, moon.getPosition().getElevation().doubleValue(), ACCURACY_IN_DEGREE);
-    }
-
-    @Test
-    public void testGetMoonInfoForMoonPhaseAccuracy() {
-        MoonCalc moonCalc = this.moonCalc;
-        assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
-
-        // New moon 06 March 2019 17:04
-        // First quarter 14 March 2019 11:27
-        // Full moon 21 March 2019 02:43
-        // Last quarter 28 March 2019 05:10
-        Calendar phaseCal = moon.getPhase().getNew();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 06, 17, 04, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
-        phaseCal = moon.getPhase().getFirstQuarter();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 14, 11, 27, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
-        phaseCal = moon.getPhase().getFull();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 21, 02, 43, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
-        phaseCal = moon.getPhase().getThirdQuarter();
-        assertNotNull(phaseCal);
-        assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 28, 05, 10, TIME_ZONE).getTimeInMillis(),
-                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
+        assertEquals(100.5, moon.getPosition().getAzimuthAsDouble(), ACCURACY_IN_DEGREE);
+        assertEquals(-17, moon.getPosition().getElevationAsDouble(), ACCURACY_IN_DEGREE);
     }
 
     /***

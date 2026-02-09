@@ -18,16 +18,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.EclipseKind;
+import org.openhab.binding.astro.internal.model.MoonPhase;
 import org.openhab.binding.astro.internal.model.SeasonName;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
 import org.openhab.core.ui.icon.IconSet.Format;
@@ -49,10 +51,14 @@ import org.slf4j.LoggerFactory;
 public class AstroIconProvider implements IconProvider {
     private static final String DEFAULT_LABEL = "Astro Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons provided for the Astro Binding";
-    private static final String ZODIAC_SET = "zodiac";
+    private static final String MOON_DAY_SET = "moon_day";
+    private static final String MOON_ECLIPSE_SET = "moon_eclipse";
+    private static final String MOON_PHASE_SET = "moon_phase";
     private static final String SEASON_SET = "season";
     private static final String SUN_ECLIPSE_SET = "sun_eclipse";
-    private static final Set<String> ICON_SETS = Set.of(SEASON_SET, SUN_ECLIPSE_SET, ZODIAC_SET);
+    private static final String ZODIAC_SET = "zodiac";
+    private static final Set<String> ICON_SETS = Set.of(MOON_DAY_SET, MOON_ECLIPSE_SET, MOON_PHASE_SET, SEASON_SET,
+            SUN_ECLIPSE_SET, ZODIAC_SET);
 
     private final Logger logger = LoggerFactory.getLogger(AstroIconProvider.class);
     private final TranslationProvider i18nProvider;
@@ -89,31 +95,47 @@ public class AstroIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        String iconName = String.format(Locale.ROOT, "icon/%s.svg", category);
-        if (ICON_SETS.contains(category) && state != null) {
-            try {
-                Enum<?> stateEnum = switch (category) {
-                    case ZODIAC_SET -> ZodiacSign.valueOf(state);
-                    case SEASON_SET -> SeasonName.valueOf(state);
-                    case SUN_ECLIPSE_SET -> EclipseKind.valueOf(state);
-                    default -> throw new IllegalArgumentException("Category of icon not found: %s".formatted(category));
-                };
-                iconName = iconName.replace(".", "-%s.".formatted(stateEnum.name().toLowerCase(Locale.US)));
-            } catch (IllegalArgumentException e) {
-                // Invalid state for the icon set, we'll remain on default icon
-                logger.warn("Error retrieving icon name '{}' - using default: {}", state, e.getMessage());
+        String set = category.equals(MOON_PHASE_SET) ? MOON_DAY_SET : category;
+        String resourceWithoutState = "icon/" + set + "." + format.toString();
+        if (state == null) {
+            return getResource(resourceWithoutState);
+        }
+
+        try {
+            String iconState = switch (category) {
+                case SEASON_SET -> SeasonName.valueOf(state).name();
+                case ZODIAC_SET -> ZodiacSign.valueOf(state).name();
+                case MOON_ECLIPSE_SET, SUN_ECLIPSE_SET -> EclipseKind.valueOf(state).name();
+                case MOON_PHASE_SET -> Integer.toString(MoonPhase.valueOf(state).getAgeDays());
+                case MOON_DAY_SET -> {
+                    try {
+                        var age = QuantityType.valueOf(state);
+                        if (age.toUnit(Units.DAY) instanceof QuantityType ageInDays) {
+                            yield Integer.toString(ageInDays.intValue());
+                        }
+                    } catch (NumberFormatException ignore) {
+                    }
+                    throw new IllegalArgumentException("Unable to use state '%s' for '%s'".formatted(state, category));
+                }
+                default -> throw new IllegalArgumentException("Icon category '%s' not found".formatted(category));
+            };
+            String resourceWithState = "icon/" + set + "-" + iconState + "." + format.toString();
+            return getResource(resourceWithState);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Use icon {} as state {} is not found", resourceWithoutState, state);
+            return getResource(resourceWithoutState);
+        }
+    }
+
+    private @Nullable InputStream getResource(String iconName) {
+        if (bundle.getEntry(iconName.toLowerCase(Locale.ROOT)) instanceof URL iconResource) {
+            try (InputStream stream = iconResource.openStream()) {
+                byte[] icon = stream.readAllBytes();
+                return new ByteArrayInputStream(icon);
+            } catch (IOException e) {
+                logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
             }
         }
-
-        String result = "";
-
-        URL iconResource = bundle.getEntry(iconName);
-        try (InputStream stream = iconResource.openStream()) {
-            result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
-        }
-
-        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
+        return null;
     }
 }

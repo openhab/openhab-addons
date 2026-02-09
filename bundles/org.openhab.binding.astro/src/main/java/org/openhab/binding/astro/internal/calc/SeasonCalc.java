@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.calc;
 
 import java.time.Instant;
+import java.time.InstantSource;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,9 +41,11 @@ public class SeasonCalc {
     /**
      * Returns the seasons of the year of the specified calendar.
      */
-    public static Season calculate(int year, double latitude, boolean useMeteorologicalSeason, TimeZone zone) {
-        return new Season(latitude, useMeteorologicalSeason, zone, calcEquiSol(3, year - 1), calcEquiSol(0, year),
-                calcEquiSol(1, year), calcEquiSol(2, year), calcEquiSol(3, year), calcEquiSol(0, year + 1));
+    public static Season calculate(int year, double latitude, boolean useMeteorologicalSeason, TimeZone zone,
+            InstantSource instantSource) {
+        return new Season(latitude, useMeteorologicalSeason, zone, instantSource, calcEquiSol(3, year - 1),
+                calcEquiSol(0, year), calcEquiSol(1, year), calcEquiSol(2, year), calcEquiSol(3, year),
+                calcEquiSol(0, year + 1));
     }
 
     /**

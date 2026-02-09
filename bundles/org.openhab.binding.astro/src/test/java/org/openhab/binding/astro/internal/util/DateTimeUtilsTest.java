@@ -15,10 +15,13 @@ package org.openhab.binding.astro.internal.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
+import java.time.InstantSource;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -65,17 +68,18 @@ public class DateTimeUtilsTest {
 
     @Test
     public void testCreateCalendarForToday() {
-        Calendar cal = DateTimeUtils.createCalendarForToday(8, 0, TIME_ZONE, Locale.ROOT);
+        InstantSource is = InstantSource.fixed(Instant.ofEpochMilli(1645671600000L));
+        Calendar cal = DateTimeUtils.createCalendarForToday(8, 0, TIME_ZONE, Locale.ROOT, is);
         assertEquals(8, cal.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, cal.get(Calendar.MINUTE));
         assertEquals(0, cal.get(Calendar.SECOND));
         assertEquals(0, cal.get(Calendar.MILLISECOND));
-        cal = DateTimeUtils.createCalendarForToday(22, 59, TIME_ZONE, Locale.ROOT);
+        cal = DateTimeUtils.createCalendarForToday(22, 59, TIME_ZONE, Locale.ROOT, is);
         assertEquals(22, cal.get(Calendar.HOUR_OF_DAY));
         assertEquals(59, cal.get(Calendar.MINUTE));
         assertEquals(0, cal.get(Calendar.SECOND));
         assertEquals(0, cal.get(Calendar.MILLISECOND));
-        cal = DateTimeUtils.createCalendarForToday(0, 0, TIME_ZONE, Locale.ROOT);
+        cal = DateTimeUtils.createCalendarForToday(0, 0, TIME_ZONE, Locale.ROOT, is);
         assertEquals(0, cal.get(Calendar.HOUR_OF_DAY));
         assertEquals(0, cal.get(Calendar.MINUTE));
         assertEquals(0, cal.get(Calendar.SECOND));
@@ -163,6 +167,11 @@ public class DateTimeUtilsTest {
         assertEquals(1223, DateTimeUtils.getMinutesFromTime("20:23"));
     }
 
+    /**
+     * Creates a new {@link Calendar} instance using the specified parameters.
+     * <p>
+     * <b>Note:</b> {@code month} is zero-indexed, so it doesn't correspond with how months are usually specified.
+     */
     private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
         Calendar result = new GregorianCalendar(zone, Locale.ROOT);
         result.set(Calendar.MILLISECOND, 0);
@@ -195,5 +204,41 @@ public class DateTimeUtilsTest {
         // Europe/Amsterdam (UTC+2 in May). Local midnight is 22:00 UTC on the previous day.
         Instant expectedAmsterdam = Instant.parse("2024-04-30T22:00:00Z");
         assertEquals(expectedAmsterdam, DateTimeUtils.atMidnightOfFirstMonthDay(initialInstant, TIME_ZONE));
+    }
+
+    @Test
+    public void testIsWithinTimeWindow() {
+        Calendar when = newCalendar(1980, 10, 11, 13, 45, TIME_ZONE);
+        assertFalse(DateTimeUtils.isWithinTimeWindow(when, newCalendar(1980, 10, 11, 13, 46, TIME_ZONE), 2L,
+                TimeUnit.DAYS));
+        when.add(Calendar.MINUTE, 1);
+        assertTrue(DateTimeUtils.isWithinTimeWindow(when, newCalendar(1980, 10, 11, 13, 46, TIME_ZONE), 2L,
+                TimeUnit.DAYS));
+        when.add(Calendar.MILLISECOND, -1);
+        assertFalse(DateTimeUtils.isWithinTimeWindow(when, newCalendar(1980, 10, 11, 13, 46, TIME_ZONE), 2L,
+                TimeUnit.DAYS));
+        when.add(Calendar.DAY_OF_MONTH, 2);
+        when.add(Calendar.MILLISECOND, 1);
+        assertTrue(DateTimeUtils.isWithinTimeWindow(when, newCalendar(1980, 10, 11, 13, 46, TIME_ZONE), 2L,
+                TimeUnit.DAYS));
+        when.add(Calendar.MILLISECOND, 1);
+        assertFalse(DateTimeUtils.isWithinTimeWindow(when, newCalendar(1980, 10, 11, 13, 46, TIME_ZONE), 2L,
+                TimeUnit.DAYS));
+
+        Instant when2 = when.toInstant();
+        assertFalse(
+                DateTimeUtils.isWithinTimeWindow(when2, Instant.parse("1980-11-11T12:46:00.00Z"), 2L, ChronoUnit.DAYS));
+        when2 = when2.minusMillis(1L);
+        assertTrue(
+                DateTimeUtils.isWithinTimeWindow(when2, Instant.parse("1980-11-11T12:46:00.00Z"), 2L, ChronoUnit.DAYS));
+        when2 = when2.minusMillis(1L).minus(2, ChronoUnit.DAYS);
+        assertFalse(
+                DateTimeUtils.isWithinTimeWindow(when2, Instant.parse("1980-11-11T12:46:00.00Z"), 2L, ChronoUnit.DAYS));
+        when2 = when2.plusMillis(1L);
+        assertTrue(
+                DateTimeUtils.isWithinTimeWindow(when2, Instant.parse("1980-11-11T12:46:00.00Z"), 2L, ChronoUnit.DAYS));
+        when2 = when2.minus(1L, ChronoUnit.MINUTES);
+        assertFalse(
+                DateTimeUtils.isWithinTimeWindow(when2, Instant.parse("1980-11-11T12:46:00.00Z"), 2L, ChronoUnit.DAYS));
     }
 }

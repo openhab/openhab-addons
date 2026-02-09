@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.homekit.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
+import org.openhab.binding.homekit.internal.session.HttpPayloadParser.HttpPayload;
 
 /**
  * Test cases for the {@link HttpPayloadParser} HTTP parsing.
@@ -36,7 +39,7 @@ class TestHttpPayloadParser {
     private static final String HEADERS_Z = HEADERS_Z1 + HEADERS_Z2;
 
     private static final String OK_204 = "HTTP/1.1 204 No Content\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
-    private static final String ERROR_403 = "HTTP/1.1 403 Forbidden\r\nTransfer-Encoding: chunked\r\n\r\n";
+    private static final String ERROR_403 = "HTTP/1.1 403 Forbidden\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
     private static final String ERROR_404 = "HTTP/1.1 404 Not Found\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
     private static final String ERROR_500 = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
 
@@ -46,240 +49,414 @@ class TestHttpPayloadParser {
     private static final String CHUNK = CHUNK_1 + CHUNK_2;
     private static final String CRLF = "\r\n";
 
+    private static final String THIS_SHOULD_NOT_BE_TREATED_AS_BODY = "THIS_SHOULD_NOT_BE_TREATED_AS_BODY";
+
     @Test
-    void testHttpWithChunkedContentOk() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            String h = HEADERS_A + HEADERS_C + HEADERS_Z;
-            String hc = h + CHUNK.formatted(100) + CONTENT + CRLF + CHUNK.formatted(0) + CRLF;
-            parser.accept(hc.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(100, content.length);
-            assertEquals(CONTENT, new String(content));
-            byte[] headers = parser.getHeaders();
-            assertEquals(h, new String(headers));
-        }
+    void testHttpWithChunkedContentOk() throws Exception {
+        String h = HEADERS_A + HEADERS_C + HEADERS_Z;
+        String hc = h + "64\r\n" + CONTENT + CRLF + "0\r\n\r\n";
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feed(hc.getBytes());
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload.content().length);
+        assertEquals(CONTENT, new String(httpPayload.content()));
+        assertEquals(h, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithChunkedContentOkManyPartial() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(HEADERS_A.substring(0, 8).getBytes());
-            parser.accept(HEADERS_A.substring(8).getBytes());
-            parser.accept(HEADERS_C.substring(0, 14).getBytes());
-            parser.accept(HEADERS_C.substring(14).getBytes());
-            parser.accept(HEADERS_Z.substring(0, 19).getBytes());
-            parser.accept(HEADERS_Z.substring(19).getBytes());
-            parser.accept(CHUNK.formatted(100).getBytes());
-            parser.accept(CONTENT.substring(0, 51).getBytes());
-            parser.accept(CONTENT.substring(51).getBytes());
-            parser.accept(CRLF.getBytes());
-            parser.accept(CHUNK.formatted(0).getBytes());
-            parser.accept(CRLF.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(100, content.length);
-            assertEquals(CONTENT, new String(content));
-            byte[] headers = parser.getHeaders();
-            String h = HEADERS_A + HEADERS_C + HEADERS_Z;
-            assertEquals(h, new String(headers));
-        }
+    void testHttpWithChunkedContentOkManyPartial() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                HEADERS_A.substring(0, 8).getBytes(), 
+                HEADERS_A.substring(8).getBytes(),
+                HEADERS_C.substring(0, 14).getBytes(), 
+                HEADERS_C.substring(14).getBytes(),
+                HEADERS_Z.substring(0, 19).getBytes(), 
+                HEADERS_Z.substring(19).getBytes(),
+                CHUNK.formatted(100).getBytes(), 
+                CONTENT.substring(0, 51).getBytes(), 
+                CONTENT.substring(51).getBytes(),
+                CRLF.getBytes(), 
+                CHUNK.formatted(0).getBytes(), 
+                CRLF.getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload.content().length);
+        assertEquals(CONTENT, new String(httpPayload.content()));
+        assertEquals(HEADERS_A + HEADERS_C + HEADERS_Z, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithChunkedContentOkManyPartialAndSplitChunkHeader() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(HEADERS_A.substring(0, 8).getBytes());
-            parser.accept(HEADERS_A.substring(8).getBytes());
-            parser.accept(HEADERS_C.substring(0, 14).getBytes());
-            parser.accept(HEADERS_C.substring(14).getBytes());
-            parser.accept(HEADERS_Z.substring(0, 19).getBytes());
-            parser.accept(HEADERS_Z.substring(19).getBytes());
-            parser.accept(CHUNK_1.formatted(100).getBytes());
-            parser.accept(CHUNK_2.getBytes());
-            parser.accept(CONTENT.substring(0, 51).getBytes());
-            parser.accept(CONTENT.substring(51).getBytes());
-            parser.accept(CRLF.getBytes());
-            parser.accept(CHUNK.formatted(0).getBytes());
-            parser.accept(CRLF.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(100, content.length);
-            assertEquals(CONTENT, new String(content));
-            byte[] headers = parser.getHeaders();
-            String h = HEADERS_A + HEADERS_C + HEADERS_Z;
-            assertEquals(h, new String(headers));
-        }
+    void testHttpWithChunkedContentOkManyPartialAndSplitChunkHeader() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                HEADERS_A.substring(0, 8).getBytes(), 
+                HEADERS_A.substring(8).getBytes(),
+                HEADERS_C.substring(0, 14).getBytes(), 
+                HEADERS_C.substring(14).getBytes(),
+                HEADERS_Z.substring(0, 19).getBytes(), 
+                HEADERS_Z.substring(19).getBytes(),
+                CHUNK_1.formatted(100).getBytes(), 
+                CHUNK_2.getBytes(),
+                CONTENT.substring(0, 51).getBytes(), 
+                CONTENT.substring(51).getBytes(),
+                CRLF.getBytes(), 
+                CHUNK.formatted(0).getBytes(), 
+                CRLF.getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload.content().length);
+        assertEquals(CONTENT, new String(httpPayload.content()));
+        String h = HEADERS_A + HEADERS_C + HEADERS_Z;
+        assertEquals(h, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithContentDiscardExtra() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-            String hc = h + CONTENT + "EXTRA";
-            parser.accept(hc.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(100, content.length);
-            assertEquals(CONTENT, new String(content));
-            byte[] headers = parser.getHeaders();
-            assertEquals(h, new String(headers));
-        }
+    void testHttpWithContentDiscardExtra() throws Exception {
+        String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
+        String hc = h + CONTENT + "EXTRA";
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feed(hc.getBytes());
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload.content().length);
+        assertEquals(CONTENT, new String(httpPayload.content()));
+        assertEquals(h, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithContentManyPartialOk() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(HEADERS_A.substring(0, 11).getBytes());
-            parser.accept(HEADERS_A.substring(11).getBytes());
-            parser.accept(HEADERS_B.substring(0, 11).getBytes());
-            parser.accept(HEADERS_B.substring(11).formatted(100).getBytes());
-            parser.accept(HEADERS_Z.substring(0, 12).getBytes());
-            parser.accept(HEADERS_Z.substring(12).getBytes());
-            parser.accept(CONTENT.substring(0, 42).getBytes());
-            parser.accept(CONTENT.substring(42).getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(100, content.length);
-            assertEquals(CONTENT, new String(content));
-            byte[] headers = parser.getHeaders();
-            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-            assertEquals(h, new String(headers));
-        }
+    void testHttpWithContentManyPartialOk() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                HEADERS_A.substring(0, 11).getBytes(),
+                HEADERS_A.substring(11).getBytes(),
+                HEADERS_B.substring(0, 11).getBytes(),
+                HEADERS_B.substring(11).formatted(100).getBytes(),
+                HEADERS_Z.substring(0, 12).getBytes(),
+                HEADERS_Z.substring(12).getBytes(),
+                CONTENT.substring(0, 42).getBytes(),
+                CONTENT.substring(42).getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload.content().length);
+        assertEquals(CONTENT, new String(httpPayload.content()));
+        assertEquals(HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithContentManyPartialOkAndSplitCRLF() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(HEADERS_A.substring(0, 11).getBytes());
-            parser.accept(HEADERS_A.substring(11).getBytes());
-            parser.accept(HEADERS_B.substring(0, 11).getBytes());
-            parser.accept(HEADERS_B.substring(11).formatted(100).getBytes());
-            parser.accept(HEADERS_Z1.getBytes());
-            parser.accept(HEADERS_Z2.getBytes());
-            parser.accept(CONTENT.substring(0, 42).getBytes());
-            parser.accept(CONTENT.substring(42).getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(100, content.length);
-            assertEquals(CONTENT, new String(content));
-            byte[] headers = parser.getHeaders();
-            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-            assertEquals(h, new String(headers));
-        }
+    void testHttpWithContentManyPartialOkAndSplitCRLF() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                HEADERS_A.substring(0, 11).getBytes(),
+                HEADERS_A.substring(11).getBytes(),
+                HEADERS_B.substring(0, 11).getBytes(),
+                HEADERS_B.substring(11).formatted(100).getBytes(),
+                HEADERS_Z1.getBytes(),
+                HEADERS_Z2.getBytes(),
+                CONTENT.substring(0, 42).getBytes(),
+                CONTENT.substring(42).getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload.content().length);
+        assertEquals(CONTENT, new String(httpPayload.content()));
+        assertEquals(HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithContentOk() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-            String hc = h + CONTENT;
-            parser.accept(hc.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(100, content.length);
-            assertEquals(CONTENT, new String(content));
-            byte[] headers = parser.getHeaders();
-            assertEquals(h, new String(headers));
-        }
+    void testHttpWithContentOk() throws Exception {
+        String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
+        String hc = h + CONTENT;
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feed(hc.getBytes());
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload.content().length);
+        assertEquals(CONTENT, new String(httpPayload.content()));
+        assertEquals(h, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithMultipleFrames() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            String h = HEADERS_A + HEADERS_B.formatted(300) + HEADERS_Z;
-            String hc = h + CONTENT;
-            parser.accept(hc.getBytes());
-            assertFalse(parser.isComplete());
-            parser.accept(CONTENT.getBytes());
-            parser.accept(CONTENT.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(300, content.length);
-        }
+    void testHttpWithMultipleFrames() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                 HEADERS_A.getBytes(), 
+                 HEADERS_B.formatted(100) .getBytes(),
+                 HEADERS_Z.getBytes(),
+                 CONTENT.getBytes(),
+                 (HEADERS_A + HEADERS_B.formatted(50) + HEADERS_Z).getBytes(),
+                 CONTENT.substring(0, 50).getBytes() 
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        // first payload
+        CompletableFuture<HttpPayload> futureHttpPayload1 = harness.expectPayload();
+        feeder.feedAll(parts.subList(0, 4));
+        HttpPayload httpPayload1 = futureHttpPayload1.get(1, TimeUnit.SECONDS);
+        assertEquals(100, httpPayload1.content().length);
+
+        // second payload
+        CompletableFuture<HttpPayload> futureHttpPayload2 = harness.expectPayload();
+        feeder.feedAll(parts.subList(4, 6));
+        HttpPayload httpPayload2 = futureHttpPayload2.get(1, TimeUnit.SECONDS);
+        assertEquals(50, httpPayload2.content().length);
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithNoContentLength() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            String h = HEADERS_A + HEADERS_B;
-            String hc = h + CONTENT;
-            parser.accept(hc.getBytes());
-            assertFalse(parser.isComplete());
-        }
+    void testHttpWithZeroContentLength() throws Exception {
+        String h = HEADERS_A + HEADERS_B.formatted(0) + HEADERS_Z;
+        String hc = h + CONTENT; // parser must ignore body entirely
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feed(hc.getBytes());
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(0, httpPayload.content().length);
+        assertEquals(h, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithWrongContentLength() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            String h = HEADERS_A + HEADERS_B.formatted(200) + HEADERS_Z;
-            String hc = h + CONTENT;
-            parser.accept(hc.getBytes());
-            assertFalse(parser.isComplete());
-        }
+    void testOk204() throws Exception {
+        List<byte[]> parts = List.of(OK_204.getBytes());
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(0, httpPayload.content().length);
+        assertEquals(OK_204, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testHttpWithZeroContentLength() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            String h = HEADERS_A + HEADERS_B.formatted(0) + HEADERS_Z;
-            String hc = h + CONTENT;
-            parser.accept(hc.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(0, content.length);
-            byte[] headers = parser.getHeaders();
-            assertEquals(h, new String(headers));
-        }
+    void testError403() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                ERROR_403.substring(0, 15).getBytes(),
+                ERROR_403.substring(15).getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(0, httpPayload.content().length);
+        assertEquals(ERROR_403, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testOk204() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(OK_204.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(0, content.length);
-            byte[] headers = parser.getHeaders();
-            assertEquals(OK_204, new String(headers));
-        }
+    void testError404() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                ERROR_404.substring(0, 20).getBytes(),
+                ERROR_404.substring(20).getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(0, httpPayload.content().length);
+        assertEquals(ERROR_404, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testError403() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(ERROR_403.getBytes());
-            parser.accept(CHUNK.formatted(0).getBytes());
-            parser.accept(CRLF.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(0, content.length);
-            byte[] headers = parser.getHeaders();
-            assertEquals(ERROR_403, new String(headers));
-        }
+    void testError500() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                ERROR_500.substring(0, 22).getBytes(),
+                ERROR_500.substring(22).getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> futureHttpPayload = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload httpPayload = futureHttpPayload.get(1, TimeUnit.SECONDS);
+        assertEquals(0, httpPayload.content().length);
+        assertEquals(ERROR_500, new String(httpPayload.headers()));
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testError404() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(ERROR_404.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(0, content.length);
-            byte[] headers = parser.getHeaders();
-            assertEquals(ERROR_404, new String(headers));
-        }
+    void testHttpWithNoContentLength() throws Exception {
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                HEADERS_A.getBytes(), 
+                HEADERS_Z.getBytes(), 
+                THIS_SHOULD_NOT_BE_TREATED_AS_BODY.getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> future = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload payload = future.get(1, TimeUnit.SECONDS);
+        assertEquals(HEADERS_A + HEADERS_Z, new String(payload.headers()));
+        assertEquals(0, payload.content().length);
+
+        parser.close();
+        feeder.close();
     }
 
     @Test
-    void testError500() throws IOException {
-        try (HttpPayloadParser parser = new HttpPayloadParser()) {
-            parser.accept(ERROR_500.getBytes());
-            assertTrue(parser.isComplete());
-            byte[] content = parser.getContent();
-            assertEquals(0, content.length);
-            byte[] headers = parser.getHeaders();
-            assertEquals(ERROR_500, new String(headers));
-        }
+    void testHttpWithWrongContentLength() throws Exception {
+        int declaredLength = 10;
+        List<byte[]> parts = List.of(
+        // @formatter:off
+                HEADERS_A.getBytes(), 
+                HEADERS_B.formatted(declaredLength).getBytes(),
+                HEADERS_Z.getBytes(),
+                CONTENT.getBytes()
+        // @formatter:on
+        );
+
+        ParserTestStreamFeeder feeder = new ParserTestStreamFeeder();
+        ParserTestHarness harness = new ParserTestHarness();
+        HttpPayloadParser parser = new HttpPayloadParser(feeder.in, harness);
+        parser.start();
+
+        CompletableFuture<HttpPayload> future = harness.expectPayload();
+        feeder.feedAll(parts);
+
+        HttpPayload payload = future.get(1, TimeUnit.SECONDS);
+        assertEquals(HEADERS_A + HEADERS_B.formatted(declaredLength) + HEADERS_Z, new String(payload.headers()));
+        assertEquals(CONTENT.substring(0, declaredLength), new String(payload.content()));
+        assertEquals(declaredLength, payload.content().length);
+
+        parser.close();
+        feeder.close();
     }
 }

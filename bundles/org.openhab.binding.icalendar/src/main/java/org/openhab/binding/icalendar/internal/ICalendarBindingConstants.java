@@ -38,9 +38,11 @@ public class ICalendarBindingConstants {
     public static final String CHANNEL_CURRENT_EVENT_START = "current_start";
     public static final String CHANNEL_CURRENT_EVENT_END = "current_end";
     public static final String CHANNEL_CURRENT_EVENT_PRESENT = "current_presence";
+    public static final String CHANNEL_CURRENT_EVENT_LOCATION = "current_location";
     public static final String CHANNEL_NEXT_EVENT_TITLE = "next_title";
     public static final String CHANNEL_NEXT_EVENT_START = "next_start";
     public static final String CHANNEL_NEXT_EVENT_END = "next_end";
+    public static final String CHANNEL_NEXT_EVENT_LOCATION = "next_location";
     public static final String CHANNEL_LAST_UPDATE = "last_update";
     public static final ChannelTypeUID LAST_UPDATE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "last_update");
 

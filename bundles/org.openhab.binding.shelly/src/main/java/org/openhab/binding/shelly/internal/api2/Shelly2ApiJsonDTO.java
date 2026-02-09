@@ -303,7 +303,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("factory_reset")
             public Boolean factoryReset;
             @SerializedName("report_thr")
-            public Double reportTreshold; // only for type analog
+            public Double reportThreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {
