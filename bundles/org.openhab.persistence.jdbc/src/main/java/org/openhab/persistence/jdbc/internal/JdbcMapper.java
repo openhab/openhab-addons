@@ -483,27 +483,27 @@ public class JdbcMapper {
                 .collect(Collectors.<PersistenceItemInfo>toSet());
     }
 
-    protected PersistenceItemInfo getItem(Item item, @Nullable String alias) {
+    protected @Nullable PersistenceItemInfo getItem(Item item, @Nullable String alias) {
         String itemName = item.getName();
         String localAlias = alias != null ? alias : itemName;
         String tableName = itemNameToTableNameMap.get(localAlias);
 
-        Integer count = null;
-        Date earliest = null;
-        Date latest = null;
         if (tableName != null) {
             try {
-                count = Math.toIntExact(getRowCount(tableName));
+                Integer count = Math.toIntExact(getRowCount(tableName));
                 FilterCriteria filter = new FilterCriteria().setItemName(localAlias).setPageSize(1);
                 filter.setOrdering(Ordering.DESCENDING);
-                latest = Date.from(getHistItemFilterQuery(filter, count, tableName, item).getFirst().getInstant());
+                Date latest = Date.from(getHistItemFilterQuery(filter, count, tableName, item).getFirst().getInstant());
                 filter.setOrdering(Ordering.ASCENDING);
-                earliest = Date.from(getHistItemFilterQuery(filter, count, tableName, item).getFirst().getInstant());
+                Date earliest = Date
+                        .from(getHistItemFilterQuery(filter, count, tableName, item).getFirst().getInstant());
+                return new JdbcPersistenceItemInfo(localAlias, count, earliest, latest);
             } catch (JdbcSQLException | ArithmeticException | NoSuchElementException e) {
-                // Keep null values for what we could not retrieve, don't check others after failure
+                logger.info("JDBC::getItem: Failed getting persisted item {} info", itemName);
+                return null;
             }
         }
-        return new JdbcPersistenceItemInfo(localAlias, count, earliest, latest);
+        return null;
     }
 
     /*****************

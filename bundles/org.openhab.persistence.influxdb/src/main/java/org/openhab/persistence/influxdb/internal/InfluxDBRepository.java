@@ -56,10 +56,11 @@ public interface InfluxDBRepository {
     /**
      * Return all stored item names with its count of stored points
      *
-     * @return Map with {@code <ItemName,ItemCount>} entries, null if not supported
+     * @return Map with {@code <ItemName,ItemCount>}
+     * @throws UnsupportedOperationException if influxDB persistence service version implementation does not support
+     *             this method
      */
-    @Nullable
-    Map<String, Integer> getStoredItemsCount();
+    Map<String, Integer> getStoredItemsCount() throws UnsupportedOperationException;
 
     /**
      * Executes Flux query

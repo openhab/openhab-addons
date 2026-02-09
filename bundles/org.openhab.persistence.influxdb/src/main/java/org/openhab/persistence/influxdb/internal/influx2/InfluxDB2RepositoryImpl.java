@@ -243,7 +243,7 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public @Nullable Map<String, Integer> getStoredItemsCount() {
+    public Map<String, Integer> getStoredItemsCount() {
         final QueryApi currentQueryAPI = queryAPI;
 
         if (currentQueryAPI != null) {

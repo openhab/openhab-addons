@@ -173,13 +173,9 @@ public class InfluxDBPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
-    public @Nullable Set<PersistenceItemInfo> getItemInfo() {
+    public Set<PersistenceItemInfo> getItemInfo() throws UnsupportedOperationException {
         if (checkConnection()) {
-            Map<String, Integer> storedItems = influxDBRepository.getStoredItemsCount();
-            if (storedItems == null) {
-                return null;
-            }
-            return storedItems.entrySet().stream().map(InfluxDBPersistentItemInfo::new)
+            return influxDBRepository.getStoredItemsCount().entrySet().stream().map(InfluxDBPersistentItemInfo::new)
                     .collect(Collectors.toUnmodifiableSet());
         } else {
             logger.info("getItemInfo ignored, InfluxDB is not connected");

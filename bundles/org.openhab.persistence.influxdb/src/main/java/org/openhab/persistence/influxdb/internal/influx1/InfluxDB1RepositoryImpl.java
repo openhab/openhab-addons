@@ -228,7 +228,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public @Nullable Map<String, Integer> getStoredItemsCount() {
-        return null;
+    public Map<String, Integer> getStoredItemsCount() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("getItemInfo not supported for persistence service influxDB1");
     }
 }
