@@ -644,17 +644,21 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         }
 
         final int remoteTempRounded;
+        final boolean isHeatModeOff = Integer.valueOf(1).equals(rthermData.getThermostatData().getMode())
+                && Integer.valueOf(0).equals(rthermData.getThermostatData().getStatus());
+        final boolean isCoolModeOff = Integer.valueOf(2).equals(rthermData.getThermostatData().getMode())
+                && Integer.valueOf(0).equals(rthermData.getThermostatData().getStatus());
 
         // hvac heating on OR hvac off in cooling mode, round temperature down, e.g. 69.5 = 69
-        if (rthermData.getThermostatData().getStatus() == 1 || rthermData.getThermostatData().getMode() == 2) {
+        if (Integer.valueOf(1).equals(rthermData.getThermostatData().getStatus()) || isCoolModeOff) {
             remoteTempRounded = (int) Math.floor(remoteTemp.doubleValue());
             logger.debug("remote temp: {}, rounding down to {}", remoteTemp, remoteTempRounded);
-        } else if (rthermData.getThermostatData().getStatus() == 2 || rthermData.getThermostatData().getMode() == 1) {
+        } else if (Integer.valueOf(2).equals(rthermData.getThermostatData().getStatus()) || isHeatModeOff) {
             // hvac cooling on OR hvac off in heat mode, round temperature up, e.g. 69.1 = 70
             remoteTempRounded = (int) Math.ceil(remoteTemp.doubleValue());
             logger.debug("remote temp: {}, rounding up to {}", remoteTemp, remoteTempRounded);
         } else {
-            // hvac mode off, round temperature, e.g. 69.5 = 70
+            // hvac mode off (or unknown), round temperature, e.g. 69.5 = 70
             remoteTempRounded = (int) Math.round(remoteTemp.doubleValue());
             logger.debug("remote temp: {}, rounding to {}", remoteTemp, remoteTempRounded);
         }
