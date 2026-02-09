@@ -24,12 +24,12 @@ import com.google.gson.annotations.SerializedName;
 public record EvStatus(boolean batteryCharge, int batteryStatus, int batteryPlugin, ReserveChargeInfo reservChargeInfos,
         List<DrivingDistance> drvDistance, ChargeRemainingTime remainTime2) {
 
-    public record ReserveChargeInfo(@SerializedName("targetSOCList") List<TargetSOC> targetSocList) {
+    public record ReserveChargeInfo(@SerializedName("targetSOClist") List<TargetSOC> targetSocList) {
         /**
          * Target state of charge setting.
          */
         public record TargetSOC(int plugType, // 0 = DC, 1 = AC
-                @SerializedName("targetSOCLevel") int targetSocLevel) {
+                @SerializedName("targetSOClevel") int targetSocLevel) {
         }
     }
 

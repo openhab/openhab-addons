@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto.us.bluelink;
-
-import org.openhab.binding.bluelink.internal.dto.Token;
+package org.openhab.binding.bluelink.internal.dto;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,6 +20,5 @@ import com.google.gson.annotations.SerializedName;
  * @author Marcus Better - Initial contribution
  */
 public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("refresh_token") String refreshToken,
         @SerializedName("expires_in") String expiresIn) implements Token {
 }

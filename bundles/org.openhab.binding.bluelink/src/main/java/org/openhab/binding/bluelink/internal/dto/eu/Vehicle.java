@@ -10,18 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.api;
+package org.openhab.binding.bluelink.internal.dto.eu;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
 
 /**
- * Supported API regions.
+ * EU vehicle record.
  *
  * @author Marcus Better - Initial contribution
  */
-@NonNullByDefault
-public enum Region {
-    CA,
-    EU,
-    US
+public record Vehicle(@Override String id, @Override @NonNull String vin, @Override String nickName,
+        @Override @NonNull EngineType engineType, @Override String model, @Override int modelYear,
+        boolean ccs2ProtocolSupport) implements IVehicle {
 }

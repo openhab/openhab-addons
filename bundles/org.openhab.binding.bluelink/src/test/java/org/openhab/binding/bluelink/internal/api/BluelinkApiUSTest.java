@@ -133,6 +133,13 @@ public class BluelinkApiUSTest {
         assertTrue(evStatus.batteryCharge());
         assertEquals(2, evStatus.batteryPlugin());
 
+        final var reserveChargeInfo = evStatus.reservChargeInfos();
+        assertNotNull(reserveChargeInfo);
+        final var targetSOCList = reserveChargeInfo.targetSocList();
+        assertNotNull(targetSOCList);
+        final var soc = targetSOCList.getFirst();
+        assertEquals(80, soc.targetSocLevel());
+
         final var drvDistance = evStatus.drvDistance();
         assertNotNull(drvDistance);
         assertFalse(drvDistance.isEmpty());

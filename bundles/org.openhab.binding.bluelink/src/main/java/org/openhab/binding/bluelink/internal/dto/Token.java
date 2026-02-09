@@ -18,7 +18,5 @@ package org.openhab.binding.bluelink.internal.dto;
 public interface Token {
     String accessToken();
 
-    String refreshToken();
-
     String expiresIn();
 }

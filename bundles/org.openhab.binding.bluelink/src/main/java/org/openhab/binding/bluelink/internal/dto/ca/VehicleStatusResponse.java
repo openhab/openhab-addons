@@ -18,7 +18,7 @@ import org.openhab.binding.bluelink.internal.dto.DoorStatus;
 import org.openhab.binding.bluelink.internal.dto.DrivingRange;
 import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.dto.SeatHeaterState;
-import org.openhab.binding.bluelink.internal.dto.TirePressureWarnings;
+import org.openhab.binding.bluelink.internal.dto.TirePressureWarning;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -41,13 +41,6 @@ public record VehicleStatusResponse(Result result) {
                 @Override @SerializedName("tirePressureLamp") TirePressureWarning tirePressureWarning)
                 implements
                     CommonVehicleStatus {
-        }
-
-        public record TirePressureWarning(@Override @SerializedName("tirePressureLampAll") int all,
-                @Override @SerializedName("tirePressureLampFL") int frontLeft,
-                @Override @SerializedName("tirePressureLampFR") int frontRight,
-                @Override @SerializedName("tirePressureLampRL") int rearLeft,
-                @Override @SerializedName("tirePressureLampRR") int rearRight) implements TirePressureWarnings {
         }
     }
 }

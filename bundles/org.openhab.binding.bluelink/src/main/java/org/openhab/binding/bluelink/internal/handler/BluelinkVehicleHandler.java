@@ -18,7 +18,6 @@ import static org.openhab.core.library.CoreItemFactory.SWITCH;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -48,7 +47,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -70,6 +69,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     private static final Duration DEFAULT_FORCE_REFRESH_INTERVAL = Duration.ofMinutes(240);
 
     private final Logger logger = LoggerFactory.getLogger(BluelinkVehicleHandler.class);
+    private final BaseThingHandlerFactory thingHandlerFactory;
 
     private volatile @Nullable ScheduledFuture<?> refreshJob;
     private volatile @Nullable ScheduledFuture<?> forceRefreshJob;
@@ -77,13 +77,9 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
     private volatile @Nullable IVehicle vehicle;
     private @Nullable Duration forceRefreshInterval;
 
-    public BluelinkVehicleHandler(final Thing thing) {
+    public BluelinkVehicleHandler(final Thing thing, BaseThingHandlerFactory thingHandlerFactory) {
         super(thing);
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(VehicleActions.class);
+        this.thingHandlerFactory = thingHandlerFactory;
     }
 
     @Override
@@ -111,6 +107,15 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
 
         updateStatus(ThingStatus.UNKNOWN);
         initTask = scheduler.schedule(() -> loadVehicle(vin), 0, TimeUnit.MILLISECONDS);
+
+        final var bridgeHnd = getBridgeHandler();
+        if (bridgeHnd != null) {
+            if (bridgeHnd.supportsControlActions()) {
+                thingHandlerFactory.registerService(this, VehicleControlActions.class);
+            } else {
+                thingHandlerFactory.registerService(this, BaseVehicleActions.class);
+            }
+        }
     }
 
     private void loadVehicle(final String vin) {

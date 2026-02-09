@@ -11,13 +11,13 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
-			<parameter name="username" type="text" required="true">
+			<parameter name="username" type="text" required="false">
 				<label>Username</label>
-				<description>Your Bluelink/Connect account email address</description>
+				<description>Your Bluelink/Connect account email address (not required for EU region)</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>Your Bluelink/Connect account password</description>
+				<description>Your Bluelink/Connect account password (for EU: refresh token)</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="pin" type="text" required="false">
@@ -31,11 +31,12 @@
 				<options>
 					<option value="US">United States</option>
 					<option value="CA">Canada</option>
+					<option value="EU">Europe</option>
 				</options>
 			</parameter>
 			<parameter name="brand" type="text" required="false">
 				<label>Brand</label>
-				<description>Vehicle brand. Required for Canada region.</description>
+				<description>Vehicle brand. Required for Canada and EU regions.</description>
 				<options>
 					<option value="HYUNDAI">Hyundai</option>
 					<option value="KIA">Kia</option>
