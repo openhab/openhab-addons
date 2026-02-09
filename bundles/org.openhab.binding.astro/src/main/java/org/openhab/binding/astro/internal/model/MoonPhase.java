@@ -12,164 +12,68 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import java.util.Calendar;
+import static org.openhab.binding.astro.internal.util.AstroConstants.LUNAR_SYNODIC_MONTH_DAYS;
 
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Time;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 
 /**
- * Holds the calculates moon phase informations.
+ * All moon phases.
  *
  * @author Gerhard Riegler - Initial contribution
- * @author Christoph Weitkamp - Introduced UoM
+ * @author Gaël L'hopital - added age equivalence in days & cycleProgressPercentage
  */
 @NonNullByDefault
-public class MoonPhase {
-    private @Nullable Calendar firstQuarter;
-    private @Nullable Calendar full;
-    private @Nullable Calendar thirdQuarter;
-    private @Nullable Calendar newCalendar;
-    private double age;
-    private double illumination;
-    private double agePercent;
-    private double ageDegree;
+public enum MoonPhase {
+    NEW(0.0, true),
+    WAXING_CRESCENT(0.125, false),
+    FIRST_QUARTER(0.25, true),
+    WAXING_GIBBOUS(0.375, false),
+    FULL(0.5, true),
+    WANING_GIBBOUS(0.625, false),
+    THIRD_QUARTER(0.75, true), // also called last quarter
+    WANING_CRESCENT(0.875, false);
 
-    private @Nullable MoonPhaseName name;
+    public final double cycleProgress;
+    private final boolean remarkable;
 
-    /**
-     * Returns the date at which the moon is in the first quarter.
-     */
-    @Nullable
-    public Calendar getFirstQuarter() {
-        return firstQuarter;
+    MoonPhase(double cycleProgress, boolean remarkable) {
+        this.cycleProgress = cycleProgress;
+        this.remarkable = remarkable;
     }
 
-    /**
-     * Sets the date at which the moon is in the first quarter.
-     */
-    public void setFirstQuarter(@Nullable Calendar firstQuarter) {
-        this.firstQuarter = firstQuarter;
+    public int getAgeDays() {
+        return (int) ((LUNAR_SYNODIC_MONTH_DAYS - 1) * cycleProgress + 1);
     }
 
-    /**
-     * Returns the date of the full moon.
-     */
-    @Nullable
-    public Calendar getFull() {
-        return full;
+    public static MoonPhase fromAgePercent(double agePercent) {
+        if (agePercent < 0.0 || agePercent > 1.0) {
+            throw new IllegalArgumentException("agePercent must be in [0,1]");
+        }
+
+        if (agePercent == NEW.cycleProgress) {
+            return NEW;
+        } else if (agePercent < FIRST_QUARTER.cycleProgress) {
+            return WAXING_CRESCENT;
+        } else if (agePercent == FIRST_QUARTER.cycleProgress) {
+            return FIRST_QUARTER;
+        } else if (agePercent < FULL.cycleProgress) {
+            return WAXING_GIBBOUS;
+        } else if (agePercent == FULL.cycleProgress) {
+            return FULL;
+        } else if (agePercent < THIRD_QUARTER.cycleProgress) {
+            return WANING_GIBBOUS;
+        } else if (agePercent == THIRD_QUARTER.cycleProgress) {
+            return THIRD_QUARTER;
+        }
+        return WANING_CRESCENT;
     }
 
-    /**
-     * Sets the date of the full moon.
-     */
-    public void setFull(@Nullable Calendar full) {
-        this.full = full;
-    }
-
-    /**
-     * Returns the date at which the moon is in the third quarter.
-     */
-    @Nullable
-    public Calendar getThirdQuarter() {
-        return thirdQuarter;
-    }
-
-    /**
-     * Sets the date at which the moon is in the third quarter.
-     */
-    public void setThirdQuarter(@Nullable Calendar thirdQuarter) {
-        this.thirdQuarter = thirdQuarter;
-    }
-
-    /**
-     * Returns the date of the new moon.
-     */
-    @Nullable
-    public Calendar getNew() {
-        return newCalendar;
-    }
-
-    /**
-     * Sets the date of the new moon.
-     */
-    public void setNew(@Nullable Calendar newCalendar) {
-        this.newCalendar = newCalendar;
-    }
-
-    /**
-     * Returns the age in days.
-     */
-    public QuantityType<Time> getAge() {
-        return new QuantityType<>(age, Units.DAY);
-    }
-
-    /**
-     * Sets the age in days.
-     */
-    public void setAge(double age) {
-        this.age = age;
-    }
-
-    /**
-     * Returns the illumination.
-     */
-    public QuantityType<Dimensionless> getIllumination() {
-        return new QuantityType<>(illumination, Units.PERCENT);
-    }
-
-    /**
-     * Sets the illumination.
-     */
-    public void setIllumination(double illumination) {
-        this.illumination = illumination;
-    }
-
-    /**
-     * Returns the phase name.
-     */
-    @Nullable
-    public MoonPhaseName getName() {
-        return name;
-    }
-
-    /**
-     * Sets the phase name.
-     */
-    public void setName(@Nullable MoonPhaseName name) {
-        this.name = name;
-    }
-
-    /**
-     * Returns the age in degree.
-     */
-    public QuantityType<Angle> getAgeDegree() {
-        return new QuantityType<>(ageDegree, Units.DEGREE_ANGLE);
-    }
-
-    /**
-     * Sets the age in degree.
-     */
-    public void setAgeDegree(double ageDegree) {
-        this.ageDegree = ageDegree;
-    }
-
-    /**
-     * Returns the age in percent.
-     */
-    public QuantityType<Dimensionless> getAgePercent() {
-        return new QuantityType<>(agePercent, Units.PERCENT);
-    }
-
-    /**
-     * Sets the age in percent.
-     */
-    public void setAgePercent(double agePercent) {
-        this.agePercent = agePercent;
+    public static List<MoonPhase> remarkables() {
+        return Arrays.stream(values()).filter(mp -> mp.remarkable).sorted(Comparator.comparing(mp -> mp.cycleProgress))
+                .toList();
     }
 }

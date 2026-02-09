@@ -157,6 +157,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         try {
             heatProgramJson = localSchedule.getHeatProgramJson();
         } catch (IllegalStateException e) {
+            logger.debug("Invalid HEATING program schedule: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-heating-program");
             return;
@@ -165,6 +166,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         try {
             coolProgramJson = localSchedule.getCoolProgramJson();
         } catch (IllegalStateException e) {
+            logger.debug("Invalid COOLING program schedule: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error-cooling-program");
             return;

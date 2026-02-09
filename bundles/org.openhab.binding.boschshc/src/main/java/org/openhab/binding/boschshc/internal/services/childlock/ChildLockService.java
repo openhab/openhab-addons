@@ -28,6 +28,7 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class ChildLockService extends BoschSHCService<ChildLockServiceState> {
     public ChildLockService() {
+        // note: apparently the service is named incorrectly in the Bosch API as "Thermostat" instead of "ChildLock"
         super("Thermostat", ChildLockServiceState.class);
     }
 

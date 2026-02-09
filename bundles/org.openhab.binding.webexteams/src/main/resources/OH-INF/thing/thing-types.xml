@@ -6,8 +6,8 @@
 
 	<!-- Account Thing Type -->
 	<thing-type id="account">
-		<label>WebexTeams Account</label>
-		<description>WebexTeams account used to send messages.</description>
+		<label>Webex Teams Account</label>
+		<description>Webex Teams account used to send messages.</description>
 
 		<channels>
 			<channel id="status" typeId="status"/>
@@ -26,8 +26,8 @@
 				<description>Authorization token. Only use with a bot account.</description>
 			</parameter>
 			<parameter name="clientId" type="text" required="false">
-				<label>Client Id</label>
-				<description>Client Id. Only use with a person integration.</description>
+				<label>Client ID</label>
+				<description>Client ID. Only use with a person integration.</description>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="false">
 				<context>password</context>
@@ -38,11 +38,11 @@
 				<label>Refresh Period (seconds)</label>
 				<default>300</default>
 				<description>Refresh period for channels. Low numbers increase accuracy, but could hit API rate limits. Defaults to
-					300 secs.</description>
+					300 seconds.</description>
 			</parameter>
 			<parameter name="roomId" type="text" required="false">
-				<label>Default Room Id</label>
-				<description>Id of the default room to send messages</description>
+				<label>Default Room ID</label>
+				<description>ID of the default room to send messages.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -51,7 +51,7 @@
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
-		<description>The current presence status of the person</description>
+		<description>The current presence status of the person.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Presence</tag>
@@ -61,7 +61,7 @@
 	<channel-type id="lastactivity">
 		<item-type>DateTime</item-type>
 		<label>Last Activity</label>
-		<description>The date and time of the person's last activity within Webex</description>
+		<description>The date and time of the person's last activity within Webex.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

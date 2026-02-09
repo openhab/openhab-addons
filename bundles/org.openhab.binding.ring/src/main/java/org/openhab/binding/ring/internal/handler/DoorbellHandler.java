@@ -13,11 +13,18 @@
 package org.openhab.binding.ring.internal.handler;
 
 import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTERY;
+import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_SNAPSHOT;
+import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_SNAPSHOT_TIMESTAMP;
+
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.Doorbell;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -33,9 +40,12 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class DoorbellHandler extends RingDeviceHandler {
     private int lastBattery = -1;
+    private long lastSnapshotTimestamp = -1;
+    private TimeZoneProvider timeZoneProvider;
 
-    public DoorbellHandler(Thing thing) {
+    public DoorbellHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -69,6 +79,17 @@ public class DoorbellHandler extends RingDeviceHandler {
         } else {
             logger.debug("Battery Level Unchanged for {} - {} vs {}", getThing().getUID().getId(),
                     deviceTO.health.batteryPercentage, lastBattery);
+        }
+        long timestamp = getSnapshotTimestamp();
+        if (timestamp > lastSnapshotTimestamp) {
+            logger.debug("timestamp = {} != lastSnapshotTimestamp {}, update snapshot channel", timestamp,
+                    lastSnapshotTimestamp);
+            lastSnapshotTimestamp = timestamp;
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT);
+            updateState(channelUID, new RawType(getSnapshot(), "image/jpeg"));
+            channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SNAPSHOT_TIMESTAMP);
+            updateState(channelUID, new DateTimeType(ZonedDateTime.ofInstant(java.time.Instant.ofEpochMilli(timestamp),
+                    timeZoneProvider.getTimeZone())));
         }
     }
 }

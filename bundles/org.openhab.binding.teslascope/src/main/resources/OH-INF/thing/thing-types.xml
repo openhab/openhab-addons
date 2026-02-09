@@ -15,7 +15,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the account is polled in sec.</description>
+				<description>Interval at which the account is polled (in seconds).</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -127,7 +127,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10">
 				<label>Refresh Interval</label>
-				<description>Interval the API is polled in sec.</description>
+				<description>Interval at which the API is polled (in seconds).</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -272,7 +272,7 @@
 	<channel-type id="charge-port-latch">
 		<item-type>Switch</item-type>
 		<label>Charge Port Latch</label>
-		<description>Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)</description>
+		<description>Indicates the Charge Port Latch status (ON/OFF if latched/unlatched)</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -674,8 +674,8 @@
 	</channel-type>
 	<channel-type id="wiper-blade-heater" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Wiperblade Heater</label>
-		<description>Indicates if the wiperblade heater is switched on</description>
+		<label>Wiper Blade Heater</label>
+		<description>Indicates if the wiper blade heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

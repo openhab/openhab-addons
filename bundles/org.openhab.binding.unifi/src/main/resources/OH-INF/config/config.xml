@@ -7,7 +7,7 @@
 	<config-description uri="thing-type:unifi:controller">
 		<parameter name="host" type="text" required="true">
 			<label>Hostname</label>
-			<description>Hostname of IP address of the UniFi Controller</description>
+			<description>Hostname or IP address of the UniFi Controller</description>
 			<default>unifi</default>
 			<context>network-address</context>
 		</parameter>
@@ -60,14 +60,14 @@
 	<config-description uri="thing-type:unifi:wlan">
 		<parameter name="wid" type="text" required="true">
 			<label>WLAN Id</label>
-			<description>The id or name of the wlan</description>
+			<description>The ID or name of the WLAN</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:unifi:client">
 		<parameter name="cid" type="text" required="true">
 			<label>Client ID</label>
-			<description>The MAC address, IP address, hostname or name of the client</description>
+			<description>The MAC address, IP address, hostname or alias of the client</description>
 		</parameter>
 		<parameter name="site" type="text" required="false">
 			<label>Site</label>

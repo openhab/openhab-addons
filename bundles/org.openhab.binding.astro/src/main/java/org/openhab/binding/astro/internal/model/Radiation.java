@@ -28,7 +28,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class Radiation {
-    public static final Radiation NULL = new Radiation();
+    public static final Radiation NONE = new Radiation();
 
     private final double direct;
     private final double diffuse;

@@ -167,7 +167,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         channelTypeId = channelTypeId.substring(i + 1);
 
         // Build with a channelTypeId of just the lower-cased DP identifier and set defaults for all text.
-        channelType = channelTypeFromSchema(channelTypeUID, productId, channelTypeId.toLowerCase());
+        channelType = channelTypeFromSchema(channelTypeUID, productId, channelTypeId);
         if (channelType != null) {
             // Localize that (e.g. using channel-type.tuya.cur_voltage.label = ...)
             channelType = localizationService.createLocalizedChannelType(bundle, channelType, locale);

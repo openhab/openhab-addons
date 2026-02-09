@@ -35,6 +35,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,7 @@ import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
+import org.openhab.binding.homekit.internal.dto.ImageResourceDescription;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.hapservices.CharacteristicReadWriteClient;
@@ -56,13 +58,17 @@ import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +93,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
     private final Map<Long, Accessory> accessories = new ConcurrentHashMap<>();
     private final HomekitKeyStore keyStore;
+    private final AtomicBoolean sessionUpgradeInProgress = new AtomicBoolean(false);
 
     private boolean isConfigured = false;
     private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
@@ -96,6 +103,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private volatile @Nullable IpTransport ipTransport;
     private volatile @Nullable ScheduledFuture<?> refreshTask;
     private volatile @Nullable Future<?> manualRefreshTask;
+    private volatile @Nullable Future<?> snapshotRefreshTask;
 
     private @NonNullByDefault({}) Long accessoryId;
 
@@ -196,6 +204,18 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
+     * Fetches accessories after a secure session upgrade has completed, ensuring that the
+     * sessionUpgradeInProgress flag is reset afterwards.
+     */
+    private void fetchAccessoriesAfterUpgrade() {
+        try {
+            fetchAccessories();
+        } finally {
+            sessionUpgradeInProgress.set(false);
+        }
+    }
+
+    /**
      * Get information about embedded accessories and their respective channels from the /accessories endpoint.
      *
      * @return list of accessories (may be empty)
@@ -213,17 +233,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
             logger.debug("{} fetched {} accessories", thing.getUID(), accessories.size());
             scheduler.submit(this::onConnectedThingAccessoriesLoaded);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' fetching accessories, reconnecting..", thing.getUID(),
-                        e.getMessage());
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' fetching accessories", thing.getUID(), e.getMessage());
-            }
-            logger.debug("Stack trace", e);
+            onCommunicationError(e, I18N_SUFFIX_ACCESSORY_FETCH_ERROR);
         }
     }
 
@@ -305,18 +318,32 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             PairVerifyClient client = new PairVerifyClient(getIpTransport(), keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), accessoryKey);
 
+            sessionUpgradeInProgress.set(true);
+
+            if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
+                task.cancel(false); // the running task must finish, but cancel future attempts
+                connectionAttemptTask = null;
+            }
+
             getIpTransport().setSessionKeys(client.verify());
             rwService = new CharacteristicReadWriteClient(getIpTransport());
             throttler.reset();
 
             logger.debug("{} restored pairing was verified", thing.getUID());
-            scheduler.schedule(this::fetchAccessories, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS, TimeUnit.SECONDS);
+            scheduler.schedule(this::fetchAccessoriesAfterUpgrade, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS,
+                    TimeUnit.SECONDS);
+
             return true; // pairing restore succeeded => exit
+        } catch (InterruptedException e) {
+            sessionUpgradeInProgress.set(false);
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
+            return false;
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
-                | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
-                | ExecutionException | IllegalStateException e) {
+                | InvalidCipherTextException | IOException | TimeoutException | ExecutionException
+                | IllegalStateException e) {
             logger.debug("{} restored pairing was not verified", thing.getUID(), e);
-            // pairing restore failed => exit and perhaps try again later
+            sessionUpgradeInProgress.set(false);
+            scheduleConnectionAttempt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     THING_STATUS_FMT.formatted("error.pairing-verification-failed", e.getMessage()));
             return false;
@@ -362,6 +389,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * If successful, resets the retry delay. If not, reschedules itself with an exponentially increased delay.
      */
     private synchronized void attemptConnect() {
+        if (sessionUpgradeInProgress.get()) {
+            logger.debug("{} skipping reconnect during session upgrade", thing.getUID());
+            return;
+        }
         if (ipTransport instanceof IpTransport transport) { // close prior transport (if any)
             transport.close();
             ipTransport = null;
@@ -431,7 +462,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.invalid-host-name");
             return null;
         }
-        if (!HOST_PATTERN.matcher(hostName).matches()) {
+        if (!hostName.isBlank() && !HOST_PATTERN.matcher(hostName).matches()) {
             logger.warn("{} host name '{}' does not match expected pattern; using anyway..", thing.getUID(), hostName);
         }
         return hostName.replace(" ", "\\032"); // escape mDNS spaces
@@ -565,20 +596,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Determines if the given throwable is an IOException or TimeoutException, including checking the cause
-     * if it is wrapped in an ExecutionException. Used to identify communication-related exceptions that can
-     * potentially be recovered.
-     *
-     * @param throwable the exception to check
-     * @return true if it's an IOException or TimeoutException, false otherwise
-     */
-    protected boolean isCommunicationException(Throwable throwable) {
-        return (throwable instanceof IOException || throwable instanceof TimeoutException) ? true
-                : (throwable instanceof ExecutionException outer) && (outer.getCause() instanceof Throwable inner)
-                        && (inner instanceof IOException || inner instanceof TimeoutException) ? true : false;
-    }
-
-    /**
      * Creates properties for the accessory based on the characteristics within the ACCESSORY_INFORMATION
      * service (if any).
      */
@@ -627,16 +644,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' subscribing to events, reconnecting..", thing.getUID(),
-                        e.getMessage());
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' subscribing to events", thing.getUID(), e.getMessage());
-            }
-            logger.debug("Stack trace", e);
+            onCommunicationError(e, I18N_SUFFIX_EVENT_SUBSCRIBE_ERROR);
         }
     }
 
@@ -691,18 +699,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         try {
             String json = throttler.call(() -> rwService.readCharacteristics(String.join(",", queries)));
             onEvent(json);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
-                        e.getMessage(), e);
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage(), e);
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    THING_STATUS_FMT.formatted("error.polling-error", e.getMessage()));
+            onCommunicationError(e, I18N_SUFFIX_POLLING_ERROR);
         }
     }
 
@@ -773,8 +773,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 if (refreshIntervalSeconds > 0) {
                     ScheduledFuture<?> task = refreshTask;
                     if (task == null || task.isCancelled() || task.isDone()) {
-                        refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, refreshIntervalSeconds,
-                                refreshIntervalSeconds, TimeUnit.SECONDS);
+                        refreshTask = scheduler.scheduleWithFixedDelay(() -> {
+                            refresh();
+                            refreshSnapshot();
+                        }, refreshIntervalSeconds, refreshIntervalSeconds, TimeUnit.SECONDS);
                     }
                 }
             } catch (NumberFormatException e) {
@@ -787,7 +789,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Cancels the refresh tasks if either is running.
+     * Cancels the refresh tasks if any are running.
      */
     private void cancelRefreshTasks() {
         if (refreshTask instanceof ScheduledFuture<?> task) {
@@ -796,8 +798,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (manualRefreshTask instanceof Future<?> task) {
             task.cancel(true);
         }
+        if (snapshotRefreshTask instanceof Future<?> task) {
+            task.cancel(true);
+        }
         refreshTask = null;
         manualRefreshTask = null;
+        snapshotRefreshTask = null;
     }
 
     /**
@@ -868,4 +874,85 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Subclasses MUST override this to perform any extra processing required.
      */
     protected abstract void initializeNotReadyThings();
+
+    /**
+     * Refreshes the snapshot channel image if the Channel exists and it is linked to an Item. Executes an
+     * HTTP POST request to fetch the IP camera snapshot image for this accessory, according to the Apple
+     * specification chapter '11.5 Image Snapshot'. The requested image size is taken from the channel
+     * configuration parameters CONFIG_SNAPSHOT_WIDTH and CONFIG_SNAPSHOT_HEIGHT, defaulting to 640x360 if
+     * not provided. The request body is a JSON SnapshotImageRequest object, and the response body results
+     * are JPEGs. If the image is successfully fetched, the snapshot channel state is updated with a RawType.
+     * And if an error occurs it is updated to UnDefType.UNDEF / UnDefType.NULL accordingly.
+     */
+    private synchronized void refreshSnapshot() {
+        if (thing.getChannel(CHANNEL_SNAPSHOT) instanceof Channel channel && isLinked(channel.getUID())
+                && getAccessoryId() instanceof Long aid) {
+            try {
+                Configuration conf = channel.getConfiguration();
+                Map.Entry<Long, Long> imageSize = Map.entry( //
+                        getConfigurationLong(conf, CONFIG_SNAPSHOT_WIDTH, 640L),
+                        getConfigurationLong(conf, CONFIG_SNAPSHOT_HEIGHT, 360L));
+                ImageResourceDescription request = new ImageResourceDescription(aid, imageSize);
+                byte[] requestBytes = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
+                byte[] responseBytes = getIpTransport().post(ENDPOINT_RESOURCE, CONTENT_TYPE_HAP, requestBytes);
+                if (responseBytes.length > 0) {
+                    updateState(channel.getUID(), new RawType(responseBytes, CONTENT_TYPE_JPEG));
+                } else {
+                    logger.warn("{} snapshot is empty", thing.getUID());
+                    updateState(channel.getUID(), UnDefType.NULL);
+                }
+            } catch (NumberFormatException | IllegalStateException | IllegalAccessException | IOException
+                    | InterruptedException | ExecutionException | TimeoutException e) {
+                logger.warn("{} error '{}' fetching snapshot", thing.getUID(), e.getMessage(), e);
+                updateState(channel.getUID(), UnDefType.UNDEF);
+            }
+        }
+    }
+
+    /**
+     * Get a long configuration parameter from a (channel) configuration.
+     * 
+     * @param cfg the configuration
+     * @param key the configuration key
+     * @param def the default value
+     * 
+     * @return the long value
+     * @throws NumberFormatException if the value cannot be parsed as a long
+     */
+    private Long getConfigurationLong(Configuration cfg, String key, long def) throws NumberFormatException {
+        Object object = cfg.get(key);
+        if (object instanceof Number number) {
+            return number.longValue();
+        } else if (object != null) {
+            return Long.parseLong(object.toString());
+        }
+        return def;
+    }
+
+    /**
+     * Schedules a snapshot refresh task if not already scheduled.
+     */
+    protected void scheduleSnapshotRefresh() {
+        Future<?> snapshotRefreshTask = this.snapshotRefreshTask;
+        if (snapshotRefreshTask == null || snapshotRefreshTask.isDone()) {
+            this.snapshotRefreshTask = scheduler.submit(() -> refreshSnapshot());
+        }
+    }
+
+    /**
+     * Common communication error handler that logs the exception, updates the thing status to OFFLINE
+     * with COMMUNICATION_ERROR detail, and schedules a reconnection attempt.
+     *
+     * @param exception the communication exception that was thrown
+     * @param i18nSuffix suffix of an i18n identifier; for example "event subscribe error" which gets
+     *            expanded to the i18n text id "error.event-subscribe-error" for the UI
+     */
+    protected void onCommunicationError(Exception exception, String i18nSuffix) {
+        String message = exception.getMessage();
+        logger.debug("{} {} {}, reconnecting..", thing.getUID(), i18nSuffix, message);
+        logger.trace("{} stack trace", thing.getUID(), exception);
+        String description = THING_STATUS_FMT.formatted("error." + i18nSuffix.replace(' ', '-'), message);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+        scheduleConnectionAttempt();
+    }
 }

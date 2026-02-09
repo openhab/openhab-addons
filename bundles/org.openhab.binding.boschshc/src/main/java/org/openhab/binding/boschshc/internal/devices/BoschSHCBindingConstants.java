@@ -49,6 +49,9 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT_2 = new ThingTypeUID(BINDING_ID, "thermostat-2");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT_2_MATTER = new ThingTypeUID(BINDING_ID,
+            "thermostat-2-matter");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
     public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
     public static final ThingTypeUID THING_TYPE_CAMERA_360 = new ThingTypeUID(BINDING_ID, "security-camera-360");
@@ -127,6 +130,9 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VIBRATION_SENSOR_SENSITIVITY = "vibration-sensor-sensitivity";
     public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vibration-sensor-state";
     public static final String CHANNEL_PRESENCE_SIMULATION_ENABLED = "presence-simulation-enabled";
+    public static final String CHANNEL_DISPLAY_DIRECTION = "display-direction";
+    public static final String CHANNEL_DISPLAYED_TEMPERATURE = "displayed-temperature";
+
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400

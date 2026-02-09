@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Weatherunderground Bridge -->
 	<bridge-type id="bridge">
-		<label>Weatherunderground Bridge</label>
+		<label>Weather Underground Bridge</label>
 		<description>The Weather Underground bridge represents a connection to the Weather Underground service</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>

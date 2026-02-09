@@ -71,7 +71,7 @@ jobs:
         env:
           CHANGED_FILES: ${{ steps.files.outputs.all }}
           MAVEN_OPTS: >-
-            -Xmx2g
+            -Xmx8g
             -Dmaven.wagon.http.retryHandler.count=5
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn

@@ -283,10 +283,11 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             case CAMERA_MOTION:
                 maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_MOTION_SNAPSHOT, Sequence.BEFORE);
                 // Trigger motion on start and end if channel exists
-                if (hasChannel(UnifiProtectBindingConstants.CHANNEL_MOTION)) {
-                    String channelId = eventType == WSEventType.ADD ? UnifiProtectBindingConstants.CHANNEL_MOTION_START
-                            : UnifiProtectBindingConstants.CHANNEL_MOTION_UPDATE;
-                    triggerChannel(new ChannelUID(thing.getUID(), channelId));
+                String motionChannelId = eventType == WSEventType.ADD
+                        ? UnifiProtectBindingConstants.CHANNEL_MOTION_START
+                        : UnifiProtectBindingConstants.CHANNEL_MOTION_UPDATE;
+                if (hasChannel(motionChannelId)) {
+                    triggerChannel(new ChannelUID(thing.getUID(), motionChannelId));
                     updateContactChannel(UnifiProtectBindingConstants.CHANNEL_MOTION_CONTACT, OpenClosedType.OPEN);
                 }
                 maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_MOTION_SNAPSHOT, Sequence.AFTER);
@@ -397,15 +398,28 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         }
         RtspsStreams rtsps = null;
 
-        // Create RTSP streams if WebRTC is enabled
+        // Query and Create RTSP streams if WebRTC is enabled
         if (enableWebRTC) {
             try {
-                rtsps = api.createRtspsStream(deviceId,
-                        List.of(ChannelQuality.HIGH, ChannelQuality.MEDIUM, ChannelQuality.LOW));
+                rtsps = api.getRtspsStream(deviceId);
+                List<ChannelQuality> qualities = new ArrayList<>();
+                if (rtsps.high == null) {
+                    qualities.add(ChannelQuality.HIGH);
+                }
+                if (rtsps.medium == null) {
+                    qualities.add(ChannelQuality.MEDIUM);
+                }
+                if (rtsps.low == null) {
+                    qualities.add(ChannelQuality.LOW);
+                }
+                if (!qualities.isEmpty()) {
+                    rtsps = api.createRtspsStream(deviceId, qualities);
+                }
             } catch (IOException e) {
-                logger.debug("Failed to create RTSP streams", e);
+                logger.debug("Failed to manage RTSP streams", e);
             }
         }
+
         // update existing channels
         updateStringChannel(UnifiProtectBindingConstants.CHANNEL_RTSP_URL_HIGH, rtsps != null ? rtsps.high : null);
         updateStringChannel(UnifiProtectBindingConstants.CHANNEL_RTSP_URL_MEDIUM, rtsps != null ? rtsps.medium : null);

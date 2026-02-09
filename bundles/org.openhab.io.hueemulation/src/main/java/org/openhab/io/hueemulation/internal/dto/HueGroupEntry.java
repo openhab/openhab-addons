@@ -15,12 +15,10 @@ package org.openhab.io.hueemulation.internal.dto;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GroupItem;
-import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.DeviceType;
 
 import com.google.gson.JsonElement;
@@ -44,6 +42,8 @@ public class HueGroupEntry {
         Zone // 1.30
     }
 
+    public static final String DEFAULT_ROOM_CLASS = "Other";
+
     public AbstractHueState action = new HueStatePlug();
 
     // The group type
@@ -53,7 +53,7 @@ public class HueGroupEntry {
     public String name;
 
     @SerializedName("class")
-    public String roomclass = "Other";
+    public String roomclass = DEFAULT_ROOM_CLASS;
 
     // The IDs of the lights that are in the group.
     public List<String> lights = Collections.emptyList();
@@ -77,31 +77,14 @@ public class HueGroupEntry {
         groupItem = element;
     }
 
-    /**
-     * This custom serializer computes the {@link HueGroupEntry#lights} list, before serializing.
-     * It does so, by looking up all item members of the references groupItem.
-     */
     @NonNullByDefault({})
     public static class Serializer implements JsonSerializer<HueGroupEntry> {
 
-        private ConfigStore cs;
-
-        public Serializer(ConfigStore cs) {
-            this.cs = cs;
-        }
-
         static class HueGroupHelper extends HueGroupEntry {
-
         }
 
         @Override
         public JsonElement serialize(HueGroupEntry product, Type type, JsonSerializationContext context) {
-            GroupItem item = product.groupItem;
-            if (item != null) {
-                product.lights = item.getMembers().stream().map(gitem -> cs.mapItemUIDtoHueID(gitem))
-                        .collect(Collectors.toList());
-            }
-
             return context.serialize(product, HueGroupHelper.class);
         }
     }

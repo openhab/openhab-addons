@@ -84,6 +84,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     private final SchedulerTask mqttConnectTask;
     private final RoborockWebTargets webTargets;
     private @Nullable MqttClient mqttClient;
+    private volatile boolean disposed = false;
     private String country = "";
     private String countryCode = "";
     private String token = "";
@@ -175,6 +176,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void initialize() {
+        disposed = false;
         RoborockAccountConfiguration localConfig = config = getConfigAs(RoborockAccountConfiguration.class);
         if (localConfig.email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -189,7 +191,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void handleRemoval() {
-        teardown(false);
+        teardown();
         super.handleRemoval();
     }
 
@@ -213,6 +215,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     private void initAPI() {
+        if (disposed) {
+            logger.debug("Handler disposed, aborting API init");
+            return;
+        }
         RoborockAccountConfiguration localConfig = config;
         if (localConfig == null) {
             return;
@@ -299,17 +305,18 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         mqttConnectTask.submit();
     }
 
-    private synchronized void teardown(boolean scheduleReconnection) {
+    private synchronized void teardown() {
+        disposed = true;
         initTask.cancel();
         mqttConnectTask.cancel();
         disconnectMqttClient();
-
-        if (scheduleReconnection) {
-            initTask.submit();
-        }
     }
 
     private void establishMQTTConnection() {
+        if (disposed) {
+            logger.debug("Handler disposed, aborting MQTT connection");
+            return;
+        }
         if (token.isEmpty() || rriot.r == null || rriot.r.m.isEmpty() || rriot.k.isEmpty() || rriot.s.isEmpty()
                 || rriot.u.isEmpty()) {
             logger.debug("token and/or rriot are empty, delay connection to MQTT server");
@@ -329,7 +336,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Override
     public void dispose() {
         super.dispose();
-        teardown(false);
+        teardown();
     }
 
     public void connectMqttClient() throws MqttException {
@@ -366,6 +373,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void connectComplete(boolean reconnect, @Nullable String serverURI) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT connectComplete");
+            return;
+        }
         logger.debug("MQTT connection established. Reconnect: {}, Server URI: {}", reconnect, serverURI);
 
         // Subscribe to topics after a successful connection
@@ -385,11 +396,19 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void connectionLost(@Nullable Throwable cause) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT connectionLost");
+            return;
+        }
         // Additional logic can be placed here if specific actions are needed on disconnect
     }
 
     @Override
     public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) throws Exception {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring MQTT messageArrived");
+            return;
+        }
         String localTopic = topic;
         MqttMessage localMessage = message;
         if (localTopic == null || localMessage == null) {
@@ -522,6 +541,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     public void onEventStreamFailure(Throwable error) {
+        if (disposed) {
+            logger.debug("Handler disposed, ignoring event stream failure");
+            return;
+        }
         logger.debug("Device connection failed, reconnecting", error);
         mqttConnectTask.schedule(60);
     }

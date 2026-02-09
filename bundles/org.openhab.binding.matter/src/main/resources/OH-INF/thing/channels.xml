@@ -564,28 +564,57 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="carbondioxideconcentrationmeasurement-measuredvalue">
-		<item-type unitHint="ppm">Number:Dimensionless</item-type>
-		<label>CO2 Concentration</label>
-		<description>Indicates the measured carbon dioxide concentration in parts per million (ppm).</description>
-		<category>CarbonDioxide</category>
+	<!-- Generic Concentration Measurement Channels (shared across all concentration measurement clusters) -->
+	<channel-type id="concentrationmeasurement-measuredvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Concentration</label>
+		<description>Indicates the measured concentration.</description>
+		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>CO2</tag>
 		</tags>
-		<state pattern="%.0f ppm" readOnly="true"/>
+		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="carbonmonoxideconcentrationmeasurement-measuredvalue">
-		<item-type unitHint="ppm">Number:Dimensionless</item-type>
-		<label>CO Concentration</label>
-		<description>Indicates the measured carbon monoxide concentration in parts per million (ppm).</description>
-		<category>Alarm</category>
+	<channel-type id="concentrationmeasurement-levelvalue">
+		<item-type>Number</item-type>
+		<label>Concentration Level</label>
+		<description>Indicates the concentration level as an enumeration (0=Unknown, 1=Low, 2=Medium, 3=High, 4=Critical).</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="concentrationmeasurement-peakmeasuredvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Peak Concentration</label>
+		<description>Indicates the peak (maximum) concentration measured during the measurement window.</description>
+		<category>Chart</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>CO</tag>
 		</tags>
-		<state pattern="%.0f ppm" readOnly="true"/>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="concentrationmeasurement-averagemeasuredvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Average Concentration</label>
+		<description>Indicates the average concentration measured during the measurement window.</description>
+		<category>Chart</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Smoke/CO Alarm Channels -->

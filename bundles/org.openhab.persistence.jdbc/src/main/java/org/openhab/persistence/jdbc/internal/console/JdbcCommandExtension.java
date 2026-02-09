@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -143,9 +142,9 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
         List<Entry<String, String>> itemNameToTableName = persistenceService.getItemNameToTableNameMap().entrySet()
                 .stream().sorted(Map.Entry.comparingByKey()).collect(Collectors.toList());
         int itemNameMaxLength = Math
-                .max(itemNameToTableName.stream().map(i -> i.getKey().length()).max(Integer::compare).orElse(0), 4);
+                .max(itemNameToTableName.stream().mapToInt(i -> i.getKey().length()).max().orElse(0), 4);
         int tableNameMaxLength = Math
-                .max(itemNameToTableName.stream().map(i -> i.getValue().length()).max(Integer::compare).orElse(0), 5);
+                .max(itemNameToTableName.stream().mapToInt(i -> i.getValue().length()).max().orElse(0), 5);
         console.println(String.format("%1$-" + (tableNameMaxLength + 2) + "s%2$-" + (itemNameMaxLength + 2) + "s%3$s",
                 "Table", "Item", "Issue"));
         console.println("-".repeat(tableNameMaxLength) + "  " + "-".repeat(itemNameMaxLength) + "  " + "-".repeat(64));
@@ -201,12 +200,10 @@ public class JdbcCommandExtension extends AbstractConsoleCommandExtension implem
             entries.removeIf(t -> t.getStatus() == ItemTableCheckEntryStatus.VALID);
         }
         entries.sort(Comparator.comparing(ItemTableCheckEntry::getTableName));
-        int itemNameMaxLength = Math
-                .max(entries.stream().map(t -> t.getItemName().length()).max(Integer::compare).orElse(0), 4);
-        int tableNameMaxLength = Math
-                .max(entries.stream().map(t -> t.getTableName().length()).max(Integer::compare).orElse(0), 5);
-        int statusMaxLength = Stream.of(ItemTableCheckEntryStatus.values()).map(t -> t.toString().length())
-                .max(Integer::compare).get();
+        int itemNameMaxLength = Math.max(entries.stream().mapToInt(t -> t.getItemName().length()).max().orElse(0), 4);
+        int tableNameMaxLength = Math.max(entries.stream().mapToInt(t -> t.getTableName().length()).max().orElse(0), 5);
+        int statusMaxLength = Arrays.stream(ItemTableCheckEntryStatus.values()).mapToInt(s -> s.toString().length())
+                .max().orElse(0);
         console.println(String.format(
                 "%1$-" + (tableNameMaxLength + 2) + "sRow Count  %2$-" + (itemNameMaxLength + 2) + "s%3$s", "Table",
                 "Item", "Status"));

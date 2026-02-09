@@ -6,14 +6,12 @@
 
 	<config-description uri="thing-type:shelly:blubattery">
 		<parameter name="deviceAddress" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceAddress.label</label>
-			<description>
-				@text/thing-type.config.shelly.deviceAddress.description</description>
+			<label>MAC Address</label>
+			<description>MAC Address of the Shelly device</description>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
-			<label>@text/thing-type.config.shelly.battery.lowBattery.label</label>
-			<description>
-				@text/thing-type.config.shelly.battery.lowBattery.description</description>
+			<label>Low Battery Threshold (%)</label>
+			<description>An alarm is triggered when the device reports a battery charge lower than this threshold. Default: 20%</description>
 			<default>20</default>
 			<unitLabel>%</unitLabel>
 		</parameter>
@@ -21,15 +19,14 @@
 
 	<config-description uri="thing-type:shelly:blugw">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 
 		<parameter name="enableBluGateway" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
-			<description>
-				@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<label>Enable BLU Gateway Support</label>
+			<description>Enables BLU Gateway support including auto-upload of the required script</description>
 			<default>true</default>
 		</parameter>
 	</config-description>

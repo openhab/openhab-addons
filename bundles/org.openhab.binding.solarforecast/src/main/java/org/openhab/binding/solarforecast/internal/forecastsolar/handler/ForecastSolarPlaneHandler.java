@@ -22,13 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
@@ -38,7 +41,6 @@ import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObj
 import org.openhab.binding.solarforecast.internal.forecastsolar.config.ForecastSolarPlaneConfiguration;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -61,48 +63,45 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ForecastSolarPlaneHandler extends BaseThingHandler implements SolarForecastProvider {
-    public static final String BASE_URL = "https://api.forecast.solar/";
 
     private final Logger logger = LoggerFactory.getLogger(ForecastSolarPlaneHandler.class);
+    private final AtomicBoolean dirty = new AtomicBoolean(false);
     private final HttpClient httpClient;
-
-    private Optional<PointType> location = Optional.empty();
+    private ForecastSolarObject forecast;
 
     protected ForecastSolarPlaneConfiguration configuration = new ForecastSolarPlaneConfiguration();
-    protected Optional<ForecastSolarBridgeHandler> bridgeHandler = Optional.empty();
-    protected Optional<String> apiKey = Optional.empty();
-    protected ForecastSolarObject forecast;
+    protected String identifier;
+    protected @Nullable ForecastSolarBridgeHandler bridgeHandler;
 
     public ForecastSolarPlaneHandler(Thing thing, HttpClient hc) {
         super(thing);
         httpClient = hc;
-        forecast = new ForecastSolarObject(thing.getUID().getAsString());
+        String label = thing.getLabel();
+        identifier = (label == null) ? thing.getUID().getAsString() : label;
+        forecast = new ForecastSolarObject(identifier);
     }
 
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(SolarForecastActions.class);
-    }
+    /**
+     * #####################
+     * Handler functionality
+     * #####################
+     */
 
     @Override
     public void initialize() {
-        doInitialize();
-        bridgeHandler.ifPresent(handler -> {
-            handler.addPlane(this);
-        });
-    }
-
-    protected boolean doInitialize() {
         configuration = getConfigAs(ForecastSolarPlaneConfiguration.class);
+        if (!isConfigurationValid()) {
+            return;
+        }
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
                 if (handler instanceof ForecastSolarBridgeHandler fsbh) {
-                    bridgeHandler = Optional.of(fsbh);
+                    bridgeHandler = fsbh;
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
                             "@text/solarforecast.plane.status.await-feedback");
-                    return true;
+                    bridge().addPlane(this);
                 } else {
                     configErrorStatus("@text/solarforecast.plane.status.wrong-handler" + " [\"" + handler + "\"]");
                 }
@@ -112,7 +111,27 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         } else {
             configErrorStatus("@text/solarforecast.plane.status.bridge-missing");
         }
-        return false;
+    }
+
+    private boolean isConfigurationValid() {
+        // Validate configuration
+        if (configuration.declination < 0 || configuration.declination > 90) {
+            configErrorStatus("Declination must be between 0 and 90.");
+            return false;
+        }
+        if (configuration.azimuth < -180 || configuration.azimuth > 180) {
+            configErrorStatus("Azimuth must be between -180 and 180.");
+            return false;
+        }
+        if (configuration.kwp <= 0) {
+            configErrorStatus("Installed kWp must be positive.");
+            return false;
+        }
+        if (configuration.refreshInterval < 0) {
+            configErrorStatus("Refresh interval must be non-negative.");
+            return false;
+        }
+        return true;
     }
 
     protected void configErrorStatus(String message) {
@@ -121,84 +140,191 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
 
     @Override
     public void dispose() {
-        super.dispose();
-        if (bridgeHandler.isPresent()) {
-            bridgeHandler.get().removePlane(this);
-        }
+        bridge().removePlane(this);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            ForecastSolarObject localForecast = getForecast();
             if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
+                sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.Average));
             } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
+                sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
             } else {
-                fetchData();
+                bridge().getSequentialScheduler().execute(this::updateData);
             }
         }
     }
 
     /**
+     * #####################
+     * Forecast functionality
+     * #####################
+     */
+
+    /**
+     * This is the main function called by the bridge to update current data and refresh if expired
+     * Only called from sequential bridge scheduler thread!
+     * 1) Fetch new data if expired
+     * 2) Update channels with current data
+     * 3) Update timeseries if fetchData delivered new forecast
+     * 4) Update thing status to ONLINE
+     */
+    public void updateData() {
+        ForecastSolarObject localForecast = getForecast();
+        // 1) fetch new data if expired
+        if (localForecast.isExpired()) {
+            fetchData();
+        }
+        try {
+            // 2) Update channels with current data
+            updateChannels();
+            // 3) Update timeseries if dirty flag is set by fetchData before
+            if (dirty.get()) {
+                updateTimeseries();
+            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (SolarForecastException sfe) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    "@text/solarforecast.plane.status.exception [\"" + sfe.getMessage() + "\"]");
+        }
+    }
+
+    /**
+     * Fetch new forecast data from the forecast.solar API if the current data is expired.
      * https://doc.forecast.solar/doku.php?id=api:estimate
      */
-    protected ForecastSolarObject fetchData() {
-        if (location.isPresent()) {
-            if (forecast.isExpired()) {
-                // create URL with mandatory parameters
-                String url = getBaseUrl() + "estimate/" + location.get().getLatitude() + SLASH
-                        + location.get().getLongitude() + SLASH + configuration.declination + SLASH
-                        + configuration.azimuth + SLASH + configuration.kwp + "?damping=" + configuration.dampAM + ","
-                        + configuration.dampPM;
-                // add parameters calculated by queryParameters() including subclasses
-                for (Entry<String, String> entry : queryParameters().entrySet()) {
-                    url += "&" + entry.getKey() + "=" + entry.getValue();
-                }
-                logger.trace("Call {}", url);
-                try {
-                    ContentResponse cr = httpClient.GET(url);
-                    int responseStatus = cr.getStatus();
-                    if (responseStatus == 200) {
-                        try {
-                            ForecastSolarObject localForecast = new ForecastSolarObject(thing.getUID().getAsString(),
-                                    cr.getContentAsString(), Instant.now(Utils.getClock())
-                                            .plus(configuration.refreshInterval, ChronoUnit.MINUTES));
-                            updateStatus(ThingStatus.ONLINE);
-                            setForecast(localForecast);
-                        } catch (SolarForecastException fse) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                                    "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
-                        }
-                    } else if (responseStatus == 429) {
-                        // special handling for 429 response: https://doc.forecast.solar/facing429
-                        // bridge shall "calm down" until at least one hour is expired
-                        if (bridgeHandler.isPresent()) {
-                            bridgeHandler.get().calmDown();
-                        }
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/solarforecast.plane.status.http-status [\"" + cr.getStatus() + "\"]");
-                    } else {
-                        logger.trace("Call {} failed with status {}. Response: {}", url, cr.getStatus(),
-                                cr.getContentAsString());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/solarforecast.plane.status.http-status [\"" + cr.getStatus() + "\"]");
-                    }
-                } catch (ExecutionException | TimeoutException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                } catch (InterruptedException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    Thread.currentThread().interrupt();
-                }
-            } else {
-                // else use available forecast
-                updateStatus(ThingStatus.ONLINE);
-                updateChannels(forecast);
-            }
-        } else {
-            logger.warn("{} Location not present", thing.getLabel());
+    private void fetchData() {
+        ForecastSolarObject localForecast = getForecast();
+        if (!localForecast.isExpired()) {
+            return;
         }
-        return forecast;
+        String url = buildUrl();
+        logger.trace("Call {}", Utils.redactUrlForLog(url));
+        try {
+            ContentResponse cr = httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).send();
+            int responseStatus = cr.getStatus();
+            handleResponse(responseStatus, cr.getContentAsString());
+        } catch (ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void handleResponse(int responseStatus, String forecastContent) {
+        if (responseStatus == HttpStatus.OK_200) {
+            try {
+                ForecastSolarObject newForecast = new ForecastSolarObject(identifier, forecastContent,
+                        Instant.now(Utils.getClock()).plus(configuration.refreshInterval, ChronoUnit.MINUTES));
+                updateForecast(newForecast);
+                updateStatus(ThingStatus.ONLINE);
+            } catch (SolarForecastException fse) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
+            }
+        } else if (responseStatus == HttpStatus.TOO_MANY_REQUESTS_429) {
+            // special handling for 429 response: https://doc.forecast.solar/facing429
+            // bridge shall "calm down" until at least one hour is expired
+            bridge().calmDown();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/solarforecast.plane.status.http-status [\"" + responseStatus + "\"]");
+        } else {
+            logger.trace("Call failed with status {}. Response: {}", responseStatus, forecastContent);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/solarforecast.plane.status.http-status [\"" + responseStatus + "\"]");
+        }
+    }
+
+    /**
+     * Update the channels with the current forecast data.
+     */
+    private void updateChannels() {
+        ForecastSolarObject localForecast = getForecast();
+        ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
+        double energyDay = localForecast.getDayTotal(now.toLocalDate());
+        double energyProduced = localForecast.getActualEnergyValue(now);
+        // energyDay (separate field in JSON) and energyProduced (sum of actual values) can differ slightly due to
+        // rounding)
+        // 2026-01-05 22:03:55.147 [TRACE] [r.handler.ForecastSolarPlaneHandler] - Actual 1.0039800206714415 Day
+        // 1.0039800206714413 Diff -2.220446049250313E-16
+        // avoid negative remaining energy due to rounding issues
+        double remainingEnergy = Math.max(0, (energyDay - energyProduced));
+        updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
+        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(remainingEnergy));
+        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
+        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(localForecast.getActualPowerValue(now)));
+    }
+
+    /**
+     * Update timeseries with the current forecast data.
+     */
+    private void updateTimeseries() {
+        ForecastSolarObject localForecast = getForecast();
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.Average));
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
+    }
+
+    /**
+     * Set the new forecast data.
+     *
+     * @param newForecast set as actual forecast data
+     */
+    protected void updateForecast(ForecastSolarObject newForecast) {
+        synchronized (this) {
+            forecast = newForecast;
+            dirty.set(true);
+        }
+    }
+
+    /**
+     * Get the current forecast data reference in a thread-safe manner.
+     *
+     * @return the current shared {@link ForecastSolarObject} reference
+     */
+    public ForecastSolarObject getForecast() {
+        synchronized (this) {
+            ForecastSolarObject localForecast = forecast;
+            return localForecast;
+        }
+    }
+
+    /**
+     * Used by bridge to check if timeseries needs to be updated.
+     * Check if timeseries update is needed and reset the flag.
+     *
+     * @return true if timeseries update is needed
+     */
+    public boolean isTimeseriesUpdateNeeded() {
+        return dirty.getAndSet(false);
+    }
+
+    /**
+     * #####################
+     * URL functionality
+     * #####################
+     */
+
+    /**
+     * Build the forecast.solar API URL with mandatory and optional parameters.
+     *
+     * @return complete URL for the forecast request
+     */
+    protected String buildUrl() {
+        // create URL with mandatory parameters using StringBuilder
+        StringBuilder url = new StringBuilder();
+        url.append(bridge().getBaseUrl()).append(configuration.declination).append(SLASH).append(configuration.azimuth)
+                .append(SLASH).append(configuration.kwp).append("?damping=").append(configuration.dampAM).append(",")
+                .append(configuration.dampPM);
+        // add parameters calculated by queryParameters() including subclasses
+        Map<String, String> parameters = new HashMap<>();
+        queryParameters(parameters);
+        for (Entry<String, String> entry : parameters.entrySet()) {
+            url.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        return url.toString();
     }
 
     /**
@@ -207,57 +333,42 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
      *
      * @return Map with parameter key
      */
-    protected Map<String, String> queryParameters() {
-        Map<String, String> parameters = new HashMap<>();
+    protected void queryParameters(Map<String, String> parameters) {
+        bridge().queryParameters(parameters);
         parameters.put("full", "1"); // full forecast data including hours without sun
         if (!SolarForecastBindingConstants.EMPTY.equals(configuration.horizon)) {
             parameters.put("horizon", configuration.horizon); // horizon if configured
         }
-        return parameters;
-    }
-
-    protected void updateChannels(ForecastSolarObject f) {
-        ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
-        double energyDay = f.getDayTotal(now.toLocalDate());
-        double energyProduced = f.getActualEnergyValue(now);
-        updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));
-        updateState(CHANNEL_ENERGY_REMAIN, Utils.getEnergyState(energyDay - energyProduced));
-        updateState(CHANNEL_ENERGY_TODAY, Utils.getEnergyState(energyDay));
-        updateState(CHANNEL_POWER_ACTUAL, Utils.getPowerState(f.getActualPowerValue(now)));
     }
 
     /**
-     * Used by Bridge to set location directly
-     *
-     * @param loc
+     * #####################
+     * Helper functionality
+     * #####################
      */
-    void setLocation(PointType loc) {
-        location = Optional.of(loc);
-    }
 
-    void setApiKey(String key) {
-        apiKey = Optional.of(key);
-    }
-
-    String getBaseUrl() {
-        String url = BASE_URL;
-        if (apiKey.isPresent()) {
-            url += apiKey.get() + SLASH;
+    private ForecastSolarBridgeHandler bridge() {
+        ForecastSolarBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            return localBridgeHandler;
+        } else {
+            throw new IllegalStateException("Bridge handler not initialized");
         }
-        return url;
     }
 
-    protected synchronized void setForecast(ForecastSolarObject f) {
-        forecast = f;
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE, forecast.getPowerTimeSeries(QueryMode.Average));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, forecast.getEnergyTimeSeries(QueryMode.Average));
-        bridgeHandler.ifPresent(h -> {
-            h.forecastUpdate();
-        });
+    /**
+     * #####################
+     * Actions functionality
+     * #####################
+     */
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(SolarForecastActions.class);
     }
 
     @Override
-    public synchronized List<SolarForecast> getSolarForecasts() {
-        return List.of(forecast);
+    public List<SolarForecast> getSolarForecasts() {
+        return List.of(getForecast());
     }
 }

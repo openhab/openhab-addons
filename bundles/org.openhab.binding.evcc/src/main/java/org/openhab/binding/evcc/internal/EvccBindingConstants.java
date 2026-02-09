@@ -12,28 +12,25 @@
  */
 package org.openhab.binding.evcc.internal;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.ThingTypeUID;
 
-/**
- * The {@link EvccBindingConstants} class contains fields mapping thing configuration parameters.
- *
- * @author Florian Hotze - Initial contribution
- * @author Luca Arnecke - Update to evcc version 0.123.1
- * @author Marcel Goerentz - Reworked the binding
- */
 @NonNullByDefault
 public class EvccBindingConstants {
 
     public static final String BINDING_ID = "evcc";
 
-    public static final String CHANNEL_PLAN_SOC = "plan-soc";
+    // Channels
     public static final String CHANNEL_PLAN_PRECONDITION = "plan-precondition";
+    public static final String CHANNEL_PLAN_SOC = "plan-soc";
 
+    // Thing Types
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
+    public static final ThingTypeUID THING_TYPE_FORECAST = new ThingTypeUID(BINDING_ID, "forecast");
     public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
     public static final ThingTypeUID THING_TYPE_LOADPOINT = new ThingTypeUID(BINDING_ID, "loadpoint");
     public static final ThingTypeUID THING_TYPE_PLAN = new ThingTypeUID(BINDING_ID, "plan");
@@ -43,22 +40,24 @@ public class EvccBindingConstants {
     public static final ThingTypeUID THING_TYPE_STATISTICS = new ThingTypeUID(BINDING_ID, "statistics");
     public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BATTERY, THING_TYPE_HEATING,
-            THING_TYPE_LOADPOINT, THING_TYPE_PLAN, THING_TYPE_PV, THING_TYPE_SITE, THING_TYPE_STATISTICS,
-            THING_TYPE_VEHICLE);
+    // Supported Thing Types
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BATTERY, THING_TYPE_FORECAST,
+            THING_TYPE_HEATING, THING_TYPE_LOADPOINT, THING_TYPE_PLAN, THING_TYPE_PV, THING_TYPE_SITE,
+            THING_TYPE_STATISTICS, THING_TYPE_VEHICLE);
 
+    public static final List<String> SUPPORTED_FORECAST_TYPES = List.of("co2", "feedin", "grid", "solar");
+
+    // Properties
+    public static final String PROPERTY_FORECAST = "forecast";
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_INDEX = "index";
-    public static final String PROPERTY_TYPE = "type";
-    public static final String PROPERTY_TITLE = "title";
     public static final String PROPERTY_SITE_TITLE = "siteTitle";
+    public static final String PROPERTY_SUBTYPE = "subType";
+    public static final String PROPERTY_TITLE = "title";
+    public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_VEHICLE_ID = "vehicleId";
 
-    public static final String API_PATH_LOADPOINTS = "loadpoints";
-    public static final String API_PATH_VEHICLES = "vehicles";
-    public static final String API_PATH_PLAN_SOC = "plan/soc";
-    public static final String API_PATH_PLAN_REPEATING = "plan/repeating";
-
+    // Property Types
     public static final String PROPERTY_TYPE_BATTERY = "battery";
     public static final String PROPERTY_TYPE_HEATING = "heating";
     public static final String PROPERTY_TYPE_LOADPOINT = "loadpoint";
@@ -68,17 +67,27 @@ public class EvccBindingConstants {
     public static final String PROPERTY_TYPE_STATISTICS = "statistics";
     public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
 
+    // API Paths
+    public static final String API_PATH_LOADPOINTS = "loadpoints";
+    public static final String API_PATH_PLAN_REPEATING = "plan/repeating";
+    public static final String API_PATH_PLAN_SOC = "plan/soc";
+    public static final String API_PATH_VEHICLES = "vehicles";
+
+    // JSON Keys
     public static final String JSON_KEY_ACTIVE = "active";
     public static final String JSON_KEY_BATTERY = "battery";
     public static final String JSON_KEY_CHARGE_CURRENT = "chargeCurrent";
     public static final String JSON_KEY_CHARGE_CURRENTS = "chargeCurrents";
     public static final String JSON_KEY_CHARGE_VOLTAGES = "chargeVoltages";
     public static final String JSON_KEY_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
-    public static final String JSON_KEY_CHARGING = "charging";
+    public static final String JSON_KEY_CO2 = "co2";
     public static final String JSON_KEY_CONNECTED = "connected";
+    public static final String JSON_KEY_DAY_AFTER_TOMORROW = "dayAfterTomorrow";
     public static final String JSON_KEY_EFFECTIVE_LIMIT_SOC = "effectiveLimitSoc";
     public static final String JSON_KEY_EFFECTIVE_PLAN_SOC = "effectivePlanSoc";
-    public static final String JSON_KEY_ENABLED = "enabled";
+    public static final String JSON_KEY_ENERGY = "energy";
+    public static final String JSON_KEY_FEED_IN = "feedin";
+    public static final String JSON_KEY_FORECAST = "forecast";
     public static final String JSON_KEY_GRID = "grid";
     public static final String JSON_KEY_GRID_CONFIGURED = "gridConfigured";
     public static final String JSON_KEY_LIMIT_SOC = "limitSoc";
@@ -90,29 +99,35 @@ public class EvccBindingConstants {
     public static final String JSON_KEY_PRECONDITION = "precondition";
     public static final String JSON_KEY_PV = "pv";
     public static final String JSON_KEY_REPEATING_PLANS = "repeatingPlans";
+    public static final String JSON_KEY_SCALE = "scale";
     public static final String JSON_KEY_SMART_COST_TYPE = "smartCostType";
     public static final String JSON_KEY_SOC = "soc";
+    public static final String JSON_KEY_SOLAR = "solar";
     public static final String JSON_KEY_STATISTICS = "statistics";
     public static final String JSON_KEY_TIME = "time";
-    public static final String JSON_KEY_TZ = "tz";
     public static final String JSON_KEY_TITLE = "title";
+    public static final String JSON_KEY_TODAY = "today";
+    public static final String JSON_KEY_TOMORROW = "tomorrow";
+    public static final String JSON_KEY_TZ = "tz";
     public static final String JSON_KEY_VEHICLE_LIMIT_SOC = "vehicleLimitSoc";
     public static final String JSON_KEY_VEHICLE_PRESENT = "vehiclePresent";
     public static final String JSON_KEY_VEHICLE_SOC = "vehicleSoc";
     public static final String JSON_KEY_VEHICLES = "vehicles";
     public static final String JSON_KEY_WEEKDAYS = "weekdays";
 
+    // Item Types
     public static final String NUMBER_CURRENCY = CoreItemFactory.NUMBER + ":Currency";
     public static final String NUMBER_DIMENSIONLESS = CoreItemFactory.NUMBER + ":Dimensionless";
     public static final String NUMBER_ELECTRIC_CURRENT = CoreItemFactory.NUMBER + ":ElectricCurrent";
     public static final String NUMBER_EMISSION_INTENSITY = CoreItemFactory.NUMBER + ":EmissionIntensity";
     public static final String NUMBER_ENERGY = CoreItemFactory.NUMBER + ":Energy";
-    public static final String NUMBER_POWER = CoreItemFactory.NUMBER + ":Power";
-    public static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
-    public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
     public static final String NUMBER_ENERGY_PRICE = CoreItemFactory.NUMBER + ":EnergyPrice";
+    public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
+    public static final String NUMBER_POWER = CoreItemFactory.NUMBER + ":Power";
     public static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
+    public static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
 
-    public static final String POST = "POST";
+    // HTTP Methods
     public static final String DELETE = "DELETE";
+    public static final String POST = "POST";
 }

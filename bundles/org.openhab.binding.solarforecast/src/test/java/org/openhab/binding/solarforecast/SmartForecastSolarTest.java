@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.solarforecast;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -27,6 +28,7 @@ import javax.measure.quantity.Power;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.solarforecast.internal.actions.SolarForecastAdjuster;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
@@ -61,10 +63,10 @@ class SmartForecastSolarTest {
     void testFirstTimestamp() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
+        ForecastSolarObject forecastObject = new ForecastSolarObject("fs-test", content,
                 queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
-        assertEquals(Instant.parse("2022-07-17T03:31:00Z"), fo.getForecastBegin(), "First entry");
-        assertEquals(Instant.parse("2022-07-17T04:00:00Z"), fo.getFirstPowerTimestamp().get(),
+        assertEquals(Instant.parse("2022-07-17T03:31:00Z"), forecastObject.getForecastBegin(), "First entry");
+        assertEquals(Instant.parse("2022-07-17T04:00:00Z"), forecastObject.getFirstPowerTimestamp().get(),
                 "First entry with positive power value");
     }
 
@@ -72,24 +74,29 @@ class SmartForecastSolarTest {
     void testSmartAdjsutment() {
         String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 17, 00).atZone(TEST_ZONE);
-        ForecastSolarObject fo = new ForecastSolarObject("fs-test", content,
+        ForecastSolarObject forecastObject = new ForecastSolarObject("fs-test", content,
                 queryDateTime.toInstant().plus(1, ChronoUnit.DAYS));
-        fo.setCorrectionFactor(0.5); // set correction factor to 50% for testing)
+        // set half of energy production for adjustment
+        ForecastSolarObject adjusted = new ForecastSolarObject(forecastObject,
+                forecastObject.getActualEnergyValue(queryDateTime) / 2, true);
+        Optional<SolarForecastAdjuster> adjuster = adjusted.getAdjuster();
+        assertTrue(adjuster.isPresent(), "Adjuster present");
+        assertEquals(0.5, adjuster.get().getCorrectionFactor(), TOLERANCE, "Factor");
         // "2022-07-17 21:32:00": 63583,
-        assertEquals(31.792, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
+        assertEquals(31.792, adjusted.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
         // "2022-07-17 17:00:00": 52896,
-        assertEquals(26.448, fo.getActualEnergyValue(queryDateTime), TOLERANCE, "Current Production");
+        assertEquals(26.448, adjusted.getActualEnergyValue(queryDateTime), TOLERANCE, "Current Production");
         // 63583 - 52896 = 10687
-        assertEquals(5.344, fo.getRemainingProduction(queryDateTime), TOLERANCE, "Current Production");
+        assertEquals(5.344, adjusted.getRemainingProduction(queryDateTime), TOLERANCE, "Current Production");
         // sum cross check
-        assertEquals(fo.getDayTotal(queryDateTime.toLocalDate()),
-                fo.getActualEnergyValue(queryDateTime) + fo.getRemainingProduction(queryDateTime), TOLERANCE,
-                "actual + remain = total");
+        assertEquals(adjusted.getDayTotal(queryDateTime.toLocalDate()),
+                adjusted.getActualEnergyValue(queryDateTime) + adjusted.getRemainingProduction(queryDateTime),
+                TOLERANCE, "actual + remain = total");
 
         queryDateTime = LocalDateTime.of(2022, 7, 18, 19, 00).atZone(TEST_ZONE);
         // "2022-07-18 19:00:00": 63067,
-        assertEquals(63.067, fo.getActualEnergyValue(queryDateTime), TOLERANCE, "Actual production");
+        assertEquals(63.067, adjusted.getActualEnergyValue(queryDateTime), TOLERANCE, "Actual production");
         // "2022-07-18 21:31:00": 65554
-        assertEquals(65.554, fo.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
+        assertEquals(65.554, adjusted.getDayTotal(queryDateTime.toLocalDate()), TOLERANCE, "Total production");
     }
 }

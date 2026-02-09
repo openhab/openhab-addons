@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>transformation</type>
-	<name>JSONPATH transformation</name>
-	<description>Extracts values from a JSON string using a JSONPATH expression.</description>
+	<name>JSONPATH Transformation</name>
+	<description>Extracts values from a JSON string using a JSONPath expression.</description>
 	<connection>none</connection>
 
 </addon:addon>

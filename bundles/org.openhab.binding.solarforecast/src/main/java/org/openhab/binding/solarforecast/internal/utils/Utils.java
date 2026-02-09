@@ -32,7 +32,9 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
+import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -40,7 +42,9 @@ import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Entry;
+import org.openhab.core.types.TimeSeries.Policy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +76,10 @@ public class Utils {
 
     public static void setTimeZoneProvider(TimeZoneProvider tzp) {
         timeZoneProvider = tzp;
+    }
+
+    public static TimeZoneProvider getTimeZoneProvider() {
+        return timeZoneProvider;
     }
 
     public static Clock getClock() {
@@ -117,14 +125,13 @@ public class Utils {
             return Instant.MAX;
         }
         Instant start = Instant.MIN;
-        for (Iterator<SolarForecast> iterator = forecastObjects.iterator(); iterator.hasNext();) {
-            SolarForecast sf = iterator.next();
+        for (SolarForecast forecast : forecastObjects) {
             // if start is maximum there's no forecast data available - return immediately
-            if (sf.getForecastBegin().equals(Instant.MAX)) {
+            if (forecast.getForecastBegin().equals(Instant.MAX)) {
                 return Instant.MAX;
-            } else if (sf.getForecastBegin().isAfter(start)) {
+            } else if (forecast.getForecastBegin().isAfter(start)) {
                 // take latest timestamp from all forecasts
-                start = sf.getForecastBegin();
+                start = forecast.getForecastBegin();
             }
         }
         return start;
@@ -135,14 +142,13 @@ public class Utils {
             return Instant.MIN;
         }
         Instant end = Instant.MAX;
-        for (Iterator<SolarForecast> iterator = forecastObjects.iterator(); iterator.hasNext();) {
-            SolarForecast sf = iterator.next();
+        for (SolarForecast forecast : forecastObjects) {
             // if end is minimum there's no forecast data available - return immediately
-            if (sf.getForecastEnd().equals(Instant.MIN)) {
+            if (forecast.getForecastEnd().equals(Instant.MIN)) {
                 return Instant.MIN;
-            } else if (sf.getForecastEnd().isBefore(end)) {
+            } else if (forecast.getForecastEnd().isBefore(end)) {
                 // take earliest timestamp from all forecast
-                end = sf.getForecastEnd();
+                end = forecast.getForecastEnd();
             }
         }
         return end;
@@ -184,7 +190,12 @@ public class Utils {
      * @param service the persistence service to query
      * @return the total energy produced in kWh, empty if the item unit is not power or energy
      */
-    public static Optional<Double> getEnergyTillNow(String calculationItemName, QueryablePersistenceService service) {
+    public static Optional<Double> getEnergyTillNow(String calculationItemName,
+            @Nullable QueryablePersistenceService service) {
+        if (service == null) {
+            LOGGER.info("No persistence service available");
+            return Optional.empty();
+        }
         ZonedDateTime beginPeriodDT = ZonedDateTime.now(Utils.getClock()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime endPeriodDT = ZonedDateTime.now(Utils.getClock());
         FilterCriteria fc = new FilterCriteria();
@@ -287,5 +298,87 @@ public class Utils {
     private static double calculateKwh(Instant begin, Instant end, double power) {
         long durationSeconds = Duration.between(begin, end).getSeconds();
         return power * durationSeconds / 3600;
+    }
+
+    public static TimeSeries toTimeseries(TreeMap<Instant, QuantityType<?>> map) {
+        TimeSeries series = new TimeSeries(Policy.REPLACE);
+        map.forEach((timestamp, state) -> {
+            series.add(timestamp, state);
+        });
+        return series;
+    }
+
+    public static void addAll(TreeMap<Instant, QuantityType<?>> targetMap, TimeSeries timeseries, Instant commonStart,
+            Instant commonEnd) {
+        timeseries.getStates().forEach(entry -> {
+            if (Utils.isAfterOrEqual(entry.timestamp(), commonStart)
+                    && Utils.isBeforeOrEqual(entry.timestamp(), commonEnd)) {
+                Utils.addState(targetMap, entry);
+            }
+        });
+    }
+
+    public static TreeMap<Instant, State> toMap(TimeSeries timeseries) {
+        TreeMap<Instant, State> map = new TreeMap<>();
+        timeseries.getStates().forEach(entry -> {
+            map.put(entry.timestamp(), entry.state());
+        });
+        return map;
+    }
+
+    public static boolean isHoldingTimeElapsed(ForecastSolarObject queryForecast, long holdingTimeMin) {
+        Optional<Instant> firstMeasure = queryForecast.getFirstPowerTimestamp();
+        if (firstMeasure.isPresent()) {
+            return Instant.now(Utils.getClock()).isAfter(firstMeasure.get().plus(holdingTimeMin, ChronoUnit.MINUTES));
+        }
+        if (!queryForecast.isEmpty()) {
+            LOGGER.warn("No adjustment possible: Unable to find first measure in forecast");
+        } else {
+            LOGGER.debug("Forecast is empty, no first measure available");
+        }
+        return false;
+    }
+
+    /**
+     * Redact API key in URLs for logging purposes.
+     */
+    public static String redactUrlForLog(String url) {
+        if (!url.contains("api.forecast.solar/estimate")) {
+            // hide api key in log
+            return url.replaceFirst("(https://api\\.forecast\\.solar/)[^/]+/", "$1****/");
+        }
+        // nothing to hide
+        return url;
+    }
+
+    /**
+     * Gets property from deep nested JSON object by given path with "/" as separator
+     *
+     * @param path path with "/" as separator
+     * @param source JSON object
+     * @return property value as Object or empty string if not found
+     */
+    private static Object getJsonEntry(String path, JSONObject source, boolean safe) {
+        String[] keys = path.split("/");
+        JSONObject iterator = source;
+        for (int i = 0; i < keys.length - 1; i++) {
+            iterator = safe ? iterator.optJSONObject(keys[i]) : iterator.getJSONObject(keys[i]);
+            if (iterator == null) {
+                return "";
+            }
+        }
+        return safe ? iterator.opt(keys[keys.length - 1]) : iterator.get(keys[keys.length - 1]);
+    }
+
+    public static JSONObject getJSONObjectFrom(String path, JSONObject source, boolean safe) {
+        Object obj = getJsonEntry(path, source, safe);
+        if (obj instanceof JSONObject jsonObj) {
+            return jsonObj;
+        }
+        return new JSONObject();
+    }
+
+    public static String getPropertyFrom(String path, JSONObject source, boolean safe) {
+        return getJsonEntry(path, source, safe).toString();
     }
 }
