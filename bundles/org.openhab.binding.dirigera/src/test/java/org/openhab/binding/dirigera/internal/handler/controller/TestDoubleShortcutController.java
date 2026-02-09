@@ -131,11 +131,9 @@ class TestDoubleShortcutController {
 
     @Test
     void testRemoval() {
-        logger.warn("####### REMOVAL START ############");
         DirigeraAPISimu.scenesAdded.clear();
         DirigeraAPISimu.scenesDeleted.clear();
-        testTriggers();
-        logger.warn("####### TRIGGER CALLED ############");
+        testInitialization();
         handler.dispose();
         handler.handleRemoval();
         Collections.sort(DirigeraAPISimu.scenesAdded);

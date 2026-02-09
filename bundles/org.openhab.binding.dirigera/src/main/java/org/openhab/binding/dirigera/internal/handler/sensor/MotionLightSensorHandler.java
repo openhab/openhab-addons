@@ -42,8 +42,7 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeDevice() {
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);

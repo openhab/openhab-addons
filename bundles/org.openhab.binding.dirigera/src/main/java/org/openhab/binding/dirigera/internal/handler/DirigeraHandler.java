@@ -205,6 +205,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         } else {
             // do this asynchronous in case of token and other parameters needs to be
             // obtained via Rest API calls
+            updateStatus(ThingStatus.UNKNOWN);
             scheduler.execute(this::doInitialize);
         }
     }

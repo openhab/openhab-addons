@@ -45,12 +45,6 @@ public class SmartPlugHandler extends PowerPlugHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        // update of values is handled in super class
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();

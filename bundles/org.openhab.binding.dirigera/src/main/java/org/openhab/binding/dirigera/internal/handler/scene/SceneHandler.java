@@ -50,8 +50,8 @@ public class SceneHandler extends BaseHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeDevice() {
+        super.initializeDevice();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readScene(config.id);
             handleUpdate(values);

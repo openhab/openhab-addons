@@ -86,10 +86,7 @@ public class BaseShortcutController extends BaseHandler {
     @Override
     public void dispose() {
         sceneMapping.forEach((key, value) -> {
-            BaseHandler proxy = child;
-            if (proxy != null) {
-                gateway().unregisterDevice(proxy, value);
-            }
+            gateway().unregisterDevice(child, value);
         });
         super.dispose();
     }
@@ -98,10 +95,7 @@ public class BaseShortcutController extends BaseHandler {
     public void handleRemoval() {
         sceneMapping.forEach((key, value) -> {
             // cleanup storage and hub
-            BaseHandler proxy = child;
-            if (proxy != null) {
-                gateway().deleteDevice(proxy, value);
-            }
+            gateway().deleteDevice(child, value);
             gateway().api().deleteScene(value);
             storage.remove(key);
         });
