@@ -18,6 +18,7 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -136,9 +137,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
         try {
             logger.debug("Initiating connection to IT4Wifi {} on port {}...", config.hostname, SERVER_PORT);
 
-            SSLSocket localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
-            sslSocket = Optional.of(localSocket);
-            localSocket.startHandshake();
+            SSLSocket localSocket = tryHandshake(config, false);
 
             It4WifiConnector localConnector = new It4WifiConnector(this, localSocket);
             connector = Optional.of(localConnector);
@@ -150,6 +149,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
+            logger.warn("Handshake failed: {}", e.getMessage(), e);
         }
     }
 
@@ -239,6 +239,70 @@ public class It4WifiHandler extends BaseBridgeHandler {
     private void sendCommand(String command) {
         connector.ifPresentOrElse(c -> c.sendCommand(command),
                 () -> logger.warn("Tried to send a command when IT4WifiConnector is not initialized."));
+    }
+
+    private String[] filterTlsProtocols(String[] supportedProtocols) {
+        return Arrays.stream(supportedProtocols).filter(p -> p.startsWith("TLS")).toArray(String[]::new);
+    }
+
+    private String[] filterCipherSuites(String[] supportedCipherSuites) {
+        return Arrays.stream(supportedCipherSuites).filter(suite -> !suite.contains("_NULL_")).toArray(String[]::new);
+    }
+
+    private String[] filterLegacyCipherSuites(String[] supportedCipherSuites) {
+        return Arrays.stream(supportedCipherSuites)
+                // Keep only RSA key exchange (exclude DHE/ECDHE), some legacy devices reject DH parameters.
+                .filter(suite -> suite.contains("_RSA_") && !suite.contains("_DHE_") && !suite.contains("_ECDHE_")
+                        && !suite.contains("_NULL_"))
+                .toArray(String[]::new);
+    }
+
+    private SSLSocket tryHandshake(It4WifiConfiguration config, boolean legacy) throws IOException {
+        SSLSocket localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
+
+        String[] tlsProtocols = legacy ? filterLegacyTlsProtocols(localSocket.getSupportedProtocols())
+                : filterTlsProtocols(localSocket.getSupportedProtocols());
+        if (tlsProtocols.length > 0) {
+            localSocket.setEnabledProtocols(tlsProtocols);
+        }
+
+        String[] tlsCiphers = legacy ? filterLegacyCipherSuites(localSocket.getSupportedCipherSuites())
+                : filterCipherSuites(localSocket.getSupportedCipherSuites());
+        if (tlsCiphers.length > 0) {
+            localSocket.setEnabledCipherSuites(tlsCiphers);
+        }
+
+        logger.debug("TLS protocols enabled{}: {}", legacy ? " (legacy)" : "",
+                Arrays.toString(localSocket.getEnabledProtocols()));
+        logger.debug("TLS cipher suites enabled{}: {}", legacy ? " (legacy)" : "",
+                localSocket.getEnabledCipherSuites().length);
+
+        try {
+            localSocket.startHandshake();
+            sslSocket = Optional.of(localSocket);
+            return localSocket;
+        } catch (Exception e) {
+            localSocket.close();
+            String message = e.getMessage();
+            if (!legacy && message != null && message.contains("insufficient_security")) {
+                logger.warn("Handshake failed with insufficient_security, retrying with legacy TLS settings");
+                return tryHandshake(config, true);
+            }
+            if (e instanceof IOException ioException) {
+                throw ioException;
+            }
+            throw new IOException("Handshake failed", e);
+        }
+    }
+
+    private String[] filterLegacyTlsProtocols(String[] supportedProtocols) {
+        List<String> legacy = new ArrayList<>(3);
+        for (String protocol : supportedProtocols) {
+            if ("TLSv1.2".equals(protocol) || "TLSv1.1".equals(protocol) || "TLSv1".equals(protocol)) {
+                legacy.add(protocol);
+            }
+        }
+        return legacy.toArray(new String[0]);
     }
 
     public void sendCommand(CommandType command) {
