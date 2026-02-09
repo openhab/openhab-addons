@@ -17,40 +17,21 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mynice.internal.config.It4WifiConfiguration;
 import org.openhab.binding.mynice.internal.discovery.MyNiceDiscoveryService;
-import org.openhab.binding.mynice.internal.xml.MyNiceXStream;
-import org.openhab.binding.mynice.internal.xml.RequestBuilder;
-import org.openhab.binding.mynice.internal.xml.dto.CommandType;
-import org.openhab.binding.mynice.internal.xml.dto.Device;
-import org.openhab.binding.mynice.internal.xml.dto.Event;
-import org.openhab.binding.mynice.internal.xml.dto.Response;
-import org.openhab.binding.mynice.internal.xml.dto.T4Command;
+import org.openhab.binding.mynice.internal.xml.*;
+import org.openhab.binding.mynice.internal.xml.dto.*;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.*;
+import org.openhab.core.thing.binding.*;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 /**
  * The {@link It4WifiHandler} is responsible for handling commands, which are
@@ -134,10 +115,34 @@ public class It4WifiHandler extends BaseBridgeHandler {
     private void startConnector() {
         It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
         freeKeepAlive();
+        SSLSocket localSocket = null;
         try {
             logger.debug("Initiating connection to IT4Wifi {} on port {}...", config.hostname, SERVER_PORT);
 
-            SSLSocket localSocket = tryHandshake(config, false);
+            localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
+
+            // The IT4Wifi device requires legacy TLS settings.
+            // We enable older TLS protocols and filter cipher suites to use static RSA key exchange,
+            // which avoids the problematic DHE exchange that causes 'insufficient_security' errors.
+            String[] legacyProtocols = Arrays.stream(localSocket.getSupportedProtocols())
+                    .filter(p -> p.startsWith("TLSv1")).toArray(String[]::new);
+            if (legacyProtocols.length > 0) {
+                localSocket.setEnabledProtocols(legacyProtocols);
+            }
+
+            String[] legacyCiphers = Arrays
+                    .stream(localSocket.getSupportedCipherSuites()).filter(suite -> suite.contains("_RSA_")
+                            && !suite.contains("_DHE_") && !suite.contains("_ECDHE_") && !suite.contains("_NULL_"))
+                    .toArray(String[]::new);
+            if (legacyCiphers.length > 0) {
+                localSocket.setEnabledCipherSuites(legacyCiphers);
+            }
+
+            logger.debug("Using legacy TLS settings. Protocols: {}, Ciphers (count): {}",
+                    Arrays.toString(localSocket.getEnabledProtocols()), localSocket.getEnabledCipherSuites().length);
+
+            localSocket.startHandshake();
+            sslSocket = Optional.of(localSocket);
 
             It4WifiConnector localConnector = new It4WifiConnector(this, localSocket);
             connector = Optional.of(localConnector);
@@ -148,6 +153,14 @@ public class It4WifiHandler extends BaseBridgeHandler {
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
         } catch (IOException e) {
+            if (localSocket != null) {
+                try {
+                    localSocket.close();
+                } catch (IOException closeException) {
+                    logger.debug("Error closing socket after failed handshake", closeException);
+                }
+            }
+            sslSocket = Optional.empty();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
             logger.warn("Handshake failed: {}", e.getMessage(), e);
         }
@@ -239,70 +252,6 @@ public class It4WifiHandler extends BaseBridgeHandler {
     private void sendCommand(String command) {
         connector.ifPresentOrElse(c -> c.sendCommand(command),
                 () -> logger.warn("Tried to send a command when IT4WifiConnector is not initialized."));
-    }
-
-    private String[] filterTlsProtocols(String[] supportedProtocols) {
-        return Arrays.stream(supportedProtocols).filter(p -> p.startsWith("TLS")).toArray(String[]::new);
-    }
-
-    private String[] filterCipherSuites(String[] supportedCipherSuites) {
-        return Arrays.stream(supportedCipherSuites).filter(suite -> !suite.contains("_NULL_")).toArray(String[]::new);
-    }
-
-    private String[] filterLegacyCipherSuites(String[] supportedCipherSuites) {
-        return Arrays.stream(supportedCipherSuites)
-                // Keep only RSA key exchange (exclude DHE/ECDHE), some legacy devices reject DH parameters.
-                .filter(suite -> suite.contains("_RSA_") && !suite.contains("_DHE_") && !suite.contains("_ECDHE_")
-                        && !suite.contains("_NULL_"))
-                .toArray(String[]::new);
-    }
-
-    private SSLSocket tryHandshake(It4WifiConfiguration config, boolean legacy) throws IOException {
-        SSLSocket localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
-
-        String[] tlsProtocols = legacy ? filterLegacyTlsProtocols(localSocket.getSupportedProtocols())
-                : filterTlsProtocols(localSocket.getSupportedProtocols());
-        if (tlsProtocols.length > 0) {
-            localSocket.setEnabledProtocols(tlsProtocols);
-        }
-
-        String[] tlsCiphers = legacy ? filterLegacyCipherSuites(localSocket.getSupportedCipherSuites())
-                : filterCipherSuites(localSocket.getSupportedCipherSuites());
-        if (tlsCiphers.length > 0) {
-            localSocket.setEnabledCipherSuites(tlsCiphers);
-        }
-
-        logger.debug("TLS protocols enabled{}: {}", legacy ? " (legacy)" : "",
-                Arrays.toString(localSocket.getEnabledProtocols()));
-        logger.debug("TLS cipher suites enabled{}: {}", legacy ? " (legacy)" : "",
-                localSocket.getEnabledCipherSuites().length);
-
-        try {
-            localSocket.startHandshake();
-            sslSocket = Optional.of(localSocket);
-            return localSocket;
-        } catch (Exception e) {
-            localSocket.close();
-            String message = e.getMessage();
-            if (!legacy && message != null && message.contains("insufficient_security")) {
-                logger.warn("Handshake failed with insufficient_security, retrying with legacy TLS settings");
-                return tryHandshake(config, true);
-            }
-            if (e instanceof IOException ioException) {
-                throw ioException;
-            }
-            throw new IOException("Handshake failed", e);
-        }
-    }
-
-    private String[] filterLegacyTlsProtocols(String[] supportedProtocols) {
-        List<String> legacy = new ArrayList<>(3);
-        for (String protocol : supportedProtocols) {
-            if ("TLSv1.2".equals(protocol) || "TLSv1.1".equals(protocol) || "TLSv1".equals(protocol)) {
-                legacy.add(protocol);
-            }
-        }
-        return legacy.toArray(new String[0]);
     }
 
     public void sendCommand(CommandType command) {

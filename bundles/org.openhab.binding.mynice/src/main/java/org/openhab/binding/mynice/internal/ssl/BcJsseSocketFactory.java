@@ -12,20 +12,14 @@
  */
 package org.openhab.binding.mynice.internal.ssl;
 
-import java.security.Provider;
-import java.security.SecureRandom;
-import java.security.Security;
+import java.security.*;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.*;
 
 /**
  * Factory to create SSLSocketFactory.
@@ -83,8 +77,7 @@ public class BcJsseSocketFactory {
             final String acceptLegacy = "true";
             final String allowUnsafeRenegotiation = "true";
 
-            // Bouncy Castle specific properties
-            System.setProperty("org.bouncycastle.jsse.client.dh.minimumKeySize", minDhKeySize);
+            // Bouncy Castle specific properties set via System properties for highest precedence
             System.setProperty("org.bouncycastle.jsse.client.acceptLegacy", acceptLegacy);
             System.setProperty("org.bouncycastle.jsse.client.allowLegacyInitiatedRenegotiation",
                     allowUnsafeRenegotiation);
