@@ -51,6 +51,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+/**
+ * The {@link EvccWsBridgeHandler} is responsible for creating the bridge and dispatch ws messages to the thing
+ * handlers.
+ *
+ * @author Marcel Goerentz - Initial contribution
+ */
 @NonNullByDefault
 public class EvccWsBridgeHandler extends BaseBridgeHandler {
 
