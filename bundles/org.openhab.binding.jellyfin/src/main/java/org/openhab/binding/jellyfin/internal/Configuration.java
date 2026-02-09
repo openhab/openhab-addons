@@ -58,10 +58,6 @@ public class Configuration {
      */
     public String token = "";
     /**
-     * Enable WebSocket for real-time updates (fallback to polling on failure)
-     */
-    public boolean useWebSocket = true;
-    /**
      * User ID
      *
      * @deprecated This parameter is no longer used by the binding and is only kept for backward compatibility.

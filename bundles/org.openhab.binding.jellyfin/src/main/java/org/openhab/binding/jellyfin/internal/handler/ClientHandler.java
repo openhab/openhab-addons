@@ -84,6 +84,25 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     private SessionInfoDto currentSession;
 
     /**
+     * Timestamp (in milliseconds) of the last session update received.
+     * Used to detect session timeouts when no updates arrive.
+     */
+    private long lastSessionUpdateTimestamp = 0;
+
+    /**
+     * Session timeout threshold in milliseconds.
+     * If no session update received within this time, client is considered offline.
+     */
+    private static final long SESSION_TIMEOUT_MS = 60_000; // 60 seconds
+
+    /**
+     * Scheduled future for session timeout monitoring.
+     * Checks every 30 seconds if session has timed out.
+     */
+    @Nullable
+    private ScheduledFuture<?> sessionTimeoutMonitor;
+
+    /**
      * Scheduled future for delayed command execution.
      * Used to delay play/browse commands after stopping current playback.
      */
@@ -140,14 +159,28 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         eventBus.subscribe(localDeviceId, this);
         logger.debug("ClientHandler subscribed to event bus for device ID: {}", localDeviceId);
 
-        // Client is ready - will receive session updates via event bus
-        updateStatus(ThingStatus.ONLINE);
+        // Start session timeout monitor (checks every 30s)
+        sessionTimeoutMonitor = scheduler.scheduleWithFixedDelay(this::checkSessionTimeout, SESSION_TIMEOUT_MS,
+                SESSION_TIMEOUT_MS / 2, // Check every 30s
+                TimeUnit.MILLISECONDS);
+        logger.debug("Session timeout monitor started for device ID: {}", localDeviceId);
+
+        // Client status will be determined by session updates
+        updateClientState();
         logger.debug("ClientHandler initialized successfully for thing {}", thing.getUID());
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing ClientHandler for thing {}", thing.getUID());
+
+        // Cancel session timeout monitor
+        ScheduledFuture<?> monitor = sessionTimeoutMonitor;
+        if (monitor != null && !monitor.isDone()) {
+            monitor.cancel(true);
+            logger.debug("Session timeout monitor cancelled");
+        }
+        sessionTimeoutMonitor = null;
 
         // Unsubscribe from event bus
         String localDeviceId = deviceId;
@@ -176,10 +209,10 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         logger.debug("Bridge status changed to {} for client {}", bridgeStatusInfo.getStatus(), thing.getUID());
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            // Bridge came online - client will be updated via session updates from ServerHandler
-            updateStatus(ThingStatus.ONLINE);
-        } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
-            // Bridge went offline - client should go offline too
+            // Bridge online - check session before marking client online
+            updateClientState();
+        } else {
+            // Bridge offline - all clients offline
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Server bridge is offline");
             clearChannelStates();
         }
@@ -570,10 +603,73 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     public void onSessionUpdate(@Nullable SessionInfoDto session) {
         try {
             logger.trace("Received session update event for device: {}", deviceId);
+
+            synchronized (sessionLock) {
+                currentSession = session;
+                lastSessionUpdateTimestamp = System.currentTimeMillis();
+            }
+
+            updateClientState();
             updateStateFromSession(session);
         } catch (Exception e) {
             logger.warn("Error processing session update for device {}: {}", deviceId, e.getMessage());
             logger.debug("Session update exception", e);
+        }
+    }
+
+    /**
+     * Updates client status based on bridge status, session presence, and timeout.
+     *
+     * <p>
+     * Priority checks:
+     * <ol>
+     * <li>Bridge must be ONLINE</li>
+     * <li>Session must exist</li>
+     * <li>Session must not be timed out (&gt;60s)</li>
+     * </ol>
+     */
+    private void updateClientState() {
+        // Priority 1: Check bridge status
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                    "Server bridge is not available or offline");
+            return;
+        }
+
+        // Priority 2 & 3: Check session presence and timeout
+        synchronized (sessionLock) {
+            if (currentSession == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Device not connected to server");
+            } else {
+                long timeSinceLastUpdate = System.currentTimeMillis() - lastSessionUpdateTimestamp;
+                if (timeSinceLastUpdate > SESSION_TIMEOUT_MS) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "No session update received (timeout)");
+                } else {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks for session timeout and marks client offline if no update received.
+     * Called every 30 seconds by session timeout monitor.
+     */
+    private void checkSessionTimeout() {
+        synchronized (sessionLock) {
+            if (currentSession != null) {
+                long timeSinceLastUpdate = System.currentTimeMillis() - lastSessionUpdateTimestamp;
+                if (timeSinceLastUpdate > SESSION_TIMEOUT_MS) {
+                    logger.info("Session timeout detected for device {} ({}s without update)", deviceId,
+                            timeSinceLastUpdate / 1000);
+                    currentSession = null;
+                    updateClientState();
+                    clearChannelStates();
+                }
+            }
         }
     }
 
@@ -591,13 +687,11 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     public synchronized void updateStateFromSession(@Nullable SessionInfoDto session) {
         Map<String, State> states;
         synchronized (sessionLock) {
-            currentSession = session;
             states = ClientStateUpdater.calculateChannelStates(session);
         }
 
         if (session == null) {
             logger.debug("Clearing client state - session is null");
-            updateStatus(ThingStatus.OFFLINE);
         } else {
             logger.debug("Updating client state from session: {}", session.getId());
         }

@@ -128,19 +128,15 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 taskManager.initializeTasks(apiClient, errorEventBus, systemInfo -> this.handleConnection(systemInfo),
                         users -> this.handleUsersList(users), this, discoveryService));
 
-        // Optionally add WebSocket task for real-time updates (preferred over polling)
+        // Add WebSocket task for real-time updates (automatic fallback to polling on failure)
         try {
-            if (this.configuration.useWebSocket) {
-                var wsHandler = new org.openhab.binding.jellyfin.internal.server.SessionsMessageHandler(apiClient,
-                        this.sessionManager);
-                // Pass fallback callback that switches to polling when WebSocket exhausts retries
-                var wsTask = new org.openhab.binding.jellyfin.internal.server.WebSocketTask(apiClient,
-                        this.configuration.token, wsHandler, () -> this.handleWebSocketFallback());
-                this.tasks.put(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID, wsTask);
-                logger.debug("WebSocketTask added to task registry (useWebSocket=true)");
-            } else {
-                logger.debug("WebSocket disabled by configuration; using polling only");
-            }
+            var wsHandler = new org.openhab.binding.jellyfin.internal.server.SessionsMessageHandler(apiClient,
+                    this.sessionManager);
+            // Pass fallback callback that switches to polling when WebSocket exhausts retries
+            var wsTask = new org.openhab.binding.jellyfin.internal.server.WebSocketTask(apiClient,
+                    this.configuration.token, wsHandler, () -> this.handleWebSocketFallback());
+            this.tasks.put(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID, wsTask);
+            logger.debug("WebSocketTask initialized (automatic fallback to polling on failure)");
         } catch (Exception ex) {
             logger.warn("Failed to initialize WebSocketTask: {}", ex.getMessage());
         }

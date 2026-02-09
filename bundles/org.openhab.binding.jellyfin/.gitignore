@@ -2,6 +2,7 @@ node_modules
 package-lock.json
 package.json
 logs
+docs
 mkdocs.yml
 /.venv-docs/
 /.apt_generated/

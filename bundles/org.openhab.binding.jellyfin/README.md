@@ -50,20 +50,19 @@ In order to assist you with this process the binding exposes a simple login form
 | refreshSeconds            | Integer | Interval to pull devices state from the server                                              |
 | clientActiveWithInSeconds | Integer | Amount of seconds allowed since the last client activity to assert it's online (0 disabled) |
 | token                     | Text    | The user access token                                                                       |
-| useWebSocket              | Boolean | Enable WebSocket connection for real-time updates (default: true)                           |
 
 ### WebSocket Real-Time Updates
 
-By default, the binding uses WebSocket connections to receive real-time updates from the Jellyfin server.
-This provides instant notifications when media playback state changes, eliminating the need for constant polling.
+The binding automatically uses WebSocket connections to receive real-time updates from the Jellyfin server.
+This provides instant notifications when media playback state changes, with automatic fallback to polling if WebSocket fails.
 
 **WebSocket Connection Behavior:**
 
+- **Automatic connection**: WebSocket is always used when available (no configuration needed)
 - **Automatic reconnection**: If the WebSocket connection is lost, the binding automatically attempts to reconnect
 - **Exponential backoff**: Reconnection attempts use increasing delays: 1s → 2s → 4s → 8s → 16s → 32s → 60s (capped)
 - **Maximum retries**: After 10 failed reconnection attempts, the binding falls back to polling mode
-- **Automatic fallback**: When WebSocket fails permanently, the binding seamlessly switches to periodic polling (using `refreshSeconds` interval)
-- **Polling mode**: You can disable WebSocket entirely by setting `useWebSocket=false`, which uses only periodic polling
+- **Seamless fallback**: When WebSocket fails permanently, the binding automatically switches to periodic polling (using `refreshSeconds` interval)
 
 WebSocket connections require network connectivity and may not work correctly if:
 
@@ -151,17 +150,7 @@ INFO: WebSocket max retries exceeded, falling back to polling
 
 3. **Server compatibility**: Verify your Jellyfin server version is 10.10.7 or newer
 
-4. **Disable WebSocket**: If WebSocket connections continue to fail, you can disable them and use polling only:
-
-   ```java
-   Bridge jellyfin:server:exampleServerId "Jellyfin Server" [
-       hostname="192.168.1.177",
-       port=8096,
-       ssl=false,
-       useWebSocket=false,  // Disable WebSocket, use polling only
-       refreshSeconds=5      // Increase polling frequency if needed
-   ]
-   ```
+4. **Automatic fallback**: If WebSocket connections fail, the binding automatically falls back to polling using `refreshSeconds` interval
 
 ### Delayed Updates
 
