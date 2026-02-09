@@ -22,9 +22,14 @@ import org.openhab.binding.ring.internal.device.Stickupcam;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 
 /**
@@ -43,6 +48,8 @@ public class StickupcamHandler extends RingDeviceHandler {
     private boolean batterySupport = false;
     private boolean lightSupport = false;
     private boolean sirenSupport = false;
+    private boolean hasLightChannel;
+    private boolean hasSirenChannel;
 
     public StickupcamHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -59,9 +66,39 @@ public class StickupcamHandler extends RingDeviceHandler {
         }
         if (LIGHT_KINDS.contains(kind)) {
             lightSupport = true;
+            if (!hasLightChannel) {
+                if (thing.getChannels().stream()
+                        .anyMatch(ch -> ch.getUID().getId().equalsIgnoreCase(CHANNEL_STATUS_LIGHT))) {
+                    logger.debug("Channel already available...skip creation of channel '{}'.", CHANNEL_STATUS_LIGHT);
+                    return;
+                }
+                logger.info("Adding channel for light");
+                ThingBuilder thingBuilder = editThing();
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_LIGHT);
+                Channel channel = ChannelBuilder.create(channelUID, "switch")
+                        .withType(new ChannelTypeUID(BINDING_ID, "light")).withLabel("Light Status").build();
+                thingBuilder.withChannel(channel);
+                updateThing(thingBuilder.build());
+                hasLightChannel = true;
+            }
         }
         if (SIREN_KINDS.contains(kind)) {
             sirenSupport = true;
+            if (!hasLightChannel) {
+                if (thing.getChannels().stream()
+                        .anyMatch(ch -> ch.getUID().getId().equalsIgnoreCase(CHANNEL_STATUS_SIREN))) {
+                    logger.debug("Channel already available...skip creation of channel '{}'.", CHANNEL_STATUS_SIREN);
+                    return;
+                }
+                logger.info("Adding channel for siren");
+                ThingBuilder thingBuilder = editThing();
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_SIREN);
+                Channel channel = ChannelBuilder.create(channelUID, "switch")
+                        .withType(new ChannelTypeUID(BINDING_ID, "siren")).withLabel("Siren Status").build();
+                thingBuilder.withChannel(channel);
+                updateThing(thingBuilder.build());
+                hasSirenChannel = true;
+            }
         }
     }
 
@@ -79,7 +116,8 @@ public class StickupcamHandler extends RingDeviceHandler {
     protected void minuteTick() {
         logger.debug("StickupcamHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
-            initialize();
+            // initialize();
+            return;
         }
         if (lightSupport == true) {
             logger.info("light supported for {}", getThing().getUID().getId());
@@ -99,6 +137,16 @@ public class StickupcamHandler extends RingDeviceHandler {
                         deviceTO.health.batteryPercentage, lastBattery);
 
             }
+        }
+
+        if (lightSupport == true) {
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_LIGHT);
+            updateState(channelUID, OnOffType.from(deviceTO.health.floodlightOn));
+        }
+
+        if (sirenSupport == true) {
+            ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_STATUS_SIREN);
+            updateState(channelUID, OnOffType.from(deviceTO.health.sirenOn));
         }
 
         long timestamp = getSnapshotTimestamp();
