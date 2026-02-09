@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.bluelink.internal.api.AbstractBluelinkApi;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiCA;
+import org.openhab.binding.bluelink.internal.api.BluelinkApiEU;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiUS;
 import org.openhab.binding.bluelink.internal.api.Region;
@@ -76,18 +78,20 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         this.localeProvider = localeProvider;
     }
 
+    public @Nullable AbstractBluelinkApi<?> getApi() {
+        return api;
+    }
+
+    public boolean supportsControlActions() {
+        final AbstractBluelinkApi<?> bluelinkApi = api;
+        return bluelinkApi != null && bluelinkApi.supportsControlActions();
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing Bluelink account handler");
 
         final BluelinkAccountConfiguration config = getConfigAs(BluelinkAccountConfiguration.class);
-        final String username = config.username;
-        final String password = config.password;
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.missing-credentials");
-            return;
-        }
 
         // Determine region
         final String regionStr;
@@ -107,6 +111,23 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
             return;
         }
 
+        // Validate credentials
+        final String username = config.username;
+        final String password = config.password;
+        if (region == Region.EU) {
+            if (password == null || password.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/account-handler.initialize.missing-token");
+                return;
+            }
+        } else {
+            if (username == null || username.isBlank() || password == null || password.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/account-handler.initialize.missing-credentials");
+                return;
+            }
+        }
+
         // Determine brand
         final Brand brand;
         final String configuredBrand = config.brand;
@@ -118,7 +139,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
                         "@text/account-handler.initialize.unsupported-brand");
                 return;
             }
-        } else if (region == Region.CA) {
+        } else if (region != Region.US) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/account-handler.initialize.brand-required");
             return;
@@ -128,10 +149,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
 
         // baseUrl override for tests
         final Optional<String> optBaseUrl = Optional.ofNullable(config.apiBaseUrl);
+        // After validation, we know password is non-null for all regions, and username is non-null for US/CA
+        final String user = username != null ? username : "";
         this.api = switch (region) {
-            case US -> new BluelinkApiUS(httpClient, optBaseUrl, timeZoneProvider, username, password, config.pin);
-            case CA ->
-                new BluelinkApiCA(httpClient, brand, optBaseUrl, timeZoneProvider, username, password, config.pin);
+            case US -> new BluelinkApiUS(httpClient, optBaseUrl, timeZoneProvider, user, password, config.pin);
+            case CA -> new BluelinkApiCA(httpClient, brand, optBaseUrl, timeZoneProvider, user, password, config.pin);
+            case EU -> new BluelinkApiEU(httpClient, brand, editProperties(), optBaseUrl, timeZoneProvider, password);
         };
         logger.debug("Created API for region {} brand {}", region, brand);
         updateStatus(ThingStatus.UNKNOWN);
@@ -147,6 +170,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         try {
             if (bluelinkApi.login()) {
                 logger.debug("Bluelink login successful");
+                final Map<String, String> apiProps = bluelinkApi.getProperties();
+                if (!apiProps.isEmpty()) {
+                    final Map<String, String> thingProps = editProperties();
+                    thingProps.putAll(apiProps);
+                    updateProperties(thingProps);
+                }
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

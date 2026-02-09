@@ -1,0 +1,135 @@
+{
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": null,
+  "msgId": "8ad9a977-a45e-447b-afc9-e4b9dc50786a",
+  "result": {
+    "vehicleStatusInfo": {
+      "vehicleLocation": {
+        "coord": {
+          "lat": 49.01395,
+          "lon": 8.40448,
+          "alt": 34
+        },
+        "head": 250,
+        "speed": 0
+      },
+      "vehicleStatus": {
+        "airCtrlOn": false,
+        "engine": false,
+        "doorLock": false,
+        "doorOpen": {
+          "frontLeft": 1,
+          "frontRight": 0,
+          "backLeft": 0,
+          "backRight": 0
+        },
+        "windowOpen": {
+          "frontLeft": 0,
+          "frontRight": 0,
+          "backLeft": 0,
+          "backRight": 0
+        },
+        "trunkOpen": false,
+        "airTemp": {
+          "value": "02H",
+          "unit": 0,
+          "hvacTempType": 1
+        },
+        "defrost": false,
+        "evStatus": {
+          "batteryCharge": false,
+          "batteryStatus": 35,
+          "batteryPlugin": 0,
+          "remainTime2": {
+            "etc1": {
+              "value": 33,
+              "unit": 1
+            },
+            "etc2": {
+              "value": 770,
+              "unit": 1
+            },
+            "etc3": {
+              "value": 175,
+              "unit": 1
+            },
+            "atc": {
+              "value": 175,
+              "unit": 1
+            }
+          },
+          "drvDistance": [
+            {
+              "rangeByFuel": {
+                "evModeRange": {
+                  "value": 129,
+                  "unit": 1
+                },
+                "totalAvailableRange": {
+                  "value": 129,
+                  "unit": 1
+                }
+              },
+              "type": 2
+            }
+          ],
+          "reservChargeInfos": {
+            "reservFlag": 0,
+            "targetSOClist": [
+              {
+                "targetSOClevel": 90,
+                "plugType": 0
+              },
+              {
+                "targetSOClevel": 80,
+                "plugType": 1
+              }
+            ]
+          }
+        },
+        "ign3": true,
+        "hoodOpen": true,
+        "transCond": true,
+        "steerWheelHeat": 0,
+        "sideBackWindowHeat": 0,
+        "sideMirrorHeat": 0,
+        "seatHeaterVentState": {
+          "flSeatHeatState": 0,
+          "frSeatHeatState": 0,
+          "rlSeatHeatState": 0,
+          "rrSeatHeatState": 0
+        },
+        "tirePressureLamp": {
+          "tirePressureLampAll": 0,
+          "tirePressureLampFL": 0,
+          "tirePressureLampFR": 0,
+          "tirePressureLampRL": 0,
+          "tirePressureLampRR": 0
+        },
+        "battery": {
+          "batSoc": 82,
+          "batState": 0,
+          "sjbDeliveryMode": 1,
+          "batSignalReferenceValue": {
+            "batWarning": 65
+          },
+          "powerAutoCutMode": 2
+        },
+        "dte": {
+          "value": 129,
+          "unit": 1
+        },
+        "smartKeyBatteryWarning": false,
+        "washerFluidStatus": false,
+        "breakOilStatus": false,
+        "lowFuelLevel": false,
+        "time": "20260102225008"
+      },
+      "odometer": {
+        "value": 39505.5,
+        "unit": 1
+      }
+    }
+  }
+}

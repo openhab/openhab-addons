@@ -33,6 +33,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.bluelink.internal.dto.TokenResponse;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.ChargeLimitsRequest;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.ClimateRequestEV;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.ClimateRequestICE;
@@ -41,7 +42,6 @@ import org.openhab.binding.bluelink.internal.dto.us.bluelink.EnrollmentResponse;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.EnrollmentResponse.EnrolledVehicle;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.ErrorResponse;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.LoginRequest;
-import org.openhab.binding.bluelink.internal.dto.us.bluelink.TokenResponse;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.Vehicle;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.VehicleLocation;
 import org.openhab.binding.bluelink.internal.dto.us.bluelink.VehicleStatusResponse.VehicleStatus;
@@ -80,7 +80,11 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
     public boolean login() throws BluelinkApiException {
         final LoginRequest loginRequest = new LoginRequest(username, password);
         final String loginUrl = baseUrl + "/v2/ac/oauth/token";
-        return doLogin(loginUrl, loginRequest, TokenResponse.class, t -> t);
+        final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
+                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .content(new StringContentProvider(gson.toJson(loginRequest)), APPLICATION_JSON);
+        addStandardHeaders(request);
+        return doLogin(request, TokenResponse.class, t -> t);
     }
 
     @Override
@@ -299,6 +303,11 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
             case "N" -> EngineType.ICE;
             default -> EngineType.UNKNOWN;
         }, info.modelCode(), modelYear, info.vehicleGeneration(), info.odometer());
+    }
+
+    @Override
+    public boolean supportsControlActions() {
+        return true;
     }
 
     @Override

@@ -10,18 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.api;
+package org.openhab.binding.bluelink.internal.dto.eu;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Supported API regions.
+ * Generic response wrapper.
  *
- * @author Marcus Better - Initial contribution
+ * @param <T> the type of the result message
+ * @author Florian Hotze - Initial contribution
  */
-@NonNullByDefault
-public enum Region {
-    CA,
-    EU,
-    US
+public record BaseResponse<T> (String retCode, String resCode, String resMsg, String msgId, @Nullable T result) {
 }

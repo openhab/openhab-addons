@@ -87,8 +87,11 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
     public boolean login() throws BluelinkApiException {
         final LoginRequest loginRequest = new LoginRequest(username, password);
         final String loginUrl = baseUrl + "v2/login";
-        return doLogin(loginUrl, loginRequest, TokenResponse.class,
-                t -> t.result() != null ? t.result().token() : null);
+        final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
+                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .content(new StringContentProvider(gson.toJson(loginRequest)), APPLICATION_JSON);
+        addStandardHeaders(request);
+        return doLogin(request, TokenResponse.class, t -> t.result() != null ? t.result().token() : null);
     }
 
     @Override
@@ -293,6 +296,11 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         if (id != null) {
             request.header("vehicleId", id);
         }
+    }
+
+    @Override
+    public boolean supportsControlActions() {
+        return true;
     }
 
     private static Vehicle toVehicle(final VehicleInfo v) {

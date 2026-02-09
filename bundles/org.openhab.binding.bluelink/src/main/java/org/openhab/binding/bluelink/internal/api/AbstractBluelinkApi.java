@@ -15,8 +15,8 @@ package org.openhab.binding.bluelink.internal.api;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
@@ -27,8 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bluelink.internal.dto.Token;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
@@ -39,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Abstract base class for Bluelink/Kia Connect API implementations.
@@ -178,6 +177,22 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
 
     public abstract void addStandardHeaders(Request request);
 
+    /**
+     * Returns properties to persist on the thing, such as a device ID obtained during registration.
+     *
+     * @return map of property names to values, or an empty map
+     */
+    public Map<String, String> getProperties() {
+        return Map.of();
+    }
+
+    /**
+     * Returns whether this API supports control actions (lock/unlock, climate, charging).
+     *
+     * @return true if control actions are supported
+     */
+    public abstract boolean supportsControlActions();
+
     protected boolean isAuthenticated() {
         final String token = accessToken;
         final Instant expiry = tokenExpiry;
@@ -195,13 +210,8 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
                 .toHours();
     }
 
-    protected <ResT> boolean doLogin(final String loginUrl, final Object loginRequest, final Class<ResT> clazz,
+    protected <ResT> boolean doLogin(Request request, final Class<ResT> clazz,
             final Function<ResT, @Nullable Token> tokenExtractor) throws BluelinkApiException {
-        final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
-                .timeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .content(new StringContentProvider(gson.toJson(loginRequest)), APPLICATION_JSON);
-        addStandardHeaders(request);
-
         try {
             final ContentResponse response = request.send();
             if (response.getStatus() != HttpStatus.OK_200) {
@@ -238,7 +248,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
      * Send a request and parse the response,
      *
      * @param request the request object
-     * @param clazz class of the parsed response
+     * @param clazz the response type
      * @param op the operation, for logging
      * @param <T> the response type
      * @return a parsed response
@@ -246,7 +256,22 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
      */
     protected <T> T sendRequest(final Request request, final Class<T> clazz, final String op)
             throws BluelinkApiException {
-        final @Nullable T res = sendRequestInternal(request, clazz, op);
+        return sendRequest(request, TypeToken.get(clazz), op);
+    }
+
+    /**
+     * Send a request and parse the response,
+     *
+     * @param request the request object
+     * @param responseType the response type
+     * @param op the operation, for logging
+     * @param <T> the response type
+     * @return a parsed response
+     * @throws BluelinkApiException on request failure
+     */
+    protected <T> T sendRequest(final Request request, final TypeToken<T> responseType, final String op)
+            throws BluelinkApiException {
+        final @Nullable T res = sendRequestInternal(request, responseType, op);
         if (res == null) {
             logger.debug("{}: unexpected empty response", op);
             throw new BluelinkApiException(op + ": empty response");
@@ -262,24 +287,25 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
      * @throws BluelinkApiException on request failure
      */
     protected void sendRequest(final Request request, final String op) throws BluelinkApiException {
-        sendRequestInternal(request, Void.class, op);
+        sendRequestInternal(request, new TypeToken<Void>() {
+        }, op);
     }
 
     /**
      * Send a request and parse the response (return null if response is empty)
      *
      * @param request the request object
-     * @param responseClass class of the parsed response
+     * @param responseType class of the parsed response
      * @param op the operation, for logging
      * @param <T> response type
      * @return the parsed response, or {@code null} if response is empty
      * @throws BluelinkApiException on request failure
      */
-    private <T> @Nullable T sendRequestInternal(final Request request, final Class<T> responseClass, final String op)
+    private <T> @Nullable T sendRequestInternal(final Request request, final TypeToken<T> responseType, final String op)
             throws BluelinkApiException {
         try {
             final ContentResponse response = checkStatus(request.send(), op);
-            return gson.fromJson(response.getContentAsString(), responseClass);
+            return gson.fromJson(response.getContentAsString(), responseType);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new BluelinkApiException(op + " interrupted", e);

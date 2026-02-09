@@ -10,18 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.api;
+package org.openhab.binding.bluelink.internal.dto.eu;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.util.UUID;
 
 /**
- * Supported API regions.
+ * Device registration response.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-@NonNullByDefault
-public enum Region {
-    CA,
-    EU,
-    US
+public record RegistrationResponse(UUID deviceId) {
 }
