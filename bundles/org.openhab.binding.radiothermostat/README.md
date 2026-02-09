@@ -71,7 +71,7 @@ curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}'
 - Humidity information is available only when using a CT80 thermostat.
 - The `remote_temp` channel can be used to send a temperature reading from a remote sensor to override the internal temperature reading of the thermostat in 1 degree increments.
 - An example use case for a thermostat that is located in a hallway would be to place a sensor in a bedroom to provide more accurate temperature regulation in the bedroom.
-- The temperature value from the sensor should be sent to the thermostat once per minute and care should be taken to reset the thermostat to internal temperature mode in the case that the sensor stops updating.
+- The temperature value from the sensor should be sent to the thermostat once per minute and with care taken to reset the thermostat to internal temperature mode in the case that the sensor stops updating.
 - If the `remoteTempDeadband` configuration parameter is set to **true** the value received by the `remote_temp` channel will be rounded up or down depending on the thermostat's current state.
 - This rounding allows the deadband/temperature swing to work properly for any remote temperature value (including those with decimal places) sent.
 - For example, if the heat setpoint is 70°F, the heat will not energize until the temperature drops to 69.0°F and should stay on until the temperature reaches 70.0°F again. The reverse is true for cooling.
@@ -272,7 +272,7 @@ when
   // Must set the `remoteTempDeadband` configuration parameter to true and the `refresh` configuration parameter to 1
   Item RemoteSensorTemp received update
 then
-  if (RemoteSensorTemp.state != null && RemoteSensorTemp.state != UNDEF) {
+  if (RemoteSensorTemp.state != NULL && RemoteSensorTemp.state != UNDEF) {
       Therm_Rtemp.sendCommand(RemoteSensorTemp.state)
   } else {
       Therm_Rtemp.sendCommand(-1)
@@ -289,7 +289,7 @@ then
   // Sends empty string to clear the number and restore the time display if OutsideTemp is undefined
   var temp = ""
 
-  if (newState != null && newState != UNDEF) {
+  if (newState != NULL && newState != UNDEF) {
       temp = Math.round((newState as DecimalType).doubleValue).intValue.toString
   }
 
