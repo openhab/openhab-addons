@@ -12,14 +12,20 @@
  */
 package org.openhab.binding.mynice.internal.ssl;
 
-import java.security.*;
+import java.security.Provider;
+import java.security.SecureRandom;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
-import org.eclipse.jdt.annotation.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Factory to create SSLSocketFactory.
@@ -71,18 +77,10 @@ public class BcJsseSocketFactory {
             if (initialized) {
                 return;
             }
-            // Set required system properties for legacy SSL/TLS connections, mimicking Python's
-            // ssl.OP_LEGACY_SERVER_CONNECT. These are set here to guarantee they are active.
-            final String minDhKeySize = "0"; // Setting to 0 disables the DH key size check entirely
-            final String acceptLegacy = "true";
-            final String allowUnsafeRenegotiation = "true";
-
+            // Set required system properties for legacy SSL/TLS connections
             // Bouncy Castle specific properties set via System properties for highest precedence
-            System.setProperty("org.bouncycastle.jsse.client.acceptLegacy", acceptLegacy);
-            System.setProperty("org.bouncycastle.jsse.client.allowLegacyInitiatedRenegotiation",
-                    allowUnsafeRenegotiation);
-            // Standard Java property for unsafe renegotiation
-            System.setProperty("sun.security.ssl.allowUnsafeRenegotiation", allowUnsafeRenegotiation);
+            System.setProperty("org.bouncycastle.jsse.client.acceptLegacy", "true");
+            System.setProperty("org.bouncycastle.jsse.client.allowLegacyInitiatedRenegotiation", "true");
 
             // Get the existing BC provider from the platform (provided by bcprov bundle)
             Provider bcProvider = Security.getProvider("BC");
