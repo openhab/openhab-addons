@@ -142,20 +142,26 @@ public class It4WifiHandler extends BaseBridgeHandler {
 
             localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
 
-            // The IT4Wifi device requires legacy TLS settings.
-            // We enable older TLS protocols and filter cipher suites to use static RSA key exchange,
-            // which avoids the problematic DHE exchange that causes 'insufficient_security' errors.
+            // We require an older TLS protocol and a static RSA cipher suite to avoid the problematic
+            // DHE exchange that causes 'insufficient_security' errors. If these are not available on
+            // the current JVM, we abort the connection.
             String[] enabledLegacyProtocols = Arrays.stream(localSocket.getSupportedProtocols())
                     .filter(NEEDED_PROTOCOL::equals).toArray(String[]::new);
+            String[] legacyCiphers = Arrays.stream(localSocket.getSupportedCipherSuites())
+                    .filter(suite -> NEEDED_CIPHER.equals(suite)).toArray(String[]::new);
 
             if (enabledLegacyProtocols.length > 0) {
                 localSocket.setEnabledProtocols(enabledLegacyProtocols);
+            } else {
+                throw new IOException(
+                        "Required TLS protocol " + NEEDED_PROTOCOL + " is not supported by this JVM for IT4Wifi");
             }
 
-            String[] legacyCiphers = Arrays.stream(localSocket.getSupportedCipherSuites())
-                    .filter(suite -> NEEDED_CIPHER.equals(suite)).toArray(String[]::new);
             if (legacyCiphers.length > 0) {
                 localSocket.setEnabledCipherSuites(legacyCiphers);
+            } else {
+                throw new IOException(
+                        "Required TLS cipher suite " + NEEDED_CIPHER + " is not supported by this JVM for IT4Wifi");
             }
 
             localSocket.startHandshake();
@@ -181,6 +187,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
             }
             sslSocket = Optional.empty();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
+            logger.warn(e.getMessage());
         }
     }
 

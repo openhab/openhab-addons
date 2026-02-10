@@ -34,6 +34,8 @@ import org.openhab.core.io.net.http.TrustAllTrustManager;
  */
 @NonNullByDefault
 public class BcJsseSocketFactory {
+    private static volatile boolean bcAdded = false;
+    private static volatile boolean bcJsseAdded = false;
     private static volatile boolean initialized = false;
 
     private BcJsseSocketFactory() {
@@ -52,9 +54,13 @@ public class BcJsseSocketFactory {
     }
 
     public static void dispose() {
-        if (initialized) {
-            Security.removeProvider("BC");
+        if (bcJsseAdded) {
             Security.removeProvider("BCJSSE");
+            bcJsseAdded = false;
+        }
+        if (bcAdded) {
+            Security.removeProvider("BC");
+            bcAdded = false;
         }
     }
 
@@ -70,12 +76,14 @@ public class BcJsseSocketFactory {
             // Get the existing BC provider from the platform (provided by bcprov bundle)
             if (Security.getProvider("BC") == null) {
                 Security.addProvider(new BouncyCastleProvider());
+                bcAdded = true;
             }
 
             // Get or register the BCJSSE provider
             if (Security.getProvider("BCJSSE") == null) {
-                // Initialize BCJSSE in non-FIPS mode. It will find the "BC" provider we just registered.
+                // Initialize BCJSSE in non-FIPS mode. It will find the existing "BC" provider.
                 Security.addProvider(new BouncyCastleJsseProvider(false));
+                bcJsseAdded = true;
             }
             initialized = true;
         }
