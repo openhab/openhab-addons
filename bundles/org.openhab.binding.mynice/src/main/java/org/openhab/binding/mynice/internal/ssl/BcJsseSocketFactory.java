@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mynice.internal.ssl;
 
-import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -83,20 +82,16 @@ public class BcJsseSocketFactory {
             System.setProperty("org.bouncycastle.jsse.client.allowLegacyInitiatedRenegotiation", "true");
 
             // Get the existing BC provider from the platform (provided by bcprov bundle)
-            Provider bcProvider = Security.getProvider("BC");
-            if (bcProvider == null) {
-                bcProvider = new BouncyCastleProvider();
-                Security.insertProviderAt(bcProvider, 1);
+            if (Security.getProvider("BC") == null) {
+                Security.insertProviderAt(new BouncyCastleProvider(), 1);
             }
 
             // Get or register the BCJSSE provider
-            Provider bcJsseProvider = Security.getProvider("BCJSSE");
-            if (bcJsseProvider == null) {
+            if (Security.getProvider("BCJSSE") == null) {
                 // Initialize BCJSSE in non-FIPS mode. It will find the "BC" provider we just registered.
                 // This is the correct way to ensure it honors the legacy system properties
                 // and should resolve the 'insufficient_security' error.
-                bcJsseProvider = new BouncyCastleJsseProvider(false);
-                Security.addProvider(bcJsseProvider);
+                Security.addProvider(new BouncyCastleJsseProvider(false));
             }
             initialized = true;
         }

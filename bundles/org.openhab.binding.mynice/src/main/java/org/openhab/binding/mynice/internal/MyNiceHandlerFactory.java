@@ -14,7 +14,6 @@ package org.openhab.binding.mynice.internal;
 
 import static org.openhab.binding.mynice.internal.MyNiceBindingConstants.*;
 
-import java.util.Objects;
 import java.util.Set;
 
 import javax.net.ssl.SSLSocketFactory;
@@ -42,7 +41,7 @@ import org.osgi.service.component.annotations.Component;
 public class MyNiceHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_IT4WIFI, THING_TYPE_SWING,
             THING_TYPE_SLIDING);
-    private @Nullable SSLSocketFactory socketFactory;
+    private final SSLSocketFactory socketFactory = BcJsseSocketFactory.get();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,7 +53,7 @@ public class MyNiceHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (BRIDGE_TYPE_IT4WIFI.equals(thingTypeUID)) {
-            return new It4WifiHandler((Bridge) thing, getSocketFactory());
+            return new It4WifiHandler((Bridge) thing, socketFactory);
         } else if (THING_TYPE_SWING.equals(thingTypeUID)) {
             return new GateHandler(thing);
         } else if (THING_TYPE_SLIDING.equals(thingTypeUID)) {
@@ -62,12 +61,5 @@ public class MyNiceHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    private synchronized SSLSocketFactory getSocketFactory() {
-        if (socketFactory == null) {
-            socketFactory = BcJsseSocketFactory.get();
-        }
-        return Objects.requireNonNull(socketFactory);
     }
 }
