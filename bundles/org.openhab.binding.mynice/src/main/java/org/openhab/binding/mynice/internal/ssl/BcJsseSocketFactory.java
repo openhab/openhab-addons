@@ -12,19 +12,20 @@
  */
 package org.openhab.binding.mynice.internal.ssl;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.io.net.http.TrustAllTrustManager;
 
 /**
  * Factory to create SSLSocketFactory.
@@ -36,34 +37,16 @@ public class BcJsseSocketFactory {
     private static volatile boolean initialized = false;
 
     private BcJsseSocketFactory() {
-        // Private constructor
     }
 
     public static SSLSocketFactory get() {
+        initializeOnce();
+
         try {
-            initializeOnce();
-
-            // Create a TrustManager that trusts all certificates
-            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate @Nullable [] certs, @Nullable String authType) {
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate @Nullable [] certs, @Nullable String authType) {
-                }
-            } };
-
-            // Explicitly request the context from the BCJSSE provider by name
             SSLContext context = SSLContext.getInstance("TLS", "BCJSSE");
-            context.init(null, trustAllCerts, new SecureRandom());
+            context.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, new SecureRandom());
             return context.getSocketFactory();
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | KeyManagementException e) {
             throw new IllegalStateException("Unable to initialize BCJSSE SSLContext", e);
         }
     }
