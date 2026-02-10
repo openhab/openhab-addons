@@ -83,7 +83,7 @@ public class MatterFirmwareProvider implements FirmwareProvider {
     public @Nullable Set<Firmware> getFirmwares(Thing thing) {
         return getFirmwares(thing, null);
     }
-    
+
     @Override
     public @Nullable Set<Firmware> getFirmwares(Thing thing, @Nullable Locale locale) {
         logger.debug("Getting firmwares for thing {}", thing.getUID());
