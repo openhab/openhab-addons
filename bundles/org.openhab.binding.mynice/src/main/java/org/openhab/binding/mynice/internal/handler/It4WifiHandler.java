@@ -60,6 +60,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class It4WifiHandler extends BaseBridgeHandler {
+    private static final String NEEDED_PROTOCOL = "TLSv1.2";
+    private static final String NEEDED_CIPHER = "TLS_RSA_WITH_AES_256_CBC_SHA256";
     private static final int SERVER_PORT = 443;
     private static final int MAX_HANDSHAKE_ATTEMPTS = 3;
     private static final int KEEPALIVE_DELAY_S = 235; // Timeout seems to be at 6 min
@@ -143,24 +145,22 @@ public class It4WifiHandler extends BaseBridgeHandler {
             // The IT4Wifi device requires legacy TLS settings.
             // We enable older TLS protocols and filter cipher suites to use static RSA key exchange,
             // which avoids the problematic DHE exchange that causes 'insufficient_security' errors.
-            String[] legacyProtocols = Arrays.stream(localSocket.getSupportedProtocols())
-                    .filter(p -> p.startsWith("TLSv1")).toArray(String[]::new);
-            if (legacyProtocols.length > 0) {
-                localSocket.setEnabledProtocols(legacyProtocols);
+            String[] enabledLegacyProtocols = Arrays.stream(localSocket.getSupportedProtocols())
+                    .filter(NEEDED_PROTOCOL::equals).toArray(String[]::new);
+
+            if (enabledLegacyProtocols.length > 0) {
+                localSocket.setEnabledProtocols(enabledLegacyProtocols);
             }
 
-            String[] legacyCiphers = Arrays
-                    .stream(localSocket.getSupportedCipherSuites()).filter(suite -> suite.contains("_RSA_")
-                            && !suite.contains("_DHE_") && !suite.contains("_ECDHE_") && !suite.contains("_NULL_"))
-                    .toArray(String[]::new);
+            String[] legacyCiphers = Arrays.stream(localSocket.getSupportedCipherSuites())
+                    .filter(suite -> NEEDED_CIPHER.equals(suite)).toArray(String[]::new);
             if (legacyCiphers.length > 0) {
                 localSocket.setEnabledCipherSuites(legacyCiphers);
             }
 
-            logger.debug("Using legacy TLS settings. Protocols: {}, Ciphers (count): {}",
-                    Arrays.toString(localSocket.getEnabledProtocols()), localSocket.getEnabledCipherSuites().length);
-
             localSocket.startHandshake();
+            logger.debug("Handshake successful. Protocol: {}, Cipher: {}", localSocket.getSession().getProtocol(),
+                    localSocket.getSession().getCipherSuite());
             sslSocket = Optional.of(localSocket);
 
             It4WifiConnector localConnector = new It4WifiConnector(this, localSocket);

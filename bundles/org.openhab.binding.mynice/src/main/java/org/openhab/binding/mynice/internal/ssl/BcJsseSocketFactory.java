@@ -51,6 +51,13 @@ public class BcJsseSocketFactory {
         }
     }
 
+    public static void dispose() {
+        if (initialized) {
+            Security.removeProvider("BC");
+            Security.removeProvider("BCJSSE");
+        }
+    }
+
     private static void initializeOnce() {
         if (initialized) {
             return;
@@ -59,21 +66,15 @@ public class BcJsseSocketFactory {
             if (initialized) {
                 return;
             }
-            // Set required system properties for legacy SSL/TLS connections
-            // Bouncy Castle specific properties set via System properties for highest precedence
-            System.setProperty("org.bouncycastle.jsse.client.acceptLegacy", "true");
-            System.setProperty("org.bouncycastle.jsse.client.allowLegacyInitiatedRenegotiation", "true");
 
             // Get the existing BC provider from the platform (provided by bcprov bundle)
             if (Security.getProvider("BC") == null) {
-                Security.insertProviderAt(new BouncyCastleProvider(), 1);
+                Security.addProvider(new BouncyCastleProvider());
             }
 
             // Get or register the BCJSSE provider
             if (Security.getProvider("BCJSSE") == null) {
                 // Initialize BCJSSE in non-FIPS mode. It will find the "BC" provider we just registered.
-                // This is the correct way to ensure it honors the legacy system properties
-                // and should resolve the 'insufficient_security' error.
                 Security.addProvider(new BouncyCastleJsseProvider(false));
             }
             initialized = true;
