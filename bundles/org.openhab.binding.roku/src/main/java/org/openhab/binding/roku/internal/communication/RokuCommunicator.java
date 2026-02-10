@@ -13,6 +13,8 @@
 package org.openhab.binding.roku.internal.communication;
 
 import java.io.StringReader;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.roku.internal.RokuHttpException;
 import org.openhab.binding.roku.internal.RokuLimitedModeException;
@@ -52,6 +55,7 @@ public class RokuCommunicator {
 
     private final Logger logger = LoggerFactory.getLogger(RokuCommunicator.class);
     private final HttpClient httpClient;
+    private final String resolvedIp;
 
     private final String urlKeyPress;
     private final String urlLaunchApp;
@@ -65,6 +69,15 @@ public class RokuCommunicator {
 
     public RokuCommunicator(HttpClient httpClient, String host, int port) {
         this.httpClient = httpClient;
+
+        String ip;
+        try {
+            ip = InetAddress.getByName(host).getHostAddress();
+        } catch (UnknownHostException e) {
+            logger.debug("Unable to resolve host address, using current value for host header", e);
+            ip = host;
+        }
+        resolvedIp = ip;
 
         final String baseUrl = "http://" + host + ":" + port;
         urlKeyPress = baseUrl + "/keypress/";
@@ -286,7 +299,8 @@ public class RokuCommunicator {
     private String getCommand(String url) throws RokuHttpException {
         try {
             final String response = httpClient.newRequest(url).method(HttpMethod.GET)
-                    .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send().getContentAsString();
+                    .header(HttpHeader.HOST, resolvedIp).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS)
+                    .send().getContentAsString();
             if (response != null && response.contains(LIMITED_MODE_RESPONSE)) {
                 throw new RokuLimitedModeException(url + ": " + response);
             }
@@ -308,7 +322,8 @@ public class RokuCommunicator {
     private void postCommand(String url) throws RokuHttpException {
         try {
             logger.trace("Sending POST command: {}", url);
-            httpClient.POST(url).method(HttpMethod.POST).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+            httpClient.POST(url).method(HttpMethod.POST).header(HttpHeader.HOST, resolvedIp)
+                    .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
         } catch (TimeoutException | ExecutionException e) {
             throw new RokuHttpException("Error executing POST command, URL: " + url, e);
         } catch (InterruptedException e) {
