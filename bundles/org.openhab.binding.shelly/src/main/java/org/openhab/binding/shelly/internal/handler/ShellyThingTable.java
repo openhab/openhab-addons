@@ -30,8 +30,8 @@ import org.osgi.service.component.annotations.Deactivate;
  * The{@link ShellyThingTable} implements a simple table to allow dispatching incoming events to the proper thing
  * handler.
  * <p>
- * <b>Note:</b> This class is a component and is supposed to be a singleton. Therefore, do <b>not</b> construct it
- * using the construction directly.
+ * <b>Note:</b> This class is a component and is supposed to be a singleton. Therefore, do <b>not</b> create it
+ * using the constructor directly.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -87,15 +87,14 @@ public class ShellyThingTable {
     }
 
     public void startDiscoveryService(BundleContext bundleContext) {
-        ShellyBasicDiscoveryService discoveryService;
         synchronized (this) {
-            discoveryService = this.discoveryService;
+            ShellyBasicDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {
                 return;
             }
             this.discoveryService = discoveryService = new ShellyBasicDiscoveryService(bundleContext, this);
+            discoveryService.registerDeviceDiscoveryService();
         }
-        discoveryService.registerDeviceDiscoveryService();
     }
 
     public void startScan() {
@@ -109,13 +108,12 @@ public class ShellyThingTable {
     }
 
     public void stopDiscoveryService() {
-        ShellyBasicDiscoveryService discoveryService;
         synchronized (this) {
-            discoveryService = this.discoveryService;
+            ShellyBasicDiscoveryService discoveryService = this.discoveryService;
             this.discoveryService = null;
-        }
-        if (discoveryService != null) {
-            discoveryService.unregisterDeviceDiscoveryService();
+            if (discoveryService != null) {
+                discoveryService.unregisterDeviceDiscoveryService();
+            }
         }
     }
 

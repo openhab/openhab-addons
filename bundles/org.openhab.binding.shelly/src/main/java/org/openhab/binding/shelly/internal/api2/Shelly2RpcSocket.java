@@ -31,7 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
-import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -149,16 +148,25 @@ public class Shelly2RpcSocket implements WriteCallback {
         synchronized (this) {
             disconnect(); // for safety
 
-            // Connect async
             try {
                 newClient.start();
-                newClient.connect(this, uri, request);
-                this.client = newClient;
-            } catch (WebSocketException | IOException e) {
-                // Keep this if your Jetty version still declares IOException on start()/connect path
-                throw new ShellyApiException("Failed to connect WebSocket: " + e.getMessage(), e);
             } catch (Exception e) {
                 throw new ShellyApiException("Failed to start WebSocket: " + e.getMessage(), e);
+            }
+
+            // Connect async
+            try {
+                newClient.connect(this, uri, request);
+                this.client = newClient;
+            } catch (RuntimeException | IOException e) {
+                // Keep this if your Jetty version still declares IOException on start()/connect path
+                try {
+                    newClient.stop();
+                } catch (Exception e1) {
+                    logger.warn("Failed to stop WebSocket client after failing to connect: {}", e1.getMessage());
+                    logger.trace("", e1);
+                }
+                throw new ShellyApiException("Failed to connect WebSocket: " + e.getMessage(), e);
             }
         }
     }
@@ -249,8 +257,10 @@ public class Shelly2RpcSocket implements WriteCallback {
 
             if (session == null || !session.isOpen()) {
                 this.sendQueue.add(str);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: Queued RPC request (no open session): {}", thingName, str);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{}: Queued RPC request (no open session): {}", thingName, str);
+                } else if (logger.isDebugEnabled()) {
+                    logger.debug("{}: Queued RPC request (no open session)", thingName);
                 }
                 return;
             }
