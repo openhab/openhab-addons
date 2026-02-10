@@ -100,7 +100,7 @@ Import-Package: \
 	org.objectweb.asm.tree;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.util;version='[9.6.0,9.6.1)',\
-	org.ops4j.pax.logging.pax-logging-api;version='[2.3.0,2.3.1)',\
+	org.ops4j.pax.logging.pax-logging-api;version='[2.3.2,2.3.3)',\
 	org.openhab.binding.mqtt;version='[5.2.0,5.2.1)',\
 	org.openhab.binding.mqtt.ruuvigateway;version='[5.2.0,5.2.1)',\
 	org.openhab.binding.mqtt.ruuvigateway.tests;version='[5.2.0,5.2.1)',\

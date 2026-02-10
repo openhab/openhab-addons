@@ -75,7 +75,7 @@ Fragment-Host: org.openhab.binding.hue
 	org.objectweb.asm.tree;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.util;version='[9.6.0,9.6.1)',\
-	org.ops4j.pax.logging.pax-logging-api;version='[2.3.0,2.3.1)',\
+	org.ops4j.pax.logging.pax-logging-api;version='[2.3.2,2.3.3)',\
 	org.ops4j.pax.web.pax-web-api;version='[8.0.34,8.0.35)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[8.0.34,8.0.35)',\
 	org.ops4j.pax.web.pax-web-runtime;version='[8.0.34,8.0.35)',\
