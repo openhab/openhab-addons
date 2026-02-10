@@ -77,6 +77,7 @@ There are two forms of pairing:
 
 In either case above, the Pairing Code must be entered manually into the Thing Action dialog.
 The Pairing Code must match the format `XXX-XX-XXX` or `XXXX-XXXX` or `XXXXXXXX` where `X` is a single digit.
+More modern devices sometimes require the format `XXXX-XXX-XXXX` or `XXXXXXXXXXX` instead.
 
 For case 1. above, the `With External Authentication` switch must be `OFF`.
 Whereas for case 2. above, must be `ON`.
