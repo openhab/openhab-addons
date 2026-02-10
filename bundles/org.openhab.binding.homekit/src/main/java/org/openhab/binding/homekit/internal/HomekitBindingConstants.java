@@ -98,8 +98,9 @@ public class HomekitBindingConstants {
     public static final String CONFIG_SNAPSHOT_WIDTH = "imageWidth";
     public static final String CONFIG_SNAPSHOT_HEIGHT = "imageHeight";
 
-    // pattern matcher for pairing code XXX-XX-XXX or XXXX-XXXX or XXXXXXXX
-    public static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8}");
+    // pattern matcher for pairing code XXX-XX-XXX or XXXX-XXXX or XXXXXXXX or XXXX-XXX-XXXX or XXXXXXXXXXX
+    public static final Pattern PAIRING_CODE_PATTERN = Pattern
+            .compile("^(\\d{4}-\\d{3}-\\d{4}|\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8}|\\d{11})$");
 
     // pattern matcher for host ipv4 address 123.123.123.123:12345
     public static final Pattern IPV4_PATTERN = Pattern.compile(

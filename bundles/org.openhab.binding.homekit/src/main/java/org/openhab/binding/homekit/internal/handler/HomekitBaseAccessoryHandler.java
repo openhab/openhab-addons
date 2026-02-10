@@ -358,16 +358,20 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Normalize XXX-XX-XXX or XXXX-XXXX or XXXXXXXX to XXX-XX-XXX
+     * Normalize XXX-XX-XXX, XXXX-XXXX, XXXXXXXX or XXXX-XXX-XXXX, XXXXXXXXXXX
      */
     private String normalizePairingCode(String input) throws IllegalArgumentException {
         // remove all non-digit character formatting
         String digits = input.replaceAll("\\D", "");
-        if (digits.length() != 8) {
-            throw new IllegalArgumentException("Input must contain exactly 8 digits");
+        if (digits.length() == 8) {
+            // re-format as XXX-XX-XXX
+            return String.format("%s-%s-%s", digits.substring(0, 3), digits.substring(3, 5), digits.substring(5, 8));
         }
-        // re-format as XXX-XX-XXX
-        return String.format("%s-%s-%s", digits.substring(0, 3), digits.substring(3, 5), digits.substring(5, 8));
+        if (digits.length() == 11) {
+            // re-format as XXXX-XXX-XXXX
+            return String.format("%s-%s-%s", digits.substring(0, 4), digits.substring(4, 7), digits.substring(7, 11));
+        }
+        throw new IllegalArgumentException("Input must contain exactly 8 or 11 digits");
     }
 
     /**
@@ -505,7 +509,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
 
         if (!PAIRING_CODE_PATTERN.matcher(code).matches()) {
-            logger.debug("{} pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX", thing.getUID());
+            logger.debug("{} pairing code must match XXX-XX-XXX, XXXX-XXXX, XXXXXXXX, XXXX-XXX-XXXX, XXXXXXXXXXX",
+                    thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("code format");
         }
         String pairingCode = normalizePairingCode(code);
