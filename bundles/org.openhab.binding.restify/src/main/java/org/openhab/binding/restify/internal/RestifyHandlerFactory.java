@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.restify.internal;
 
-import static org.openhab.binding.restify.internal.RESTifyBindingConstants.*;
+import static org.openhab.binding.restify.internal.RestifyBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,14 +26,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link RESTifyHandlerFactory} is responsible for creating things and thing
+ * The {@link RestifyHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.restify", service = ThingHandlerFactory.class)
-public class RESTifyHandlerFactory extends BaseThingHandlerFactory {
+public class RestifyHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
 
@@ -47,7 +47,7 @@ public class RESTifyHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new RESTifyHandler(thing);
+            return new RestifyHandler(thing);
         }
 
         return null;

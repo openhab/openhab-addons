@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.restify.internal;
 
-import static org.openhab.binding.restify.internal.RESTifyBindingConstants.*;
+import static org.openhab.binding.restify.internal.RestifyBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,19 +26,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RESTifyHandler} is responsible for handling commands, which are
+ * The {@link RestifyHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class RESTifyHandler extends BaseThingHandler {
+public class RestifyHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(RESTifyHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RestifyHandler.class);
 
-    private @Nullable RESTifyConfiguration config;
+    private @Nullable RestifyConfiguration config;
 
-    public RESTifyHandler(Thing thing) {
+    public RestifyHandler(Thing thing) {
         super(thing);
     }
 
@@ -60,7 +60,7 @@ public class RESTifyHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(RESTifyConfiguration.class);
+        config = getConfigAs(RestifyConfiguration.class);
 
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly, i.e. any network access must be done in
