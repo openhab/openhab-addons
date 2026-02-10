@@ -358,7 +358,21 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Normalize XXX-XX-XXX, XXXX-XXXX, XXXXXXXX or XXXX-XXX-XXXX, XXXXXXXXXXX
+     * Normalizes a HomeKit pairing code by stripping all non-digit characters and reformatting
+     * the remaining digits into a canonical representation.
+     * <p>
+     * Accepted inputs:
+     * <ul>
+     *   <li>8 digits (e.g. {@code XXX-XX-XXX}, {@code XXXX-XXXX}, {@code XXXXXXXX}) are normalized to
+     *       {@code XXX-XX-XXX}.</li>
+     *   <li>11 digits (e.g. {@code XXXX-XXX-XXXX}, {@code XXXXXXXXXXX}) are normalized to
+     *       {@code XXXX-XXX-XXXX}.</li>
+     * </ul>
+     * Any other number of digits results in an {@link IllegalArgumentException}.
+     *
+     * @param input the pairing code to normalize; may contain formatting characters such as dashes or spaces
+     * @return the normalized pairing code in {@code XXX-XX-XXX} (for 8 digits) or {@code XXXX-XXX-XXXX} (for 11 digits)
+     * @throws IllegalArgumentException if the input does not contain exactly 8 or 11 digits after removing non-digits
      */
     private String normalizePairingCode(String input) throws IllegalArgumentException {
         // remove all non-digit character formatting
