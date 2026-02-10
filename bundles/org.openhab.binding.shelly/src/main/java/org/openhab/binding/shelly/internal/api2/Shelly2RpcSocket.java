@@ -120,7 +120,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     public void connect() throws ShellyApiException {
         String deviceIp = this.deviceIp;
         if (deviceIp.isBlank()) {
-            throw new IllegalArgumentException(thingName + ": Device IP not set");
+            throw new ShellyApiException(thingName + ": Device IP not set");
         }
 
         // Prepare connect
