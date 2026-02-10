@@ -13,22 +13,19 @@
 package org.openhab.binding.restify.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link RESTifyBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link RestifyConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class RESTifyBindingConstants {
+public class RestifyConfiguration {
 
-    private static final String BINDING_ID = "restify";
-
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
-
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    /**
+     * Sample configuration parameters. Replace with your own.
+     */
+    public String hostname = "";
+    public String password = "";
+    public int refreshInterval = 600;
 }
