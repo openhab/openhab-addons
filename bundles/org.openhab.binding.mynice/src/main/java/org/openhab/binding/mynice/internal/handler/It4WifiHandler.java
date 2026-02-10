@@ -187,7 +187,7 @@ public class It4WifiHandler extends BaseBridgeHandler {
             }
             sslSocket = Optional.empty();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
-            logger.warn(e.getMessage());
+            logger.warn("Error in IT4Wifi handshake: {}", e.getMessage());
         }
     }
 
