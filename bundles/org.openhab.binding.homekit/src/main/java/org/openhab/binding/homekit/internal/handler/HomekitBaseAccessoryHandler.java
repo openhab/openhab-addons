@@ -363,10 +363,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * <p>
      * Accepted inputs:
      * <ul>
-     *   <li>8 digits (e.g. {@code XXX-XX-XXX}, {@code XXXX-XXXX}, {@code XXXXXXXX}) are normalized to
-     *       {@code XXX-XX-XXX}.</li>
-     *   <li>11 digits (e.g. {@code XXXX-XXX-XXXX}, {@code XXXXXXXXXXX}) are normalized to
-     *       {@code XXXX-XXX-XXXX}.</li>
+     * <li>8 digits (e.g. {@code XXX-XX-XXX}, {@code XXXX-XXXX}, {@code XXXXXXXX}) are normalized to
+     * {@code XXX-XX-XXX}.</li>
+     * <li>11 digits (e.g. {@code XXXX-XXX-XXXX}, {@code XXXXXXXXXXX}) are normalized to
+     * {@code XXXX-XXX-XXXX}.</li>
      * </ul>
      * Any other number of digits results in an {@link IllegalArgumentException}.
      *
