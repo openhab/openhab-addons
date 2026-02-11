@@ -14,4 +14,24 @@
 
   <name>openHAB Add-ons :: Bundles :: RESTify Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+      <version>1.5.6</version>
+      <type>bundle</type>
+    </dependency>
+    <dependency>
+      <!-- Used for logging -->
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <!-- Used to process JSON -->
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+  </dependencies>
 </project>
