@@ -20,10 +20,11 @@ import com.google.gson.annotations.SerializedName;
  * Class that provides storage for the json object obtained from the HomeWizard Energy Socket State API
  *
  * @author Daniël van Os - Initial contribution
+ * @author Gearrel Welvaart - Renamed class
  *
  */
 @NonNullByDefault
-public class HomeWizardEnergySocketStatePayload {
+public class HomeWizardDeviceStatePayload {
     @SerializedName("power_on")
     private boolean powerOn;
     @SerializedName("switch_lock")
