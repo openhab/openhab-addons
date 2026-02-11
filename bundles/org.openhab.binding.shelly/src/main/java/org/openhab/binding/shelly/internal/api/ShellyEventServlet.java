@@ -37,7 +37,9 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.openhab.core.io.net.http.WebSocketFactory;
+import org.osgi.service.component.ComponentException;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -67,21 +69,25 @@ public class ShellyEventServlet extends WebSocketServlet {
             @Reference WebSocketFactory webSocketFactory) {
         this.handlerFactory = handlerFactory;
         this.thingTable = thingTable;
-        WebSocketClient client = webSocketFactory.createWebSocketClient("shelly2servlet");
-        client.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
-        client.setStopTimeout(1000);
+        WebSocketClient client = ShellyUtils.createWebSocketClient(webSocketFactory, "shelly2servlet");
         this.webSocketClient = client;
         try {
             client.start();
             logger.debug("Shelly EventServlet started at {} and {}", SHELLY1_CALLBACK_URI, SHELLY2_CALLBACK_URI);
         } catch (Exception e) {
             logger.warn("Failed to start servlet WebSocket client: {}", e.getMessage(), e);
+            throw new ComponentException("Failed to activate: Unable to start WebSocket client: " + e.getMessage(), e);
         }
     }
 
     @Deactivate
     protected void deactivate() {
         logger.debug("ShellyEventServlet: Stopping");
+        try {
+            webSocketClient.stop();
+        } catch (Exception e) {
+            logger.warn("Failed to stop servlet WebSocket client: {}", e.getMessage(), e);
+        }
     }
 
     /**
