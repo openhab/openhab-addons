@@ -460,4 +460,149 @@ class TaskManagerTest {
         assertTrue(scheduledTasks.containsKey(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID));
         assertTrue(scheduledTasks.containsKey(DiscoveryTask.TASK_ID));
     }
+
+    /**
+     * Test that WebSocket task is preferred over ServerSyncTask when both are available.
+     * This validates the preference for real-time WebSocket updates over polling.
+     */
+    @Test
+    void testWebSocketTaskPreferredOverPolling() {
+        // Arrange
+        AbstractTask mockWebSocketTask = mock(AbstractTask.class);
+        when(mockWebSocketTask.getId()).thenReturn(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+        when(mockWebSocketTask.getStartupDelay()).thenReturn(0);
+        when(mockWebSocketTask.getInterval()).thenReturn(0);
+
+        Map<String, AbstractTask> availableTasks = new HashMap<>();
+        availableTasks.put(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID, mockWebSocketTask);
+        availableTasks.put(ServerSyncTask.TASK_ID, mockServerSyncTask);
+        availableTasks.put(DiscoveryTask.TASK_ID, mockDiscoveryTask);
+
+        Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
+
+        // Act
+        taskManager.processStateChange(ServerState.CONNECTED, availableTasks, scheduledTasks, mockScheduler);
+
+        // Assert: WebSocket should be started, ServerSync should NOT be started
+        assertTrue(scheduledTasks.containsKey(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID),
+                "WebSocket task should be started");
+        assertFalse(scheduledTasks.containsKey(ServerSyncTask.TASK_ID),
+                "ServerSync task should NOT be started when WebSocket is available");
+        assertTrue(scheduledTasks.containsKey(DiscoveryTask.TASK_ID), "Discovery task should be started");
+
+        verify(mockScheduler).schedule(eq(mockWebSocketTask), eq(0L), eq(TimeUnit.SECONDS));
+        verify(mockScheduler, never()).scheduleWithFixedDelay(eq(mockServerSyncTask), anyLong(), anyLong(),
+                any(TimeUnit.class));
+    }
+
+    /**
+     * Test mutual exclusivity: WebSocket and ServerSync tasks should never run simultaneously.
+     */
+    @Test
+    void testMutualExclusivityWebSocketAndPolling() {
+        // Arrange
+        AbstractTask mockWebSocketTask = mock(AbstractTask.class);
+        when(mockWebSocketTask.getId()).thenReturn(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+        when(mockWebSocketTask.getStartupDelay()).thenReturn(0);
+        when(mockWebSocketTask.getInterval()).thenReturn(0);
+
+        Map<String, AbstractTask> availableTasks = new HashMap<>();
+        availableTasks.put(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID, mockWebSocketTask);
+        availableTasks.put(ServerSyncTask.TASK_ID, mockServerSyncTask);
+
+        Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
+
+        // Act: Start with WebSocket
+        taskManager.processStateChange(ServerState.CONNECTED, availableTasks, scheduledTasks, mockScheduler);
+
+        // Assert: Only WebSocket should be running
+        assertTrue(scheduledTasks.containsKey(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID));
+        assertFalse(scheduledTasks.containsKey(ServerSyncTask.TASK_ID));
+
+        // Simulate WebSocket failure - remove WebSocket from available tasks
+        availableTasks.remove(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+
+        // Act: Re-process state (simulating fallback)
+        reset(mockScheduler);
+        when(mockScheduler.scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class)))
+                .thenAnswer(invocation -> mockScheduledFuture);
+
+        taskManager.processStateChange(ServerState.CONNECTED, availableTasks, scheduledTasks, mockScheduler);
+
+        // Assert: Now ServerSync should be running, WebSocket should not
+        assertTrue(scheduledTasks.containsKey(ServerSyncTask.TASK_ID),
+                "ServerSync task should start after WebSocket removed");
+        assertFalse(scheduledTasks.containsKey(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID),
+                "WebSocket task should not be scheduled when unavailable");
+    }
+
+    /**
+     * Test task state transition matrix for all server states.
+     * Validates correct task scheduling across state transitions.
+     */
+    @Test
+    void testTaskStateTransitionMatrix() {
+        Map<String, AbstractTask> availableTasks = new HashMap<>();
+        availableTasks.put(ConnectionTask.TASK_ID, mockConnectionTask);
+        availableTasks.put(ServerSyncTask.TASK_ID, mockServerSyncTask);
+        availableTasks.put(DiscoveryTask.TASK_ID, mockDiscoveryTask);
+
+        Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
+
+        // Test: INITIALIZING → no tasks
+        taskManager.processStateChange(ServerState.INITIALIZING, availableTasks, scheduledTasks, mockScheduler);
+        assertTrue(scheduledTasks.isEmpty(), "INITIALIZING should have no tasks");
+
+        // Test: CONFIGURED → ConnectionTask only
+        taskManager.processStateChange(ServerState.CONFIGURED, availableTasks, scheduledTasks, mockScheduler);
+        assertTrue(scheduledTasks.containsKey(ConnectionTask.TASK_ID), "CONFIGURED should start ConnectionTask");
+        assertFalse(scheduledTasks.containsKey(ServerSyncTask.TASK_ID), "CONFIGURED should not start ServerSyncTask");
+
+        // Test: CONNECTED → ServerSync + Discovery (ConnectionTask stopped)
+        scheduledTasks.put(ConnectionTask.TASK_ID, mockScheduledFuture);
+        when(mockScheduledFuture.isCancelled()).thenReturn(false);
+        when(mockScheduledFuture.isDone()).thenReturn(false);
+
+        taskManager.processStateChange(ServerState.CONNECTED, availableTasks, scheduledTasks, mockScheduler);
+
+        assertFalse(scheduledTasks.containsKey(ConnectionTask.TASK_ID), "CONNECTED should stop ConnectionTask");
+        assertTrue(scheduledTasks.containsKey(ServerSyncTask.TASK_ID), "CONNECTED should start ServerSyncTask");
+        assertTrue(scheduledTasks.containsKey(DiscoveryTask.TASK_ID), "CONNECTED should start DiscoveryTask");
+
+        // Test: ERROR → all tasks stopped
+        taskManager.processStateChange(ServerState.ERROR, availableTasks, scheduledTasks, mockScheduler);
+        assertTrue(scheduledTasks.isEmpty(), "ERROR should stop all tasks");
+
+        // Test: DISPOSED → all tasks stopped
+        scheduledTasks.put(ServerSyncTask.TASK_ID, mockScheduledFuture);
+        taskManager.processStateChange(ServerState.DISPOSED, availableTasks, scheduledTasks, mockScheduler);
+        assertTrue(scheduledTasks.isEmpty(), "DISPOSED should stop all tasks");
+    }
+
+    /**
+     * Test that tasks are properly stopped before new tasks start during state transitions.
+     * This ensures clean transitions without resource leaks.
+     */
+    @Test
+    void testCleanTaskTransitions() {
+        // Arrange
+        ScheduledFuture<?> connectionFuture = mock(ScheduledFuture.class);
+        when(connectionFuture.isCancelled()).thenReturn(false);
+        when(connectionFuture.isDone()).thenReturn(false);
+
+        Map<String, AbstractTask> availableTasks = new HashMap<>();
+        availableTasks.put(ConnectionTask.TASK_ID, mockConnectionTask);
+        availableTasks.put(ServerSyncTask.TASK_ID, mockServerSyncTask);
+
+        Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
+        scheduledTasks.put(ConnectionTask.TASK_ID, connectionFuture);
+
+        // Act: Transition from CONFIGURED (ConnectionTask) to CONNECTED (ServerSyncTask)
+        taskManager.processStateChange(ServerState.CONNECTED, availableTasks, scheduledTasks, mockScheduler);
+
+        // Assert: Old task cancelled before new task started
+        verify(connectionFuture).cancel(true);
+        assertFalse(scheduledTasks.containsKey(ConnectionTask.TASK_ID), "Old task should be removed");
+        assertTrue(scheduledTasks.containsKey(ServerSyncTask.TASK_ID), "New task should be added");
+    }
 }
