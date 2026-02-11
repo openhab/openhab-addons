@@ -1,5 +1,6 @@
 package org.openhab.binding.restify.internal.config;
 
+import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.restify.internal.config.GlobalConfig.EMPTY;
 
 import java.util.List;
@@ -68,7 +69,7 @@ public class ConfigParser {
             Authorization authorization = map.containsKey("authorization")
                     ? parseAuthorization(map.get("authorization"))
                     : null;
-            var schema = parseSchema(map.get("response"));
+            var schema = parseFromMap((Map<?, ?>) map.get("response"));
             return new Response(path, method, authorization, schema);
         } catch (Exception e) {
             throw new IllegalArgumentException(
@@ -134,14 +135,14 @@ public class ConfigParser {
     private record UuidExpression(String uuid, String expression) {
     }
 
-    private Schema parseFromMap(Map<?, ?> map) {
-        var schemaMap = map.entrySet().stream()
-                .map(entry -> Map.entry((String) entry.getKey(), parseSchema(entry.getValue())))
+    private Schema.JsonSchema parseFromMap(Map<?, ?> map) {
+        var schemaMap = map.entrySet().stream().filter(entry -> entry.getKey() instanceof String)
+                .map(entry -> Map.entry((String) requireNonNull(entry.getKey()), parseSchema(entry.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new Schema.JsonSchema(schemaMap);
     }
 
-    private Schema parseFromList(List<?> list) {
+    private Schema.ArraySchema parseFromList(List<?> list) {
         return new Schema.ArraySchema(list.stream().map(this::parseSchema).toList());
     }
 }
