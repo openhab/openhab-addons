@@ -40,6 +40,12 @@ public interface ShellyApiInterface {
 
     void initialize() throws ShellyApiException;
 
+    /**
+     * Free any resources allocated by the API interface. The instance will be in a non-operable state after this is
+     * called, and must be reinitialized by invoking {@link #initialize()} to be made operable again.
+     */
+    void dispose();
+
     void setConfig(String thingName, ShellyThingConfiguration config);
 
     ShellySettingsDevice getDeviceInfo() throws ShellyApiException;

@@ -41,6 +41,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyComponents;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +67,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param thingTable Table of known things (build at runtime)
      * @param thing Thing Handler (ThingHandlerInterface)
      */
-    public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
-        super(thingName, thingTable, thing);
+    public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
+            WebSocketFactory webSocketFactory) {
+        super(thingName, thingTable, thing, webSocketFactory);
 
         ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
