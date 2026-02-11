@@ -65,7 +65,11 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
     private final ShellyTranslationProvider messages;
     private final Shelly1CoapServer coapServer;
     private final ShellyThingTable thingTable;
+<<<<<<< HEAD
     private final WebSocketClient webSocketClient;
+=======
+    private final WebSocketFactory webSocketFactory;
+>>>>>>> b84eaf53c9 (Rudimentary refactoring to let WebSocketClient share lifecycle with the ThingHandler)
     private ShellyBindingConfiguration bindingConfig = new ShellyBindingConfiguration();
 
     /**
@@ -82,6 +86,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             ComponentContext componentContext, Map<String, Object> configProperties) {
         super.activate(componentContext);
         this.messages = translationProvider;
+        this.webSocketFactory = webSocketFactory;
         this.thingTable = thingTable;
         WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2api");
         this.webSocketClient = client;
@@ -137,22 +142,38 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
+<<<<<<< HEAD
                     webSocketClient);
+=======
+                    webSocketFactory);
+>>>>>>> b84eaf53c9 (Rudimentary refactoring to let WebSocketClient share lifecycle with the ThingHandler)
         } else if (GROUP_LIGHT_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyLightHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyLightHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
+<<<<<<< HEAD
                     webSocketClient);
+=======
+                    webSocketFactory);
+>>>>>>> b84eaf53c9 (Rudimentary refactoring to let WebSocketClient share lifecycle with the ThingHandler)
         } else if (GROUP_BLU_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyBluSensorHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyBluHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
+<<<<<<< HEAD
                     webSocketClient);
+=======
+                    webSocketFactory);
+>>>>>>> b84eaf53c9 (Rudimentary refactoring to let WebSocketClient share lifecycle with the ThingHandler)
         } else if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             logger.debug("{}: Create new thing of type {} using ShellyRelayHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyRelayHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient,
+<<<<<<< HEAD
                     webSocketClient);
+=======
+                    webSocketFactory);
+>>>>>>> b84eaf53c9 (Rudimentary refactoring to let WebSocketClient share lifecycle with the ThingHandler)
         }
 
         if (handler != null) {
