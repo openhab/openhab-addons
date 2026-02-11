@@ -102,9 +102,7 @@ public class RokuHandler extends BaseThingHandler {
 
         final @Nullable String host = config.hostName;
 
-        if (host != null && !EMPTY.equals(host)) {
-            this.communicator = new RokuCommunicator(httpClient, host, config.port);
-        } else {
+        if (host == null || EMPTY.equals(host)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
             return;
         }
