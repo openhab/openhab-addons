@@ -63,6 +63,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A converter for translating {@link DoorLockCluster} events and attributes to
@@ -189,15 +190,32 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
             channels.put(doorStateChannel, null);
         }
 
+        if (initializingCluster.featureMap.unbolting) {
+            Channel boltStateChannel = ChannelBuilder
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_DOORLOCK_BOLTSTATE), CoreItemFactory.SWITCH)
+                    .withType(CHANNEL_DOORLOCK_BOLTSTATE).build();
+            channels.put(boltStateChannel, null);
+        }
+
         return channels;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType onOffType) {
+            String channelId = channelUID.getIdWithoutGroup();
             OctetString pinCode = getPinCodeForRemoteOperation();
-            ClusterCommand doorLockCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(pinCode)
-                    : DoorLockCluster.unlockDoor(pinCode);
+            ClusterCommand doorLockCommand;
+
+            if (channelId.equals(CHANNEL_ID_DOORLOCK_BOLTSTATE)) {
+                // Bolt state: lock (bolt) or unbolt
+                doorLockCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(pinCode)
+                        : DoorLockCluster.unboltDoor(pinCode);
+            } else {
+                // Lock state: lock or unlock (which unlatches)
+                doorLockCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(pinCode)
+                        : DoorLockCluster.unlockDoor(pinCode);
+            }
             handler.sendClusterCommand(endpointNumber, DoorLockCluster.CLUSTER_NAME, doorLockCommand);
         }
         super.handleCommand(channelUID, command);
@@ -208,8 +226,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
         switch (message.path.attributeName) {
             case DoorLockCluster.ATTRIBUTE_LOCK_STATE:
                 if (message.value instanceof DoorLockCluster.LockStateEnum lockState) {
-                    updateState(CHANNEL_ID_DOORLOCK_STATE,
-                            lockState == DoorLockCluster.LockStateEnum.LOCKED ? OnOffType.ON : OnOffType.OFF);
+                    updateLockState(lockState);
                 }
                 break;
             case DoorLockCluster.ATTRIBUTE_DOOR_STATE:
@@ -277,8 +294,7 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
 
     @Override
     public void initState() {
-        updateState(CHANNEL_ID_DOORLOCK_STATE,
-                initializingCluster.lockState == DoorLockCluster.LockStateEnum.LOCKED ? OnOffType.ON : OnOffType.OFF);
+        updateLockState(initializingCluster.lockState);
 
         if (initializingCluster.featureMap.doorPositionSensor) {
             updateState(CHANNEL_ID_DOORLOCK_DOORSTATE,
@@ -963,5 +979,43 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
 
     private String buildPinCodeDescription(String descriptionKey) {
         return handler.getTranslation(descriptionKey, minPinCodeLength, maxPinCodeLength);
+    }
+
+    /**
+     * Updates the lock state and bolt state channels based on the lock state enum.
+     * 
+     * @param lockState The lock state from the door lock cluster
+     */
+    private void updateLockState(DoorLockCluster.LockStateEnum lockState) {
+        switch (lockState) {
+            case LOCKED:
+                // Both the lock and bolt state are locked
+                updateState(CHANNEL_ID_DOORLOCK_STATE, OnOffType.ON);
+                if (initializingCluster.featureMap.unbolting) {
+                    updateState(CHANNEL_ID_DOORLOCK_BOLTSTATE, OnOffType.ON);
+                }
+                break;
+            case UNLOCKED:
+                // Both the lock and bolt state are unlocked
+                updateState(CHANNEL_ID_DOORLOCK_STATE, OnOffType.OFF);
+                if (initializingCluster.featureMap.unbolting) {
+                    updateState(CHANNEL_ID_DOORLOCK_BOLTSTATE, OnOffType.OFF);
+                }
+                break;
+            case UNLATCHED:
+                // The lock state is locked (latched), but the bolt state is unlocked
+                updateState(CHANNEL_ID_DOORLOCK_STATE, OnOffType.ON);
+                if (initializingCluster.featureMap.unbolting) {
+                    updateState(CHANNEL_ID_DOORLOCK_BOLTSTATE, OnOffType.OFF);
+                }
+                break;
+            case NOT_FULLY_LOCKED:
+                // We don't know the state of the lock or bolt, something is wrong
+                updateState(CHANNEL_ID_DOORLOCK_STATE, UnDefType.UNDEF);
+                if (initializingCluster.featureMap.unbolting) {
+                    updateState(CHANNEL_ID_DOORLOCK_BOLTSTATE, UnDefType.UNDEF);
+                }
+                break;
+        }
     }
 }
