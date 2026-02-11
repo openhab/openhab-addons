@@ -168,12 +168,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             @Override
             public WebSocketClient createWebSocketClient(String consumerName,
                     @Nullable SslContextFactory sslContextFactory) {
-                return getCommonWebSocketClient();
+                return new WebSocketClient();
             }
 
             @Override
             public WebSocketClient createWebSocketClient(String consumerName) {
-                return getCommonWebSocketClient();
+                return new WebSocketClient();
             }
         };
     }
