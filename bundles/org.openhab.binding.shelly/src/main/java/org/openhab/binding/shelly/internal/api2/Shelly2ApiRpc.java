@@ -33,7 +33,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
@@ -91,6 +93,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -112,6 +115,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private volatile boolean discovery = false;
     private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
+    private final WebSocketFactory webSocketFactory;
+
+    // All access must be guarded by "this"
+    private @Nullable WebSocketClient client;
 
     // Plus devices support up to 3 scripts, Pro devices up to 10
     // We need to find a free script id when uploading our script
@@ -124,9 +131,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * @param thingName Symbolic thing name
      * @param thing Thing Handler (ThingHandlerInterface)
      */
-    public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
+    public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
+            WebSocketFactory webSocketFactory) {
         super(thingName, thing);
         this.thingTable = thingTable;
+        this.webSocketFactory = webSocketFactory;
     }
 
     /**
@@ -142,10 +151,57 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         this.thingName = thingName;
         this.thingTable = thingTable;
         this.discovery = true;
+        this.webSocketFactory = new WebSocketFactory() {
+            // TODO: This is a temporary "mock" awaiting refactoring where this class isn't used during discovery
+
+            private @Nullable WebSocketClient mockClient;
+
+            @Override
+            public synchronized WebSocketClient getCommonWebSocketClient() {
+                WebSocketClient client = mockClient;
+                if (client == null) {
+                    mockClient = client = new WebSocketClient();
+                }
+                return client;
+            }
+
+            @Override
+            public WebSocketClient createWebSocketClient(String consumerName,
+                    @Nullable SslContextFactory sslContextFactory) {
+                return getCommonWebSocketClient();
+            }
+
+            @Override
+            public WebSocketClient createWebSocketClient(String consumerName) {
+                return getCommonWebSocketClient();
+            }
+        };
     }
 
     @Override
     public void initialize() throws ShellyApiException {
+        WebSocketClient client;
+        synchronized (this) {
+            client = this.client;
+            if (client != null && client.isRunning()) {
+                try {
+                    client.stop();
+                } catch (Exception e) {
+                    logger.warn("{}: Failed to stop previous WebSocket client: {}", thingName, e.getMessage());
+                    logger.trace("", e);
+                }
+            }
+            this.client = client = webSocketFactory.createWebSocketClient("shelly2api");
+            client.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
+            client.setStopTimeout(1000);
+            try {
+                client.start();
+            } catch (Exception e) {
+                this.client = null;
+                throw new ShellyApiException("Failed to start WebSocket client: " + e.getMessage(), e);
+            }
+        }
+
         if (initialized) {
             logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
             disconnect();
@@ -154,7 +210,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (rpcSocket != null) {
             rpcSocket.disconnect();
         }
-        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp);
+        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client);
         rpcSocket.addMessageHandler(this);
         this.rpcSocket = rpcSocket;
         initialized = true;
@@ -163,6 +219,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public boolean isInitialized() {
         return initialized;
+    }
+
+    @Override
+    public void dispose() {
+        close();
+        synchronized (this) {
+            WebSocketClient client = this.client;
+            if (client != null && client.isRunning()) {
+                try {
+                    client.stop();
+                } catch (Exception e) {
+                    logger.warn("{}: Failed to stop WebSocket client: {}", thingName, e.getMessage());
+                    logger.trace("", e);
+                }
+            }
+            this.client = null;
+        }
     }
 
     @Override

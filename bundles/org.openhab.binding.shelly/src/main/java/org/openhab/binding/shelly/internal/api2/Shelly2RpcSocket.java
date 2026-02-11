@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.addBluThing;
@@ -74,8 +73,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     // All access must be guarded by "this"
     private @Nullable Shelly2RpctInterface websocketHandler;
 
-    // All access must be guarded by "this"
-    private @Nullable WebSocketClient client;
+    private final WebSocketClient client;
 
     /**
      * Regular constructor for Thing and Discover handler
@@ -84,10 +82,12 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param thingTable
      * @param deviceIp IP address for the device
      */
-    public Shelly2RpcSocket(String thingName, ShellyThingTable thingTable, String deviceIp) {
+    public Shelly2RpcSocket(String thingName, ShellyThingTable thingTable, String deviceIp,
+            WebSocketClient webSocketClient) {
         this.thingName = thingName;
         this.deviceIp = deviceIp;
         this.thingTable = thingTable;
+        this.client = webSocketClient;
         inbound = false;
     }
 
@@ -97,9 +97,10 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param thingTable
      * @param inbound
      */
-    public Shelly2RpcSocket(ShellyThingTable thingTable, boolean inbound) {
+    public Shelly2RpcSocket(ShellyThingTable thingTable, boolean inbound, WebSocketClient webSocketClient) {
         this.thingTable = thingTable;
         this.inbound = inbound;
+        this.client = webSocketClient;
     }
 
     /**
@@ -136,10 +137,6 @@ public class Shelly2RpcSocket implements WriteCallback {
         request.setHeader("Pragma", "no-cache");
         request.setHeader("Cache-Control", "no-cache");
 
-        WebSocketClient newClient = new WebSocketClient();
-        newClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
-        newClient.setStopTimeout(1000);
-
         if (logger.isTraceEnabled()) {
             logger.trace("{}: Connect WebSocket, URI={}", thingName, uri);
         }
@@ -148,24 +145,11 @@ public class Shelly2RpcSocket implements WriteCallback {
         synchronized (this) {
             disconnect(); // for safety
 
-            try {
-                newClient.start();
-            } catch (Exception e) {
-                throw new ShellyApiException("Failed to start WebSocket: " + e.getMessage(), e);
-            }
-
             // Connect async
             try {
-                newClient.connect(this, uri, request);
-                this.client = newClient;
+                client.connect(this, uri, request);
             } catch (RuntimeException | IOException e) {
                 // Keep this if your Jetty version still declares IOException on start()/connect path
-                try {
-                    newClient.stop();
-                } catch (Exception e1) {
-                    logger.warn("Failed to stop WebSocket client after failing to connect: {}", e1.getMessage());
-                    logger.trace("", e1);
-                }
                 throw new ShellyApiException("Failed to connect WebSocket: " + e.getMessage(), e);
             }
         }
@@ -294,11 +278,9 @@ public class Shelly2RpcSocket implements WriteCallback {
      */
     public void disconnect() {
         Session session;
-        WebSocketClient client;
         synchronized (this) {
             session = this.session;
-            client = this.client;
-            cleanup();// set session+client=null, clear send queue
+            cleanup();// set session=null, clear send queue
         }
         if (session != null && session.isOpen()) {
             if (logger.isTraceEnabled()) {
@@ -306,24 +288,6 @@ public class Shelly2RpcSocket implements WriteCallback {
                         session.getRemoteAddress());
             }
             session.close(StatusCode.NORMAL, "Socket closed");
-        }
-        // make sure client is stopped / thread terminates / socket resource gets freed up
-        if (client != null && client.isRunning()) {
-            try {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{}: Stopping WebSocket client", thingName);
-                }
-                client.stop();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                if (logger.isDebugEnabled()) {
-                    logger.warn("{}: Interrupted while stopping WebSocket client", thingName, e);
-                }
-            } catch (Exception e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: Unable to stop WebSocket client", thingName, e);
-                }
-            }
         }
     }
 
@@ -470,14 +434,13 @@ public class Shelly2RpcSocket implements WriteCallback {
     }
 
     /**
-     * Clears session/client and drops queued messages.
-     * Must only be called when session and client has been closed one way or another.
+     * Clears session and drops queued messages.
+     * Must only be called when session has been/is being closed one way or another.
      */
     private synchronized void cleanup() {
         int qLength;
         synchronized (this) {
             this.session = null;
-            this.client = null;
 
             qLength = sendQueue.size();
             sendQueue.clear();

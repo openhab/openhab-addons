@@ -58,6 +58,7 @@ import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -97,6 +98,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     protected final ShellyApiInterface api;
     private final HttpClient httpClient;
+    private final WebSocketFactory webSocketFactory;
     private final ShellyThingTable thingTable;
 
     private ShellyBindingConfiguration bindingConfig;
@@ -141,7 +143,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketFactory webSocketFactory) {
         super(thing);
 
         this.thingTable = thingTable;
@@ -152,15 +154,16 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         this.bindingConfig = bindingConfig;
         this.config = getConfigAs(ShellyThingConfiguration.class);
         this.httpClient = httpClient;
+        this.webSocketFactory = webSocketFactory;
 
         // Create thing handler depending on device generation
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
         gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
         if (blu) {
-            this.api = new ShellyBluApi(thingName, thingTable, this);
+            this.api = new ShellyBluApi(thingName, thingTable, this, webSocketFactory);
         } else if (gen2) {
-            this.api = new Shelly2ApiRpc(thingName, thingTable, this);
+            this.api = new Shelly2ApiRpc(thingName, thingTable, this, webSocketFactory);
         } else {
             this.api = new Shelly1HttpApi(thingName, this);
         }
