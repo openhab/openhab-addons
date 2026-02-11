@@ -55,14 +55,10 @@ public class Engine implements Serializable {
         this.thingRegistry = thingRegistry;
     }
 
-    public Response evaluate(Schema schema) throws ParameterException {
-        return new Response(schema.name(), evaluateJson(schema));
-    }
-
-    private Json evaluateJson(Schema schema) throws ParameterException {
-        return switch (schema) {
-            case ItemSchema itemSchema -> evaluateItemSchema(itemSchema);
-            case JsonSchema jsonSchema -> evaluateJsonSchema(jsonSchema);
+    public Json evaluate(Schema Schema) throws ParameterException {
+        return switch (Schema) {
+            case Schema.ItemSchema itemSchema -> evaluateItemSchema(itemSchema);
+            case Schema.JsonSchema jsonSchema -> evaluateJsonSchema(jsonSchema);
             case StringSchema stringSchema -> evaluateStringSchema(stringSchema);
             case ThingSchema thingSchema -> evaluateThingSchema(thingSchema);
         };
@@ -237,7 +233,7 @@ public class Engine implements Serializable {
         }
         var map = new HashMap<String, Json>();
         for (var pair : schema.values().entrySet()) {
-            var entry = entry(pair.getKey(), evaluateJson(pair.getValue()));
+            var entry = entry(pair.getKey(), evaluate(pair.getValue()));
             if (map.put(entry.getKey(), entry.getValue()) != null) {
                 throw new IllegalStateException("Duplicate key");
             }

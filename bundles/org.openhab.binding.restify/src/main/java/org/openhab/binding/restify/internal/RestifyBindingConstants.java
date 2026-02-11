@@ -13,7 +13,6 @@
 package org.openhab.binding.restify.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link RestifyBindingConstants} class defines common constants, which are

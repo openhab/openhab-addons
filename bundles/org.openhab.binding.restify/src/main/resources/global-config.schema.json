@@ -1,0 +1,24 @@
+{
+  "$schema": "https://www.openhab.org/addons/RESTify/global-config.schema.json",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "authentication": {
+      "type": "object",
+      "properties": {
+        "userNamePasswords": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["version"],
+  "additionalProperties": false
+}

@@ -6,6 +6,9 @@ import java.util.Hashtable;
 
 import javax.servlet.ServletException;
 
+import org.jspecify.annotations.NonNull;
+import org.openhab.binding.restify.internal.config.ConfigLoader;
+import org.openhab.binding.restify.internal.config.ConfigParser;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.component.annotations.Activate;
@@ -23,11 +26,20 @@ public class RestifyEndpoint {
     public RestifyEndpoint(@Reference HttpService httpService, @Reference ItemRegistry itemRegistry,
             @Reference ThingRegistry thingRegistry) throws ServletException, NamespaceException {
         this.httpService = httpService;
-        var engine = new Engine(itemRegistry, thingRegistry);
-        var foo = new RequestProcessor(engine);
 
-        httpService.registerServlet(BINDING_ID, new DispatcherServlet(foo), new Hashtable<>(),
+        var processor = buildProcessor(itemRegistry, thingRegistry);
+
+        httpService.registerServlet(BINDING_ID, new DispatcherServlet(processor), new Hashtable<>(),
                 httpService.createDefaultHttpContext());
+    }
+
+    private static @NonNull RequestProcessor buildProcessor(ItemRegistry itemRegistry, ThingRegistry thingRegistry) {
+        var engine = new Engine(itemRegistry, thingRegistry);
+        var configLoader = new ConfigLoader();
+        var configParser = new ConfigParser();
+        var configContent = configLoader.load();
+        var config = configParser.parse(configContent);
+        return new RequestProcessor(config, engine);
     }
 
     @Deactivate
