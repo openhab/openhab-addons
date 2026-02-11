@@ -2,33 +2,30 @@ package org.openhab.binding.restify.internal;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.restify.internal.config.Config;
 
 public class RequestProcessor implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     // todo proper loading
-    private final Map<String, Schema> getSchema = Map.of("/hello", new Schema.StringSchema("foo", null, "boo"));
+    private final Config config;
     private final Engine engine;
 
-    public RequestProcessor(Engine engine) {
+    public RequestProcessor(Config config, Engine engine) {
+        this.config = config;
         this.engine = engine;
     }
 
-    public Response process(Method method, String path, @Nullable String authorization)
+    public Json process(Method method, String path, @Nullable String authorization)
             throws AuthorizationException, NotFoundException, ParameterException {
-        // todo support other methods
-        var schema = getSchema.get(path);
-        if (schema == null) {
-            throw new NotFoundException(path);
+        var response = config.findResponse(path, method).orElseThrow(() -> new NotFoundException(path, method));
+        if (response.authorization() != null) {
+            authorize(response.authorization(), authorization);
         }
-        if (schema.authorization() != null) {
-            authorize(schema.authorization(), authorization);
-        }
-        return engine.evaluate(schema);
+        return engine.evaluate(response.schema());
     }
 
     private void authorize(Authorization required, @Nullable String provided) throws AuthorizationException {

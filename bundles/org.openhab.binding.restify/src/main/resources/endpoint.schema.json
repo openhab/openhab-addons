@@ -1,0 +1,53 @@
+{
+  "$schema": "https://www.openhab.org/addons/RESTify/endpoint.schema.json",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "pattern": "^/.*"
+    },
+    "method": {
+      "type": "string",
+      "enum": ["GET", "POST", "PUT", "DELETE"]
+    },
+    "authorization": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "username-password"
+            },
+            "username": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          },
+          "required": ["type", "username", "password"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "bearer"
+            },
+            "token": {
+              "type": "string"
+            }
+          },
+          "required": ["type", "token"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "response": {
+      "type": "object"
+    }
+  },
+  "required": ["path", "method", "response"],
+  "additionalProperties": false
+}
