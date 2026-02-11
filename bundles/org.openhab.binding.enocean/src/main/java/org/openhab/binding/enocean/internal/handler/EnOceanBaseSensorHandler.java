@@ -33,6 +33,7 @@ import org.openhab.binding.enocean.internal.eep.EEPType;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.binding.enocean.internal.messages.ERP1Message.RORG;
+import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.binding.enocean.internal.transceiver.PacketListener;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
@@ -65,6 +66,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
     protected final Hashtable<RORG, EEPType> receivingEEPTypes = new Hashtable<>();
 
     protected @Nullable ScheduledFuture<?> responseFuture = null;
+
+    public @Nullable STMStateMachine<?, ?> stm = null;
 
     public EnOceanBaseSensorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing, itemChannelLinkRegistry);
@@ -181,7 +184,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                         switch (channel.getKind()) {
                             case STATE:
                                 State result = eep.convertToState(channelId, channelTypeId, channelConfig,
-                                        this::getCurrentState);
+                                        this::getCurrentState, stm);
 
                                 // if message can be interpreted (result != UnDefType.UNDEF) => update item state
                                 if (result != UnDefType.UNDEF) {
@@ -190,7 +193,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
                                 break;
                             case TRIGGER:
                                 String lastEvent = lastEvents.get(channelId);
-                                String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig);
+                                String event = eep.convertToEvent(channelId, channelTypeId, lastEvent, channelConfig,
+                                        stm);
                                 if (event != null) {
                                     triggerChannel(channel.getUID(), event);
                                     lastEvents.put(channelId, event);
