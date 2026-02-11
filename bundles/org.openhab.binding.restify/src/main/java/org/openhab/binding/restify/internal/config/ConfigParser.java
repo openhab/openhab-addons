@@ -3,9 +3,10 @@ package org.openhab.binding.restify.internal.config;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.restify.internal.config.GlobalConfig.EMPTY;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.Authorization;
@@ -13,100 +14,109 @@ import org.openhab.binding.restify.internal.RequestProcessor.Method;
 import org.openhab.binding.restify.internal.Response;
 import org.openhab.binding.restify.internal.Schema;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ConfigParser {
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public Config parse(ConfigContent config) {
-        return new Config(config.globalConfig().map(this::parseGlobalConfig).orElse(EMPTY),
-                config.responses().stream().map(this::parseResponse).toList());
+    public Config parse(ConfigContent config) throws ConfigException {
+        var globalConfig = config.globalConfig().isPresent() ? parseGlobalConfig(config.globalConfig().orElseThrow())
+                : EMPTY;
+        var responses = new ArrayList<Response>(config.responses().size());
+        for (var response : config.responses()) {
+            responses.add(parseResponse(response));
+        }
+        return new Config(globalConfig, List.copyOf(responses));
     }
 
-    private GlobalConfig parseGlobalConfig(String content) {
+    private GlobalConfig parseGlobalConfig(String content) throws ConfigException {
         try {
-            var map = mapper.readValue(content, new TypeReference<Map<String, Object>>() {
-            });
-            var version = (String) map.get("version");
-            var usernamePasswords = parseUsernamePasswords(map.get("authentication"));
+            var root = mapper.readTree(content);
+            var version = getText(root, "version");
+            var usernamePasswords = parseUsernamePasswords(root.get("authentication"));
             return new GlobalConfig(version, usernamePasswords);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Cannot parse %s from JSON! Schema should be validated earlier and this should not happen! json=%s"
-                            .formatted(GlobalConfig.class.getSimpleName(), content),
-                    e);
+        } catch (JsonProcessingException e) {
+            throw new ConfigException("Cannot read tree from: " + content, e);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, String> parseUsernamePasswords(@Nullable Object authentication) {
-        try {
-            if (authentication == null) {
-                return Map.of();
-            }
-            var map = (Map<String, Object>) authentication;
-            var usernamePasswords = map.get("usernamePasswords");
-            if (usernamePasswords == null) {
-                return Map.of();
-            }
-            return ((Map<String, String>) usernamePasswords);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Cannot parse username/password from JSON! Schema should be validated earlier and this should not happen! json=%s"
-                            .formatted(authentication),
-                    e);
+    private Map<String, String> parseUsernamePasswords(@Nullable JsonNode authentication) throws ConfigException {
+        if (authentication == null || authentication.isNull()) {
+            return Map.of();
         }
+        if (!authentication.isObject()) {
+            throw new ConfigException("Authentication should be a JSON object!");
+        }
+        var usernamePasswords = authentication.get("usernamePasswords");
+        if (usernamePasswords == null || usernamePasswords.isNull()) {
+            return Map.of();
+        }
+        if (!(usernamePasswords instanceof ObjectNode usernamePasswordsObject)) {
+            throw new ConfigException("usernamePasswords should be a JSON object!");
+        }
+        var result = new HashMap<String, String>();
+        for (var entry : usernamePasswordsObject.properties()) {
+            result.put(entry.getKey(), entry.getValue().asText());
+        }
+        return Map.copyOf(result);
     }
 
-    private Response parseResponse(String json) {
+    private Response parseResponse(String json) throws ConfigException {
         try {
-            var map = mapper.readValue(json, new TypeReference<Map<String, Object>>() {
-            });
-            var path = (String) map.get("path");
-            var method = Method.valueOf((String) map.get("method"));
+            var root = mapper.readTree(json);
+            var path = getText(root, "path");
+            var method = Method.valueOf(getText(root, "method"));
+            var authorizationNode = root.get("authorization");
             @Nullable
-            Authorization authorization = map.containsKey("authorization")
-                    ? parseAuthorization(map.get("authorization"))
+            Authorization authorization = authorizationNode != null && !authorizationNode.isNull()
+                    ? parseAuthorization(authorizationNode)
                     : null;
-            var schema = parseFromMap((Map<?, ?>) map.get("response"));
+            var responseNode = root.get("response");
+            if (responseNode == null || responseNode.isNull() || !responseNode.isObject()) {
+                throw new ConfigException("Response should be a JSON object!");
+            }
+            var schema = parseFromObject((ObjectNode) responseNode);
             return new Response(path, method, authorization, schema);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Cannot parse %s from JSON! Schema should be validated earlier and this should not happen! json=%s"
-                            .formatted(Response.class.getSimpleName(), json),
-                    e);
+        } catch (JsonProcessingException e) {
+            throw new ConfigException("Cannot read tree from: " + json, e);
         }
     }
 
-    private Authorization parseAuthorization(Object authorization) {
-        try {
-            @SuppressWarnings("unchecked")
-            var map = (Map<String, Object>) authorization;
-            var type = (String) map.get("type");
-            return switch (type) {
-                case "Basic" -> new Authorization.Basic((String) map.get("username"), (String) map.get("password"));
-                case "Bearer" -> new Authorization.Bearer((String) map.get("token"));
-                default -> throw new IllegalArgumentException("Unknown authorization type: " + type);
-            };
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Cannot parse %s from JSON! Schema should be validated earlier and this should not happen! json=%s"
-                            .formatted(Authorization.class.getSimpleName(), authorization),
-                    e);
-        }
-    }
+    private Authorization parseAuthorization(JsonNode authorization) throws ConfigException {
 
-    private Schema parseSchema(Object response) {
-        return switch (response) {
-            case Map<?, ?> map -> parseFromMap(map);
-            case List<?> list -> parseFromList(list);
-            case String s -> parseFromString(s);
-            default -> throw new IllegalArgumentException("Unsupported schema type: " + response.getClass());
+        if (!authorization.isObject()) {
+            throw new ConfigException("Authorization should be a JSON object!");
+        }
+        var type = getText(authorization, "type");
+        return switch (type) {
+            case "Basic" ->
+                new Authorization.Basic(getText(authorization, "username"), getText(authorization, "password"));
+            case "Bearer" -> new Authorization.Bearer(getText(authorization, "token"));
+            default -> throw new ConfigException("Unknown authorization type: " + type);
         };
     }
 
-    private Schema parseFromString(String string) {
+    private Schema parseSchema(JsonNode response) throws ConfigException {
+        if (response == null || response.isNull()) {
+            throw new ConfigException("Response schema cannot be null!");
+        }
+        if (response.isObject()) {
+            return parseFromObject((ObjectNode) response);
+        }
+        if (response.isArray()) {
+            return parseFromArray((ArrayNode) response);
+        }
+        if (response.isTextual()) {
+            return parseFromString(response.asText());
+        }
+        throw new ConfigException("Unsupported schema type: " + response.getNodeType());
+    }
+
+    private Schema parseFromString(String string) throws ConfigException {
         if (!string.startsWith("$")) {
             return new Schema.StringSchema(string);
         }
@@ -118,14 +128,14 @@ public class ConfigParser {
             var uuidExpression = findUuidExpression(string, "$item.");
             return new Schema.ThingSchema(uuidExpression.uuid, uuidExpression.expression);
         }
-        throw new IllegalArgumentException("Unsupported schema type: " + string);
+        throw new ConfigException("Unsupported schema type: " + string);
     }
 
-    private UuidExpression findUuidExpression(String string, String prefix) {
+    private UuidExpression findUuidExpression(String string, String prefix) throws ConfigException {
         var withoutPrefix = string.substring(prefix.length());
         var dotIndex = withoutPrefix.indexOf(".");
         if (dotIndex == -1) {
-            throw new IllegalArgumentException("Invalid schema expression: " + string);
+            throw new ConfigException("Invalid schema expression: " + string);
         }
         var uuid = withoutPrefix.substring(0, dotIndex);
         var expression = withoutPrefix.substring(dotIndex + 1);
@@ -135,14 +145,27 @@ public class ConfigParser {
     private record UuidExpression(String uuid, String expression) {
     }
 
-    private Schema.JsonSchema parseFromMap(Map<?, ?> map) {
-        var schemaMap = map.entrySet().stream().filter(entry -> entry.getKey() instanceof String)
-                .map(entry -> Map.entry((String) requireNonNull(entry.getKey()), parseSchema(entry.getValue())))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return new Schema.JsonSchema(schemaMap);
+    private Schema.JsonSchema parseFromObject(ObjectNode objectNode) throws ConfigException {
+        var schemaMap = new HashMap<String, Schema>();
+        for (var entry : objectNode.properties()) {
+            schemaMap.put(requireNonNull(entry.getKey()), parseSchema(entry.getValue()));
+        }
+        return new Schema.JsonSchema(Map.copyOf(schemaMap));
     }
 
-    private Schema.ArraySchema parseFromList(List<?> list) {
-        return new Schema.ArraySchema(list.stream().map(this::parseSchema).toList());
+    private Schema.ArraySchema parseFromArray(ArrayNode arrayNode) throws ConfigException {
+        var schemas = new ArrayList<Schema>(arrayNode.size());
+        for (var node : arrayNode) {
+            schemas.add(parseSchema(node));
+        }
+        return new Schema.ArraySchema(List.copyOf(schemas));
+    }
+
+    private String getText(JsonNode node, String fieldName) throws ConfigException {
+        var value = node.get(fieldName);
+        if (value == null || value.isNull()) {
+            throw new ConfigException("Missing required field: " + fieldName);
+        }
+        return value.asText();
     }
 }
