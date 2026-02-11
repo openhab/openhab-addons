@@ -7,6 +7,9 @@ import java.util.Hashtable;
 import javax.servlet.ServletException;
 
 import org.jspecify.annotations.NonNull;
+import org.openhab.binding.restify.internal.config.Config;
+import org.openhab.binding.restify.internal.config.ConfigContent;
+import org.openhab.binding.restify.internal.config.ConfigException;
 import org.openhab.binding.restify.internal.config.ConfigLoader;
 import org.openhab.binding.restify.internal.config.ConfigParser;
 import org.openhab.binding.restify.internal.config.JsonSchemaValidator;
@@ -40,8 +43,16 @@ public class RestifyEndpoint {
         var configLoader = new ConfigLoader(validator);
         var configParser = new ConfigParser();
         var configContent = configLoader.load();
-        var config = configParser.parse(configContent);
+        var config = parseConfig(configParser, configContent);
         return new RequestProcessor(config, engine);
+    }
+
+    private static Config parseConfig(ConfigParser configParser, ConfigContent configContent) {
+        try {
+            return configParser.parse(configContent);
+        } catch (ConfigException e) {
+            throw new IllegalStateException("Cannot parse RESTify config", e);
+        }
     }
 
     @Deactivate
