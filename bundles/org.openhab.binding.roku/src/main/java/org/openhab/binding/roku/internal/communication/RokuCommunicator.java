@@ -13,8 +13,6 @@
 package org.openhab.binding.roku.internal.communication;
 
 import java.io.StringReader;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -67,12 +65,6 @@ public class RokuCommunicator {
 
     public RokuCommunicator(HttpClient httpClient, String host, int port) {
         this.httpClient = httpClient;
-
-        try {
-            host = InetAddress.getByName(host).getHostAddress();
-        } catch (UnknownHostException e) {
-            logger.debug("Unable to resolve host, using current value", e);
-        }
 
         final String baseUrl = "http://" + host + ":" + port;
         urlKeyPress = baseUrl + "/keypress/";
