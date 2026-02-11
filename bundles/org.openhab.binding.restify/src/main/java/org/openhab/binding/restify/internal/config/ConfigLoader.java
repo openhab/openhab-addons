@@ -2,29 +2,40 @@ package org.openhab.binding.restify.internal.config;
 
 import static java.lang.String.format;
 import static java.nio.file.Files.*;
+import static java.util.Comparator.comparing;
+import static java.util.Optional.empty;
+import static java.util.stream.Stream.concat;
 import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jspecify.annotations.NonNull;
 import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.networknt.schema.ValidationMessage;
+
 public class ConfigLoader {
     private static final String GENERAL_CONFIG_FILE_NAME = "general.json";
     private final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
     private final Path configPath;
+    private final JsonSchemaValidator validator;
 
-    public ConfigLoader() {
-        this(Path.of(OpenHAB.getConfigFolder()).resolve(BINDING_ID));
+    public ConfigLoader(JsonSchemaValidator validator) {
+        this(Path.of(OpenHAB.getConfigFolder()).resolve(BINDING_ID), validator);
     }
 
-    ConfigLoader(Path configPath) {
+    ConfigLoader(Path configPath, JsonSchemaValidator validator) {
+        this.validator = validator;
         logger.debug("Using config path: {}", configPath.toAbsolutePath());
         this.configPath = configPath;
         if (!exists(configPath)) {
@@ -36,7 +47,19 @@ public class ConfigLoader {
     }
 
     public ConfigContent load() {
-        return list().parallelStream().filter(path -> {
+        record PathAndContent(Path path, String content) {
+        }
+        record PathConfig(Optional<PathAndContent> globalConfig, List<PathAndContent> responses) {
+            PathConfig merge(PathConfig other) {
+                if (globalConfig.isPresent() && other.globalConfig.isPresent()) {
+                    throw new IllegalStateException("Cannot merge with global config");
+                }
+                var mergedGlobalConfig = globalConfig.or(() -> other.globalConfig);
+                var mergedResponses = concat(responses.stream(), other.responses.stream()).toList();
+                return new PathConfig(mergedGlobalConfig, mergedResponses);
+            }
+        }
+        var configContent = list().parallel().filter(path -> {
             var isJson = path.toString().endsWith(".json");
             if (!isJson) {
                 logger.debug("Skipping non-json file: {}", path.getFileName());
@@ -47,17 +70,43 @@ public class ConfigLoader {
 
             if (path.getFileName().toString().equals(GENERAL_CONFIG_FILE_NAME)) {
                 logger.debug("Loading general config from file: {}", path.getFileName());
-                return ConfigContent.ofGeneralConfig(content);
+                return new PathConfig(Optional.of(new PathAndContent(path, content)), List.of());
             }
             logger.debug("Loading endpoint config from file: {}", path.getFileName());
-            return ConfigContent.ofEndpoint(content);
-        }).reduce(ConfigContent::merge)
+            return new PathConfig(empty(), List.of(new PathAndContent(path, content)));
+        }).reduce(PathConfig::merge)
                 .orElseThrow(() -> new IllegalStateException("No config file found in " + configPath.toAbsolutePath()));
+        if (configContent.responses().isEmpty()) {
+            logger.warn("No responses found in {}", configPath.toAbsolutePath());
+        }
+        record ValidationResult(Path path, Collection<ValidationMessage> validationMessages) {
+        }
+
+        var globalConfigValidationErrors = configContent.globalConfig()
+                .map(pac -> new ValidationResult(pac.path, validator.validateGlobalConfig(pac.content))).stream();
+
+        var endpointConfigValidationErrors = configContent.responses.stream()
+                .map(pac -> new ValidationResult(pac.path, validator.validateEndpointConfig(pac.content)));
+
+        var errors = concat(globalConfigValidationErrors, endpointConfigValidationErrors)
+                .filter(result -> !result.validationMessages.isEmpty()).toList();
+
+        if (!errors.isEmpty()) {
+            var msg = errors.stream().sorted(comparing(a -> a.path))
+                    .map(er -> "\t%s: %s".formatted(er.path.getFileName(), er.validationMessages))
+                    .collect(Collectors.joining("\n"));
+            var errorMessage = "Found (%d) errors:\n%s".formatted(errors.size(), msg);
+            logger.error(errorMessage);
+            throw new IllegalStateException(errorMessage);
+        }
+
+        return new ConfigContent(configContent.globalConfig.map(PathAndContent::content),
+                configContent.responses.stream().map(PathAndContent::content).toList());
     }
 
-    private @NonNull List<Path> list() {
+    private @NonNull Stream<Path> list() {
         try {
-            return Files.list(configPath).toList();
+            return walk(configPath).filter(Files::isRegularFile);
         } catch (IOException e) {
             throw new UncheckedIOException("Cannot list config dir: " + configPath.toAbsolutePath(), e);
         }

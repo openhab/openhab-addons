@@ -20,7 +20,7 @@ public class ConfigParser {
 
     public Config parse(ConfigContent config) {
         return new Config(config.globalConfig().map(this::parseGlobalConfig).orElse(EMPTY),
-                config.endpoints().stream().map(this::parseResponse).toList());
+                config.responses().stream().map(this::parseResponse).toList());
     }
 
     private GlobalConfig parseGlobalConfig(String content) {

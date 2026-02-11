@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.config.ConfigLoader;
 import org.openhab.binding.restify.internal.config.ConfigParser;
+import org.openhab.binding.restify.internal.config.JsonSchemaValidator;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.component.annotations.Activate;
@@ -35,7 +36,8 @@ public class RestifyEndpoint {
 
     private static @NonNull RequestProcessor buildProcessor(ItemRegistry itemRegistry, ThingRegistry thingRegistry) {
         var engine = new Engine(itemRegistry, thingRegistry);
-        var configLoader = new ConfigLoader();
+        var validator = new JsonSchemaValidator();
+        var configLoader = new ConfigLoader(validator);
         var configParser = new ConfigParser();
         var configContent = configLoader.load();
         var config = configParser.parse(configContent);
