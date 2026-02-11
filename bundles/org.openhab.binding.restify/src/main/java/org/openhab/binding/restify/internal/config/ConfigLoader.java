@@ -59,7 +59,7 @@ public class ConfigLoader {
                 return new PathConfig(mergedGlobalConfig, mergedResponses);
             }
         }
-        var configContent = list().parallel().filter(path -> {
+        var configContent = list().filter(path -> {
             var isJson = path.toString().endsWith(".json");
             if (!isJson) {
                 logger.debug("Skipping non-json file: {}", path.getFileName());
