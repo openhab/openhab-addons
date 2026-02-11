@@ -12,39 +12,40 @@ Some accessory types require a specific set of characteristics.
 
 HomeKit integration supports following accessory types:
 
-- Switchable
-- Outlet
-- Lighting (simple, dimmable, color)
-- Fan
-- Thermostat
-- Heater / Cooler
-- Lock
-- Security System
-- Garage Door Opener
-- Motorized Door
-- Motorized Window
-- Window Covering/Blinds
-- Slat
-- Valve
-- Faucet / Shower
-- Speaker
-- SmartSpeaker
-- Microphone
+- Air Purifier
 - Air Quality Sensor
-- Contact Sensor
-- Leak Sensor
-- Motion Sensor
-- Occupancy Sensor
-- Smoke Sensor
-- Temperature Sensor
-- Humidity Sensor
-- Light Sensor
+- Battery
 - Carbon Dioxide Sensor
 - Carbon Monoxide Sensor
-- Battery
+- Contact Sensor
+- Fan
+- Faucet / Shower
 - Filter Maintenance
-- Television
+- Garage Door Opener
+- Heater / Cooler
+- Humidity Sensor
 - Irrigation System
+- Leak Sensor
+- Light Sensor
+- Lighting (simple, dimmable, color)
+- Lock
+- Microphone
+- Motion Sensor
+- Motorized Door
+- Motorized Window
+- Occupancy Sensor
+- Outlet
+- Security System
+- Slat
+- SmartSpeaker
+- Smoke Sensor
+- Speaker
+- Switchable
+- Temperature Sensor
+- Television
+- Thermostat
+- Valve
+- Window Covering/Blinds
 
 ## Quick start
 
@@ -652,6 +653,20 @@ Number valve2SetDuration (gValve2) { homekit="Duration" }
 Number valve2RemainingDuration (gValve2) { homekit="RemainingDuration" }
 ```
 
+### Air Purifier
+
+You can attach a filter maintenance service to an air purifier. The filter service will be linked under the air purifier in HomeKit:
+
+```java
+Group  gPurifier                "Living Room Purifier"              { homekit="AirPurifier"}
+Switch purifierActive           "Purifier Active"       (gPurifier) { homekit="Active" }
+String purifierCurrentState     "Purifier State"        (gPurifier) { homekit="CurrentAirPurifierState" }
+String purifierTargetState      "Purifier Mode"         (gPurifier) { homekit="TargetAirPurifierState" }
+Group gFilter                                           (gPurifier) { homekit="Filter" }
+Switch purifierFilterChange     "Filter Change Needed"  (gFilter)   { homekit="FilterChangeIndication" }
+```
+
+
 ### Sensors
 
 Sensors typically have one mandatory characteristic, e.g., temperature or leak trigger, and several optional characteristics which are typically used for battery-powered sensors and/or wireless sensors.
@@ -767,6 +782,13 @@ All accessories also support the following optional characteristic that can be l
 
 | Accessory Tag               | Mandatory Characteristics   | Optional Characteristics    | Supported openHAB item types                   | Description                                                                                                                                                                                                                                                                                                                                                   | Configuration Options                                                 | Valid Enum Values                                                                                           |
 |-----------------------------|-----------------------------|-----------------------------|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
+| AirPurifier                 |                             |                             |                                                | Air purifier                                                                                                                                                                                                                                                                                                                                                  |                                                                       |                                                                                                             |
+|                             | Active                      |                             | Contact, Dimmer, Number, String, Switch        | Accessory current working status                                                                                                                                                                                                                                                                                                                              | inverted (false)                                                      | INACTIVE (0, OFF), ACTIVE (1, ON)                                                                           |
+|                             | CurrentAirPurifierState     |                             | Number, String                                 | Current air purifier state                                                                                                                                                                                                                                                                                                                                    |                                                                       | INACTIVE (0), IDLE (1), PURIFYING_AIR (2)                                                                   |
+|                             | TargetAirPurifierState      |                             | Number, Switch, String                         | Target air purifier state                                                                                                                                                                                                                                                                                                                                     | inverted (false)                                                      | MANUAL (0, OFF), AUTO (1, ON)                                                                               |
+|                             |                             | LockControl                 | Number, Switch, String                         | Status of physical control lock                                                                                                                                                                                                                                                                                                                               | inverted (false)                                                      | CONTROL_LOCK_DISABLED (0, OFF), CONTROL_LOCK_ENABLED (1, ON)                                                |
+|                             |                             | RotationSpeed               | Dimmer, Number                                 | Fan rotation speed in % (1-100)                                                                                                                                                                                                                                                                                                                               |                                                                       |                                                                                                             |
+|                             |                             | SwingMode                   | Number, Switch, String                         | Swing mode                                                                                                                                                                                                                                                                                                                                                    | inverted (false)                                                      | SWING_DISABLED (0, OFF), SWING_ENABLED (1, ON)                                                              |
 | AirQualitySensor            |                             |                             |                                                | Air Quality Sensor which can measure different parameters                                                                                                                                                                                                                                                                                                     |                                                                       |                                                                                                             |
 |                             | AirQuality                  |                             | Number, String, Switch                         | Air quality state                                                                                                                                                                                                                                                                                                                                             |                                                                       | UNKNOWN (0, OFF), EXCELLENT (1, ON), GOOD (2), FAIR (3), INFERIOR (4), POOR (5)                             |
 |                             |                             | ActiveStatus                | Contact, Switch                                | Working status                                                                                                                                                                                                                                                                                                                                                |                                                                       |                                                                                                             |

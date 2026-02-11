@@ -69,6 +69,8 @@ public class HomekitAccessoryFactory {
         {
             put(ACCESSORY_GROUP, new HomekitCharacteristicType[] {});
 
+            put(AIR_PURIFIER,
+                    new HomekitCharacteristicType[] { ACTIVE, CURRENT_AIR_PURIFIER_STATE, TARGET_AIR_PURIFIER_STATE });
             put(AIR_QUALITY_SENSOR, new HomekitCharacteristicType[] { AIR_QUALITY });
             put(BASIC_FAN, new HomekitCharacteristicType[] { ON_STATE });
             put(BATTERY, new HomekitCharacteristicType[] { BATTERY_LEVEL, BATTERY_LOW_STATUS });
@@ -117,6 +119,7 @@ public class HomekitAccessoryFactory {
         {
             put(ACCESSORY_GROUP, HomekitAccessoryGroupImpl.class);
 
+            put(AIR_PURIFIER, HomekitAirPurifierImpl.class);
             put(AIR_QUALITY_SENSOR, HomekitAirQualitySensorImpl.class);
             put(BASIC_FAN, HomekitBasicFanImpl.class);
             put(BATTERY, HomekitBatteryImpl.class);
