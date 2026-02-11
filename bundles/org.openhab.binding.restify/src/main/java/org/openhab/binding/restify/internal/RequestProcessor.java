@@ -10,7 +10,6 @@ public class RequestProcessor implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    // todo proper loading
     private final Config config;
     private final Engine engine;
 
