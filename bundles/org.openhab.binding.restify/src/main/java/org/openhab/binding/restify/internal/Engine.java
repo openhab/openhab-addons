@@ -57,10 +57,11 @@ public class Engine implements Serializable {
 
     public Json evaluate(Schema Schema) throws ParameterException {
         return switch (Schema) {
-            case Schema.ItemSchema itemSchema -> evaluateItemSchema(itemSchema);
-            case Schema.JsonSchema jsonSchema -> evaluateJsonSchema(jsonSchema);
+            case ItemSchema itemSchema -> evaluateItemSchema(itemSchema);
+            case JsonSchema jsonSchema -> evaluateJsonSchema(jsonSchema);
             case StringSchema stringSchema -> evaluateStringSchema(stringSchema);
             case ThingSchema thingSchema -> evaluateThingSchema(thingSchema);
+            case Schema.ArraySchema arraySchema -> evaluateArraySchema(arraySchema);
         };
     }
 
@@ -372,5 +373,14 @@ public class Engine implements Serializable {
         var map = properties.entrySet().stream().map(entry -> entry(entry.getKey(), new StringValue(entry.getValue())))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new JsonObject(map);
+    }
+
+    private JsonArray evaluateArraySchema(Schema.ArraySchema arraySchema) throws ParameterException {
+        var values = new ArrayList<Json>();
+        for (Schema schema : arraySchema.values()) {
+            Json evaluate = evaluate(schema);
+            values.add(evaluate);
+        }
+        return new JsonArray(values);
     }
 }
