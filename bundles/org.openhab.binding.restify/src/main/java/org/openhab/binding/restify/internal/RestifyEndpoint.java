@@ -30,7 +30,7 @@ public class RestifyEndpoint {
 
         var processor = buildProcessor(itemRegistry, thingRegistry);
 
-        httpService.registerServlet(BINDING_ID, new DispatcherServlet(processor), new Hashtable<>(),
+        httpService.registerServlet(BINDING_ID, new DispatcherServlet(processor, new JsonEncoder()), new Hashtable<>(),
                 httpService.createDefaultHttpContext());
     }
 
