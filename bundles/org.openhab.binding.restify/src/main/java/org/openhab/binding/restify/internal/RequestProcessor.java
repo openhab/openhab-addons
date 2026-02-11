@@ -40,7 +40,11 @@ public class RequestProcessor implements Serializable {
     }
 
     private void authorize(Authorization.Basic basic, String provided) throws AuthorizationException {
-        var expected = "Basic " + basic.username() + ":" + basic.password();
+        var password = config.globalConfig().usernamePasswords().get(basic.username());
+        if (password == null) {
+            throw new AuthorizationException("There is no password configured for user: " + basic.username());
+        }
+        var expected = "Basic " + basic.username() + ":" + password;
         if (!provided.equals(expected)) {
             throw new AuthorizationException("Invalid username or password");
         }

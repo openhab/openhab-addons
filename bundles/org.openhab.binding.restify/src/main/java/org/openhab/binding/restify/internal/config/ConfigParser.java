@@ -93,8 +93,7 @@ public class ConfigParser {
         }
         var type = getText(authorization, "type");
         return switch (type) {
-            case "Basic" ->
-                new Authorization.Basic(getText(authorization, "username"), getText(authorization, "password"));
+            case "Basic" -> new Authorization.Basic(getText(authorization, "username"));
             case "Bearer" -> new Authorization.Bearer(getText(authorization, "token"));
             default -> throw new ConfigException("Unknown authorization type: " + type);
         };
