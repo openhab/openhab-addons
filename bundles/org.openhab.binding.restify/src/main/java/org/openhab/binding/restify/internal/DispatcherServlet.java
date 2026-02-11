@@ -6,7 +6,6 @@ import static org.openhab.binding.restify.internal.RequestProcessor.Method.*;
 import java.io.IOException;
 import java.io.Serial;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,17 +17,22 @@ import org.slf4j.LoggerFactory;
 public class DispatcherServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class.getName());
     private final RequestProcessor requestProcessor;
+    private final JsonEncoder jsonEncoder;
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public DispatcherServlet(RequestProcessor requestProcessor) {
+    public DispatcherServlet(RequestProcessor requestProcessor, JsonEncoder jsonEncoder) {
         this.requestProcessor = requestProcessor;
+        this.jsonEncoder = jsonEncoder;
     }
 
     private void process(Method method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             var json = requestProcessor.process(method, req.getContextPath(), req.getHeader("Authorization"));
-            // todo send it back properly
+            resp.setStatus(SC_OK);
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().write(jsonEncoder.encode(json));
         } catch (UserRequestException e) {
             respondWithError(resp, e.getStatusCode(), e);
         } catch (IllegalArgumentException | IllegalStateException ex) {
@@ -36,6 +40,7 @@ public class DispatcherServlet extends HttpServlet {
         } catch (Exception ex) {
             respondWithError(resp, SC_INTERNAL_SERVER_ERROR, ex);
         }
+        resp.getWriter().close();
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
@@ -46,22 +51,22 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         process(GET, req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         process(POST, req, resp);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         process(PUT, req, resp);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         process(DELETE, req, resp);
     }
 }
