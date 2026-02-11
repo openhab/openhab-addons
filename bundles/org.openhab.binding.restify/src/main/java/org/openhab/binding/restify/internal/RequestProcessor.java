@@ -19,7 +19,7 @@ public class RequestProcessor implements Serializable {
         this.engine = engine;
     }
 
-    public Json process(Method method, String path, @Nullable String authorization)
+    public Json.JsonObject process(Method method, String path, @Nullable String authorization)
             throws AuthorizationException, NotFoundException, ParameterException {
         var response = config.findResponse(path, method).orElseThrow(() -> new NotFoundException(path, method));
         if (response.authorization() != null) {

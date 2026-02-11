@@ -55,17 +55,17 @@ public class Engine implements Serializable {
         this.thingRegistry = thingRegistry;
     }
 
-    public Json evaluate(Schema Schema) throws ParameterException {
+    private Json evaluate(Schema Schema) throws ParameterException {
         return switch (Schema) {
-            case ItemSchema itemSchema -> evaluateItemSchema(itemSchema);
-            case JsonSchema jsonSchema -> evaluateJsonSchema(jsonSchema);
-            case StringSchema stringSchema -> evaluateStringSchema(stringSchema);
-            case ThingSchema thingSchema -> evaluateThingSchema(thingSchema);
-            case Schema.ArraySchema arraySchema -> evaluateArraySchema(arraySchema);
+            case ItemSchema itemSchema -> evaluate(itemSchema);
+            case JsonSchema jsonSchema -> evaluate(jsonSchema);
+            case StringSchema stringSchema -> evaluate(stringSchema);
+            case ThingSchema thingSchema -> evaluate(thingSchema);
+            case Schema.ArraySchema arraySchema -> evaluate(arraySchema);
         };
     }
 
-    private Json evaluateItemSchema(ItemSchema itemSchema) throws ParameterException {
+    private Json evaluate(ItemSchema itemSchema) throws ParameterException {
         var itemName = itemSchema.itemName();
         try {
             var item = itemRegistry.getItem(itemName);
@@ -227,11 +227,7 @@ public class Engine implements Serializable {
         };
     }
 
-    private Json evaluateJsonSchema(JsonSchema schema) throws ParameterException {
-        Json json;
-        if (schema.values().isEmpty()) {
-            return NULL_VALUE;
-        }
+    public JsonObject evaluate(JsonSchema schema) throws ParameterException {
         var map = new HashMap<String, Json>();
         for (var pair : schema.values().entrySet()) {
             var entry = entry(pair.getKey(), evaluate(pair.getValue()));
@@ -242,11 +238,11 @@ public class Engine implements Serializable {
         return new JsonObject(map);
     }
 
-    private Json evaluateStringSchema(StringSchema schema) {
+    private Json evaluate(StringSchema schema) {
         return new StringValue(schema.value());
     }
 
-    private Json evaluateThingSchema(ThingSchema schema) throws ParameterException {
+    private Json evaluate(ThingSchema schema) throws ParameterException {
         try {
             ThingUID uid = new ThingUID(schema.thingUid());
             var thing = thingRegistry.get(uid);
@@ -375,7 +371,7 @@ public class Engine implements Serializable {
         return new JsonObject(map);
     }
 
-    private JsonArray evaluateArraySchema(Schema.ArraySchema arraySchema) throws ParameterException {
+    private JsonArray evaluate(Schema.ArraySchema arraySchema) throws ParameterException {
         var values = new ArrayList<Json>();
         for (Schema schema : arraySchema.values()) {
             Json evaluate = evaluate(schema);

@@ -27,7 +27,8 @@ public class DispatcherServlet extends HttpServlet {
 
     private void process(Method method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            requestProcessor.process(method, req.getContextPath(), req.getHeader("Authorization"));
+            var json = requestProcessor.process(method, req.getContextPath(), req.getHeader("Authorization"));
+            // todo send it back properly
         } catch (UserRequestException e) {
             respondWithError(resp, e.getStatusCode(), e);
         } catch (IllegalArgumentException | IllegalStateException ex) {

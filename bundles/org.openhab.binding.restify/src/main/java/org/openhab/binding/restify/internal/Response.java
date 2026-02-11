@@ -3,7 +3,7 @@ package org.openhab.binding.restify.internal;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.RequestProcessor.Method;
 
-public record Response(String path, Method method, @Nullable Authorization authorization, Schema schema) {
+public record Response(String path, Method method, @Nullable Authorization authorization, Schema.JsonSchema schema) {
     @Override
     public final boolean equals(Object o) {
         if (!(o instanceof Response response))
