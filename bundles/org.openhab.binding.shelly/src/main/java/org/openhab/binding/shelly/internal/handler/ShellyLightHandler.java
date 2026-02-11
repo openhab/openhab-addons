@@ -22,6 +22,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
@@ -33,7 +34,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
-import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -61,8 +61,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketFactory webSocketFactory) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketFactory);
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
         channelColors = new TreeMap<>();
     }
 

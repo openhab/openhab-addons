@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
@@ -126,11 +127,24 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String deviceName = "";
         String thingType = "";
         Map<String, Object> properties = new TreeMap<>();
+        WebSocketClient webSocketClient = null;
 
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
-            api = gen2 ? new Shelly2ApiRpc(name, thingTable, config, httpClient)
-                    : new Shelly1HttpApi(name, config, httpClient);
+            if (gen2) {
+                // TODO: Temporary code to be refactored away
+                webSocketClient = new WebSocketClient();
+                webSocketClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
+                webSocketClient.setStopTimeout(1000);
+                try {
+                    webSocketClient.start();
+                } catch (Exception e1) {
+                    logger.warn("Discovery: Unable to start websocket client: {}", e1.getMessage(), e1);
+                }
+                api = new Shelly2ApiRpc(name, thingTable, config, httpClient, webSocketClient);
+            } else {
+                api = new Shelly1HttpApi(name, config, httpClient);
+            }
             api.initialize();
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
@@ -161,6 +175,14 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         } finally {
             if (api != null) {
                 api.close();
+            }
+            if (webSocketClient != null) {
+                // TODO: Temporary code to be refactored away
+                try {
+                    webSocketClient.stop();
+                } catch (Exception e) {
+                    logger.warn("Discovery: Unable to stop websocket client: {}", e.getMessage(), e);
+                }
             }
         }
 
