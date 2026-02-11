@@ -79,7 +79,10 @@ public class RokuHandler extends BaseThingHandler {
     private ThingTypeUID thingTypeUID = THING_TYPE_ROKU_PLAYER;
     private RokuCommunicator communicator;
     private DeviceInfo deviceInfo = new DeviceInfo();
+    private String resolvedHost = EMPTY;
+    private int port = -1;
     private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
+    private boolean deviceInfoLoaded = false;
     private boolean tvActive = false;
     private int limitedMode = -1;
     private Map<String, String> appMap = new HashMap<>();
@@ -101,8 +104,9 @@ public class RokuHandler extends BaseThingHandler {
         this.thingTypeUID = this.getThing().getThingTypeUID();
 
         final @Nullable String host = config.hostName;
+        port = config.port;
 
-        if (host == null || EMPTY.equals(host)) {
+        if (host == null || host.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
             return;
         }
@@ -113,37 +117,37 @@ public class RokuHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        startAutomaticRefresh();
+        startAppListRefresh();
+
         scheduler.execute(() -> {
-            try {
-                String resolvedHost = host;
-
-                if (!NetUtil.isValidIPConfig(host)) {
-                    resolvedHost = InetAddress.getByName(host).getHostAddress();
-                }
-
-                this.communicator = new RokuCommunicator(httpClient, resolvedHost, config.port);
-
-                deviceInfo = communicator.getDeviceInfo();
-                thing.setProperty(PROPERTY_MODEL_NAME, deviceInfo.getModelName());
-                thing.setProperty(PROPERTY_MODEL_NUMBER, deviceInfo.getModelNumber());
-                thing.setProperty(PROPERTY_DEVICE_LOCAITON, deviceInfo.getUserDeviceLocation());
-                thing.setProperty(PROPERTY_SERIAL_NUMBER, deviceInfo.getSerialNumber());
-                thing.setProperty(PROPERTY_DEVICE_ID, deviceInfo.getDeviceId());
-                thing.setProperty(PROPERTY_SOFTWARE_VERSION, deviceInfo.getSoftwareVersion());
-                thing.setProperty(PROPERTY_UUID, deviceInfo.getSerialNumber().toLowerCase());
-
-                updateStatus(ThingStatus.ONLINE);
-
-                startAutomaticRefresh();
-                startAppListRefresh();
-            } catch (UnknownHostException e) {
-                logger.debug("Unable to resolve host", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot resolve hostname");
-            } catch (RokuHttpException e) {
-                logger.debug("Unable to retrieve Roku device-info. Exception: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot connect to device");
+            // Initialize resolvedHost from config and lookup the IP address if it is not one already
+            resolvedHost = host;
+            if (NetUtil.isValidIPConfig(resolvedHost)) {
+                communicator = new RokuCommunicator(httpClient, resolvedHost, port);
+            } else {
+                resolveHostName();
             }
         });
+    }
+
+    /**
+     * If resolvedHost is not an IP address, look it up and use it to create a new RokuCommunicator
+     *
+     * @return A boolean indicating if the IP address has been resolved
+     */
+    private boolean resolveHostName() {
+        if (!NetUtil.isValidIPConfig(resolvedHost)) {
+            try {
+                resolvedHost = InetAddress.getByName(resolvedHost).getHostAddress();
+                communicator = new RokuCommunicator(httpClient, resolvedHost, port);
+            } catch (UnknownHostException e) {
+                logger.debug("Unable to resolve hostname", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot resolve hostname");
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -152,7 +156,7 @@ public class RokuHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
-            this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshPlayerState, 0, refreshInterval,
+            this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshPlayerState, 2, refreshInterval,
                     TimeUnit.SECONDS);
         }
     }
@@ -161,15 +165,31 @@ public class RokuHandler extends BaseThingHandler {
      * Get a status update from the Roku and update the channels
      */
     private void refreshPlayerState() {
+        // Try to resolve the hostname each time in case the previous attempts failed, do not continue if not resolved
+        if (!resolveHostName()) {
+            return;
+        }
+
         synchronized (sequenceLock) {
             String activeAppId = ROKU_HOME_ID;
             try {
-                if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                if (thingTypeUID.equals(THING_TYPE_ROKU_TV) || !deviceInfoLoaded) {
                     try {
                         deviceInfo = communicator.getDeviceInfo();
                         String powerMode = deviceInfo.getPowerMode();
                         updateState(POWER_STATE, new StringType(powerMode));
                         updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
+
+                        if (!deviceInfoLoaded) {
+                            thing.setProperty(PROPERTY_MODEL_NAME, deviceInfo.getModelName());
+                            thing.setProperty(PROPERTY_MODEL_NUMBER, deviceInfo.getModelNumber());
+                            thing.setProperty(PROPERTY_DEVICE_LOCAITON, deviceInfo.getUserDeviceLocation());
+                            thing.setProperty(PROPERTY_SERIAL_NUMBER, deviceInfo.getSerialNumber());
+                            thing.setProperty(PROPERTY_DEVICE_ID, deviceInfo.getDeviceId());
+                            thing.setProperty(PROPERTY_SOFTWARE_VERSION, deviceInfo.getSoftwareVersion());
+                            thing.setProperty(PROPERTY_UUID, deviceInfo.getSerialNumber().toLowerCase());
+                            deviceInfoLoaded = true;
+                        }
                     } catch (RokuHttpException e) {
                         logger.debug("Unable to retrieve Roku device-info.", e);
                     }
@@ -200,6 +220,7 @@ public class RokuHandler extends BaseThingHandler {
                 }
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
+                deviceInfoLoaded = false;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
@@ -380,7 +401,15 @@ public class RokuHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             logger.debug("Unsupported refresh command: {}", command);
-        } else if (channelUID.getId().equals(BUTTON)) {
+            return;
+        }
+
+        // Try to resolve the hostname each time in case the previous attempts failed, do not continue if not resolved
+        if (!resolveHostName()) {
+            return;
+        }
+
+        if (channelUID.getId().equals(BUTTON)) {
             synchronized (sequenceLock) {
                 try {
                     communicator.keyPress(command.toString());
