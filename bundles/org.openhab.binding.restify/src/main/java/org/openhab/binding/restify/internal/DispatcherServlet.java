@@ -41,6 +41,7 @@ public class DispatcherServlet extends HttpServlet {
     @Activate
     public DispatcherServlet(@Reference HttpService httpService, @Reference ItemRegistry itemRegistry,
             @Reference ThingRegistry thingRegistry) throws ConfigException, IOException {
+        logger.info("Starting DispatcherServlet");
         scheduledPool = ThreadPoolManager.getScheduledPool(BINDING_ID);
         configWatcher = new ConfigWatcher(scheduledPool);
         requestProcessor = new RequestProcessor(configWatcher, new Engine(itemRegistry, thingRegistry));
@@ -48,8 +49,10 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void process(Method method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        var uri = req.getRequestURI();
+        logger.debug("Processing {}:{}", method, uri);
         try {
-            var json = requestProcessor.process(method, req.getContextPath(), req.getHeader("Authorization"));
+            var json = requestProcessor.process(method, uri, req.getHeader("Authorization"));
             resp.setStatus(SC_OK);
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
