@@ -16,6 +16,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
@@ -29,9 +30,8 @@ import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ddwrt")
 /**
- * The {@link ddwrtConfiguration} class is the discovery service for detecting things in DD-WRT network.
+ * The {@link DDWRTDiscoveryService} is the discovery service for detecting things in DD-WRT network.
  *
  * @author Lee Ballard - Initial contribution
  */
@@ -41,7 +41,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 120;
 
-    private final Logger logger = LoggerFactory.getLogger(DDWRTDiscoveryService.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTDiscoveryService.class));
 
     public DDWRTDiscoveryService() {
         super(DDWRTNetworkBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
@@ -87,23 +87,22 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
         net.getDevices().forEach(device -> {
             final DDWRTDeviceConfiguration devCfg = device.getConfig();
+            final String label = device.getHostname().isEmpty() ? device.getMac() : device.getHostname();
+            final String macClean = device.getMac().toLowerCase().replace(":", "");
 
-            // final String macClean = device.getMac().toLowerCase().replace(":", "");
-            final ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, device.getName());
+            final ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID,
+                    macClean.isEmpty() ? devCfg.hostname : macClean);
 
-            logger.debug("discovered device: \'{}\'", thingUID);
+            logger.debug("Discovered device: '{}'", thingUID);
 
             final Map<String, Object> props = Map.of("hostname", devCfg.hostname, "port", devCfg.port, "user",
                     devCfg.user, "password", devCfg.password, "refreshInterval", devCfg.refreshInterval, "mac",
-                    device.getMac(), "name", device.getName(), "model", device.getModel(), "firmware",
-                    device.getFirmware());
+                    device.getMac(), "model", device.getModel(), "firmware", device.getFirmware());
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(device.getName()).withProperties(props).withRepresentationProperty("mac").build();
+                    .withLabel(label).withProperties(props).withRepresentationProperty("mac").build();
 
             thingDiscovered(result);
         });
-
-        return;
     }
 }

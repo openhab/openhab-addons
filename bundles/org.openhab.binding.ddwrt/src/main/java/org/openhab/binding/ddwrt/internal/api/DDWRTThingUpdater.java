@@ -17,7 +17,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
 
 /**
- * :TODO: add description
+ * Callback interface for DD-WRT device implementations to update thing states.
+ * 
+ * This interface is implemented by thing handlers to receive state updates
+ * from device implementations. It provides methods to update channel states
+ * and report communication status changes.
  *
  * @author Lee Ballard - Initial contribution
  */
