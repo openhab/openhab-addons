@@ -13,10 +13,11 @@
 package org.openhab.binding.dirigera.internal.handler.sensor;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DateTimeType;
@@ -84,8 +86,8 @@ public class MotionSensorHandler extends BaseHandler {
                     }
                 }
                 if (seconds > 0) {
-                    String updateData = String
-                            .format(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_DURATION_UPDATE), seconds);
+                    String updateData = String.format(ResourceReader.getResource(Model.TEMPLATE_SENSOR_DURATION_UPDATE),
+                            seconds);
                     sendPatch(new JSONObject(updateData));
                 }
                 break;
@@ -94,14 +96,14 @@ public class MotionSensorHandler extends BaseHandler {
                     switch (decimal.intValue()) {
                         case 0:
                             gateway().api().sendPatch(config.id,
-                                    new JSONObject(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_ALWQAYS_ON)));
+                                    new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_ALWQAYS_ON)));
                             break;
                         case 1:
                             gateway().api().sendPatch(config.id,
-                                    new JSONObject(gateway().model().getTemplate(Model.TEMPLATE_SENSOR_FOLLOW_SUN)));
+                                    new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_FOLLOW_SUN)));
                             break;
                         case 2:
-                            String template = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
+                            String template = ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                             gateway().api().sendPatch(config.id,
                                     new JSONObject(String.format(template, startTime, endTime)));
                             break;
@@ -109,22 +111,22 @@ public class MotionSensorHandler extends BaseHandler {
                 }
                 break;
             case CHANNEL_SCHEDULE_START:
-                String startSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
+                String startSchedule = ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
                     // take string as it is, no consistency check
                     startTime = string.toFullString();
                 } else if (command instanceof DateTimeType dateTime) {
-                    startTime = dateTime.format(timeFormat, ZoneId.systemDefault());
+                    startTime = dateTime.format(timeFormat, gateway().getTimeZoneProvider().getTimeZone());
                 }
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(startSchedule, startTime, endTime)));
                 break;
             case CHANNEL_SCHEDULE_END:
-                String endSchedule = gateway().model().getTemplate(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
+                String endSchedule = ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON);
                 if (command instanceof StringType string) {
                     endTime = string.toFullString();
                     // take string as it is, no consistency check
                 } else if (command instanceof DateTimeType dateTime) {
-                    endTime = dateTime.format(timeFormat, ZoneId.systemDefault());
+                    endTime = dateTime.format(timeFormat, gateway().getTimeZoneProvider().getTimeZone());
                 }
                 gateway().api().sendPatch(config.id, new JSONObject(String.format(endSchedule, startTime, endTime)));
                 break;
@@ -137,20 +139,19 @@ public class MotionSensorHandler extends BaseHandler {
                             // fine - array stays empty
                             break;
                         case "Warm":
-                            presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_WARM));
+                            presetValues = new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_WARM));
                             break;
                         case "Slowdown":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
                             break;
                         case "Smooth":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
                             break;
                         case "Bright":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
                             break;
                         default:
                             presetValues = new JSONArray(string.toFullString());
@@ -165,8 +166,8 @@ public class MotionSensorHandler extends BaseHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
@@ -252,10 +253,13 @@ public class MotionSensorHandler extends BaseHandler {
                                                         int offMinute = Integer.parseInt(offHourMinute[1]);
                                                         updateState(new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE),
                                                                 new DecimalType(2));
-                                                        ZonedDateTime on = ZonedDateTime.now().withHour(onHour)
-                                                                .withMinute(onMinute);
-                                                        ZonedDateTime off = ZonedDateTime.now().withHour(offHour)
-                                                                .withMinute(offMinute);
+                                                        ZonedDateTime on = Instant.now().truncatedTo(ChronoUnit.MINUTES)
+                                                                .atZone(gateway().getTimeZoneProvider().getTimeZone())
+                                                                .withHour(onHour).withMinute(onMinute);
+                                                        ZonedDateTime off = Instant.now()
+                                                                .truncatedTo(ChronoUnit.MINUTES)
+                                                                .atZone(gateway().getTimeZoneProvider().getTimeZone())
+                                                                .withHour(offHour).withMinute(offMinute);
                                                         updateState(
                                                                 new ChannelUID(thing.getUID(), CHANNEL_SCHEDULE_START),
                                                                 new DateTimeType(on));

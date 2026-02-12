@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.network;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
@@ -32,6 +33,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
@@ -139,7 +141,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public int sendAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
-        data.put(Model.ATTRIBUTES, attributes);
+        data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
         return sendPatch(id, data);
     }
 
@@ -224,7 +226,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public String createScene(String uuid, String clickPattern, String controllerId) {
         String url = String.format(SCENES_URL, gateway.getIpAddress());
-        String sceneTemplate = gateway.model().getTemplate(Model.TEMPLATE_CLICK_SCENE);
+        String sceneTemplate = ResourceReader.getResource(Model.TEMPLATE_CLICK_SCENE);
         String payload = String.format(sceneTemplate, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
         StringContentProvider stringProvider = new StringContentProvider("application/json", payload,
                 StandardCharsets.UTF_8);
@@ -245,7 +247,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
                         logger.debug("DIRIGERA API send {} to {} delivered", payload, url);
                         String responseString = response.getContentAsString();
                         JSONObject responseJSON = new JSONObject(responseString);
-                        responseUUID = responseJSON.getString(PROPERTY_DEVICE_ID);
+                        responseUUID = responseJSON.getString(JSON_KEY_DEVICE_ID);
                         break;
                     } else {
                         logger.warn("DIRIGERA API send {} to {} failed with status {}", payload, url,

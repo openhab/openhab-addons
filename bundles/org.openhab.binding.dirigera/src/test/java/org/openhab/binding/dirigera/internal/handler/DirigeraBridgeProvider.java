@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.MODEL_KEY_DEVICES;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.Constants;
+import org.openhab.binding.dirigera.internal.FileReader;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
@@ -56,6 +59,7 @@ public class DirigeraBridgeProvider {
      * @return Bridge
      */
     public static Bridge prepareSimuBridge(String homeFile, boolean discovery, List<String> knownDevicesd) {
+        ResourceReader.setProvider(new FileReader());
         String ipAddress = "1.2.3.4";
         HttpClient httpMock = mock(HttpClient.class);
         DirigeraAPISimu.fileName = homeFile;
@@ -69,7 +73,7 @@ public class DirigeraBridgeProvider {
         JSONObject storageObject = new JSONObject();
         JSONArray knownDevices = new JSONArray(knownDevicesd);
         knownDevices.put("594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1");
-        storageObject.put(PROPERTY_DEVICES, knownDevices.toString());
+        storageObject.put(MODEL_KEY_DEVICES, knownDevices.toString());
         storageObject.put(PROPERTY_TOKEN, "unit-test");
         mockStorage.put(ipAddress, storageObject.toString());
 
