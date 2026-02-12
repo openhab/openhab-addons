@@ -26,5 +26,5 @@ import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 public class EndpointConfiguration {
     public String path = "/";
     public DispatcherServlet.Method method = GET;
-    public String config = "{}";
+    public String endpoint = "{}";
 }

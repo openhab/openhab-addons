@@ -4,45 +4,49 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="RESTifyBridge" />
-			</supported-bridge-type-refs>
-		-->
+	<thing-type id="endpoint">
+		<label>RESTify Binding Thing</label><!-- TODO -->
+		<description>Sample thing for RESTify Binding</description><!-- TODO -->
 
-		<label>RESTify Binding Thing</label>
-		<description>Sample thing for RESTify Binding</description>
-
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
+		<!-- TODO -->
+		<!-- <channels> -->
+		<!-- <channel id="channel1" typeId="sample-channel"/> -->
+		<!-- </channels> -->
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+			<parameter name="path" type="text" required="true">
+				<label>Context Path</label>
+				<description>Path of the endpoint. You can query it by http(s)://${oh}/restify/${path}</description>
+				<default>/</default>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the device</description>
+			<parameter name="method" type="text" required="true">
+				<label>HTTP Method</label>
+				<description>
+					<!-- TODO:codex -->
+				</description>
+				<default>GET</default>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+					<option value="DELETE">DELETE</option>
+				</options>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-				<default>600</default>
-				<advanced>true</advanced>
+			<parameter name="endpoint" type="text" required="true">
+				<context>script</context>
+				<label>Endpoint</label>
+				<description>
+					<!-- TODO:codex -->
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for RESTify Binding</description>
-	</channel-type>
+	<!-- TODO -->
+	<!-- <channel-type id="sample-channel"> -->
+	<!-- <item-type>Number:Temperature</item-type> -->
+	<!-- <label>Example Temperature</label>&lt;!&ndash; Use uppercase words, except prepositions. 2-3 words, max 25 chars &ndash;&gt; -->
+	<!-- <description>Sample channel for RESTify Binding</description> -->
+	<!-- </channel-type> -->
 </thing:thing-descriptions>
