@@ -18,6 +18,7 @@ import static org.openhab.core.thing.ThingStatusDetail.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.restify.internal.JsonSchemaValidator;
 import org.openhab.binding.restify.internal.config.ConfigException;
 import org.openhab.binding.restify.internal.config.ConfigParser;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
@@ -29,6 +30,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.networknt.schema.Error;
+
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
@@ -39,13 +42,16 @@ public class EndpointHandler extends BaseThingHandler {
 
     private final ConfigParser configParser;
     private final DispatcherServlet dispatcherServlet;
+    private final JsonSchemaValidator schemaValidator;
 
     private @Nullable EndpointConfiguration config;
 
-    public EndpointHandler(Thing thing, ConfigParser configParser, DispatcherServlet dispatcherServlet) {
+    public EndpointHandler(Thing thing, ConfigParser configParser, DispatcherServlet dispatcherServlet,
+            JsonSchemaValidator schemaValidator) {
         super(thing);
         this.configParser = configParser;
         this.dispatcherServlet = dispatcherServlet;
+        this.schemaValidator = schemaValidator;
     }
 
     @Override
@@ -69,6 +75,13 @@ public class EndpointHandler extends BaseThingHandler {
         if (!config.path.startsWith("/")) {
             throw new InitializationException("thing-type.restify.%s.path".formatted(THING_TYPE_ENDPOINT.getId()),
                     config.path);
+        }
+
+        var errors = schemaValidator.validateEndpointConfig(config.config);
+        if (!errors.isEmpty()) {
+            var errorMessages = errors.stream().map(Error::getMessage).toList();
+            throw new InitializationException("thing-type.restify.%s.config".formatted(THING_TYPE_ENDPOINT.getId()),
+                    String.join(", ", errorMessages));
         }
 
         var response = configParser.parseEndpointConfig(config.config);

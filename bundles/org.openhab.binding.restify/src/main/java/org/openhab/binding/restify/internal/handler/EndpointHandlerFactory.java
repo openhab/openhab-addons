@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.restify.internal.JsonSchemaValidator;
 import org.openhab.binding.restify.internal.config.ConfigParser;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 import org.openhab.core.thing.Thing;
@@ -42,10 +43,13 @@ public class EndpointHandlerFactory extends BaseThingHandlerFactory {
 
     private final ConfigParser configParser = new ConfigParser();
     private final DispatcherServlet dispatcherServlet;
+    private final JsonSchemaValidator schemaValidator;
 
     @Activate
-    public EndpointHandlerFactory(@Reference DispatcherServlet dispatcherServlet) {
+    public EndpointHandlerFactory(@Reference DispatcherServlet dispatcherServlet,
+            @Reference JsonSchemaValidator schemaValidator) {
         this.dispatcherServlet = dispatcherServlet;
+        this.schemaValidator = schemaValidator;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class EndpointHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ENDPOINT.equals(thingTypeUID)) {
-            return new EndpointHandler(thing, configParser, dispatcherServlet);
+            return new EndpointHandler(thing, configParser, dispatcherServlet, schemaValidator);
         }
 
         return null;
