@@ -117,18 +117,18 @@ public class RokuHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        // Initialize resolvedHost from config and lookup the IP address if it is not one already
+        resolvedHost = host;
+        if (NetUtil.isValidIPConfig(resolvedHost)) {
+            communicator = new RokuCommunicator(httpClient, resolvedHost, port);
+        } else {
+            scheduler.execute(() -> {
+                resolveHostName();
+            });
+        }
+
         startAutomaticRefresh();
         startAppListRefresh();
-
-        scheduler.execute(() -> {
-            // Initialize resolvedHost from config and lookup the IP address if it is not one already
-            resolvedHost = host;
-            if (NetUtil.isValidIPConfig(resolvedHost)) {
-                communicator = new RokuCommunicator(httpClient, resolvedHost, port);
-            } else {
-                resolveHostName();
-            }
-        });
     }
 
     /**
