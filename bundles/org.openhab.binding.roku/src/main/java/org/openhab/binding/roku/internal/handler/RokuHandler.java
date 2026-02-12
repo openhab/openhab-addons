@@ -137,17 +137,19 @@ public class RokuHandler extends BaseThingHandler {
      * @return A boolean indicating if the IP address has been resolved
      */
     private boolean resolveHostName() {
-        if (!NetUtil.isValidIPConfig(resolvedHost)) {
-            try {
-                resolvedHost = InetAddress.getByName(resolvedHost).getHostAddress();
-                communicator = new RokuCommunicator(httpClient, resolvedHost, port);
-            } catch (UnknownHostException e) {
-                logger.debug("Unable to resolve hostname", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot resolve hostname");
-                return false;
+        synchronized (sequenceLock) {
+            if (!NetUtil.isValidIPConfig(resolvedHost)) {
+                try {
+                    resolvedHost = InetAddress.getByName(resolvedHost).getHostAddress();
+                    communicator = new RokuCommunicator(httpClient, resolvedHost, port);
+                } catch (UnknownHostException e) {
+                    logger.debug("Unable to resolve hostname", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot resolve hostname");
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
     }
 
     /**
