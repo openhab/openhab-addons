@@ -9,7 +9,9 @@ import org.openhab.binding.restify.internal.servlet.Json.JsonObject;
 import org.openhab.binding.restify.internal.servlet.Json.NullValue;
 import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
+import org.osgi.service.component.annotations.Component;
 
+@Component
 public class JsonEncoder implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

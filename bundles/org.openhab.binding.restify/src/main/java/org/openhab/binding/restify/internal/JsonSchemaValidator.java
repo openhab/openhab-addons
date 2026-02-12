@@ -4,6 +4,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+import org.osgi.service.component.annotations.Component;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.SchemaLocation;
@@ -12,6 +14,7 @@ import com.networknt.schema.SchemaRegistryConfig;
 import com.networknt.schema.SpecificationVersion;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
 
+@Component
 public class JsonSchemaValidator implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -19,11 +22,11 @@ public class JsonSchemaValidator implements Serializable {
     private static final String GLOBAL_CONFIG_SCHEMA = "/global-config-schema.json";
     private static final ObjectMapper mapper = new ObjectMapper();
 
-   public List<com.networknt.schema.Error> validateEndpointConfig(String config) {
+    public List<com.networknt.schema.Error> validateEndpointConfig(String config) {
         return validate(config, ENDPOINT_SCHEMA);
     }
 
- public   List<com.networknt.schema.Error> validateGlobalConfig(String config) {
+    public List<com.networknt.schema.Error> validateGlobalConfig(String config) {
         return validate(config, GLOBAL_CONFIG_SCHEMA);
     }
 

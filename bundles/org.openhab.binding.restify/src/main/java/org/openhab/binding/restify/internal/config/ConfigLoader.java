@@ -14,9 +14,13 @@ import java.util.stream.Stream;
 
 import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.JsonSchemaValidator;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class ConfigLoader implements Serializable {
     public static final String GENERAL_CONFIG_FILE_NAME = "config.json";
     @Serial
@@ -24,7 +28,8 @@ public class ConfigLoader implements Serializable {
     private final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
     private final JsonSchemaValidator validator;
 
-    public ConfigLoader(JsonSchemaValidator validator) {
+    @Activate
+    public ConfigLoader(@Reference JsonSchemaValidator validator) {
         this.validator = validator;
     }
 
