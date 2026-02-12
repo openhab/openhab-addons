@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.service.component.annotations.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,10 @@ import com.networknt.schema.SchemaRegistryConfig;
 import com.networknt.schema.SpecificationVersion;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 @Component
 public class JsonSchemaValidator implements Serializable {
     @Serial

@@ -1,11 +1,13 @@
 package org.openhab.binding.restify.internal.servlet;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
+import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.*;
 
 import java.io.IOException;
 import java.io.Serial;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.config.Config;
 import org.openhab.binding.restify.internal.config.ConfigWatcher;
@@ -20,6 +22,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 @Component(service = Servlet.class, property = { "osgi.http.whiteboard.servlet.pattern=/restify/*",
         "osgi.http.whiteboard.context.select=(osgi.http.whiteboard.context.name=default)" })
 public class DispatcherServlet extends HttpServlet {
@@ -40,7 +46,10 @@ public class DispatcherServlet extends HttpServlet {
         logger.info("Starting DispatcherServlet");
     }
 
-    private void process(Method method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void process(Method method, @Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
+            throws IOException {
+        requireNonNull(req, "Request must not be null");
+        requireNonNull(resp, "Response must not be null");
         var uri = req.getRequestURI();
         logger.debug("Processing {}:{}", method, uri);
         try {
@@ -69,8 +78,13 @@ public class DispatcherServlet extends HttpServlet {
         return engine.evaluate(response.schema());
     }
 
-    private void authorize(Config config, Authorization required, @Nullable String provided)
+    private void authorize(Config config, @Nullable Authorization required, @Nullable String provided)
             throws AuthorizationException {
+        if (required == null) {
+            // TODO add global config flag that allows to disable authorization for all endpoints, then we can skip
+            // authorization if the flag is disabled
+            return;
+        }
         if (provided == null) {
             throw new AuthorizationException("Authorization required");
         }
@@ -106,26 +120,26 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         process(GET, req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         process(POST, req, resp);
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPut(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         process(PUT, req, resp);
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doDelete(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) throws IOException {
         process(DELETE, req, resp);
     }
 
-    public void register(String path, Method method, @Nullable Response response) {
+    public void register(String path, Method method, Response response) {
         registry.register(path, method, response);
     }
 

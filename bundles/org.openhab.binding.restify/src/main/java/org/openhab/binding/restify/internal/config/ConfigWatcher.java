@@ -3,6 +3,7 @@ package org.openhab.binding.restify.internal.config;
 import static java.lang.String.format;
 import static java.nio.file.Files.*;
 import static java.nio.file.StandardWatchEventKinds.*;
+import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
 import static org.openhab.binding.restify.internal.config.ConfigLoader.GENERAL_CONFIG_FILE_NAME;
 
@@ -21,6 +22,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
 import org.osgi.service.component.annotations.Activate;
@@ -30,6 +33,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 @Component(immediate = true)
 public class ConfigWatcher implements AutoCloseable, Serializable {
     private static final Duration RELOAD_DEBOUNCE = Duration.ofMillis(300);
@@ -45,7 +52,7 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
     private final WatchService watchService;
     private final ScheduledExecutorService scheduler;
 
-    private volatile ScheduledFuture<?> pendingReload;
+    private @Nullable volatile ScheduledFuture<?> pendingReload;
 
     @Activate
     public ConfigWatcher(@Reference ConfigLoader loader, @Reference ConfigParser parser)
@@ -56,10 +63,10 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
         this.loader = loader;
         this.parser = parser;
 
-        config = new AtomicReference<>(loadConfig().orElse(Config.EMPTY));
+        config = new AtomicReference<>(requireNonNull(loadConfig().orElse(Config.EMPTY)));
 
         this.scheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
-        ;
+
         watchService = FileSystems.getDefault().newWatchService();
         configDir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         scheduler.submit(this::watchLoop);
@@ -138,7 +145,7 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
                     config.set(newConfig);
                 });
             } catch (Exception e) {
-                logger.error("Config reload failed – keeping previous config", e);
+                logger.error("Config reload failed â€“ keeping previous config", e);
             }
         }, RELOAD_DEBOUNCE.toMillis(), TimeUnit.MILLISECONDS);
     }

@@ -3,6 +3,12 @@ package org.openhab.binding.restify.internal.servlet;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 public sealed interface Schema {
     public record StringSchema(String value) implements Schema {
     }

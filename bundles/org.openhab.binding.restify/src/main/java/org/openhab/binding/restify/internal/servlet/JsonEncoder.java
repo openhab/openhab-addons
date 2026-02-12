@@ -3,6 +3,7 @@ package org.openhab.binding.restify.internal.servlet;
 import java.io.Serial;
 import java.io.Serializable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.restify.internal.servlet.Json.BooleanValue;
 import org.openhab.binding.restify.internal.servlet.Json.JsonArray;
 import org.openhab.binding.restify.internal.servlet.Json.JsonObject;
@@ -11,6 +12,10 @@ import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
 import org.osgi.service.component.annotations.Component;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 @Component
 public class JsonEncoder implements Serializable {
     @Serial
