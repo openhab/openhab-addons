@@ -22,8 +22,6 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.networknt.schema.ValidationMessage;
-
 class ConfigLoader implements Serializable {
     private static final String GENERAL_CONFIG_FILE_NAME = "general.json";
     @Serial
@@ -75,7 +73,7 @@ class ConfigLoader implements Serializable {
         if (configContent.responses().isEmpty()) {
             logger.warn("No responses found in {}", configPath.toAbsolutePath());
         }
-        record ValidationResult(Path path, Collection<ValidationMessage> validationMessages) {
+        record ValidationResult(Path path, Collection<com.networknt.schema.Error> validationMessages) {
         }
 
         var globalConfigValidationErrors = configContent.globalConfig()
@@ -89,6 +87,7 @@ class ConfigLoader implements Serializable {
 
         if (!errors.isEmpty()) {
             var msg = errors.stream().sorted(comparing(a -> a.path))
+                    // todo propably better formatting of errors. `er.validationMessages` does not have nice toString()
                     .map(er -> "\t%s: %s".formatted(er.path.getFileName(), er.validationMessages))
                     .collect(Collectors.joining("\n"));
             var errorMessage = "Found (%d) errors:\n%s".formatted(errors.size(), msg);

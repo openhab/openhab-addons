@@ -2,38 +2,50 @@ package org.openhab.binding.restify.internal.config;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import com.networknt.schema.ValidationMessage;
+import com.networknt.schema.InputFormat;
+import com.networknt.schema.SchemaLocation;
+import com.networknt.schema.SchemaRegistry;
+import com.networknt.schema.SchemaRegistryConfig;
+import com.networknt.schema.SpecificationVersion;
+import com.networknt.schema.regex.JoniRegularExpressionFactory;
 
 class JsonSchemaValidator implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private static final String ENDPOINT_SCHEMA = "/schemas/endpoint-schema.json";
-    private static final String GLOBAL_CONFIG_SCHEMA = "/schemas/global-config-schema.json";
+    private static final String ENDPOINT_SCHEMA = "/endpoint-schema.json";
+    private static final String GLOBAL_CONFIG_SCHEMA = "/global-config-schema.json";
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    Set<ValidationMessage> validateEndpointConfig(String config) {
+    List<com.networknt.schema.Error> validateEndpointConfig(String config) {
         return validate(config, ENDPOINT_SCHEMA);
     }
 
-    Set<ValidationMessage> validateGlobalConfig(String config) {
+    List<com.networknt.schema.Error> validateGlobalConfig(String config) {
         return validate(config, GLOBAL_CONFIG_SCHEMA);
     }
 
-    private Set<ValidationMessage> validate(String config, String schemaPath) {
-        var schemaStream = JsonSchemaValidator.class.getResourceAsStream(schemaPath);
-        var factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V202012);
-        var schema = factory.getSchema(schemaStream);
-        try {
-            var json = mapper.readTree(config);
-            return schema.validate(json);
-        } catch (JsonProcessingException e) {
-            return Set.of(ValidationMessage.builder().type("json.parse.error").message(e.getOriginalMessage()).build());
-        }
+    private List<com.networknt.schema.Error> validate(String config, String schemaPath) {
+        var schemaRegistryConfig = SchemaRegistryConfig.builder()
+                .regularExpressionFactory(JoniRegularExpressionFactory.getInstance()).build();
+        var schemaRegistry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12,
+                builder -> builder.schemaRegistryConfig(schemaRegistryConfig)
+                        /*
+                         * This creates a mapping from $id which starts with
+                         * https://www.example.org/schema to the retrieval IRI classpath:schema.
+                         */
+                        .schemaIdResolvers(schemaIdResolvers -> schemaIdResolvers
+                                .mapPrefix("https://www.openhab.org/addons/RESTify", "classpath:schema")));
+        var schema = schemaRegistry
+                .getSchema(SchemaLocation.of("https://www.openhab.org/addons/RESTify/schema" + schemaPath));
+        return schema.validate(config, InputFormat.JSON, executionContext -> {
+            /*
+             * By default since Draft 2019-09 the format keyword only generates annotations
+             * and not assertions.
+             */
+            executionContext.executionConfig(executionConfig -> executionConfig.formatAssertionsEnabled(true));
+        });
     }
 }
