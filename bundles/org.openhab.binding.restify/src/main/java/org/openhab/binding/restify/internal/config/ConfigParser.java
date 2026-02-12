@@ -3,6 +3,8 @@ package org.openhab.binding.restify.internal.config;
 import static java.util.Objects.requireNonNull;
 import static org.openhab.binding.restify.internal.config.GlobalConfig.EMPTY;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +22,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class ConfigParser {
+class ConfigParser implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public Config parse(ConfigContent config) throws ConfigException {
+    Config parse(ConfigContent config) throws ConfigException {
         var globalConfig = config.globalConfig().isPresent() ? parseGlobalConfig(config.globalConfig().orElseThrow())
                 : EMPTY;
         var responses = new ArrayList<Response>(config.responses().size());

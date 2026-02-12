@@ -1,5 +1,7 @@
 package org.openhab.binding.restify.internal.config;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -8,16 +10,18 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 
-public class JsonSchemaValidator {
+class JsonSchemaValidator implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private static final String ENDPOINT_SCHEMA = "/schemas/endpoint-schema.json";
     private static final String GLOBAL_CONFIG_SCHEMA = "/schemas/global-config-schema.json";
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public Set<ValidationMessage> validateEndpointConfig(String config) {
+    Set<ValidationMessage> validateEndpointConfig(String config) {
         return validate(config, ENDPOINT_SCHEMA);
     }
 
-    public Set<ValidationMessage> validateGlobalConfig(String config) {
+    Set<ValidationMessage> validateGlobalConfig(String config) {
         return validate(config, GLOBAL_CONFIG_SCHEMA);
     }
 

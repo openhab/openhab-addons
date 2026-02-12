@@ -5,9 +5,10 @@ import static java.nio.file.Files.*;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.empty;
 import static java.util.stream.Stream.concat;
-import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
 
 import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,35 +19,30 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jspecify.annotations.NonNull;
-import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.networknt.schema.ValidationMessage;
 
-public class ConfigLoader {
+class ConfigLoader implements Serializable {
     private static final String GENERAL_CONFIG_FILE_NAME = "general.json";
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
-    private final Path configPath;
     private final JsonSchemaValidator validator;
 
-    public ConfigLoader(JsonSchemaValidator validator) {
-        this(Path.of(OpenHAB.getConfigFolder()).resolve(BINDING_ID), validator);
+    ConfigLoader(JsonSchemaValidator validator) {
+        this.validator = validator;
     }
 
-    ConfigLoader(Path configPath, JsonSchemaValidator validator) {
-        this.validator = validator;
-        logger.debug("Using config path: {}", configPath.toAbsolutePath());
-        this.configPath = configPath;
+    ConfigContent load(Path configPath) throws UncheckedIOException {
+        logger.debug("Using dir for config loading: {}", configPath.toAbsolutePath());
         if (!exists(configPath)) {
             throw new IllegalArgumentException("Config dir does not exist: " + configPath.toAbsolutePath());
         }
         if (!isDirectory(configPath)) {
             throw new IllegalArgumentException(format("%s is not a directory", configPath.toAbsolutePath()));
         }
-    }
-
-    public ConfigContent load() {
         record PathAndContent(Path path, String content) {
         }
         record PathConfig(Optional<PathAndContent> globalConfig, List<PathAndContent> responses) {
@@ -59,7 +55,7 @@ public class ConfigLoader {
                 return new PathConfig(mergedGlobalConfig, mergedResponses);
             }
         }
-        var configContent = list().filter(path -> {
+        var configContent = list(configPath).filter(path -> {
             var isJson = path.toString().endsWith(".json");
             if (!isJson) {
                 logger.debug("Skipping non-json file: {}", path.getFileName());
@@ -104,7 +100,7 @@ public class ConfigLoader {
                 configContent.responses.stream().map(PathAndContent::content).toList());
     }
 
-    private @NonNull Stream<Path> list() {
+    private @NonNull Stream<Path> list(Path configPath) {
         try {
             return walk(configPath).filter(Files::isRegularFile);
         } catch (IOException e) {
