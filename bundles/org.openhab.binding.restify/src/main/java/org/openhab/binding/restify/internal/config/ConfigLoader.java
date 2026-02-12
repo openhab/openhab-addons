@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.JsonSchemaValidator;
 import org.osgi.service.component.annotations.Activate;
@@ -20,6 +21,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 @Component
 public class ConfigLoader implements Serializable {
     public static final String GENERAL_CONFIG_FILE_NAME = "config.json";

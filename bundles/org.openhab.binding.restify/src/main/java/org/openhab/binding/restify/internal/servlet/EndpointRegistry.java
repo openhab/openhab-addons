@@ -8,10 +8,14 @@ import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 public class EndpointRegistry implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -29,7 +33,7 @@ public class EndpointRegistry implements Serializable {
         }
     }
 
-    public void register(String path, DispatcherServlet.Method method, @Nullable Response response) {
+    public void register(String path, DispatcherServlet.Method method, Response response) {
         lock.writeLock().lock();
         try {
             logger.debug("Registering {}:{}", method, path);

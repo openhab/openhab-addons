@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.servlet.Json.BooleanValue;
@@ -45,6 +46,10 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Martin Grzeslowski - Initial contribution
+ */
+@NonNullByDefault
 @Component
 public class Engine implements Serializable {
     private static final Pattern DATE_FORMATTER_PATTERN = Pattern.compile("\\[(.*?)]");
@@ -97,8 +102,7 @@ public class Engine implements Serializable {
                                     .map(StringValue::new).toList())),
                     entry("groups", new JsonArray(item.getGroupNames().stream().map(StringValue::new).toList())),
                     entry("tags", new JsonArray(item.getTags().stream().map(StringValue::new).toList())),
-                    entry("label", new StringValue(item.getLabel())),
-                    entry("category", new StringValue(item.getCategory())),
+                    entry("label", stringOrNull(item.getLabel())), entry("category", stringOrNull(item.getCategory())),
                     entry("stateDescription", evaluateItemExpression(item.getStateDescription(), tail)),
                     entry("commandDescription", evaluateItemExpression(item.getCommandDescription(), tail))));
         }
@@ -116,8 +120,8 @@ public class Engine implements Serializable {
                         .toList());
             case "groups" -> new JsonArray(item.getGroupNames().stream().map(StringValue::new).toList());
             case "tags" -> new JsonArray(item.getTags().stream().map(StringValue::new).toList());
-            case "label" -> new StringValue(item.getLabel());
-            case "category" -> new StringValue(item.getCategory());
+            case "label" -> stringOrNull(item.getLabel());
+            case "category" -> stringOrNull(item.getCategory());
             case "stateDescription" -> evaluateItemExpression(item.getStateDescription(), tail);
             case "commandDescription" -> evaluateItemExpression(item.getCommandDescription(), tail);
             default -> throw new ParameterException(parts[0]);
@@ -155,21 +159,43 @@ public class Engine implements Serializable {
         }
         if (params.length == 0) {
             // return full StateDescription
-            return new JsonObject(Map.of("minimum", new NumberValue(stateDescription.getMinimum()), "maximum",
-                    new NumberValue(stateDescription.getMaximum()), "step", new NumberValue(stateDescription.getStep()),
-                    "pattern", new StringValue(stateDescription.getPattern()), "readOnly",
-                    new BooleanValue(stateDescription.isReadOnly()), "options",
-                    evaluateItemOptions(stateDescription.getOptions(), findTail(params))));
+            return new JsonObject(Map.of("minimum", numberOrNull(stateDescription.getMinimum()), //
+                    "maximum", numberOrNull(stateDescription.getMaximum()), //
+                    "step", numberOrNull(stateDescription.getStep()), //
+                    "pattern", stringOrNull(stateDescription.getPattern()), //
+                    "readOnly", booleanOrNull(stateDescription.isReadOnly()), //
+                    "options", evaluateItemOptions(stateDescription.getOptions(), findTail(params))));
         }
         return switch (params[0]) {
-            case "minimum" -> new NumberValue(stateDescription.getMinimum());
-            case "maximum" -> new NumberValue(stateDescription.getMaximum());
-            case "step" -> new NumberValue(stateDescription.getStep());
-            case "pattern" -> new StringValue(stateDescription.getPattern());
-            case "readOnly" -> new BooleanValue(stateDescription.isReadOnly());
+            case "minimum" -> numberOrNull(stateDescription.getMinimum());
+            case "maximum" -> numberOrNull(stateDescription.getMaximum());
+            case "step" -> numberOrNull(stateDescription.getStep());
+            case "pattern" -> stringOrNull(stateDescription.getPattern());
+            case "readOnly" -> booleanOrNull(stateDescription.isReadOnly());
             case "options" -> evaluateItemOptions(stateDescription.getOptions(), findTail(params));
             default -> throw new ParameterException(params[0]);
         };
+    }
+
+    public Json numberOrNull(@Nullable Number number) {
+        if (number == null) {
+            return NULL_VALUE;
+        }
+        return new NumberValue(number);
+    }
+
+    public Json stringOrNull(@Nullable String string) {
+        if (string == null) {
+            return NULL_VALUE;
+        }
+        return new StringValue(string);
+    }
+
+    public Json booleanOrNull(@Nullable Boolean bool) {
+        if (bool == null) {
+            return NULL_VALUE;
+        }
+        return new BooleanValue(bool);
     }
 
     private Json evaluateItemOptions(List<StateOption> options, String[] params) throws ParameterException {
