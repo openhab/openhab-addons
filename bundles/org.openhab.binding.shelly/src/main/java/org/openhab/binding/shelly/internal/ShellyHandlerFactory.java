@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
+import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyBluHandler;
@@ -82,7 +83,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
         this.messages = translationProvider;
         this.thingTable = thingTable;
-        WebSocketClient client = ShellyUtils.createWebSocketClient(webSocketFactory, "shelly2api");
+        WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2api");
         this.webSocketClient = client;
         try {
             client.start();

@@ -33,10 +33,8 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -382,19 +380,5 @@ public class ShellyUtils {
             hexString.append(hex);
         }
         return hexString.toString();
-    }
-
-    /**
-     * Create and configures a new {@link WebSocketClient}.
-     *
-     * @param webSocketFactory the {@link WebSocketFactory} to use to create the new client instance.
-     * @param consumerName the for identifying the consumer in the Jetty thread pool.
-     *            Must be between 4 and 20 characters long and must contain only the following characters [a-zA-Z0-9-_]
-     */
-    public static WebSocketClient createWebSocketClient(WebSocketFactory webSocketFactory, String consumerName) {
-        WebSocketClient client = webSocketFactory.createWebSocketClient(consumerName);
-        client.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
-        client.setStopTimeout(1000);
-        return client;
     }
 }

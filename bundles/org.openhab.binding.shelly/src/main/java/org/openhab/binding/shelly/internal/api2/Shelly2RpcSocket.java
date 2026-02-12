@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.SHELLY_API_TIMEOUT_MS;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.addBluThing;
@@ -45,6 +46,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNoti
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -471,5 +473,19 @@ public class Shelly2RpcSocket implements WriteCallback {
     @Override
     public void writeSuccess() {
         // Nothing to do
+    }
+
+    /**
+     * Create and configures a new {@link WebSocketClient}.
+     *
+     * @param webSocketFactory the {@link WebSocketFactory} to use to create the new client instance.
+     * @param consumerName the for identifying the consumer in the Jetty thread pool.
+     *            Must be between 4 and 20 characters long and must contain only the following characters [a-zA-Z0-9-_]
+     */
+    public static WebSocketClient createWebSocketClient(WebSocketFactory webSocketFactory, String consumerName) {
+        WebSocketClient client = webSocketFactory.createWebSocketClient(consumerName);
+        client.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
+        client.setStopTimeout(1000);
+        return client;
     }
 }
