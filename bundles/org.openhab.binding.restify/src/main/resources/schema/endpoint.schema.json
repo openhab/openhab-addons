@@ -2,14 +2,6 @@
   "$schema": "https://www.openhab.org/addons/RESTify/endpoint.schema.json",
   "type": "object",
   "properties": {
-    "path": {
-      "type": "string",
-      "pattern": "^/.*"
-    },
-    "method": {
-      "type": "string",
-      "enum": ["GET", "POST", "PUT", "DELETE"]
-    },
     "authorization": {
       "type": "object",
       "oneOf": [
@@ -48,6 +40,6 @@
       "type": "object"
     }
   },
-  "required": ["path", "method", "response"],
+  "required": ["response"],
   "additionalProperties": false
 }

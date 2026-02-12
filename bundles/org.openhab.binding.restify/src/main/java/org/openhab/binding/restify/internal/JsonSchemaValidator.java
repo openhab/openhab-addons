@@ -1,4 +1,4 @@
-package org.openhab.binding.restify.internal.config;
+package org.openhab.binding.restify.internal;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,18 +12,18 @@ import com.networknt.schema.SchemaRegistryConfig;
 import com.networknt.schema.SpecificationVersion;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
 
-class JsonSchemaValidator implements Serializable {
+public class JsonSchemaValidator implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private static final String ENDPOINT_SCHEMA = "/endpoint-schema.json";
     private static final String GLOBAL_CONFIG_SCHEMA = "/global-config-schema.json";
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    List<com.networknt.schema.Error> validateEndpointConfig(String config) {
+   public List<com.networknt.schema.Error> validateEndpointConfig(String config) {
         return validate(config, ENDPOINT_SCHEMA);
     }
 
-    List<com.networknt.schema.Error> validateGlobalConfig(String config) {
+ public   List<com.networknt.schema.Error> validateGlobalConfig(String config) {
         return validate(config, GLOBAL_CONFIG_SCHEMA);
     }
 

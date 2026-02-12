@@ -4,28 +4,24 @@ import static java.lang.String.format;
 import static java.nio.file.Files.*;
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
+import static org.openhab.binding.restify.internal.config.ConfigLoader.GENERAL_CONFIG_FILE_NAME;
 
 import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.restify.internal.JsonSchemaValidator;
 import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +33,6 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
 
     private final Logger logger = LoggerFactory.getLogger(ConfigWatcher.class);
     private final AtomicReference<Config> config;
-    private final Map<WatchKey, @Nullable Path> keyToDir = new ConcurrentHashMap<>();
 
     private final Path configDir;
     private final ConfigLoader loader;
@@ -47,24 +42,23 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
 
     private volatile ScheduledFuture<?> pendingReload;
 
-    public ConfigWatcher(ScheduledExecutorService scheduler) throws ConfigException, IOException {
+    public ConfigWatcher(ScheduledExecutorService scheduler) throws ConfigException, IOException, ConfigParseException {
         this(new ConfigLoader(new JsonSchemaValidator()), new ConfigParser(), scheduler);
     }
 
     ConfigWatcher(ConfigLoader loader, ConfigParser parser, ScheduledExecutorService scheduler)
-            throws ConfigException, IOException {
+            throws ConfigException, IOException, ConfigParseException {
         this.configDir = Path.of(OpenHAB.getConfigFolder()).resolve(BINDING_ID);
         validateConfigDir(this.configDir);
 
         this.loader = loader;
         this.parser = parser;
 
-        config = new AtomicReference<>(loadConfig());
+        config = new AtomicReference<>(loadConfig().orElse(Config.EMPTY));
 
         this.scheduler = scheduler;
         watchService = FileSystems.getDefault().newWatchService();
         configDir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-        registerAll(configDir);
         scheduler.submit(this::watchLoop);
     }
 
@@ -77,27 +71,22 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
         }
     }
 
-    private Config loadConfig() throws ConfigException {
+    private Optional<Config> loadConfig() throws ConfigException, ConfigParseException {
         logger.info("Loading config...");
         var load = loader.load(configDir);
-        return parser.parse(load);
+        if (load.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(parser.parseConfig(load.get()));
     }
 
     private void watchLoop() {
         var done = false;
-        while (!Thread.currentThread().isInterrupted() && !done) {
+        while (!done) {
             try {
                 var key = watchService.take(); // blocking
-                var dir = keyToDir.get(key);
-
-                if (dir == null) {
-                    key.reset();
-                    continue;
-                }
-
                 for (var event : key.pollEvents()) {
                     var kind = event.kind();
-
                     if (kind == OVERFLOW) {
                         logger.debug("Overflow event detected");
                         continue;
@@ -105,38 +94,19 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
 
                     @SuppressWarnings("unchecked")
                     var pathEvent = (WatchEvent<Path>) event;
-                    var child = dir.resolve(pathEvent.context());
+                    var child = configDir.resolve(pathEvent.context());
 
                     logger.debug("Config change detected: {} {}", kind.name(), child);
 
-                    // If new directory created → register recursively
-                    if (kind == ENTRY_CREATE) {
-                        try {
-                            if (isDirectory(child)) {
-                                registerAll(child);
-                            }
-                        } catch (IOException e) {
-                            logger.warn("Failed to register new directory: {}", child, e);
-                        }
-                    }
-
-                    // Only react to JSON changes
-                    if (!isDirectory(child) && child.toString().endsWith(".json")) {
+                    // Only react to config changes
+                    if (!isDirectory(child) && child.getFileName().toString().equals(GENERAL_CONFIG_FILE_NAME)) {
                         scheduleReload();
-                    }
-                }
-
-                var valid = key.reset();
-                if (!valid) {
-                    keyToDir.remove(key);
-                    if (keyToDir.isEmpty()) {
-                        logger.warn("All config directories became inaccessible");
-                        done = true;
                     }
                 }
             } catch (InterruptedException ignored) {
                 logger.debug("Interrupted while watching config");
                 Thread.currentThread().interrupt();
+                done = true;
             } catch (ClosedWatchServiceException ignored) {
                 // normal on shutdown
                 logger.debug("WatchService closed");
@@ -156,25 +126,18 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
         pendingReload = scheduler.schedule(() -> {
             try {
                 logger.debug("Reloading Restify config after change...");
-                var newConfig = loadConfig();
-                config.set(newConfig);
-                logger.info("New config loaded successfully. Config={}", newConfig);
+                loadConfig().ifPresent(newConfig -> {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("New config loaded successfully. Config={}", newConfig);
+                    } else {
+                        logger.info("New config loaded successfully.");
+                    }
+                    config.set(newConfig);
+                });
             } catch (Exception e) {
                 logger.error("Config reload failed – keeping previous config", e);
             }
         }, RELOAD_DEBOUNCE.toMillis(), TimeUnit.MILLISECONDS);
-    }
-
-    private void registerAll(Path start) throws IOException {
-        walkFileTree(start, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                WatchKey key = dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-                keyToDir.put(key, dir);
-                logger.debug("Watching directory: {}", dir);
-                return FileVisitResult.CONTINUE;
-            }
-        });
     }
 
     @Override

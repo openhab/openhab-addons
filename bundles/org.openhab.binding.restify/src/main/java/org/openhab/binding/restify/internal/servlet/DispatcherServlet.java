@@ -1,15 +1,17 @@
-package org.openhab.binding.restify.internal;
+package org.openhab.binding.restify.internal.servlet;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
-import static org.openhab.binding.restify.internal.RequestProcessor.Method.*;
 import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
+import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.*;
 
 import java.io.IOException;
 import java.io.Serial;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.openhab.binding.restify.internal.RequestProcessor.Method;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.restify.internal.config.Config;
 import org.openhab.binding.restify.internal.config.ConfigException;
+import org.openhab.binding.restify.internal.config.ConfigParseException;
 import org.openhab.binding.restify.internal.config.ConfigWatcher;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.ItemRegistry;
@@ -18,7 +20,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,18 +34,19 @@ public class DispatcherServlet extends HttpServlet {
     @Serial
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class.getName());
-    private final RequestProcessor requestProcessor;
+    private final EndpointRegistry registry = new EndpointRegistry();
     private final JsonEncoder jsonEncoder;
     private final ScheduledExecutorService scheduledPool;
     private final ConfigWatcher configWatcher;
+    private final Engine engine;
 
     @Activate
-    public DispatcherServlet(@Reference HttpService httpService, @Reference ItemRegistry itemRegistry,
-            @Reference ThingRegistry thingRegistry) throws ConfigException, IOException {
+    public DispatcherServlet(@Reference ItemRegistry itemRegistry, @Reference ThingRegistry thingRegistry)
+            throws ConfigException, IOException, ConfigParseException {
         logger.info("Starting DispatcherServlet");
         scheduledPool = ThreadPoolManager.getScheduledPool(BINDING_ID);
         configWatcher = new ConfigWatcher(scheduledPool);
-        requestProcessor = new RequestProcessor(configWatcher, new Engine(itemRegistry, thingRegistry));
+        engine = new Engine(itemRegistry, thingRegistry);
         jsonEncoder = new JsonEncoder();
     }
 
@@ -52,7 +54,7 @@ public class DispatcherServlet extends HttpServlet {
         var uri = req.getRequestURI();
         logger.debug("Processing {}:{}", method, uri);
         try {
-            var json = requestProcessor.process(method, uri, req.getHeader("Authorization"));
+            var json = process(method, uri, req.getHeader("Authorization"));
             resp.setStatus(SC_OK);
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
@@ -65,6 +67,45 @@ public class DispatcherServlet extends HttpServlet {
             respondWithError(resp, SC_INTERNAL_SERVER_ERROR, ex);
         }
         resp.getWriter().close();
+    }
+
+    public Json.JsonObject process(Method method, String path, @Nullable String authorization)
+            throws AuthorizationException, NotFoundException, ParameterException {
+        var config = configWatcher.currentConfig();
+        var response = registry.find(path, method).orElseThrow(() -> new NotFoundException(path, method));
+        if (response.authorization() != null) {
+            authorize(config, response.authorization(), authorization);
+        }
+        return engine.evaluate(response.schema());
+    }
+
+    private void authorize(Config config, Authorization required, @Nullable String provided)
+            throws AuthorizationException {
+        if (provided == null) {
+            throw new AuthorizationException("Authorization required");
+        }
+
+        switch (required) {
+            case Authorization.Basic basic -> authorize(config, basic, provided);
+            case Authorization.Bearer bearer -> authorize(bearer, provided);
+        }
+    }
+
+    private void authorize(Config config, Authorization.Basic basic, String provided) throws AuthorizationException {
+        var password = config.usernamePasswords().get(basic.username());
+        if (password == null) {
+            throw new AuthorizationException("There is no password configured for user: " + basic.username());
+        }
+        var expected = "Basic " + basic.username() + ":" + password;
+        if (!provided.equals(expected)) {
+            throw new AuthorizationException("Invalid username or password");
+        }
+    }
+
+    private void authorize(Authorization.Bearer bearer, String provided) throws AuthorizationException {
+        if (!provided.equals("Bearer " + bearer.token())) {
+            throw new AuthorizationException("Invalid token");
+        }
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
@@ -98,5 +139,20 @@ public class DispatcherServlet extends HttpServlet {
     public void deactivate() throws Exception {
         configWatcher.close();
         scheduledPool.close();
+    }
+
+    public void register(String path, Method method, @Nullable Response response) {
+        registry.register(path, method, response);
+    }
+
+    public void unregister(String path, Method method) {
+        registry.unregister(path, method);
+    }
+
+    public enum Method {
+        GET,
+        POST,
+        PUT,
+        DELETE
     }
 }

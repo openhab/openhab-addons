@@ -1,4 +1,4 @@
-package org.openhab.binding.restify.internal;
+package org.openhab.binding.restify.internal.servlet;
 
 import java.util.List;
 import java.util.Map;

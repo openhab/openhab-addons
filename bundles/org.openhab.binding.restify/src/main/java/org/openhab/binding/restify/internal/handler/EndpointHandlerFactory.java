@@ -10,32 +10,43 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.restify.internal;
+package org.openhab.binding.restify.internal.handler;
 
-import static org.openhab.binding.restify.internal.RestifyBindingConstants.*;
+import static org.openhab.binding.restify.internal.RestifyBindingConstants.THING_TYPE_ENDPOINT;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.restify.internal.config.ConfigParser;
+import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link RestifyHandlerFactory} is responsible for creating things and thing
+ * The {@link EndpointHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.restify", service = ThingHandlerFactory.class)
-public class RestifyHandlerFactory extends BaseThingHandlerFactory {
+public class EndpointHandlerFactory extends BaseThingHandlerFactory {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENDPOINT);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private final ConfigParser configParser = new ConfigParser();
+    private final DispatcherServlet dispatcherServlet;
+
+    @Activate
+    public EndpointHandlerFactory(@Reference DispatcherServlet dispatcherServlet) {
+        this.dispatcherServlet = dispatcherServlet;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +57,8 @@ public class RestifyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new RestifyHandler(thing);
+        if (THING_TYPE_ENDPOINT.equals(thingTypeUID)) {
+            return new EndpointHandler(thing, configParser, dispatcherServlet);
         }
 
         return null;

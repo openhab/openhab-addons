@@ -1,7 +1,6 @@
 package org.openhab.binding.restify.internal.config;
 
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.restify.internal.config.GlobalConfig.EMPTY;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -11,10 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.restify.internal.Authorization;
-import org.openhab.binding.restify.internal.RequestProcessor.Method;
-import org.openhab.binding.restify.internal.Response;
-import org.openhab.binding.restify.internal.Schema;
+import org.openhab.binding.restify.internal.servlet.Authorization;
+import org.openhab.binding.restify.internal.servlet.Response;
+import org.openhab.binding.restify.internal.servlet.Schema;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,27 +20,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-class ConfigParser implements Serializable {
+public class ConfigParser implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    Config parse(ConfigContent config) throws ConfigException {
-        var globalConfig = config.globalConfig().isPresent() ? parseGlobalConfig(config.globalConfig().orElseThrow())
-                : EMPTY;
-        var responses = new ArrayList<Response>(config.responses().size());
-        for (var response : config.responses()) {
-            responses.add(parseResponse(response));
-        }
-        return new Config(globalConfig, List.copyOf(responses));
+    public Response parseEndpointConfig(String config) throws ConfigException {
+        return parseResponse(config);
     }
 
-    private GlobalConfig parseGlobalConfig(String content) throws ConfigException {
+    public Config parseConfig(String content) throws ConfigException {
         try {
             var root = mapper.readTree(content);
-            var version = getText(root, "version");
+            var version = getInt(root, "version");
             var usernamePasswords = parseUsernamePasswords(root.get("authentication"));
-            return new GlobalConfig(version, usernamePasswords);
+            return new Config(version, usernamePasswords);
         } catch (JsonProcessingException e) {
             throw new ConfigException("Cannot read tree from: " + content, e);
         }
@@ -72,8 +64,6 @@ class ConfigParser implements Serializable {
     private Response parseResponse(String json) throws ConfigException {
         try {
             var root = mapper.readTree(json);
-            var path = getText(root, "path");
-            var method = Method.valueOf(getText(root, "method"));
             var authorizationNode = root.get("authorization");
             @Nullable
             Authorization authorization = authorizationNode != null && !authorizationNode.isNull()
@@ -84,7 +74,7 @@ class ConfigParser implements Serializable {
                 throw new ConfigException("Response should be a JSON object!");
             }
             var schema = parseFromObject((ObjectNode) responseNode);
-            return new Response(path, method, authorization, schema);
+            return new Response(authorization, schema);
         } catch (JsonProcessingException e) {
             throw new ConfigException("Cannot read tree from: " + json, e);
         }
@@ -170,5 +160,13 @@ class ConfigParser implements Serializable {
             throw new ConfigException("Missing required field: " + fieldName);
         }
         return value.asText();
+    }
+
+    private int getInt(JsonNode node, String fieldName) throws ConfigException {
+        var value = node.get(fieldName);
+        if (value == null || value.isNull()) {
+            throw new ConfigException("Missing required field: " + fieldName);
+        }
+        return value.asInt();
     }
 }
