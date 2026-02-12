@@ -60,20 +60,18 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
 
     private final Path configDir;
     private final ConfigLoader loader;
-    private final ConfigParser parser;
+    private final ConfigParser parser = new ConfigParser();
     private final WatchService watchService;
     private final ScheduledExecutorService scheduler;
 
     private @Nullable volatile ScheduledFuture<?> pendingReload;
 
     @Activate
-    public ConfigWatcher(@Reference ConfigLoader loader, @Reference ConfigParser parser)
-            throws ConfigException, IOException, ConfigParseException {
+    public ConfigWatcher(@Reference ConfigLoader loader) throws ConfigException, IOException, ConfigParseException {
         this.configDir = Path.of(OpenHAB.getConfigFolder()).resolve(BINDING_ID);
         validateConfigDir(this.configDir);
 
         this.loader = loader;
-        this.parser = parser;
 
         config = new AtomicReference<>(requireNonNull(loadConfig().orElse(Config.EMPTY)));
 

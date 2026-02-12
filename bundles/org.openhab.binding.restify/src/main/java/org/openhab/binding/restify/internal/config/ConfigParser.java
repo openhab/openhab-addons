@@ -26,19 +26,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.servlet.Authorization;
 import org.openhab.binding.restify.internal.servlet.Response;
 import org.openhab.binding.restify.internal.servlet.Schema;
-import org.osgi.service.component.annotations.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ConfigParser.class)
 public class ConfigParser implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -54,7 +52,7 @@ public class ConfigParser implements Serializable {
             var version = getInt(root, "version");
             var usernamePasswords = parseUsernamePasswords(root.get("authentication"));
             return new Config(version, usernamePasswords);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new ConfigException("Cannot read tree from: " + content, e);
         }
     }
@@ -94,7 +92,7 @@ public class ConfigParser implements Serializable {
             }
             var schema = parseFromObject((ObjectNode) responseNode);
             return new Response(authorization, schema);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new ConfigException("Cannot read tree from: " + json, e);
         }
     }
