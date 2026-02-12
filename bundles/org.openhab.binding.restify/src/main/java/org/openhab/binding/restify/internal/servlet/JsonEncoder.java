@@ -1,14 +1,14 @@
-package org.openhab.binding.restify.internal;
+package org.openhab.binding.restify.internal.servlet;
 
 import java.io.Serial;
 import java.io.Serializable;
 
-import org.openhab.binding.restify.internal.Json.BooleanValue;
-import org.openhab.binding.restify.internal.Json.JsonArray;
-import org.openhab.binding.restify.internal.Json.JsonObject;
-import org.openhab.binding.restify.internal.Json.NullValue;
-import org.openhab.binding.restify.internal.Json.NumberValue;
-import org.openhab.binding.restify.internal.Json.StringValue;
+import org.openhab.binding.restify.internal.servlet.Json.BooleanValue;
+import org.openhab.binding.restify.internal.servlet.Json.JsonArray;
+import org.openhab.binding.restify.internal.servlet.Json.JsonObject;
+import org.openhab.binding.restify.internal.servlet.Json.NullValue;
+import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
+import org.openhab.binding.restify.internal.servlet.Json.StringValue;
 
 public class JsonEncoder implements Serializable {
     @Serial

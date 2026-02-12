@@ -10,22 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.restify.internal;
+package org.openhab.binding.restify.internal.handler;
+
+import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.GET;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 
 /**
- * The {@link RestifyConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EndpointConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class RestifyConfiguration {
-
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+public class EndpointConfiguration {
+    public String path = "/";
+    public DispatcherServlet.Method method = GET;
+    public String config = "{}";
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.restify.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link RestifyBindingConstants} class defines common constants, which are
@@ -26,7 +27,7 @@ public class RestifyBindingConstants {
     public static final String BINDING_ID = "restify";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_ENDPOINT = new ThingTypeUID(BINDING_ID, "endpoint");
 
     // List of all Channel ids
     public static final String CHANNEL_1 = "channel1";
