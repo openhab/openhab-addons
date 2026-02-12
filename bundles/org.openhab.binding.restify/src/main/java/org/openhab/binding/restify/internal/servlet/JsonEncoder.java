@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component
+@Component(service = JsonEncoder.class)
 public class JsonEncoder implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(immediate = true)
+@Component(service = ConfigWatcher.class, immediate = true)
 public class ConfigWatcher implements AutoCloseable, Serializable {
     private static final Duration RELOAD_DEBOUNCE = Duration.ofMillis(300);
     @Serial
