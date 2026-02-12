@@ -101,7 +101,7 @@ public class ConfigParser implements Serializable {
     }
 
     private Schema parseSchema(JsonNode response) throws ConfigException {
-        if (response == null || response.isNull()) {
+        if (response.isNull()) {
             throw new ConfigException("Response schema cannot be null!");
         }
         if (response.isObject()) {

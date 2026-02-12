@@ -71,21 +71,21 @@ public class EndpointHandler extends BaseThingHandler {
     }
 
     private void internalInitialize() throws ConfigException, InitializationException {
-        config = getConfigAs(EndpointConfiguration.class);
-        if (!config.path.startsWith("/")) {
+        var localConfig = config = getConfigAs(EndpointConfiguration.class);
+        if (!localConfig.path.startsWith("/")) {
             throw new InitializationException("thing-type.restify.%s.path".formatted(THING_TYPE_ENDPOINT.getId()),
-                    config.path);
+                    localConfig.path);
         }
 
-        var errors = schemaValidator.validateEndpointConfig(config.endpoint);
+        var errors = schemaValidator.validateEndpointConfig(localConfig.endpoint);
         if (!errors.isEmpty()) {
             var errorMessages = errors.stream().map(Error::getMessage).toList();
             throw new InitializationException("thing-type.restify.%s.config".formatted(THING_TYPE_ENDPOINT.getId()),
                     String.join(", ", errorMessages));
         }
 
-        var response = configParser.parseEndpointConfig(config.endpoint);
-        dispatcherServlet.register(config.path, config.method, response);
+        var response = configParser.parseEndpointConfig(localConfig.endpoint);
+        dispatcherServlet.register(localConfig.path, localConfig.method, response);
         updateStatus(ThingStatus.ONLINE);
     }
 

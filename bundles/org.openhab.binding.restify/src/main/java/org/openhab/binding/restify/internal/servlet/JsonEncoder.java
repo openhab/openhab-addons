@@ -58,6 +58,8 @@ public class JsonEncoder implements Serializable {
         var iterator = json.response().entrySet().iterator();
         while (iterator.hasNext()) {
             var entry = iterator.next();
+            if (entry == null)
+                continue;
             encodeStringValue(new StringValue(entry.getKey()), content);
             content.append(':');
             encode(entry.getValue(), content);

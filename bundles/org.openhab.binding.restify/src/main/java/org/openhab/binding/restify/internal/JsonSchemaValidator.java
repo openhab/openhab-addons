@@ -7,7 +7,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.service.component.annotations.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
@@ -25,7 +24,6 @@ public class JsonSchemaValidator implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String ENDPOINT_SCHEMA = "/endpoint-schema.json";
     private static final String GLOBAL_CONFIG_SCHEMA = "/global-config-schema.json";
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     public List<com.networknt.schema.Error> validateEndpointConfig(String config) {
         return validate(config, ENDPOINT_SCHEMA);
