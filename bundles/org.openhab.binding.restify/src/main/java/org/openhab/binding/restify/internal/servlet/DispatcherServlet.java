@@ -1,24 +1,16 @@
 package org.openhab.binding.restify.internal.servlet;
 
 import static jakarta.servlet.http.HttpServletResponse.*;
-import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
 import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.*;
 
 import java.io.IOException;
 import java.io.Serial;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.config.Config;
-import org.openhab.binding.restify.internal.config.ConfigException;
-import org.openhab.binding.restify.internal.config.ConfigParseException;
 import org.openhab.binding.restify.internal.config.ConfigWatcher;
-import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,18 +28,16 @@ public class DispatcherServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class.getName());
     private final EndpointRegistry registry = new EndpointRegistry();
     private final JsonEncoder jsonEncoder;
-    private final ScheduledExecutorService scheduledPool;
     private final ConfigWatcher configWatcher;
     private final Engine engine;
 
     @Activate
-    public DispatcherServlet(@Reference ItemRegistry itemRegistry, @Reference ThingRegistry thingRegistry)
-            throws ConfigException, IOException, ConfigParseException {
+    public DispatcherServlet(@Reference JsonEncoder jsonEncoder, @Reference ConfigWatcher configWatcher,
+            @Reference Engine engine) {
+        this.jsonEncoder = jsonEncoder;
+        this.configWatcher = configWatcher;
+        this.engine = engine;
         logger.info("Starting DispatcherServlet");
-        scheduledPool = ThreadPoolManager.getScheduledPool(BINDING_ID);
-        configWatcher = new ConfigWatcher(scheduledPool);
-        engine = new Engine(itemRegistry, thingRegistry);
-        jsonEncoder = new JsonEncoder();
     }
 
     private void process(Method method, HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -133,12 +123,6 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         process(DELETE, req, resp);
-    }
-
-    @Deactivate
-    public void deactivate() throws Exception {
-        configWatcher.close();
-        scheduledPool.close();
     }
 
     public void register(String path, Method method, @Nullable Response response) {

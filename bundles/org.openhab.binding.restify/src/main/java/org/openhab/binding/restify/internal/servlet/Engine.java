@@ -39,9 +39,13 @@ import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateOption;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component
 public class Engine implements Serializable {
     private static final Pattern DATE_FORMATTER_PATTERN = Pattern.compile("\\[(.*?)]");
     @Serial
@@ -50,7 +54,8 @@ public class Engine implements Serializable {
     private final ItemRegistry itemRegistry;
     private final ThingRegistry thingRegistry;
 
-    public Engine(ItemRegistry itemRegistry, ThingRegistry thingRegistry) {
+    @Activate
+    public Engine(@Reference ItemRegistry itemRegistry, @Reference ThingRegistry thingRegistry) {
         this.itemRegistry = itemRegistry;
         this.thingRegistry = thingRegistry;
     }

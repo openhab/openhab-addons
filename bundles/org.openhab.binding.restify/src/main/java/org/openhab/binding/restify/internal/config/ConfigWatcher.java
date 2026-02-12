@@ -21,11 +21,16 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.openhab.binding.restify.internal.JsonSchemaValidator;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.common.ThreadPoolManager;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Component(immediate = true)
 public class ConfigWatcher implements AutoCloseable, Serializable {
     private static final Duration RELOAD_DEBOUNCE = Duration.ofMillis(300);
     @Serial
@@ -42,11 +47,8 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
 
     private volatile ScheduledFuture<?> pendingReload;
 
-    public ConfigWatcher(ScheduledExecutorService scheduler) throws ConfigException, IOException, ConfigParseException {
-        this(new ConfigLoader(new JsonSchemaValidator()), new ConfigParser(), scheduler);
-    }
-
-    ConfigWatcher(ConfigLoader loader, ConfigParser parser, ScheduledExecutorService scheduler)
+    @Activate
+    public ConfigWatcher(@Reference ConfigLoader loader, @Reference ConfigParser parser)
             throws ConfigException, IOException, ConfigParseException {
         this.configDir = Path.of(OpenHAB.getConfigFolder()).resolve(BINDING_ID);
         validateConfigDir(this.configDir);
@@ -56,7 +58,8 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
 
         config = new AtomicReference<>(loadConfig().orElse(Config.EMPTY));
 
-        this.scheduler = scheduler;
+        this.scheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
+        ;
         watchService = FileSystems.getDefault().newWatchService();
         configDir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
         scheduler.submit(this::watchLoop);
@@ -140,6 +143,7 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
         }, RELOAD_DEBOUNCE.toMillis(), TimeUnit.MILLISECONDS);
     }
 
+    @Deactivate
     @Override
     public void close() throws Exception {
         logger.info("Closing ConfigWatcher for dir {}...", configDir.toAbsolutePath());

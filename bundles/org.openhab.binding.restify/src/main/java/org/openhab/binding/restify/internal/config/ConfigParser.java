@@ -13,6 +13,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.servlet.Authorization;
 import org.openhab.binding.restify.internal.servlet.Response;
 import org.openhab.binding.restify.internal.servlet.Schema;
+import org.osgi.service.component.annotations.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+@Component
 public class ConfigParser implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
