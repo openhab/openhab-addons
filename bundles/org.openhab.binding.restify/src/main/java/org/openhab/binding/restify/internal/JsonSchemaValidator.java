@@ -30,7 +30,7 @@ import com.networknt.schema.regex.JoniRegularExpressionFactory;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component
+@Component(service = JsonSchemaValidator.class)
 public class JsonSchemaValidator implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

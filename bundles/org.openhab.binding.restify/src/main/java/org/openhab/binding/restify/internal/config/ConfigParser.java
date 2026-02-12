@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component
+@Component(service = ConfigParser.class)
 public class ConfigParser implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

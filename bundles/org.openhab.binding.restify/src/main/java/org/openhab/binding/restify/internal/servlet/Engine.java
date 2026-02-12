@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component
+@Component(service = Engine.class)
 public class Engine implements Serializable {
     private static final Pattern DATE_FORMATTER_PATTERN = Pattern.compile("\\[(.*?)]");
     @Serial

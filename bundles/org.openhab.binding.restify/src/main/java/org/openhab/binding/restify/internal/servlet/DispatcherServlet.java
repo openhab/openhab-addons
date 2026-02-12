@@ -38,7 +38,8 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(service = Servlet.class, property = { "osgi.http.whiteboard.servlet.pattern=/restify/*",
+@Component(service = { Servlet.class, DispatcherServlet.class }, property = {
+        "osgi.http.whiteboard.servlet.pattern=/restify/*",
         "osgi.http.whiteboard.context.select=(osgi.http.whiteboard.context.name=default)" })
 public class DispatcherServlet extends HttpServlet {
     @Serial

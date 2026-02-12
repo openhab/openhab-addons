@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component
+@Component(service = ConfigLoader.class)
 public class ConfigLoader implements Serializable {
     public static final String GENERAL_CONFIG_FILE_NAME = "config.json";
     @Serial
