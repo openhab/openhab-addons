@@ -77,14 +77,14 @@ public class EndpointHandler extends BaseThingHandler {
                     config.path);
         }
 
-        var errors = schemaValidator.validateEndpointConfig(config.config);
+        var errors = schemaValidator.validateEndpointConfig(config.endpoint);
         if (!errors.isEmpty()) {
             var errorMessages = errors.stream().map(Error::getMessage).toList();
             throw new InitializationException("thing-type.restify.%s.config".formatted(THING_TYPE_ENDPOINT.getId()),
                     String.join(", ", errorMessages));
         }
 
-        var response = configParser.parseEndpointConfig(config.config);
+        var response = configParser.parseEndpointConfig(config.endpoint);
         dispatcherServlet.register(config.path, config.method, response);
         updateStatus(ThingStatus.ONLINE);
     }
