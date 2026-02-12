@@ -71,7 +71,7 @@ public class SshRunner {
     private final ClientSession session;
     private final Duration defaultTimeout;
 
-    private final Logger logger = LoggerFactory.getLogger(SshRunner.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(SshRunner.class));
 
     public SshRunner(ClientSession session, Duration defaultTimeout) {
         this.session = session;
