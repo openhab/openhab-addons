@@ -129,8 +129,10 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
     }
 
     private synchronized void scheduleReload() {
-        if (pendingReload != null) {
-            pendingReload.cancel(false);
+        var localPendingReload = pendingReload;
+        if (localPendingReload != null) {
+            localPendingReload.cancel(false);
+            pendingReload = null;
         }
 
         pendingReload = scheduler.schedule(() -> {
@@ -158,6 +160,6 @@ public class ConfigWatcher implements AutoCloseable, Serializable {
     }
 
     public Config currentConfig() {
-        return config.get();
+        return requireNonNull(config.get());
     }
 }
