@@ -109,11 +109,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void authorize(Config config, Authorization.Basic basic, String provided) throws AuthorizationException {
-        var password = config.usernamePasswords().get(basic.username());
-        if (password == null) {
-            throw new AuthorizationException("There is no password configured for user: " + basic.username());
-        }
-        var expected = "Basic " + basic.username() + ":" + password;
+        var expected = "Basic " + basic.username() + ":" + basic.password();
         if (!provided.equals(expected)) {
             throw new AuthorizationException("Invalid username or password");
         }

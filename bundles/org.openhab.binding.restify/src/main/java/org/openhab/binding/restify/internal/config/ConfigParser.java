@@ -98,16 +98,17 @@ public class ConfigParser implements Serializable {
     }
 
     private Authorization parseAuthorization(JsonNode authorization) throws ConfigException {
-
         if (!authorization.isObject()) {
             throw new ConfigException("Authorization should be a JSON object!");
         }
         var type = getText(authorization, "type");
-        return switch (type) {
-            case "Basic" -> new Authorization.Basic(getText(authorization, "username"));
-            case "Bearer" -> new Authorization.Bearer(getText(authorization, "token"));
-            default -> throw new ConfigException("Unknown authorization type: " + type);
-        };
+        if ("Basic".equalsIgnoreCase(type)) {
+            return new Authorization.Basic(getText(authorization, "username"), getText(authorization, "password"));
+        }
+        if ("Bearer".equalsIgnoreCase(type)) {
+            return new Authorization.Bearer(getText(authorization, "token"));
+        }
+        throw new ConfigException("Unknown authorization type: " + type);
     }
 
     private Schema parseSchema(JsonNode response) throws ConfigException {
@@ -135,19 +136,21 @@ public class ConfigParser implements Serializable {
             return new Schema.ItemSchema(uuidExpression.uuid, uuidExpression.expression);
         }
         if (string.startsWith("$thing.")) {
-            var uuidExpression = findUuidExpression(string, "$item.");
+            var uuidExpression = findUuidExpression(string, "$thing.");
             return new Schema.ThingSchema(uuidExpression.uuid, uuidExpression.expression);
         }
         throw new ConfigException("Unsupported schema type: " + string);
     }
 
-    private UuidExpression findUuidExpression(String string, String prefix) throws ConfigException {
+    private UuidExpression findUuidExpression(String string, String prefix) {
         var withoutPrefix = string.substring(prefix.length());
+        String uuid;
         var dotIndex = withoutPrefix.indexOf(".");
-        if (dotIndex == -1) {
-            throw new ConfigException("Invalid schema expression: " + string);
+        if (dotIndex > -1) {
+            uuid = withoutPrefix.substring(0, dotIndex);
+        } else {
+            uuid = withoutPrefix;
         }
-        var uuid = withoutPrefix.substring(0, dotIndex);
         var expression = withoutPrefix.substring(dotIndex + 1);
         return new UuidExpression(uuid, expression);
     }
