@@ -16,6 +16,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_T
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(DDWRTNetworkBridgeHandler.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetworkBridgeHandler.class));
 
     private DDWRTNetworkConfiguration config = new DDWRTNetworkConfiguration();
 
@@ -124,5 +125,6 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         cancelRefreshJob();
+        network.dispose();
     }
 }

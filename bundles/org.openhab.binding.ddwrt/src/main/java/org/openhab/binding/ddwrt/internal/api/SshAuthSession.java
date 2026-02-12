@@ -15,6 +15,7 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Objects;
 
 import org.apache.sshd.client.session.ClientSession;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SshAuthSession implements AutoCloseable {
-    private final Logger logger = LoggerFactory.getLogger(SshAuthSession.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(SshAuthSession.class));
     private final ClientSession session;
     private final Duration defaultTimeout;
     private final @Nullable String welcomeBanner;

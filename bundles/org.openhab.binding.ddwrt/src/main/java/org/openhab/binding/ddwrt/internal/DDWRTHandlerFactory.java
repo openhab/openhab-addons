@@ -15,11 +15,13 @@ package org.openhab.binding.ddwrt.internal;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.BRIDGE_TYPE_NETWORK;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTDeviceThingHandler;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTNetworkBridgeHandler;
+import org.openhab.binding.ddwrt.internal.handler.DDWRTRadioThingHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -51,6 +53,8 @@ public class DDWRTHandlerFactory extends BaseThingHandlerFactory {
             return new DDWRTNetworkBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new DDWRTDeviceThingHandler(thing);
+        } else if (THING_TYPE_RADIO.equals(thingTypeUID)) {
+            return new DDWRTRadioThingHandler(thing);
         }
 
         return null;

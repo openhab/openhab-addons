@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.sshd.client.SshClient;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SshClientManager {
 
-    private final Logger logger = LoggerFactory.getLogger(SshClientManager.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(SshClientManager.class));
 
     private static final SshClientManager INSTANCE = new SshClientManager();
 
@@ -64,7 +65,7 @@ public class SshClientManager {
             ohPrivateKeyDir.mkdirs();
         }
 
-        client = SshClient.setUpDefaultClient();
+        client = Objects.requireNonNull(SshClient.setUpDefaultClient());
         logger.debug("SSH Client Ket Verifier Accept All");
         client.setServerKeyVerifier(AcceptAllServerKeyVerifier.INSTANCE); // MVP only; replace with pinning
         client.start();
@@ -110,6 +111,7 @@ public class SshClientManager {
         }
     }
 
+    @SuppressWarnings("null")
     public SshAuthSession openAuthSession(String host, int port, String user, @Nullable String password,
             @Nullable String privateKeyRef, @Nullable String pinnedFingerprint, Duration defaultTimeout)
             throws IOException {
@@ -132,7 +134,10 @@ public class SshClientManager {
 
         if (ohPrivateKeyDir.exists()) {
             logger.debug("opening keys directory {}", ohPrivateKeyDir.getPath());
-            Collections.addAll(keyFiles, ohPrivateKeyDir.listFiles());
+            File @Nullable [] files = ohPrivateKeyDir.listFiles();
+            if (files != null) {
+                Collections.addAll(keyFiles, files);
+            }
         }
 
         Path homeSshDir = getHomeSshDir();
@@ -140,7 +145,10 @@ public class SshClientManager {
             File homePrivateKeyDir = homeSshDir.toFile();
             if (homePrivateKeyDir.exists()) {
                 logger.debug("opening keys directory {}", homePrivateKeyDir.getPath());
-                Collections.addAll(keyFiles, homePrivateKeyDir.listFiles());
+                File @Nullable [] homeFiles = homePrivateKeyDir.listFiles();
+                if (homeFiles != null) {
+                    Collections.addAll(keyFiles, homeFiles);
+                }
             }
         }
 

@@ -12,47 +12,84 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CHANNEL;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CLIENT_COUNT;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ENABLED;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_MODE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SSID;
+
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ddwrt.internal.DDWRTRadioConfiguration;
+import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
+import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
+import org.openhab.binding.ddwrt.internal.api.DDWRTRadio;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Minimal handler for a DD‑WRT Radio thing.
+ * Handler for a DD-WRT Radio thing.
  *
- * @author Lee Ballard - Initial contribution (adapted)
+ * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTRadioThingHandler extends BaseThingHandler {
+public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRadioConfiguration> {
 
-    private final Logger logger = LoggerFactory.getLogger(DDWRTRadioThingHandler.class);
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTRadioThingHandler.class));
+
+    private DDWRTRadioConfiguration config = new DDWRTRadioConfiguration();
 
     public DDWRTRadioThingHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void initialize() {
-        logger.debug("Initializing DD‑WRT Radio Thing handler for '{}'", getThing().getUID());
-        // For now we just set the thing online – real implementation can be added later.
-        updateStatus(ThingStatus.ONLINE);
+    protected boolean initialize(DDWRTRadioConfiguration config) {
+        this.config = config;
+        if (config.interfaceId.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "interfaceId is required");
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public void dispose() {
-        logger.debug("Disposing DD‑WRT Radio Thing handler for '{}'", getThing().getUID());
-        super.dispose();
+    protected @Nullable DDWRTRadio getEntity(DDWRTNetworkCache cache) {
+        return cache.getRadio(config.interfaceId);
     }
 
     @Override
-    public void handleCommand(ChannelUID arg0, Command arg1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleCommand'");
+    protected State getChannelState(DDWRTRadio radio, String channelId) {
+        return switch (channelId) {
+            case CHANNEL_ENABLED -> OnOffType.from(radio.isEnabled());
+            case CHANNEL_CHANNEL -> new DecimalType(radio.getChannel());
+            case CHANNEL_SSID -> radio.getSsid().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(radio.getSsid());
+            case CHANNEL_MODE -> radio.getMode().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(radio.getMode());
+            case CHANNEL_CLIENT_COUNT -> new DecimalType(radio.getClientCount());
+            default -> UnDefType.NULL;
+        };
     }
 
-    // Add command handling, channel updates, etc. when you need them.
+    @Override
+    protected boolean handleCommand(DDWRTNetwork network, DDWRTRadio radio, ChannelUID channelUID, Command command) {
+        // Enable/disable radio will be implemented in Phase 5
+        String channelId = channelUID.getIdWithoutGroup();
+        if (CHANNEL_ENABLED.equals(channelId) && command instanceof OnOffType) {
+            logger.info("Radio enable/disable not yet implemented for {}", radio.getInterfaceId());
+            return true;
+        }
+        return false;
+    }
 }
