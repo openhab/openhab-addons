@@ -425,6 +425,7 @@ public enum EEPType {
 
                 {
                     put(CHANNEL_ROLLERSHUTTER, new Configuration());
+                    put(CHANNEL_DIMMER, new Configuration());
                     put(CHANNEL_STATEMACHINESTATE, new Configuration());
                     put(CHANNEL_TEACHINCMD, new Configuration() {
                         {
