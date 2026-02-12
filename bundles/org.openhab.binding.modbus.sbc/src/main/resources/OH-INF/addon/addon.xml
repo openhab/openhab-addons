@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Modbus SBC Binding</name>
-	<description>Lambda heat pump binding via Modbus TCP/IP.</description>
+	<description>SBC binding via Modbus TCP/IP.</description>
 	<connection>local</connection>
 
 </addon:addon>

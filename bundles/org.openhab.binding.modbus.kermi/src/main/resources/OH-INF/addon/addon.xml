@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Kermi Modbus Binding</name>
-	<description>Lambda heat pump binding via Modbus TCP/IP.</description>
+	<description>Kermi binding via Modbus TCP/IP.</description>
 	<connection>local</connection>
 
 </addon:addon>
