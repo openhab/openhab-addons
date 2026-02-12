@@ -37,7 +37,6 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.osgi.service.component.ComponentException;
 import org.osgi.service.component.annotations.Activate;
@@ -69,7 +68,7 @@ public class ShellyEventServlet extends WebSocketServlet {
             @Reference WebSocketFactory webSocketFactory) {
         this.handlerFactory = handlerFactory;
         this.thingTable = thingTable;
-        WebSocketClient client = ShellyUtils.createWebSocketClient(webSocketFactory, "shelly2servlet");
+        WebSocketClient client = Shelly2RpcSocket.createWebSocketClient(webSocketFactory, "shelly2servlet");
         this.webSocketClient = client;
         try {
             client.start();
