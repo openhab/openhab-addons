@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public sealed interface Authorization {
-    public record Basic(String username) implements Authorization {
+    public record Basic(String username, String password) implements Authorization {
     }
 
     public record Bearer(String token) implements Authorization {

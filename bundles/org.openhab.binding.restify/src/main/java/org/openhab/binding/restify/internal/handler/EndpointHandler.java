@@ -60,7 +60,7 @@ public class EndpointHandler extends BaseThingHandler {
             internalInitialize();
         } catch (ConfigException ex) {
             logger.error("Wrong config!", ex);
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Wrong config!");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Wrong config! " + ex.getLocalizedMessage());
         } catch (InitializationException ex) {
             logger.error(ex.getLocalizedMessage(), ex);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, ex.translationKey());

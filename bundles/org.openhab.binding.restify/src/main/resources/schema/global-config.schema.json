@@ -1,6 +1,9 @@
 {
-  "$schema": "https://www.openhab.org/addons/RESTify/global-config.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.openhab.org/addons/RESTify/global-config.schema.json",
+
   "type": "object",
+
   "properties": {
     "version": {
       "type": "string",
@@ -19,6 +22,7 @@
       "additionalProperties": false
     }
   },
+
   "required": ["version"],
   "additionalProperties": false
 }

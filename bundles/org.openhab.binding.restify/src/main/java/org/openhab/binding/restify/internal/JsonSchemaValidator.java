@@ -12,18 +12,30 @@
  */
 package org.openhab.binding.restify.internal;
 
+import static com.networknt.schema.SpecificationVersion.DRAFT_2020_12;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serial;
 import java.io.Serializable;
+import java.io.UncheckedIOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.networknt.schema.InputFormat;
 import com.networknt.schema.SchemaLocation;
 import com.networknt.schema.SchemaRegistry;
 import com.networknt.schema.SchemaRegistryConfig;
-import com.networknt.schema.SpecificationVersion;
 import com.networknt.schema.regex.JoniRegularExpressionFactory;
 
 /**
@@ -32,10 +44,17 @@ import com.networknt.schema.regex.JoniRegularExpressionFactory;
 @NonNullByDefault
 @Component(service = JsonSchemaValidator.class)
 public class JsonSchemaValidator implements Serializable {
+    private final Logger logger = LoggerFactory.getLogger(JsonSchemaValidator.class);
     @Serial
     private static final long serialVersionUID = 1L;
-    private static final String ENDPOINT_SCHEMA = "/endpoint-schema.json";
-    private static final String GLOBAL_CONFIG_SCHEMA = "/global-config-schema.json";
+
+    private static final String BASE_ID = "https://www.openhab.org/addons/RESTify/";
+    private static final String SCHEMA_DIR = "schema/";
+
+    private static final String ENDPOINT_SCHEMA = "endpoint.schema.json";
+    private static final String GLOBAL_CONFIG_SCHEMA = "global-config.schema.json";
+
+    private final Map<String, String> schemaTextCache = new ConcurrentHashMap<>();
 
     public List<com.networknt.schema.Error> validateEndpointConfig(String config) {
         return validate(config, ENDPOINT_SCHEMA);
@@ -45,25 +64,48 @@ public class JsonSchemaValidator implements Serializable {
         return validate(config, GLOBAL_CONFIG_SCHEMA);
     }
 
-    private List<com.networknt.schema.Error> validate(String config, String schemaPath) {
+    private List<com.networknt.schema.Error> validate(String config, String schemaFileName) {
+        logger.debug("Validating config using {}", schemaFileName);
+
         var schemaRegistryConfig = SchemaRegistryConfig.builder()
                 .regularExpressionFactory(JoniRegularExpressionFactory.getInstance()).build();
-        var schemaRegistry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_2020_12,
+
+        var schemaRegistry = SchemaRegistry.withDefaultDialect(DRAFT_2020_12,
                 builder -> builder.schemaRegistryConfig(schemaRegistryConfig)
-                        /*
-                         * This creates a mapping from $id which starts with
-                         * https://www.example.org/schema to the retrieval IRI classpath:schema.
-                         */
-                        .schemaIdResolvers(schemaIdResolvers -> schemaIdResolvers
-                                .mapPrefix("https://www.openhab.org/addons/RESTify", "classpath:schema")));
-        var schema = schemaRegistry
-                .getSchema(SchemaLocation.of("https://www.openhab.org/addons/RESTify/schema" + schemaPath));
-        return schema.validate(config, InputFormat.JSON, executionContext -> {
-            /*
-             * By default since Draft 2019-09 the format keyword only generates annotations
-             * and not assertions.
-             */
-            executionContext.executionConfig(executionConfig -> executionConfig.formatAssertionsEnabled(true));
+                        // IMPORTANT: provide schema contents for absolute $id IRIs
+                        .schemas(this::loadSchemaByAbsoluteId));
+
+        var schema = schemaRegistry.getSchema(SchemaLocation.of(BASE_ID + schemaFileName));
+
+        return schema.validate(config, InputFormat.JSON,
+                ctx -> ctx.executionConfig(ec -> ec.formatAssertionsEnabled(true)));
+    }
+
+    /**
+     * Called by json-schema-validator for absolute schema IDs (e.g. https://.../endpoint.schema.json)
+     * Must return the schema JSON as a String or null if not handled.
+     */
+    @Nullable
+    private String loadSchemaByAbsoluteId(String absoluteId) {
+        if (!absoluteId.startsWith(BASE_ID)) {
+            return null; // not ours
+        }
+
+        return schemaTextCache.computeIfAbsent(absoluteId, id -> {
+            String fileName = id.substring(BASE_ID.length()); // e.g. "endpoint.schema.json"
+            String bundlePath = SCHEMA_DIR + fileName; // e.g. "schema/endpoint.schema.json"
+
+            URL url = FrameworkUtil.getBundle(getClass()).getEntry(bundlePath);
+            if (url == null) {
+                throw new IllegalStateException("Schema not found in bundle: " + bundlePath + " (for $id=" + id + ")");
+            }
+
+            try (InputStream in = url.openStream()) {
+                return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new UncheckedIOException(
+                        "Cannot read schema from bundle: " + bundlePath + " (for $id=" + id + ")", e);
+            }
         });
     }
 }
