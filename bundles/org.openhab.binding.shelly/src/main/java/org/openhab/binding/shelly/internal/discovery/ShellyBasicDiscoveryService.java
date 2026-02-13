@@ -25,14 +25,13 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api.ShellyDiscoveryInterface;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiClient;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
@@ -118,7 +117,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         ThingUID thingUID = null;
         ShellyDeviceProfile profile;
         ShellySettingsDevice devInfo;
-        ShellyApiInterface api = null;
+        ShellyDiscoveryInterface api = null;
         boolean auth = false;
         String mac = "";
         String model = "";
@@ -127,21 +126,11 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String deviceName = "";
         String thingType = "";
         Map<String, Object> properties = new TreeMap<>();
-        WebSocketClient webSocketClient = null;
 
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
             if (gen2) {
-                // TODO: Temporary code to be refactored away
-                webSocketClient = new WebSocketClient();
-                webSocketClient.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
-                webSocketClient.setStopTimeout(1000);
-                try {
-                    webSocketClient.start();
-                } catch (Exception e1) {
-                    logger.warn("Discovery: Unable to start websocket client: {}", e1.getMessage(), e1);
-                }
-                api = new Shelly2ApiRpc(name, thingTable, config, httpClient, webSocketClient);
+                api = new Shelly2ApiClient(name, config, httpClient);
             } else {
                 api = new Shelly1HttpApi(name, config, httpClient);
             }
@@ -175,14 +164,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         } finally {
             if (api != null) {
                 api.close();
-            }
-            if (webSocketClient != null) {
-                // TODO: Temporary code to be refactored away
-                try {
-                    webSocketClient.stop();
-                } catch (Exception e) {
-                    logger.warn("Discovery: Unable to stop websocket client: {}", e.getMessage(), e);
-                }
             }
         }
 
