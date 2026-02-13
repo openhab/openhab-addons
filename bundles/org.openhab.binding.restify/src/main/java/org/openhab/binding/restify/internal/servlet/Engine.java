@@ -37,7 +37,9 @@ import org.openhab.binding.restify.internal.servlet.Json.JsonArray;
 import org.openhab.binding.restify.internal.servlet.Json.JsonObject;
 import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
+import org.openhab.binding.restify.internal.servlet.Response.BooleanResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ItemResponse;
+import org.openhab.binding.restify.internal.servlet.Response.NumberResponse;
 import org.openhab.binding.restify.internal.servlet.Response.StringResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ThingResponse;
 import org.openhab.core.config.core.Configuration;
@@ -82,6 +84,8 @@ public class Engine implements Serializable {
         return switch (Response) {
             case ItemResponse itemSchema -> evaluate(itemSchema);
             case Response.JsonResponse jsonSchema -> evaluate(jsonSchema);
+            case BooleanResponse booleanSchema -> evaluate(booleanSchema);
+            case NumberResponse numberSchema -> evaluate(numberSchema);
             case Response.StringResponse stringSchema -> evaluate(stringSchema);
             case ThingResponse thingSchema -> evaluate(thingSchema);
             case Response.ArrayResponse arraySchema -> evaluate(arraySchema);
@@ -354,6 +358,14 @@ public class Engine implements Serializable {
 
     private Json evaluate(StringResponse schema) {
         return new StringValue(schema.value());
+    }
+
+    private Json evaluate(NumberResponse schema) {
+        return new NumberValue(schema.value());
+    }
+
+    private Json evaluate(BooleanResponse schema) {
+        return new BooleanValue(schema.value());
     }
 
     private Json evaluate(ThingResponse schema) throws ParameterException {

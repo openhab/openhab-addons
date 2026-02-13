@@ -39,6 +39,16 @@ class ResponseParserTest {
     }
 
     @Test
+    void parseResponseParsesNumber() throws Exception {
+        assertParsed("42", new Response.NumberResponse(42));
+    }
+
+    @Test
+    void parseResponseParsesBoolean() throws Exception {
+        assertParsed("true", new Response.BooleanResponse(true));
+    }
+
+    @Test
     void parseResponseParsesItemExpression() throws Exception {
         assertParsed("\"$item.livingRoom.temperature\"", new Response.ItemResponse("livingRoom", "temperature"));
     }
@@ -72,8 +82,6 @@ class ResponseParserTest {
     @Test
     void parseResponseFailsForUnsupportedNodeTypes() throws Exception {
         assertParseFails("null", "Response schema cannot be null!");
-        assertParseFails("123", "Unsupported schema type: NUMBER");
-        assertParseFails("true", "Unsupported schema type: BOOLEAN");
     }
 
     @Test

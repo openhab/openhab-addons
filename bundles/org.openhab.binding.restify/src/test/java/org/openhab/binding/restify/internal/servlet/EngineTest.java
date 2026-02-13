@@ -31,8 +31,10 @@ import org.openhab.binding.restify.internal.servlet.Json.NullValue;
 import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
 import org.openhab.binding.restify.internal.servlet.Response.ArrayResponse;
+import org.openhab.binding.restify.internal.servlet.Response.BooleanResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ItemResponse;
 import org.openhab.binding.restify.internal.servlet.Response.JsonResponse;
+import org.openhab.binding.restify.internal.servlet.Response.NumberResponse;
 import org.openhab.binding.restify.internal.servlet.Response.StringResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ThingResponse;
 import org.openhab.core.items.Item;
@@ -83,6 +85,32 @@ class EngineTest {
 
         // Then
         assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("message", new StringValue("ok"))));
+        verifyNoInteractions(itemRegistry, thingRegistry);
+    }
+
+    @Test
+    void evaluateMapsNumberResponse() throws ParameterException {
+        // Given
+        var schema = new JsonResponse(Map.of("value", new NumberResponse(42)));
+
+        // When
+        var actual = sut.evaluate(schema);
+
+        // Then
+        assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("value", new NumberValue(42))));
+        verifyNoInteractions(itemRegistry, thingRegistry);
+    }
+
+    @Test
+    void evaluateMapsBooleanResponse() throws ParameterException {
+        // Given
+        var schema = new JsonResponse(Map.of("enabled", new BooleanResponse(true)));
+
+        // When
+        var actual = sut.evaluate(schema);
+
+        // Then
+        assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("enabled", new BooleanValue(true))));
         verifyNoInteractions(itemRegistry, thingRegistry);
     }
 

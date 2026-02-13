@@ -72,6 +72,8 @@ Supported authorization formats:
 Each value inside `response` can be:
 
 - a static string
+- a static number
+- a static boolean
 - an object
 - an array
 - an item expression string: `$item.<itemName>.<expression>`
