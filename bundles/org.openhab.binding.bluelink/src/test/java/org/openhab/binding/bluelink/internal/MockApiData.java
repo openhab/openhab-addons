@@ -26,7 +26,7 @@ public final class MockApiData {
     public static final String TOKEN_RESPONSE_CA;
     public static final String TOKEN_RESPONSE_US;
     public static final String TOKEN_RESPONSE_EU;
-    public static final String ENROLLMENT_RESPONSE;
+    public static final String ENROLLMENT_RESPONSE_US;
     public static final String DEVICE_REGISTRATION_RESPONSE_EU;
     public static final String VEHICLE_STATUS_RESPONSE_CA;
     public static final String VEHICLE_STATUS_RESPONSE_US;
@@ -40,7 +40,7 @@ public final class MockApiData {
             TOKEN_RESPONSE_CA = loadResource("/login-response-ca.json");
             TOKEN_RESPONSE_US = loadResource("/login-response-us.json");
             TOKEN_RESPONSE_EU = loadResource("/login-response-eu.json");
-            ENROLLMENT_RESPONSE = loadResource("/enrollment-details.json");
+            ENROLLMENT_RESPONSE_US = loadResource("/enrollment-details-us.json");
             DEVICE_REGISTRATION_RESPONSE_EU = loadResource("/device-registration-eu.json");
             VEHICLE_STATUS_RESPONSE_US = loadResource("/vehicle-status-us.json");
             VEHICLE_STATUS_RESPONSE_CA = loadResource("/vehicle-status-ca.json");
