@@ -27,4 +27,14 @@ public class EndpointConfiguration {
     public String path = "/hello-world";
     public DispatcherServlet.Method method = GET;
     public String endpoint = "{\"response\":{ \"message\":\"Hello World\"}}";
+
+    public EndpointConfiguration() {
+    }
+
+    public EndpointConfiguration(String path, DispatcherServlet.Method method, String endpoint) {
+        this();
+        this.path = path.trim();
+        this.method = method;
+        this.endpoint = endpoint.trim();
+    }
 }
