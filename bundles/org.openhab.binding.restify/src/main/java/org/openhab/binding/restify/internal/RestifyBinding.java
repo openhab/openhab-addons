@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = CONFIGURATION_PID, service = { RestifyBinding.class, ManagedService.class })
 public class RestifyBinding implements ManagedService, Serializable {
     @Serial
-    private static final long serialVersionUID = 6114697727662078933L;
+    private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(RestifyBinding.class);
     private volatile RestifyBindingConfig config = RestifyBindingConfig.DEFAULT;
 
