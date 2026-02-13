@@ -49,4 +49,12 @@ public interface RingAccount {
      * @throws AuthenticationException when request is invalid.
      */
     byte[] getSnapshot(String id);
+
+    /**
+     * Get the timestamp of the last camera snapshot
+     *
+     * @param url to be sent ot the Ring API
+     * @throws AuthenticationException when request is invalid.
+     */
+    void sendCommand(String url);
 }
