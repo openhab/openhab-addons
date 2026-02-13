@@ -117,14 +117,26 @@ public class DispatcherServlet extends HttpServlet {
         logger.error("{}: {}", statusCode, translatedMessage, e);
         resp.setStatus(statusCode);
         resp.setContentType("application/json");
-        resp.getWriter().write("{\"code\": %d, \"error\": \"%s\"}".formatted(statusCode, translatedMessage));
+        resp.setCharacterEncoding("UTF-8");
+        var errorResponse = Json.object();
+        errorResponse.put("code", statusCode);
+        errorResponse.put("error", translatedMessage);
+        resp.getWriter().write(jsonEncoder.encode(errorResponse));
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
-        logger.error("{}: {}", statusCode, e.getMessage(), e);
+        var message = e.getMessage();
+        if (message == null) {
+            message = e.toString();
+        }
+        logger.error("{}: {}", statusCode, message, e);
         resp.setStatus(statusCode);
         resp.setContentType("application/json");
-        resp.getWriter().write("{\"code\": %d, \"error\": \"%s\"}".formatted(statusCode, e.getMessage()));
+        resp.setCharacterEncoding("UTF-8");
+        var errorResponse = Json.object();
+        errorResponse.put("code", statusCode);
+        errorResponse.put("error", message);
+        resp.getWriter().write(jsonEncoder.encode(errorResponse));
     }
 
     @Override
