@@ -15,8 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: RESTify Binding</name>
 
   <properties>
-    <bnd.importpackage>org.graalvm.polyglot;resolution:=optional,
-      *</bnd.importpackage>
+    <bnd.importpackage>javax.servlet;version="[3.1,4)",javax.servlet.http;version="[3.1,4)",org.osgi.service.http.whiteboard.*,org.graalvm.polyglot;resolution:=optional,org.jspecify.annotations;resolution:=optional,tools.jackson.dataformat.yaml;resolution:=optional,*</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -70,9 +69,20 @@
       <version>2.2.6</version>
     </dependency>
     <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <version>5.0.0</version>
+      <groupId>org.jruby.jcodings</groupId>
+      <artifactId>jcodings</artifactId>
+      <version>1.0.63</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+      <version>1.0.0</version>
     </dependency>
   </dependencies>
 </project>

@@ -12,39 +12,44 @@
  */
 package org.openhab.binding.restify.internal.servlet;
 
-import static jakarta.servlet.http.HttpServletResponse.*;
 import static java.util.Objects.requireNonNull;
+import static javax.servlet.http.HttpServletResponse.*;
+import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
 import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.*;
 
 import java.io.IOException;
 import java.io.Serial;
 
+import javax.servlet.Servlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.config.Config;
 import org.openhab.binding.restify.internal.config.ConfigWatcher;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.servlet.Servlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { Servlet.class, DispatcherServlet.class }, property = {
-        "osgi.http.whiteboard.servlet.pattern=/restify/*",
-        "osgi.http.whiteboard.context.select=(osgi.http.whiteboard.context.name=default)" })
+@Component(service = { Servlet.class, DispatcherServlet.class }, immediate = true)
+@HttpWhiteboardServletName(DispatcherServlet.SERVLET_PATH)
+@HttpWhiteboardServletPattern({ DispatcherServlet.SERVLET_PATH, DispatcherServlet.SERVLET_PATH + "/*" })
 public class DispatcherServlet extends HttpServlet {
+    public static final String SERVLET_PATH = "/" + BINDING_ID;
     @Serial
     private static final long serialVersionUID = 1L;
-    private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class.getName());
+    private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
     private final EndpointRegistry registry = new EndpointRegistry();
     private final JsonEncoder jsonEncoder;
     private final ConfigWatcher configWatcher;
@@ -63,7 +68,7 @@ public class DispatcherServlet extends HttpServlet {
             throws IOException {
         requireNonNull(req, "Request must not be null");
         requireNonNull(resp, "Response must not be null");
-        var uri = req.getRequestURI();
+        var uri = findRequestUri(req);
         logger.debug("Processing {}:{}", method, uri);
         try {
             var json = process(method, uri, req.getHeader("Authorization"));
@@ -79,6 +84,14 @@ public class DispatcherServlet extends HttpServlet {
             respondWithError(resp, SC_INTERNAL_SERVER_ERROR, ex);
         }
         resp.getWriter().close();
+    }
+
+    private static @NonNull String findRequestUri(@NonNull HttpServletRequest req) {
+        var fullUri = requireNonNull(req.getRequestURI(), "Request URI must not be null");
+        if (!fullUri.startsWith(SERVLET_PATH)) {
+            throw new IllegalStateException("Request URI must start with " + SERVLET_PATH);
+        }
+        return fullUri.substring(SERVLET_PATH.length());
     }
 
     public Json.JsonObject process(Method method, String path, @Nullable String authorization)
@@ -101,7 +114,6 @@ public class DispatcherServlet extends HttpServlet {
         if (provided == null) {
             throw new AuthorizationException("Authorization required");
         }
-
         switch (required) {
             case Authorization.Basic basic -> authorize(config, basic, provided);
             case Authorization.Bearer bearer -> authorize(bearer, provided);
@@ -109,6 +121,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void authorize(Config config, Authorization.Basic basic, String provided) throws AuthorizationException {
+        // TODO use base64 encoding and separate username and password with a colon, as per RFC 7617
         var expected = "Basic " + basic.username() + ":" + basic.password();
         if (!provided.equals(expected)) {
             throw new AuthorizationException("Invalid username or password");
@@ -122,7 +135,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
-        logger.error("%s: %s".formatted(statusCode, e.getMessage()), e);
+        logger.error("{}: {}", statusCode, e.getMessage(), e);
         resp.setStatus(statusCode);
         resp.setContentType("application/json");
         resp.getWriter().write("{\"code\": %d, \"error\": \"%s\"}".formatted(statusCode, e.getMessage()));
