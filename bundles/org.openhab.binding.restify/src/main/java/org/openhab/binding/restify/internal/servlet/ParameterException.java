@@ -27,4 +27,8 @@ public class ParameterException extends UserRequestException {
     public ParameterException(String parameterName) {
         super(460, "Could not parse parameter " + parameterName);
     }
+
+    protected ParameterException(int statusCode, String message) {
+        super(statusCode, message);
+    }
 }
