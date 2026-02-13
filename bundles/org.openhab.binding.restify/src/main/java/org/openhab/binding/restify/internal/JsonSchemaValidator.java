@@ -52,16 +52,11 @@ public class JsonSchemaValidator implements Serializable {
     private static final String SCHEMA_DIR = "schema/";
 
     private static final String ENDPOINT_SCHEMA = "endpoint.schema.json";
-    private static final String GLOBAL_CONFIG_SCHEMA = "global-config.schema.json";
 
     private final Map<String, String> schemaTextCache = new ConcurrentHashMap<>();
 
     public List<com.networknt.schema.Error> validateEndpointConfig(String config) {
         return validate(config, ENDPOINT_SCHEMA);
-    }
-
-    public List<com.networknt.schema.Error> validateGlobalConfig(String config) {
-        return validate(config, GLOBAL_CONFIG_SCHEMA);
     }
 
     private List<com.networknt.schema.Error> validate(String config, String schemaFileName) {
