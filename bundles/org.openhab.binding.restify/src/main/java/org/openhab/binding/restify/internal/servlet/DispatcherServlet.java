@@ -19,6 +19,8 @@ import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Met
 
 import java.io.IOException;
 import java.io.Serial;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
@@ -122,17 +124,34 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void authorizeBasic(Authorization.Basic basic, String provided) throws AuthorizationException {
-        // TODO use base64 encoding and separate username and password with a colon, as per RFC 7617
-        var expected = "Basic " + basic.username() + ":" + basic.password();
-        if (!provided.equals(expected)) {
+        if (!provided.startsWith("Basic ")) {
+            throw new AuthorizationException("Invalid username or password");
+        }
+        var credentials = provided.substring("Basic ".length());
+        var separatorIndex = credentials.indexOf(':');
+        if (separatorIndex <= 0) {
+            throw new AuthorizationException("Invalid username or password");
+        }
+        var providedUsername = credentials.substring(0, separatorIndex);
+        var providedPassword = credentials.substring(separatorIndex + 1);
+        if (!timingSafeEquals(providedUsername, basic.username())
+                || !timingSafeEquals(providedPassword, basic.password())) {
             throw new AuthorizationException("Invalid username or password");
         }
     }
 
     private void authorizeBearer(Authorization.Bearer bearer, String provided) throws AuthorizationException {
-        if (!provided.equals("Bearer " + bearer.token())) {
+        if (!provided.startsWith("Bearer ")) {
             throw new AuthorizationException("Invalid token");
         }
+        var providedToken = provided.substring("Bearer ".length());
+        if (!timingSafeEquals(providedToken, bearer.token())) {
+            throw new AuthorizationException("Invalid token");
+        }
+    }
+
+    private static boolean timingSafeEquals(String left, String right) {
+        return MessageDigest.isEqual(left.getBytes(StandardCharsets.UTF_8), right.getBytes(StandardCharsets.UTF_8));
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
