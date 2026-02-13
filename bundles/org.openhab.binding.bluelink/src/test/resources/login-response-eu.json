@@ -1,6 +1,5 @@
 {
   "token_type": "Bearer",
-  "access_token": "test-eu-access-token",
-  "refresh_token": "test-eu-refresh-token",
+  "access_token": "test-access-token",
   "expires_in": "3600"
 }
