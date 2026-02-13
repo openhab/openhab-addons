@@ -25,10 +25,10 @@ public class ParameterException extends UserRequestException {
     private static final long serialVersionUID = 1L;
 
     public ParameterException(String parameterName) {
-        super(460, "Could not parse parameter " + parameterName);
+        super(460, "servlet.error.parameter", parameterName);
     }
 
-    protected ParameterException(int statusCode, String message) {
-        super(statusCode, message);
+    protected ParameterException(int statusCode, String messageKey, Object... args) {
+        super(statusCode, messageKey, args);
     }
 }

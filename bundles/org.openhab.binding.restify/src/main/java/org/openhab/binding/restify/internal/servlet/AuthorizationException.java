@@ -24,7 +24,7 @@ public class AuthorizationException extends UserRequestException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public AuthorizationException(String message) {
-        super(401, message);
+    public AuthorizationException(String messageKey, Object... args) {
+        super(401, messageKey, args);
     }
 }
