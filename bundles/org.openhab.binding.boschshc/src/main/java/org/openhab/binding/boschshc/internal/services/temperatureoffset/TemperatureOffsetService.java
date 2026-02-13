@@ -25,8 +25,9 @@ import org.openhab.binding.boschshc.internal.services.temperatureoffset.dto.Temp
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service to configure temperature offsets for thermostats.
@@ -36,6 +37,8 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class TemperatureOffsetService extends BoschSHCService<TemperatureOffsetServiceState> {
+
+    private final Logger logger = LoggerFactory.getLogger(TemperatureOffsetService.class);
 
     public static final String TEMPERATURE_OFFSET_SERVICE_NAME = "TemperatureOffset";
 
@@ -60,10 +63,10 @@ public class TemperatureOffsetService extends BoschSHCService<TemperatureOffsetS
         return super.handleCommand(command);
     }
 
-    @Nullable
-    private QuantityType<Temperature> getRelativeTemperatureValue(QuantityType<?> quantityCommand) {
+    private @Nullable QuantityType<Temperature> getRelativeTemperatureValue(QuantityType<?> quantityCommand) {
         // check if the given quantity has a temperature unit
-        if (!quantityCommand.getUnit().getSystemUnit().equals(Units.KELVIN)) {
+        if (!quantityCommand.getUnit().isCompatible(SIUnits.CELSIUS)) {
+            logger.warn("Received a command that has no temperature quantity, ignoring: {}", quantityCommand);
             return null;
         }
 
@@ -74,7 +77,9 @@ public class TemperatureOffsetService extends BoschSHCService<TemperatureOffsetS
 
     private TemperatureOffsetServiceState createNewTemperatureOffsetState(BigDecimal offset) {
         TemperatureOffsetServiceState state = new TemperatureOffsetServiceState();
-        state.offset = sanitizeOffsetValue(offset);
+        double sanitizedOffset = sanitizeOffsetValue(offset);
+        logger.debug("Temperature offset value {} was sanitized to {}.", offset, sanitizedOffset);
+        state.offset = sanitizedOffset;
         return state;
     }
 

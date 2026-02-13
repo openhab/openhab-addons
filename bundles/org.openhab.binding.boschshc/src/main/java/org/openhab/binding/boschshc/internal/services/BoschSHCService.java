@@ -50,7 +50,7 @@ import com.google.gson.JsonElement;
 @NonNullByDefault
 public abstract class BoschSHCService<TState extends BoschSHCServiceState> extends AbstractBoschSHCService {
 
-    protected final Logger logger = LoggerFactory.getLogger(BoschSHCService.class);
+    private final Logger logger = LoggerFactory.getLogger(BoschSHCService.class);
 
     /**
      * Class of service state
