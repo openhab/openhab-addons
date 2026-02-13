@@ -91,7 +91,7 @@ public class EndpointHandler extends BaseThingHandler {
 
         final Endpoint response;
         try {
-            response = endpointParser.parseEndpointConfig(localConfig.endpoint);
+            response = endpointParser.parseEndpoint(localConfig.endpoint);
         } catch (EndpointParseException ex) {
             throw new InitializationException(
                     "thing-type.config.restify.%s.endpoint.invalid".formatted(THING_TYPE_ENDPOINT.getId()),
