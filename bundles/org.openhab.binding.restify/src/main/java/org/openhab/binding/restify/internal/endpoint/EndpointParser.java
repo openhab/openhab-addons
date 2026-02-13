@@ -45,28 +45,6 @@ public class EndpointParser implements Serializable {
         return parseResponse(config);
     }
 
-    private Map<String, String> parseUsernamePasswords(@Nullable JsonNode authentication)
-            throws EndpointParseException {
-        if (authentication == null || authentication.isNull()) {
-            return Map.of();
-        }
-        if (!authentication.isObject()) {
-            throw new EndpointParseException("Authentication should be a JSON object!");
-        }
-        var usernamePasswords = authentication.get("usernamePasswords");
-        if (usernamePasswords == null || usernamePasswords.isNull()) {
-            return Map.of();
-        }
-        if (!(usernamePasswords instanceof ObjectNode usernamePasswordsObject)) {
-            throw new EndpointParseException("usernamePasswords should be a JSON object!");
-        }
-        var result = new HashMap<String, String>();
-        for (var entry : usernamePasswordsObject.properties()) {
-            result.put(entry.getKey(), entry.getValue().asString());
-        }
-        return Map.copyOf(result);
-    }
-
     private Endpoint parseResponse(String json) throws EndpointParseException {
         try {
             var root = mapper.readTree(json);
