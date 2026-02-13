@@ -1,11 +1,8 @@
 package org.openhab.binding.restify.internal;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Dictionary;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.component.annotations.Component;
 
@@ -19,8 +16,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.restify", service = { RestifyBinding.class, ManagedService.class })
 public class RestifyBinding implements ManagedService {
 
-    @Nullable
-    private volatile RestifyBindingConfig config;
+    private volatile RestifyBindingConfig config = RestifyBindingConfig.DEFAULT;
 
     @Override
     @NonNullByDefault({})
@@ -34,6 +30,6 @@ public class RestifyBinding implements ManagedService {
     }
 
     public RestifyBindingConfig getConfig() {
-        return requireNonNull(config);
+        return config;
     }
 }
