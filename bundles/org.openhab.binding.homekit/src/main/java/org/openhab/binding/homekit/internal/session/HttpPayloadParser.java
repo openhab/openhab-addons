@@ -233,7 +233,7 @@ public class HttpPayloadParser implements AutoCloseable {
                     chunkDataBuffer.write(inputBuffer, inputStartIndex, remainingByteCount);
                     if (chunkDataBuffer.size() > MAX_CONTENT_LENGTH) {
                         throw new IOException("Chunked data size %d exceeds maximum allowed %d"
-                                .formatted(contentBuffer.size(), MAX_CONTENT_LENGTH));
+                                .formatted(chunkDataBuffer.size(), MAX_CONTENT_LENGTH));
                     }
                     inputStartIndex += remainingByteCount;
                     parseChunkedBytesFromStagingBuffer();
