@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -51,7 +50,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
     protected static final int HTTP_TIMEOUT_SECONDS = 30;
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected final Gson gson = new GsonBuilder().create();
+    protected final Gson gson = new Gson();
     protected final HttpClient httpClient;
     protected final TimeZoneProvider timeZoneProvider;
     protected final String username;

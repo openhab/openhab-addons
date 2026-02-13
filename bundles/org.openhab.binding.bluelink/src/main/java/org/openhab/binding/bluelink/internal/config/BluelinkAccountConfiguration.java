@@ -24,12 +24,12 @@ import org.eclipse.jdt.annotation.Nullable;
 public class BluelinkAccountConfiguration {
 
     /**
-     * Bluelink account username (email).
+     * Bluelink account username (email). Not required for EU region.
      */
     public @Nullable String username;
 
     /**
-     * Bluelink account password.
+     * Bluelink account password / refresh_token for EU region.
      */
     public @Nullable String password;
 
@@ -44,7 +44,7 @@ public class BluelinkAccountConfiguration {
     public @Nullable String region;
 
     /**
-     * Vehicle brand (HYUNDAI, KIA, or GENESIS). Required for Canada region.
+     * Vehicle brand (HYUNDAI, KIA, or GENESIS). Required for Canada & EU region.
      */
     public @Nullable String brand;
 
