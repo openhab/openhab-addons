@@ -108,9 +108,13 @@ Examples:
 - `$thing.mqtt:topic:broker:device.label,enabled`
 - `$thing.mqtt:topic:broker:device.statusInfo.status,statusDetail`
 - `$thing.mqtt:topic:broker:device.channel.temperature.label`
+- `$thing.mqtt:topic:broker:device.channels.label`
+- `$thing.mqtt:topic:broker:device.channels.uid,label`
 
 `channel.<channelId>` addresses a specific channel.
+`channel.<channelId>` supports channel sub-commands like `label`, `uid`, `kind`, `configuration`, `properties`, `defaultTags`, and `autoUpdatePolicy`.
 `channels` returns an array of all channels.
+`channels.<sub-command>` applies the same channel sub-commands to all channels and returns an array of projected values or objects.
 
 ## HTTP Behavior
 
