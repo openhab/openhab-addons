@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.restify.internal.servlet;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
@@ -20,8 +19,6 @@ import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Met
 
 import java.io.IOException;
 import java.io.Serial;
-import java.security.MessageDigest;
-import java.util.Base64;
 import java.util.Locale;
 
 import javax.servlet.Servlet;
@@ -32,8 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
-import org.openhab.binding.restify.internal.RestifyBinding;
-import org.openhab.binding.restify.internal.RestifyBindingConfig;
 import org.openhab.binding.restify.internal.endpoint.Endpoint;
 import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
 import org.openhab.core.i18n.TranslationProvider;
@@ -56,8 +51,6 @@ import org.slf4j.LoggerFactory;
 @HttpWhiteboardServletPattern({ DispatcherServlet.SERVLET_PATH, DispatcherServlet.SERVLET_PATH + "/*" })
 public class DispatcherServlet extends HttpServlet {
     public static final String SERVLET_PATH = "/" + BINDING_ID;
-    private static final String BASIC_PREFIX = new Authorization.Basic("", "").prefix();
-    private static final String BEARER_PREFIX = new Authorization.Bearer("").prefix();
     @Serial
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
@@ -65,16 +58,16 @@ public class DispatcherServlet extends HttpServlet {
     private final JsonEncoder jsonEncoder;
     private final Bundle bundle;
     private final TranslationProvider i18nProvider;
-    private final RestifyBinding restifyBinding;
+    private final AuthorizationService authorizationService;
     private final Engine engine;
 
     @Activate
     public DispatcherServlet(@Reference JsonEncoder jsonEncoder, @Reference TranslationProvider i18nProvider,
-            @Reference RestifyBinding restifyBinding, @Reference Engine engine) {
+            @Reference AuthorizationService authorizationService, @Reference Engine engine) {
         this.jsonEncoder = jsonEncoder;
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.i18nProvider = i18nProvider;
-        this.restifyBinding = restifyBinding;
+        this.authorizationService = authorizationService;
         this.engine = engine;
         logger.info("Starting DispatcherServlet");
     }
@@ -112,107 +105,8 @@ public class DispatcherServlet extends HttpServlet {
     public Json.JsonObject process(Method method, String path, @Nullable String authorization)
             throws AuthorizationException, NotFoundException, ParameterException {
         var response = registry.find(path, method).orElseThrow(() -> new NotFoundException(path, method));
-        authorize(restifyBinding.getConfig(), response.authorization(), authorization);
+        authorizationService.authorize(response.authorization(), authorization);
         return engine.evaluate(response.schema());
-    }
-
-    private void authorize(RestifyBindingConfig config, @Nullable Authorization required, @Nullable String provided)
-            throws AuthorizationException {
-        var effectiveRequired = required;
-        if (effectiveRequired == null) {
-            effectiveRequired = resolveDefaultAuthorization(config, provided);
-            if (effectiveRequired != null) {
-                logger.debug("No endpoint authorization configured, using {} from binding defaults",
-                        effectiveRequired.getClass().getSimpleName());
-            } else {
-                logger.debug("No endpoint authorization configured and no valid default authorization provided");
-            }
-        }
-        if (effectiveRequired == null) {
-            if (config.enforceAuthentication()) {
-                throw new AuthorizationException("servlet.error.authorization.missing-config-or-disable-enforce");
-            }
-            return; // no authorization required
-        }
-        if (provided == null) {
-            throw new AuthorizationException("servlet.error.authorization.required");
-        }
-        switch (effectiveRequired) {
-            case Authorization.Basic basic -> authorizeBasic(basic, provided);
-            case Authorization.Bearer bearer -> authorizeBearer(bearer, provided);
-        }
-    }
-
-    private @Nullable Authorization resolveDefaultAuthorization(RestifyBindingConfig config,
-            @Nullable String provided) {
-        if (provided == null) {
-            return null;
-        }
-        if (provided.startsWith(BASIC_PREFIX)) {
-            return parseDefaultBasic(config.defaultBasic());
-        }
-        if (provided.startsWith(BEARER_PREFIX)) {
-            return parseDefaultBearer(config.defaultBearer());
-        }
-        return null;
-    }
-
-    private @Nullable Authorization parseDefaultBasic(@Nullable String defaultBasic) {
-        if (defaultBasic == null) {
-            return null;
-        }
-        var separatorIndex = defaultBasic.indexOf(':');
-        if (separatorIndex <= 0 || separatorIndex >= defaultBasic.length() - 1) {
-            logger.warn("Ignoring invalid restify defaultBasic value, expected username:password format");
-            return null;
-        }
-        var username = defaultBasic.substring(0, separatorIndex);
-        var password = defaultBasic.substring(separatorIndex + 1);
-        return new Authorization.Basic(username, password);
-    }
-
-    private @Nullable Authorization parseDefaultBearer(@Nullable String defaultBearer) {
-        if (defaultBearer == null) {
-            return null;
-        }
-        return new Authorization.Bearer(defaultBearer);
-    }
-
-    private void authorizeBasic(Authorization.Basic basic, String provided) throws AuthorizationException {
-        if (!provided.startsWith(basic.prefix())) {
-            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
-        }
-        var encodedCredentials = provided.substring(basic.prefix().length());
-        final String credentials;
-        try {
-            credentials = new String(Base64.getDecoder().decode(encodedCredentials), UTF_8);
-        } catch (IllegalArgumentException e) {
-            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
-        }
-        var separatorIndex = credentials.indexOf(':');
-        if (separatorIndex <= 0) {
-            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
-        }
-        var providedUsername = credentials.substring(0, separatorIndex);
-        var providedPassword = credentials.substring(separatorIndex + 1);
-        if (timingSafeNotEquals(providedUsername, basic.username())
-                || timingSafeNotEquals(providedPassword, basic.password())) {
-            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
-        }
-    }
-
-    private void authorizeBearer(Authorization.Bearer bearer, String provided) throws AuthorizationException {
-        if (!provided.startsWith(bearer.prefix())) {
-            throw new AuthorizationException("servlet.error.authorization.invalid-token");
-        }
-        var providedToken = provided.substring(bearer.prefix().length());
-        if (timingSafeNotEquals(providedToken, bearer.token())) {
-            throw new AuthorizationException("servlet.error.authorization.invalid-token");
-        }
-    }
-
-    private static boolean timingSafeNotEquals(String left, String right) {
-        return !MessageDigest.isEqual(left.getBytes(UTF_8), right.getBytes(UTF_8));
     }
 
     private void respondWithError(HttpServletResponse resp, UserRequestException e, Locale locale) throws IOException {

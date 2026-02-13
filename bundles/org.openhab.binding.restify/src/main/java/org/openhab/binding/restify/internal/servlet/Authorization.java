@@ -19,19 +19,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public sealed interface Authorization {
+    String BASIC_PREFIX = "Basic ";
+    String BEARER_PREFIX = "Bearer ";
+
     String prefix();
 
     public record Basic(String username, String password) implements Authorization {
         @Override
         public String prefix() {
-            return "Basic ";
+            return BASIC_PREFIX;
         }
     }
 
     public record Bearer(String token) implements Authorization {
         @Override
         public String prefix() {
-            return "Bearer ";
+            return BEARER_PREFIX;
         }
     }
 }
