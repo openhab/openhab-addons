@@ -43,19 +43,19 @@
     </dependency>
     <dependency>
       <!-- Used to process JSON -->
-      <groupId>tools.jackson.core</groupId>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>3.0.3</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.20</version>
+      <version>${jackson.annotations.version}</version>
     </dependency>
     <dependency>
-      <groupId>tools.jackson.core</groupId>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>3.0.3</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <!-- Used to validate RFC 3339 date and date-time -->
