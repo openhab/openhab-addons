@@ -20,12 +20,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -58,115 +55,126 @@ class EngineTest {
     @InjectMocks
     private Engine sut;
 
-    @ParameterizedTest(name = "maps null helper values [{index}]")
-    @MethodSource("nullMappingCases")
-    void nullMappingHelpersMapValuesCorrectly(String type, Object input, Json expected) {
-        // When
-        var actual = switch (type) {
-            case "number" -> sut.numberOrNull((Number) input);
-            case "string" -> sut.stringOrNull((String) input);
-            case "boolean" -> sut.booleanOrNull((Boolean) input);
-            default -> throw new IllegalArgumentException("Unsupported type: " + type);
-        };
-
-        // Then
-        if (expected == NullValue.NULL_VALUE) {
-            assertThat(actual).isSameAs(NullValue.NULL_VALUE);
-        } else {
-            assertThat(actual).isEqualTo(expected);
-        }
+    @Test
+    void numberOrNullMapsNullAndNumberValues() {
+        assertThat(sut.numberOrNull(null)).isSameAs(NullValue.NULL_VALUE);
+        assertThat(sut.numberOrNull(42)).isEqualTo(new NumberValue(42));
     }
 
-    private static Stream<Arguments> nullMappingCases() {
-        return Stream.of(Arguments.of("number", null, NullValue.NULL_VALUE),
-                Arguments.of("number", 42, new NumberValue(42)), Arguments.of("string", null, NullValue.NULL_VALUE),
-                Arguments.of("string", "hello", new StringValue("hello")),
-                Arguments.of("boolean", null, NullValue.NULL_VALUE),
-                Arguments.of("boolean", true, new BooleanValue(true)));
+    @Test
+    void stringOrNullMapsNullAndStringValues() {
+        assertThat(sut.stringOrNull(null)).isSameAs(NullValue.NULL_VALUE);
+        assertThat(sut.stringOrNull("hello")).isEqualTo(new StringValue("hello"));
     }
 
-    @ParameterizedTest(name = "maps simple json/array response [{index}]")
-    @MethodSource("simpleJsonResponses")
-    void evaluateMapsStringAndArrayResponses(JsonResponse schema, Json.JsonObject expected) throws ParameterException {
+    @Test
+    void booleanOrNullMapsNullAndBooleanValues() {
+        assertThat(sut.booleanOrNull(null)).isSameAs(NullValue.NULL_VALUE);
+        assertThat(sut.booleanOrNull(true)).isEqualTo(new BooleanValue(true));
+    }
+
+    @Test
+    void evaluateMapsStringResponse() throws ParameterException {
+        // Given
+        var schema = new JsonResponse(Map.of("message", new StringResponse("ok")));
+
         // When
         var actual = sut.evaluate(schema);
 
         // Then
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("message", new StringValue("ok"))));
         verifyNoInteractions(itemRegistry, thingRegistry);
     }
 
-    private static Stream<Arguments> simpleJsonResponses() {
-        return Stream.of(
-                Arguments.of(new JsonResponse(Map.of("message", new StringResponse("ok"))),
-                        new Json.JsonObject(Map.of("message", new StringValue("ok")))),
-                Arguments.of(
-                        new JsonResponse(Map.of("values",
-                                new ArrayResponse(List.of(new StringResponse("a"), new StringResponse("b"))))),
-                        new Json.JsonObject(Map.of("values",
-                                new Json.JsonArray(List.of(new StringValue("a"), new StringValue("b")))))));
-    }
-
-    @ParameterizedTest(name = "evaluates item expression case [{index}]")
-    @MethodSource("itemExpressionCases")
-    void evaluateItemExpressions(ItemResponse response, Item item, Json expected, String expectedErrorMessageKey)
-            throws Exception {
+    @Test
+    void evaluateMapsArrayResponse() throws ParameterException {
         // Given
-        when(itemRegistry.getItem("temperature")).thenReturn(item);
+        var schema = new JsonResponse(
+                Map.of("values", new ArrayResponse(List.of(new StringResponse("a"), new StringResponse("b")))));
 
-        // When / Then
-        if (expectedErrorMessageKey == null) {
-            var actual = sut.evaluate(new JsonResponse(Map.of("item", response)));
-            assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("item", expected)));
-        } else {
-            assertThatThrownBy(() -> sut.evaluate(new JsonResponse(Map.of("item", response))))
-                    .isInstanceOf(ParameterException.class).hasMessage(expectedErrorMessageKey);
-        }
-        verify(itemRegistry).getItem("temperature");
+        // When
+        var actual = sut.evaluate(schema);
+
+        // Then
+        assertThat(actual).isEqualTo(new Json.JsonObject(
+                Map.of("values", new Json.JsonArray(List.of(new StringValue("a"), new StringValue("b"))))));
+        verifyNoInteractions(itemRegistry, thingRegistry);
     }
 
-    private static Stream<Arguments> itemExpressionCases() {
+    @Test
+    void evaluateItemExpressionReturnsState() throws Exception {
+        // Given
         var state = org.mockito.Mockito.mock(State.class);
         when(state.toFullString()).thenReturn("23.0 C");
         var item = org.mockito.Mockito.mock(Item.class);
         when(item.getState()).thenReturn(state);
+        when(itemRegistry.getItem("temperature")).thenReturn(item);
+        var schema = new JsonResponse(Map.of("item", new ItemResponse("temperature", "state")));
 
-        return Stream.of(Arguments.of(new ItemResponse("temperature", "state"), item, new StringValue("23.0 C"), null),
-                Arguments.of(new ItemResponse("temperature", "state,state"), item, null,
-                        "servlet.error.duplicate-field"),
-                Arguments.of(new ItemResponse("temperature", "unknownField"), item, null, "servlet.error.parameter"));
+        // When
+        var actual = sut.evaluate(schema);
+
+        // Then
+        assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("item", new StringValue("23.0 C"))));
+        verify(itemRegistry).getItem("temperature");
     }
 
-    @ParameterizedTest(name = "returns null when item missing [{index}]")
-    @MethodSource("itemNotFoundCases")
-    void evaluateItemResponseReturnsNullWhenItemMissing(ItemResponse response) throws Exception {
+    @Test
+    void evaluateItemExpressionFailsForDuplicateSelectedField() throws Exception {
+        // Given
+        var state = org.mockito.Mockito.mock(State.class);
+        when(state.toFullString()).thenReturn("23.0 C");
+        var item = org.mockito.Mockito.mock(Item.class);
+        when(item.getState()).thenReturn(state);
+        when(itemRegistry.getItem("temperature")).thenReturn(item);
+        var schema = new JsonResponse(Map.of("item", new ItemResponse("temperature", "state,state")));
+
+        // When / Then
+        assertThatThrownBy(() -> sut.evaluate(schema)).isInstanceOf(ParameterException.class)
+                .hasMessage("servlet.error.duplicate-field");
+        verify(itemRegistry).getItem("temperature");
+    }
+
+    @Test
+    void evaluateItemExpressionFailsForUnknownField() throws Exception {
+        // Given
+        var item = org.mockito.Mockito.mock(Item.class);
+        when(itemRegistry.getItem("temperature")).thenReturn(item);
+        var schema = new JsonResponse(Map.of("item", new ItemResponse("temperature", "unknownField")));
+
+        // When / Then
+        assertThatThrownBy(() -> sut.evaluate(schema)).isInstanceOf(ParameterException.class)
+                .hasMessage("servlet.error.parameter");
+        verify(itemRegistry).getItem("temperature");
+    }
+
+    @Test
+    void evaluateItemResponseReturnsNullWhenItemMissing() throws Exception {
         // Given
         when(itemRegistry.getItem("missing")).thenThrow(new ItemNotFoundException("missing"));
 
         // When
-        var actual = sut.evaluate(new JsonResponse(Map.of("item", response)));
+        var withoutExpression = sut.evaluate(new JsonResponse(Map.of("item", new ItemResponse("missing", ""))));
+        var withExpression = sut.evaluate(new JsonResponse(Map.of("item", new ItemResponse("missing", "state"))));
 
         // Then
-        assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("item", NullValue.NULL_VALUE)));
-        verify(itemRegistry).getItem("missing");
+        var expected = new Json.JsonObject(Map.of("item", NullValue.NULL_VALUE));
+        assertThat(withoutExpression).isEqualTo(expected);
+        assertThat(withExpression).isEqualTo(expected);
     }
 
-    private static Stream<ItemResponse> itemNotFoundCases() {
-        return Stream.of(new ItemResponse("missing", ""), new ItemResponse("missing", "state"));
-    }
-
-    @ParameterizedTest(name = "returns null for invalid thing uid [{index}]")
-    @MethodSource("invalidThingUidCases")
-    void evaluateThingResponseReturnsNullForInvalidUid(String invalidThingUid) throws ParameterException {
+    @Test
+    void evaluateThingResponseReturnsNullForInvalidUid() throws ParameterException {
         // When
-        var actual = sut.evaluate(new JsonResponse(Map.of("thing", new ThingResponse(invalidThingUid, "status"))));
+        var invalidOne = sut.evaluate(new JsonResponse(Map.of("thing", new ThingResponse("not-a-uid", "status"))));
+        var invalidTwo = sut.evaluate(new JsonResponse(Map.of("thing", new ThingResponse("restify::", "status"))));
+        var invalidThree = sut.evaluate(new JsonResponse(Map.of("thing", new ThingResponse("abc", "status"))));
 
         // Then
-        assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("thing", NullValue.NULL_VALUE)));
+        var expected = new Json.JsonObject(Map.of("thing", NullValue.NULL_VALUE));
+        assertThat(invalidOne).isEqualTo(expected);
+        assertThat(invalidTwo).isEqualTo(expected);
+        assertThat(invalidThree).isEqualTo(expected);
         verifyNoInteractions(thingRegistry);
-    }
-
-    private static Stream<String> invalidThingUidCases() {
-        return Stream.of("not-a-uid", "restify::", "abc");
     }
 }

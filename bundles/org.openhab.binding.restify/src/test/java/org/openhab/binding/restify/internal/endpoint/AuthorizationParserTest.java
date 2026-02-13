@@ -15,12 +15,8 @@ package org.openhab.binding.restify.internal.endpoint;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.restify.internal.servlet.Authorization;
 
 import tools.jackson.databind.ObjectMapper;
@@ -34,75 +30,78 @@ class AuthorizationParserTest {
 
     private final AuthorizationParser sut = new AuthorizationParser();
 
-    private static Stream<Arguments> validAuthorizations() {
-        return Stream.of(
-                Arguments.of("{\"type\":\"Basic\",\"username\":\"john\",\"password\":\"secret\"}",
-                        new Authorization.Basic("john", "secret")),
-                Arguments.of("{\"type\":\"basic\",\"username\":\"john\",\"password\":\"secret\"}",
-                        new Authorization.Basic("john", "secret")),
-                Arguments.of("{\"type\":\"Bearer\",\"token\":\"abc-token\"}", new Authorization.Bearer("abc-token")),
-                Arguments.of("{\"type\":\"bearer\",\"token\":\"abc-token\"}", new Authorization.Bearer("abc-token")));
-    }
-
-    @ParameterizedTest(name = "parses supported authorization [{index}]")
-    @MethodSource("validAuthorizations")
-    void parseAuthorizationParsesSupportedTypes(String json, Authorization expected) throws Exception {
+    @Test
+    void parseAuthorizationParsesBasicTypeCaseInsensitive() throws Exception {
         // Given
-        var authorizationNode = MAPPER.readTree(json);
+        var basicUpper = MAPPER.readTree("{\"type\":\"Basic\",\"username\":\"john\",\"password\":\"secret\"}");
+        var basicLower = MAPPER.readTree("{\"type\":\"basic\",\"username\":\"john\",\"password\":\"secret\"}");
 
         // When
-        var actual = sut.parseAuthorization(authorizationNode);
+        var parsedUpper = sut.parseAuthorization(basicUpper);
+        var parsedLower = sut.parseAuthorization(basicLower);
 
         // Then
-        assertThat(actual).isEqualTo(expected);
+        var expected = new Authorization.Basic("john", "secret");
+        assertThat(parsedUpper).isEqualTo(expected);
+        assertThat(parsedLower).isEqualTo(expected);
     }
 
-    private static Stream<Arguments> invalidAuthorizationShape() {
-        return Stream.of(Arguments.of("\"not-an-object\""), Arguments.of("[]"), Arguments.of("null"));
-    }
-
-    @ParameterizedTest(name = "fails when authorization shape is invalid [{index}]")
-    @MethodSource("invalidAuthorizationShape")
-    void parseAuthorizationFailsWhenNotObject(String json) throws Exception {
+    @Test
+    void parseAuthorizationParsesBearerTypeCaseInsensitive() throws Exception {
         // Given
-        var authorizationNode = MAPPER.readTree(json);
+        var bearerUpper = MAPPER.readTree("{\"type\":\"Bearer\",\"token\":\"abc-token\"}");
+        var bearerLower = MAPPER.readTree("{\"type\":\"bearer\",\"token\":\"abc-token\"}");
 
-        // When / Then
-        assertThatThrownBy(() -> sut.parseAuthorization(authorizationNode)).isInstanceOf(EndpointParseException.class)
-                .hasMessage("Authorization should be a JSON object!");
+        // When
+        var parsedUpper = sut.parseAuthorization(bearerUpper);
+        var parsedLower = sut.parseAuthorization(bearerLower);
+
+        // Then
+        var expected = new Authorization.Bearer("abc-token");
+        assertThat(parsedUpper).isEqualTo(expected);
+        assertThat(parsedLower).isEqualTo(expected);
     }
 
-    private static Stream<Arguments> missingRequiredFields() {
-        return Stream.of(
-                Arguments.of("{\"username\":\"john\",\"password\":\"secret\"}", "Missing required field: type"),
-                Arguments.of("{\"type\":\"Basic\",\"password\":\"secret\"}", "Missing required field: username"),
-                Arguments.of("{\"type\":\"Basic\",\"username\":\"john\"}", "Missing required field: password"),
-                Arguments.of("{\"type\":\"Bearer\"}", "Missing required field: token"));
+    @Test
+    void parseAuthorizationFailsWhenNotObject() throws Exception {
+        assertParseFails("\"not-an-object\"", "Authorization should be a JSON object!");
+        assertParseFails("[]", "Authorization should be a JSON object!");
+        assertParseFails("null", "Authorization should be a JSON object!");
     }
 
-    @ParameterizedTest(name = "fails when required authorization field missing [{index}]")
-    @MethodSource("missingRequiredFields")
-    void parseAuthorizationFailsWhenFieldMissing(String json, String expectedMessage) throws Exception {
+    @Test
+    void parseAuthorizationFailsWhenTypeMissing() throws Exception {
+        assertParseFails("{\"username\":\"john\",\"password\":\"secret\"}", "Missing required field: type");
+    }
+
+    @Test
+    void parseAuthorizationFailsWhenBasicUsernameMissing() throws Exception {
+        assertParseFails("{\"type\":\"Basic\",\"password\":\"secret\"}", "Missing required field: username");
+    }
+
+    @Test
+    void parseAuthorizationFailsWhenBasicPasswordMissing() throws Exception {
+        assertParseFails("{\"type\":\"Basic\",\"username\":\"john\"}", "Missing required field: password");
+    }
+
+    @Test
+    void parseAuthorizationFailsWhenBearerTokenMissing() throws Exception {
+        assertParseFails("{\"type\":\"Bearer\"}", "Missing required field: token");
+    }
+
+    @Test
+    void parseAuthorizationFailsForUnknownType() throws Exception {
+        assertParseFails("{\"type\":\"Token\"}", "Unknown authorization type: Token");
+        assertParseFails("{\"type\":\"ApiKey\"}", "Unknown authorization type: ApiKey");
+        assertParseFails("{\"type\":\"Digest\"}", "Unknown authorization type: Digest");
+    }
+
+    private void assertParseFails(String json, String expectedMessage) throws Exception {
         // Given
         var authorizationNode = MAPPER.readTree(json);
 
         // When / Then
         assertThatThrownBy(() -> sut.parseAuthorization(authorizationNode)).isInstanceOf(EndpointParseException.class)
                 .hasMessage(expectedMessage);
-    }
-
-    @ParameterizedTest(name = "fails for unknown authorization type [{index}]")
-    @MethodSource("unknownTypes")
-    void parseAuthorizationFailsForUnknownType(String type) throws Exception {
-        // Given
-        var authorizationNode = MAPPER.readTree("{\"type\":\"%s\"}".formatted(type));
-
-        // When / Then
-        assertThatThrownBy(() -> sut.parseAuthorization(authorizationNode)).isInstanceOf(EndpointParseException.class)
-                .hasMessage("Unknown authorization type: %s".formatted(type));
-    }
-
-    private static Stream<String> unknownTypes() {
-        return Stream.of("Token", "ApiKey", "Digest");
     }
 }
