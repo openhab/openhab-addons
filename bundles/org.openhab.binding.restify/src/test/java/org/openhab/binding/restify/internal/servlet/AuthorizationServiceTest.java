@@ -20,12 +20,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Base64;
-import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,37 +40,115 @@ class AuthorizationServiceTest {
     @InjectMocks
     private AuthorizationService sut;
 
-    private static String basicHeader(String username, String password) {
-        var credentials = "%s:%s".formatted(username, password);
-        var encoded = Base64.getEncoder().encodeToString(credentials.getBytes(UTF_8));
-        return Authorization.BASIC_PREFIX + encoded;
-    }
-
-    private static Stream<Arguments> validRequiredAuthorizations() {
-        return Stream.of(Arguments.of(new Authorization.Basic("john", "secret"), basicHeader("john", "secret")),
-                Arguments.of(new Authorization.Bearer("token-123"), Authorization.BEARER_PREFIX + "token-123"));
-    }
-
-    @ParameterizedTest(name = "accepts matching required authorization [{index}]")
-    @MethodSource("validRequiredAuthorizations")
-    void authorizeAcceptsMatchingProvidedAuthorization(Authorization required, String provided) {
+    @Test
+    void authorizeAcceptsMatchingRequiredBasicAuthorization() {
         // Given
         when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
+        var required = new Authorization.Basic("john", "secret");
+        var provided = basicHeader("john", "secret");
 
         // When / Then
         assertThatCode(() -> sut.authorize(required, provided)).doesNotThrowAnyException();
         verify(restifyBinding, times(1)).getConfig();
     }
 
-    private static Stream<Arguments> invalidBasicHeaders() {
-        return Stream.of(Arguments.of("Bearer token"), Arguments.of("Basic not-base64!!!"),
-                Arguments.of(Authorization.BASIC_PREFIX + Base64.getEncoder().encodeToString("john".getBytes(UTF_8))),
-                Arguments.of(basicHeader("john", "wrong")));
+    @Test
+    void authorizeAcceptsMatchingRequiredBearerAuthorization() {
+        // Given
+        when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
+        var required = new Authorization.Bearer("token-123");
+        var provided = Authorization.BEARER_PREFIX + "token-123";
+
+        // When / Then
+        assertThatCode(() -> sut.authorize(required, provided)).doesNotThrowAnyException();
+        verify(restifyBinding, times(1)).getConfig();
     }
 
-    @ParameterizedTest(name = "rejects invalid basic header [{index}]")
-    @MethodSource("invalidBasicHeaders")
-    void authorizeRejectsInvalidBasicAuthorization(String provided) {
+    @Test
+    void authorizeRejectsBasicAuthorizationWithWrongScheme() {
+        assertBasicAuthFailure("Bearer token");
+    }
+
+    @Test
+    void authorizeRejectsBasicAuthorizationWithInvalidBase64() {
+        assertBasicAuthFailure("Basic not-base64!!!");
+    }
+
+    @Test
+    void authorizeRejectsBasicAuthorizationWithoutCredentialsSeparator() {
+        var encodedWithoutSeparator = Base64.getEncoder().encodeToString("john".getBytes(UTF_8));
+        assertBasicAuthFailure(Authorization.BASIC_PREFIX + encodedWithoutSeparator);
+    }
+
+    @Test
+    void authorizeRejectsBasicAuthorizationWithWrongPassword() {
+        assertBasicAuthFailure(basicHeader("john", "wrong"));
+    }
+
+    @Test
+    void authorizeRejectsBearerAuthorizationWithWrongScheme() {
+        assertBearerAuthFailure("Basic abc");
+    }
+
+    @Test
+    void authorizeRejectsBearerAuthorizationWithWrongToken() {
+        assertBearerAuthFailure(Authorization.BEARER_PREFIX + "wrong-token");
+    }
+
+    @Test
+    void authorizeFailsWhenRequiredAuthorizationExistsButHeaderMissing() {
+        // Given
+        when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
+
+        // When / Then
+        assertThatThrownBy(() -> sut.authorize(new Authorization.Basic("john", "secret"), null))
+                .isInstanceOf(AuthorizationException.class).hasMessage("servlet.error.authorization.required");
+        verify(restifyBinding, times(1)).getConfig();
+    }
+
+    @Test
+    void authorizeUsesDefaultBasicWhenEndpointAuthorizationMissing() {
+        // Given
+        var config = new RestifyBindingConfig(false, "john:secret", null);
+        when(restifyBinding.getConfig()).thenReturn(config);
+
+        // When / Then
+        assertThatCode(() -> sut.authorize(null, basicHeader("john", "secret"))).doesNotThrowAnyException();
+        verify(restifyBinding, times(1)).getConfig();
+    }
+
+    @Test
+    void authorizeUsesDefaultBearerWhenEndpointAuthorizationMissing() {
+        // Given
+        var config = new RestifyBindingConfig(false, null, "token-123");
+        when(restifyBinding.getConfig()).thenReturn(config);
+
+        // When / Then
+        assertThatCode(() -> sut.authorize(null, Authorization.BEARER_PREFIX + "token-123")).doesNotThrowAnyException();
+        verify(restifyBinding, times(1)).getConfig();
+    }
+
+    @Test
+    void authorizeFailsWhenEffectiveAuthorizationMissingAndEnforced() {
+        assertMissingEffectiveAuthorizationEnforced(new RestifyBindingConfig(true, null, null), null);
+        assertMissingEffectiveAuthorizationEnforced(new RestifyBindingConfig(true, null, null), "Digest something");
+        assertMissingEffectiveAuthorizationEnforced(new RestifyBindingConfig(true, "invalid-format", null),
+                basicHeader("john", "secret"));
+        assertMissingEffectiveAuthorizationEnforced(new RestifyBindingConfig(true, null, null),
+                Authorization.BEARER_PREFIX + "token-123");
+    }
+
+    @Test
+    void authorizeAllowsWhenEffectiveAuthorizationMissingAndNotEnforced() {
+        assertMissingEffectiveAuthorizationNotEnforced(new RestifyBindingConfig(false, null, null), null);
+        assertMissingEffectiveAuthorizationNotEnforced(new RestifyBindingConfig(false, null, null), "Digest something");
+        assertMissingEffectiveAuthorizationNotEnforced(new RestifyBindingConfig(false, "invalid-format", null),
+                basicHeader("john", "secret"));
+        assertMissingEffectiveAuthorizationNotEnforced(new RestifyBindingConfig(false, null, null),
+                Authorization.BEARER_PREFIX + "token-123");
+    }
+
+    private void assertBasicAuthFailure(String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
         var required = new Authorization.Basic("john", "secret");
@@ -84,13 +159,7 @@ class AuthorizationServiceTest {
         verify(restifyBinding, times(1)).getConfig();
     }
 
-    private static Stream<Arguments> invalidBearerHeaders() {
-        return Stream.of(Arguments.of("Basic abc"), Arguments.of(Authorization.BEARER_PREFIX + "wrong-token"));
-    }
-
-    @ParameterizedTest(name = "rejects invalid bearer header [{index}]")
-    @MethodSource("invalidBearerHeaders")
-    void authorizeRejectsInvalidBearerAuthorization(String provided) {
+    private void assertBearerAuthFailure(String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
         var required = new Authorization.Bearer("token-123");
@@ -101,64 +170,26 @@ class AuthorizationServiceTest {
         verify(restifyBinding, times(1)).getConfig();
     }
 
-    @ParameterizedTest(name = "fails when header missing for required authorization [{index}]")
-    @MethodSource("validRequiredAuthorizations")
-    void authorizeFailsWhenProvidedHeaderMissing(Authorization required, @SuppressWarnings("unused") String provided) {
-        // Given
-        when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
-
-        // When / Then
-        assertThatThrownBy(() -> sut.authorize(required, null)).isInstanceOf(AuthorizationException.class)
-                .hasMessage("servlet.error.authorization.required");
-        verify(restifyBinding, times(1)).getConfig();
-    }
-
-    private static Stream<Arguments> validDefaultAuthorizations() {
-        return Stream.of(
-                Arguments.of(new RestifyBindingConfig(false, "john:secret", null), basicHeader("john", "secret")),
-                Arguments.of(new RestifyBindingConfig(false, null, "token-123"),
-                        Authorization.BEARER_PREFIX + "token-123"));
-    }
-
-    @ParameterizedTest(name = "uses configured default authorization [{index}]")
-    @MethodSource("validDefaultAuthorizations")
-    void authorizeUsesBindingDefaultWhenEndpointAuthorizationMissing(RestifyBindingConfig config, String provided) {
-        // Given
-        when(restifyBinding.getConfig()).thenReturn(config);
-
-        // When / Then
-        assertThatCode(() -> sut.authorize(null, provided)).doesNotThrowAnyException();
-        verify(restifyBinding, times(1)).getConfig();
-    }
-
-    private static Stream<Arguments> missingEffectiveAuthorizationCases() {
-        return Stream.of(Arguments.of(new RestifyBindingConfig(true, null, null), null),
-                Arguments.of(new RestifyBindingConfig(true, null, null), "Digest something"),
-                Arguments.of(new RestifyBindingConfig(true, "invalid-format", null), basicHeader("john", "secret")),
-                Arguments.of(new RestifyBindingConfig(true, null, null), Authorization.BEARER_PREFIX + "token-123"));
-    }
-
-    @ParameterizedTest(name = "fails when no effective auth and enforcement enabled [{index}]")
-    @MethodSource("missingEffectiveAuthorizationCases")
-    void authorizeFailsWhenEffectiveAuthorizationMissingAndEnforced(RestifyBindingConfig config, String provided) {
+    private void assertMissingEffectiveAuthorizationEnforced(RestifyBindingConfig config, String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(config);
 
         // When / Then
         assertThatThrownBy(() -> sut.authorize(null, provided)).isInstanceOf(AuthorizationException.class)
                 .hasMessage("servlet.error.authorization.missing-config-or-disable-enforce");
-        verify(restifyBinding, times(1)).getConfig();
     }
 
-    @ParameterizedTest(name = "allows when no effective auth and enforcement disabled [{index}]")
-    @MethodSource("missingEffectiveAuthorizationCases")
-    void authorizeAllowsWhenEffectiveAuthorizationMissingAndNotEnforced(RestifyBindingConfig config, String provided) {
+    private void assertMissingEffectiveAuthorizationNotEnforced(RestifyBindingConfig config, String provided) {
         // Given
-        var nonEnforcedConfig = new RestifyBindingConfig(false, config.defaultBasic(), config.defaultBearer());
-        when(restifyBinding.getConfig()).thenReturn(nonEnforcedConfig);
+        when(restifyBinding.getConfig()).thenReturn(config);
 
         // When / Then
         assertThatCode(() -> sut.authorize(null, provided)).doesNotThrowAnyException();
-        verify(restifyBinding, times(1)).getConfig();
+    }
+
+    private static String basicHeader(String username, String password) {
+        var credentials = "%s:%s".formatted(username, password);
+        var encoded = Base64.getEncoder().encodeToString(credentials.getBytes(UTF_8));
+        return Authorization.BASIC_PREFIX + encoded;
     }
 }
