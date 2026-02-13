@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class RestifyBindingConstants {
 
     public static final String BINDING_ID = "restify";
+    public static final String CONFIGURATION_PID = "binding.restify";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ENDPOINT = new ThingTypeUID(BINDING_ID, "endpoint");

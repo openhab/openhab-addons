@@ -99,9 +99,7 @@ public class DispatcherServlet extends HttpServlet {
     public Json.JsonObject process(Method method, String path, @Nullable String authorization)
             throws AuthorizationException, NotFoundException, ParameterException {
         var response = registry.find(path, method).orElseThrow(() -> new NotFoundException(path, method));
-        if (response.authorization() != null) {
-            authorize(restifyBinding.getConfig(), response.authorization(), authorization);
-        }
+        authorize(restifyBinding.getConfig(), response.authorization(), authorization);
         return engine.evaluate(response.schema());
     }
 
