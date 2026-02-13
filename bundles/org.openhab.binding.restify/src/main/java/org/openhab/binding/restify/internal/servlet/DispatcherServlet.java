@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.security.MessageDigest;
 import java.util.Base64;
+import java.util.Locale;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +36,9 @@ import org.openhab.binding.restify.internal.RestifyBinding;
 import org.openhab.binding.restify.internal.RestifyBindingConfig;
 import org.openhab.binding.restify.internal.endpoint.Endpoint;
 import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
+import org.openhab.core.i18n.TranslationProvider;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -57,13 +61,17 @@ public class DispatcherServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
     private final EndpointRegistry registry = new EndpointRegistry();
     private final JsonEncoder jsonEncoder;
+    private final Bundle bundle;
+    private final TranslationProvider i18nProvider;
     private final RestifyBinding restifyBinding;
     private final Engine engine;
 
     @Activate
-    public DispatcherServlet(@Reference JsonEncoder jsonEncoder, @Reference RestifyBinding restifyBinding,
-            @Reference Engine engine) {
+    public DispatcherServlet(@Reference JsonEncoder jsonEncoder, @Reference TranslationProvider i18nProvider,
+            @Reference RestifyBinding restifyBinding, @Reference Engine engine) {
         this.jsonEncoder = jsonEncoder;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+        this.i18nProvider = i18nProvider;
         this.restifyBinding = restifyBinding;
         this.engine = engine;
         logger.info("Starting DispatcherServlet");
@@ -82,7 +90,7 @@ public class DispatcherServlet extends HttpServlet {
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().write(jsonEncoder.encode(json));
         } catch (UserRequestException e) {
-            respondWithError(resp, e.getStatusCode(), e);
+            respondWithError(resp, e, req.getLocale());
         } catch (IllegalArgumentException | IllegalStateException ex) {
             respondWithError(resp, SC_BAD_REQUEST, ex);
         } catch (Exception ex) {
@@ -110,13 +118,12 @@ public class DispatcherServlet extends HttpServlet {
             throws AuthorizationException {
         if (required == null) {
             if (config.enforceAuthentication()) {
-                throw new AuthorizationException(
-                        "Add authorization to endpoint config or disable enforceAuthentication in binding config");
+                throw new AuthorizationException("servlet.error.authorization.missing-config-or-disable-enforce");
             }
             return; // no authorization required
         }
         if (provided == null) {
-            throw new AuthorizationException("Authorization required");
+            throw new AuthorizationException("servlet.error.authorization.required");
         }
         switch (required) {
             case Authorization.Basic basic -> authorizeBasic(basic, provided);
@@ -126,39 +133,49 @@ public class DispatcherServlet extends HttpServlet {
 
     private void authorizeBasic(Authorization.Basic basic, String provided) throws AuthorizationException {
         if (!provided.startsWith("Basic ")) {
-            throw new AuthorizationException("Invalid username or password");
+            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
         }
         var encodedCredentials = provided.substring("Basic ".length());
         final String credentials;
         try {
             credentials = new String(Base64.getDecoder().decode(encodedCredentials), UTF_8);
         } catch (IllegalArgumentException e) {
-            throw new AuthorizationException("Invalid username or password");
+            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
         }
         var separatorIndex = credentials.indexOf(':');
         if (separatorIndex <= 0) {
-            throw new AuthorizationException("Invalid username or password");
+            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
         }
         var providedUsername = credentials.substring(0, separatorIndex);
         var providedPassword = credentials.substring(separatorIndex + 1);
         if (timingSafeNotEquals(providedUsername, basic.username())
                 || timingSafeNotEquals(providedPassword, basic.password())) {
-            throw new AuthorizationException("Invalid username or password");
+            throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
         }
     }
 
     private void authorizeBearer(Authorization.Bearer bearer, String provided) throws AuthorizationException {
         if (!provided.startsWith("Bearer ")) {
-            throw new AuthorizationException("Invalid token");
+            throw new AuthorizationException("servlet.error.authorization.invalid-token");
         }
         var providedToken = provided.substring("Bearer ".length());
         if (timingSafeNotEquals(providedToken, bearer.token())) {
-            throw new AuthorizationException("Invalid token");
+            throw new AuthorizationException("servlet.error.authorization.invalid-token");
         }
     }
 
     private static boolean timingSafeNotEquals(String left, String right) {
         return !MessageDigest.isEqual(left.getBytes(UTF_8), right.getBytes(UTF_8));
+    }
+
+    private void respondWithError(HttpServletResponse resp, UserRequestException e, Locale locale) throws IOException {
+        var statusCode = e.getStatusCode();
+        var translatedMessage = i18nProvider.getText(bundle, e.getMessageKey(), e.getMessageKey(), locale,
+                e.getMessageArguments());
+        logger.error("{}: {}", statusCode, translatedMessage, e);
+        resp.setStatus(statusCode);
+        resp.setContentType("application/json");
+        resp.getWriter().write("{\"code\": %d, \"error\": \"%s\"}".formatted(statusCode, translatedMessage));
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {

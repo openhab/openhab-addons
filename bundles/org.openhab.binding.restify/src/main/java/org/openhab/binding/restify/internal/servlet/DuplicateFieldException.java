@@ -25,6 +25,6 @@ public class DuplicateFieldException extends ParameterException {
     private static final long serialVersionUID = 1L;
 
     public DuplicateFieldException(String fieldName) {
-        super(461, "Duplicate field " + fieldName);
+        super(461, "servlet.error.duplicate-field", fieldName);
     }
 }

@@ -25,6 +25,6 @@ public class NotFoundException extends UserRequestException {
     private static final long serialVersionUID = 1L;
 
     public NotFoundException(String path, DispatcherServlet.Method method) {
-        super(404, "Endpoint not found: %s %s".formatted(method, path));
+        super(404, "servlet.error.not-found", method, path);
     }
 }
