@@ -37,7 +37,7 @@ class EndpointRegistryTest {
     @ParameterizedTest
     @EnumSource(DispatcherServlet.Method.class)
     @DisplayName("register stores endpoint and find returns it for matching method/path")
-    void registerAndFindMatchingEndpoint(DispatcherServlet.Method method) {
+    void registerAndFindMatchingEndpoint(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
 
@@ -49,7 +49,7 @@ class EndpointRegistryTest {
     @ParameterizedTest
     @EnumSource(DispatcherServlet.Method.class)
     @DisplayName("find is keyed by both path and method")
-    void findIsMethodAndPathSpecific(DispatcherServlet.Method method) {
+    void findIsMethodAndPathSpecific(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
 
@@ -63,21 +63,21 @@ class EndpointRegistryTest {
     @ParameterizedTest
     @EnumSource(DispatcherServlet.Method.class)
     @DisplayName("register throws when key already exists")
-    void registerThrowsOnDuplicateKey(DispatcherServlet.Method method) {
+    void registerThrowsOnDuplicateKey(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
 
         registry.register("/status", method, endpoint);
 
         assertThatThrownBy(() -> registry.register("/status", method, endpoint))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(RegistrationException.class)
                 .hasMessage("Duplicate key found! key: %s:/status".formatted(method));
     }
 
     @ParameterizedTest
     @EnumSource(DispatcherServlet.Method.class)
     @DisplayName("unregister removes endpoint for matching key")
-    void unregisterRemovesExistingEndpoint(DispatcherServlet.Method method) {
+    void unregisterRemovesExistingEndpoint(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
 

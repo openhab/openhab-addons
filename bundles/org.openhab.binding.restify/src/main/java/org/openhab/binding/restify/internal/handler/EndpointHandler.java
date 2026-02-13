@@ -22,6 +22,7 @@ import org.openhab.binding.restify.internal.JsonSchemaValidator;
 import org.openhab.binding.restify.internal.endpoint.Endpoint;
 import org.openhab.binding.restify.internal.endpoint.EndpointParseException;
 import org.openhab.binding.restify.internal.endpoint.EndpointParser;
+import org.openhab.binding.restify.internal.endpoint.RegistrationException;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -96,7 +97,13 @@ public class EndpointHandler extends BaseThingHandler {
                     "thing-type.config.restify.%s.endpoint.invalid".formatted(THING_TYPE_ENDPOINT.getId()),
                     ex.getMessage());
         }
-        dispatcherServlet.register(localConfig.path, localConfig.method, response);
+        try {
+            dispatcherServlet.register(localConfig.path, localConfig.method, response);
+        } catch (RegistrationException ex) {
+            throw new InitializationException(
+                    "thing-type.config.restify.%s.endpoint.duplicate".formatted(THING_TYPE_ENDPOINT.getId()),
+                    localConfig.method.name(), localConfig.path);
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
