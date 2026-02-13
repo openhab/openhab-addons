@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.restify.internal.handler;
 
-import static java.lang.String.join;
+import static java.util.Arrays.stream;
 
 import java.io.Serial;
 
@@ -35,7 +35,16 @@ public class InitializationException extends Exception {
     }
 
     private static String translationKey(String i18nKey, String[] args) {
-        return "%s[%s]".formatted(i18nKey, join(", ", args));
+        if (args.length == 0) {
+            return "@text/%s".formatted(i18nKey);
+        }
+        var encodedArgs = stream(args).map(InitializationException::encodeArg)
+                .reduce((left, right) -> left + ", " + right).orElse("");
+        return "@text/%s [%s]".formatted(i18nKey, encodedArgs);
+    }
+
+    private static String encodeArg(String value) {
+        return "\"%s\"".formatted(value.replace("\\", "\\\\").replace("\"", "\\\""));
     }
 
     public String translationKey() {

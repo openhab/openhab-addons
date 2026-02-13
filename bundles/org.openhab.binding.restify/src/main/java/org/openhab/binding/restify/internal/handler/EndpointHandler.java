@@ -19,6 +19,7 @@ import static org.openhab.core.thing.ThingStatusDetail.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.JsonSchemaValidator;
+import org.openhab.binding.restify.internal.endpoint.Endpoint;
 import org.openhab.binding.restify.internal.endpoint.EndpointParseException;
 import org.openhab.binding.restify.internal.endpoint.EndpointParser;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
@@ -58,9 +59,6 @@ public class EndpointHandler extends BaseThingHandler {
     public void initialize() {
         try {
             internalInitialize();
-        } catch (EndpointParseException ex) {
-            logger.error("Wrong config!", ex);
-            updateStatus(OFFLINE, CONFIGURATION_ERROR, "Wrong config! " + ex.getLocalizedMessage());
         } catch (InitializationException ex) {
             logger.error(ex.getLocalizedMessage(), ex);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, ex.translationKey());
@@ -70,25 +68,34 @@ public class EndpointHandler extends BaseThingHandler {
         }
     }
 
-    private void internalInitialize() throws EndpointParseException, InitializationException {
+    private void internalInitialize() throws InitializationException {
         var localConfig = config = getConfigAs(EndpointConfiguration.class);
         if (!localConfig.path.startsWith("/")) {
-            throw new InitializationException("thing-type.restify.%s.path".formatted(THING_TYPE_ENDPOINT.getId()),
+            throw new InitializationException(
+                    "thing-type.config.restify.%s.path.invalid".formatted(THING_TYPE_ENDPOINT.getId()),
                     localConfig.path);
         }
         if (localConfig.path.equals("/")) {
             throw new InitializationException(
-                    "thing-type.restify.%s.pathOnlyRoot".formatted(THING_TYPE_ENDPOINT.getId()));
+                    "thing-type.config.restify.%s.path.only-root".formatted(THING_TYPE_ENDPOINT.getId()));
         }
 
         var errors = schemaValidator.validateEndpointConfig(localConfig.endpoint);
         if (!errors.isEmpty()) {
             var errorMessages = errors.stream().map(Error::getMessage).toList();
-            throw new InitializationException("thing-type.restify.%s.config".formatted(THING_TYPE_ENDPOINT.getId()),
+            throw new InitializationException(
+                    "thing-type.config.restify.%s.endpoint.invalid".formatted(THING_TYPE_ENDPOINT.getId()),
                     String.join(", ", errorMessages));
         }
 
-        var response = endpointParser.parseEndpointConfig(localConfig.endpoint);
+        final Endpoint response;
+        try {
+            response = endpointParser.parseEndpointConfig(localConfig.endpoint);
+        } catch (EndpointParseException ex) {
+            throw new InitializationException(
+                    "thing-type.config.restify.%s.endpoint.invalid".formatted(THING_TYPE_ENDPOINT.getId()),
+                    ex.getMessage());
+        }
         dispatcherServlet.register(localConfig.path, localConfig.method, response);
         updateStatus(ThingStatus.ONLINE);
     }
