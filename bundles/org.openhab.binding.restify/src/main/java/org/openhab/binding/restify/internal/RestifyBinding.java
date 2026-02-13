@@ -29,7 +29,8 @@ public class RestifyBinding implements ManagedService {
             return;
         }
 
-        this.config = new RestifyBindingConfig((Boolean) properties.get("enforceAuthentication"));
+        var enforceAuthentication = (Boolean) properties.get("enforceAuthentication");
+        this.config = new RestifyBindingConfig(enforceAuthentication != null && enforceAuthentication);
     }
 
     public RestifyBindingConfig getConfig() {
