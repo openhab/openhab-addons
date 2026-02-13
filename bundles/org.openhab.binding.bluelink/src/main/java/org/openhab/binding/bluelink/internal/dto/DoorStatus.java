@@ -12,8 +12,26 @@
  */
 package org.openhab.binding.bluelink.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * @author Marcus Better - Initial contribution
  */
-public record DoorStatus(int frontLeft, int frontRight, int backLeft, int backRight) {
+public record DoorStatus(@SerializedName("frontLeft") int rawFrontLeft, @SerializedName("frontRight") int rawFrontRight,
+        @SerializedName("backLeft") int rawBackLeft, @SerializedName("backRight") int rawBackRight) {
+    public boolean frontLeft() {
+        return rawFrontLeft > 0;
+    }
+
+    public boolean frontRight() {
+        return rawFrontRight > 0;
+    }
+
+    public boolean backLeft() {
+        return rawBackLeft > 0;
+    }
+
+    public boolean backRight() {
+        return rawBackRight > 0;
+    }
 }

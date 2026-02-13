@@ -32,6 +32,7 @@ import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkVehicleConfiguration;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
+import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -327,7 +328,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             updateState(GROUP_CHARGING, CHANNEL_EV_BATTERY_SOC,
                     new QuantityType<>(evStatus.batteryStatus(), Units.PERCENT));
             updateState(GROUP_CHARGING, CHANNEL_EV_CHARGING, OnOffType.from(evStatus.batteryCharge()));
-            updateState(GROUP_CHARGING, CHANNEL_EV_PLUGGED_IN, OnOffType.from(evStatus.batteryPlugin() > 0));
+            updateState(GROUP_CHARGING, CHANNEL_EV_PLUGGED_IN, OnOffType.from(evStatus.batteryPlugin()));
 
             // Driving ranges
             if (evStatus.drvDistance() != null && !evStatus.drvDistance().isEmpty()) {
@@ -349,10 +350,10 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             final var reservChargeInfos = evStatus.reservChargeInfos();
             if (reservChargeInfos != null && reservChargeInfos.targetSocList() != null) {
                 for (final var target : reservChargeInfos.targetSocList()) {
-                    if (target.plugType() == 0) {
+                    if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_DC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    } else if (target.plugType() == 1) {
+                    } else if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_AC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
                     }
