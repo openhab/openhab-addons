@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-descriptions>
+	<config-description uri="binding:restify">
+
+		<parameter name="enforceAuthentication" type="boolean" required="false">
+			<label>Enforce Authentication</label>
+			<default>false</default>
+		</parameter>
+
+	</config-description>
+</config-descriptions>

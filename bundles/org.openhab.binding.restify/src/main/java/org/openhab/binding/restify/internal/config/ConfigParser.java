@@ -46,17 +46,6 @@ public class ConfigParser implements Serializable {
         return parseResponse(config);
     }
 
-    public Config parseConfig(String content) throws ConfigException {
-        try {
-            var root = mapper.readTree(content);
-            var version = getInt(root, "version");
-            var usernamePasswords = parseUsernamePasswords(root.get("authentication"));
-            return new Config(version, usernamePasswords);
-        } catch (JacksonException e) {
-            throw new ConfigException("Cannot read tree from: " + content, e);
-        }
-    }
-
     private Map<String, String> parseUsernamePasswords(@Nullable JsonNode authentication) throws ConfigException {
         if (authentication == null || authentication.isNull()) {
             return Map.of();

@@ -28,8 +28,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
-import org.openhab.binding.restify.internal.config.Config;
-import org.openhab.binding.restify.internal.config.ConfigWatcher;
+import org.openhab.binding.restify.internal.RestifyBinding;
+import org.openhab.binding.restify.internal.RestifyBindingConfig;
+import org.openhab.binding.restify.internal.endpoint.Endpoint;
+import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
+import org.openhab.binding.restify.internal.RestifyBindingConfig;
+import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -52,14 +56,14 @@ public class DispatcherServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
     private final EndpointRegistry registry = new EndpointRegistry();
     private final JsonEncoder jsonEncoder;
-    private final ConfigWatcher configWatcher;
+    private final RestifyBinding restifyBinding;
     private final Engine engine;
 
     @Activate
-    public DispatcherServlet(@Reference JsonEncoder jsonEncoder, @Reference ConfigWatcher configWatcher,
+    public DispatcherServlet(@Reference JsonEncoder jsonEncoder, @Reference RestifyBinding restifyBinding,
             @Reference Engine engine) {
         this.jsonEncoder = jsonEncoder;
-        this.configWatcher = configWatcher;
+        this.restifyBinding = restifyBinding;
         this.engine = engine;
         logger.info("Starting DispatcherServlet");
     }
@@ -96,31 +100,32 @@ public class DispatcherServlet extends HttpServlet {
 
     public Json.JsonObject process(Method method, String path, @Nullable String authorization)
             throws AuthorizationException, NotFoundException, ParameterException {
-        var config = configWatcher.currentConfig();
         var response = registry.find(path, method).orElseThrow(() -> new NotFoundException(path, method));
         if (response.authorization() != null) {
-            authorize(config, response.authorization(), authorization);
+            authorize(restifyBinding.getConfig(), response.authorization(), authorization);
         }
         return engine.evaluate(response.schema());
     }
 
-    private void authorize(Config config, @Nullable Authorization required, @Nullable String provided)
+    private void authorize(RestifyBindingConfig config, @Nullable Authorization required, @Nullable String provided)
             throws AuthorizationException {
         if (required == null) {
-            // TODO add global config flag that allows to disable authorization for all endpoints, then we can skip
-            // authorization if the flag is disabled
-            return;
+            if (config.enforceAuthentication()) {
+                throw new AuthorizationException(
+                        "Add authorization to endpoint config or disable enforceAuthentication in binding config");
+            }
+            return; // no authorization required
         }
         if (provided == null) {
             throw new AuthorizationException("Authorization required");
         }
         switch (required) {
-            case Authorization.Basic basic -> authorize(config, basic, provided);
-            case Authorization.Bearer bearer -> authorize(bearer, provided);
+            case Authorization.Basic basic -> authorizeBasic(basic, provided);
+            case Authorization.Bearer bearer -> authorizeBearer(bearer, provided);
         }
     }
 
-    private void authorize(Config config, Authorization.Basic basic, String provided) throws AuthorizationException {
+    private void authorizeBasic(Authorization.Basic basic, String provided) throws AuthorizationException {
         // TODO use base64 encoding and separate username and password with a colon, as per RFC 7617
         var expected = "Basic " + basic.username() + ":" + basic.password();
         if (!provided.equals(expected)) {
@@ -128,7 +133,7 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private void authorize(Authorization.Bearer bearer, String provided) throws AuthorizationException {
+    private void authorizeBearer(Authorization.Bearer bearer, String provided) throws AuthorizationException {
         if (!provided.equals("Bearer " + bearer.token())) {
             throw new AuthorizationException("Invalid token");
         }
