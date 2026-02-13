@@ -68,7 +68,7 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
-
+    private static final String HTTP_USER_AGENT = "okhttp/3.12.0";
     private static final DateTimeFormatter EU_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private final BrandConfig brandConfig;
@@ -107,20 +107,31 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         return true;
     }
 
+    /**
+     * Authenticate to the Bluelink EU API using refresh_token and get an access_token.
+     * 
+     * @throws BluelinkApiException
+     */
     private void authenticate() throws BluelinkApiException {
         final String loginUrl = brandConfig.loginBaseUrl + "/auth/api/v2/user/oauth2/token";
         final String formBody = "grant_type=refresh_token&refresh_token=" + refreshToken + "&client_id="
                 + brandConfig.ccspServiceId + "&client_secret=" + brandConfig.clientSecret;
         final Request request = httpClient.newRequest(loginUrl).method(HttpMethod.POST)
-                .header(HttpHeader.USER_AGENT, "okhttp/3.12.0")
+                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
                 .content(new StringContentProvider(formBody), "application/x-www-form-urlencoded");
         doLogin(request, TokenResponse.class, t -> t);
     }
 
+    /**
+     * Register using a random UUID to get a valid <code>deviceId</code> required for API calls.
+     * 
+     * @throws BluelinkApiException
+     */
     private void registerDevice() throws BluelinkApiException {
         ensureAuthenticated();
         final String url = brandConfig.apiBaseUrl + "/api/v1/spa/notifications/register";
         final RegistrationRequest payload = new RegistrationRequest(
+                // ThreadLocalRandom is good enough, we don't need cryptographically secure randomness
                 String.format("%064x", ThreadLocalRandom.current().nextLong()), brandConfig.pushType,
                 UUID.randomUUID().toString());
 
@@ -282,7 +293,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     @Override
     public void addStandardHeaders(final Request request) {
         request.header("ccsp-service-id", brandConfig.ccspServiceId).header("ccsp-application-id", brandConfig.appId)
-                .header("Stamp", generateStamp()).header(HttpHeader.USER_AGENT, "okhttp/3.12.0");
+                .header("Stamp", generateStamp()).header(HttpHeader.USER_AGENT, HTTP_USER_AGENT);
     }
 
     private void addAuthHeaders(final Request request) {
@@ -316,6 +327,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             return true;
         }
         if (response.getStatus() == HttpStatus.BAD_REQUEST_400) {
+            // retry on HTTP 400: resCode = 4004; resMsg = Duplicate request
             final BaseResponse<?> parsed = gson.fromJson(response.getContentAsString(), BaseResponse.class);
             return parsed != null && "4004".equals(parsed.resCode());
         }
@@ -328,7 +340,9 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     }
 
     private static Vehicle toVehicle(final VehiclesResponse.VehicleInfo info) {
-        assert info.vin() != null;
+        if (info.vin() == null) {
+            throw new IllegalStateException("VIN is null");
+        }
         final IVehicle.EngineType engineType = switch (info.type() != null ? info.type() : "") {
             case "EV" -> IVehicle.EngineType.EV;
             case "PHEV" -> IVehicle.EngineType.PHEV;
