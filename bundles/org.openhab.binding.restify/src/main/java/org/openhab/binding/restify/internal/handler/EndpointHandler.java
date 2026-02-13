@@ -76,6 +76,10 @@ public class EndpointHandler extends BaseThingHandler {
             throw new InitializationException("thing-type.restify.%s.path".formatted(THING_TYPE_ENDPOINT.getId()),
                     localConfig.path);
         }
+        if (localConfig.path.equals("/")) {
+            throw new InitializationException(
+                    "thing-type.restify.%s.pathOnlyRoot".formatted(THING_TYPE_ENDPOINT.getId()));
+        }
 
         var errors = schemaValidator.validateEndpointConfig(localConfig.endpoint);
         if (!errors.isEmpty()) {

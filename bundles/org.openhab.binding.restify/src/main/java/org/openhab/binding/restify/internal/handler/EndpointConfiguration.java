@@ -24,7 +24,7 @@ import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
  */
 @NonNullByDefault
 public class EndpointConfiguration {
-    public String path = "/";
+    public String path = "/hello-world";
     public DispatcherServlet.Method method = GET;
-    public String endpoint = "{}";
+    public String endpoint = "{\"response\":{ \"message\":\"Hello World\"}}";
 }
