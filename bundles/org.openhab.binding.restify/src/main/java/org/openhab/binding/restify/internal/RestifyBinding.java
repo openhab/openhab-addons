@@ -16,7 +16,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.restify", service = {})
+@Component(configurationPid = "binding.restify", service = { RestifyBinding.class, ManagedService.class })
 public class RestifyBinding implements ManagedService {
 
     @Nullable
