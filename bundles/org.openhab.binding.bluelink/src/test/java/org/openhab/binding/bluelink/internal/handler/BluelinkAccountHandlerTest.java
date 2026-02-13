@@ -42,6 +42,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
+import org.openhab.binding.bluelink.internal.api.Region;
+import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
@@ -153,8 +155,9 @@ class BluelinkAccountHandlerTest extends JavaTest {
 
         @BeforeEach
         void setUp() {
-            final Configuration config = new Configuration(Map.of("password", MockApiData.TEST_REFRESH_TOKEN, "region",
-                    "EU", "apiBaseUrl", "http://localhost:" + WIREMOCK_SERVER.port()));
+            final Configuration config = new Configuration(
+                    Map.of("password", MockApiData.TEST_REFRESH_TOKEN, "region", Region.EU.name(), "brand",
+                            Brand.HYUNDAI.name(), "apiBaseUrl", "http://localhost:" + WIREMOCK_SERVER.port()));
             when(bridge.getConfiguration()).thenReturn(config);
             when(bridge.getUID()).thenReturn(new ThingUID("bluelink:account:testaccount"));
 
