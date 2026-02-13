@@ -22,11 +22,10 @@ import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
-import org.openhab.transform.math.internal.DivideTransformationService;
 import org.openhab.transform.math.internal.profiles.config.DivideTransformationProfileConfiguration;
 
 /**
- * Profile to offer the {@link DivideTransformationService} on a ItemChannelLink.
+ * Profile to offer the {@link org.openhab.transform.math.internal.DivideTransformationService} on a ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

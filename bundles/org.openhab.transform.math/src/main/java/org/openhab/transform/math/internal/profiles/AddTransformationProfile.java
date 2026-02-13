@@ -21,11 +21,10 @@ import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
-import org.openhab.transform.math.internal.AddTransformationService;
 import org.openhab.transform.math.internal.profiles.config.AddTransformationProfileConfiguration;
 
 /**
- * Profile to offer the {@link AddTransformationService} on a ItemChannelLink.
+ * Profile to offer the {@link org.openhab.transform.math.internal.AddTransformationService} on a ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
