@@ -102,7 +102,6 @@ public class EndpointHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // todo create channels and handle REFRESH command
     }
 
     @Override
