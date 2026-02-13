@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
+import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.dto.eu.Vehicle;
 import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
@@ -46,7 +47,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 /**
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
 @NonNullByDefault
 public class BluelinkApiEUTest {
@@ -79,7 +80,7 @@ public class BluelinkApiEUTest {
     }
 
     @Test
-    void testLoginAndGetVehicleStatus() throws Exception {
+    void testLoginAndGetVehicleStatus() throws BluelinkApiException {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), Optional.of(baseUrl),
                 timeZoneProvider, MockApiData.TEST_REFRESH_TOKEN);
@@ -126,17 +127,22 @@ public class BluelinkApiEUTest {
 
         assertTrue(res);
         final var status = aStatus.get();
+
         assertNotNull(status);
         assertFalse(status.doorLock());
         assertFalse(status.engine());
+        assertFalse(status.trunkOpen());
         assertTrue(status.hoodOpen());
         assertEquals(82, status.battery().stateOfCharge());
+        assertFalse(status.airCtrlOn());
+        assertFalse(status.defrost());
 
         final var evStatus = status.evStatus();
         assertNotNull(evStatus);
         assertEquals(35, evStatus.batteryStatus());
         assertFalse(evStatus.batteryCharge());
-        assertEquals(0, evStatus.batteryPlugin());
+        assertEquals(0, evStatus.rawBatteryPlugin());
+        assertFalse(evStatus.batteryPlugin());
 
         final var drvDistance = evStatus.drvDistance();
         assertNotNull(drvDistance);
@@ -145,24 +151,36 @@ public class BluelinkApiEUTest {
         assertNotNull(rangeByFuel);
         assertNotNull(rangeByFuel.evModeRange());
         assertEquals(new QuantityType<>(129.0, KILO(METRE)), rangeByFuel.evModeRange().getRange());
+        assertEquals(new QuantityType<>(129.0, KILO(METRE)), rangeByFuel.totalAvailableRange().getRange());
 
         final var chargeInfos = evStatus.reservChargeInfos();
         assertNotNull(chargeInfos);
         final var targetSocList = chargeInfos.targetSocList();
         assertNotNull(targetSocList);
         assertEquals(2, targetSocList.size());
-        assertEquals(90, targetSocList.getFirst().targetSocLevel());
-        assertEquals(0, targetSocList.getFirst().plugType());
-        assertEquals(80, targetSocList.get(1).targetSocLevel());
-        assertEquals(1, targetSocList.get(1).plugType());
+        for (final var targetSoC : targetSocList) {
+            if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
+                assertEquals(90, targetSoC.targetSocLevel());
+            } else if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
+                assertEquals(80, targetSoC.targetSocLevel());
+            }
+        }
 
         final var lastUpdate = aLastUpdate.get();
         assertNotNull(lastUpdate);
+
+        final var doorOpen = status.doorOpen();
+        assertNotNull(doorOpen);
+        assertTrue(doorOpen.frontLeft());
+        assertFalse(doorOpen.frontRight());
+        assertFalse(doorOpen.backLeft());
+        assertFalse(doorOpen.backRight());
 
         final var location = aLocation.get();
         assertNotNull(location);
         assertEquals(49.01395, location.getLatitude().doubleValue(), 0.0001);
         assertEquals(8.40448, location.getLongitude().doubleValue(), 0.0001);
+        assertEquals(34.0, location.getAltitude().doubleValue(), 0.0001);
 
         final var odometer = aOdometer.get();
         assertNotNull(odometer);
