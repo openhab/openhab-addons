@@ -74,13 +74,15 @@ public class ResponseParser {
     private UuidExpression findUuidExpression(String string, String prefix) {
         var withoutPrefix = string.substring(prefix.length());
         String uuid;
+        String expression;
         var dotIndex = withoutPrefix.indexOf(".");
         if (dotIndex > -1) {
             uuid = withoutPrefix.substring(0, dotIndex);
+            expression = withoutPrefix.substring(dotIndex + 1);
         } else {
             uuid = withoutPrefix;
+            expression = "";
         }
-        var expression = withoutPrefix.substring(dotIndex + 1);
         return new UuidExpression(uuid, expression);
     }
 
