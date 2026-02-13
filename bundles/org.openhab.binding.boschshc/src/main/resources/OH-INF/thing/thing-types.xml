@@ -752,7 +752,7 @@
 		<tags>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="-5" max="5" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+		<state min="-9" max="9" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="temperature-rating">
