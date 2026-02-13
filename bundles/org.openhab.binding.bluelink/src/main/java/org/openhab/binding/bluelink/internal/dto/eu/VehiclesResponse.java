@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * EU vehicles list response.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
 public record VehiclesResponse(List<VehicleInfo> vehicles) {
 

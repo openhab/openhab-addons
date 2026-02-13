@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Vehicle status response (EU).
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
 public record VehicleStatusResponse(VehicleStatusInfo vehicleStatusInfo) {
 
@@ -33,7 +33,7 @@ public record VehicleStatusResponse(VehicleStatusInfo vehicleStatusInfo) {
             DrivingRange odometer) {
     }
 
-    public record VehicleLocation(Coordinates coord, double speed, int heading) {
+    public record VehicleLocation(Coordinates coord, double speed, int heading, String time) {
     }
 
     public record Coordinates(double lat, double lon, double alt) {

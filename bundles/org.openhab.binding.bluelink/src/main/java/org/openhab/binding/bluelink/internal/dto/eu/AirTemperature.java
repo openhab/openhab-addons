@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Air temperature value for the EU API.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
 public record AirTemperature(@Override String value, @Override int unit, int hvacTempType) implements TemperatureValue {
 
