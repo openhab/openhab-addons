@@ -56,6 +56,8 @@ import org.slf4j.LoggerFactory;
 @HttpWhiteboardServletPattern({ DispatcherServlet.SERVLET_PATH, DispatcherServlet.SERVLET_PATH + "/*" })
 public class DispatcherServlet extends HttpServlet {
     public static final String SERVLET_PATH = "/" + BINDING_ID;
+    private static final String BASIC_PREFIX = new Authorization.Basic("", "").prefix();
+    private static final String BEARER_PREFIX = new Authorization.Bearer("").prefix();
     @Serial
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
@@ -146,10 +148,10 @@ public class DispatcherServlet extends HttpServlet {
         if (provided == null) {
             return null;
         }
-        if (provided.startsWith("Basic ")) {
+        if (provided.startsWith(BASIC_PREFIX)) {
             return parseDefaultBasic(config.defaultBasic());
         }
-        if (provided.startsWith("Bearer ")) {
+        if (provided.startsWith(BEARER_PREFIX)) {
             return parseDefaultBearer(config.defaultBearer());
         }
         return null;
@@ -177,10 +179,10 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void authorizeBasic(Authorization.Basic basic, String provided) throws AuthorizationException {
-        if (!provided.startsWith("Basic ")) {
+        if (!provided.startsWith(basic.prefix())) {
             throw new AuthorizationException("servlet.error.authorization.invalid-username-or-password");
         }
-        var encodedCredentials = provided.substring("Basic ".length());
+        var encodedCredentials = provided.substring(basic.prefix().length());
         final String credentials;
         try {
             credentials = new String(Base64.getDecoder().decode(encodedCredentials), UTF_8);
@@ -200,10 +202,10 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private void authorizeBearer(Authorization.Bearer bearer, String provided) throws AuthorizationException {
-        if (!provided.startsWith("Bearer ")) {
+        if (!provided.startsWith(bearer.prefix())) {
             throw new AuthorizationException("servlet.error.authorization.invalid-token");
         }
-        var providedToken = provided.substring("Bearer ".length());
+        var providedToken = provided.substring(bearer.prefix().length());
         if (timingSafeNotEquals(providedToken, bearer.token())) {
             throw new AuthorizationException("servlet.error.authorization.invalid-token");
         }
