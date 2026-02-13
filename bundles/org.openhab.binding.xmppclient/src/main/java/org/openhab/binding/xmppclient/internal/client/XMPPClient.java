@@ -19,6 +19,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -79,7 +82,8 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     public void connect(String host, Integer port, String login, String nick, String domain, String password,
-            SecurityMode securityMode) throws XMPPClientConfigException, XMPPClientException {
+            SecurityMode securityMode, boolean disableHostnameVerification)
+            throws XMPPClientConfigException, XMPPClientException {
         disconnect();
         String serverHost = domain;
         if (!host.isBlank()) {
@@ -93,6 +97,10 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         }
 
         XMPPTCPConnectionConfiguration config;
+        HostnameVerifier hostnameVerifier = disableHostnameVerification || securityMode == SecurityMode.disabled
+                ? (hostname, session) -> true
+                : HttpsURLConnection.getDefaultHostnameVerifier();
+
         try {
             config = XMPPTCPConnectionConfiguration.builder() //
                     .setHost(serverHost) //
@@ -100,6 +108,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
                     .setUsernameAndPassword(login, password) //
                     .setXmppDomain(domain) //
                     .setSecurityMode(securityMode)//
+                    .setHostnameVerifier(hostnameVerifier)//
                     .build();
         } catch (XmppStringprepException e) {
             throw new XMPPClientConfigException(Objects.requireNonNullElse(e.getMessage(), "Unknown error message"));

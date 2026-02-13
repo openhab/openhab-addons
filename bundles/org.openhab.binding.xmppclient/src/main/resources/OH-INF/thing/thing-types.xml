@@ -50,6 +50,12 @@
 				<default>required</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="disableHostnameVerification" type="boolean" required="false">
+				<label>Disable Hostname Verification</label>
+				<description>Disable hostname verification for TLS connections</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
