@@ -10,5 +10,14 @@
 			<description>Require authorization for all endpoints, even if endpoint-specific authorization is not configured.</description>
 			<default>false</default>
 		</parameter>
+		<parameter name="defaultBasic" type="text" required="false">
+			<label>Default Basic Authorization</label>
+			<description>Default Basic authorization in format username:password, used when endpoint authorization is not
+				configured.</description>
+		</parameter>
+		<parameter name="defaultBearer" type="text" required="false">
+			<label>Default Bearer Authorization</label>
+			<description>Default Bearer token used when endpoint authorization is not configured.</description>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

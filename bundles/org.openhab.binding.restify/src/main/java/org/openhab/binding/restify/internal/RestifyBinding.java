@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Dictionary;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.osgi.service.cm.ManagedService;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -33,7 +34,8 @@ public class RestifyBinding implements ManagedService, Serializable {
             return;
         }
 
-        this.config = new RestifyBindingConfig(getBoolean(properties, "enforceAuthentication", false));
+        this.config = new RestifyBindingConfig(getBoolean(properties, "enforceAuthentication", false),
+                getNullableString(properties, "defaultBasic"), getNullableString(properties, "defaultBearer"));
         logger.debug("Loaded configuration: {}", config);
     }
 
@@ -47,6 +49,17 @@ public class RestifyBinding implements ManagedService, Serializable {
             case Boolean bool -> bool;
             case String text -> Boolean.parseBoolean(text);
             default -> defaultValue;
+        };
+    }
+
+    private static @Nullable String getNullableString(Dictionary<String, ?> properties, String key) {
+        var value = properties.get(key);
+        return switch (value) {
+            case String text -> {
+                var trimmed = text.trim();
+                yield trimmed.isEmpty() ? null : trimmed;
+            }
+            default -> null;
         };
     }
 }
