@@ -14,6 +14,8 @@ package org.openhab.binding.restify.internal.servlet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.security.MessageDigest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,7 +33,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = AuthorizationService.class)
-public class AuthorizationService {
+public class AuthorizationService implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
     private final RestifyBinding restifyBinding;
 
