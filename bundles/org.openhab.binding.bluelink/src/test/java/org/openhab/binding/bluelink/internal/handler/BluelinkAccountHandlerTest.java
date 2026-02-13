@@ -17,8 +17,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.bluelink.internal.MockApiData.DEVICE_REGISTRATION_RESPONSE_EU;
 import static org.openhab.binding.bluelink.internal.MockApiData.ENROLLMENT_RESPONSE_US;
+import static org.openhab.binding.bluelink.internal.MockApiData.TOKEN_RESPONSE_EU;
 import static org.openhab.binding.bluelink.internal.MockApiData.TOKEN_RESPONSE_US;
+import static org.openhab.binding.bluelink.internal.MockApiData.VEHICLES_RESPONSE_EU;
 
 import java.time.ZoneId;
 import java.util.Locale;
@@ -56,6 +59,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
  * Integration tests for the Bluelink binding using WireMock to mock the API.
  *
  * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Added tests for EU account
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -124,6 +128,53 @@ class BluelinkAccountHandlerTest extends JavaTest {
             assertNotNull(vehicle);
             assertEquals("IONIQ 6", vehicle.model());
             assertEquals(IVehicle.EngineType.EV, vehicle.engineType());
+            assertTrue(vehicle.isElectric());
+        }
+    }
+
+    @Nested
+    class EU {
+        private final TimeZoneProvider timeZoneProvider = () -> ZoneId.of("Europe/Berlin");
+        private final LocaleProvider localeProvider = () -> Locale.GERMAN;
+
+        @BeforeAll
+        static void setUpHttpServer() throws Exception {
+            WIREMOCK_SERVER.start();
+            WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
+            stubFor(post(urlEqualTo("/auth/api/v2/user/oauth2/token")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE_EU)));
+            stubFor(post(urlEqualTo("/api/v1/spa/notifications/register")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(DEVICE_REGISTRATION_RESPONSE_EU)));
+            stubFor(get(urlPathMatching("/api/v1/spa/vehicles")).willReturn(aResponse().withStatus(200)
+                    .withHeader("Content-Type", "application/json").withBody(VEHICLES_RESPONSE_EU)));
+
+            HTTP_CLIENT.start();
+        }
+
+        @BeforeEach
+        void setUp() {
+            final Configuration config = new Configuration(Map.of("password", MockApiData.TEST_REFRESH_TOKEN, "region",
+                    "EU", "apiBaseUrl", "http://localhost:" + WIREMOCK_SERVER.port()));
+            when(bridge.getConfiguration()).thenReturn(config);
+            when(bridge.getUID()).thenReturn(new ThingUID("bluelink:account:testaccount"));
+
+            handler = new BluelinkAccountHandler(bridge, HTTP_CLIENT, timeZoneProvider, localeProvider);
+            handler.setCallback(callback);
+            handler.initialize();
+        }
+
+        @Test
+        void testLoginAndGetVehicles() throws BluelinkApiException {
+            final var vehicles = handler.getVehicles();
+
+            assertThat(vehicles, is(not(empty())));
+            final var vehicle = vehicles.getFirst();
+            assertNotNull(vehicle);
+            assertEquals("aa6c0ca6-48eb-430c-9eea-902bb6cd281c", vehicle.id());
+            assertEquals("VIN1234", vehicle.vin());
+            assertEquals("IONIQ 5", vehicle.model());
+            assertEquals(IVehicle.EngineType.EV, vehicle.engineType());
+            assertEquals("My Car", vehicle.getDisplayName());
             assertTrue(vehicle.isElectric());
         }
     }
