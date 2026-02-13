@@ -23,6 +23,8 @@ The binding has one optional parameter.
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `enforceAuthentication` | boolean | `false` | If `true`, every endpoint must define authorization in its endpoint JSON config. |
+| `defaultBasic` | text | empty | Default Basic credentials in `username:password` format, used when endpoint authorization is not configured and the request has a `Basic` authorization prefix. |
+| `defaultBearer` | text | empty | Default Bearer token, used when endpoint authorization is not configured and the request has a `Bearer` authorization prefix. |
 
 ## Thing Configuration
 
