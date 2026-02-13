@@ -17,10 +17,10 @@ import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.transform.TransformationService;
-import org.openhab.transform.math.internal.BitwiseAndTransformationService;
 
 /**
- * Profile to offer the {@link BitwiseAndTransformationService} on a ItemChannelLink.
+ * Profile to offer the {@link org.openhab.transform.math.internal.BitwiseAndTransformationService} on a
+ * ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
  * @author Jan N. Klug - Adapted To BitwiseTransformations
