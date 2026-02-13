@@ -267,6 +267,24 @@
 			<tag>Info</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="light">
+		<item-type>Switch</item-type>
+		<label>Light Status</label>
+		<description>Light Status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="siren">
+		<item-type>Switch</item-type>
+		<label>Siren Status</label>
+		<description>Siren Status</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
 	<channel-type id="battery">
 		<item-type>Number</item-type>
 		<label>Battery Level</label>

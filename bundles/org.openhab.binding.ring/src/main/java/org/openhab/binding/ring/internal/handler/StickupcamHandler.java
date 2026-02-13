@@ -48,8 +48,8 @@ public class StickupcamHandler extends RingDeviceHandler {
     private boolean batterySupport = false;
     private boolean lightSupport = false;
     private boolean sirenSupport = false;
-    private boolean hasLightChannel;
-    private boolean hasSirenChannel;
+    private boolean hasLightChannel = false;
+    private boolean hasSirenChannel = false;
 
     public StickupcamHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -60,46 +60,6 @@ public class StickupcamHandler extends RingDeviceHandler {
     public void initialize() {
         logger.debug("Initializing Stickupcam handler");
         super.initialize(Stickupcam.class);
-        String kind = thing.getProperties().get(THING_PROPERTY_KIND);
-        if (BATTERY_KINDS.contains(kind)) {
-            batterySupport = true;
-        }
-        if (LIGHT_KINDS.contains(kind)) {
-            lightSupport = true;
-            if (!hasLightChannel) {
-                if (thing.getChannels().stream()
-                        .anyMatch(ch -> ch.getUID().getId().equalsIgnoreCase(CHANNEL_STATUS_LIGHT))) {
-                    logger.debug("Channel already available...skip creation of channel '{}'.", CHANNEL_STATUS_LIGHT);
-                    return;
-                }
-                logger.info("Adding channel for light");
-                ThingBuilder thingBuilder = editThing();
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_LIGHT);
-                Channel channel = ChannelBuilder.create(channelUID, "switch")
-                        .withType(new ChannelTypeUID(BINDING_ID, "light")).withLabel("Light Status").build();
-                thingBuilder.withChannel(channel);
-                updateThing(thingBuilder.build());
-                hasLightChannel = true;
-            }
-        }
-        if (SIREN_KINDS.contains(kind)) {
-            sirenSupport = true;
-            if (!hasLightChannel) {
-                if (thing.getChannels().stream()
-                        .anyMatch(ch -> ch.getUID().getId().equalsIgnoreCase(CHANNEL_STATUS_SIREN))) {
-                    logger.debug("Channel already available...skip creation of channel '{}'.", CHANNEL_STATUS_SIREN);
-                    return;
-                }
-                logger.info("Adding channel for siren");
-                ThingBuilder thingBuilder = editThing();
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_SIREN);
-                Channel channel = ChannelBuilder.create(channelUID, "switch")
-                        .withType(new ChannelTypeUID(BINDING_ID, "siren")).withLabel("Siren Status").build();
-                thingBuilder.withChannel(channel);
-                updateThing(thingBuilder.build());
-                hasSirenChannel = true;
-            }
-        }
     }
 
     @Override
@@ -114,6 +74,41 @@ public class StickupcamHandler extends RingDeviceHandler {
 
     @Override
     protected void minuteTick() {
+        String kind = thing.getProperties().get(THING_PROPERTY_KIND);
+        if (BATTERY_KINDS.contains(kind)) {
+            batterySupport = true;
+        }
+        if (LIGHT_KINDS.contains(kind)) {
+            if (!hasLightChannel) {
+                hasLightChannel = true;
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_LIGHT);
+                Channel channel = thing.getChannel(channelUID);
+                if (channel == null) {
+                    logger.info("Adding channel for light");
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, "switch").withLabel("Light Status")
+                            .withType(new ChannelTypeUID(BINDING_ID, "light")).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+            }
+        }
+        if (SIREN_KINDS.contains(kind)) {
+            if (!hasLightChannel) {
+                hasSirenChannel = true;
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_SIREN);
+                Channel channel = thing.getChannel(channelUID);
+                if (channel == null) {
+                    logger.info("Adding channel for siren");
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, "switch").withLabel("Siren Status")
+                            .withType(new ChannelTypeUID(BINDING_ID, "siren")).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+            }
+        }
+
         logger.debug("StickupcamHandler - minuteTick - device {}", getThing().getUID().getId());
         if (device == null) {
             // initialize();
