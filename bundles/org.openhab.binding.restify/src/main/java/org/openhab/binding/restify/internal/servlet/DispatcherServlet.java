@@ -31,6 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.endpoint.Endpoint;
 import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
+import org.openhab.binding.restify.internal.endpoint.RegistrationException;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -146,7 +147,7 @@ public class DispatcherServlet extends HttpServlet {
         process(DELETE, req, resp);
     }
 
-    public void register(String path, Method method, Endpoint endpoint) {
+    public void register(String path, Method method, Endpoint endpoint) throws RegistrationException {
         registry.register(path, method, endpoint);
     }
 

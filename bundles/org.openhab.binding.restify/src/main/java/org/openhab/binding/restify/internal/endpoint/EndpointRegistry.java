@@ -48,13 +48,13 @@ public class EndpointRegistry implements Serializable {
     }
 
     public void register(String path, DispatcherServlet.Method method,
-            org.openhab.binding.restify.internal.endpoint.Endpoint endpoint) {
+            org.openhab.binding.restify.internal.endpoint.Endpoint endpoint) throws RegistrationException {
         lock.writeLock().lock();
         try {
             logger.debug("Registering {}:{}", method, path);
             var key = new Endpoint(method, path);
             if (registry.containsKey(key)) {
-                throw new IllegalStateException("Duplicate key found! key: %s:%s".formatted(method, path));
+                throw new RegistrationException("Duplicate key found! key: %s:%s".formatted(method, path));
             }
             registry.put(key, endpoint);
         } finally {
