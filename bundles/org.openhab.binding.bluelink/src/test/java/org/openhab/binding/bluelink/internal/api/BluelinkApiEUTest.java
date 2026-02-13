@@ -88,7 +88,7 @@ public class BluelinkApiEUTest {
 
         // Verify device ID was obtained
         assertFalse(api.getProperties().isEmpty());
-        assertEquals("a1b2c3d4-e5f6-7890-abcd-ef1234567890", api.getProperties().get("deviceId"));
+        assertEquals("122c2e30-d642-4d34-ba07-7ce7d787349a", api.getProperties().get("deviceId"));
 
         final IVehicle vehicle = new Vehicle("test-vehicle-id", "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
                 "IONIQ 5", 0, false);

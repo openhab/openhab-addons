@@ -14,11 +14,14 @@ package org.openhab.binding.bluelink.internal.dto.eu;
 
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Generic response wrapper.
  *
  * @param <T> the type of the result message
  * @author Florian Hotze - Initial contribution
  */
-public record BaseResponse<T> (String retCode, String resCode, String resMsg, String msgId, @Nullable T result) {
+public record BaseResponse<T> (String retCode, String resCode, @Nullable @SerializedName("resMsg") T result,
+        String msgId) {
 }

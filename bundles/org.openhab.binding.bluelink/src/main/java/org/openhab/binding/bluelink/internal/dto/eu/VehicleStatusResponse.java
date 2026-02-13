@@ -33,7 +33,7 @@ public record VehicleStatusResponse(VehicleStatusInfo vehicleStatusInfo) {
             DrivingRange odometer) {
     }
 
-    public record VehicleLocation(Coordinates coord, double speed, int heading, String time) {
+    public record VehicleLocation(Coordinates coord, int head, ValueUnit speed, String time) {
     }
 
     public record Coordinates(double lat, double lon, double alt) {
@@ -49,5 +49,8 @@ public record VehicleStatusResponse(VehicleStatusInfo vehicleStatusInfo) {
             @Override boolean washerFluidStatus, @Override @SerializedName("breakOilStatus") boolean brakeOilStatus,
             @Override @SerializedName("tirePressureLamp") TirePressureWarning tirePressureWarning,
             boolean smartKeyBatteryWarning) implements CommonVehicleStatus {
+    }
+
+    public record ValueUnit(double value, int unit) {
     }
 }
