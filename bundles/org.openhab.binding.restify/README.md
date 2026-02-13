@@ -30,11 +30,11 @@ The binding has one optional parameter.
 
 Thing type: `restify:endpoint`.
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | text | yes | URL path for the endpoint. Must start with `/`. `/` alone is not allowed. |
-| `method` | enum (`GET`,`POST`,`PUT`,`DELETE`) | yes | HTTP method accepted by this endpoint. |
-| `endpoint` | text (script context) | yes | JSON script describing authorization and response schema. |
+| Name | Type | Required | Advanced | Description |
+|------|------|----------|----------|-------------|
+| `path` | text | yes | no | URL path for the endpoint. Must start with `/`. `/` alone is not allowed. |
+| `method` | enum (`GET`,`POST`,`PUT`,`DELETE`) | yes | yes | HTTP method accepted by this endpoint. |
+| `endpoint` | text (script context) | yes | no | JSON script describing authorization and response schema. |
 
 ## Endpoint Script Format
 
