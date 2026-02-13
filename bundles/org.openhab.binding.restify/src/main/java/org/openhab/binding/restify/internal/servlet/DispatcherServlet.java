@@ -141,8 +141,8 @@ public class DispatcherServlet extends HttpServlet {
         }
         var providedUsername = credentials.substring(0, separatorIndex);
         var providedPassword = credentials.substring(separatorIndex + 1);
-        if (!timingSafeEquals(providedUsername, basic.username())
-                || !timingSafeEquals(providedPassword, basic.password())) {
+        if (timingSafeNotEquals(providedUsername, basic.username())
+                || timingSafeNotEquals(providedPassword, basic.password())) {
             throw new AuthorizationException("Invalid username or password");
         }
     }
@@ -152,13 +152,13 @@ public class DispatcherServlet extends HttpServlet {
             throw new AuthorizationException("Invalid token");
         }
         var providedToken = provided.substring("Bearer ".length());
-        if (!timingSafeEquals(providedToken, bearer.token())) {
+        if (timingSafeNotEquals(providedToken, bearer.token())) {
             throw new AuthorizationException("Invalid token");
         }
     }
 
-    private static boolean timingSafeEquals(String left, String right) {
-        return MessageDigest.isEqual(left.getBytes(UTF_8), right.getBytes(UTF_8));
+    private static boolean timingSafeNotEquals(String left, String right) {
+        return !MessageDigest.isEqual(left.getBytes(UTF_8), right.getBytes(UTF_8));
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
