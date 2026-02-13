@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,9 +52,8 @@ class ResponseParserTest {
                                 List.of(new Response.StringResponse("a"), new Response.StringResponse("b")))))));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "parses supported response schema [{index}]")
     @MethodSource("validResponses")
-    @DisplayName("parseResponse parses supported schema nodes")
     void parseResponseParsesSupportedSchemaNodes(String json, Response expected) throws Exception {
         // Given
         var responseNode = MAPPER.readTree(json);
@@ -67,9 +65,8 @@ class ResponseParserTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "fails for unsupported node type [{index}]")
     @MethodSource("unsupportedNodeTypes")
-    @DisplayName("parseResponse fails for unsupported schema node types")
     void parseResponseFailsForUnsupportedNodeTypes(String json, String expectedMessage) throws Exception {
         // Given
         var responseNode = MAPPER.readTree(json);
@@ -85,9 +82,8 @@ class ResponseParserTest {
                 Arguments.of("true", "Unsupported schema type: BOOLEAN"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "fails for unsupported string schema [{index}]")
     @MethodSource("unsupportedStringSchemas")
-    @DisplayName("parseResponse fails for unsupported string expressions")
     void parseResponseFailsForUnsupportedStringExpressions(String schema) throws Exception {
         // Given
         var responseNode = MAPPER.readTree("\"%s\"".formatted(schema));

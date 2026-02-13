@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 import java.util.Base64;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -55,9 +54,8 @@ class AuthorizationServiceTest {
                 Arguments.of(new Authorization.Bearer("token-123"), Authorization.BEARER_PREFIX + "token-123"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "accepts matching required authorization [{index}]")
     @MethodSource("validRequiredAuthorizations")
-    @DisplayName("authorize accepts matching provided authorization when endpoint requirement is configured")
     void authorizeAcceptsMatchingProvidedAuthorization(Authorization required, String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
@@ -73,9 +71,8 @@ class AuthorizationServiceTest {
                 Arguments.of(basicHeader("john", "wrong")));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "rejects invalid basic header [{index}]")
     @MethodSource("invalidBasicHeaders")
-    @DisplayName("authorize rejects invalid basic authorization values")
     void authorizeRejectsInvalidBasicAuthorization(String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
@@ -91,9 +88,8 @@ class AuthorizationServiceTest {
         return Stream.of(Arguments.of("Basic abc"), Arguments.of(Authorization.BEARER_PREFIX + "wrong-token"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "rejects invalid bearer header [{index}]")
     @MethodSource("invalidBearerHeaders")
-    @DisplayName("authorize rejects invalid bearer authorization values")
     void authorizeRejectsInvalidBearerAuthorization(String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
@@ -105,9 +101,8 @@ class AuthorizationServiceTest {
         verify(restifyBinding, times(1)).getConfig();
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "fails when header missing for required authorization [{index}]")
     @MethodSource("validRequiredAuthorizations")
-    @DisplayName("authorize fails when endpoint requirement exists but request has no authorization header")
     void authorizeFailsWhenProvidedHeaderMissing(Authorization required, @SuppressWarnings("unused") String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(RestifyBindingConfig.DEFAULT);
@@ -125,9 +120,8 @@ class AuthorizationServiceTest {
                         Authorization.BEARER_PREFIX + "token-123"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "uses configured default authorization [{index}]")
     @MethodSource("validDefaultAuthorizations")
-    @DisplayName("authorize uses matching binding default when endpoint requirement is missing")
     void authorizeUsesBindingDefaultWhenEndpointAuthorizationMissing(RestifyBindingConfig config, String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(config);
@@ -144,9 +138,8 @@ class AuthorizationServiceTest {
                 Arguments.of(new RestifyBindingConfig(true, null, null), Authorization.BEARER_PREFIX + "token-123"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "fails when no effective auth and enforcement enabled [{index}]")
     @MethodSource("missingEffectiveAuthorizationCases")
-    @DisplayName("authorize fails when effective authorization cannot be resolved and enforcement is enabled")
     void authorizeFailsWhenEffectiveAuthorizationMissingAndEnforced(RestifyBindingConfig config, String provided) {
         // Given
         when(restifyBinding.getConfig()).thenReturn(config);
@@ -157,9 +150,8 @@ class AuthorizationServiceTest {
         verify(restifyBinding, times(1)).getConfig();
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "allows when no effective auth and enforcement disabled [{index}]")
     @MethodSource("missingEffectiveAuthorizationCases")
-    @DisplayName("authorize allows request when effective authorization cannot be resolved and enforcement is disabled")
     void authorizeAllowsWhenEffectiveAuthorizationMissingAndNotEnforced(RestifyBindingConfig config, String provided) {
         // Given
         var nonEnforcedConfig = new RestifyBindingConfig(false, config.defaultBasic(), config.defaultBearer());

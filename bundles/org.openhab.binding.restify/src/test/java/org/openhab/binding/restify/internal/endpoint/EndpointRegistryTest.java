@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
@@ -34,9 +33,8 @@ class EndpointRegistryTest {
         return new Endpoint(null, new Response.JsonResponse(emptyMap()));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "register/find returns endpoint for matching method [{index}]")
     @EnumSource(DispatcherServlet.Method.class)
-    @DisplayName("register stores endpoint and find returns it for matching method/path")
     void registerAndFindMatchingEndpoint(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
@@ -46,9 +44,8 @@ class EndpointRegistryTest {
         assertThat(registry.find("/status", method)).containsSame(endpoint);
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "find is method/path specific [{index}]")
     @EnumSource(DispatcherServlet.Method.class)
-    @DisplayName("find is keyed by both path and method")
     void findIsMethodAndPathSpecific(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
@@ -60,9 +57,8 @@ class EndpointRegistryTest {
         assertThat(registry.find("/other", method)).isEmpty();
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "register rejects duplicate key [{index}]")
     @EnumSource(DispatcherServlet.Method.class)
-    @DisplayName("register throws when key already exists")
     void registerThrowsOnDuplicateKey(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
@@ -74,9 +70,8 @@ class EndpointRegistryTest {
                 .hasMessage("Duplicate key found! key: %s:/status".formatted(method));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "unregister removes existing endpoint [{index}]")
     @EnumSource(DispatcherServlet.Method.class)
-    @DisplayName("unregister removes endpoint for matching key")
     void unregisterRemovesExistingEndpoint(DispatcherServlet.Method method) throws RegistrationException {
         var registry = new EndpointRegistry();
         var endpoint = endpoint();
@@ -88,9 +83,8 @@ class EndpointRegistryTest {
         assertThat(registry.find("/status", method)).isEmpty();
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "unregister missing endpoint does not throw [{index}]")
     @EnumSource(DispatcherServlet.Method.class)
-    @DisplayName("unregister does not fail for missing endpoint")
     void unregisterMissingEndpointDoesNotThrow(DispatcherServlet.Method method) {
         var registry = new EndpointRegistry();
 
