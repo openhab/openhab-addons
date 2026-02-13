@@ -5,14 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="endpoint">
-		<label>RESTify Binding Thing</label><!-- TODO -->
-		<description>Sample thing for RESTify Binding</description><!-- TODO -->
-
-		<!-- TODO -->
-		<!-- <channels> -->
-		<!-- <channel id="channel1" typeId="sample-channel"/> -->
-		<!-- </channels> -->
-
+		<label>RESTify Endpoint</label>
+		<description>Configurable REST endpoint that returns a JSON response from a script.</description>
 		<config-description>
 			<parameter name="path" type="text" required="true">
 				<label>Context Path</label>
@@ -22,7 +16,7 @@
 			<parameter name="method" type="text" required="true">
 				<label>HTTP Method</label>
 				<description>
-					<!-- TODO:codex -->
+					HTTP method this endpoint accepts.
 				</description>
 				<default>GET</default>
 				<limitToOptions>true</limitToOptions>
@@ -37,16 +31,9 @@
 				<context>script</context>
 				<label>Endpoint</label>
 				<description>
-					<!-- TODO:codex -->
+					Script that generates the JSON response returned by this endpoint.
 				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<!-- TODO -->
-	<!-- <channel-type id="sample-channel"> -->
-	<!-- <item-type>Number:Temperature</item-type> -->
-	<!-- <label>Example Temperature</label>&lt;!&ndash; Use uppercase words, except prepositions. 2-3 words, max 25 chars &ndash;&gt; -->
-	<!-- <description>Sample channel for RESTify Binding</description> -->
-	<!-- </channel-type> -->
 </thing:thing-descriptions>
