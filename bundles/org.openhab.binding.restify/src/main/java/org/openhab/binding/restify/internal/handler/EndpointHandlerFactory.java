@@ -41,13 +41,14 @@ import org.osgi.service.component.annotations.Reference;
 public class EndpointHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENDPOINT);
 
-    private final EndpointParser endpointParser = new EndpointParser();
+    private final EndpointParser endpointParser;
     private final DispatcherServlet dispatcherServlet;
     private final JsonSchemaValidator schemaValidator;
 
     @Activate
-    public EndpointHandlerFactory(@Reference DispatcherServlet dispatcherServlet,
-            @Reference JsonSchemaValidator schemaValidator) {
+    public EndpointHandlerFactory(@Reference EndpointParser endpointParser,
+            @Reference DispatcherServlet dispatcherServlet, @Reference JsonSchemaValidator schemaValidator) {
+        this.endpointParser = endpointParser;
         this.dispatcherServlet = dispatcherServlet;
         this.schemaValidator = schemaValidator;
     }
