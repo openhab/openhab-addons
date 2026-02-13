@@ -35,10 +35,9 @@ import org.openhab.binding.restify.internal.servlet.Json.JsonArray;
 import org.openhab.binding.restify.internal.servlet.Json.JsonObject;
 import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
-import org.openhab.binding.restify.internal.servlet.Schema.ItemSchema;
-import org.openhab.binding.restify.internal.servlet.Schema.JsonSchema;
-import org.openhab.binding.restify.internal.servlet.Schema.StringSchema;
-import org.openhab.binding.restify.internal.servlet.Schema.ThingSchema;
+import org.openhab.binding.restify.internal.servlet.Response.ItemResponse;
+import org.openhab.binding.restify.internal.servlet.Response.StringResponse;
+import org.openhab.binding.restify.internal.servlet.Response.ThingResponse;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -77,17 +76,17 @@ public class Engine implements Serializable {
         this.thingRegistry = thingRegistry;
     }
 
-    private Json evaluate(Schema Schema) throws ParameterException {
-        return switch (Schema) {
-            case ItemSchema itemSchema -> evaluate(itemSchema);
-            case JsonSchema jsonSchema -> evaluate(jsonSchema);
-            case StringSchema stringSchema -> evaluate(stringSchema);
-            case ThingSchema thingSchema -> evaluate(thingSchema);
-            case Schema.ArraySchema arraySchema -> evaluate(arraySchema);
+    private Json evaluate(Response Response) throws ParameterException {
+        return switch (Response) {
+            case ItemResponse itemSchema -> evaluate(itemSchema);
+            case Response.JsonResponse jsonSchema -> evaluate(jsonSchema);
+            case Response.StringResponse stringSchema -> evaluate(stringSchema);
+            case ThingResponse thingSchema -> evaluate(thingSchema);
+            case Response.ArrayResponse arraySchema -> evaluate(arraySchema);
         };
     }
 
-    private Json evaluate(ItemSchema itemSchema) throws ParameterException {
+    private Json evaluate(ItemResponse itemSchema) throws ParameterException {
         var itemName = itemSchema.itemName();
         try {
             var item = itemRegistry.getItem(itemName);
@@ -270,7 +269,7 @@ public class Engine implements Serializable {
         };
     }
 
-    public JsonObject evaluate(JsonSchema schema) throws ParameterException {
+    public JsonObject evaluate(Response.JsonResponse schema) throws ParameterException {
         var map = new HashMap<String, Json>();
         for (var pair : schema.values().entrySet()) {
             var entry = entry(pair.getKey(), evaluate(pair.getValue()));
@@ -281,11 +280,11 @@ public class Engine implements Serializable {
         return new JsonObject(map);
     }
 
-    private Json evaluate(StringSchema schema) {
+    private Json evaluate(StringResponse schema) {
         return new StringValue(schema.value());
     }
 
-    private Json evaluate(ThingSchema schema) throws ParameterException {
+    private Json evaluate(ThingResponse schema) throws ParameterException {
         try {
             ThingUID uid = new ThingUID(schema.thingUid());
             var thing = thingRegistry.get(uid);
@@ -414,10 +413,10 @@ public class Engine implements Serializable {
         return new JsonObject(map);
     }
 
-    private JsonArray evaluate(Schema.ArraySchema arraySchema) throws ParameterException {
+    private JsonArray evaluate(Response.ArrayResponse arraySchema) throws ParameterException {
         var values = new ArrayList<Json>();
-        for (Schema schema : arraySchema.values()) {
-            Json evaluate = evaluate(schema);
+        for (Response response : arraySchema.values()) {
+            Json evaluate = evaluate(response);
             values.add(evaluate);
         }
         return new JsonArray(values);

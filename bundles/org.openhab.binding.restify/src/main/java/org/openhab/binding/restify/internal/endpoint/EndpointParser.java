@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.restify.internal.config;
+package org.openhab.binding.restify.internal.endpoint;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.servlet.Authorization;
 import org.openhab.binding.restify.internal.servlet.Response;
-import org.openhab.binding.restify.internal.servlet.Schema;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
@@ -37,28 +36,29 @@ import tools.jackson.databind.node.ObjectNode;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class ConfigParser implements Serializable {
+public class EndpointParser implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public Response parseEndpointConfig(String config) throws ConfigException {
+    public Endpoint parseEndpointConfig(String config) throws EndpointParseException {
         return parseResponse(config);
     }
 
-    private Map<String, String> parseUsernamePasswords(@Nullable JsonNode authentication) throws ConfigException {
+    private Map<String, String> parseUsernamePasswords(@Nullable JsonNode authentication)
+            throws EndpointParseException {
         if (authentication == null || authentication.isNull()) {
             return Map.of();
         }
         if (!authentication.isObject()) {
-            throw new ConfigException("Authentication should be a JSON object!");
+            throw new EndpointParseException("Authentication should be a JSON object!");
         }
         var usernamePasswords = authentication.get("usernamePasswords");
         if (usernamePasswords == null || usernamePasswords.isNull()) {
             return Map.of();
         }
         if (!(usernamePasswords instanceof ObjectNode usernamePasswordsObject)) {
-            throw new ConfigException("usernamePasswords should be a JSON object!");
+            throw new EndpointParseException("usernamePasswords should be a JSON object!");
         }
         var result = new HashMap<String, String>();
         for (var entry : usernamePasswordsObject.properties()) {
@@ -67,7 +67,7 @@ public class ConfigParser implements Serializable {
         return Map.copyOf(result);
     }
 
-    private Response parseResponse(String json) throws ConfigException {
+    private Endpoint parseResponse(String json) throws EndpointParseException {
         try {
             var root = mapper.readTree(json);
             var authorizationNode = root.get("authorization");
@@ -77,18 +77,18 @@ public class ConfigParser implements Serializable {
                     : null;
             var responseNode = root.get("response");
             if (responseNode == null || responseNode.isNull() || !responseNode.isObject()) {
-                throw new ConfigException("Response should be a JSON object!");
+                throw new EndpointParseException("Response should be a JSON object!");
             }
             var schema = parseFromObject((ObjectNode) responseNode);
-            return new Response(authorization, schema);
+            return new Endpoint(authorization, schema);
         } catch (JacksonException e) {
-            throw new ConfigException("Cannot read tree from: " + json, e);
+            throw new EndpointParseException("Cannot read tree from: " + json, e);
         }
     }
 
-    private Authorization parseAuthorization(JsonNode authorization) throws ConfigException {
+    private Authorization parseAuthorization(JsonNode authorization) throws EndpointParseException {
         if (!authorization.isObject()) {
-            throw new ConfigException("Authorization should be a JSON object!");
+            throw new EndpointParseException("Authorization should be a JSON object!");
         }
         var type = getText(authorization, "type");
         if ("Basic".equalsIgnoreCase(type)) {
@@ -97,12 +97,12 @@ public class ConfigParser implements Serializable {
         if ("Bearer".equalsIgnoreCase(type)) {
             return new Authorization.Bearer(getText(authorization, "token"));
         }
-        throw new ConfigException("Unknown authorization type: " + type);
+        throw new EndpointParseException("Unknown authorization type: " + type);
     }
 
-    private Schema parseSchema(JsonNode response) throws ConfigException {
+    private Response parseSchema(JsonNode response) throws EndpointParseException {
         if (response.isNull()) {
-            throw new ConfigException("Response schema cannot be null!");
+            throw new EndpointParseException("Response schema cannot be null!");
         }
         if (response.isObject()) {
             return parseFromObject((ObjectNode) response);
@@ -113,22 +113,22 @@ public class ConfigParser implements Serializable {
         if (response.isString()) {
             return parseFromString(response.asString());
         }
-        throw new ConfigException("Unsupported schema type: " + response.getNodeType());
+        throw new EndpointParseException("Unsupported schema type: " + response.getNodeType());
     }
 
-    private Schema parseFromString(String string) throws ConfigException {
+    private Response parseFromString(String string) throws EndpointParseException {
         if (!string.startsWith("$")) {
-            return new Schema.StringSchema(string);
+            return new Response.StringResponse(string);
         }
         if (string.startsWith("$item.")) {
             var uuidExpression = findUuidExpression(string, "$item.");
-            return new Schema.ItemSchema(uuidExpression.uuid, uuidExpression.expression);
+            return new Response.ItemResponse(uuidExpression.uuid, uuidExpression.expression);
         }
         if (string.startsWith("$thing.")) {
             var uuidExpression = findUuidExpression(string, "$thing.");
-            return new Schema.ThingSchema(uuidExpression.uuid, uuidExpression.expression);
+            return new Response.ThingResponse(uuidExpression.uuid, uuidExpression.expression);
         }
-        throw new ConfigException("Unsupported schema type: " + string);
+        throw new EndpointParseException("Unsupported schema type: " + string);
     }
 
     private UuidExpression findUuidExpression(String string, String prefix) {
@@ -147,34 +147,34 @@ public class ConfigParser implements Serializable {
     private record UuidExpression(String uuid, String expression) {
     }
 
-    private Schema.JsonSchema parseFromObject(ObjectNode objectNode) throws ConfigException {
-        var schemaMap = new HashMap<String, Schema>();
+    private Response.JsonResponse parseFromObject(ObjectNode objectNode) throws EndpointParseException {
+        var schemaMap = new HashMap<String, Response>();
         for (var entry : objectNode.properties()) {
             schemaMap.put(requireNonNull(entry.getKey()), parseSchema(entry.getValue()));
         }
-        return new Schema.JsonSchema(Map.copyOf(schemaMap));
+        return new Response.JsonResponse(Map.copyOf(schemaMap));
     }
 
-    private Schema.ArraySchema parseFromArray(ArrayNode arrayNode) throws ConfigException {
-        var schemas = new ArrayList<Schema>(arrayNode.size());
+    private Response.ArrayResponse parseFromArray(ArrayNode arrayNode) throws EndpointParseException {
+        var schemas = new ArrayList<Response>(arrayNode.size());
         for (var node : arrayNode) {
             schemas.add(parseSchema(node));
         }
-        return new Schema.ArraySchema(List.copyOf(schemas));
+        return new Response.ArrayResponse(List.copyOf(schemas));
     }
 
-    private String getText(JsonNode node, String fieldName) throws ConfigException {
+    private String getText(JsonNode node, String fieldName) throws EndpointParseException {
         var value = node.get(fieldName);
         if (value == null || value.isNull()) {
-            throw new ConfigException("Missing required field: " + fieldName);
+            throw new EndpointParseException("Missing required field: " + fieldName);
         }
         return value.asString();
     }
 
-    private int getInt(JsonNode node, String fieldName) throws ConfigException {
+    private int getInt(JsonNode node, String fieldName) throws EndpointParseException {
         var value = node.get(fieldName);
         if (value == null || value.isNull()) {
-            throw new ConfigException("Missing required field: " + fieldName);
+            throw new EndpointParseException("Missing required field: " + fieldName);
         }
         return value.asInt();
     }

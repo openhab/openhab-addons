@@ -19,8 +19,8 @@ import static org.openhab.core.thing.ThingStatusDetail.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.JsonSchemaValidator;
-import org.openhab.binding.restify.internal.config.ConfigException;
-import org.openhab.binding.restify.internal.config.ConfigParser;
+import org.openhab.binding.restify.internal.endpoint.EndpointParseException;
+import org.openhab.binding.restify.internal.endpoint.EndpointParser;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -40,16 +40,16 @@ public class EndpointHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EndpointHandler.class);
 
-    private final ConfigParser configParser;
+    private final EndpointParser endpointParser;
     private final DispatcherServlet dispatcherServlet;
     private final JsonSchemaValidator schemaValidator;
 
     private @Nullable EndpointConfiguration config;
 
-    public EndpointHandler(Thing thing, ConfigParser configParser, DispatcherServlet dispatcherServlet,
+    public EndpointHandler(Thing thing, EndpointParser endpointParser, DispatcherServlet dispatcherServlet,
             JsonSchemaValidator schemaValidator) {
         super(thing);
-        this.configParser = configParser;
+        this.endpointParser = endpointParser;
         this.dispatcherServlet = dispatcherServlet;
         this.schemaValidator = schemaValidator;
     }
@@ -58,7 +58,7 @@ public class EndpointHandler extends BaseThingHandler {
     public void initialize() {
         try {
             internalInitialize();
-        } catch (ConfigException ex) {
+        } catch (EndpointParseException ex) {
             logger.error("Wrong config!", ex);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "Wrong config! " + ex.getLocalizedMessage());
         } catch (InitializationException ex) {
@@ -70,7 +70,7 @@ public class EndpointHandler extends BaseThingHandler {
         }
     }
 
-    private void internalInitialize() throws ConfigException, InitializationException {
+    private void internalInitialize() throws EndpointParseException, InitializationException {
         var localConfig = config = getConfigAs(EndpointConfiguration.class);
         if (!localConfig.path.startsWith("/")) {
             throw new InitializationException("thing-type.restify.%s.path".formatted(THING_TYPE_ENDPOINT.getId()),
@@ -84,7 +84,7 @@ public class EndpointHandler extends BaseThingHandler {
                     String.join(", ", errorMessages));
         }
 
-        var response = configParser.parseEndpointConfig(localConfig.endpoint);
+        var response = endpointParser.parseEndpointConfig(localConfig.endpoint);
         dispatcherServlet.register(localConfig.path, localConfig.method, response);
         updateStatus(ThingStatus.ONLINE);
     }
