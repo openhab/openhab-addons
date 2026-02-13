@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>RESTify Binding</name>
 	<description>This is the binding for RESTify.</description>
+	<config-description-ref uri="binding:restify"/>
 
 </addon:addon>

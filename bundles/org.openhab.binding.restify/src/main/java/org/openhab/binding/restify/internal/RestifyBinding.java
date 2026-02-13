@@ -1,5 +1,9 @@
 package org.openhab.binding.restify.internal;
 
+import static org.openhab.binding.restify.internal.RestifyBindingConstants.CONFIGURATION_PID;
+
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Dictionary;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -9,14 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RestifyBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link RestifyBinding} stores global binding configuration and exposes it to other
+ * binding components.
  *
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.restify", service = { RestifyBinding.class, ManagedService.class })
-public class RestifyBinding implements ManagedService {
+@Component(configurationPid = CONFIGURATION_PID, service = { RestifyBinding.class, ManagedService.class })
+public class RestifyBinding implements ManagedService, Serializable {
+    @Serial
+    private static final long serialVersionUID = 6114697727662078933L;
     private final Logger logger = LoggerFactory.getLogger(RestifyBinding.class);
     private volatile RestifyBindingConfig config = RestifyBindingConfig.DEFAULT;
 
@@ -27,12 +33,20 @@ public class RestifyBinding implements ManagedService {
             return;
         }
 
-        var enforceAuthentication = (Boolean) properties.get("enforceAuthentication");
-        this.config = new RestifyBindingConfig(enforceAuthentication != null && enforceAuthentication);
+        this.config = new RestifyBindingConfig(getBoolean(properties, "enforceAuthentication", false));
         logger.debug("Loaded configuration: {}", config);
     }
 
     public RestifyBindingConfig getConfig() {
         return config;
+    }
+
+    private static boolean getBoolean(Dictionary<String, ?> properties, String key, boolean defaultValue) {
+        var value = properties.get(key);
+        return switch (value) {
+            case Boolean bool -> bool;
+            case String text -> Boolean.parseBoolean(text);
+            default -> defaultValue;
+        };
     }
 }

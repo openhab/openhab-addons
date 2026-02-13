@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.restify", service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class, immediate = true)
 public class EndpointHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENDPOINT);
 
