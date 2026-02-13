@@ -128,18 +128,8 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 taskManager.initializeTasks(apiClient, errorEventBus, systemInfo -> this.handleConnection(systemInfo),
                         users -> this.handleUsersList(users), this, discoveryService));
 
-        // Add WebSocket task for real-time updates (automatic fallback to polling on failure)
-        try {
-            var wsHandler = new org.openhab.binding.jellyfin.internal.server.SessionsMessageHandler(apiClient,
-                    this.sessionManager);
-            // Pass fallback callback that switches to polling when WebSocket exhausts retries
-            var wsTask = new org.openhab.binding.jellyfin.internal.server.WebSocketTask(apiClient,
-                    this.configuration.token, wsHandler, () -> this.handleWebSocketFallback());
-            this.tasks.put(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID, wsTask);
-            logger.debug("WebSocketTask initialized (automatic fallback to polling on failure)");
-        } catch (Exception ex) {
-            logger.warn("Failed to initialize WebSocketTask: {}", ex.getMessage());
-        }
+        // Note: WebSocketTask is initialized lazily when state transitions to CONNECTED
+        // to ensure API token is available (see initializeWebSocketTask method)
     }
 
     // ---------------------------------------------------------------------
@@ -147,12 +137,48 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     // ---------------------------------------------------------------------
 
     /**
+     * Initializes WebSocketTask with current API token.
+     * This method is called lazily when state transitions to CONNECTED to ensure
+     * the API token is available.
+     *
+     * If WebSocketTask already exists and token has changed, it will be disposed
+     * and recreated with the new token.
+     */
+    private void initializeWebSocketTask() {
+        try {
+            // Check if we already have a WebSocketTask
+            AbstractTask existingTask = this.tasks
+                    .get(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+
+            // If token is missing or empty, don't create WebSocketTask
+            if (this.configuration.token.isEmpty()) {
+                logger.warn("[WEBSOCKET] Cannot initialize WebSocket: API token not configured");
+                return;
+            }
+
+            // Only create if it doesn't exist
+            if (existingTask == null) {
+                var wsHandler = new org.openhab.binding.jellyfin.internal.server.SessionsMessageHandler(apiClient,
+                        this.sessionManager);
+                // Pass fallback callback that switches to polling when WebSocket exhausts retries
+                var wsTask = new org.openhab.binding.jellyfin.internal.server.WebSocketTask(apiClient,
+                        this.configuration.token, wsHandler, () -> this.handleWebSocketFallback());
+                this.tasks.put(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID, wsTask);
+                logger.info("[MODE] WebSocket mode initialized (real-time updates enabled with automatic fallback)");
+            }
+        } catch (Exception ex) {
+            logger.warn("Failed to initialize WebSocketTask: {}", ex.getMessage());
+        }
+    }
+
+    /**
      * Handles WebSocket fallback to polling when max reconnection attempts exceeded.
      * Called by WebSocketTask when it exhausts retry attempts.
      * Stops WebSocket task and starts polling task (ServerSyncTask).
      */
     private void handleWebSocketFallback() {
-        logger.warn("WebSocket fallback triggered: stopping WebSocket and starting polling task");
+        logger.warn("[MODE] ⚠️ WebSocket fallback triggered: switching to POLLING mode");
+        logger.info("[MODE] Real-time updates disabled, using periodic polling instead");
 
         // Stop WebSocket task
         ScheduledFuture<?> wsSchedule = this.scheduledTasks
@@ -171,14 +197,15 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         // Start polling task as fallback
         AbstractTask pollingTask = this.tasks
                 .get(org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask.TASK_ID);
-        if (pollingTask != null && this.scheduler != null) {
+        if (pollingTask != null) {
             ScheduledFuture<?> scheduledTask = this.scheduler.scheduleWithFixedDelay(pollingTask,
                     pollingTask.getStartupDelay(), pollingTask.getInterval(), TimeUnit.SECONDS);
             this.scheduledTasks.put(org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask.TASK_ID,
                     scheduledTask);
-            logger.info("Fallback to polling: ServerSyncTask started");
+            logger.info("[MODE] ✓ Fallback to POLLING mode successful: ServerSyncTask started (interval: {}s)",
+                    pollingTask.getInterval());
         } else {
-            logger.error("Cannot start polling fallback: ServerSyncTask not available or scheduler is null");
+            logger.error("[MODE] ✗ Cannot start polling fallback: ServerSyncTask not available or scheduler is null");
         }
     }
 
@@ -191,9 +218,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             MessageCommand msg = new MessageCommand();
             msg.setHeader(header);
             msg.setText(message);
-            if (timeoutMs != null) {
-                msg.setTimeoutMs(timeoutMs.longValue());
-            }
+            msg.setTimeoutMs(timeoutMs.longValue());
             if (sessionId != null) {
                 sessionApi.sendMessageCommand(sessionId, msg);
             }
@@ -330,8 +355,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                     /* seriesStatus */ null, /* nameStartsWithOrGreater */ null, /* nameStartsWith */ null,
                     /* nameLessThan */ null, /* studioIds */ null, /* genreIds */ null,
                     /* enableTotalRecordCount */ null, /* enableImages */ null);
-            if (result != null && result.getItems() != null && !result.getItems().isEmpty()) {
-                return result.getItems().get(0);
+            if (result != null) {
+                var items = result.getItems();
+                if (items != null && !items.isEmpty()) {
+                    return items.get(0);
+                }
             }
         } catch (Exception e) {
             logger.warn("Failed to search for {}: {}", searchTerm, e.getMessage());
@@ -476,7 +504,20 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private synchronized void setState(ServerState newState) {
         ServerState oldState = this.state;
         this.state = newState;
-        logger.debug("Server state changed: {} -> {}", oldState, newState);
+
+        // Log state transition at INFO level for operational visibility
+        logger.info("[STATE] Server state transition: {} -> {} (thing: {})", oldState, newState, thing.getUID());
+
+        // Log additional context for specific transitions
+        if (newState == ServerState.CONNECTED) {
+            logger.info("[STATE] Server fully connected and operational");
+            // Initialize WebSocketTask now that we have an authenticated connection with token
+            initializeWebSocketTask();
+        } else if (newState == ServerState.ERROR) {
+            logger.warn("[STATE] Server entered ERROR state from {}", oldState);
+        } else if (newState == ServerState.DISPOSED) {
+            logger.info("[STATE] Server handler disposed, cleanup complete");
+        }
 
         // Update running tasks based on the new state
         taskManager.processStateChange(newState, tasks, scheduledTasks, scheduler);
@@ -549,17 +590,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     @Override
     public void dispose() {
         // Clean up event bus registration
-        if (errorEventBus != null) {
-            errorEventBus.removeListener(this);
-        }
+        errorEventBus.removeListener(this);
         // Clear session manager state
-        if (sessionManager != null) {
-            sessionManager.clear();
-        }
+        sessionManager.clear();
         // Clear session event bus
-        if (sessionEventBus != null) {
-            sessionEventBus.clear();
-        }
+        sessionEventBus.clear();
         // Use injected task manager
         taskManager.stopAllTasks(scheduledTasks);
         setState(ServerState.DISPOSED);
@@ -586,6 +621,17 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
             // Stop all running tasks before re-initialization
             taskManager.stopAllTasks(scheduledTasks);
+
+            // If token changed, dispose existing WebSocketTask so it can be recreated with new token
+            if (tokenChanged) {
+                AbstractTask wsTask = this.tasks
+                        .get(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+                if (wsTask instanceof org.openhab.binding.jellyfin.internal.server.WebSocketTask) {
+                    logger.debug("[WEBSOCKET] Disposing existing WebSocketTask due to token change");
+                    ((org.openhab.binding.jellyfin.internal.server.WebSocketTask) wsTask).dispose();
+                    this.tasks.remove(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+                }
+            }
 
             // Reload configuration from the Thing
             // Note: The configuration object is updated by the framework via reflection
@@ -728,8 +774,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             sessionManager.updateSessions(newSessions);
 
             // Trigger client discovery after updating the client list
-            if (discoveryService != null) {
-                discoveryService.discoverClients();
+            ClientDiscoveryService service = discoveryService;
+            if (service != null) {
+                service.discoverClients();
             }
         } catch (Exception e) {
             logger.warn("Failed to update client list: {}", e.getMessage(), e);

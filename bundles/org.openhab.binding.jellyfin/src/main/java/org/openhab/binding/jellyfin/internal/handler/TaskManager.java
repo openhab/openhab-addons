@@ -123,8 +123,9 @@ public class TaskManager implements TaskManagerInterface {
 
     @Override
     public void stopAllTasks(Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
-        logger.info("Stopping {} task(s): {}", scheduledTasks.values().size(),
-                String.join(",", scheduledTasks.keySet()));
+        logger.info("[TASK] Stopping {} task(s): {}", scheduledTasks.values().size(),
+                String.join(", ", scheduledTasks.keySet()));
+        logger.debug("[TASK] Active tasks being stopped: {}", scheduledTasks.keySet());
 
         for (ScheduledFuture<?> scheduledTask : scheduledTasks.values()) {
             stopScheduledTask(scheduledTask);
@@ -198,8 +199,8 @@ public class TaskManager implements TaskManagerInterface {
         int delay = task.getStartupDelay();
         int interval = task.getInterval();
 
-        logger.trace("Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
-        logger.info("Starting task [{}]", taskId);
+        logger.trace("[TASK] Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
+        logger.info("[TASK] ▶️ Starting task [{}] (delay: {}s, interval: {}s)", taskId, delay, interval);
 
         ScheduledFuture<?> scheduledTask = scheduleTask(task, delay, interval, scheduler);
         scheduledTasks.put(taskId, scheduledTask);
@@ -215,7 +216,7 @@ public class TaskManager implements TaskManagerInterface {
             Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
         ScheduledFuture<?> scheduledTask = scheduledTasks.remove(taskId);
         if (scheduledTask != null) {
-            logger.info("Stopping task [{}]", taskId);
+            logger.info("[TASK] ⏹️ Stopping task [{}]", taskId);
             stopScheduledTask(scheduledTask);
             // Dispose resources for tasks that maintain connections
             AbstractTask task = availableTasks.get(taskId);

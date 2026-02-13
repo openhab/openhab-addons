@@ -662,13 +662,26 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         synchronized (sessionLock) {
             if (currentSession != null) {
                 long timeSinceLastUpdate = System.currentTimeMillis() - lastSessionUpdateTimestamp;
+
+                // Log monitoring activity at TRACE level to track periodic checks
+                logger.trace("[SESSION] Timeout check for device {}: {}s since last update (threshold: {}s)", deviceId,
+                        timeSinceLastUpdate / 1000, SESSION_TIMEOUT_MS / 1000);
+
                 if (timeSinceLastUpdate > SESSION_TIMEOUT_MS) {
-                    logger.info("Session timeout detected for device {} ({}s without update)", deviceId,
-                            timeSinceLastUpdate / 1000);
+                    logger.warn(
+                            "[SESSION] ⚠️ Session timeout detected for device {} ({}s without update, threshold: {}s)",
+                            deviceId, timeSinceLastUpdate / 1000, SESSION_TIMEOUT_MS / 1000);
+                    logger.info("[SESSION] Clearing session state for device {}", deviceId);
                     currentSession = null;
                     updateClientState();
                     clearChannelStates();
+                } else if (timeSinceLastUpdate > (SESSION_TIMEOUT_MS / 2)) {
+                    // Warn when approaching timeout (halfway through timeout period)
+                    logger.debug("[SESSION] Device {} approaching timeout: {}s since last update", deviceId,
+                            timeSinceLastUpdate / 1000);
                 }
+            } else {
+                logger.trace("[SESSION] No active session for device {} (timeout check skipped)", deviceId);
             }
         }
     }
@@ -688,6 +701,28 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         Map<String, State> states;
         synchronized (sessionLock) {
             states = ClientStateUpdater.calculateChannelStates(session);
+
+            // Update session tracking
+            SessionInfoDto previousSession = currentSession;
+            currentSession = session;
+
+            if (session != null) {
+                lastSessionUpdateTimestamp = System.currentTimeMillis();
+
+                // Log session update with key details
+                if (previousSession == null) {
+                    logger.info("[SESSION] New session started for device {} (session: {})", deviceId, session.getId());
+                } else if (!session.getId().equals(previousSession.getId())) {
+                    logger.info("[SESSION] Session changed for device {} (old: {}, new: {})", deviceId,
+                            previousSession.getId(), session.getId());
+                } else {
+                    logger.debug("[SESSION] Session update for device {} (session: {}, playing: {})", deviceId,
+                            session.getId(),
+                            session.getNowPlayingItem() != null ? session.getNowPlayingItem().getName() : "nothing");
+                }
+            } else {
+                logger.debug("[SESSION] Clearing client state for device {} - session ended", deviceId);
+            }
         }
 
         if (session == null) {

@@ -31,7 +31,6 @@ import org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
 
 /**
  * Integration-style test that verifies the end-to-end flow:
@@ -49,9 +48,9 @@ class DiscoveryIntegrationTest {
             return config;
         }
 
-        TestServerHandler(org.openhab.binding.jellyfin.internal.Configuration config, Thing thing, ApiClient apiClient,
-                org.openhab.binding.jellyfin.internal.handler.TaskManagerInterface taskManager) {
-            super(mock(Bridge.class), apiClient, taskManager);
+        TestServerHandler(org.openhab.binding.jellyfin.internal.Configuration config, Bridge bridge,
+                ApiClient apiClient, org.openhab.binding.jellyfin.internal.handler.TaskManagerInterface taskManager) {
+            super(bridge, apiClient, taskManager);
             this.testConfig = config;
             configForCtor = null;
             // set the 'thing' field in BaseThingHandler
@@ -59,7 +58,7 @@ class DiscoveryIntegrationTest {
                 java.lang.reflect.Field thingField = org.openhab.core.thing.binding.BaseThingHandler.class
                         .getDeclaredField("thing");
                 thingField.setAccessible(true);
-                thingField.set(this, thing);
+                thingField.set(this, bridge);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -87,8 +86,17 @@ class DiscoveryIntegrationTest {
         when(mockApiClient.getRequestInterceptor()).thenReturn(null);
         when(mockApiClient.getHttpClient()).thenReturn(mockHttpClient);
         when(mockResponse.statusCode()).thenReturn(200);
-        // Single user JSON with Id field that will be parsed into UserDto
-        when(mockResponse.body()).thenReturn("[{\"Id\": \"11111111-1111-1111-1111-111111111111\"}]");
+        // Single user JSON with Id and Policy fields that will be parsed into UserDto
+        String userJson = """
+                [{
+                    "Id": "11111111-1111-1111-1111-111111111111",
+                    "Policy": {
+                        "IsDisabled": false,
+                        "IsHidden": false
+                    }
+                }]
+                """;
+        when(mockResponse.body()).thenReturn(userJson);
         when(mockApiClient.getObjectMapper())
                 .thenReturn(org.openhab.binding.jellyfin.internal.api.ApiClient.createDefaultObjectMapper());
         // Make HttpClient.send return our mock response
@@ -107,8 +115,10 @@ class DiscoveryIntegrationTest {
             // Create test server handler
             org.openhab.binding.jellyfin.internal.Configuration cfg = mock(
                     org.openhab.binding.jellyfin.internal.Configuration.class);
-            Thing mockThing = mock(Thing.class);
-            TestServerHandler handler = new TestServerHandler(TestServerHandler.setConfigForCtor(cfg), mockThing,
+            Bridge mockBridge = mock(Bridge.class);
+            // Mock bridge status to return ONLINE so DiscoveryTask proceeds
+            when(mockBridge.getStatus()).thenReturn(org.openhab.core.thing.ThingStatus.ONLINE);
+            TestServerHandler handler = new TestServerHandler(TestServerHandler.setConfigForCtor(cfg), mockBridge,
                     mockApiClient, taskManager);
 
             // Set handler state to CONNECTED so DiscoveryTask will be started/considered
@@ -134,8 +144,10 @@ class DiscoveryIntegrationTest {
 
             discoveryTask.run();
 
-            // Assert - discovery was triggered
-            verify(discoveryService, times(1)).discoverClients();
+            // Assert - discovery was triggered twice:
+            // 1. From updateClientList() after processing users
+            // 2. From DiscoveryTask.run() after fetching users
+            verify(discoveryService, times(2)).discoverClients();
 
             // Assert - clients map now contains our session
             java.util.Map<String, org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto> clients = handler
