@@ -108,7 +108,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final ShellyThingTable thingTable;
 
     protected boolean initialized = false;
-    private volatile boolean discovery = false;
     private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
@@ -143,7 +142,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         super(thingName, config, httpClient);
         this.thingName = thingName;
         this.thingTable = thingTable;
-        this.discovery = true;
         this.client = webSocketClient;
     }
 
@@ -349,42 +347,40 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.initialized = true;
-        if (!discovery) {
-            getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
-            asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
+        getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
+        asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
 
-            try {
-                if (profile.alwaysOn && dc.ble != null) {
-                    logger.debug("{}: BLU Gateway support is {} for this device", thingName,
-                            config.enableBluGateway ? "enabled" : "disabled");
-                    if (config.enableBluGateway) {
-                        boolean bluetooth = getBool(dc.ble.enable);
-                        boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
-                        if (!bluetooth) {
-                            logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
-                        }
-                        if (observer) {
-                            logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
-                                    thingName);
-                        }
-                        boolean restart = false;
-                        if (!bluetooth || observer) {
-                            logger.info("{}: Setup openHAB BLU Gateway", thingName);
-                            restart = setBluetooth(true);
-                        }
+        try {
+            if (profile.alwaysOn && dc.ble != null) {
+                logger.debug("{}: BLU Gateway support is {} for this device", thingName,
+                        config.enableBluGateway ? "enabled" : "disabled");
+                if (config.enableBluGateway) {
+                    boolean bluetooth = getBool(dc.ble.enable);
+                    boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
+                    if (!bluetooth) {
+                        logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
+                    }
+                    if (observer) {
+                        logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
+                                thingName);
+                    }
+                    boolean restart = false;
+                    if (!bluetooth || observer) {
+                        logger.info("{}: Setup openHAB BLU Gateway", thingName);
+                        restart = setBluetooth(true);
+                    }
 
-                        installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
+                    installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
 
-                        if (restart) {
-                            logger.info("{}: Restart device to activate BLU Gateway", thingName);
-                            deviceReboot();
-                            getThing().reinitializeThing();
-                        }
+                    if (restart) {
+                        logger.info("{}: Restart device to activate BLU Gateway", thingName);
+                        deviceReboot();
+                        getThing().reinitializeThing();
                     }
                 }
-            } catch (ShellyApiException e) {
-                logger.debug("{}: Device config failed", thingName, e);
             }
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Device config failed", thingName, e);
         }
 
         return profile;
@@ -612,8 +608,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
         ShellyThingInterface t = thing;
         if (t == null) {
-            logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={}, discovery={})",
-                    thingName, thingName, message.src, message.dst, discovery);
+            logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={})", thingName, thingName,
+                    message.src, message.dst);
             return;
         }
         if (t.isStopping()) {
@@ -769,7 +765,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
             if ("Bye".equalsIgnoreCase(reason)) {
                 logger.debug("{}: Device went to sleep mode or was restarted", thingName);
-            } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
+            } else if (statusCode == StatusCode.ABNORMAL && getProfile().alwaysOn) {
                 // e.g. device rebooted
                 if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
                     thingOffline("WebSocket connection closed abnormally");
@@ -1340,7 +1336,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket != null) {
             if (!rpcSocket.isConnected()) {
-                logger.debug("{}: Connect Rpc Socket (discovery = {})", thingName, discovery);
+                logger.debug("{}: Connect RPC Socket", thingName);
                 rpcSocket.connect();
             }
         } else {
@@ -1372,8 +1368,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             return;
         }
         if (initialized || rpcSocket.isConnected()) {
-            logger.debug("{}: Closing Rpc API (socket is {}, discovery={})", thingName,
-                    rpcSocket.isConnected() ? "connected" : "disconnected", discovery);
+            logger.debug("{}: Closing Rpc API (socket is {})", thingName,
+                    rpcSocket.isConnected() ? "connected" : "disconnected");
         }
         disconnect();
         initialized = false;
