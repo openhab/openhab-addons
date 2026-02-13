@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.restify.internal.servlet;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
@@ -19,8 +20,8 @@ import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Met
 
 import java.io.IOException;
 import java.io.Serial;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Base64;
 
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
@@ -127,7 +128,13 @@ public class DispatcherServlet extends HttpServlet {
         if (!provided.startsWith("Basic ")) {
             throw new AuthorizationException("Invalid username or password");
         }
-        var credentials = provided.substring("Basic ".length());
+        var encodedCredentials = provided.substring("Basic ".length());
+        final String credentials;
+        try {
+            credentials = new String(Base64.getDecoder().decode(encodedCredentials), UTF_8);
+        } catch (IllegalArgumentException e) {
+            throw new AuthorizationException("Invalid username or password");
+        }
         var separatorIndex = credentials.indexOf(':');
         if (separatorIndex <= 0) {
             throw new AuthorizationException("Invalid username or password");
@@ -151,7 +158,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     private static boolean timingSafeEquals(String left, String right) {
-        return MessageDigest.isEqual(left.getBytes(StandardCharsets.UTF_8), right.getBytes(StandardCharsets.UTF_8));
+        return MessageDigest.isEqual(left.getBytes(UTF_8), right.getBytes(UTF_8));
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
