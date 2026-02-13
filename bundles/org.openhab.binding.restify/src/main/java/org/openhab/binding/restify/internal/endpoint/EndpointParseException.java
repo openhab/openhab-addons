@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.restify.internal.config;
+package org.openhab.binding.restify.internal.endpoint;
 
 import java.io.Serial;
 
@@ -20,15 +20,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class ConfigException extends Exception {
+public class EndpointParseException extends Exception {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public ConfigException(String message) {
+    public EndpointParseException(String message) {
         super(message);
     }
 
-    public ConfigException(String message, Throwable cause) {
+    public EndpointParseException(String message, Throwable cause) {
         super(message, cause);
     }
 }

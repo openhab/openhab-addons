@@ -29,9 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
 import org.openhab.binding.restify.internal.RestifyBinding;
-import org.openhab.binding.restify.internal.RestifyBindingConfig;
 import org.openhab.binding.restify.internal.endpoint.Endpoint;
-import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
 import org.openhab.binding.restify.internal.RestifyBindingConfig;
 import org.openhab.binding.restify.internal.endpoint.EndpointRegistry;
 import org.osgi.service.component.annotations.Activate;
@@ -166,8 +164,8 @@ public class DispatcherServlet extends HttpServlet {
         process(DELETE, req, resp);
     }
 
-    public void register(String path, Method method, Response response) {
-        registry.register(path, method, response);
+    public void register(String path, Method method, Endpoint endpoint) {
+        registry.register(path, method, endpoint);
     }
 
     public void unregister(String path, Method method) {

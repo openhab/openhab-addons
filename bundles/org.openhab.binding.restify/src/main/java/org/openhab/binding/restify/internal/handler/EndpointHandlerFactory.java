@@ -19,7 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.JsonSchemaValidator;
-import org.openhab.binding.restify.internal.config.ConfigParser;
+import org.openhab.binding.restify.internal.endpoint.EndpointParser;
 import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 public class EndpointHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENDPOINT);
 
-    private final ConfigParser configParser = new ConfigParser();
+    private final EndpointParser endpointParser = new EndpointParser();
     private final DispatcherServlet dispatcherServlet;
     private final JsonSchemaValidator schemaValidator;
 
@@ -62,7 +62,7 @@ public class EndpointHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ENDPOINT.equals(thingTypeUID)) {
-            return new EndpointHandler(thing, configParser, dispatcherServlet, schemaValidator);
+            return new EndpointHandler(thing, endpointParser, dispatcherServlet, schemaValidator);
         }
 
         return null;

@@ -12,12 +12,28 @@
  */
 package org.openhab.binding.restify.internal.servlet;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public record Response(@Nullable Authorization authorization, Schema.JsonSchema schema) {
+public sealed interface Response {
+    public record StringResponse(String value) implements Response {
+    }
+
+    public record ItemResponse(String itemName, String expression) implements Response {
+    }
+
+    public record ThingResponse(String thingUid, String expression) implements Response {
+    }
+
+    public record JsonResponse(Map<String, ? extends Response> values) implements Response {
+    }
+
+    public record ArrayResponse(List<? extends Response> values) implements Response {
+    }
 }

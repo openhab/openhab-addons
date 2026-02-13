@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.restify.internal.servlet;
+package org.openhab.binding.restify.internal.endpoint;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.restify.internal.servlet.DispatcherServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +34,10 @@ public class EndpointRegistry implements Serializable {
     private static final long serialVersionUID = 1L;
     private final Logger logger = LoggerFactory.getLogger(EndpointRegistry.class);
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Map<Endpoint, Response> registry = new HashMap<>();
+    private final Map<Endpoint, org.openhab.binding.restify.internal.endpoint.Endpoint> registry = new HashMap<>();
 
-    public Optional<Response> find(String path, DispatcherServlet.Method method) {
+    public Optional<org.openhab.binding.restify.internal.endpoint.Endpoint> find(String path,
+            DispatcherServlet.Method method) {
         lock.readLock().lock();
         try {
             logger.debug("Finding {}:{}", method, path);
@@ -45,7 +47,8 @@ public class EndpointRegistry implements Serializable {
         }
     }
 
-    public void register(String path, DispatcherServlet.Method method, Response response) {
+    public void register(String path, DispatcherServlet.Method method,
+            org.openhab.binding.restify.internal.endpoint.Endpoint endpoint) {
         lock.writeLock().lock();
         try {
             logger.debug("Registering {}:{}", method, path);
@@ -53,7 +56,7 @@ public class EndpointRegistry implements Serializable {
             if (registry.containsKey(key)) {
                 throw new IllegalStateException("Duplicate key found! key: %s:%s".formatted(method, path));
             }
-            registry.put(key, response);
+            registry.put(key, endpoint);
         } finally {
             lock.writeLock().unlock();
         }
