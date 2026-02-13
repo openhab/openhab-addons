@@ -1,95 +1,149 @@
 # RESTify Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+The RESTify binding exposes configurable HTTP endpoints from openHAB.
+Each endpoint returns JSON built from a declarative JSON script.
+Scripts can return static values, `$item` values, `$thing` values, nested objects, and arrays.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding currently provides one thing type.
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `restify:endpoint`
+  Creates one HTTP endpoint under `/restify/<path>`.
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+This binding does not provide auto-discovery.
+Create endpoint things manually.
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
+The binding has one optional parameter.
 
-```
-# Configuration for the RESTify Binding
-#
-# Default secret key for the pairing of the RESTify Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `enforceAuthentication` | boolean | `false` | If `true`, every endpoint must define authorization in its endpoint JSON config. |
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+Thing type: `restify:endpoint`.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `path` | text | yes | URL path for the endpoint. Must start with `/`. `/` alone is not allowed. |
+| `method` | enum (`GET`,`POST`,`PUT`,`DELETE`) | yes | HTTP method accepted by this endpoint. |
+| `endpoint` | text (script context) | yes | JSON script describing authorization and response schema. |
 
-### `sample` Thing Configuration
+## Endpoint Script Format
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+The `endpoint` config must be a JSON object with this shape.
 
-## Channels
+```json
+{
+  "authorization": {
+    "type": "Basic",
+    "username": "api",
+    "password": "secret"
+  },
+  "response": {
+    "message": "Hello World"
+  }
+}
+```
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+`authorization` is optional.
+`response` is required and must be a JSON object.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+Supported authorization formats:
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+- Basic:
+```json
+{ "type": "Basic", "username": "api", "password": "secret" }
+```
+- Bearer:
+```json
+{ "type": "Bearer", "token": "my-token" }
+```
+
+## Response Schema
+
+Each value inside `response` can be:
+
+- a static string
+- an object
+- an array
+- an item expression string: `$item.<itemName>.<expression>`
+- a thing expression string: `$thing.<thingUID>.<expression>`
+
+## Item Expressions
+
+Top-level fields:
+`state`, `lastStateUpdate`, `lastStateChange`, `name`, `type`, `acceptedDataTypes`, `acceptedCommandTypes`, `groups`, `tags`, `label`, `category`, `stateDescription`, `commandDescription`.
+
+Examples:
+
+- `$item.LivingRoomTemp.state`
+- `$item.LivingRoomTemp.name,tags`
+- `$item.LivingRoomTemp.stateDescription.minimum,maximum`
+- `$item.LivingRoomTemp.commandDescription`
+
+Date formatting:
+
+- `$item.LivingRoomTemp.lastStateUpdate.[yyyy-MM-dd HH:mm:ss]`
+- `$item.LivingRoomTemp.lastStateChange.[HH:mm:ss]`
+
+Use comma-separated fields to return only selected subfields as an object.
+For example, `$item.MyItem.name,tags` returns `{ "name": "...", "tags": [...] }`.
+
+## Thing Expressions
+
+Top-level fields:
+`label`, `channels`, `channel`, `status`, `statusInfo`, `configuration`, `uid`, `thingTypeUid`, `properties`, `location`, `enabled`, `semanticEquipmentTag`.
+
+Examples:
+
+- `$thing.mqtt:topic:broker:device.status`
+- `$thing.mqtt:topic:broker:device.label,enabled`
+- `$thing.mqtt:topic:broker:device.statusInfo.status,statusDetail`
+- `$thing.mqtt:topic:broker:device.channel.temperature.label`
+
+`channel.<channelId>` addresses a specific channel.
+`channels` returns an array of all channels.
+
+## HTTP Behavior
+
+Endpoints are available under:
+
+`http://<openhab-host>:8080/restify<path>`
+
+If authorization is configured, the request must provide the matching `Authorization` header.
+
+Error responses are JSON:
+
+```json
+{ "code": 401, "error": "Authorization required" }
+```
+
+User-facing error messages are translated via openHAB i18n.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+### Thing File (`*.things`)
 
-### Thing Configuration
-
-```java
-Example thing configuration goes here.
+```things
+Thing restify:endpoint:status "REST Status Endpoint" [
+  path="/status",
+  method="GET",
+  endpoint="{\"authorization\":{\"type\":\"Bearer\",\"token\":\"abc123\"},\"response\":{\"server\":\"openHAB\",\"insideTemp\":\"$item.InsideTemperature.state\",\"insideMeta\":\"$item.InsideTemperature.name,tags\",\"boiler\":\"$thing.mqtt:topic:broker:boiler.status,statusInfo\"}}"
+]
 ```
 
-### Item Configuration
+### Test Calls
 
-```java
-Example item configuration goes here.
+```bash
+curl -H "Authorization: Bearer abc123" http://localhost:8080/restify/status
 ```
 
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
+```bash
+curl -u api:secret http://localhost:8080/restify/private
 ```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
