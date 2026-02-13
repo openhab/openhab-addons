@@ -20,15 +20,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class ParameterException extends UserRequestException {
+public class DuplicateFieldException extends ParameterException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public ParameterException(String parameterName) {
-        super(460, "Could not parse parameter " + parameterName);
-    }
-
-    protected ParameterException(int statusCode, String message) {
-        super(statusCode, message);
+    public DuplicateFieldException(String fieldName) {
+        super(461, "Duplicate field " + fieldName);
     }
 }

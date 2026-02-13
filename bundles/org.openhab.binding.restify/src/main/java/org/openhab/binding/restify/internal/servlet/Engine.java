@@ -100,7 +100,10 @@ public class Engine implements Serializable {
     }
 
     private Json evaluateItemExpression(Item item, String expression) throws ParameterException {
-        var params = expressionToQueue(expression);
+        return evaluateItemExpression(item, expressionToQueue(expression));
+    }
+
+    private Json evaluateItemExpression(Item item, Queue<String> params) throws ParameterException {
         if (params.isEmpty()) {
             return new JsonObject(Map.ofEntries(entry("state", new StringValue(item.getState().toFullString())),
                     entry("lastStateUpdate", evaluateDate(item.getLastStateUpdate(), params)),
@@ -120,6 +123,9 @@ public class Engine implements Serializable {
         }
         var head = requireNonNull(params.peek());
         var tail = findTail(params);
+        if (head.contains(",")) {
+            return evaluateSelectedFields(head, tail, field -> evaluateItemExpression(item, prependField(field, tail)));
+        }
         return switch (head) {
             case "state" -> new StringValue(item.getState().toFullString());
             case "lastStateUpdate" -> evaluateDate(item.getLastStateUpdate(), tail);
@@ -165,6 +171,33 @@ public class Engine implements Serializable {
         return tail;
     }
 
+    private static Queue<String> prependField(String field, Queue<String> tail) {
+        var queue = new ArrayDeque<String>(tail.size() + 1);
+        queue.add(field);
+        queue.addAll(tail);
+        return queue;
+    }
+
+    private Json evaluateSelectedFields(String head, Queue<String> tail, FieldEvaluator evaluator)
+            throws ParameterException {
+        var map = new HashMap<String, Json>();
+        for (String field : head.split(",")) {
+            var trimmedField = field.trim();
+            if (trimmedField.isEmpty()) {
+                continue;
+            }
+            if (map.put(trimmedField, evaluator.evaluate(trimmedField)) != null) {
+                throw new DuplicateFieldException(trimmedField);
+            }
+        }
+        return new JsonObject(map);
+    }
+
+    @FunctionalInterface
+    private interface FieldEvaluator {
+        Json evaluate(String field) throws ParameterException;
+    }
+
     private Json evaluateDate(@Nullable ZonedDateTime lastStateUpdate, Queue<String> params) {
         if (lastStateUpdate == null) {
             return NULL_VALUE;
@@ -200,13 +233,18 @@ public class Engine implements Serializable {
                     "options", evaluateItemOptions(stateDescription.getOptions(), findTail(params))));
         }
         var head = requireNonNull(params.peek());
+        var tail = findTail(params);
+        if (head.contains(",")) {
+            return evaluateSelectedFields(head, tail,
+                    field -> evaluateItemExpression(stateDescription, prependField(field, tail)));
+        }
         return switch (head) {
             case "minimum" -> numberOrNull(stateDescription.getMinimum());
             case "maximum" -> numberOrNull(stateDescription.getMaximum());
             case "step" -> numberOrNull(stateDescription.getStep());
             case "pattern" -> stringOrNull(stateDescription.getPattern());
             case "readOnly" -> booleanOrNull(stateDescription.isReadOnly());
-            case "options" -> evaluateItemOptions(stateDescription.getOptions(), findTail(params));
+            case "options" -> evaluateItemOptions(stateDescription.getOptions(), tail);
             default -> throw new ParameterException(head);
         };
     }
@@ -247,6 +285,10 @@ public class Engine implements Serializable {
                     Map.of("value", new StringValue(option.getValue()), "label", mapNullableString(option.getLabel())));
         }
         var head = requireNonNull(params.peek());
+        var tail = findTail(params);
+        if (head.contains(",")) {
+            return evaluateSelectedFields(head, tail, field -> evaluateStateOption(option, prependField(field, tail)));
+        }
         return switch (head) {
             case "value" -> new StringValue(option.getValue());
             case "label" -> mapNullableString(option.getLabel());
@@ -287,6 +329,11 @@ public class Engine implements Serializable {
                     mapNullableString(option.getLabel())));
         }
         var head = requireNonNull(params.peek());
+        var tail = findTail(params);
+        if (head.contains(",")) {
+            return evaluateSelectedFields(head, tail,
+                    field -> evaluateCommandOption(option, prependField(field, tail)));
+        }
         return switch (head) {
             case "command" -> new StringValue(option.getCommand());
             case "label" -> mapNullableString(option.getLabel());
@@ -299,7 +346,7 @@ public class Engine implements Serializable {
         for (var pair : schema.values().entrySet()) {
             var entry = entry(pair.getKey(), evaluate(pair.getValue()));
             if (map.put(entry.getKey(), entry.getValue()) != null) {
-                throw new IllegalStateException("Duplicate key");
+                throw new DuplicateFieldException(entry.getKey());
             }
         }
         return new JsonObject(map);
@@ -325,7 +372,10 @@ public class Engine implements Serializable {
     }
 
     private Json evaluateThingExpression(Thing thing, String expression) throws ParameterException {
-        var params = expressionToQueue(expression);
+        return evaluateThingExpression(thing, expressionToQueue(expression));
+    }
+
+    private Json evaluateThingExpression(Thing thing, Queue<String> params) throws ParameterException {
         var tail = findTail(params);
         if (params.isEmpty()) {
             return new JsonObject(Map.ofEntries(entry("label", mapNullableString(thing.getLabel())),
@@ -343,6 +393,10 @@ public class Engine implements Serializable {
 
         }
         var head = requireNonNull(params.peek());
+        if (head.contains(",")) {
+            return evaluateSelectedFields(head, tail,
+                    field -> evaluateThingExpression(thing, prependField(field, tail)));
+        }
         return switch (head) {
             case "label" -> mapNullableString(thing.getLabel());
             case "channels" -> evaluateChannels(thing.getChannels(), tail);
@@ -397,6 +451,10 @@ public class Engine implements Serializable {
         }
 
         var head = requireNonNull(params.peek());
+        var tail = findTail(params);
+        if (head.contains(",")) {
+            return evaluateSelectedFields(head, tail, field -> evaluateChannel(channel, prependField(field, tail)));
+        }
         return switch (head) {
             case "acceptedItemType" -> mapNullableString(channel.getAcceptedItemType());
             case "kind" -> new StringValue(channel.getKind().toString());
@@ -420,6 +478,11 @@ public class Engine implements Serializable {
         }
 
         var head = requireNonNull(params.peek());
+        var tail = findTail(params);
+        if (head.contains(",")) {
+            return evaluateSelectedFields(head, tail,
+                    field -> evaluateStatusInfo(statusInfo, prependField(field, tail)));
+        }
         return switch (head) {
             case "status" -> new StringValue(statusInfo.getStatus().toString());
             case "statusDetail" -> new StringValue(statusInfo.getStatusDetail().toString());
