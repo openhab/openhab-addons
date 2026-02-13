@@ -116,7 +116,17 @@ public class DispatcherServlet extends HttpServlet {
 
     private void authorize(RestifyBindingConfig config, @Nullable Authorization required, @Nullable String provided)
             throws AuthorizationException {
-        if (required == null) {
+        var effectiveRequired = required;
+        if (effectiveRequired == null) {
+            effectiveRequired = resolveDefaultAuthorization(config, provided);
+            if (effectiveRequired != null) {
+                logger.debug("No endpoint authorization configured, using {} from binding defaults",
+                        effectiveRequired.getClass().getSimpleName());
+            } else {
+                logger.debug("No endpoint authorization configured and no valid default authorization provided");
+            }
+        }
+        if (effectiveRequired == null) {
             if (config.enforceAuthentication()) {
                 throw new AuthorizationException("servlet.error.authorization.missing-config-or-disable-enforce");
             }
@@ -125,10 +135,45 @@ public class DispatcherServlet extends HttpServlet {
         if (provided == null) {
             throw new AuthorizationException("servlet.error.authorization.required");
         }
-        switch (required) {
+        switch (effectiveRequired) {
             case Authorization.Basic basic -> authorizeBasic(basic, provided);
             case Authorization.Bearer bearer -> authorizeBearer(bearer, provided);
         }
+    }
+
+    private @Nullable Authorization resolveDefaultAuthorization(RestifyBindingConfig config,
+            @Nullable String provided) {
+        if (provided == null) {
+            return null;
+        }
+        if (provided.startsWith("Basic ")) {
+            return parseDefaultBasic(config.defaultBasic());
+        }
+        if (provided.startsWith("Bearer ")) {
+            return parseDefaultBearer(config.defaultBearer());
+        }
+        return null;
+    }
+
+    private @Nullable Authorization parseDefaultBasic(@Nullable String defaultBasic) {
+        if (defaultBasic == null) {
+            return null;
+        }
+        var separatorIndex = defaultBasic.indexOf(':');
+        if (separatorIndex <= 0 || separatorIndex >= defaultBasic.length() - 1) {
+            logger.warn("Ignoring invalid restify defaultBasic value, expected username:password format");
+            return null;
+        }
+        var username = defaultBasic.substring(0, separatorIndex);
+        var password = defaultBasic.substring(separatorIndex + 1);
+        return new Authorization.Basic(username, password);
+    }
+
+    private @Nullable Authorization parseDefaultBearer(@Nullable String defaultBearer) {
+        if (defaultBearer == null) {
+            return null;
+        }
+        return new Authorization.Bearer(defaultBearer);
     }
 
     private void authorizeBasic(Authorization.Basic basic, String provided) throws AuthorizationException {
