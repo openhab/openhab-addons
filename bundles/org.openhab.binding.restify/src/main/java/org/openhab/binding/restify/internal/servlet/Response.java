@@ -25,6 +25,12 @@ public sealed interface Response {
     public record StringResponse(String value) implements Response {
     }
 
+    public record NumberResponse(Number value) implements Response {
+    }
+
+    public record BooleanResponse(Boolean value) implements Response {
+    }
+
     public record ItemResponse(String itemName, String expression) implements Response {
     }
 

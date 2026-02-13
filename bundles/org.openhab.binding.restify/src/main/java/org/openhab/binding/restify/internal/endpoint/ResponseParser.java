@@ -47,6 +47,12 @@ public class ResponseParser {
         if (response.isString()) {
             return parseFromString(response.asString());
         }
+        if (response.isNumber()) {
+            return new Response.NumberResponse(response.numberValue());
+        }
+        if (response.isBoolean()) {
+            return new Response.BooleanResponse(response.asBoolean());
+        }
         throw new EndpointParseException("Unsupported schema type: " + response.getNodeType());
     }
 
