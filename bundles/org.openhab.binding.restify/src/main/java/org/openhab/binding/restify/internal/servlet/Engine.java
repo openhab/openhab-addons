@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.restify.internal.servlet;
 
-import static java.util.Arrays.copyOfRange;
 import static java.util.Map.entry;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.openhab.binding.restify.internal.servlet.Json.NullValue.NULL_VALUE;
 
@@ -21,10 +21,12 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -98,12 +100,11 @@ public class Engine implements Serializable {
     }
 
     private Json evaluateItemExpression(Item item, String expression) throws ParameterException {
-        var parts = expression.split("\\.");
-        var tail = findTail(parts);
-        if (parts.length == 0) {
+        var params = expressionToQueue(expression);
+        if (params.isEmpty()) {
             return new JsonObject(Map.ofEntries(entry("state", new StringValue(item.getState().toFullString())),
-                    entry("lastStateUpdate", evaluateDate(item.getLastStateUpdate(), tail)),
-                    entry("lastStateChange", evaluateDate(item.getLastStateChange(), tail)),
+                    entry("lastStateUpdate", evaluateDate(item.getLastStateUpdate(), params)),
+                    entry("lastStateChange", evaluateDate(item.getLastStateChange(), params)),
                     entry("name", new StringValue(item.getName())), entry("type", new StringValue(item.getType())),
                     entry("acceptedDataTypes",
                             new JsonArray(item.getAcceptedDataTypes().stream().map(Class::getSimpleName)
@@ -114,10 +115,12 @@ public class Engine implements Serializable {
                     entry("groups", new JsonArray(item.getGroupNames().stream().map(StringValue::new).toList())),
                     entry("tags", new JsonArray(item.getTags().stream().map(StringValue::new).toList())),
                     entry("label", stringOrNull(item.getLabel())), entry("category", stringOrNull(item.getCategory())),
-                    entry("stateDescription", evaluateItemExpression(item.getStateDescription(), tail)),
-                    entry("commandDescription", evaluateItemExpression(item.getCommandDescription(), tail))));
+                    entry("stateDescription", evaluateItemExpression(item.getStateDescription(), params)),
+                    entry("commandDescription", evaluateItemExpression(item.getCommandDescription(), params))));
         }
-        return switch (parts[0]) {
+        var head = requireNonNull(params.peek());
+        var tail = findTail(params);
+        return switch (head) {
             case "state" -> new StringValue(item.getState().toFullString());
             case "lastStateUpdate" -> evaluateDate(item.getLastStateUpdate(), tail);
             case "lastStateChange" -> evaluateDate(item.getLastStateChange(), tail);
@@ -135,21 +138,40 @@ public class Engine implements Serializable {
             case "category" -> stringOrNull(item.getCategory());
             case "stateDescription" -> evaluateItemExpression(item.getStateDescription(), tail);
             case "commandDescription" -> evaluateItemExpression(item.getCommandDescription(), tail);
-            default -> throw new ParameterException(parts[0]);
+            default -> throw new ParameterException(head);
         };
     }
 
-    private static String @NonNull [] findTail(String[] parts) {
-        return copyOfRange(parts, 1, parts.length);
+    private static Queue<String> expressionToQueue(String expression) {
+        var parts = expression.split("\\.");
+        var queue = new ArrayDeque<String>(parts.length);
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                queue.add(part);
+            }
+        }
+        return queue;
     }
 
-    private Json evaluateDate(@Nullable ZonedDateTime lastStateUpdate, String[] params) {
+    private static Queue<String> findTail(Queue<String> params) {
+        var iterator = params.iterator();
+        var tail = new ArrayDeque<String>();
+        if (iterator.hasNext()) {
+            iterator.next();
+        }
+        while (iterator.hasNext()) {
+            tail.add(iterator.next());
+        }
+        return tail;
+    }
+
+    private Json evaluateDate(@Nullable ZonedDateTime lastStateUpdate, Queue<String> params) {
         if (lastStateUpdate == null) {
             return NULL_VALUE;
         }
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
-        if (params.length > 0) {
-            var matcher = DATE_FORMATTER_PATTERN.matcher(params[0]);
+        if (!params.isEmpty()) {
+            var matcher = DATE_FORMATTER_PATTERN.matcher(requireNonNull(params.peek()));
 
             if (matcher.find()) {
                 var format = matcher.group(1);
@@ -163,12 +185,12 @@ public class Engine implements Serializable {
         return new StringValue(formatter.format(lastStateUpdate));
     }
 
-    private Json evaluateItemExpression(@Nullable StateDescription stateDescription, String[] params)
+    private Json evaluateItemExpression(@Nullable StateDescription stateDescription, Queue<String> params)
             throws ParameterException {
         if (stateDescription == null) {
             return NULL_VALUE;
         }
-        if (params.length == 0) {
+        if (params.isEmpty()) {
             // return full StateDescription
             return new JsonObject(Map.of("minimum", numberOrNull(stateDescription.getMinimum()), //
                     "maximum", numberOrNull(stateDescription.getMaximum()), //
@@ -177,14 +199,15 @@ public class Engine implements Serializable {
                     "readOnly", booleanOrNull(stateDescription.isReadOnly()), //
                     "options", evaluateItemOptions(stateDescription.getOptions(), findTail(params))));
         }
-        return switch (params[0]) {
+        var head = requireNonNull(params.peek());
+        return switch (head) {
             case "minimum" -> numberOrNull(stateDescription.getMinimum());
             case "maximum" -> numberOrNull(stateDescription.getMaximum());
             case "step" -> numberOrNull(stateDescription.getStep());
             case "pattern" -> stringOrNull(stateDescription.getPattern());
             case "readOnly" -> booleanOrNull(stateDescription.isReadOnly());
             case "options" -> evaluateItemOptions(stateDescription.getOptions(), findTail(params));
-            default -> throw new ParameterException(params[0]);
+            default -> throw new ParameterException(head);
         };
     }
 
@@ -209,7 +232,7 @@ public class Engine implements Serializable {
         return new BooleanValue(bool);
     }
 
-    private Json evaluateItemOptions(List<StateOption> options, String[] params) throws ParameterException {
+    private Json evaluateItemOptions(List<StateOption> options, Queue<String> params) throws ParameterException {
         var list = new ArrayList<Json>();
         for (StateOption option : options) {
             Json json = evaluateStateOption(option, params);
@@ -218,15 +241,16 @@ public class Engine implements Serializable {
         return new JsonArray(list);
     }
 
-    private Json evaluateStateOption(StateOption option, String[] params) throws ParameterException {
-        if (params.length == 0) {
+    private Json evaluateStateOption(StateOption option, Queue<String> params) throws ParameterException {
+        if (params.isEmpty()) {
             return new JsonObject(
                     Map.of("value", new StringValue(option.getValue()), "label", mapNullableString(option.getLabel())));
         }
-        return switch (params[0]) {
+        var head = requireNonNull(params.peek());
+        return switch (head) {
             case "value" -> new StringValue(option.getValue());
             case "label" -> mapNullableString(option.getLabel());
-            default -> throw new ParameterException(params[0]);
+            default -> throw new ParameterException(head);
         };
     }
 
@@ -244,7 +268,7 @@ public class Engine implements Serializable {
         return new StringValue(object.toString());
     }
 
-    private Json evaluateItemExpression(@Nullable CommandDescription commandDescription, String[] params)
+    private Json evaluateItemExpression(@Nullable CommandDescription commandDescription, Queue<String> params)
             throws ParameterException {
         if (commandDescription == null) {
             return NULL_VALUE;
@@ -257,15 +281,16 @@ public class Engine implements Serializable {
         return new JsonArray(list);
     }
 
-    private Json evaluateCommandOption(CommandOption option, String[] params) throws ParameterException {
-        if (params.length == 0) {
+    private Json evaluateCommandOption(CommandOption option, Queue<String> params) throws ParameterException {
+        if (params.isEmpty()) {
             return new JsonObject(Map.of("command", new StringValue(option.getCommand()), "label",
                     mapNullableString(option.getLabel())));
         }
-        return switch (params[0]) {
+        var head = requireNonNull(params.peek());
+        return switch (head) {
             case "command" -> new StringValue(option.getCommand());
             case "label" -> mapNullableString(option.getLabel());
-            default -> throw new ParameterException(params[0]);
+            default -> throw new ParameterException(head);
         };
     }
 
@@ -300,9 +325,9 @@ public class Engine implements Serializable {
     }
 
     private Json evaluateThingExpression(Thing thing, String expression) throws ParameterException {
-        var params = expression.split("\\.");
+        var params = expressionToQueue(expression);
         var tail = findTail(params);
-        if (params.length == 0) {
+        if (params.isEmpty()) {
             return new JsonObject(Map.ofEntries(entry("label", mapNullableString(thing.getLabel())),
                     entry("channels", evaluateChannels(thing.getChannels(), tail)),
                     entry("channel", evaluateChannel(findChannel(thing, tail), findTail(tail))),
@@ -317,7 +342,8 @@ public class Engine implements Serializable {
                     entry("semanticEquipmentTag", mapNullableString(thing.getSemanticEquipmentTag()))));
 
         }
-        return switch (params[0]) {
+        var head = requireNonNull(params.peek());
+        return switch (head) {
             case "label" -> mapNullableString(thing.getLabel());
             case "channels" -> evaluateChannels(thing.getChannels(), tail);
             case "channel" -> evaluateChannel(findChannel(thing, tail), findTail(tail));
@@ -330,18 +356,18 @@ public class Engine implements Serializable {
             case "location" -> mapNullableString(thing.getLocation());
             case "enabled" -> new BooleanValue(thing.isEnabled());
             case "semanticEquipmentTag" -> mapNullableString(thing.getSemanticEquipmentTag());
-            default -> throw new ParameterException(params[0]);
+            default -> throw new ParameterException(head);
         };
     }
 
-    private static @Nullable Channel findChannel(Thing thing, String[] params) {
-        if (params.length == 0) {
+    private static @Nullable Channel findChannel(Thing thing, Queue<String> params) {
+        if (params.isEmpty()) {
             return null;
         }
-        return thing.getChannel(params[0]);
+        return thing.getChannel(requireNonNull(params.peek()));
     }
 
-    private Json evaluateChannels(List<Channel> channels, String[] params) throws ParameterException {
+    private Json evaluateChannels(List<Channel> channels, Queue<String> params) throws ParameterException {
         var list = new ArrayList<Json>();
         for (Channel channel : channels) {
             Json json = evaluateChannel(channel, params);
@@ -350,11 +376,11 @@ public class Engine implements Serializable {
         return new JsonArray(list);
     }
 
-    private Json evaluateChannel(@Nullable Channel channel, String[] params) throws ParameterException {
+    private Json evaluateChannel(@Nullable Channel channel, Queue<String> params) throws ParameterException {
         if (channel == null) {
             return NULL_VALUE;
         }
-        if (params.length == 0) {
+        if (params.isEmpty()) {
             return new JsonObject(Map.ofEntries(
 
                     entry("acceptedItemType", mapNullableString(channel.getAcceptedItemType())),
@@ -370,7 +396,8 @@ public class Engine implements Serializable {
                     entry("autoUpdatePolicy", mapNullableObjectToString(channel.getAutoUpdatePolicy()))));
         }
 
-        return switch (params[0]) {
+        var head = requireNonNull(params.peek());
+        return switch (head) {
             case "acceptedItemType" -> mapNullableString(channel.getAcceptedItemType());
             case "kind" -> new StringValue(channel.getKind().toString());
             case "uid" -> new StringValue(channel.getUID().toString());
@@ -381,22 +408,23 @@ public class Engine implements Serializable {
             case "properties" -> evaluateProperties(channel.getProperties());
             case "defaultTags" -> new JsonArray(channel.getDefaultTags().stream().map(StringValue::new).toList());
             case "autoUpdatePolicy" -> mapNullableObjectToString(channel.getAutoUpdatePolicy());
-            default -> throw new ParameterException(params[0]);
+            default -> throw new ParameterException(head);
         };
     }
 
-    private Json evaluateStatusInfo(ThingStatusInfo statusInfo, String[] params) throws ParameterException {
-        if (params.length == 0) {
+    private Json evaluateStatusInfo(ThingStatusInfo statusInfo, Queue<String> params) throws ParameterException {
+        if (params.isEmpty()) {
             return new JsonObject(Map.ofEntries(entry("status", new StringValue(statusInfo.getStatus().toString())),
                     entry("statusDetail", new StringValue(statusInfo.getStatusDetail().toString())),
                     entry("description", mapNullableString(statusInfo.getDescription()))));
         }
 
-        return switch (params[0]) {
+        var head = requireNonNull(params.peek());
+        return switch (head) {
             case "status" -> new StringValue(statusInfo.getStatus().toString());
             case "statusDetail" -> new StringValue(statusInfo.getStatusDetail().toString());
             case "description" -> mapNullableString(statusInfo.getDescription());
-            default -> throw new ParameterException(params[0]);
+            default -> throw new ParameterException(head);
         };
     }
 
