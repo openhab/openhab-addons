@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.api;
+package org.openhab.binding.shelly.internal.api2;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
@@ -32,7 +32,6 @@ import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
-import org.openhab.binding.shelly.internal.api2.Shelly2RpcSocket;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.osgi.service.component.ComponentException;
