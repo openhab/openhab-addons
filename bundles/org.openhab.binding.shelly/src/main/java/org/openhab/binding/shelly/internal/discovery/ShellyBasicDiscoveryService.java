@@ -24,7 +24,6 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
@@ -126,7 +125,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String deviceName = "";
         String thingType = "";
         Map<String, Object> properties = new TreeMap<>();
-        WebSocketClient webSocketClient = null;
 
         try {
             ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
@@ -169,14 +167,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         } finally {
             if (api != null) {
                 api.close();
-            }
-            if (webSocketClient != null) {
-                // TODO: Temporary code to be refactored away
-                try {
-                    webSocketClient.stop();
-                } catch (Exception e) {
-                    logger.warn("Discovery: Unable to stop websocket client: {}", e.getMessage(), e);
-                }
             }
         }
 
