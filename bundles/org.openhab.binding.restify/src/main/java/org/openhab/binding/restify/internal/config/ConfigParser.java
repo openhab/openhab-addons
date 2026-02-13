@@ -73,7 +73,7 @@ public class ConfigParser implements Serializable {
         }
         var result = new HashMap<String, String>();
         for (var entry : usernamePasswordsObject.properties()) {
-            result.put(entry.getKey(), entry.getValue().asText());
+            result.put(entry.getKey(), entry.getValue().asString());
         }
         return Map.copyOf(result);
     }
@@ -121,8 +121,8 @@ public class ConfigParser implements Serializable {
         if (response.isArray()) {
             return parseFromArray((ArrayNode) response);
         }
-        if (response.isTextual()) {
-            return parseFromString(response.asText());
+        if (response.isString()) {
+            return parseFromString(response.asString());
         }
         throw new ConfigException("Unsupported schema type: " + response.getNodeType());
     }
@@ -179,7 +179,7 @@ public class ConfigParser implements Serializable {
         if (value == null || value.isNull()) {
             throw new ConfigException("Missing required field: " + fieldName);
         }
-        return value.asText();
+        return value.asString();
     }
 
     private int getInt(JsonNode node, String fieldName) throws ConfigException {
