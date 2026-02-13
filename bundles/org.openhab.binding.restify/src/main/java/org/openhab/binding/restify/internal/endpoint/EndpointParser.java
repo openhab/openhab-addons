@@ -148,12 +148,4 @@ public class EndpointParser implements Serializable {
         }
         return value.asString();
     }
-
-    private int getInt(JsonNode node, String fieldName) throws EndpointParseException {
-        var value = node.get(fieldName);
-        if (value == null || value.isNull()) {
-            throw new EndpointParseException("Missing required field: " + fieldName);
-        }
-        return value.asInt();
-    }
 }
