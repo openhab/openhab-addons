@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="jellyfin"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="send-notification-channel">
+		<item-type>String</item-type>
+		<label>Send Notification</label>
+		<description>Send notification to the client</description>
+	</channel-type>
+	<channel-type id="playing-item-id-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Id</label>
+		<description>Id of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-name-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Name</label>
+		<description>Name of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-series-name-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Series Name</label>
+		<description>Name of the item's series currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-season-name-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Season Name</label>
+		<description>Name of the item's season currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-season-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Season</label>
+		<description>Number of the item's season currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-episode-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Episode</label>
+		<description>Number of the episode item currently playing, only have value when item is an episode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-genres-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Genres</label>
+		<description>Comma separated list of genres of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-type-channel">
+		<item-type>String</item-type>
+		<label>Playing Item Type</label>
+		<description>Type of the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playing-item-percentage-channel">
+		<item-type>Dimmer</item-type>
+		<label>Playing Item Percentage</label>
+		<description>
+			<![CDATA[
+			<p>Current playback position as a percentage (0-100%).</p>
+			<p>This channel allows both reading the current position and seeking to a new position by setting a percentage value.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Progress</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="playing-item-second-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Second</label>
+		<description>
+			<![CDATA[
+			<p>Current playback position in seconds.</p>
+			<p>This channel allows both reading the current position and seeking to a specific time by setting a value in seconds.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Progress</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="playing-item-total-seconds-channel">
+		<item-type>Number</item-type>
+		<label>Playing Item Total Seconds</label>
+		<description>Total seconds for the item currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="play-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Play By Terms</label>
+		<description>Play media by terms, works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="play-next-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Play Next By Terms</label>
+		<description>Add to playback queue as next by terms; works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="play-last-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Play Last By Terms</label>
+		<description>Add to playback queue as last by terms; works for series, episodes and movies</description>
+	</channel-type>
+	<channel-type id="browse-by-terms-channel">
+		<item-type>String</item-type>
+		<label>Browse By Terms</label>
+		<description>Browse media by terms, works for series, episodes and movies</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="play-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play By Id</label>
+		<description>Play media by id</description>
+	</channel-type>
+	<channel-type id="play-next-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play Next By Id</label>
+		<description>Add to playback queue as next by id</description>
+	</channel-type>
+	<channel-type id="play-last-by-id-channel">
+		<item-type>String</item-type>
+		<label>Play Last By Id</label>
+		<description>Add to playback queue as last by id</description>
+	</channel-type>
+	<channel-type id="browse-by-id-channel">
+		<item-type>String</item-type>
+		<label>Browse By Id</label>
+		<description>Browse media by id</description>
+	</channel-type>
+	<channel-type id="media-stop-channel">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>
+			<![CDATA[
+			<p>Stop playback control.</p>
+			<p>Send <b>ON</b> to stop playback. This ends playback and may reset the playback position depending on the client.</p>
+			<p><b>Note:</b> Use the <code>media-control</code> channel for play, pause, next, previous, fast-forward, and rewind commands.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="media-shuffle-channel">
+		<item-type>Switch</item-type>
+		<label>Shuffle</label>
+		<description>
+			<![CDATA[
+			<p>Toggle shuffle mode for the playback queue.</p>
+			<p>
+				<b>ON</b>: Items in the queue will play in random order.<br/>
+				<b>OFF</b>: Items in the queue will play in sequential order.
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="media-repeat-channel">
+		<item-type>String</item-type>
+		<label>Repeat Mode</label>
+		<description>
+			<![CDATA[
+			<p>Set the repeat mode for playback.</p>
+			<p>
+				<ul>
+					<li><b>off</b>: Play queue once and stop</li>
+					<li><b>one</b>: Repeat current item continuously</li>
+					<li><b>all</b>: Repeat entire queue continuously</li>
+				</ul>
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="off">Off</option>
+				<option value="one">Repeat One</option>
+				<option value="all">Repeat All</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-quality-channel">
+		<item-type>String</item-type>
+		<label>Streaming Quality</label>
+		<description>
+			<![CDATA[
+			<p>Set the maximum streaming bitrate to control video quality.</p>
+			<p>
+				Higher bitrates provide better quality but require more bandwidth:
+				<ul>
+					<li><b>140000</b> (140 Kbps): Low quality, minimal bandwidth</li>
+					<li><b>500000</b> (500 Kbps): Medium quality, suitable for mobile</li>
+					<li><b>1500000</b> (1.5 Mbps): High quality, SD streaming</li>
+					<li><b>3000000</b> (3 Mbps): Very high quality, HD streaming</li>
+					<li><b>8000000</b> (8 Mbps): Ultra quality, Full HD streaming</li>
+				</ul>
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="140000">Low (140 Kbps)</option>
+				<option value="500000">Medium (500 Kbps)</option>
+				<option value="1500000">High (1.5 Mbps)</option>
+				<option value="3000000">Very High (3 Mbps)</option>
+				<option value="8000000">Ultra (8 Mbps)</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="media-audio-track-channel">
+		<item-type>Number</item-type>
+		<label>Audio Track</label>
+		<description>
+			<![CDATA[
+			<p>Select the audio track for the current media item.</p>
+			<p>Use the <b>zero-based stream index</b> to switch between available audio tracks (e.g., different languages or audio formats).</p>
+			<p>Example: <b>0</b> for first track, <b>1</b> for second track, etc.</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="media-subtitle-channel">
+		<item-type>Number</item-type>
+		<label>Subtitle</label>
+		<description>
+			<![CDATA[
+			<p>Select or disable the subtitle track for the current media item.</p>
+			<p>
+				Use the stream index to switch between available subtitle tracks:
+				<ul>
+					<li><b>-1</b>: Disable subtitles</li>
+					<li><b>0</b>: First subtitle track</li>
+					<li><b>1</b>: Second subtitle track</li>
+					<li>etc.</li>
+				</ul>
+			</p>
+			]]>
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
+	</channel-type>
+</thing:thing-descriptions>
