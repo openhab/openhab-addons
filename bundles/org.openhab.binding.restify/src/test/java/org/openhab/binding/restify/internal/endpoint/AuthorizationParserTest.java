@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -45,9 +44,8 @@ class AuthorizationParserTest {
                 Arguments.of("{\"type\":\"bearer\",\"token\":\"abc-token\"}", new Authorization.Bearer("abc-token")));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "parses supported authorization [{index}]")
     @MethodSource("validAuthorizations")
-    @DisplayName("parseAuthorization parses supported authorization types")
     void parseAuthorizationParsesSupportedTypes(String json, Authorization expected) throws Exception {
         // Given
         var authorizationNode = MAPPER.readTree(json);
@@ -63,9 +61,8 @@ class AuthorizationParserTest {
         return Stream.of(Arguments.of("\"not-an-object\""), Arguments.of("[]"), Arguments.of("null"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "fails when authorization shape is invalid [{index}]")
     @MethodSource("invalidAuthorizationShape")
-    @DisplayName("parseAuthorization fails when authorization is not a JSON object")
     void parseAuthorizationFailsWhenNotObject(String json) throws Exception {
         // Given
         var authorizationNode = MAPPER.readTree(json);
@@ -83,9 +80,8 @@ class AuthorizationParserTest {
                 Arguments.of("{\"type\":\"Bearer\"}", "Missing required field: token"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "fails when required authorization field missing [{index}]")
     @MethodSource("missingRequiredFields")
-    @DisplayName("parseAuthorization fails when required field is missing")
     void parseAuthorizationFailsWhenFieldMissing(String json, String expectedMessage) throws Exception {
         // Given
         var authorizationNode = MAPPER.readTree(json);
@@ -95,9 +91,8 @@ class AuthorizationParserTest {
                 .hasMessage(expectedMessage);
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "fails for unknown authorization type [{index}]")
     @MethodSource("unknownTypes")
-    @DisplayName("parseAuthorization fails for unknown authorization type")
     void parseAuthorizationFailsForUnknownType(String type) throws Exception {
         // Given
         var authorizationNode = MAPPER.readTree("{\"type\":\"%s\"}".formatted(type));

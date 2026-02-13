@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -59,9 +58,8 @@ class EngineTest {
     @InjectMocks
     private Engine sut;
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "maps null helper values [{index}]")
     @MethodSource("nullMappingCases")
-    @DisplayName("null mapping helpers return Json null value and non-null values return typed JSON values")
     void nullMappingHelpersMapValuesCorrectly(String type, Object input, Json expected) {
         // When
         var actual = switch (type) {
@@ -87,9 +85,8 @@ class EngineTest {
                 Arguments.of("boolean", true, new BooleanValue(true)));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "maps simple json/array response [{index}]")
     @MethodSource("simpleJsonResponses")
-    @DisplayName("evaluate maps string and array responses into JSON structure")
     void evaluateMapsStringAndArrayResponses(JsonResponse schema, Json.JsonObject expected) throws ParameterException {
         // When
         var actual = sut.evaluate(schema);
@@ -110,9 +107,8 @@ class EngineTest {
                                 new Json.JsonArray(List.of(new StringValue("a"), new StringValue("b")))))));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "evaluates item expression case [{index}]")
     @MethodSource("itemExpressionCases")
-    @DisplayName("evaluate item expressions returns selected fields and fails for invalid parameters")
     void evaluateItemExpressions(ItemResponse response, Item item, Json expected, String expectedErrorMessageKey)
             throws Exception {
         // Given
@@ -141,9 +137,8 @@ class EngineTest {
                 Arguments.of(new ItemResponse("temperature", "unknownField"), item, null, "servlet.error.parameter"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "returns null when item missing [{index}]")
     @MethodSource("itemNotFoundCases")
-    @DisplayName("evaluate item response returns JSON null when item does not exist")
     void evaluateItemResponseReturnsNullWhenItemMissing(ItemResponse response) throws Exception {
         // Given
         when(itemRegistry.getItem("missing")).thenThrow(new ItemNotFoundException("missing"));
@@ -160,9 +155,8 @@ class EngineTest {
         return Stream.of(new ItemResponse("missing", ""), new ItemResponse("missing", "state"));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "returns null for invalid thing uid [{index}]")
     @MethodSource("invalidThingUidCases")
-    @DisplayName("evaluate thing response returns JSON null for invalid thing UID")
     void evaluateThingResponseReturnsNullForInvalidUid(String invalidThingUid) throws ParameterException {
         // When
         var actual = sut.evaluate(new JsonResponse(Map.of("thing", new ThingResponse(invalidThingUid, "status"))));
