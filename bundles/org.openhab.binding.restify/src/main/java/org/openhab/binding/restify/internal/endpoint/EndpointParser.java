@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.restify.internal.endpoint;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.servlet.Authorization;
@@ -19,6 +21,8 @@ import org.openhab.binding.restify.internal.servlet.Response;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -30,6 +34,10 @@ import tools.jackson.databind.node.ObjectNode;
 @NonNullByDefault
 @Component(service = EndpointParser.class, immediate = true)
 public class EndpointParser {
+    private static final Pattern SECRET_VALUE_PATTERN = Pattern.compile(
+            "(\"(?:password|token|defaultBasic|defaultBearer)\"\\s*:\\s*\")([^\"]*)(\")", Pattern.CASE_INSENSITIVE);
+
+    private final Logger logger = LoggerFactory.getLogger(EndpointParser.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final AuthorizationParser authorizationParser;
     private final ResponseParser responseParser;
@@ -59,7 +67,12 @@ public class EndpointParser {
             }
             return new Endpoint(authorization, jsonResponse);
         } catch (JacksonException e) {
-            throw new EndpointParseException("Cannot read tree from: " + json, e);
+            logger.debug("Cannot parse endpoint JSON: {}", redactSecrets(json), e);
+            throw new EndpointParseException("Invalid endpoint JSON", e);
         }
+    }
+
+    private static String redactSecrets(String json) {
+        return SECRET_VALUE_PATTERN.matcher(json).replaceAll("$1***$3");
     }
 }
