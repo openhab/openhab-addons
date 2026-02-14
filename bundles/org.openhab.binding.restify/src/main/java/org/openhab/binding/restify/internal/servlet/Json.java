@@ -37,10 +37,7 @@ public sealed interface Json {
     public record JsonArray(List<? extends Json> responses) implements Json {
     }
 
-    public static final class NullValue implements Json {
-        public static final NullValue NULL_VALUE = new NullValue();
-
-        private NullValue() {
-        }
+    public enum NullValue implements Json {
+        NULL_VALUE
     }
 }
