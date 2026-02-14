@@ -270,7 +270,7 @@
 	<channel-type id="light">
 		<item-type>Switch</item-type>
 		<label>Light Status</label>
-		<description>Light Status</description>
+		<description>Current status of the light</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Light</tag>
@@ -279,7 +279,7 @@
 	<channel-type id="siren">
 		<item-type>Switch</item-type>
 		<label>Siren Status</label>
-		<description>Siren Status</description>
+		<description>Current status of the siren</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Noise</tag>

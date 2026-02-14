@@ -414,9 +414,11 @@ public class RestClient {
                             "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
             }
 
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+        } catch (ExecutionException | InterruptedException e) {
             logger.warn("RestApi error in sendCommand!", e);
             Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            logger.warn("RestApi error in sendCommand!", e);
         }
     }
 }
