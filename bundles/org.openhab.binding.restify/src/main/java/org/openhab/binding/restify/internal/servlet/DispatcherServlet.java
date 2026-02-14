@@ -19,6 +19,7 @@ import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Met
 
 import java.io.IOException;
 import java.io.Serial;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import javax.servlet.Servlet;
@@ -77,9 +78,9 @@ public class DispatcherServlet extends HttpServlet {
             throws IOException {
         requireNonNull(req, "Request must not be null");
         requireNonNull(resp, "Response must not be null");
-        var uri = findRequestUri(req);
-        logger.debug("Processing {}:{}", method, uri);
         try {
+            var uri = findRequestUri(req);
+            logger.debug("Processing {}:{}", method, uri);
             var json = process(method, uri, req.getHeader("Authorization"));
             resp.setStatus(SC_OK);
             resp.setContentType("application/json");
@@ -115,28 +116,27 @@ public class DispatcherServlet extends HttpServlet {
         var translatedMessage = i18nProvider.getText(bundle, e.getMessageKey(), e.getMessageKey(), locale,
                 e.getMessageArguments());
         logger.error("{}: {}", statusCode, translatedMessage, e);
-        resp.setStatus(statusCode);
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        var errorResponse = Json.object();
-        errorResponse.put("code", statusCode);
-        errorResponse.put("error", translatedMessage);
-        resp.getWriter().write(jsonEncoder.encode(errorResponse));
+        writeJsonError(resp, statusCode, translatedMessage != null ? translatedMessage : e.getMessageKey());
     }
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
-        var message = e.getMessage();
-        if (message == null) {
-            message = e.toString();
-        }
-        logger.error("{}: {}", statusCode, message, e);
+        logger.error("{}: {}", statusCode, e.getMessage(), e);
+        var safeMessage = switch (statusCode) {
+            case SC_BAD_REQUEST -> "Bad request";
+            case SC_INTERNAL_SERVER_ERROR -> "Internal server error";
+            default -> "Request failed";
+        };
+        writeJsonError(resp, statusCode, safeMessage);
+    }
+
+    private void writeJsonError(HttpServletResponse resp, int statusCode, String message) throws IOException {
+        var body = new LinkedHashMap<String, Json>();
+        body.put("code", new Json.NumberValue(statusCode));
+        body.put("error", new Json.StringValue(message));
         resp.setStatus(statusCode);
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        var errorResponse = Json.object();
-        errorResponse.put("code", statusCode);
-        errorResponse.put("error", message);
-        resp.getWriter().write(jsonEncoder.encode(errorResponse));
+        resp.getWriter().write(jsonEncoder.encode(new Json.JsonObject(body)));
     }
 
     @Override
