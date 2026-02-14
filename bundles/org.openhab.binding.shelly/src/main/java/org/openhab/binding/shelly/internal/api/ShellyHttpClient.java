@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -235,7 +236,9 @@ public class ShellyHttpClient {
         }
         if (!SHELLY2_AUTHTTYPE_DIGEST.equalsIgnoreCase(challenge.authType)
                 || !SHELLY2_AUTHALG_SHA256.equalsIgnoreCase(challenge.algorithm)) {
-            throw new IllegalArgumentException("Unsupported Auth type/algorithm requested by device");
+            throw new IllegalArgumentException(
+                    String.format(Locale.ROOT, "Unsupported Auth type (%s) or algorithm (%s) requested by device",
+                            challenge.authType, challenge.algorithm));
         }
         Shelly2AuthRsp response = new Shelly2AuthRsp();
         response.username = user;
