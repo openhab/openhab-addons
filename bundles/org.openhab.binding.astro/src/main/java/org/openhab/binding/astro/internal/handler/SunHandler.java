@@ -47,8 +47,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The SunHandler is responsible for updating calculated sun data.
@@ -63,7 +61,6 @@ public class SunHandler extends AstroThingHandler {
             CHANNEL_ID_SUN_RADIATION_TOTAL);
 
     private final SunCalc sunCalc;
-    private final Logger logger = LoggerFactory.getLogger(SunHandler.class);
     volatile @Nullable Sun sun;
 
     /**
@@ -248,12 +245,6 @@ public class SunHandler extends AstroThingHandler {
                 return toState(sun.getRadiation().getDiffuse(), channel);
             case CHANNEL_ID_SUN_RADIATION_TOTAL:
                 return toState(sun.getRadiation().getTotal(), channel);
-            case CHANNEL_ID_SUN_ZODIAC_START:
-                return toState(sun.getZodiac().getStart(), channel);
-            case CHANNEL_ID_SUN_ZODIAC_END:
-                return toState(sun.getZodiac().getEnd(), channel);
-            case CHANNEL_ID_ZODIAC_SIGN:
-                return toState(sun.getZodiac().getSign(), channel);
             case CHANNEL_ID_SUN_SEASON_NAME:
                 s = sun.getSeason();
                 return s == null ? UnDefType.UNDEF : toState(s.getName(), channel);
@@ -294,10 +285,8 @@ public class SunHandler extends AstroThingHandler {
             case CHANNEL_ID_SUN_CIRCADIAN_TEMPERATURE:
                 return toState(sun.getCircadian().getTemperature(), channel);
             default:
-                logger.warn("Unsupported channel: {}", channel.getUID());
+                return super.getState(channel, channel.getUID());
         }
-
-        return UnDefType.UNDEF;
     }
 
     @Override
