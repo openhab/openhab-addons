@@ -14,8 +14,13 @@ package org.openhab.binding.restify.internal.servlet;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.restify.internal.servlet.Json.BooleanValue;
 import org.openhab.binding.restify.internal.servlet.Json.JsonArray;
 import org.openhab.binding.restify.internal.servlet.Json.JsonObject;
@@ -23,6 +28,9 @@ import org.openhab.binding.restify.internal.servlet.Json.NullValue;
 import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
 import org.osgi.service.component.annotations.Component;
+
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -32,83 +40,52 @@ import org.osgi.service.component.annotations.Component;
 public class JsonEncoder implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
+    private final JsonMapper mapper = new JsonMapper();
 
     public String encode(JsonObject json) {
-        var content = new StringBuilder();
-        encode(json, content);
-        return content.toString();
+        try {
+            return mapper.writeValueAsString(toJsonCompatibleObject(json));
+        } catch (JacksonException e) {
+            throw new IllegalStateException("Cannot encode response to JSON", e);
+        }
     }
 
-    private void encode(Json json, StringBuilder content) {
+    private @Nullable Object toJsonCompatibleObject(Json json) {
         switch (json) {
-            case BooleanValue booleanValue -> encodeBooleanValue(booleanValue, content);
-            case JsonArray jsonArray -> encodeJsonArray(jsonArray, content);
-            case JsonObject jsonObject -> encodeJsonObject(jsonObject, content);
-            case NullValue nullValue -> encodeNullValue(nullValue, content);
-            case NumberValue numberValue -> encodeNumberValue(numberValue, content);
-            case StringValue stringValue -> encodeStringValue(stringValue, content);
-        }
-    }
-
-    private void encodeBooleanValue(BooleanValue json, StringBuilder content) {
-        content.append(json.value());
-    }
-
-    private void encodeJsonArray(JsonArray json, StringBuilder content) {
-        content.append('[');
-        for (int i = 0; i < json.responses().size(); i++) {
-            if (i > 0) {
-                content.append(',');
+            case BooleanValue booleanValue -> {
+                return booleanValue.value();
             }
-            encode(json.responses().get(i), content);
-        }
-        content.append(']');
-    }
-
-    private void encodeJsonObject(JsonObject json, StringBuilder content) {
-        content.append('{');
-        var iterator = json.response().entrySet().iterator();
-        while (iterator.hasNext()) {
-            var entry = iterator.next();
-            if (entry == null)
-                continue;
-            encodeStringValue(new StringValue(entry.getKey()), content);
-            content.append(':');
-            encode(entry.getValue(), content);
-            if (iterator.hasNext()) {
-                content.append(',');
+            case JsonArray jsonArray -> {
+                return toJsonCompatibleArray(jsonArray);
+            }
+            case JsonObject jsonObject -> {
+                return toJsonCompatibleMap(jsonObject);
+            }
+            case NullValue ignored -> {
+                return null;
+            }
+            case NumberValue numberValue -> {
+                return numberValue.value();
+            }
+            case StringValue stringValue -> {
+                return stringValue.value();
             }
         }
-        content.append('}');
     }
 
-    private void encodeNullValue(NullValue json, StringBuilder content) {
-        content.append("null");
-    }
-
-    private void encodeNumberValue(NumberValue json, StringBuilder content) {
-        content.append(json.value());
-    }
-
-    private void encodeStringValue(StringValue json, StringBuilder content) {
-        content.append('"');
-        for (char c : json.value().toCharArray()) {
-            switch (c) {
-                case '"', '\\' -> content.append('\\').append(c);
-                case '\b' -> content.append("\\b");
-                case '\f' -> content.append("\\f");
-                case '\n' -> content.append("\\n");
-                case '\r' -> content.append("\\r");
-                case '\t' -> content.append("\\t");
-                default -> {
-                    if (c < 0x20) {
-                        content.append(String.format("\\u%04x", (int) c));
-                    } else {
-                        content.append(c);
-                    }
-                }
-            }
+    private List<@Nullable Object> toJsonCompatibleArray(JsonArray jsonArray) {
+        var values = new ArrayList<@Nullable Object>(jsonArray.responses().size());
+        for (var entry : jsonArray.responses()) {
+            values.add(toJsonCompatibleObject(entry));
         }
-        content.append('"');
+        return values;
+    }
+
+    private Map<String, @Nullable Object> toJsonCompatibleMap(JsonObject jsonObject) {
+        var values = new LinkedHashMap<String, @Nullable Object>();
+        for (var entry : jsonObject.response().entrySet()) {
+            values.put(entry.getKey(), toJsonCompatibleObject(entry.getValue()));
+        }
+        return values;
     }
 }
