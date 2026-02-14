@@ -96,7 +96,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
             int actPos = currentDimmer.intValue();
             convertDimmerImpl(newPos, actPos, config, stm);
         } else {
-            stm.apply(BlindAction.SLATS_POS_DONE);//
+            stm.apply(BlindAction.SLATS_POS_DONE);
         }
     }
 
@@ -236,7 +236,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                 setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
                 stm.apply(BlindAction.INVALID_REQUEST);
             } else if (stopMoveCommand == StopMoveType.MOVE) {
-                // if (strCmd.toString() == "CALLBACK") {
                 if (stm.getState() == BlindState.POSITION_REACHED) {
                     // Position has been reached, slat now needs to be adjusted
                     // Since the actual position is not persisted elsewhere, the slat position is determined based on
@@ -337,7 +336,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
         @SuppressWarnings("unchecked")
         STMStateMachine<BlindAction, BlindState> blindStm = (STMStateMachine<BlindAction, BlindState>) stm;
 
-        if (CHANNEL_ROLLERSHUTTER.equals(channelId)) { //
+        if (CHANNEL_ROLLERSHUTTER.equals(channelId)) {
             State currentState = getCurrentStateFunc.apply(channelId);
             if (currentState != null) {
                 int duration = ((getDB3Value() << 8) + getDB2Value()) / 10; // => Time in DB3 and DB2 is given
@@ -350,6 +349,7 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
                             case MOVEMENT_POSITION_UP, MOVEMENT_POSITION_DOWN:
                                 // StopMoveType.MOVE is used as command for adjustment of slats
                                 blindStm.storeCommand(CHANNEL_ROLLERSHUTTER, StopMoveType.MOVE);
+                                break;
                             default:
                         }
                         blindStm.apply(BlindAction.POSITION_DONE);// will launch new command for adjustment of slats
