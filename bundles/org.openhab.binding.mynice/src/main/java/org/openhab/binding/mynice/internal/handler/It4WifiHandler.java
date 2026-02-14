@@ -18,6 +18,7 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class It4WifiHandler extends BaseBridgeHandler {
+    private static final String NEEDED_PROTOCOL = "TLSv1.2";
+    private static final String NEEDED_CIPHER = "TLS_RSA_WITH_AES_256_CBC_SHA256";
     private static final int SERVER_PORT = 443;
     private static final int MAX_HANDSHAKE_ATTEMPTS = 3;
     private static final int KEEPALIVE_DELAY_S = 235; // Timeout seems to be at 6 min
@@ -133,12 +136,38 @@ public class It4WifiHandler extends BaseBridgeHandler {
     private void startConnector() {
         It4WifiConfiguration config = getConfigAs(It4WifiConfiguration.class);
         freeKeepAlive();
+        SSLSocket localSocket = null;
         try {
             logger.debug("Initiating connection to IT4Wifi {} on port {}...", config.hostname, SERVER_PORT);
 
-            SSLSocket localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
-            sslSocket = Optional.of(localSocket);
+            localSocket = (SSLSocket) socketFactory.createSocket(config.hostname, SERVER_PORT);
+
+            // We require an older TLS protocol and a static RSA cipher suite to avoid the problematic
+            // DHE exchange that causes 'insufficient_security' errors. If these are not available on
+            // the current JVM, we abort the connection.
+            String[] enabledLegacyProtocols = Arrays.stream(localSocket.getSupportedProtocols())
+                    .filter(NEEDED_PROTOCOL::equals).toArray(String[]::new);
+            String[] legacyCiphers = Arrays.stream(localSocket.getSupportedCipherSuites())
+                    .filter(suite -> NEEDED_CIPHER.equals(suite)).toArray(String[]::new);
+
+            if (enabledLegacyProtocols.length > 0) {
+                localSocket.setEnabledProtocols(enabledLegacyProtocols);
+            } else {
+                throw new IOException(
+                        "Required TLS protocol " + NEEDED_PROTOCOL + " is not supported by this JVM for IT4Wifi");
+            }
+
+            if (legacyCiphers.length > 0) {
+                localSocket.setEnabledCipherSuites(legacyCiphers);
+            } else {
+                throw new IOException(
+                        "Required TLS cipher suite " + NEEDED_CIPHER + " is not supported by this JVM for IT4Wifi");
+            }
+
             localSocket.startHandshake();
+            logger.debug("Handshake successful. Protocol: {}, Cipher: {}", localSocket.getSession().getProtocol(),
+                    localSocket.getSession().getCipherSuite());
+            sslSocket = Optional.of(localSocket);
 
             It4WifiConnector localConnector = new It4WifiConnector(this, localSocket);
             connector = Optional.of(localConnector);
@@ -149,7 +178,16 @@ public class It4WifiHandler extends BaseBridgeHandler {
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/conf-error-hostname");
         } catch (IOException e) {
+            if (localSocket != null) {
+                try {
+                    localSocket.close();
+                } catch (IOException closeException) {
+                    logger.debug("Error closing socket after failed handshake", closeException);
+                }
+            }
+            sslSocket = Optional.empty();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error-handshake-init");
+            logger.warn("Error in IT4Wifi handshake: {}", e.getMessage());
         }
     }
 
