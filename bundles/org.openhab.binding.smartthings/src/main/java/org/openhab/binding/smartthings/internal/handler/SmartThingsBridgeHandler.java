@@ -140,7 +140,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             org.openhab.core.auth.client.oauth2.AccessTokenResponse response = oAuthService.getAccessTokenResponse();
             if (response != null && response.getAccessToken() != null) {
                 setupClient(null);
-                logger.info("token:" + response.getAccessToken());
+                logger.info("token: {}", response.getAccessToken());
             } else {
                 String msg = "Please authorize the binding by visiting:";
                 msg += "\n\n";
@@ -170,7 +170,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 org.openhab.core.auth.client.oauth2.AccessTokenResponse response = srv
                         .getAccessTokenResponseByAuthorizationCode(code, SmartThingsBindingConstants.REDIRECT_URI);
                 if (response.getAccessToken() != null) {
-                    logger.info("token:" + response.getAccessToken());
+                    logger.info("token: {}", response.getAccessToken());
                     setupClient(callBackUri);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -229,7 +229,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 this.updateConfiguration(config);
                 success = true;
             } catch (SmartThingsException ex) {
-                logger.debug(String.format("failed to create app {}", appName));
+                logger.debug("failed to create app {}", appName);
             }
 
             retry++;
@@ -332,8 +332,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 throw new OAuthException("OAuth service is not initialized");
             }
             logger.debug("Make call to SmartThings to get access token.");
-            AccessTokenResponse accessToken = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
-                    redirectUri);
+            oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode, redirectUri);
             return reqCode;
         } catch (RuntimeException | OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());

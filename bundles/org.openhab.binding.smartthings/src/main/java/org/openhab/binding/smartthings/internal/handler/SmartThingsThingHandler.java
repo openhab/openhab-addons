@@ -26,8 +26,8 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsStatus;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusCapabilities;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsStatusProperties;
-import org.openhab.binding.smartthings.internal.stateHandler.SmartThingsStateHandler;
-import org.openhab.binding.smartthings.internal.stateHandler.SmartThingsStateHandlerFactory;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandler;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.thing.Bridge;
@@ -88,7 +88,6 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 refreshDevice();
             } else {
                 try {
-
                     if (converter != null) {
                         jsonMsg = converter.convertToSmartThings(thing, channelUID, command);
                     }

@@ -104,7 +104,6 @@ public class SmartThingsServlet extends HttpServlet {
 
     public SmartThingsServlet(SmartThingsBridgeHandler bridgeHandler, SmartThingsAuthService smartthingsAuthService,
             HttpService httpService) throws SmartThingsException {
-
         this.smartthingsAuthService = smartthingsAuthService;
         this.bridgeHandler = bridgeHandler;
         this.httpService = httpService;
@@ -275,7 +274,6 @@ public class SmartThingsServlet extends HttpServlet {
     @Override
     protected void service(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
-
         if (req == null) {
             logger.debug("SmartThingsServlet.service unexpectedly received a null request. Request not processed");
             return;
@@ -291,9 +289,9 @@ public class SmartThingsServlet extends HttpServlet {
             return;
         }
 
-        if (path.equals("/smartthings")) {
+        if ("/smartthings".equals(path)) {
             super.service(req, resp);
-        } else if (path.equals("/smartthings/cb")) {
+        } else if ("/smartthings/cb".equals(path)) {
             BufferedReader rdr = new BufferedReader(req.getReader());
             String s = rdr.lines().collect(Collectors.joining());
 

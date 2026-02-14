@@ -382,7 +382,6 @@ public class SmartThingsApi {
             source.open();
 
             return true;
-
         } catch (Exception ex) {
             logger.debug("ex: {}", ex.toString());
         }
@@ -430,7 +429,6 @@ public class SmartThingsApi {
             }
 
             return true;
-
         } catch (SmartThingsException ex) {
             logger.error("Unable to register subscriptions: {}", ex.getMessage());
         }

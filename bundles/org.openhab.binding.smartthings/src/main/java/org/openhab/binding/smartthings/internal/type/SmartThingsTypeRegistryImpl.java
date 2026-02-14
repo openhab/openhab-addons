@@ -158,7 +158,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             logger.trace("createChannelTypes: key {}", key);
 
             try {
-
                 if (key.indexOf("Range") > 0) {
                     continue;
                 }
@@ -186,12 +185,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                     } else {
                         generateChannelTypeForProp(capa, key, attr, prop);
                     }
-
                 }
             } catch (Exception ex) {
                 logger.warn("Unable to register ChannelTypes for capability '{}'", key, ex);
             }
-
         }
     }
 
