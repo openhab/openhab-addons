@@ -78,7 +78,7 @@ class GeneralDiagnosticsConverterTest extends BaseMatterConverterTest {
         mockCluster.networkInterfaces = null;
         converter.initState();
         verify(converter, atLeastOnce())
-                .updateThingAttributeProperty(eq(GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES), eq("null"));
+                .updateThingAttributeProperty(eq(GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES), eq(null));
     }
 
     @Test
