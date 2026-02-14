@@ -6,7 +6,7 @@
 	<type>binding</type>
 	<name>Modbus Binding</name>
 	<description>Binding for Modbus</description>
-	<keywords>E3DC,FoxInverter,HeliosEasyControls,Kermi,Lambda,SBC,StiebelEltron,Studer,SunGrow,SunSpec</keywords>
+	<keywords>HagerE3DC,FoxInverter,HeliosEasyControls,Kermi,Lambda,SaiaBurgessControlsSBC,StiebelEltronISG,Studer,SunGrow,SunSpec</keywords>
 	<connection>local</connection>
 
 </addon:addon>
