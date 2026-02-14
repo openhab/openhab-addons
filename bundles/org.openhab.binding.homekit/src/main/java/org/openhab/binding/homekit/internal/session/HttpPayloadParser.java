@@ -54,7 +54,7 @@ public class HttpPayloadParser implements AutoCloseable {
     }
 
     private static final String NEWLINE_REGEX = "\\r?\\n";
-    private static final int MAX_CONTENT_LENGTH = 65536;
+    private static final int MAX_CONTENT_LENGTH = 262144; // 256 KB
     private static final int MAX_HEADER_BLOCK_SIZE = 2048;
     private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("(?i)^content-length:\\s*(\\d+)$");
     private static final Pattern CHUNKED_ENCODING_PATTERN = Pattern.compile("(?i)^transfer-encoding:\\s*chunked$");
@@ -232,7 +232,8 @@ public class HttpPayloadParser implements AutoCloseable {
                 if (isChunked && !finalChunkSeen) {
                     chunkDataBuffer.write(inputBuffer, inputStartIndex, remainingByteCount);
                     if (chunkDataBuffer.size() > MAX_CONTENT_LENGTH) {
-                        throw new IOException("Chunked data exceeds maximum allowed size");
+                        throw new IOException("Chunked data size %d exceeds maximum allowed %d"
+                                .formatted(contentBuffer.size(), MAX_CONTENT_LENGTH));
                     }
                     inputStartIndex += remainingByteCount;
                     parseChunkedBytesFromStagingBuffer();
@@ -253,7 +254,8 @@ public class HttpPayloadParser implements AutoCloseable {
                 }
 
                 if (contentBuffer.size() > MAX_CONTENT_LENGTH) {
-                    throw new IOException("Content exceeds maximum allowed length");
+                    throw new IOException("Content size %d exceeds maximum allowed %d".formatted(contentBuffer.size(),
+                            MAX_CONTENT_LENGTH));
                 }
 
                 if (isComplete()) {

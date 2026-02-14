@@ -196,6 +196,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_DOORLOCK_STATE = "doorlock-lockstate";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_STATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_STATE);
+    public static final String CHANNEL_ID_DOORLOCK_BOLTSTATE = "doorlock-boltstate";
+    public static final ChannelTypeUID CHANNEL_DOORLOCK_BOLTSTATE = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ID_DOORLOCK_BOLTSTATE);
     public static final String CHANNEL_ID_DOORLOCK_DOORSTATE = "doorlock-doorstate";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_DOORSTATE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_DOORLOCK_DOORSTATE);
