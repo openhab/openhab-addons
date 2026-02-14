@@ -32,7 +32,6 @@ public class AccessControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x001F;
     public static final String CLUSTER_NAME = "AccessControl";
     public static final String CLUSTER_PREFIX = "accessControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ACL = "acl";
     public static final String ATTRIBUTE_EXTENSION = "extension";
@@ -42,7 +41,6 @@ public class AccessControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_COMMISSIONING_ARL = "commissioningArl";
     public static final String ATTRIBUTE_ARL = "arl";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * An attempt to add an Access Control Entry when no more entries are available shall result in a RESOURCE_EXHAUSTED
@@ -253,12 +251,13 @@ public class AccessControlCluster extends BaseCluster {
          * • The key-value pairs shall in the format name&#x3D;&lt;value&gt; where name is the key name, and
          * &lt;value&gt; is the contents of the value encoded with proper URL-encoded escaping.
          * • If key MTcu is present, it shall have a value of &quot;_&quot; (i.e. MTcu&#x3D;_). This is the
-         * &quot;callback URL (CallbackUrl) placeholder&quot;.
+         * &quot;callback URL (Call backUrl) placeholder&quot;.
          * • Any key whose name begins with MT not mentioned in the previous bullets shall be reserved for future use by
          * this specification. Manufacturers shall NOT include query keys starting with MT in the ARLRequestFlowUrl
          * unless they are referenced by a version of this specification.
          * Any other element in the ARLRequestFlowUrl query field not covered by the above rules, as well as the
          * fragment field (if present), shall remain including the order of query key/value pairs present.
+         * ### Expansion of ARLRequestFlowUrl by client
          * Once the URL is obtained, it shall be expanded to form a final URL (ExpandedARLRequestFlowUrl) by proceeding
          * with the following substitution algorithm on the original ARLRequestFlowUrl:
          * 1. If key MTcu is present, compute the CallbackUrl desired (see Section 9.10.9.3.5, “CallbackUrl format for
@@ -286,6 +285,7 @@ public class AccessControlCluster extends BaseCluster {
          * Any other element in the CallbackUrl query field not covered by the above rules, as well as the fragment
          * field (if present), shall remain as provided by the client through embedding within the
          * ExpandedARLRequestFlowUrl, including the order of query key/value pairs present.
+         * ### Expansion of CallbackUrl by the manufacturer custom flow
          * Once the CallbackUrl is obtained by the manufacturer flow, it may be expanded to form a final
          * ExpandedARLRequestCallbackUrl URL to be used by proceeding with the following substitution algorithm on the
          * provided CallbackUrl:
@@ -380,6 +380,7 @@ public class AccessControlCluster extends BaseCluster {
          * An attempt to create an entry with more subjects than the node can support shall result in a
          * RESOURCE_EXHAUSTED error and the entry shall NOT be created.
          * ### Subject ID shall be of type uint64 with semantics depending on the entry’s AuthMode as follows:
+         * ### Subject Semantics
          * An empty subjects list indicates a wildcard; that is, this entry shall grant access to any Node that
          * successfully authenticates via AuthMode. The subjects list shall NOT be empty if the entry’s AuthMode is
          * PASE.
@@ -405,6 +406,7 @@ public class AccessControlCluster extends BaseCluster {
          * A single target shall contain at least one field (Cluster, Endpoint, or DeviceType), and shall NOT contain
          * both an Endpoint field and a DeviceType field.
          * A target grants access based on the presence of fields as follows:
+         * ### Target Semantics
          * An empty targets list indicates a wildcard: that is, this entry shall grant access to all cluster instances
          * on all endpoints on this Node.
          */
@@ -552,10 +554,6 @@ public class AccessControlCluster extends BaseCluster {
         }
     }
 
-    /**
-     * ### Proxy View Value
-     * ### This value implicitly grants View privileges
-     */
     public enum AccessControlEntryPrivilegeEnum implements MatterEnum {
         VIEW(1, "View"),
         PROXY_VIEW(2, "Proxy View"),
@@ -642,8 +640,8 @@ public class AccessControlCluster extends BaseCluster {
          * 
          * This feature is for a device that is managed by a service associated with the device vendor and which imposes
          * default access restrictions upon each new fabric added to it. This could arise, for example, if the device is
-         * managed by a service provider under contract to an end-user, in such a way that the manager of the device
-         * does not unconditionally grant universal access to all of a device’s functionality, even for fabric
+         * managed by a service provider under contract to an end-user, in such away that the manager of the device does
+         * not unconditionally grant universal access to all of a device’s functionality, even for fabric
          * administrators. For example, many Home Routers are managed by an Internet Service Provider (a service), and
          * these services often have a policy that requires them to obtain user consent before certain administrative
          * functions can be delegated to a third party (e.g., a fabric Administrator). These restrictions are expressed
@@ -670,10 +668,11 @@ public class AccessControlCluster extends BaseCluster {
          * communication between external services and the user, and may take an unpredictable amount of time to
          * complete since an end-user may need to visit some resources, such as a mobile application or web site. A
          * FabricRestrictionReviewUpdate event will be generated by the device within a predictable time period of the
-         * ReviewFabricRestrictionsResponse (see ReviewFabricRestrictions for specification of this time period), and
-         * this event can be correlated with the ReviewFabricRestrictionsResponse using a token provided in both. The
-         * device may provide instructions or a Redirect URL in the FabricRestrictionReviewUpdate event in order to help
-         * the user access the features required for managing per-fabric restrictions.
+         * ReviewFabricRestrictionsResponse (see Section 9.10.8.1, “ReviewFabricRestrictions Command” for specification
+         * of this time period), and this event can be correlated with the ReviewFabricRestrictionsResponse using a
+         * token provided in both. The device may provide instructions or a Redirect URL in the
+         * FabricRestrictionReviewUpdate event in order to help the user access the features required for managing
+         * per-fabric restrictions.
          * See Section 6.6.2, “Model” for a description of how access control is impacted by the ARL attribute.
          * ### Managed Device Feature Usage Restrictions
          * Use of this feature shall be limited to the mandatory clusters of endpoints having a device type that
@@ -732,7 +731,6 @@ public class AccessControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "acl : " + acl + "\n";
         str += "extension : " + extension + "\n";

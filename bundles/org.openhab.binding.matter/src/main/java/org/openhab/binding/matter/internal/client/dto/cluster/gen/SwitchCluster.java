@@ -28,17 +28,15 @@ public class SwitchCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x003B;
     public static final String CLUSTER_NAME = "Switch";
     public static final String CLUSTER_PREFIX = "switch";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_NUMBER_OF_POSITIONS = "numberOfPositions";
     public static final String ATTRIBUTE_CURRENT_POSITION = "currentPosition";
     public static final String ATTRIBUTE_MULTI_PRESS_MAX = "multiPressMax";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the maximum number of positions the switch has. Any kind of switch has a minimum of 2 positions. Also
-     * see Multi Position Details for the case NumberOfPositions&gt;2.
+     * see Section 1.13.10, “Multi Position Details” for the case NumberOfPositions&gt;2.
      */
     public Integer numberOfPositions; // 0 uint8 R V
     /**
@@ -173,7 +171,7 @@ public class SwitchCluster extends BaseCluster {
      * If the server has the Action Switch (AS) feature flag set, this event shall NOT be generated at all. Otherwise,
      * the following paragraphs describe the situations where this event is generated.
      * This event shall be generated to indicate how many times the momentary switch has been pressed in a multi-press
-     * sequence, during that sequence. See Multi Press Details below.
+     * sequence, during that sequence. See Section 1.13.8, “Sequence of events for MultiPress”.
      */
     public static class MultiPressOngoing {
         /**
@@ -196,7 +194,8 @@ public class SwitchCluster extends BaseCluster {
 
     /**
      * This event shall be generated to indicate how many times the momentary switch has been pressed in a multi-press
-     * sequence, after it has been detected that the sequence has ended. See Multi Press Details.
+     * sequence, after it has been detected that the sequence has ended. See Section 1.13.8, “Sequence of events for
+     * MultiPress”.
      * The PreviousPosition field shall indicate the previous value of the CurrentPosition attribute, i.e. just prior to
      * release.
      * The TotalNumberOfPressesCounted field shall contain:
@@ -254,8 +253,8 @@ public class SwitchCluster extends BaseCluster {
         public boolean momentarySwitchMultiPress;
         /**
          * 
-         * This feature flag indicates simplified handling of events for multi-press-capable switches. See Multi Press
-         * Details.
+         * This feature flag indicates simplified handling of events for multi-press-capable switches. See Section
+         * 1.13.8, “Sequence of events for MultiPress”.
          */
         public boolean actionSwitch;
 
@@ -281,7 +280,6 @@ public class SwitchCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "numberOfPositions : " + numberOfPositions + "\n";
         str += "currentPosition : " + currentPosition + "\n";

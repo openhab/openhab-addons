@@ -28,13 +28,11 @@ public class TemperatureMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0402;
     public static final String CLUSTER_NAME = "TemperatureMeasurement";
     public static final String CLUSTER_PREFIX = "temperatureMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_MEASURED_VALUE = "measuredValue";
     public static final String ATTRIBUTE_MIN_MEASURED_VALUE = "minMeasuredValue";
     public static final String ATTRIBUTE_MAX_MEASURED_VALUE = "maxMeasuredValue";
     public static final String ATTRIBUTE_TOLERANCE = "tolerance";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the measured temperature. The null value indicates that the temperature is unknown.
      */
@@ -67,7 +65,6 @@ public class TemperatureMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "measuredValue : " + measuredValue + "\n";
         str += "minMeasuredValue : " + minMeasuredValue + "\n";
         str += "maxMeasuredValue : " + maxMeasuredValue + "\n";

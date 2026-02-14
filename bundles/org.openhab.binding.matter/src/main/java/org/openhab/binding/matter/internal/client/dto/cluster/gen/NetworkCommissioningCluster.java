@@ -32,7 +32,6 @@ public class NetworkCommissioningCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0031;
     public static final String CLUSTER_NAME = "NetworkCommissioning";
     public static final String CLUSTER_PREFIX = "networkCommissioning";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_MAX_NETWORKS = "maxNetworks";
     public static final String ATTRIBUTE_NETWORKS = "networks";
@@ -46,7 +45,6 @@ public class NetworkCommissioningCluster extends BaseCluster {
     public static final String ATTRIBUTE_SUPPORTED_THREAD_FEATURES = "supportedThreadFeatures";
     public static final String ATTRIBUTE_THREAD_VERSION = "threadVersion";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This shall indicate the maximum number of network configuration entries that can be added, based on available
@@ -69,7 +67,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * Indicates the maximum duration taken, in seconds, by the network interface on this cluster server instance to
      * provide scan results.
-     * See ScanNetworks for usage.
+     * See Section 11.9.7.1, “ScanNetworks Command” for usage.
      */
     public Integer scanMaxTimeSeconds; // 2 uint8 R V
     /**
@@ -85,7 +83,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * It is undefined what happens if InterfaceEnabled is written to false on the same interface as that which is used
      * to write the value. In that case, it is possible that the Administrator would have to await expiry of the
      * fail-safe, and associated recovery of network configuration to prior safe values, before being able to
-     * communicate with the node again (see ArmFailSafe).
+     * communicate with the node again (see Section 11.10.7.2, “ArmFailSafe Command”).
      * It may be possible to disable Ethernet interfaces but it is implementation-defined. If not supported, a write to
      * this attribute with a value of false shall fail with a status of INVALID_ACTION. When disabled, an Ethernet
      * interface would longer employ media detection. That is, a simple unplug and replug of the cable shall NOT
@@ -329,8 +327,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * The ThreadCapabilitiesBitmap encodes the supported Thread features and capabilities of a Thread-enabled network
      * interface.
-     * &gt; [!NOTE]
-     * &gt; The valid combinations of capabilities are restricted and dependent on Thread version.
+     * NOTE The valid combinations of capabilities are restricted and dependent on Thread version.
      */
     public static class ThreadCapabilitiesBitmap {
         public boolean isBorderRouterCapable;
@@ -385,6 +382,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to scan for available networks on the network interface associated with the cluster
+     * instance.
      * This command shall scan on the Cluster instance’s associated network interface for either of:
      * • All available networks (non-directed scanning)
      * • Specific networks (directed scanning)
@@ -394,8 +393,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * size.
      * Scanning for a specific network (i.e. directed scanning) takes place if a network identifier (e.g. Wi-Fi SSID) is
      * provided in the command arguments. Directed scanning shall restrict the result set to the specified network only.
-     * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
-     * with a FAILSAFE_REQUIRED status code sent back to the initiator.
+     * If this command is received without an armed fail-safe context (see Section 11.10.7.2, “ArmFailSafe Command”),
+     * then this command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * The client shall NOT expect the server to be done scanning and have responded with ScanNetworksResponse before
      * ScanMaxTimeSeconds seconds have elapsed. Enough transport time affordances for retries SHOULD be expected before
      * a client determines the operation to have timed-out.
@@ -425,9 +424,10 @@ public class NetworkCommissioningCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to add or update a Wi-Fi network configuration.
      * This command shall be used to add or modify Wi-Fi network configurations.
-     * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
-     * with a FAILSAFE_REQUIRED status code sent back to the initiator.
+     * If this command is received without an armed fail-safe context (see Section 11.10.7.2, “ArmFailSafe Command”),
+     * then this command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * The Credentials associated with the network are not readable after execution of this command, as they do not
      * appear in the Networks attribute, for security reasons.
      * If this command contains a ClientIdentifier, and the Networks list does not contain an entry with a matching
@@ -451,9 +451,10 @@ public class NetworkCommissioningCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to add or update a Thread network configuration.
      * This command shall be used to add or modify Thread network configurations.
-     * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
-     * with a FAILSAFE_REQUIRED status code sent back to the initiator.
+     * If this command is received without an armed fail-safe context (see Section 11.10.7.2, “ArmFailSafe Command”),
+     * then this command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * See Section 11.9.7.5, “Common processing of AddOrUpdateWiFiNetwork and AddOrUpdateThreadNetwork” for behavior of
      * addition/update.
      * The XPAN ID in the OperationalDataset serves as the NetworkID for the network configuration to be added or
@@ -473,11 +474,13 @@ public class NetworkCommissioningCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to remove a network configuration on the network interface associated with the cluster
+     * instance.
      * This command shall remove the network configuration from the Cluster if there was already a network configuration
      * with the same NetworkID. The relative order of the entries in the Networks attribute shall remain unchanged,
      * except for the removal of the requested network configuration.
-     * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
-     * with a FAILSAFE_REQUIRED status code sent back to the initiator.
+     * If this command is received without an armed fail-safe context (see Section 11.10.7.2, “ArmFailSafe Command”),
+     * then this command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * If the Networks attribute does not contain a matching entry, the command shall immediately respond with
      * NetworkConfigResponse having NetworkingStatus status field set to NetworkIdNotFound.
      * On success, the NetworkConfigResponse command shall have its NetworkIndex field set to the 0- based index of the
@@ -495,13 +498,14 @@ public class NetworkCommissioningCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to connect to a network on the network interface associated with the cluster instance.
      * This command shall attempt to connect to a network whose configuration was previously added by either the
      * AddOrUpdateWiFiNetwork or AddOrUpdateThreadNetwork commands. Network is identified by its NetworkID.
      * This command shall fail with a BUSY status code returned to the initiator if the server is currently unable to
      * proceed with such an operation, such as if it is currently attempting to connect in the background, or is already
      * proceeding with a prior ConnectNetwork.
-     * If this command is received without an armed fail-safe context (see ArmFailSafe), then this command shall fail
-     * with a FAILSAFE_REQUIRED status code sent back to the initiator.
+     * If this command is received without an armed fail-safe context (see Section 11.10.7.2, “ArmFailSafe Command”),
+     * then this command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * Before connecting to the new network, the Node shall disconnect the operational network connections managed by
      * any other Network Commissioning cluster instances (whether under the Root Node or a Secondary Network Interface),
      * where those connections are not represented by an entry in the Networks attribute of the corresponding cluster
@@ -526,8 +530,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * indicate its Connected field set to false.
      * The precedence order of any entry subject to ConnectNetwork shall NOT change within the Networks attribute.
      * Even after successfully connecting to a network, the configuration shall revert to the prior state of
-     * configuration if the CommissioningComplete command (see CommissioningComplete) is not successfully invoked before
-     * expiry of the Fail-Safe timer.
+     * configuration if the CommissioningComplete command (see Section 11.10.7.6, “CommissioningComplete Command”) is
+     * not successfully invoked before expiry of the Fail-Safe timer.
      * When non-concurrent commissioning is being used by a Commissioner or Administrator, the ConnectNetworkResponse
      * shall be sent with the NetworkingStatus field set to Success prior to closing the commissioning channel, even if
      * not yet connected to the operational network, unless the device would be incapable of joining that network, in
@@ -536,8 +540,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * success of the operation is operational discovery of the Node on the new operational network. Therefore, before
      * invoking the ConnectNetwork command, the client SHOULD re-invoke the Arm Fail-Safe command with a duration that
      * meets the following:
-     * 1. Sufficient time to meet the minimum required time (see ConnectMaxTimeSeconds) that may be taken by the server
-     * to connect to the desired network.
+     * 1. Sufficient time to meet the minimum required time (see Section 11.9.6.4, “ConnectMaxTimeSeconds Attribute”)
+     * that may be taken by the server to connect to the desired network.
      * 2. Sufficient time to account for possible message-layer retries when a response is requested.
      * 3. Sufficient time to allow operational discovery on the new network by a Commissioner or Administrator.
      * 4. Sufficient time to establish a CASE session after operational discovery
@@ -562,6 +566,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to re-order the network configuration list.
      * This command shall set the specific order of the network configuration selected by its NetworkID in the Networks
      * attribute to match the position given by NetworkIndex.
      */
@@ -582,7 +587,6 @@ public class NetworkCommissioningCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "maxNetworks : " + maxNetworks + "\n";
         str += "networks : " + networks + "\n";

@@ -31,7 +31,6 @@ public class FanControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0202;
     public static final String CLUSTER_NAME = "FanControl";
     public static final String CLUSTER_PREFIX = "fanControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_FAN_MODE = "fanMode";
     public static final String ATTRIBUTE_FAN_MODE_SEQUENCE = "fanModeSequence";
@@ -46,92 +45,110 @@ public class FanControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_WIND_SETTING = "windSetting";
     public static final String ATTRIBUTE_AIRFLOW_DIRECTION = "airflowDirection";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * Indicates the current speed mode of the fan. This attribute may be written by the client to request a different
-     * fan mode. A server shall return INVALID_IN_STATE to indicate that the fan is not in a state where the FanMode can
-     * be changed to the requested value. A server may have FanMode values that it can never be set to. For example,
-     * where this cluster appears on the same or another endpoint as other clusters with a system dependency, for
-     * example the Thermostat cluster, attempting to set the FanMode attribute of this cluster to Off may not be allowed
-     * by the system.
-     * This attribute shall be set to one of the values in FanModeEnum.
-     * When the FanMode attribute is successfully written to, the PercentSetting and SpeedSetting (if present)
-     * attributes shall be set to appropriate values, as defined by the Section 4.4.6.3.1 and Section 4.4.6.6.1
-     * respectively, unless otherwise specified below.
-     * When the FanMode attribute is set to any given mode, the PercentCurrent and SpeedCurrent (if present) shall
+     * Indicates the current speed mode of the fan.
+     * This attribute shall be set to one of the values in FanModeEnum supported by the server as indicated in the
+     * FanModeSequence attribute. The Low value shall be supported if and only if the FanModeSequence attribute value is
+     * less than 4. The Medium value shall be supported if and only if the FanModeSequence attribute value is 0 or 2.
+     * This attribute may be written by a client to request a different fan mode. The server shall return
+     * INVALID_IN_STATE to indicate that the fan is not in a state where this attribute can be changed to the requested
+     * value.
+     * The server may have values that this attribute can never be set to or that will be ignored by the server. For
+     * example, where this cluster appears on the same or another endpoint as other clusters with a system dependency,
+     * for example the Thermostat cluster, attempting to set this attribute to Off may not be allowed by the system.
+     * If an attempt is made to set this attribute to a value not supported by the server as indicated in the
+     * FanModeSequence attribute, the server shall respond with CONSTRAINT_ERROR.
+     * When this attribute is successfully written to, the PercentSetting and SpeedSetting (if present) attributes shall
+     * be set to appropriate values, as defined by Section 4.4.6.3.1, “Percent Rules” and Section 4.4.6.6.1, “Speed
+     * Rules” respectively, unless otherwise specified below.
+     * When this attribute is set to any valid value, the PercentCurrent and SpeedCurrent (if present) attributes shall
      * indicate the actual currently operating fan speed, unless otherwise specified below.
      */
     public FanModeEnum fanMode; // 0 FanModeEnum RW VO
     /**
-     * This attribute indicates the fan speed ranges that shall be supported.
+     * This attribute indicates the fan speed ranges that shall be supported by the server.
      */
     public FanModeSequenceEnum fanModeSequence; // 1 FanModeSequenceEnum R V
     /**
-     * Indicates the speed setting for the fan. This attribute may be written by the client to indicate a new fan speed.
-     * If the client writes null to this attribute, the attribute value shall NOT change. A server shall return
-     * INVALID_IN_STATE to indicate that the fan is not in a state where the PercentSetting can be changed to the
-     * requested value.
-     * If this is successfully written to 0, the server shall set the FanMode attribute value to Off.
+     * Indicates the speed setting for the fan with a value of 0 indicating that the fan is off and a value of 100
+     * indicating that the fan is set to run at its maximum speed. If the FanMode attribute is set to Auto, the value of
+     * this attribute shall be set to null.
+     * This attribute may be written to by a client to indicate a new fan speed. If a client writes null to this
+     * attribute, the attribute value shall NOT change. If the fan is in a state where this attribute cannot be changed
+     * to the requested value, the server shall return INVALID_IN_STATE.
+     * When this attribute is successfully written, the server shall set the value of the FanMode and SpeedSetting (if
+     * present) attributes to values that abide by the mapping requirements listed below.
      */
     public Integer percentSetting; // 2 percent RW VO
     /**
      * Indicates the actual currently operating fan speed, or zero to indicate that the fan is off. There may be a
      * temporary mismatch between the value of this attribute and the value of the PercentSetting attribute due to other
-     * system requirements that would not allow the fan to operate at the requested setting. See Section 4.4.6.3.1 for
-     * more details.
+     * system requirements or constraints that would not allow the fan to operate at the requested setting.
+     * For example, if the value of this attribute is currently 50%, and the PercentSetting attribute is newly set to
+     * 25%, the value of this attribute may stay above 25% for a period necessary to dissipate internal heat, maintain
+     * product operational safety, etc.
+     * When the value of the FanMode attribute is AUTO, the value of this attribute may vary across the range over time.
+     * See Section 4.4.6.3.1, “Percent Rules” for more details.
      */
     public Integer percentCurrent; // 3 percent R V
     /**
-     * Indicates that the fan has one speed (value of 1) or the maximum speed, if the fan is capable of multiple speeds.
+     * Indicates the maximum value to which the SpeedSetting attribute can be set.
      */
     public Integer speedMax; // 4 uint8 R V
     /**
-     * Indicates the speed setting for the fan. This attribute may be written by the client to indicate a new fan speed.
-     * If the client writes null to this attribute, the attribute value shall NOT change. A server shall return
-     * INVALID_IN_STATE to indicate that the fan is not in a state where the SpeedSetting can be changed to the
-     * requested value.
-     * If this is successfully written to 0, the server shall set the FanMode attribute value to Off. Please see the
-     * Section 4.4.6.6.1 for details on other values.
+     * Indicates the speed setting for the fan. This attribute may be written by a client to indicate a new fan speed.
+     * If the FanMode attribute is set to Auto, the value of this attribute shall be set to null.
+     * The server shall support all values between 0 and SpeedMax.
+     * If a client writes null to this attribute, the attribute value shall NOT change. If the fan is in a state where
+     * this attribute cannot be changed to the requested value, the server shall return INVALID_IN_STATE.
+     * When this attribute is successfully written to, the server shall set the value of the FanMode and PercentSetting
+     * attributes to values that abide by the mapping requirements listed below.
      */
     public Integer speedSetting; // 5 uint8 RW VO
     /**
      * Indicates the actual currently operating fan speed, or zero to indicate that the fan is off. There may be a
      * temporary mismatch between the value of this attribute and the value of the SpeedSetting attribute due to other
-     * system requirements that would not allow the fan to operate at the requested setting.
+     * system requirements or constraints that would not allow the fan to operate at the requested setting.
+     * For example, if the value of this attribute is currently 5, and the SpeedSetting attribute is newly set to 2, the
+     * value of this attribute may stay above 2 for a period necessary to dissipate internal heat, maintain product
+     * operational safety, etc.
+     * When the value of the FanMode attribute is AUTO, the value of this attribute may vary across the range over time.
+     * See Section 4.4.6.6.1, “Speed Rules” for more details.
      */
     public Integer speedCurrent; // 6 uint8 R V
     /**
-     * This attribute is a bitmap that indicates what rocking motions the server supports.
+     * This attribute is a bitmap that indicates the rocking motions that are supported by the server. If this attribute
+     * is supported by the server, at least one bit shall be set in this attribute.
      */
     public RockBitmap rockSupport; // 7 RockBitmap R V
     /**
-     * This attribute is a bitmap that indicates the current active fan rocking motion settings. Each bit shall only be
+     * This attribute is a bitmap that indicates the currently active fan rocking motion setting. Each bit shall only be
      * set to 1, if the corresponding bit in the RockSupport attribute is set to 1, otherwise a status code of
      * CONSTRAINT_ERROR shall be returned.
-     * If a combination of supported bits is set by the client, and the server does not support the combination, the
+     * If a combination of supported bits is set by a client, and the server does not support the combination, the
      * lowest supported single bit in the combination shall be set and active, and all other bits shall indicate zero.
      * For example: If RockUpDown and RockRound are both set, but this combination is not possible, then only RockUpDown
      * becomes active.
      */
     public RockBitmap rockSetting; // 8 RockBitmap RW VO
     /**
-     * This attribute is a bitmap that indicates what wind modes the server supports. At least one wind mode bit shall
-     * be set.
+     * This attribute is a bitmap that indicates what wind modes are supported by the server. If this attribute is
+     * supported by the server, at least one bit shall be set in this attribute.
      */
     public WindBitmap windSupport; // 9 WindBitmap R V
     /**
      * This attribute is a bitmap that indicates the current active fan wind feature settings. Each bit shall only be
      * set to 1, if the corresponding bit in the WindSupport attribute is set to 1, otherwise a status code of
      * CONSTRAINT_ERROR shall be returned.
-     * If a combination of supported bits is set by the client, and the server does not support the combination, the
+     * If a combination of supported bits is set by a client, and the server does not support the combination, the
      * lowest supported single bit in the combination shall be set and active, and all other bits shall indicate zero.
      * For example: If Sleep Wind and Natural Wind are set, but this combination is not possible, then only Sleep Wind
      * becomes active.
      */
     public WindBitmap windSetting; // 10 WindBitmap RW VO
     /**
-     * Indicates the current airflow direction of the fan. This attribute may be written by the client to indicate a new
+     * Indicates the current airflow direction of the fan. This attribute may be written by a client to indicate a new
      * airflow direction for the fan. This attribute shall be set to one of the values in the AirflowDirectionEnum
      * table.
      */
@@ -253,7 +270,16 @@ public class FanControlCluster extends BaseCluster {
     }
 
     public static class WindBitmap {
+        /**
+         * Indicate sleep wind
+         * The fan speed, based on current settings, shall gradually slow down to a final minimum speed. For this
+         * process, the sequence, speeds and duration are MS.
+         */
         public boolean sleepWind;
+        /**
+         * Indicate natural wind
+         * The fan speed shall vary to emulate natural wind. For this setting, the sequence, speeds and duration are MS.
+         */
         public boolean naturalWind;
 
         public WindBitmap(boolean sleepWind, boolean naturalWind) {
@@ -269,9 +295,8 @@ public class FanControlCluster extends BaseCluster {
          * but left it up to the implementer to decide what was supported. Therefore, it is assumed that legacy client
          * implementations are capable of determining, from the server, the number of speeds supported between 1, 2, or
          * 3, and whether automatic speed control is supported.
-         * The MultiSpeed feature includes new attributes that support a running fan speed value from 0 to SpeedMax,
-         * which has a maximum of 100.
-         * See Section 4.4.6.6.1 for more details.
+         * The MultiSpeed feature includes attributes that support a running fan speed value from 0 to SpeedMax.
+         * See Section 4.4.6.6.1, “Speed Rules” for more details.
          */
         public boolean multiSpeed;
         /**
@@ -321,10 +346,17 @@ public class FanControlCluster extends BaseCluster {
 
     // commands
     /**
-     * This command speeds up or slows down the fan, in steps, without the client having to know the fan speed. This
-     * command supports, for example, a user operated wall switch, where the user provides the feedback or control to
-     * stop sending this command when the proper speed is reached. The step speed values are implementation specific.
-     * How many step speeds are implemented is implementation specific.
+     * This command indirectly changes the speed-oriented attributes of the fan in steps rather than using the
+     * speed-oriented attributes, FanMode, PercentSetting, or SpeedSetting, directly. This command supports, for
+     * example, a user-operated and wall-mounted toggle switch that can be used to increase or decrease the speed of the
+     * fan by pressing the toggle switch up or down until the desired fan speed is reached. How this command is
+     * interpreted by the server and how it affects the values of the speed-oriented attributes is implementation
+     * specific.
+     * For example, a fan supports this command, and the value of the FanModeSequence attribute is 0. The current value
+     * of the FanMode attribute is 2, or Medium. This command is received with the Direction field set to Increase. As
+     * per it’s specific implementation, the server reacts to the command by setting the value of the FanMode attribute
+     * to 3, or High, which in turn sets the PercentSetting and SpeedSetting (if present) attributes to appropriate
+     * values, as defined by Section 4.4.6.3.1, “Percent Rules” and Section 4.4.6.6.1, “Speed Rules” respectively.
      * This command supports these fields:
      */
     public static ClusterCommand step(StepDirectionEnum direction, Boolean wrap, Boolean lowestOff) {
@@ -344,7 +376,6 @@ public class FanControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "fanMode : " + fanMode + "\n";
         str += "fanModeSequence : " + fanModeSequence + "\n";

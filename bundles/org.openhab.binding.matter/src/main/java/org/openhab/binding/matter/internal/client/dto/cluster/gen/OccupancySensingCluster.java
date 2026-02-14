@@ -28,7 +28,6 @@ public class OccupancySensingCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0406;
     public static final String CLUSTER_NAME = "OccupancySensing";
     public static final String CLUSTER_PREFIX = "occupancySensing";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_OCCUPANCY = "occupancy";
     public static final String ATTRIBUTE_OCCUPANCY_SENSOR_TYPE = "occupancySensorType";
@@ -45,7 +44,6 @@ public class OccupancySensingCluster extends BaseCluster {
     public static final String ATTRIBUTE_PHYSICAL_CONTACT_UNOCCUPIED_TO_OCCUPIED_DELAY = "physicalContactUnoccupiedToOccupiedDelay";
     public static final String ATTRIBUTE_PHYSICAL_CONTACT_UNOCCUPIED_TO_OCCUPIED_THRESHOLD = "physicalContactUnoccupiedToOccupiedThreshold";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the sensed (processed) status of occupancy. For compatibility reasons this is expressed as a bitmap
@@ -57,11 +55,10 @@ public class OccupancySensingCluster extends BaseCluster {
     public OccupancySensorTypeBitmap occupancySensorTypeBitmap; // 2 OccupancySensorTypeBitmap R V
     /**
      * This attribute shall specify the time delay, in seconds, before the sensor changes to its unoccupied state after
-     * the last detection of occupancy in the sensed area. This is equivalent to the legacy
-     * OccupiedToUnoccupiedDelay attributes.
-     * The value of HoldTime shall be within the limits provided in the HoldTimeLimits attribute, i.e. HoldTimeMin
-     * &lt;&#x3D; HoldTime &lt;&#x3D; HoldTimeMax Low values of HoldTime SHOULD be avoided since they could lead to many
-     * reporting messages. A value 0 for HoldTime shall NOT be used.
+     * the last detection of occupancy in the sensed area. This is equivalent to the legacy *OccupiedToUnoccupiedDelay
+     * attributes.
+     * Low values of HoldTime SHOULD be avoided since they could lead to many reporting messages. A value 0 for HoldTime
+     * shall NOT be used.
      * The figure below illustrates this with an example of how this attribute is used for a PIR sensor. It uses
      * threshold detection to generate an &quot;internal detection&quot; signal, which needs post-processing to become
      * usable for transmission (traffic shaping). The bit in the Occupancy attribute will be set to 1 when the internal
@@ -252,7 +249,7 @@ public class OccupancySensingCluster extends BaseCluster {
         public boolean physicalContact;
         /**
          * 
-         * Supports sensing using Active InfraRed measurement (e.g. time-of-flight or transflective/reflec tive IR
+         * Supports sensing using Active InfraRed measurement (e.g. time-of-flight or transflective/reflective IR
          * sensing)
          */
         public boolean activeInfrared;
@@ -263,7 +260,7 @@ public class OccupancySensingCluster extends BaseCluster {
         public boolean radar;
         /**
          * 
-         * Supports sensing based on RF signal analysis
+         * Supports sensing using analysis of radio signals, e.g.: RSSI, CSI and/or any other metric from the signal
          */
         public boolean rfSensing;
         /**
@@ -296,7 +293,6 @@ public class OccupancySensingCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "occupancy : " + occupancy + "\n";
         str += "occupancySensorType : " + occupancySensorType + "\n";

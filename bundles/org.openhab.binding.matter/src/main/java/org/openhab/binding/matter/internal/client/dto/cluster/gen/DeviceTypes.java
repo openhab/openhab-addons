@@ -89,6 +89,7 @@ public class DeviceTypes {
         DEVICE_MAPPING.put(34, "Speaker");
         DEVICE_MAPPING.put(113, "TemperatureControlledCabinet");
         DEVICE_MAPPING.put(770, "TemperatureSensor");
+        DEVICE_MAPPING.put(778, "ThermostatController");
         DEVICE_MAPPING.put(769, "Thermostat");
         DEVICE_MAPPING.put(42, "VideoRemoteControl");
         DEVICE_MAPPING.put(65, "WaterFreezeDetector");
@@ -129,8 +130,8 @@ public class DeviceTypes {
      * is used for these functions).
      * For example, a Basic Video Player can be a traditional TV device a physical media playback device such as a DVD
      * Player, or a device that provides input to another device like a TV or computer monitor.
-     * Please see Video Player Architecture for additional Basic Video Player requirements relating to Video Player
-     * device endpoint composition, commissioning, feature representation in clusters, and UI context.
+     * See Section 10.1, “Video Player Architecture” for additional Basic Video Player requirements relating to Video
+     * Player device endpoint composition, commissioning, feature representation in clusters, and UI context.
      **/
     public static final Integer BASIC_VIDEO_PLAYER = 40;
     /**
@@ -161,8 +162,8 @@ public class DeviceTypes {
      * input), and is able to launch content.
      * For example, a Casting Video Player can be a smart TV device, a TV Set Top Box, or a content streaming device
      * that provides input to another device like a TV or computer monitor.
-     * Please see Video Player Architecture for additional Casting Video Player requirements relating to Video Player
-     * device endpoint composition, commissioning, feature representation in clusters, and UI context.
+     * See Section 10.1, “Video Player Architecture” for additional Casting Video Player requirements relating to Video
+     * Player device endpoint composition, commissioning, feature representation in clusters, and UI context.
      **/
     public static final Integer CASTING_VIDEO_PLAYER = 35;
     /**
@@ -219,6 +220,15 @@ public class DeviceTypes {
      * A Dimmable Plug-In Unit is a device that provides power to another device that is plugged into it, and is capable
      * of being switched on or off and have its level adjusted. The Dimmable Plug-in Unit is typically used to control a
      * conventional non-communicating light through its mains connection using phase cutting.
+     * The Mounted Dimmable Load Control (added in Matter 1.4) has identical cluster requirements as the Dimmable
+     * Plug-In Unit, and is marked as a superset of this device type (since Matter 1.4.2). For devices intended to be
+     * mounted permanently, the Mounted Dimmable Load Control device type shall be used, with the Dimmable Plug-In Unit
+     * device type optionally added to the DeviceTypeList of the Descriptor cluster in addition to the Mounted Dimmable
+     * Load Control device type (see [ref_MountedDimmableLoadControlServerGuidance]).
+     * ### Before Matter 1.4, mounted dimmable load control units typically used the Dimmable Plug-In Unit device type.
+     * Clients can encounter devices which were made before or after these specification updates. Therefore, clients
+     * SHOULD use the following heuristic to distinguish the type of physical device based on the device type revision
+     * found on an endpoint (&quot;--&quot; means the device type is not listed).
      **/
     public static final Integer DIMMABLE_PLUG_IN_UNIT = 267;
     /**
@@ -301,8 +311,8 @@ public class DeviceTypes {
      * A Joint Fabric Administrator device provides capabilities to manage the Joint Fabric Datastore and issue an ICAC
      * signed by the Joint Fabric Anchor Root CA.
      * A client wanting to access the capabilities of the Joint Fabric Administrator may use the Joint Commissioning
-     * Method to be commissioned onto the Joint Fabric. Once commissioned, a client may access the capabilities of the
-     * Joint Fabric Administrator.
+     * Method (as specified in the Matter core specification) to be commissioned onto the Joint Fabric. Once
+     * commissioned, a client may access the capabilities of the Joint Fabric Administrator.
      **/
     public static final Integer JOINT_FABRIC_ADMINISTRATOR = 304;
     /**
@@ -330,15 +340,30 @@ public class DeviceTypes {
      **/
     public static final Integer MODE_SELECT = 39;
     /**
-     * A Mounted Dimmable Load Control is a fixed device that provides power to another device that is plugged into it,
-     * and is capable of being switched on or off and have its level adjusted. The Mounted Dimmable Load Control is
-     * typically used to control a conventional non-communicating light through its mains connection using phase
-     * cutting.
+     * A Mounted Dimmable Load Control is a fixed device that provides power to a load connected to it, and is capable
+     * of being switched on or off and have its level adjusted. The Mounted Dimmable Load Control is typically used to
+     * control a conventional non-communicating light through its mains connection using phase cutting.
+     * This device type is intended for any wall-mounted or hardwired dimmer-capable load controller, while Dimmable
+     * Plug-In Unit is intended only for dimmer-capable smart plugs that are not permanently connected, and which can be
+     * unplugged from their power source.
+     * &gt; [!NOTE]
+     * &gt; Since this device type was added in Matter 1.4, for endpoints using this device type
+     * it is recommended to add the subset device type Dimmable Plug-In Unit to the DeviceTypeList of the Descriptor
+     * cluster on the same endpoint for backward compatibility with existing clients.
+     * See [ref_MountedDimmablePlugInUnitClientGuidance] for client guidance with these two device types.
      **/
     public static final Integer MOUNTED_DIMMABLE_LOAD_CONTROL = 272;
     /**
-     * A Mounted On/Off Control is a fixed device that provides power to another device that is plugged into it, and is
-     * capable of switching that provided power on or off.
+     * A Mounted On/Off Control is a fixed device that provides power to another device or power circuit that is
+     * connected to it, and is capable of switching that provided power on or off.
+     * This device type is intended for any wall-mounted or hardwired load controller, while On/Off Plug-in Unit is
+     * intended only for smart plugs and other power switching devices that are not permanently connected, and which can
+     * be unplugged from their power source.
+     * &gt; [!NOTE]
+     * &gt; Since this device type was added in Matter 1.4, for endpoints using this device type it is recommended to
+     * add the subset device type On/Off Plug-in Unit to the DeviceTypeList of the Descriptor cluster on the same
+     * endpoint for backward compatibility with existing clients.
+     * See [ref_MountedOnOffClientGuidance] for client guidance with these two device types.
      **/
     public static final Integer MOUNTED_ON_OFF_CONTROL = 271;
     /**
@@ -347,10 +372,10 @@ public class DeviceTypes {
      * Examples of physical devices that implement the Matter Network Infrastructure Manager device type include Wi-Fi
      * gateway routers.
      * Relevant hardware and software requirements for Network Infrastructure Manager devices are defined in Section
-     * 15.2.6, “Other Requirements” and within the clusters mandated by this device type.
+     * 15.3.6, “Other Requirements” and within the clusters mandated by this device type.
      * A Network Infrastructure Manager device may be managed by a service associated with the device vendor, for
      * example, an Internet Service Provider. Sometimes this managing service will have policies that require the use of
-     * the Managed Device feature of the Access Control Cluster (see Section 15.2.5.1, “Access Control MNGD
+     * the Managed Device feature of the Access Control Cluster (see Section 15.3.5.1, “Access Control MNGD
      * Conformance”). Consequently, Commissioners of this device type should be aware of this feature and its use.
      **/
     public static final Integer NETWORK_INFRASTRUCTURE_MANAGER = 144;
@@ -373,6 +398,15 @@ public class DeviceTypes {
     /**
      * An On/Off Plug-in Unit is a device that provides power to another device that is plugged into it, and is capable
      * of switching that provided power on or off.
+     * The Mounted On/Off Control (added in Matter 1.4) has identical cluster requirements as the On/Off Plug-In Unit,
+     * and is marked as superset of this device type (since Matter 1.4.2). For devices intended to be mounted
+     * permanently, the Mounted On/Off Control device type shall be used, with the On/Off Plug-In Unit device type
+     * optionally added in the DeviceTypeList of the Descriptor cluster in addition to the On/Off Plug-In Unit device
+     * type (see [ref_MountedOnOffControlServerGuidance]).
+     * ### Before Matter 1.4, mounted units typically used the On/Off Plug-In Unit device type. Clients can encounter
+     * devices which were made before or after these specification updates. Therefore, clients SHOULD use the following
+     * heuristic to distinguish the type of physical device based on the device type revision found on an endpoint
+     * (&quot;--&quot; means the device type is not listed).
      **/
     public static final Integer ON_OFF_PLUG_IN_UNIT = 266;
     /**
@@ -486,6 +520,10 @@ public class DeviceTypes {
      * A Temperature Sensor device reports measurements of temperature.
      **/
     public static final Integer TEMPERATURE_SENSOR = 770;
+    /**
+     * A Thermostat Controller is a device capable of controlling a Thermostat.
+     **/
+    public static final Integer THERMOSTAT_CONTROLLER = 778;
     /**
      * A Thermostat device is capable of having either built-in or separate sensors for temperature, humidity or
      * occupancy. It allows the desired temperature to be set either remotely or locally. The thermostat is capable of

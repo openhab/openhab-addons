@@ -31,7 +31,6 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0452;
     public static final String CLUSTER_NAME = "ThreadBorderRouterManagement";
     public static final String CLUSTER_PREFIX = "threadBorderRouterManagement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_BORDER_ROUTER_NAME = "borderRouterName";
     public static final String ATTRIBUTE_BORDER_AGENT_ID = "borderAgentId";
@@ -40,7 +39,6 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_ACTIVE_DATASET_TIMESTAMP = "activeDatasetTimestamp";
     public static final String ATTRIBUTE_PENDING_DATASET_TIMESTAMP = "pendingDatasetTimestamp";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates a user-friendly name identifying the device model or product of the Border Router in MeshCOP (DNS-SD
@@ -87,7 +85,7 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
          * by setting a pending dataset.
          * &gt; [!NOTE]
          * &gt; This feature flag can be used to protect an already-configured network from accidental configuration
-         * change, e.g. when the Thread Border Router serves non- Matter devices that do not support PAN change for an
+         * change, e.g. when the Thread Border Router serves non-Matter devices that do not support PAN change for an
          * implementation-specific reason.
          */
         public boolean panChange;
@@ -171,7 +169,6 @@ public class ThreadBorderRouterManagementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "borderRouterName : " + borderRouterName + "\n";
         str += "borderAgentId : " + borderAgentId + "\n";

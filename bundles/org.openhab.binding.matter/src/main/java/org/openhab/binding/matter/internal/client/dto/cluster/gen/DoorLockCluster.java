@@ -32,7 +32,6 @@ public class DoorLockCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0101;
     public static final String CLUSTER_NAME = "DoorLock";
     public static final String CLUSTER_PREFIX = "doorLock";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_LOCK_STATE = "lockState";
     public static final String ATTRIBUTE_LOCK_TYPE = "lockType";
@@ -70,7 +69,6 @@ public class DoorLockCluster extends BaseCluster {
     public static final String ATTRIBUTE_SEND_PIN_OVER_THE_AIR = "sendPinOverTheAir";
     public static final String ATTRIBUTE_REQUIRE_PIN_FOR_REMOTE_OPERATION = "requirePinForRemoteOperation";
     public static final String ATTRIBUTE_EXPIRING_USER_TIMEOUT = "expiringUserTimeout";
-    public static final String ATTRIBUTE_ALARM_MASK = "alarmMask";
     public static final String ATTRIBUTE_ALIRO_READER_VERIFICATION_KEY = "aliroReaderVerificationKey";
     public static final String ATTRIBUTE_ALIRO_READER_GROUP_IDENTIFIER = "aliroReaderGroupIdentifier";
     public static final String ATTRIBUTE_ALIRO_READER_GROUP_SUB_IDENTIFIER = "aliroReaderGroupSubIdentifier";
@@ -81,7 +79,6 @@ public class DoorLockCluster extends BaseCluster {
     public static final String ATTRIBUTE_NUMBER_OF_ALIRO_CREDENTIAL_ISSUER_KEYS_SUPPORTED = "numberOfAliroCredentialIssuerKeysSupported";
     public static final String ATTRIBUTE_NUMBER_OF_ALIRO_ENDPOINT_KEYS_SUPPORTED = "numberOfAliroEndpointKeysSupported";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute may be NULL if the lock hardware does not currently know the status of the locking mechanism. For
@@ -196,13 +193,18 @@ public class DoorLockCluster extends BaseCluster {
      */
     public SoundVolumeEnum soundVolume; // 36 SoundVolumeEnum R[W] VM
     /**
-     * This attribute shall indicate the current operating mode of the lock as defined in OperatingModeEnum.
+     * Indicates the current operating mode of the lock as defined in OperatingModeEnum.
      */
     public OperatingModeEnum operatingMode; // 37 OperatingModeEnum R[W] VM
     /**
      * This attribute shall contain a bitmap with all operating bits of the OperatingMode attribute supported by the
-     * lock. All operating modes NOT supported by a lock shall be set to one. The value of the OperatingMode enumeration
-     * defines the related bit to be set.
+     * lock.
+     * A bit position set to zero shall indicate that the mode is supported. A bit position set to one shall indicate
+     * that the mode is not supported.
+     * Any bit that is not yet defined in OperatingModesBitmap shall be set to 1.
+     * The values considered valid to read or write in the OperatingMode attribute shall be the enum values from
+     * DoorLockOperatingModeEnum whose equivalent same-named bit from OperatingModesBitmap is set to zero in this
+     * attribute. WARNING: This is the opposite of most other semantically similar bitmaps in this specification.
      */
     public OperatingModesBitmap supportedOperatingModes; // 38 OperatingModesBitmap R V
     /**
@@ -289,22 +291,16 @@ public class DoorLockCluster extends BaseCluster {
      */
     public Integer expiringUserTimeout; // 53 uint16 R[W] VA
     /**
-     * This attribute is only supported if the Alarms cluster is on the same endpoint. The alarm mask is used to turn
-     * on/off alarms for particular functions. Alarms for an alarm group are enabled if the associated alarm mask bit is
-     * set. Each bit represents a group of alarms. Entire alarm groups can be turned on or off by setting or clearing
-     * the associated bit in the alarm mask.
-     * This mask DOES NOT apply to the Events mechanism of this cluster.
-     */
-    public AlarmMaskBitmap alarmMask; // 64 AlarmMaskBitmap RW VA
-    /**
      * Indicates the verification key component of the Reader’s key pair as defined in [Aliro]. The value, if not null,
      * shall be an uncompressed elliptic curve public key as defined in section 2.3.3 of SEC 1.
-     * Null if no Reader key pair has been configured on the lock. See SetAliroReaderConfig.
+     * Null if no Reader key pair has been configured on the lock. See Section 5.2.10.42, “SetAliroReaderConfig
+     * Command”.
      */
     public OctetString aliroReaderVerificationKey; // 128 octstr R A
     /**
      * Indicates the reader_group_identifier as defined in [Aliro].
-     * Null if no reader_group_identifier has been configured on the lock. See SetAliroReaderConfig.
+     * Null if no reader_group_identifier has been configured on the lock. See Section 5.2.10.42, “SetAliroReaderConfig
+     * Command”.
      */
     public OctetString aliroReaderGroupIdentifier; // 129 octstr R A
     /**
@@ -317,7 +313,8 @@ public class DoorLockCluster extends BaseCluster {
     public List<OctetString> aliroExpeditedTransactionSupportedProtocolVersions; // 131 list R A
     /**
      * Indicates the Group Resolving Key as defined in [Aliro].
-     * Null if no group resolving key has been configured on the lock. See SetAliroReaderConfig.
+     * Null if no group resolving key has been configured on the lock. See Section 5.2.10.42, “SetAliroReaderConfig
+     * Command”.
      */
     public OctetString aliroGroupResolvingKey; // 132 octstr R A
     /**
@@ -392,7 +389,8 @@ public class DoorLockCluster extends BaseCluster {
      * event with LockOperationType set to Unlock.
      * • Upon manual actuation, a door lock server that supports the Unbolting feature:
      * ◦ shall generate a LockOperation event of LockOperationType Unlatch when it is actuated from the outside.
-     * ◦ may generate a LockOperation event of LockOperationType Unlatch when it is actuated from the inside.
+     * ◦ may generate a LockOperation event of LockOperationType Unlatch when it is actuated
+     * from the inside.
      */
     public static class LockOperation {
         /**
@@ -1137,6 +1135,12 @@ public class DoorLockCluster extends BaseCluster {
         }
     }
 
+    /**
+     * ### WARNING
+     * For the OperatingModesBitmap, a bit SET indicates that the operating mode IS NOT supported. A bit CLEAR indicates
+     * that the operating mode IS supported. This is the inverse of most bitmaps in this specification, and it is
+     * recommended that clients carefully take this into consideration. See SupportedOperatingModes.
+     */
     public static class OperatingModesBitmap {
         public boolean normal;
         public boolean vacation;
@@ -1817,8 +1821,8 @@ public class DoorLockCluster extends BaseCluster {
 
     /**
      * Retrieve user.
-     * An InvokeResponse command shall be sent with an appropriate error (e.g. FAILURE, INVALID_COMMAND, etc.) as needed
-     * otherwise the GetUserResponse Command shall be sent implying a status of SUCCESS.
+     * An InvokeResponse command shall be sent with an appropriate error (e.g. FAILURE, INVALID_ COMMAND, etc.) as
+     * needed otherwise the GetUserResponse Command shall be sent implying a status of SUCCESS.
      */
     public static ClusterCommand getUser(Integer userIndex) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -1953,7 +1957,6 @@ public class DoorLockCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "lockState : " + lockState + "\n";
         str += "lockType : " + lockType + "\n";
@@ -1991,7 +1994,6 @@ public class DoorLockCluster extends BaseCluster {
         str += "sendPinOverTheAir : " + sendPinOverTheAir + "\n";
         str += "requirePinForRemoteOperation : " + requirePinForRemoteOperation + "\n";
         str += "expiringUserTimeout : " + expiringUserTimeout + "\n";
-        str += "alarmMask : " + alarmMask + "\n";
         str += "aliroReaderVerificationKey : " + aliroReaderVerificationKey + "\n";
         str += "aliroReaderGroupIdentifier : " + aliroReaderGroupIdentifier + "\n";
         str += "aliroReaderGroupSubIdentifier : " + aliroReaderGroupSubIdentifier + "\n";
