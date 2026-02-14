@@ -10,9 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us.bluelink;
 
 import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Response from the enrollment details API.
@@ -22,5 +24,10 @@ import java.util.List;
 public record EnrollmentResponse(List<EnrolledVehicle> enrolledVehicleDetails) {
 
     public record EnrolledVehicle(VehicleInfo vehicleDetails) {
+
+        public record VehicleInfo(@SerializedName("regid") String registrationId, String vehicleId, String nickName,
+                String vin, String evStatus, String modelCode, String modelYear, String vehicleGeneration,
+                double odometer) {
+        }
     }
 }

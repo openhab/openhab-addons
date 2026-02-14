@@ -10,15 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.model;
 
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Token response from the Bluelink authentication API.
+ * Supported vehicle brands.
  *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+@NonNullByDefault
+public enum Brand {
+    UNKNOWN,
+    HYUNDAI,
+    KIA,
+    GENESIS
 }

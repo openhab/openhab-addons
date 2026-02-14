@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us.bluelink;
 
 /**
- * Login request for the Bluelink API.
+ * Door lock/unlock command request for the Bluelink API.
  *
  * @author Marcus Better - Initial contribution
  */
-public record LoginRequest(String username, String password) {
+public record DoorCommandRequest(String userName, String vin) {
 }

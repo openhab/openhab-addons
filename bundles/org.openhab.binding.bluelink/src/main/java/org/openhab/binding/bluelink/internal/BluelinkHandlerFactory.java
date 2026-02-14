@@ -66,7 +66,7 @@ public class BluelinkHandlerFactory extends BaseThingHandlerFactory {
             return new BluelinkAccountHandler((Bridge) thing, httpClient, timeZoneProvider, localeProvider);
         }
         if (THING_TYPE_VEHICLE.equals(thingTypeUID)) {
-            return new BluelinkVehicleHandler(thing);
+            return new BluelinkVehicleHandler(thing, this);
         }
         return null;
     }
