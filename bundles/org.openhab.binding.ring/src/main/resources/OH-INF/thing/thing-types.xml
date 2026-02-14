@@ -273,7 +273,7 @@
 		<description>Light Status</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Info</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="siren">
@@ -282,7 +282,7 @@
 		<description>Siren Status</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Info</tag>
+			<tag>Noise</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="battery">
