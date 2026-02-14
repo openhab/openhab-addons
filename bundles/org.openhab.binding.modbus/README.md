@@ -4,7 +4,7 @@ This binding supports generic Modbus TCP and serial slave devices.
 And it has specialist extensions for the following manufacturers products:
 
 - Hager E3/DC
-- Fox Inverters
+- Fox Inverters (Avocado, ESS, MQ-2200, Solakon, etc.)
 - Helios Easy Controls
 - Kermi
 - Lambda
