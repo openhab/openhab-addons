@@ -38,7 +38,6 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalC
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
-import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +178,7 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
                     String eventName = receivedTopic.split("/")[2].toLowerCase();
                     logger.trace("{}: Got MQTT message on topic {}: {}", getSerialNumber(), receivedTopic, payload);
                     parser.handleMessage(eventName, payload);
-                } catch (DataParsingException e) {
+                } catch (Exception e) {
                     listener.onEventStreamFailure(this, e);
                 }
             };
