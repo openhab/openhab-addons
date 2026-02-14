@@ -11,7 +11,6 @@
 			<parameter name="path" type="text" required="true">
 				<label>Context Path</label>
 				<description>Path of the endpoint. You can query it by http(s)://${oh}/restify/${path}</description>
-				<default>/</default>
 			</parameter>
 			<parameter name="method" type="text" required="true">
 				<label>HTTP Method</label>

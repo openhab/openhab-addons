@@ -118,6 +118,23 @@ class EndpointHandlerTest {
     }
 
     @Test
+    void initializeSetsOfflineWhenPathStartsWithReservedPrefix() throws Exception {
+        // Given
+        var config = new EndpointConfiguration("/_foo", DispatcherServlet.Method.GET, "{\"response\":{}}");
+        var handler = new TestEndpointHandler(config, thing, endpointParser, dispatcherServlet, schemaValidator);
+        handler.setCallback(callback);
+
+        // When
+        handler.initialize();
+
+        // Then
+        verify(schemaValidator, never()).validateEndpointConfig(any());
+        verify(dispatcherServlet, never()).register(any(), any(), any());
+        verify(callback).statusUpdated(eq(thing), argThat(statusInfo -> statusInfo.getStatus() == OFFLINE
+                && statusInfo.getStatusDetail() == CONFIGURATION_ERROR));
+    }
+
+    @Test
     void initializeSetsOfflineWhenSchemaValidationFails() throws Exception {
         // Given
         var config = new EndpointConfiguration("/status", DispatcherServlet.Method.GET, "{\"response\":{}}");
