@@ -66,7 +66,7 @@ public class TemperatureOffsetService extends BoschSHCService<TemperatureOffsetS
     private @Nullable QuantityType<Temperature> getRelativeTemperatureValue(QuantityType<?> quantityCommand) {
         // check if the given quantity has a temperature unit
         if (!quantityCommand.getUnit().isCompatible(SIUnits.CELSIUS)) {
-            logger.warn("Received a command that has no temperature quantity, ignoring: {}", quantityCommand);
+            logger.warn("Received a command that has no temperature quantity: {}", quantityCommand);
             return null;
         }
 

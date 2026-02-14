@@ -93,7 +93,7 @@ public abstract class AbstractThermostatHandler extends AbstractBatteryPoweredDe
      * Updates the channels which are linked to the {@link TemperatureOffsetService}
      * of the device.
      * 
-     * @param state current {@link TemperatureOffsetService} received from the Smart
+     * @param state current {@link TemperatureOffsetServiceState} received from the Smart
      *            Home Controller
      */
     private void updateChannels(TemperatureOffsetServiceState state) {
