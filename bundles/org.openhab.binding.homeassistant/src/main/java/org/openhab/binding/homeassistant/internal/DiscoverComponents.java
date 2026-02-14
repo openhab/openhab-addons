@@ -100,7 +100,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
     }
 
     @Override
-    public void processMessage(String topic, byte[] payload) {
+    public synchronized void processMessage(String topic, byte[] payload) {
         if (!topic.endsWith("/config")) {
             return;
         }
@@ -216,7 +216,7 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         }
     }
 
-    private @Nullable Void subscribeFail(Throwable e) {
+    private synchronized @Nullable Void subscribeFail(Throwable e) {
         final ScheduledFuture<?> scheduledFuture = this.stopDiscoveryFuture;
         if (scheduledFuture != null) { // Cancel timeout
             scheduledFuture.cancel(false);

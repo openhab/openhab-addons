@@ -279,7 +279,7 @@ def process_discovery_config(topic, payload):
             # The object_id in the device discovery topic is the unique identifier.
             # It is used as node_id for the components it contains.
             component_node_id = object_id
-            # The component_id in the discovery playload is used as object_id
+            # The component_id in the discovery payload is used as object_id
             # If we have an additional node_id in the discovery topic,
             # we extend the component_id with it.
             component_object_id = (

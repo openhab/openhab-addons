@@ -75,25 +75,23 @@ public class ComponentFactory {
             HomeAssistantPythonBridge python, UnitProvider unitProvider) throws ConfigurationException {
         if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(haID.component)) {
             List<AbstractComponent<?>> components = new ArrayList<>();
-            mqttComponentConfigs.forEach(config -> {
+            for (MqttComponentConfig config : mqttComponentConfigs) {
+                String nodeId = config.getNodeId();
+                if (nodeId == null) {
+                    // Use the device component's object id as the node id for the sub components if
+                    // not explicitly specified
+                    nodeId = haID.objectID;
+                }
+                HaID componentHaID = new HaID(haID.baseTopic, config.getObjectId(), nodeId, config.getComponent());
+                ComponentContext componentContext = new ComponentContext(thingUID, componentHaID,
+                        channelConfigurationJSON, gson, python, updateListener, linkageChecker, tracker, scheduler,
+                        unitProvider, config.getDiscoveryPayload(), false);
                 try {
-                    String nodeId = config.getNodeId();
-                    if (nodeId == null) {
-                        // Use the device component's object id as the node id for the sub components if
-                        // not explicitly specified
-                        nodeId = haID.objectID;
-                    }
-                    HaID componentHaID = new HaID(haID.baseTopic, config.getObjectId(), nodeId, config.getComponent());
-                    ComponentContext componentContext = new ComponentContext(thingUID, componentHaID,
-                            channelConfigurationJSON, gson, python, updateListener, linkageChecker, tracker, scheduler,
-                            unitProvider, config.getDiscoveryPayload(), false);
                     components.add(createComponent(componentContext));
                 } catch (UnsupportedComponentException e) {
                     logger.warn("Home Assistant discovery error: component {} is unsupported", haID.toShortTopic());
-                } catch (ConfigurationException e) {
-                    throw new RuntimeException(e);
                 }
-            });
+            }
 
             return Collections.unmodifiableList(components);
         }
