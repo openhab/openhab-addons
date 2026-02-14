@@ -14,6 +14,7 @@ package org.openhab.automation.jrubyscripting.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -500,9 +502,20 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     }
 
     /*
+     * Configure the engine to redirect output to the provided console.
+     */
+    private void configureEngineConsoleOutput(ScriptEngine engine, @Nullable Console console) {
+        if (console != null) {
+            ScriptContext context = engine.getContext();
+            context.setWriter(new ConsoleWriter(console));
+            context.setErrorWriter(new ConsoleWriter(console));
+        }
+    }
+
+    /*
      * Create a full openHAB-managed JRuby engine with openHAB scoped variables
      * including any injected required gems.
-     * 
+     *
      * This will run the script with the helper library if configured.
      */
     private @Nullable Object executeWithFullJRuby(Console console, EngineEvalFunction process) {
@@ -516,6 +529,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         }
         ScriptEngine engine = container.getScriptEngine();
         try {
+            configureEngineConsoleOutput(engine, console);
             printLoadingMessage(console, false);
             return process.apply(engine);
         } catch (ScriptException e) {
@@ -535,6 +549,7 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
             if (engine == null) {
                 throw new ScriptException("Unable to create JRuby script engine.");
             }
+            configureEngineConsoleOutput(engine, console);
             return process.apply(engine);
         } catch (ScriptException e) {
             if (console != null) {
@@ -543,6 +558,65 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 logger.warn("Error: {}", e.getMessage());
             }
             return null;
+        }
+    }
+
+    // ============================================================================
+    // Inner Classes
+    // ============================================================================
+
+    /**
+     * A custom Writer implementation that routes output through the console.
+     * Properly handles newlines by converting them to console.println calls.
+     */
+    private static class ConsoleWriter extends Writer {
+        private final Console console;
+        private final StringBuilder buffer = new StringBuilder();
+        private boolean closed = false;
+
+        ConsoleWriter(Console console) {
+            this.console = console;
+        }
+
+        @Override
+        public void write(char @Nullable [] c, int off, int len) throws IOException {
+            if (closed) {
+                throw new IOException("Writer is closed");
+            }
+            if (c != null) {
+                buffer.append(c, off, len);
+                flushBuffer();
+            }
+        }
+
+        private void flushBuffer() {
+            String content = buffer.toString();
+            int lastNewlineIndex = content.lastIndexOf('\n');
+
+            if (lastNewlineIndex >= 0) {
+                // Process all complete lines
+                String[] lines = content.substring(0, lastNewlineIndex + 1).split("\n", -1);
+                for (int i = 0; i < lines.length - 1; i++) {
+                    console.println(lines[i]);
+                }
+                // Keep any remaining partial line in the buffer
+                buffer.delete(0, lastNewlineIndex + 1);
+            }
+        }
+
+        @Override
+        public void flush() throws IOException {
+            // Flush any remaining content
+            if (buffer.length() > 0) {
+                console.print(buffer.toString());
+                buffer.delete(0, buffer.length());
+            }
+        }
+
+        @Override
+        public void close() throws IOException {
+            flush();
+            closed = true;
         }
     }
 
