@@ -39,6 +39,7 @@ import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
 import org.openhab.binding.restify.internal.servlet.Response.BooleanResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ItemResponse;
+import org.openhab.binding.restify.internal.servlet.Response.NullResponse;
 import org.openhab.binding.restify.internal.servlet.Response.NumberResponse;
 import org.openhab.binding.restify.internal.servlet.Response.StringResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ThingResponse;
@@ -85,6 +86,7 @@ public class Engine implements Serializable {
             case ItemResponse itemSchema -> evaluate(itemSchema);
             case Response.JsonResponse jsonSchema -> evaluate(jsonSchema);
             case BooleanResponse booleanSchema -> evaluate(booleanSchema);
+            case NullResponse nullSchema -> evaluate(nullSchema);
             case NumberResponse numberSchema -> evaluate(numberSchema);
             case Response.StringResponse stringSchema -> evaluate(stringSchema);
             case ThingResponse thingSchema -> evaluate(thingSchema);
@@ -366,6 +368,10 @@ public class Engine implements Serializable {
 
     private Json evaluate(BooleanResponse schema) {
         return new BooleanValue(schema.value());
+    }
+
+    private Json evaluate(NullResponse schema) {
+        return NULL_VALUE;
     }
 
     private Json evaluate(ThingResponse schema) throws ParameterException {

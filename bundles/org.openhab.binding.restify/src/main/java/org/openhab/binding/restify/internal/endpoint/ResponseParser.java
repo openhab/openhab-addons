@@ -36,7 +36,7 @@ public class ResponseParser {
 
     public Response parseResponse(JsonNode response) throws EndpointParseException {
         if (response.isNull()) {
-            throw new EndpointParseException("Response schema cannot be null!");
+            return new Response.NullResponse();
         }
         if (response.isObject()) {
             return parseFromObject((ObjectNode) response);

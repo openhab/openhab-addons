@@ -34,6 +34,7 @@ import org.openhab.binding.restify.internal.servlet.Response.ArrayResponse;
 import org.openhab.binding.restify.internal.servlet.Response.BooleanResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ItemResponse;
 import org.openhab.binding.restify.internal.servlet.Response.JsonResponse;
+import org.openhab.binding.restify.internal.servlet.Response.NullResponse;
 import org.openhab.binding.restify.internal.servlet.Response.NumberResponse;
 import org.openhab.binding.restify.internal.servlet.Response.StringResponse;
 import org.openhab.binding.restify.internal.servlet.Response.ThingResponse;
@@ -111,6 +112,19 @@ class EngineTest {
 
         // Then
         assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("enabled", new BooleanValue(true))));
+        verifyNoInteractions(itemRegistry, thingRegistry);
+    }
+
+    @Test
+    void evaluateMapsNullResponse() throws ParameterException {
+        // Given
+        var schema = new JsonResponse(Map.of("value", new NullResponse()));
+
+        // When
+        var actual = sut.evaluate(schema);
+
+        // Then
+        assertThat(actual).isEqualTo(new Json.JsonObject(Map.of("value", NullValue.NULL_VALUE)));
         verifyNoInteractions(itemRegistry, thingRegistry);
     }
 

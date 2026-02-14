@@ -74,6 +74,7 @@ Each value inside `response` can be:
 - a static string
 - a static number
 - a static boolean
+- a static null
 - an object
 - an array
 - an item expression string: `$item.<itemName>.<expression>`

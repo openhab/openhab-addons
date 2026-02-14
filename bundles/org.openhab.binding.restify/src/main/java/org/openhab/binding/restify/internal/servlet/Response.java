@@ -31,6 +31,9 @@ public sealed interface Response {
     public record BooleanResponse(Boolean value) implements Response {
     }
 
+    public record NullResponse() implements Response {
+    }
+
     public record ItemResponse(String itemName, String expression) implements Response {
     }
 
