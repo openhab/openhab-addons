@@ -5,7 +5,8 @@
 
 	<type>binding</type>
 	<name>Modbus Binding</name>
-	<description>Modbus binding via Modbus TCP/IP.</description>
+	<description>Modbus binding via TCP/IP.</description>
+	<keywords>E3DC,FoxInverter,HeliosEasyControls,Kermi,Lambda,SBC,StiebelEltron,Studer,SunGrow,SunSpec</keywords>
 	<connection>local</connection>
 
 </addon:addon>
