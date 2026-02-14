@@ -67,7 +67,7 @@ jobs:
 
       - name: Build
         id: build
-        run: './.github/scripts/maven-build'
+        run: bash './.github/scripts/maven-build'
         env:
           CHANGED_FILES: ${{ steps.files.outputs.all }}
           MAVEN_OPTS: >-
