@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.enocean.internal.config;
 
-import java.security.InvalidParameterException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -34,7 +32,7 @@ public class EnOceanChannelRollershutterConfig {
         ROLLERSHUTTER("rollershutter"),
         BLINDS("blinds");
 
-        private String value;
+        private final String value;
 
         ConfigMode(String value) {
             this.value = value;
@@ -55,7 +53,7 @@ public class EnOceanChannelRollershutterConfig {
                 }
             }
 
-            throw new InvalidParameterException("Unknown ConfigMode");
+            throw new IllegalArgumentException("Unknown ConfigMode");
         }
     }
 

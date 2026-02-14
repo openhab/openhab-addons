@@ -100,6 +100,48 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         config = getConfigAs(EnOceanActuatorConfig.class);
     }
 
+    @Override
+    protected boolean applyThingStructureUpdates() {
+        EnOceanActuatorConfig localConfig = getConfiguration();
+        if (localConfig.sendingEEPId.isEmpty()) {
+            return false;
+        }
+
+        EEPType localEEPType;
+        try {
+            localEEPType = EEPType.getType(localConfig.sendingEEPId);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        EEP eep = EEPFactory.createEEP(localEEPType);
+        if (!(eep instanceof StateMachineProvider<?, ?> stmEEP)) {
+            return false;
+        }
+
+        Thing thing = getThing();
+        Set<String> channelsToRemove = stmEEP.getChannelsToRemove(thing);
+        if (channelsToRemove.isEmpty()) {
+            return false;
+        }
+
+        ThingBuilder thingBuilder = editThing();
+        boolean changed = false;
+        for (String channelId : channelsToRemove) {
+            Channel channel = thing.getChannel(channelId);
+            if (channel != null) {
+                thingBuilder.withoutChannel(channel.getUID());
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            updateThing(thingBuilder.build());
+            return true;
+        }
+        return false;
+    }
+
     protected EnOceanActuatorConfig getConfiguration() {
         return (EnOceanActuatorConfig) config;
     }
@@ -177,19 +219,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                                 .forEach(a -> rawStm.register(a, this::processStoredCommand));
                         restoreStateMachineState();
                     }
-                }
-
-                // Remove channels based on configuration mode
-                Set<String> channelsToRemove = stmEEP.getChannelsToRemove(thing);
-                if (!channelsToRemove.isEmpty()) {
-                    ThingBuilder thingBuilder = editThing();
-                    for (String channelId : channelsToRemove) {
-                        Channel channel = thing.getChannel(channelId);
-                        if (channel != null) {
-                            thingBuilder.withoutChannel(channel.getUID());
-                        }
-                    }
-                    updateThing(thingBuilder.build());
                 }
                 logger.debug("STM initialized via StateMachineProvider interface");
             }
