@@ -666,7 +666,6 @@ Group gFilter                                           (gPurifier) { homekit="F
 Switch purifierFilterChange     "Filter Change Needed"  (gFilter)   { homekit="FilterChangeIndication" }
 ```
 
-
 ### Sensors
 
 Sensors typically have one mandatory characteristic, e.g., temperature or leak trigger, and several optional characteristics which are typically used for battery-powered sensors and/or wireless sensors.
