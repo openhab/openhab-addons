@@ -61,7 +61,7 @@ public class EndpointHandler extends BaseThingHandler {
         try {
             internalInitialize();
         } catch (InitializationException ex) {
-            logger.error(ex.getLocalizedMessage(), ex);
+            logger.error("{}", ex.getLocalizedMessage(), ex);
             updateStatus(OFFLINE, CONFIGURATION_ERROR, ex.translationKey());
         } catch (Exception ex) {
             logger.error("Cannot initialize handler: {}", ex.getMessage(), ex);
