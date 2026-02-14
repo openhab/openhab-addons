@@ -290,10 +290,10 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             OAuthClientService oAuthService = this.oAuthService;
             AccessTokenResponse response = oAuthService == null ? null : oAuthService.getAccessTokenResponse();
             if (response != null) {
-                String appId = response.getExtraFields().get("installed_app_id");
-                if (appId != null) {
-                    this.appId = appId;
-                }
+                // String appId = response.getExtraFields().get("installed_app_id");
+                // if (appId != null) {
+                // this.appId = appId;
+                // }
                 return response;
             }
             return null;
