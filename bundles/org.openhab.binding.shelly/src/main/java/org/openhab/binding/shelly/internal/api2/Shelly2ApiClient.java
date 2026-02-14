@@ -386,7 +386,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
         try {
-            json = httpPost(new Shelly2AuthChallenge(), gson.toJson(req));
+            json = httpPost((Shelly2AuthChallenge) null, gson.toJson(req));
         } catch (ShellyApiException e) {
             ShellyApiResult res = e.getApiResult();
             String auth = getString(res.authChallenge);
