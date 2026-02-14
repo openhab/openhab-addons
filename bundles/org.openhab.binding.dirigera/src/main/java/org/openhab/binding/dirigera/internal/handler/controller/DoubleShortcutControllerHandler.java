@@ -38,12 +38,8 @@ public class DoubleShortcutControllerHandler extends BaseShortcutController {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeDevice() {
         if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-
             // now register at gateway all device and scene ids
             String relationId = gateway().model().getRelationId(config.id);
             relations = gateway().model().getRelations(relationId);
@@ -51,15 +47,17 @@ public class DoubleShortcutControllerHandler extends BaseShortcutController {
             String firstDeviceId = firstEntry.getKey();
             super.initializeScenes(firstDeviceId, CHANNEL_BUTTON_1);
             gateway().registerDevice(this, firstDeviceId);
-            values = gateway().api().readDevice(firstDeviceId);
-            handleUpdate(values);
+
             // double shortcut controller has 2 devices
             Entry<String, String> secondEntry = relations.higherEntry(firstEntry.getKey());
             String secondDeviceId = secondEntry.getKey();
             super.initializeScenes(secondDeviceId, CHANNEL_BUTTON_2);
-            gateway().registerDevice(this, secondDeviceId);
+
+            JSONObject values = gateway().api().readDevice(firstDeviceId);
+            handleUpdate(values);
             values = gateway().api().readDevice(secondDeviceId);
             handleUpdate(values);
+            gateway().registerDevice(this, secondDeviceId);
         }
     }
 

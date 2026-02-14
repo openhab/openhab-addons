@@ -53,15 +53,6 @@ public class ColorLightHandler extends TemperatureLightHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
-    }
-
-    @Override
     public void dispose() {
         super.dispose();
     }

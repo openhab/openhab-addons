@@ -56,8 +56,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeDevice() {
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
             JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
@@ -81,8 +80,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
             stateProvider.setStateDescription(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_TEMPERATURE_ABS), fragment);
             updateProperties(properties);
             range = colorTemperatureMin - colorTemperatureMax;
-            handleUpdate(values);
         }
+        super.initializeDevice();
     }
 
     @Override
