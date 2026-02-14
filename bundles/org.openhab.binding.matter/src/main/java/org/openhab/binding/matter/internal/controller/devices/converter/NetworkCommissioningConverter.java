@@ -59,7 +59,17 @@ public class NetworkCommissioningConverter extends GenericConverter<NetworkCommi
 
     @Override
     public void onEvent(AttributeChangedMessage message) {
-        updateThingAttributeProperty(message.path.attributeName, message.value);
+        switch (message.path.attributeName) {
+            case NetworkCommissioningCluster.ATTRIBUTE_NETWORKS:
+            case NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS:
+            case NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES:
+                updateThingAttributeProperty(message.path.attributeName,
+                        message.value != null ? gson.toJson(message.value) : null);
+                break;
+            default:
+                updateThingAttributeProperty(message.path.attributeName, message.value);
+                break;
+        }
         super.onEvent(message);
     }
 

@@ -201,6 +201,12 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         }
     }
 
+    // Making this public
+    @Override
+    public boolean isLinked(String channelId) {
+        return isLinked(channelId);
+    }
+
     @Override
     protected void updateStatus(ThingStatus status) {
         updateStatus(status, ThingStatusDetail.NONE, null);
