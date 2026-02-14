@@ -23,13 +23,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class STMTransition<A extends Enum<A>, S extends Enum<S>> {
-    S from;
-    A action;
-    S to;
+    private final S from;
+    private final A action;
+    private final S to;
 
     public STMTransition(S from, A action, S to) {
         this.from = from;
         this.action = action;
         this.to = to;
+    }
+
+    public S getFrom() {
+        return from;
+    }
+
+    public A getAction() {
+        return action;
+    }
+
+    public S getTo() {
+        return to;
     }
 }
