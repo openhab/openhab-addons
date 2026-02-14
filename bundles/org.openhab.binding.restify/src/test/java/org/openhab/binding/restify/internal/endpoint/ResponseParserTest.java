@@ -49,6 +49,11 @@ class ResponseParserTest {
     }
 
     @Test
+    void parseResponseParsesNull() throws Exception {
+        assertParsed("null", new Response.NullResponse());
+    }
+
+    @Test
     void parseResponseParsesItemExpression() throws Exception {
         assertParsed("\"$item.livingRoom.temperature\"", new Response.ItemResponse("livingRoom", "temperature"));
     }
@@ -77,11 +82,6 @@ class ResponseParserTest {
                         Map.of("meta", new Response.JsonResponse(Map.of("answer", new Response.StringResponse("42"))),
                                 "list", new Response.ArrayResponse(
                                         List.of(new Response.StringResponse("a"), new Response.StringResponse("b"))))));
-    }
-
-    @Test
-    void parseResponseFailsForUnsupportedNodeTypes() throws Exception {
-        assertParseFails("null", "Response schema cannot be null!");
     }
 
     @Test
