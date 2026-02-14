@@ -644,9 +644,10 @@
 		<item-type>Number:EnergyPrice</item-type>
 		<label>Session Price Per kWh</label>
 		<description>Current session charging price per kWh</description>
+		<category>Price</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Info</tag>
+			<tag>Calculation</tag>
+			<tag>Price</tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
