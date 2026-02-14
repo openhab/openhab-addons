@@ -10,15 +10,10 @@
 		<description>SmartThings Cloud Hub</description>
 
 		<config-description>
-			<parameter name="clientId" type="text" required="true">
-				<label>Client ID</label>
-				<description>The apps oauth client Id)</description>
-				<default>e91265c7-42b1-4928-ab52-67ff1f80cc5c</default>
-			</parameter>
-			<parameter name="clientSecret" type="text" required="true">
-				<label>Client Secret</label>
-				<description>The apps oauth client Secret</description>
-				<default>85697243-75e2-4e2b-ac4e-d29e784b2116</default>
+			<parameter name="appName" type="text" required="true">
+				<label>AppName</label>
+				<description>The samsung apps name</description>
+				<default>openhab</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

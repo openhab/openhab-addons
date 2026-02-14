@@ -76,7 +76,6 @@ public class SmartThingsApi {
     private final ClientBuilder clientBuilder;
     private final SseEventSourceFactory eventSourceFactory;
 
-    private static final String APP_NAME = "openhabnew0160";
     private Gson gson = new Gson();
     private String baseUrl = "https://api.smartthings.com/v1";
 
@@ -110,10 +109,10 @@ public class SmartThingsApi {
         return devices;
     }
 
-    public AppResponse setupApp(String redirectUrl) throws SmartThingsException {
+    public AppResponse setupApp(String appName, String redirectUrl) throws SmartThingsException {
         SmartThingsApp[] appList = getAllApps();
 
-        Optional<SmartThingsApp> appOptional = Arrays.stream(appList).filter(x -> APP_NAME.equals(x.appName))
+        Optional<SmartThingsApp> appOptional = Arrays.stream(appList).filter(x -> appName.equals(x.appName))
                 .findFirst();
 
         if (appOptional.isPresent()) {
@@ -127,7 +126,7 @@ public class SmartThingsApi {
 
             return result;
         } else {
-            AppResponse result = createApp(redirectUrl);
+            AppResponse result = createApp(appName, redirectUrl);
             return result;
         }
     }
@@ -225,12 +224,11 @@ public class SmartThingsApi {
         }
     }
 
-    public AppResponse createApp(String redirectUrl) throws SmartThingsException {
+    public AppResponse createApp(String appName, String redirectUrl) throws SmartThingsException {
         try {
             String uri = baseUrl + appEndPoint + "?signatureType=ST_PADLOCK&requireConfirmation=true";
             String realRedirectUrl = redirectUrl + "/cb";
 
-            String appName = APP_NAME;
             AppRequest appRequest = new AppRequest();
             appRequest.appName = appName;
             appRequest.displayName = appName;
@@ -413,6 +411,10 @@ public class SmartThingsApi {
             for (SmartThingsDevice dev : devices) {
                 try {
                     if (!dev.locationId.equals(locations[0])) {
+                        continue;
+                    }
+
+                    if (!dev.label.contains("Petrole")) {
                         continue;
                     }
 
