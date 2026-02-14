@@ -15,8 +15,8 @@ package org.openhab.binding.smartthings.internal.converter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.dto.ColorObject;
-import org.openhab.binding.smartthings.internal.stateHandler.SmartThingsStateHandler;
-import org.openhab.binding.smartthings.internal.stateHandler.SmartThingsStateHandlerFactory;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandler;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
@@ -59,7 +59,6 @@ public class SmartThingsSaturationConverter extends SmartThingsConverter {
             arguments[0] = colorObj;
 
             this.pushCommand(componentKey, capaKey, cmdName, arguments);
-
         } else if (command instanceof DecimalType dec) {
             double hue = 0;
             double sat = dec.doubleValue();
@@ -85,7 +84,6 @@ public class SmartThingsSaturationConverter extends SmartThingsConverter {
             arguments[0] = colorObj;
 
             this.pushCommand(componentKey, capaKey, cmdName, arguments);
-
         } else {
             throw new SmartThingsException(
                     String.format("Unsupported command received {}, please contact developper", command.getClass()));
