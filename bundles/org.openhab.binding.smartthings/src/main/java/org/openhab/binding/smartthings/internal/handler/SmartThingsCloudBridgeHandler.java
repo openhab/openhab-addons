@@ -63,9 +63,14 @@ public class SmartThingsCloudBridgeHandler extends SmartThingsBridgeHandler {
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         super.initialize();
 
-        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    @Override
+    protected void setupClient(@Nullable String callBackUri) {
+        super.setupClient(callBackUri);
 
         scheduler.submit(() -> {
             try {
@@ -146,11 +151,7 @@ public class SmartThingsCloudBridgeHandler extends SmartThingsBridgeHandler {
         return smartthingsHandlerFactory;
     }
 
-    public String getClientId() {
-        return config.clientId;
-    }
-
-    public String getClientSecret() {
-        return config.clientSecret;
+    public String getAppName() {
+        return config.appName;
     }
 }

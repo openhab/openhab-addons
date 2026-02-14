@@ -37,19 +37,22 @@ public class SmartThingsBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMARTTHINGSCLOUD = new ThingTypeUID(BINDING_ID, "smartthingscloud");
 
     // Authorization related Servlet and resources aliases.
-    public static final String SMARTTHINGS_ALIAS = "/connectsmartthings";
+    public static final String SMARTTHINGS_ALIAS = "/smartthings";
     public static final String SMARTTHINGS_IMG_ALIAS = "/img";
 
     /**
      * SmartThings scopes needed by this binding to work.
      */
-    public static final String SMARTTHINGS_SCOPES = Stream
-            .of("r:devices:*", "w:devices:*", "x:devices:*", "r:hubs:*", "r:locations:*", "w:locations:*",
-                    "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*")
-            .collect(Collectors.joining(" "));
+
+    public static final String SMARTTHINGS_SCOPES = "controller:stCli";
+
+    public static final String CLIENT_ID = "d18cf96e-c626-4433-bf51-ddbb10c5d1ed";
+
+    public static final String REDIRECT_URI = "http://localhost:61973/finish";
 
     // List of SmartThings services related urls, information
-    public static final String SMARTTHINGS_ACCOUNT_URL = "https://api.smartthings.com/oauth";
+    public static final String SMARTTHINGS_ACCOUNT_URL = "https://oauthin-regional.api.smartthings.com/oauth";
+
     public static final String SMARTTHINGS_AUTHORIZE_URL = SMARTTHINGS_ACCOUNT_URL + "/authorize";
     public static final String SMARTTHINGS_API_TOKEN_URL = SMARTTHINGS_ACCOUNT_URL + "/token";
 

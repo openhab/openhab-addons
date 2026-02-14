@@ -22,14 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SmartThingsBridgeConfig {
 
-    public String clientId = "e91265c7-42b1-4928-ab52-67ff1f80cc5c";
-    public String clientSecret = "85697243-75e2-4e2b-ac4e-d29e784b2116";
+    public String appName = "openhab";
 
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("clientId = ").append(clientId);
-        sb.append("clientSecret = ").append(clientSecret);
+        sb.append("appName = ").append(appName);
         return sb.toString();
     }
 }

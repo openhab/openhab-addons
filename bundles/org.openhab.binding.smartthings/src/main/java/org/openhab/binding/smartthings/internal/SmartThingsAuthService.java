@@ -12,23 +12,16 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import java.util.Hashtable;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnector;
-import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +38,6 @@ public class SmartThingsAuthService {
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsAuthService.class);
 
-    private @NonNullByDefault({}) HttpService httpService;
     private @Nullable SmartThingsAccountHandler accountHandler;
 
     @Activate
@@ -53,41 +45,6 @@ public class SmartThingsAuthService {
     }
 
     protected void initialize() {
-    }
-
-    @Deactivate
-    protected void deactivate(ComponentContext componentContext) {
-        httpService.unregister(SmartThingsBindingConstants.SMARTTHINGS_ALIAS);
-        httpService.unregister(
-                SmartThingsBindingConstants.SMARTTHINGS_ALIAS + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS);
-    }
-
-    /**
-     * Creates a new {@link SmartThingsAuthServlet}.
-     *
-     * @return the newly created servlet
-     */
-
-    public void registerServlet() {
-        try {
-            httpService.registerServlet(SmartThingsBindingConstants.SMARTTHINGS_ALIAS, createServlet(),
-                    new Hashtable<>(), httpService.createDefaultHttpContext());
-            httpService.registerResources(
-                    SmartThingsBindingConstants.SMARTTHINGS_ALIAS + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS,
-                    "web", null);
-        } catch (Exception e) {
-            logger.warn("Error during smartthings servlet startup", e);
-        }
-    }
-
-    private HttpServlet createServlet() throws SmartThingsException {
-        SmartThingsBridgeHandler bridgeHandler = (SmartThingsBridgeHandler) accountHandler;
-        if (bridgeHandler == null) {
-            throw new SmartThingsException("BridgeHandler is null");
-        }
-
-        SmartThingsNetworkConnector networkConnector = bridgeHandler.getNetworkConnector();
-        return new SmartThingsAuthServlet(bridgeHandler, this, httpService, networkConnector);
     }
 
     /**
@@ -132,14 +89,5 @@ public class SmartThingsAuthService {
      */
     public @Nullable SmartThingsAccountHandler getSmartThingsAccountHandler() {
         return this.accountHandler;
-    }
-
-    @Reference
-    protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
     }
 }
