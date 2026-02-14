@@ -590,17 +590,33 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
         }
 
         private void flushBuffer() {
-            String content = buffer.toString();
-            int lastNewlineIndex = content.lastIndexOf('\n');
+            int lastTerminatorIndex = -1;
+            int len = buffer.length();
 
-            if (lastNewlineIndex >= 0) {
-                // Process all complete lines
-                String[] lines = content.substring(0, lastNewlineIndex + 1).split("\n", -1);
-                for (int i = 0; i < lines.length - 1; i++) {
-                    console.println(lines[i]);
+            for (int i = len - 1; i >= 0; i--) {
+                char ch = buffer.charAt(i);
+                if (ch == '\n') {
+                    lastTerminatorIndex = i;
+                    break;
                 }
-                // Keep any remaining partial line in the buffer
-                buffer.delete(0, lastNewlineIndex + 1);
+                if (ch == '\r') {
+                    // Only skip if it's the very last char (might be start of CRLF)
+                    if (i < len - 1) {
+                        lastTerminatorIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            if (lastTerminatorIndex >= 0) {
+                String segment = buffer.substring(0, lastTerminatorIndex + 1);
+
+                buffer.delete(0, lastTerminatorIndex + 1);
+
+                String[] lines = segment.split("\\r?\\n|\\r");
+                for (String line : lines) {
+                    console.println(line);
+                }
             }
         }
 
