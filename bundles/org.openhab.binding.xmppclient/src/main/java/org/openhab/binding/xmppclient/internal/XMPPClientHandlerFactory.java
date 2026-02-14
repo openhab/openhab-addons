@@ -16,6 +16,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jivesoftware.smack.util.DNSUtil;
+import org.jivesoftware.smack.util.dns.javax.JavaxResolver;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -23,6 +25,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -50,5 +54,13 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
             return new XMPPClientHandler((Bridge) thing);
         }
         return null;
+    }
+
+    @Activate
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        if (DNSUtil.getDNSResolver() == null) {
+            DNSUtil.setDNSResolver(JavaxResolver.getInstance());
+        }
     }
 }

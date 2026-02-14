@@ -96,7 +96,8 @@ public class XMPPClientHandler extends BaseBridgeHandler implements XMPPClientEv
 
         try {
             xmppClient.connect(Objects.requireNonNullElse(config.host, ""), config.port, config.username,
-                    config.nickname, config.domain, config.password, SecurityMode.valueOf(config.securityMode));
+                    config.nickname, config.domain, config.password, SecurityMode.valueOf(config.securityMode),
+                    config.disableHostnameVerification);
             updateStatus(ThingStatus.ONLINE);
         } catch (XMPPClientConfigException e) {
             logger.debug("XMPP connection error", e);
