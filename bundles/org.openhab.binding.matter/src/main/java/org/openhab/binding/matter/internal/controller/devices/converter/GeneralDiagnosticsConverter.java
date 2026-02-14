@@ -71,6 +71,6 @@ public class GeneralDiagnosticsConverter extends GenericConverter<GeneralDiagnos
 
     private void updateThingProperties(GeneralDiagnosticsCluster cluster) {
         updateThingAttributeProperty(GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES,
-                gson.toJson(cluster.networkInterfaces));
+                cluster.networkInterfaces != null ? gson.toJson(cluster.networkInterfaces) : null);
     }
 }

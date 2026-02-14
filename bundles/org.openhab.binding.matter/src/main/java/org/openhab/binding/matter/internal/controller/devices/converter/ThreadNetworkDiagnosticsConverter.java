@@ -77,10 +77,10 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, cluster.extendedPanId);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
-                gson.toJson(cluster.neighborTable));
+                cluster.neighborTable != null ? gson.toJson(cluster.neighborTable) : null);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
-                gson.toJson(cluster.routeTable));
+                cluster.routeTable != null ? gson.toJson(cluster.routeTable) : null);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS,
-                gson.toJson(cluster.extAddress));
+                cluster.extAddress != null ? gson.toJson(cluster.extAddress) : null);
     }
 }
