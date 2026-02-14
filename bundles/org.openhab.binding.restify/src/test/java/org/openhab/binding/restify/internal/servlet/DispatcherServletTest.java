@@ -75,7 +75,7 @@ class DispatcherServletTest {
     }
 
     @Test
-    void doGetDoesNotExposeInternalExceptionMessage() throws Exception {
+    void doGetUsesLocalizedExceptionMessage() throws Exception {
         // Given
         var writer = new StringWriter();
         var sut = new DispatcherServlet(new JsonEncoder(), i18nProvider, authorizationService, engine);
@@ -87,7 +87,6 @@ class DispatcherServletTest {
 
         // Then
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        assertThat(writer.toString()).isEqualTo("{\"code\":400,\"error\":\"Bad request\"}");
-        assertThat(writer.toString()).doesNotContain("Request URI must start");
+        assertThat(writer.toString()).isEqualTo("{\"code\":400,\"error\":\"Request URI must start with /restify\"}");
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.restify.internal.servlet;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.openhab.binding.restify.internal.RestifyBindingConstants.BINDING_ID;
 import static org.openhab.binding.restify.internal.servlet.DispatcherServlet.Method.*;
@@ -121,18 +122,13 @@ public class DispatcherServlet extends HttpServlet {
 
     private void respondWithError(HttpServletResponse resp, int statusCode, Exception e) throws IOException {
         logger.error("{}: {}", statusCode, e.getMessage(), e);
-        var safeMessage = switch (statusCode) {
-            case SC_BAD_REQUEST -> "Bad request";
-            case SC_INTERNAL_SERVER_ERROR -> "Internal server error";
-            default -> "Request failed";
-        };
-        writeJsonError(resp, statusCode, safeMessage);
+        writeJsonError(resp, statusCode, e.getLocalizedMessage());
     }
 
-    private void writeJsonError(HttpServletResponse resp, int statusCode, String message) throws IOException {
+    private void writeJsonError(HttpServletResponse resp, int statusCode, @Nullable String message) throws IOException {
         var body = new LinkedHashMap<String, Json>();
         body.put("code", new Json.NumberValue(statusCode));
-        body.put("error", new Json.StringValue(message));
+        body.put("error", new Json.StringValue(requireNonNullElse(message, "")));
         resp.setStatus(statusCode);
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
