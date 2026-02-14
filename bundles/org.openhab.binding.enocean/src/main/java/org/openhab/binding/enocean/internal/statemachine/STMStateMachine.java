@@ -134,14 +134,14 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
     @SuppressWarnings("null")
     public synchronized STMStateMachine<A, S> apply(A action) {
         for (STMTransition<A, S> transition : transitions) {
-            boolean currentStateMatches = transition.from.equals(state);
-            boolean conditionsMatch = transition.action.equals(action);
+            boolean currentStateMatches = transition.getFrom().equals(state);
+            boolean conditionsMatch = transition.getAction().equals(action);
 
             if (currentStateMatches && conditionsMatch) {
-                logger.debug("STM: State change from {} to {} by action {}, prevState {}", state, transition.to, action,
-                        prevState);
+                logger.debug("STM: State change from {} to {} by action {}, prevState {}", state, transition.getTo(),
+                        action, prevState);
                 prevState = state;
-                state = transition.to;
+                state = transition.getTo();
 
                 // Execute action-specific callback if registered
                 if (callbackActions.containsKey(action)) {
@@ -169,7 +169,7 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
      * @param delayMs delay in milliseconds
      */
     @SuppressWarnings("null")
-    public void scheduleDelayed(Runnable runnable, long delayMs) {
+    public synchronized void scheduleDelayed(Runnable runnable, long delayMs) {
         if (responseFuture == null || responseFuture.isDone()) {
             this.responseFuture = scheduler.schedule(runnable, delayMs, TimeUnit.MILLISECONDS);
         }
