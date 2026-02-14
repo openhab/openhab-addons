@@ -170,7 +170,9 @@ class NetworkCommissioningConverterTest extends BaseMatterConverterTest {
         mockCluster.lastConnectErrorValue = null;
         mockCluster.threadVersion = null;
         mockCluster.networks = null;
+        mockCluster.lastNetworkId = null;
         mockCluster.supportedWiFiBands = null;
+        mockCluster.supportedThreadFeatures = null;
         converter.initState();
         verify(converter, atLeastOnce())
                 .updateThingAttributeProperty(eq(NetworkCommissioningCluster.ATTRIBUTE_MAX_NETWORKS), eq(null));
@@ -186,6 +188,15 @@ class NetworkCommissioningConverterTest extends BaseMatterConverterTest {
                 eq(NetworkCommissioningCluster.ATTRIBUTE_LAST_CONNECT_ERROR_VALUE), eq(null));
         verify(converter, atLeastOnce())
                 .updateThingAttributeProperty(eq(NetworkCommissioningCluster.ATTRIBUTE_THREAD_VERSION), eq(null));
+        // Verify JSON-serialized fields pass null instead of the string "null" to remove properties
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(NetworkCommissioningCluster.ATTRIBUTE_NETWORKS), eq(null));
+        verify(converter, atLeastOnce())
+                .updateThingAttributeProperty(eq(NetworkCommissioningCluster.ATTRIBUTE_LAST_NETWORK_ID), eq(null));
+        verify(converter, atLeastOnce()).updateThingAttributeProperty(
+                eq(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS), eq(null));
+        verify(converter, atLeastOnce()).updateThingAttributeProperty(
+                eq(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES), eq(null));
     }
 
     @Test
