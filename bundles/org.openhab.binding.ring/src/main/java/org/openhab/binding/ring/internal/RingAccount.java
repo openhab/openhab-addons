@@ -51,10 +51,9 @@ public interface RingAccount {
     byte[] getSnapshot(String id);
 
     /**
-     * Get the timestamp of the last camera snapshot
+     * Send a command to the Ring API
      *
-     * @param url to be sent ot the Ring API
-     * @throws AuthenticationException when request is invalid.
+     * @param url to be sent to the Ring API
      */
     void sendCommand(String url);
 }

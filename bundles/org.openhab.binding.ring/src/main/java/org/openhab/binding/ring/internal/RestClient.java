@@ -391,7 +391,6 @@ public class RestClient {
     }
 
     public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
-        String result = "";
         try {
             Request request = httpClient.newRequest(endpoint);
             request.method(HttpMethod.PUT);
