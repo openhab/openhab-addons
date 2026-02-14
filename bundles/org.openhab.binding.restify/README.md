@@ -67,6 +67,8 @@ Supported authorization formats:
 { "type": "Bearer", "token": "my-token" }
 ```
 
+`type` matching is case-insensitive (`Basic`/`basic`, `Bearer`/`bearer`).
+
 ## Response Schema
 
 Each value inside `response` can be:

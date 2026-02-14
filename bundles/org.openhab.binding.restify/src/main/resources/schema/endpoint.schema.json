@@ -8,7 +8,7 @@
         {
           "type": "object",
           "properties": {
-            "type": { "const": "Basic" },
+            "type": { "type": "string", "pattern": "^[Bb][Aa][Ss][Ii][Cc]$" },
             "username": { "type": "string" },
             "password": { "type": "string" }
           },
@@ -18,7 +18,7 @@
         {
           "type": "object",
           "properties": {
-            "type": { "const": "Bearer" },
+            "type": { "type": "string", "pattern": "^[Bb][Ee][Aa][Rr][Ee][Rr]$" },
             "token": { "type": "string" }
           },
           "required": ["type", "token"],

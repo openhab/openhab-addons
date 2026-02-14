@@ -67,6 +67,18 @@ class JsonSchemaValidatorTest {
     }
 
     @Test
+    void validateEndpointConfigReturnsNoErrorsForLowercaseAuthorizationType() {
+        // Given
+        var config = "{\"authorization\":{\"type\":\"basic\",\"username\":\"john\",\"password\":\"secret\"},\"response\":{}}";
+
+        // When
+        var errors = sut.validateEndpointConfig(config);
+
+        // Then
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
     void validateEndpointConfigReturnsErrorsWhenRequiredResponseIsMissing() {
         // Given
         var config = "{\"authorization\":{\"type\":\"Bearer\",\"token\":\"abc\"}}";
