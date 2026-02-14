@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal.converter;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
@@ -73,6 +74,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
     private Object getValue(Command command, ThingTypeUID thingUid, String channelId) {
         Object value = null;
 
+        String commandSt = command.toString().toLowerCase(Locale.ROOT);
         if (command instanceof DateTimeType dateTimeCommand) {
             value = dateTimeCommand.format("%m/%d/%Y %H.%M.%S");
         } else if (command instanceof HSBType hsbCommand) {
@@ -82,13 +84,13 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
             DecimalType dc = (DecimalType) command;
             value = dc.intValue();
         } else if (command instanceof IncreaseDecreaseType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof NextPreviousType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof OnOffType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof OpenClosedType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof PercentType) {
             value = command.toString();
         } else if (command instanceof PointType) {
@@ -97,13 +99,13 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                     thingUid, channelId);
             value = command.toFullString();
         } else if (command instanceof RefreshType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof RewindFastforwardType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof StopMoveType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof PlayPauseType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else if (command instanceof StringListType) {
             value = command.toString();
         } else if (command instanceof StringType) {
@@ -114,12 +116,12 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                 value = st;
             }
         } else if (command instanceof UpDownType) {
-            value = command.toString().toLowerCase();
+            value = commandSt;
         } else {
             logger.warn(
                     "Warning - The SmartThings converter does not know how to handle the {} command. The SmartThingsonverter class should be updated.  CapabilityKey: {},  capabilityAttribute {}",
                     command.getClass().getName(), thingUid, channelId);
-            value = command.toString().toLowerCase();
+            value = commandSt;
         }
 
         return Objects.requireNonNull(value);

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smartthings.internal.converter;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
@@ -37,9 +39,9 @@ public class SmartThingsOpenCloseControlConverter extends SmartThingsConverter {
 
     @Override
     public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command) {
-        String smartthingsValue = (SmartThingsBindingConstants.OPEN_VALUE.equals(command.toString().toLowerCase()))
-                ? SmartThingsBindingConstants.OPEN_VALUE
-                : SmartThingsBindingConstants.CLOSE_VALUE;
+        String smartthingsValue = (SmartThingsBindingConstants.OPEN_VALUE
+                .equals(command.toString().toLowerCase(Locale.ROOT))) ? SmartThingsBindingConstants.OPEN_VALUE
+                        : SmartThingsBindingConstants.CLOSE_VALUE;
         smartthingsValue = surroundWithQuotes(smartthingsValue);
 
         // @todo : to review, no action !

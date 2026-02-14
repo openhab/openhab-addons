@@ -13,6 +13,7 @@
 package org.openhab.binding.smartthings.internal.discovery;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -153,7 +154,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        deviceType = deviceType.toLowerCase();
+        deviceType = deviceType.toLowerCase(Locale.ROOT);
 
         SmartThingsTypeRegistry registry = this.typeRegistry;
         if (registry != null) {

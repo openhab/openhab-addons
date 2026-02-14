@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -213,7 +214,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         String label = capa.name;
 
         String channelTypeName = capa.id.replace(".", "_") + "_"
-                + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-')).toLowerCase();
+                + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-')).toLowerCase(Locale.ROOT);
 
         List<StateOption> options = new ArrayList<StateOption>();
 
@@ -393,7 +394,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                                     registerCapability(capa);
                                 } catch (SmartThingsException ex) {
                                     logger.error("Exception during capa reading:{}", ex.toString(), ex);
-
                                 }
                             }
                         }
@@ -434,7 +434,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             Map<String, String> props = new Hashtable<String, String>();
 
             String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-'))
-                    .toLowerCase();
+                    .toLowerCase(Locale.ROOT);
             String channelTypeName = capa.id.replace(".", "_") + "_" + channelName;
 
             final String fChannelName = channelName;

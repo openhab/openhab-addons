@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -137,7 +138,8 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 return;
             }
 
-            String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-')).toLowerCase();
+            String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-'))
+                    .toLowerCase(Locale.ROOT);
 
             String groupId = deviceType + "_" + componentId + "_";
 
