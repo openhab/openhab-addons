@@ -263,7 +263,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             servlet.desactivate();
         }
         super.dispose();
-
     }
 
     protected boolean validateConfig(SmartThingsBridgeConfig config) {

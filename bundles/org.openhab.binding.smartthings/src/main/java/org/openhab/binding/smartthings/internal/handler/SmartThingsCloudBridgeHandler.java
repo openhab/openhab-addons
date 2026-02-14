@@ -65,7 +65,6 @@ public class SmartThingsCloudBridgeHandler extends SmartThingsBridgeHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         super.initialize();
-
     }
 
     @Override
