@@ -81,8 +81,8 @@ public class Engine implements Serializable {
         this.thingRegistry = thingRegistry;
     }
 
-    private Json evaluate(Response Response) throws ParameterException {
-        return switch (Response) {
+    private Json evaluate(Response response) throws ParameterException {
+        return switch (response) {
             case ItemResponse itemSchema -> evaluate(itemSchema);
             case Response.JsonResponse jsonSchema -> evaluate(jsonSchema);
             case BooleanResponse booleanSchema -> evaluate(booleanSchema);
