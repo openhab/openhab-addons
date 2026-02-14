@@ -24,6 +24,7 @@ public class EnOceanActuatorConfig extends EnOceanBaseConfig {
 
     public int channel;
     public @Nullable Integer senderIdOffset = null;
+    public @Nullable String senderId = null;
     public String manufacturerId = "";
     public String teachInType = "";
 
