@@ -200,6 +200,12 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         }
     }
 
+    // Making this public
+    @Override
+    public boolean isLinked(String channelId) {
+        return isLinked(channelId);
+    }
+
     @Override
     public void onEvent(AttributeChangedMessage message) {
         logger.debug("AttributeChangedMessage for endpoint {}", message.path.endpointId);

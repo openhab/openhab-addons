@@ -42,24 +42,23 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
     }
 
     @Override
-    public void pollCluster() {
-        handler.readCluster(ThreadNetworkDiagnosticsCluster.class, endpointNumber, initializingCluster.id)
-                .thenAccept(cluster -> {
-                    updateThingProperties(cluster);
-                }).exceptionally(e -> {
-                    logger.debug("Error polling thread network diagnostics", e);
-                    return null;
-                });
-    }
-
-    @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         return Collections.emptyMap();
     }
 
     @Override
     public void onEvent(AttributeChangedMessage message) {
-        updateThingAttributeProperty(message.path.attributeName, message.value);
+        switch (message.path.attributeName) {
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS:
+                updateThingAttributeProperty(message.path.attributeName,
+                        message.value != null ? gson.toJson(message.value) : null);
+                break;
+            default:
+                updateThingAttributeProperty(message.path.attributeName, message.value);
+                break;
+        }
         super.onEvent(message);
     }
 
