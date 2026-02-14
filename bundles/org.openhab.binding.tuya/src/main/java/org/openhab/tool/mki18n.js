@@ -19,7 +19,7 @@
 const http = require('https');
 const fs = require('fs');
 
-const schemas = require('../../../src/main/resources/schema.json');
+const schemas = require('../../../../resources/schema.json');
 
 
 function optionToLabel(option) {
