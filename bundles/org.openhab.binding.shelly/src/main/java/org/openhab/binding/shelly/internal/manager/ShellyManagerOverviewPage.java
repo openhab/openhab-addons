@@ -32,6 +32,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyCacheList;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -54,8 +55,8 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
     public ShellyManagerOverviewPage(ConfigurationAdmin configurationAdmin,
             ShellyTranslationProvider translationProvider, HttpClient httpClient, String localIp, int localPort,
-            ShellyHandlerFactory handlerFactory, ShellyManagerCache<String, FwRepoEntry> firmwareRepo,
-            ShellyManagerCache<String, FwArchList> firmwareArch) {
+            ShellyHandlerFactory handlerFactory, ShellyCacheList<String, FwRepoEntry> firmwareRepo,
+            ShellyCacheList<String, FwArchList> firmwareArch) {
         super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
                 firmwareArch);
     }

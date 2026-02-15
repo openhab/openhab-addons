@@ -92,7 +92,7 @@ public class ShellyUtils {
                     throw new ShellyApiException(PRE + className + " from JSON: " + json);
                 }
                 return obj;
-            } catch (JsonSyntaxException e) {
+            } catch (JsonSyntaxException | IllegalStateException e) {
                 throw new ShellyApiException(
                         PRE + className + " from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
