@@ -15,6 +15,16 @@
 				<description>The samsung apps name</description>
 				<default>openhab</default>
 			</parameter>
+			<parameter name="clientId" type="text" required="false">
+                <label>Client ID</label>
+                <description>The apps oauth client Id)</description>
+                <default></default>
+            </parameter>
+            <parameter name="clientSecret" type="text" required="false">
+                <label>Client Secret</label>
+                <description>The apps oauth client Secret</description>
+                <default></default>
+            </parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>
