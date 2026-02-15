@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -781,7 +782,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void onError(Throwable cause) {
         if (logger.isDebugEnabled()) {
-            if (cause instanceof EofException) {
+            if (cause instanceof EofException || cause instanceof EOFException) {
                 logger.debug("{}: WebSocket was closed ungracefully", thingName);
             } else {
                 logger.debug("{}: WebSocket error", thingName, cause);
