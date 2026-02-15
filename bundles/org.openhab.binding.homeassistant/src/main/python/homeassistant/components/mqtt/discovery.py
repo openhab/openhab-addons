@@ -264,7 +264,7 @@ def process_discovery_config(topic, payload):
         # cleanup config for the all the components that are being removed.
         # This is done when a component in the device config is omitted and detected
         # as being removed, or when the device config update payload is empty.
-        # In that case this will regenerate a cleanup message for all every already
+        # In that case this will regenerate a cleanup message for all already
         # discovered components that were linked to the initial device discovery.
         device_discovery_payload = _parse_device_payload(
             payload, object_id, node_id
