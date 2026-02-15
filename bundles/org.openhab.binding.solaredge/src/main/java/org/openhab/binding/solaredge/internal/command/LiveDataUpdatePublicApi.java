@@ -62,7 +62,6 @@ public class LiveDataUpdatePublicApi extends AbstractCommand implements SolarEdg
     public void onComplete(@Nullable Result result) {
         logger.debug("onComplete()");
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }
@@ -76,5 +75,6 @@ public class LiveDataUpdatePublicApi extends AbstractCommand implements SolarEdg
                 }
             }
         }
+        updateListenerStatus();
     }
 }

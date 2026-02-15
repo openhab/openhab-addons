@@ -94,7 +94,6 @@ public class AggregateDataUpdatePublicApi extends AbstractCommand implements Sol
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }
@@ -108,5 +107,6 @@ public class AggregateDataUpdatePublicApi extends AbstractCommand implements Sol
                 }
             }
         }
+        updateListenerStatus();
     }
 }
