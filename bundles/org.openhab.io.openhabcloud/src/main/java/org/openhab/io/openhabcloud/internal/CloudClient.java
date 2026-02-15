@@ -60,8 +60,8 @@ import org.eclipse.jetty.io.RetainableByteBuffer;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.URIUtil;
-import org.json.JSONArray;
 import org.eclipse.jetty.util.thread.Locker;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
@@ -446,22 +446,22 @@ public class CloudClient {
      * it writes the data to the upgraded request connection.
      */
     public void onWSEvent(int requestId, byte[] data) {
-        logger.debug("on({}): websocket incoming {} bytes", requestId, data.length);
+        logger.trace("on({}): websocket incoming {} bytes", requestId, data.length);
         var request = runningRequests.get(requestId);
         if (request == null) {
-            logger.warn("Received ws data for missed request {}", requestId);
+            logger.debug("Received ws data for missed request {}", requestId);
             return;
         }
         OpenHABWebSocketConnection webSocketConnection = websocketConnections.get(request);
         if (webSocketConnection == null) {
-            logger.warn("WebSocket connection missed for request {}", requestId);
+            logger.debug("WebSocket connection missed for request {}", requestId);
             return;
         }
         if (remoteAccessEnabled) {
             try {
                 webSocketConnection.write(ByteBuffer.wrap(data));
             } catch (IOException e) {
-                logger.warn("IOException writing WebSocket data: {}", e.getMessage());
+                logger.debug("IOException writing WebSocket data: {}", e.getMessage());
                 webSocketConnection.close();
             }
         } else {
@@ -644,7 +644,7 @@ public class CloudClient {
                 if (webSocketConnection == null) {
                     request.abort(new InterruptedException());
                 } else {
-                    webSocketConnection.close();
+                    webSocketConnection.closeQuietly();
                 }
                 runningRequests.remove(requestId);
             }
@@ -1079,10 +1079,12 @@ public class CloudClient {
         }
 
         public synchronized void write(ByteBuffer byteBuffer) throws IOException {
-            if (writing.compareAndSet(true, true)) {
-                writeQueue.add(byteBuffer);
-            } else {
+            if (writing.compareAndSet(false, true)) {
+                // No write in progress — write directly
                 endPoint.write(Callback.from(this::writeNext, this::onWriteError), byteBuffer);
+            } else {
+                // Write in progress — queue for later
+                writeQueue.add(byteBuffer);
             }
         }
 
@@ -1090,7 +1092,7 @@ public class CloudClient {
             if (writeQueue.isEmpty()) {
                 writing.set(false);
             } else {
-                endPoint.write(Callback.from(this::writeNext, this::onWriteError), writeQueue.getFirst());
+                endPoint.write(Callback.from(this::writeNext, this::onWriteError), writeQueue.pollFirst());
             }
         }
 
@@ -1179,15 +1181,23 @@ public class CloudClient {
         @Override
         public void close() {
             logger.debug("Closing websocket connection {}", requestId);
-            // emit request error to close websocket at connector
+            // emit websocketClose to notify the connector
             JSONObject responseJson = new JSONObject();
             try {
                 responseJson.put("id", requestId);
-                responseJson.put("responseStatusText", "openHAB connection closed");
-                socketIOSupplier.get().emit("responseError", responseJson);
+                socketIOSupplier.get().emit("websocketClose", responseJson);
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
+            super.close();
+        }
+
+        /**
+         * Close the connection without emitting an event to the connector.
+         * Used for server-initiated cancels to prevent event ping-pong.
+         */
+        public void closeQuietly() {
+            logger.debug("Quietly closing websocket connection {}", requestId);
             super.close();
         }
 
