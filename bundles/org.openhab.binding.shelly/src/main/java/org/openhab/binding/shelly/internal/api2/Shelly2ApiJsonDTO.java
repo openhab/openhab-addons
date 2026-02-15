@@ -31,6 +31,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_ENDPOINT = "/rpc";
+    public static final String SHELLY2_JSONRPC_VERSION = "2.0";
 
     public static final String SHELLYRPC_METHOD_CLASS_SHELLY = "Shelly";
     public static final String SHELLYRPC_METHOD_CLASS_SWITCH = "Switch";
@@ -1131,6 +1132,7 @@ public class Shelly2ApiJsonDTO {
             public String message;
         }
 
+        public String jsonrpc;
         public Integer id;
         public String src;
         public String dst;
