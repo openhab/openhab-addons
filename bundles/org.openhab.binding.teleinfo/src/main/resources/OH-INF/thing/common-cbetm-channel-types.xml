@@ -119,8 +119,8 @@
 		<description>Electrical potential presence</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-        </tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -130,8 +130,8 @@
 		<description>Excess electric current on phase 1 warning</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-        </tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -141,8 +141,8 @@
 		<description>Excess electric current on phase 2 warning</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-        </tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -152,8 +152,8 @@
 		<description>Excess electric current on phase 3 warning</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-        </tags>
+			<tag>Measurement</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
