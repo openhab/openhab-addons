@@ -144,12 +144,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
         config = getConfigAs(HandlerConfiguration.class);
         if (config.topics.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No component topics configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-component-topics");
             return;
         }
         if (!validateTopics()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Only one 'device' component is allowed per Thing");
+                    "@text/offline.conf-error.only-one-device");
             return;
         }
         discoveryHomeAssistantIDs.addAll(HaID.fromConfig(config));
@@ -283,6 +284,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         delayedProcessing.accept(component);
     }
 
+    /**
+     * Callback of {@link DiscoverComponents} for a device topic update.
+     * Persists the full raw device config JSON on the Thing, so the handler can
+     * restore device-originated components after restart and still reconcile
+     * component removals/migrations when later discovery messages arrive.
+     */
     @Override
     public void deviceConfigUpdated(HaID homeAssistantTopicID, String configPayload) {
         if (!config.deviceConfig.equals(configPayload)) {
