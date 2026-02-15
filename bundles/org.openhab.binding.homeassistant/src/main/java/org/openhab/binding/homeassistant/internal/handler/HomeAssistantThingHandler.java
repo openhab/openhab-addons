@@ -457,7 +457,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 changeThingType(typeID, getConfig());
                 return false;
             }
-
             synchronized (haComponents) { // sync whenever discoverComponents is started
                 var sortedComponents = haComponents.values().stream().sorted(COMPONENT_COMPARATOR).toList();
 
@@ -470,14 +469,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 var channelDefs = sortedComponents.stream().map(AbstractComponent::getChannelDefinitions)
                         .flatMap(List::stream).toList();
                 thingTypeBuilder.withChannelDefinitions(channelDefs).withChannelGroupDefinitions(groupDefs);
-
                 channelTypeProvider.putThingType(thingTypeBuilder.build());
 
                 removeStateDescriptions();
                 sortedComponents.stream().forEach(c -> c.addStateDescriptions(stateDescriptionProvider));
 
                 ThingBuilder thingBuilder = editThing().withChannels();
-
                 sortedComponents.stream().map(AbstractComponent::getChannels).flatMap(List::stream)
                         .forEach(c -> thingBuilder.withChannel(c));
 
@@ -531,9 +528,9 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         try {
             List<AbstractComponent<?>> components = ComponentFactory.createComponent(thing.getUID(), haID,
                     persistedPayload, this, this, this, scheduler, gson, python, unitProvider);
-            components.forEach(component -> {
-                addComponent(component);
-            });
+            if (!components.isEmpty()) {
+                components.forEach(delayedProcessing::accept);
+            }
         } catch (ConfigurationException e) {
             logger.debug("Ignoring invalid deviceConfig in thing {}: {}", thing.getUID(), e.getMessage());
         }

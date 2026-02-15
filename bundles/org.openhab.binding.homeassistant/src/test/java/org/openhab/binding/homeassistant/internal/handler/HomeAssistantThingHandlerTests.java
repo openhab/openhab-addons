@@ -520,6 +520,25 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
     }
 
     @Test
+    public void testFileConfiguredTopicsCreateChannelsAfterMqttConfigMessages() {
+        setupThingHandlerWithTopics(List.of("switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt"));
+        thingHandler.initialize();
+
+        assertThat("no channels before discovery payload arrives", nonSpyThingHandler.getThing().getChannels().size(),
+                is(0));
+
+        String configTopic = "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config";
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configTS0601AutoLock.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> {
+            assertThat("channels created from MQTT discovery payload",
+                    nonSpyThingHandler.getThing().getChannels().size(), is(2));
+        });
+    }
+
+    @Test
     public void testDeviceJsonChangeRemovesMissingComponents() {
         setupThingHandlerWithTopics(DEVICE_ONLY_TOPICS);
         thingHandler.initialize();
@@ -594,12 +613,32 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         thingHandler.initialize();
         assertThat("persisted cache available after reinitialize", thingHandler.config.deviceConfig,
                 is(persistedCache));
-        assertThat("components restored into handler state", nonSpyThingHandler.getComponents().size(), is(2));
-
         verify(thingHandler, never()).componentDiscovered(any(), any());
-
         waitForAssert(() -> assertThat("components restored from persisted cache before new MQTT messages",
                 nonSpyThingHandler.getComponents().size(), is(2)));
+        waitForAssert(() -> assertThat("channels restored from deviceConfig before new MQTT messages",
+                nonSpyThingHandler.getThing().getChannels().size(), is(2)));
+        nonSpyThingHandler.getThing().getChannels()
+                .forEach(channel -> assertThat(channel.getConfiguration().containsKey("config"), is(false)));
+
+        var beforeChannelIds = nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID)
+                .collect(Collectors.toSet());
+        var beforeComponentIds = nonSpyThingHandler.getComponents().keySet().stream().filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        thingHandler.discoverComponents.processMessage(configTopic,
+                getResourceAsByteArray("component/configDevice1.json"));
+        thingHandler.delayedProcessing.forceProcessNow();
+
+        waitForAssert(() -> assertThat("channels unchanged after same MQTT device message arrives",
+                nonSpyThingHandler.getThing().getChannels().size(), is(2)));
+        assertThat("channel IDs unchanged after same MQTT device message arrives",
+                nonSpyThingHandler.getThing().getChannels().stream().map(Channel::getUID).collect(Collectors.toSet()),
+                is(beforeChannelIds));
+        assertThat(
+                "component IDs unchanged after same MQTT device message arrives", nonSpyThingHandler.getComponents()
+                        .keySet().stream().filter(Objects::nonNull).collect(Collectors.toSet()),
+                is(beforeComponentIds));
     }
 
     @Test
