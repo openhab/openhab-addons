@@ -597,7 +597,7 @@
         <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karaf.maven.plugin.version}</version>
+          <version>${karaf.version}</version>
           <extensions>true</extensions>
           <configuration>
             <startLevel>80</startLevel>
