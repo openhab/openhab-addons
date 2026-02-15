@@ -507,8 +507,10 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     private void configureEngineConsoleOutput(ScriptEngine engine, @Nullable Console console) {
         if (console != null) {
             ScriptContext context = engine.getContext();
-            context.setWriter(new ConsoleWriter(console));
-            context.setErrorWriter(new ConsoleWriter(console));
+            Writer errorWriter = context.getErrorWriter();
+            if (errorWriter != null) {
+                context.setErrorWriter(new ConsoleWriter(errorWriter));
+            }
         }
     }
 
@@ -566,16 +568,15 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
     // ============================================================================
 
     /**
-     * A custom Writer implementation that routes output through the console.
-     * Properly handles newlines by converting them to console.println calls.
+     * A Writer wrapper that normalizes LF line endings to CRLF while preserving all other characters.
      */
-    private static class ConsoleWriter extends Writer {
-        private final Console console;
-        private final StringBuilder buffer = new StringBuilder();
+    static class ConsoleWriter extends Writer {
+        private final Writer delegate;
+        private boolean previousWasCarriageReturn = false;
         private boolean closed = false;
 
-        ConsoleWriter(Console console) {
-            this.console = console;
+        ConsoleWriter(Writer delegate) {
+            this.delegate = delegate;
         }
 
         @Override
@@ -584,55 +585,45 @@ public class JRubyConsoleCommandExtension extends AbstractConsoleCommandExtensio
                 throw new IOException("Writer is closed");
             }
             if (c != null) {
-                buffer.append(c, off, len);
-                flushBuffer();
-            }
-        }
-
-        private void flushBuffer() {
-            int lastTerminatorIndex = -1;
-            int len = buffer.length();
-
-            for (int i = len - 1; i >= 0; i--) {
-                char ch = buffer.charAt(i);
-                if (ch == '\n') {
-                    lastTerminatorIndex = i;
-                    break;
-                }
-                if (ch == '\r') {
-                    // Only skip if it's the very last char (might be start of CRLF)
-                    if (i < len - 1) {
-                        lastTerminatorIndex = i;
-                        break;
+                for (int index = off; index < off + len; index++) {
+                    char ch = c[index];
+                    if (previousWasCarriageReturn) {
+                        if (ch == '\n') {
+                            delegate.write('\r');
+                            delegate.write('\n');
+                            previousWasCarriageReturn = false;
+                            continue;
+                        }
+                        delegate.write('\r');
+                        previousWasCarriageReturn = false;
                     }
-                }
-            }
 
-            if (lastTerminatorIndex >= 0) {
-                String segment = buffer.substring(0, lastTerminatorIndex + 1);
-
-                buffer.delete(0, lastTerminatorIndex + 1);
-
-                String[] lines = segment.split("\\r?\\n|\\r");
-                for (String line : lines) {
-                    console.println(line);
+                    if (ch == '\r') {
+                        previousWasCarriageReturn = true;
+                    } else if (ch == '\n') {
+                        delegate.write('\r');
+                        delegate.write('\n');
+                    } else {
+                        delegate.write(ch);
+                    }
                 }
             }
         }
 
         @Override
         public void flush() throws IOException {
-            // Flush any remaining content
-            if (buffer.length() > 0) {
-                console.print(buffer.toString());
-                buffer.delete(0, buffer.length());
+            if (previousWasCarriageReturn) {
+                delegate.write('\r');
+                previousWasCarriageReturn = false;
             }
+            delegate.flush();
         }
 
         @Override
         public void close() throws IOException {
             flush();
             closed = true;
+            delegate.close();
         }
     }
 
