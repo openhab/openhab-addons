@@ -25,6 +25,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.ItemRegistry;
@@ -71,7 +73,7 @@ class RRD4jPersistenceServiceTest {
     /**
      * Waits for data to be persisted by polling the database.
      * This is more robust than Thread.sleep() in CI environments with resource contention.
-     * 
+     *
      * @param itemName the name of the item to check
      * @param timeoutMs maximum time to wait in milliseconds
      * @throws InterruptedException if interrupted while waiting
@@ -79,52 +81,47 @@ class RRD4jPersistenceServiceTest {
     private void waitForStorage(String itemName, long timeoutMs) throws InterruptedException {
         long startTime = System.currentTimeMillis();
         int attempts = 0;
-        
+
         while (System.currentTimeMillis() - startTime < timeoutMs) {
             attempts++;
-            
+
             FilterCriteria criteria = new FilterCriteria();
             criteria.setItemName(itemName);
             criteria.setPageSize(1);
-            
+
             try {
                 Iterable<HistoricItem> results = service.query(criteria);
                 if (results.iterator().hasNext()) {
                     long elapsed = System.currentTimeMillis() - startTime;
-                    logger.info("Storage completed for '{}' after {}ms ({} attempts)", 
-                               itemName, elapsed, attempts);
+                    logger.info("Storage completed for '{}' after {}ms ({} attempts)", itemName, elapsed, attempts);
                     return; // Success!
                 }
             } catch (Exception e) {
                 // Query might fail if data not ready yet, continue polling
-                logger.debug("Query attempt {} failed: {}", attempts, e.getMessage());
+                logger.info("Query attempt {} failed: {}", attempts, e.getMessage());
             }
-            
+
             Thread.sleep(POLL_INTERVAL_MS);
         }
-        
+
         long elapsed = System.currentTimeMillis() - startTime;
-        fail(String.format(
-            "Data for item '%s' was not persisted within %dms (%d polling attempts). " +
-            "This likely indicates CI resource contention with parallel test execution (-T1.5C). " +
-            "Consider increasing STORAGE_TIMEOUT_MS or running tests sequentially.",
-            itemName, elapsed, attempts
-        ));
+        fail(String.format("Data for item '%s' was not persisted within %dms (%d polling attempts).", itemName, elapsed,
+                attempts));
     }
 
-    private void configureNumberItem() throws Exception {
-        when(numberItem.getName()).thenReturn("TestNumber");
+    private void configureNumberItem(String suffix) throws Exception {
+        when(numberItem.getName()).thenReturn("TestNumber" + suffix);
         when(numberItem.getType()).thenReturn("Number");
         when(numberItem.getState()).thenReturn(new DecimalType(42.5));
         when(numberItem.getStateAs(DecimalType.class)).thenReturn(new DecimalType(42.5));
-        when(itemRegistry.getItem("TestNumber")).thenReturn(numberItem);
+        when(itemRegistry.getItem("TestNumber" + suffix)).thenReturn(numberItem);
     }
 
-    private void configureSwitchItem() throws Exception {
-        when(switchItem.getName()).thenReturn("TestSwitch");
+    private void configureSwitchItem(String suffix) throws Exception {
+        when(switchItem.getName()).thenReturn("TestSwitch" + suffix);
         when(switchItem.getType()).thenReturn("Switch");
         when(switchItem.getStateAs(DecimalType.class)).thenReturn(new DecimalType(1));
-        when(itemRegistry.getItem("TestSwitch")).thenReturn(switchItem);
+        when(itemRegistry.getItem("TestSwitch" + suffix)).thenReturn(switchItem);
     }
 
     @AfterEach
@@ -134,19 +131,25 @@ class RRD4jPersistenceServiceTest {
         }
     }
 
-    @Test
-    void storeAndRetrieveNumberValue() throws Exception {
-        configureNumberItem();
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void storeAndRetrieveNumberValue(boolean reloadAfterStore) throws Exception {
+        configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(numberItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service = new RRD4jPersistenceService(itemRegistry, Map.of());
+        }
 
         // Wait for background storage to complete
         waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestNumber");
+        criteria.setItemName(numberItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
@@ -157,23 +160,29 @@ class RRD4jPersistenceServiceTest {
         // Verify the retrieved value
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
-        assertEquals("TestNumber", item.getName());
+        assertEquals(numberItem.getName(), item.getName());
         assertEquals(new DecimalType(42.5), item.getState());
     }
 
-    @Test
-    void storeAndRetrieveSwitchValue() throws Exception {
-        configureSwitchItem();
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void storeAndRetrieveSwitchValue(boolean reloadAfterStore) throws Exception {
+        configureSwitchItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(switchItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service = new RRD4jPersistenceService(itemRegistry, Map.of());
+        }
 
         // Wait for background storage to complete
         waitForStorage(switchItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestSwitch");
+        criteria.setItemName(switchItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
@@ -184,28 +193,34 @@ class RRD4jPersistenceServiceTest {
         // Verify the retrieved value (converted back to OnOffType by toStateMapper)
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
-        assertEquals("TestSwitch", item.getName());
+        assertEquals(switchItem.getName(), item.getName());
         assertEquals(OnOffType.ON, item.getState());
 
-        PersistedItem persistedItem = service.persistedItem("TestSwitch", null);
+        PersistedItem persistedItem = service.persistedItem(switchItem.getName(), null);
         assertNotNull(persistedItem);
-        assertEquals("TestSwitch", persistedItem.getName());
+        assertEquals(switchItem.getName(), persistedItem.getName());
         assertEquals(OnOffType.ON, persistedItem.getState());
     }
 
-    @Test
-    void queryWithTimeRange() throws Exception {
-        configureNumberItem();
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void queryWithTimeRange(boolean reloadAfterStore) throws Exception {
+        configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(numberItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service = new RRD4jPersistenceService(itemRegistry, Map.of());
+        }
 
         // Wait for background storage to complete
         waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query with time range
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestNumber");
+        criteria.setItemName(numberItem.getName());
         criteria.setBeginDate(ZonedDateTime.now(ZoneId.systemDefault()).minusHours(1));
         criteria.setEndDate(ZonedDateTime.now(ZoneId.systemDefault()).plusHours(1));
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
@@ -238,21 +253,27 @@ class RRD4jPersistenceServiceTest {
     }
 
     // just to increase test coverage, supply an invalid DB config which will be ignored
-    @Test
-    void storeAndRetrieveWithInvalidDBConfig() throws Exception {
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void storeAndRetrieveWithInvalidDBConfig(boolean reloadAfterStore) throws Exception {
         service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
 
-        configureNumberItem();
+        configureNumberItem(reloadAfterStore ? "_PERSISTED" : "_MEMORY");
 
         // Store a value
         service.store(numberItem);
+
+        if (reloadAfterStore) {
+            service.deactivate();
+            service = new RRD4jPersistenceService(itemRegistry, Map.of("something.invalid", "invalid/path/to/db"));
+        }
 
         // Wait for background storage to complete
         waitForStorage(numberItem.getName(), STORAGE_TIMEOUT_MS);
 
         // Query the value back
         FilterCriteria criteria = new FilterCriteria();
-        criteria.setItemName("TestNumber");
+        criteria.setItemName(numberItem.getName());
         criteria.setOrdering(FilterCriteria.Ordering.ASCENDING);
         criteria.setPageSize(1);
         criteria.setPageNumber(0);
@@ -264,7 +285,7 @@ class RRD4jPersistenceServiceTest {
         // Verify the retrieved value
         HistoricItem item = results.iterator().next();
         assertNotNull(item);
-        assertEquals("TestNumber", item.getName());
+        assertEquals(numberItem.getName(), item.getName());
         assertEquals(new DecimalType(42.5), item.getState());
     }
 
