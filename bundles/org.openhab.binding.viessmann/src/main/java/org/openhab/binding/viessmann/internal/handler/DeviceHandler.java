@@ -16,7 +16,9 @@ import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -96,6 +98,7 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private static final Gson GSON = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
     private static final Set<String> BASE_ALLOWED_SUFFIXES = Set.of("active", "enabled");
+    private static final DateTimeFormatter API_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ROOT);
 
     private ThingsConfig config = new ThingsConfig();
 
@@ -377,6 +380,11 @@ public class DeviceHandler extends ViessmannThingHandler {
 
         storedChannelValues.putProperty(channelUID.getId(), value.toString());
 
+        if (channelUID.getId().contains("holiday")) {
+            logger.debug("Command cached for activation via active channel");
+            return;
+        }
+
         UriParam up = resolveCommand(prop, channelId, suffix, params, com, value);
 
         if (up == null) {
@@ -454,6 +462,8 @@ public class DeviceHandler extends ViessmannThingHandler {
         String[] effectiveParams = params;
         if (channelId.contains("hygiene-trigger") && "triggerDaily".equals(cmd)) {
             effectiveParams = prop.getOrDefault("triggerDailyParams", "{}").split(",");
+        } else if (channelId.contains("holiday") && "changeEndDate".equals(cmd)) {
+            effectiveParams = prop.getOrDefault("changeEndDateParams", "{}").split(",");
         }
 
         for (String p : effectiveParams) {
@@ -557,6 +567,9 @@ public class DeviceHandler extends ViessmannThingHandler {
             uri = prop.get("deactivateUri");
             if (uri == null) {
                 uri = prop.get("disableUri");
+            }
+            if (uri == null) {
+                uri = prop.get("unscheduleUri");
             }
         }
         return uri != null ? new UriParam(uri, "{}") : null;
@@ -991,12 +1004,16 @@ public class DeviceHandler extends ViessmannThingHandler {
                             subMsg.setChannelType("boolean-read-only");
                             checkIfSubChannelExists(subMsg);
                         }
+                        if (featureDataDTO.feature.contains("holiday")) {
+                            subMsg.setIsSubChannel(true);
+                            subMsg.setSuffix("status");
+                            subMsg.setChannelType("boolean-read-only");
+                            checkIfSubChannelExists(subMsg);
+                        }
                         break;
                     default:
                         break;
                 }
-
-                storedChannelValues.putProperty(msg.getChannelId(), msg.getValue());
 
                 switch (typeEntry) {
                     case "decimal":
@@ -1030,7 +1047,8 @@ public class DeviceHandler extends ViessmannThingHandler {
                     case "boolean":
                         OnOffType state = bool ? OnOffType.ON : OnOffType.OFF;
                         updateState(msg.getChannelId(), state);
-                        if (featureDataDTO.feature.contains("oneTimeCharge")) {
+                        if (featureDataDTO.feature.contains("oneTimeCharge")
+                                || featureDataDTO.feature.contains("holiday")) {
                             updateState(subMsg.getChannelId(), state);
                         }
                         break;
@@ -1041,6 +1059,25 @@ public class DeviceHandler extends ViessmannThingHandler {
                     case "string":
                     case "array":
                     case "weekdays":
+                        if (featureDataDTO.feature.contains("holiday")) {
+                            subMsg.setSuffix("active");
+
+                            final String channelId = msg.getChannelId();
+                            final String stored = storedChannelValues.getProperty(channelId);
+
+                            if (valueEntry.isBlank()) {
+                                valueEntry = (stored == null || stored.isBlank()) ? getApiDate("end".equals(entry))
+                                        : stored;
+
+                                msg.setValue(valueEntry);
+                                updateState(subMsg.getChannelId(), OnOffType.OFF);
+                            } else {
+                                updateState(subMsg.getChannelId(), OnOffType.ON);
+                            }
+
+                            updateState(channelId, StringType.valueOf(valueEntry));
+                        }
+
                         updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
                         String[] parts = msg.getValue().replace("[", "").replace("]", "").replace(" ", "").split(",");
                         if (parts.length > 1) {
@@ -1089,6 +1126,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                         updateState(msg.getChannelId(), StringType.valueOf(msg.getValue()));
                         break;
                 }
+                storedChannelValues.putProperty(msg.getChannelId(), msg.getValue());
             }
         }
     }
@@ -1305,6 +1343,14 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
     }
 
+    private String getApiDate(boolean tomorrow) {
+        LocalDate date = LocalDate.now(ViessmannUtil.getOpenHABZoneId());
+        if (tomorrow) {
+            date = date.plusDays(1);
+        }
+        return date.format(API_DATE_FORMATTER);
+    }
+
     private void updateChannelState(String channelId, String stateAsString, @Nullable String unit) {
         if (unit != null) {
             updateState(channelId, new QuantityType<>(stateAsString + " " + unit));
@@ -1347,7 +1393,7 @@ public class DeviceHandler extends ViessmannThingHandler {
             }
 
             FeatureCommand fc = commands.get(command);
-            if (fc == null || fc.isDeprecated) {
+            if (fc == null || fc.isDeprecated || !fc.isExecutable) {
                 continue;
             }
 
