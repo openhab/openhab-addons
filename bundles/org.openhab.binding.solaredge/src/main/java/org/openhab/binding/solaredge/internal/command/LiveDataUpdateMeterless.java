@@ -65,6 +65,7 @@ public class LiveDataUpdateMeterless extends AbstractCommand implements SolarEdg
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
+                return;
             }
         } else {
             String json = getContentAsString(StandardCharsets.UTF_8);
