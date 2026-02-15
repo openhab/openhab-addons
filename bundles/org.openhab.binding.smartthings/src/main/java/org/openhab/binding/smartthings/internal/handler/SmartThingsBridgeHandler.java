@@ -30,6 +30,7 @@ import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
 import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnector;
 import org.openhab.binding.smartthings.internal.api.SmartThingsNetworkConnectorImpl;
 import org.openhab.binding.smartthings.internal.discovery.SmartThingsDiscoveryService;
+import org.openhab.binding.smartthings.internal.dto.AppResponse;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
@@ -81,7 +82,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     private @Nullable OAuthClientService oAuthService;
     private @NonNullByDefault({}) SmartThingsNetworkConnector networkConnector;
     private final OAuthFactory oAuthFactory;
-    private String appId = "";
+    private String installedAppId = "";
     private @Nullable SmartThingsServlet servlet;
 
     public SmartThingsBridgeHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
@@ -213,31 +214,44 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     protected void setupApp(String callBackUri) {
-        int retry = 0;
-        boolean success = false;
-        while (!success && retry < 3) {
-            String appName = config.appName;
-            if (retry > 0) {
-                appName = appName + new Random().nextInt(65536);
+        boolean appExist = smartthingsApi.isAppExist(config.appName);
+        if (!appExist) {
+            int retry = 0;
+            boolean success = false;
+            AppResponse appResponse = null;
+            while (!success && retry < 3) {
+                String appName = config.appName;
+                if (retry > 0) {
+                    appName = "openhab" + new Random().nextInt(65536);
+                }
+
+                try {
+                    appResponse = smartthingsApi.createApp(appName, callBackUri);
+
+                    config.appName = appName;
+                    config.clientId = appResponse.oauthClientId;
+                    config.clientSecret = appResponse.oauthClientSecret;
+
+                    Configuration config = getConfig();
+                    config.put("appName", appName);
+                    config.put("clientId", appResponse.oauthClientId);
+                    config.put("clientSecret", appResponse.oauthClientSecret);
+                    this.updateConfiguration(config);
+
+                    success = true;
+                } catch (SmartThingsException ex) {
+                    logger.debug("failed to create app {}", appName);
+                }
+
+                retry++;
             }
 
-            try {
-                smartthingsApi.setupApp(appName, callBackUri);
-                config.appName = appName;
-                Configuration config = getConfig();
-                config.put("appName", appName);
-                this.updateConfiguration(config);
-                success = true;
-            } catch (SmartThingsException ex) {
-                logger.debug("failed to create app {}", appName);
+            if (!success) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unable to create app");
+                return;
             }
 
-            retry++;
-        }
-
-        if (!success) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to setup SMARTHINGS_WEBHOOK_APP");
+            logger.info("");
 
         }
     }
@@ -290,10 +304,10 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             OAuthClientService oAuthService = this.oAuthService;
             AccessTokenResponse response = oAuthService == null ? null : oAuthService.getAccessTokenResponse();
             if (response != null) {
-                // String appId = response.getExtraFields().get("installed_app_id");
-                // if (appId != null) {
-                // this.appId = appId;
-                // }
+                String installedAppId = response.getExtraFields().get("installed_app_id");
+                if (installedAppId != null) {
+                    this.installedAppId = installedAppId;
+                }
                 return response;
             }
             return null;
@@ -357,12 +371,12 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setInstalledAppId(String installedAppId) {
+        this.installedAppId = installedAppId;
     }
 
-    public String getAppId() {
-        return this.appId;
+    public String getdInstalledAppId() {
+        return this.installedAppId;
     }
 
     public SmartThingsNetworkConnector getNetworkConnector() {

@@ -24,6 +24,8 @@ public class AppRequest {
     public String description;
     public String appType;
 
+    public OAuthConfigRequest oauth;
+
     public record webhookSmartApp(String targetUrl) {
     }
 

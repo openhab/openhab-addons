@@ -199,6 +199,22 @@ public class SmartThingsApi {
         }
     }
 
+    public boolean isAppExist(String appName) {
+        try {
+            SmartThingsApp[] appList = getAllApps();
+
+            Optional<SmartThingsApp> appOptional = Arrays.stream(appList).filter(x -> appName.equals(x.appName))
+                    .findFirst();
+
+            if (appOptional.isPresent()) {
+                return true;
+            }
+        } catch (SmartThingsException ex) {
+        }
+
+        return false;
+    }
+
     public SmartThingsApp[] getAllApps() throws SmartThingsException {
         try {
             String uri = baseUrl + appEndPoint;
@@ -212,7 +228,7 @@ public class SmartThingsApi {
         }
     }
 
-    public SmartThingsApp getApp(String appId) throws SmartThingsException {
+    public @Nullable SmartThingsApp getApp(String appId) throws SmartThingsException {
         try {
             String uri = baseUrl + appEndPoint + "/" + appId;
 
@@ -238,32 +254,17 @@ public class SmartThingsApi {
             appRequest.classifications = new String[1];
             appRequest.classifications[0] = "AUTOMATION";
 
+            OAuthConfigRequest oAuthConfig = new OAuthConfigRequest();
+            oAuthConfig.clientName = "openHAB Integration";
+            oAuthConfig.scope = SmartThingsBindingConstants.SMARTTHINGS_FULL_SCOPES;
+            appRequest.oauth = oAuthConfig;
+
             String body = gson.toJson(appRequest);
             AppResponse appResponse = doRequest(HttpMethod.POST, AppResponse.class, uri, body);
 
             return appResponse;
         } catch (final Exception e) {
             throw new SmartThingsException("SmartThingsApi : Unable to create app", e);
-        }
-    }
-
-    public void createAppOAuth(String appId) throws SmartThingsException {
-        try {
-            String uri = baseUrl + appEndPoint + "/" + appId + "/oauth";
-
-            OAuthConfigRequest oAuthConfig = new OAuthConfigRequest();
-            oAuthConfig.clientName = "openHAB Integration";
-            oAuthConfig.scope = new String[1];
-            oAuthConfig.scope[0] = "r:devices:*";
-
-            String body = gson.toJson(oAuthConfig);
-            doRequest(HttpMethod.PUT, JsonObject.class, uri, body);
-
-            logger.info("");
-
-            // return appResponse;
-        } catch (final Exception e) {
-            throw new SmartThingsException("SmartThingsApi : Unable to create oauth settings", e);
         }
     }
 
@@ -336,7 +337,11 @@ public class SmartThingsApi {
 
     public boolean registerSSESubscription() {
         try {
-            String appId = bridgeHandler.getAppId();
+            String installedAppId = bridgeHandler.getdInstalledAppId();
+            if ("".equals(installedAppId)) {
+                return false;
+            }
+
             String subscriptionUri = "https://api.smartthings.com/subscriptions";
 
             SmartThingsLocation[] locationsObj = this.getAllLocations();
@@ -350,7 +355,7 @@ public class SmartThingsApi {
             EventRegistration evtReg = new EventRegistration();
             evtReg.name = "openHAB sub";
             evtReg.version = 20250122;
-            evtReg.clientDeviceId = "iapp_" + appId;
+            evtReg.clientDeviceId = "iapp_" + installedAppId;
             evtReg.subscriptionFilters = new EventRegistration.SubscriptionFilters[1];
 
             evtReg.subscriptionFilters[0] = new EventRegistration.SubscriptionFilters("LOCATIONIDS", locations,
@@ -390,8 +395,13 @@ public class SmartThingsApi {
 
     public boolean registerCallbackSubscription() {
         try {
-            String appId = bridgeHandler.getAppId();
-            String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + appId + "/subscriptions";
+            String installedAppId = bridgeHandler.getdInstalledAppId();
+
+            if ("".equals(installedAppId)) {
+                return false;
+            }
+            String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
+                    + "/subscriptions";
 
             SmartThingsLocation[] locationsObj = this.getAllLocations();
 
@@ -410,10 +420,6 @@ public class SmartThingsApi {
             for (SmartThingsDevice dev : devices) {
                 try {
                     if (!dev.locationId.equals(locations[0])) {
-                        continue;
-                    }
-
-                    if (!dev.label.contains("Petrole")) {
                         continue;
                     }
 
