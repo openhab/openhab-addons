@@ -1,0 +1,8 @@
+FTK (EEP:D5-00-01)
+ORG = 0x06
+Data_byte3= Kontakt geschlossen -> 0x09
+			Kontakt offen -> 0x08
+Data_byte2= -
+Data_byte1= -
+Data_byte0= -
+Lerntelegramm DB3..DB0: 0x00, 0x00, 0x00, 0x00
