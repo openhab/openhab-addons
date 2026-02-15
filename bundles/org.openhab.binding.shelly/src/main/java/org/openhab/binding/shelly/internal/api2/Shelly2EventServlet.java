@@ -109,7 +109,7 @@ public class Shelly2EventServlet extends WebSocketServlet {
     @Override
     public void configure(@Nullable WebSocketServletFactory factory) {
         if (factory != null) {
-            factory.getPolicy().setIdleTimeout(15000);
+            factory.getPolicy().setIdleTimeout(SHELLY_API_TIMEOUT_MS);
             factory.setCreator(new Shelly2WebSocketCreator(thingTable, webSocketClient));
             factory.register(Shelly2RpcSocket.class);
         }

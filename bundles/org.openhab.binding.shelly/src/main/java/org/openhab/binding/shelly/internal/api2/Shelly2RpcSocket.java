@@ -158,7 +158,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     }
 
     /**
-     * Web Socket is connected, send any already queued messages
+     * Web Socket is connected, get thing handler and send already queued messages.
      *
      * @param session Newly created WebSocket connection
      */
@@ -275,8 +275,9 @@ public class Shelly2RpcSocket implements WriteCallback {
     }
 
     /**
-     * Close WebSocket session and stop the WebSocketClient
-     * Clears sendQueue (NOT preserved across reconnects).
+     * Close WebSocket session and clean up.
+     * <p>
+     * Clears {@code sendQueue} (NOT preserved across reconnects).
      */
     public void disconnect() {
         Session session;
@@ -411,7 +412,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     }
 
     /**
-     * Callback for WebSocket error
+     * Callback for WebSocket error (disconnect initiated by remote).
      *
      * @param cause WebSocket error/Exception
      */
@@ -439,7 +440,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Clears session and drops queued messages.
      * Must only be called when session has been/is being closed one way or another.
      */
-    private synchronized void cleanup() {
+    private void cleanup() {
         int qLength;
         synchronized (this) {
             this.session = null;
