@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enocean"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="datagramInjector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Datagram Injector</label>
+		<description>Send-only profile based command injector for EnOcean telegrams (RS485 mode required).</description>
+
+		<config-description>
+			<parameter name="senderAddress" type="text">
+				<label>Sender Address</label>
+				<description>Virtual sender address for injector telegrams on the Eltako bus (8 hex digits, RS485 only).</description>
+			</parameter>
+			<parameter name="sendingProfileId" type="text" required="true">
+				<label>Sending Profile</label>
+				<options>
+					<option value="FTK_D5_00_01">FTK Window Contact (D5-00-01) provided as switch </option>
+					<option value="MOTION_A5_07_01">Motion Detection (A5-07-01) provided as switch </option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="suppressRepeating" type="boolean">
+				<label>Suppress Repeating of Messages</label>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
