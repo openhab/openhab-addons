@@ -341,10 +341,7 @@ public class SmartThingsServlet extends HttpServlet {
                 String appId = resultObj.confirmationData.appId();
                 String confirmUrl = resultObj.confirmationData.confirmationUrl();
 
-                bridgeHandler.setAppId(appId);
-
                 String responseSt = "{";
-
                 responseSt = responseSt + "\"targetUrl\": \"" + confirmUrl + "\"";
                 responseSt = responseSt + "}";
                 resp.getWriter().print(responseSt);

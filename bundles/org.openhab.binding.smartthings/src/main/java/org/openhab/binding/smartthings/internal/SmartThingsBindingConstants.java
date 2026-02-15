@@ -44,6 +44,9 @@ public class SmartThingsBindingConstants {
      * SmartThings scopes needed by this binding to work.
      */
 
+    public static final String[] SMARTTHINGS_FULL_SCOPES = { "r:devices:*", "w:devices:*", "x:devices:*", "r:hubs:*",
+            "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*" };
+
     public static final String SMARTTHINGS_SCOPES = "controller:stCli";
 
     public static final String CLIENT_ID = "d18cf96e-c626-4433-bf51-ddbb10c5d1ed";
