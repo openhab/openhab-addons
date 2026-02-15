@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,6 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public VeSyncHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
-        super();
         this.httpClientFactory = httpClientFactory;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;

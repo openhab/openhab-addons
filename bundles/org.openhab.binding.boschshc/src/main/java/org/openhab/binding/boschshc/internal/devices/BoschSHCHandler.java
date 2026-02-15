@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -389,8 +389,9 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
-     * Updates the state of a device service.
-     * Sets the status of the device to offline if setting the state fails.
+     * Updates the state of a device service using a HTTP <code>PUT</code> request.
+     * <p>
+     * Sets the status of the device to <code>OFFLINE</code> if setting the state fails.
      *
      * @param <TService> Type of service.
      * @param <TState> Type of service state.
@@ -401,7 +402,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             TService service, TState state) {
         try {
             service.setState(state);
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
                     "Error while trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
         } catch (InterruptedException e) {
@@ -411,6 +412,16 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Updates the state of a device service using a HTTP <code>POST</code> request.
+     * <p>
+     * Sets the status of the device to <code>OFFLINE</code> if setting the state fails.
+     * 
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service to set state for.
+     * @param state State to set.
+     */
     protected <TService extends AbstractStatelessBoschSHCDeviceService<TState>, TState extends BoschSHCServiceState> void postState(
             TService service, TState state) {
         try {
@@ -427,7 +438,8 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Lets a service handle a received command.
-     * Sets the status of the device to offline if handling the command fails.
+     * <p>
+     * Sets the status of the device to <code>OFFLINE</code> if handling the command fails.
      *
      * @param <TService> Type of service.
      * @param <TState> Type of service state.
@@ -452,7 +464,8 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     /**
      * Requests a service to refresh its state.
-     * Sets the device offline if request fails.
+     * <p>
+     * Sets the device <code>OFFLINE</code> if request fails.
      *
      * @param <TService> Type of service.
      * @param <TState> Type of service state.

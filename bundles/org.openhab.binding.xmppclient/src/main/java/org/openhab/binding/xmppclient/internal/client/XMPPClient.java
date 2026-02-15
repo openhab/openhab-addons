@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -173,7 +173,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         }
         try {
             EntityBareJid jid = JidCreate.entityBareFrom(to);
-            MultiUserChat chat = multiUserChatManager.getMultiUserChat(jid);
+            MultiUserChat chat = chatManager.getMultiUserChat(jid);
 
             if (!chat.isJoined()) {
                 chat.join(Resourcepart.from(nickname));

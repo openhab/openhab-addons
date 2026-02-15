@@ -59,12 +59,12 @@ Linky telemeters add a new `Standard` mode with more detailed information but st
 
 Standard mode doesn't depend on the pricing options, but it adds some useful information for electricity producers.
 
-| Thing type                                 | Connection   | Producer mode |
-|--------------------------------------------|--------------|--------------|
-| lsmm_electricitymeter                      | single-phase |              |
-| lsmm_prod_electricitymeter                 | single-phase | [x]          |
-| lstm_electricitymeter                      | three-phase  |              |
-| lstm_prod_electricitymeter                 | three-phase  | [x]          |
+| Thing type                 | Connection   | Producer mode |
+|----------------------------|--------------|---------------|
+| lsmm_electricitymeter      | single-phase |               |
+| lsmm_prod_electricitymeter | single-phase | [x]           |
+| lstm_electricitymeter      | three-phase  |               |
+| lstm_prod_electricitymeter | three-phase  | [x]           |
 
 ## Bridge
 
@@ -135,39 +135,39 @@ For D2L-connected meters, you will need to enter the appKey and ivKey for decryp
 
 Channel availability depends on the electricity connection (single or three-phase) and on the pricing mode (Base, HCHP, EJP or Tempo).
 
-| Channel  | Type                      | Description                                              | Connection | Mode  |
-|----------|---------------------------|----------------------------------------------------------|--------|-------|
-| isousc   | `Number:ElectricCurrent`  | Subscribed electric current                              | All    | All   |
-| ptec     | `String`                  | Current pricing period                                   | All    | All   |
-| imax     | `Number:ElectricCurrent`  | Maximum consumed electric current                        | Single-phase | All   |
-| imax1    | `Number:ElectricCurrent`  | Maximum consumed electric current on phase 1             | Three-phase  | All   |
-| imax2    | `Number:ElectricCurrent`  | Maximum consumed electric current on phase 2             | Three-phase  | All   |
-| imax3    | `Number:ElectricCurrent`  | Maximum consumed electric current on phase 3             | Three-phase  | All   |
-| adps     | `Number:ElectricCurrent`  | Excess electric current warning                          | Single-phase | All   |
-| adir1    | `Number:ElectricCurrent`  | Excess electric current on phase 1 warning               | Three-phase  | All   |
-| adir2    | `Number:ElectricCurrent`  | Excess electric current on phase 2 warning               | Three-phase  | All   |
-| adir3    | `Number:ElectricCurrent`  | Excess electric current on phase 3 warning               | Three-phase  | All   |
-| iinst    | `Number:ElectricCurrent`  | Instantaneous electric current                           | Single-phase | All   |
-| iinst1   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 1                | Three-phase  | All   |
-| iinst2   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 2                | Three-phase  | All   |
-| iinst3   | `Number:ElectricCurrent`  | Instantaneous electric current on phase 3                | Three-phase  | All   |
-| ppot     | `String`                  | Electrical potential presence                            | Three-phase  | All   |
-| pmax     | `Number:Energy`           | Maximum consumed electric power on all phases            | Three-phase  | All   |
-| papp     | `Number:Power`            | Instantaneous apparent power                             | Three-phase, single-phase (ICC evolution only) | All   |
-| hhphc    | `String`                  | Pricing schedule group                                   | All    | HCHP  |
-| hchc     | `Number:Energy`           | Total consumed energy at low rate pricing                | All    | HCHP  |
-| hchp     | `Number:Energy`           | Total consumed energy at high rate pricing               | All    | HCHP  |
-| base     | `Number:Energy`           | Total consumed energy                                    | All    | Base  |
-| ejphn    | `Number:Energy`           | Total consumed energy at low rate pricing                | All    | EJP   |
-| ejphpm   | `Number:Energy`           | Total consumed energy at high rate pricing               | All    | EJP   |
-| bbrhcjb  | `Number:Energy`           | Total consumed energy at low rate pricing on blue days   | All    | Tempo |
-| bbrhpjb  | `Number:Energy`           | Total consumed energy at high rate pricing on blue days  | All    | Tempo |
-| bbrhcjw  | `Number:Energy`           | Total consumed energy at low rate pricing on white days  | All    | Tempo |
-| bbrhpjw  | `Number:Energy`           | Total consumed energy at high rate pricing on white days | All    | Tempo |
-| bbrhcjr  | `Number:Energy`           | Total consumed energy at low rate pricing on red days    | All    | Tempo |
-| bbrhpjr  | `Number:Energy`           | Total consumed energy at high rate pricing on red days   | All    | Tempo |
-| pejp     | `Number:Time`             | Prior notice to EJP start                                | All    | EJP   |
-| demain   | `String`                  | Following day color                                      | All    | Tempo |
+| Channel | Type                     | Description                                              | Connection                                     | Mode  |
+|---------|--------------------------|----------------------------------------------------------|------------------------------------------------|-------|
+| isousc  | `Number:ElectricCurrent` | Subscribed electric current                              | All                                            | All   |
+| ptec    | `String`                 | Current pricing period                                   | All                                            | All   |
+| imax    | `Number:ElectricCurrent` | Maximum consumed electric current                        | Single-phase                                   | All   |
+| imax1   | `Number:ElectricCurrent` | Maximum consumed electric current on phase 1             | Three-phase                                    | All   |
+| imax2   | `Number:ElectricCurrent` | Maximum consumed electric current on phase 2             | Three-phase                                    | All   |
+| imax3   | `Number:ElectricCurrent` | Maximum consumed electric current on phase 3             | Three-phase                                    | All   |
+| adps    | `Number:ElectricCurrent` | Excess electric current warning                          | Single-phase                                   | All   |
+| adir1   | `Number:ElectricCurrent` | Excess electric current on phase 1 warning               | Three-phase                                    | All   |
+| adir2   | `Number:ElectricCurrent` | Excess electric current on phase 2 warning               | Three-phase                                    | All   |
+| adir3   | `Number:ElectricCurrent` | Excess electric current on phase 3 warning               | Three-phase                                    | All   |
+| iinst   | `Number:ElectricCurrent` | Instantaneous electric current                           | Single-phase                                   | All   |
+| iinst1  | `Number:ElectricCurrent` | Instantaneous electric current on phase 1                | Three-phase                                    | All   |
+| iinst2  | `Number:ElectricCurrent` | Instantaneous electric current on phase 2                | Three-phase                                    | All   |
+| iinst3  | `Number:ElectricCurrent` | Instantaneous electric current on phase 3                | Three-phase                                    | All   |
+| ppot    | `String`                 | Electrical potential presence                            | Three-phase                                    | All   |
+| pmax    | `Number:Energy`          | Maximum consumed electric power on all phases            | Three-phase                                    | All   |
+| papp    | `Number:Power`           | Instantaneous apparent power                             | Three-phase, single-phase (ICC evolution only) | All   |
+| hhphc   | `String`                 | Pricing schedule group                                   | All                                            | HCHP  |
+| hchc    | `Number:Energy`          | Total consumed energy at low rate pricing                | All                                            | HCHP  |
+| hchp    | `Number:Energy`          | Total consumed energy at high rate pricing               | All                                            | HCHP  |
+| base    | `Number:Energy`          | Total consumed energy                                    | All                                            | Base  |
+| ejphn   | `Number:Energy`          | Total consumed energy at low rate pricing                | All                                            | EJP   |
+| ejphpm  | `Number:Energy`          | Total consumed energy at high rate pricing               | All                                            | EJP   |
+| bbrhcjb | `Number:Energy`          | Total consumed energy at low rate pricing on blue days   | All                                            | Tempo |
+| bbrhpjb | `Number:Energy`          | Total consumed energy at high rate pricing on blue days  | All                                            | Tempo |
+| bbrhcjw | `Number:Energy`          | Total consumed energy at low rate pricing on white days  | All                                            | Tempo |
+| bbrhpjw | `Number:Energy`          | Total consumed energy at high rate pricing on white days | All                                            | Tempo |
+| bbrhcjr | `Number:Energy`          | Total consumed energy at low rate pricing on red days    | All                                            | Tempo |
+| bbrhpjr | `Number:Energy`          | Total consumed energy at high rate pricing on red days   | All                                            | Tempo |
+| pejp    | `Number:Time`            | Prior notice to EJP start                                | All                                            | EJP   |
+| demain  | `String`                 | Following day color                                      | All                                            | Tempo |
 
 ### Standard TIC Mode
 
@@ -289,17 +289,17 @@ These channels are available on the following telemeters:
 - lstm_electricitymeter
 - lsmt_prod_electricitymeter
 
-| Channel                                 | Type                      | Description                                                                       |
-|-----------------------------------------|---------------------------|-----------------------------------------------------------------------------------|
-| threePhasedLSMGroup#irms_X_             | `Number:ElectricCurrent`  | RMS Current on phase _X, X_ in {2,3}                                              |
-| threePhasedLSMGroup#urms_X_             | `Number:Potential`        | RMS Voltage on phase _X, X_ in {2,3}                                              |
-| threePhasedLSMGroup#umoy_X_             | `Number:Potential`        | Mean Voltage on phase _X, X_ in {2,3}                                             |
-| threePhasedLSMGroup#sinsts_X_           | `Number:Power`            | Instantaneous withdrawn apparent power on phase _X, X_ in {1,2,3}                 |
-| threePhasedLSMGroup#smaxsn_X_           | `Number:Power`            | Maximum withdrawn apparent power of the day on phase _X, X_ in {1,2,3}            |
-| commonLSMGroup#umoy_X_Date              | `DateTime`                | Timestamp of UMOY_X_ value, _X_ in {2,3}                                          |
-| threePhasedLSMGroup#smaxsn_X_Minus1     | `Number:Power`            | Maximum withdrawn apparent power on the previous day on phase _X, X_ in {1,2,3}   |
-| threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`                | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                      |
-| threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`                | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                    |
+| Channel                                 | Type                     | Description                                                                     |
+|-----------------------------------------|--------------------------|---------------------------------------------------------------------------------|
+| threePhasedLSMGroup#irms_X_             | `Number:ElectricCurrent` | RMS Current on phase _X, X_ in {2,3}                                            |
+| threePhasedLSMGroup#urms_X_             | `Number:Potential`       | RMS Voltage on phase _X, X_ in {2,3}                                            |
+| threePhasedLSMGroup#umoy_X_             | `Number:Potential`       | Mean Voltage on phase _X, X_ in {2,3}                                           |
+| threePhasedLSMGroup#sinsts_X_           | `Number:Power`           | Instantaneous withdrawn apparent power on phase _X, X_ in {1,2,3}               |
+| threePhasedLSMGroup#smaxsn_X_           | `Number:Power`           | Maximum withdrawn apparent power of the day on phase _X, X_ in {1,2,3}          |
+| commonLSMGroup#umoy_X_Date              | `DateTime`               | Timestamp of UMOY_X_ value, _X_ in {2,3}                                        |
+| threePhasedLSMGroup#smaxsn_X_Minus1     | `Number:Power`           | Maximum withdrawn apparent power on the previous day on phase _X, X_ in {1,2,3} |
+| threePhasedLSMGroup#smaxs_X_nDate       | `DateTime`               | Timestamp of SMAXSN_X_ value, _X_ in {1,2,3}                                    |
+| threePhasedLSMGroup#smaxsn_X_Minus1Date | `DateTime`               | Timestamp of SMAXSN_X_-1 value, _X_ in {1,2,3}                                  |
 
 #### Producer Only Channels
 
@@ -308,19 +308,19 @@ These channels are available on the following telemeters:
 - lsmm_prod_electricitymeter
 - lsmt_prod_electricitymeter
 
-| Channel                           | Type            | Description                                              |
-|-----------------------------------|-----------------|----------------------------------------------------------|
-| producerLSMGroup#eait             | `Number:Energy` | Total active energy injected                             |
-| producerLSMGroup#erq_X_           | `Number:Energy` | Total reactive energy on index _X, X_ in {1,...,4}       |
-| producerLSMGroup#sinsti           | `Number:Energy` | Instantaneous injected apparent power                    |
-| producerLSMGroup#smaxin           | `Number:Power`  | Maximum injected apparent power of the day               |
-| producerLSMGroup#smaxinMinus1     | `Number:Power`  | Maximum injected apparent power of the previous day      |
-| producerLSMGroup#ccain            | `Number:Power`  | Injected active charge point N                           |
-| producerLSMGroup#ccainMinus1      | `Number:Power`  | Injected active charge point N-1                         |
-| producerLSMGroup#smaxinDate       | `DateTime`      | Timestamp of SMAXIN value                                |
-| producerLSMGroup#smaxinMinus1Date | `DateTime`      | Timestamp of SMAXIN-1 value                              |
-| producerLSMGroup#ccainDate        | `DateTime`      | Timestamp of CCAIN value                                 |
-| producerLSMGroup#ccainMinus1Date  | `DateTime`      | Timestamp of CCAIN-1 value                               |
+| Channel                           | Type            | Description                                         |
+|-----------------------------------|-----------------|-----------------------------------------------------|
+| producerLSMGroup#eait             | `Number:Energy` | Total active energy injected                        |
+| producerLSMGroup#erq_X_           | `Number:Energy` | Total reactive energy on index _X, X_ in {1,...,4}  |
+| producerLSMGroup#sinsti           | `Number:Energy` | Instantaneous injected apparent power               |
+| producerLSMGroup#smaxin           | `Number:Power`  | Maximum injected apparent power of the day          |
+| producerLSMGroup#smaxinMinus1     | `Number:Power`  | Maximum injected apparent power of the previous day |
+| producerLSMGroup#ccain            | `Number:Power`  | Injected active charge point N                      |
+| producerLSMGroup#ccainMinus1      | `Number:Power`  | Injected active charge point N-1                    |
+| producerLSMGroup#smaxinDate       | `DateTime`      | Timestamp of SMAXIN value                           |
+| producerLSMGroup#smaxinMinus1Date | `DateTime`      | Timestamp of SMAXIN-1 value                         |
+| producerLSMGroup#ccainDate        | `DateTime`      | Timestamp of CCAIN value                            |
+| producerLSMGroup#ccainMinus1Date  | `DateTime`      | Timestamp of CCAIN-1 value                          |
 
 ## Full Example
 
@@ -388,12 +388,12 @@ Bridge teleinfo:d2lcontroller:teleinfoD2L "D2lBridge" [ listenningPort="7845"] {
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
 
-| Serial interface | Power Energy Meter model    | Mode(s)                   | TIC mode |
-|------------------|-----------------------------|---------------------------|----------|
-| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Actaris A14C5 | Single-phase HCHP & Base | Historical |
-| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Sagem S10C4 | Single-phase HCHP | Historical |
-| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html) | Linky | Single-phase HCHP | Standard |
-| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Linky | Three-phase TEMPO | Standard |
+| Serial interface                                                                                                                                                  | Power Energy Meter model | Mode(s)                  | TIC mode   |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|--------------------------|------------|
+| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html)                                             | Actaris A14C5            | Single-phase HCHP & Base | Historical |
+| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Sagem S10C4              | Single-phase HCHP        | Historical |
+| GCE Electronics USB Teleinfo module [(more details)](https://gce-electronics.com/fr/usb/655-module-teleinfo-usb.html)                                             | Linky                    | Single-phase HCHP        | Standard   |
+| Cartelectronic USB Teleinfo modem [(more details)](https://www.cartelectronic.fr/teleinfo-compteur-enedis/17-teleinfo-1-compteur-usb-rail-din-3760313520028.html) | Linky                    | Three-phase TEMPO        | Standard   |
 
 You can also build a Teleinfo modem by yourself (see [this example](http://bernard.lefrancois.free.fr)).
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConf
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
-import org.openhab.binding.shelly.internal.api2.ShellyBluEventDataDTO.Shelly2NotifyBluEventData;
+import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -136,7 +136,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_LPUSH = "long_push";
     public static final String SHELLY2_EVENT_SLPUSH = "short_long_push";
     public static final String SHELLY2_EVENT_LSPUSH = "long_short_push";
-    public static final String SHELLY2_EVENT_HOLDING = "hold";
+    public static final String SHELLY2_EVENT_HOLDING = "holding";
 
     public static final String SHELLY2_EVENT_SLEEP = "sleep";
     public static final String SHELLY2_EVENT_CFGCHANGED = "config_changed";
@@ -146,12 +146,6 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_RESTART = "scheduled_restart";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
-
-    // BLU events
-    public static final String SHELLY2_BLU_GWSCRIPT = "oh-blu-scanner.js";
-    public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
-    public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
-    public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
 
     // Error Codes
     public static final String SHELLY2_ERROR_OVERPOWER = "overpower";
@@ -309,7 +303,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("factory_reset")
             public Boolean factoryReset;
             @SerializedName("report_thr")
-            public Double reportTreshold; // only for type analog
+            public Double reportThreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {

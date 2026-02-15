@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Marker interface for all planets.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface Planet {
 }

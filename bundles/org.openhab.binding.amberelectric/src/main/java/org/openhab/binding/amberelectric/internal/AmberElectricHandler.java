@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,7 +118,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     }
 
     private void poll() {
-        if (isEstimate == true) {
+        if (isEstimate) {
             try {
                 logger.debug("CurrentPrice is estimated, polling for state");
                 pollStatus();
@@ -246,7 +246,7 @@ public class AmberElectricHandler extends BaseThingHandler {
                 }
             }
             // Only update TimeSeries once price has been confirmed
-            if (isEstimate == false) {
+            if (!isEstimate) {
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE, elecTimeSeries);
                 sendTimeSeries(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE, feedInTimeSeries);
             }

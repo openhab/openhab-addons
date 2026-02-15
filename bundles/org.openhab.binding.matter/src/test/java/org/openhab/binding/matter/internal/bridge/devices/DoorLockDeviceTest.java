@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.Map;
 
@@ -86,34 +87,34 @@ class DoorLockDeviceTest {
     @Test
     void testHandleMatterEventLockState() {
         switchDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.value));
-        verify(switchItem).send(OnOffType.ON);
+                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
+        verify(switchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         switchDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.value));
-        verify(switchItem).send(OnOffType.OFF);
+                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
+        verify(switchItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventLockStateGroup() {
         groupDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.value));
-        verify(groupItem).send(OnOffType.ON);
+                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
+        verify(groupItem).send(OnOffType.ON, MATTER_SOURCE);
 
         groupDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.value));
-        verify(groupItem).send(OnOffType.OFF);
+                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
+        verify(groupItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testUpdateState() {
         switchDevice.updateState(switchItem, OnOffType.ON);
         verify(client).setEndpointState(any(), eq("doorLock"), eq("lockState"),
-                eq(DoorLockCluster.LockStateEnum.LOCKED.value));
+                eq(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
 
         switchDevice.updateState(switchItem, OnOffType.OFF);
         verify(client).setEndpointState(any(), eq("doorLock"), eq("lockState"),
-                eq(DoorLockCluster.LockStateEnum.UNLOCKED.value));
+                eq(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
     }
 
     @Test
@@ -123,7 +124,7 @@ class DoorLockDeviceTest {
 
         Map<String, Object> doorLockMap = options.clusters.get("doorLock");
         assertNotNull(doorLockMap);
-        assertEquals(DoorLockCluster.LockStateEnum.LOCKED.value, doorLockMap.get("lockState"));
+        assertEquals(DoorLockCluster.LockStateEnum.LOCKED.getValue(), doorLockMap.get("lockState"));
     }
 
     @Test
@@ -133,6 +134,6 @@ class DoorLockDeviceTest {
 
         Map<String, Object> doorLockMap = options.clusters.get("doorLock");
         assertNotNull(doorLockMap);
-        assertEquals(DoorLockCluster.LockStateEnum.UNLOCKED.value, doorLockMap.get("lockState"));
+        assertEquals(DoorLockCluster.LockStateEnum.UNLOCKED.getValue(), doorLockMap.get("lockState"));
     }
 }

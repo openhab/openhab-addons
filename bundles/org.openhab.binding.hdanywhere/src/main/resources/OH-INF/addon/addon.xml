@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>openHAB HDanywhere Binding</name>
-	<description>This is the binding for HDanywhere HDMI Matrices</description>
+	<name>HDanywhere Binding</name>
+	<description>This is the binding for HDanywhere HDMI matrices.</description>
 	<connection>local</connection>
 
 </addon:addon>

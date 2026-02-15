@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.FilterMaintenanceAccessory;
+import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterChangeIndicationEnum;
@@ -64,5 +65,10 @@ public class HomekitFilterMaintenanceImpl extends AbstractHomekitAccessoryImpl i
     @Override
     public void unsubscribeFilterChangeIndication() {
         unsubscribe(FILTER_CHANGE_INDICATION);
+    }
+
+    @Override
+    public boolean isLinkable(HomekitAccessory parentAccessory) {
+        return parentAccessory instanceof HomekitAirPurifierImpl;
     }
 }

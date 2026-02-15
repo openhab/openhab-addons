@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class ThermostatDevice extends BaseDevice {
                         if (item instanceof NumberItem numberItem) {
                             QuantityType<Temperature> t = ValueUtils
                                     .valueToTemperature(Float.valueOf(data.toString()).intValue());
-                            numberItem.send(t);
+                            numberItem.send(t, MATTER_SOURCE);
                         }
                         break;
                     case ThermostatCluster.ATTRIBUTE_SYSTEM_MODE:
@@ -76,11 +76,11 @@ public class ThermostatDevice extends BaseDevice {
                             int mode = ((Double) data).intValue();
                             String mappedMode = systemModeMapper.toCustomValue(mode);
                             if (item instanceof NumberItem numberItem) {
-                                numberItem.send(new DecimalType(mappedMode));
+                                numberItem.send(new DecimalType(mappedMode), MATTER_SOURCE);
                             } else if (item instanceof StringItem stringItem) {
-                                stringItem.send(new StringType(mappedMode));
+                                stringItem.send(new StringType(mappedMode), MATTER_SOURCE);
                             } else if (item instanceof SwitchItem switchItem) {
-                                switchItem.send(OnOffType.from(mode > 0));
+                                switchItem.send(OnOffType.from(mode > 0), MATTER_SOURCE);
                             }
                         } catch (SystemModeMappingException e) {
                             logger.debug("Could not convert {} to custom value", data);
@@ -120,7 +120,7 @@ public class ThermostatDevice extends BaseDevice {
                         break;
                     case ThermostatCluster.ATTRIBUTE_SYSTEM_MODE:
                         try {
-                            int mode = systemModeMapper.fromCustomValue(state.toString()).value;
+                            int mode = systemModeMapper.fromCustomValue(state.toString()).getValue();
                             setEndpointState(clusterName, attributeName, mode);
                         } catch (SystemModeMappingException e) {
                             logger.debug("Could not convert {} to matter value", state.toString());
@@ -166,7 +166,7 @@ public class ThermostatDevice extends BaseDevice {
                         case ThermostatCluster.ATTRIBUTE_SYSTEM_MODE:
                             try {
                                 systemModeMapper.initializeMappings(metadata.config);
-                                int mode = systemModeMapper.fromCustomValue(state.toString()).value;
+                                int mode = systemModeMapper.fromCustomValue(state.toString()).getValue();
                                 attributeMap.put(attribute, mode);
                             } catch (SystemModeMappingException e) {
                                 logger.debug("Could not convert {} to matter value", state.toString());
@@ -234,7 +234,7 @@ public class ThermostatDevice extends BaseDevice {
 
                 try {
                     ThermostatCluster.SystemModeEnum mode = ThermostatCluster.SystemModeEnum.valueOf(customKey);
-                    intToCustomMap.put(mode.value, customValue);
+                    intToCustomMap.put(mode.getValue(), customValue);
                     customToEnumMap.put(customValue, mode);
                 } catch (IllegalArgumentException e) {
                     // ignore unknown values

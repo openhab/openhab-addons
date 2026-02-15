@@ -70,7 +70,7 @@ The binding also supports the discovery of devices via the cloud. This may be us
 
 ## Thing Configuration
 
-Each Xiaomi device (thing) needs the IP address and token configured to be able to communicate. See discovery for details.
+Each Xiaomi device (Thing) needs the IP address and token configured to be able to communicate. See discovery for details.
 Optional configuration is the refresh interval and the deviceID. Note that the deviceID is automatically retrieved when it is left blank.
 The configuration for model is automatically retrieved from the device in normal operation.
 However, for devices that are unsupported, you may override the value and try to use a model string from a similar device to experimentally use your device with the binding.
@@ -117,7 +117,7 @@ There are 3 ways to get unsupported devices working:
 ## Substitute model for unsupported devices
 
 Replace the model with the model which is already supported.
-For this, first remove your unsupported thing. Manually add a miio:basic thing.
+For this, first remove your unsupported Thing. Manually add a miio:basic Thing.
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
 Look at the openHAB forum, or the openHAB GitHub repository or this readme for the modelId of similar devices.
@@ -128,7 +128,7 @@ The unsupported device has a `(experimental) Create channels for new/unsupported
 It will test all properties are in the spec for your device, which may take few minutes.
 A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 The experimental database file is saved to the conf/misc/miio folder (see below chapter).
-The thing will go offline and will come back online as basic device, supporting the found channels.
+The Thing will go offline and will come back online as basic device, supporting the found channels.
 If this does not happen automatically, restart the binding or restart openHAB in order to have the new database file picked up.
 
 Please validate and feedback if all channels and actions are working, and share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
@@ -138,7 +138,7 @@ Please validate and feedback if all channels and actions are working, and share 
 The unsupported device has a test channel with switch. When switching on, all known properties are tested, this may take few minutes.
 A test report will be shown in the log and is saved in the `userdata/miio` folder with a filename `test-[your model]-[timestamp].txt`.
 If supported properties are found, an experimental database file is saved to the conf/misc/miio folder (see below chapter).
-The thing will go offline and will come back online as basic device, supporting the found channels.
+The Thing will go offline and will come back online as basic device, supporting the found channels.
 The database file may need to be modified to display the right channel names.
 After validation, please share the logfile and json files on the openHAB forum or the openHAB GitHub to build future support for this model.
 
@@ -183,7 +183,7 @@ Alternatively as described above, double check for multiple connections for sing
 _Your device is on a different subnet?_
 This is in most cases not working.
 Firmware of the device don't accept commands coming from other subnets.
-Set the communication in the thing configuration to 'cloud'.
+Set the communication in the Thing configuration to 'cloud'.
 
 _Cloud connectivity is not working_
 The most common problem is a wrong or missing userId/password. Update your Xiaomi cloud userId & password in the [miio binding configuration screen](#binding-configuration).
@@ -273,7 +273,7 @@ The way to customize this is to create a file with the name `mapConfig.json` in 
 If the binding finds this file it will read the map rendering preferences from there.
 If the file is available but invalid json, it will create a new file with all the default values for you to customize.
 This allows you to control the colors, if logo is displayed, if and what text is rendered etc.
-To (re-)read the file either restart openHAB, restart the binding or alternatively edit the thing and make (any) minor change.
+To (re-)read the file either restart openHAB, restart the binding or alternatively edit the Thing and make (any) minor change.
 Note, cropping is disabled (hence showing like the maps in OH3.1 and earlier) for any `cropBorder` value < 0.
 Note, not all the values need to be in the json file, e.g. a subset of the parameters also works, the parameters not in the `mapConfig.json` will take the default values.
 

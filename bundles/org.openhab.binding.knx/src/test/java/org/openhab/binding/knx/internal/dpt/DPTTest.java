@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,13 +36,13 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.util.ColorUtil;
 
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator4ByteUnsigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator64BitSigned;
-import tuwien.auto.calimero.dptxlator.DPTXlator8BitSigned;
-import tuwien.auto.calimero.dptxlator.DptXlator2ByteSigned;
+import io.calimero.dptxlator.DPTXlator2ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator4ByteFloat;
+import io.calimero.dptxlator.DPTXlator4ByteSigned;
+import io.calimero.dptxlator.DPTXlator4ByteUnsigned;
+import io.calimero.dptxlator.DPTXlator64BitSigned;
+import io.calimero.dptxlator.DPTXlator8BitSigned;
+import io.calimero.dptxlator.DptXlator2ByteSigned;
 
 /**
  *

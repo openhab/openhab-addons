@@ -21,7 +21,7 @@ Tested with Kostal Inverter PIKO 10-20, PIKO NEW GENERATION.
 ### Third generation devices (PIKO IQ / PLENTICORE plus)
 
 This implementation was tested for the current KOSTAL PIKO PLENTICORE plus and PIKO IQ devices.
-All of these devices contain the same communication board (SCB = **S**mart**C**onnection**B**oard)
+All of these devices contain the same communication board (SCB = **S**mart **C**onnection **B**oard)
 
 Currently supported things are:
 
@@ -36,11 +36,11 @@ Currently supported things are:
 - PLENTICORE plus 8.5 (with or without battery attached)
 - PLENTICORE plus 10.0 (with or without battery attached)
 
-Others may be supported (like future devices using the same SCB or offering the same Web API, branded OEM devices, ...), but they were not tested!
+Others may be supported (like future devices using the same SCB or offering the same Web API, branded OEM devices, etc.), but they were not tested!
 
-Kostal bindings to third generation devices require Java's strong cryptography to be enabled in order to establish connections. In case you are allowed to use
-strong cryptography in your country, you can achieve this by modifying the $JAVA_HOME/jre/lib/security/java.security file (find the line _crypto.policy=limited_ and set it to _unlimited_).
-If you're using the official openHAB docker image you may also enable Java's strong cryptography by specifying an environment variable _CRYPTO_POLICY="unlimited"_.
+Kostal bindings to third-generation devices require Java's strong cryptography to be enabled in order to establish connections. In case you are allowed to use
+strong cryptography in your country, you can achieve this by modifying the `$JAVA_HOME/jre/lib/security/java.security` file (find the line `crypto.policy=limited` and set it to `unlimited`).
+If you're using the official openHAB Docker image, you may also enable Java's strong cryptography by specifying an environment variable `CRYPTO_POLICY="unlimited"`.
 
 ## Discovery
 
@@ -113,7 +113,7 @@ None
 | device-local-battery-temperature         | Number:Temperature       | Battery current temperature                                                      |     R      |
 | device-local-loginterval                 | Number:Time              | Value for loginterval                                                            |     R      |
 | device-local-s0-inpulse-cnt              | Number:Dimensionless     | S0-pulse counter                                                                 |     R      |
-| statistic-own-cons-rate-total            | Number:Dimensionless     | Total own comsumption rate                                                       |     R      |
+| statistic-own-cons-rate-total            | Number:Dimensionless     | Total own consumption rate                                                       |     R      |
 | statistic-autonomy-degree-total          | Number:Dimensionless     | Total autonomy degree                                                            |     R      |
 | device-local-battery-voltage             | Number:ElectricPotential | Battery current voltage                                                          |     R      |
 | device-local-bat-state-of-charge         | Number:Dimensionless     | Battery current charge state                                                     |     R      |
@@ -127,7 +127,7 @@ The following Channels are writeable
 
 | Channel Type ID                          | Item Type                | Description                                                                      | Read Write |
 |------------------------------------------|--------------------------|----------------------------------------------------------------------------------|:----------:|
-| device-local-battery-usage-consumption-set| String                  | Battery usage consumption level for power-consumption from battery, value = 100 (W)                                                                                                                                                         |     W      |
+| device-local-battery-usage-consumption-set| String                  | Battery usage consumption level for power consumption from battery, value = 100 (W)                                                                                                                                                         |     W      |
 | device-local-battery-usage-strategy-set  | String                   | Battery usage strategy, Value = 1 = Automatic, Value = 2 = Automatic economical  |     W      |
 | device-local-smart-battery-control-set   | Switch                   | Smart battery control, Value = OFF / ON                                          |     W      |
 | device-local-battery-charge-time-from-set| String                   | Battery charge time from, Value = 00:00                                          |     W      |
@@ -143,7 +143,7 @@ The following Channels are writeable
 | deviceLocalDCPower                       | Number:Energy            | Current DC power of the inverter                                                 |      R     |
 | deviceLocalHomeconsumptionFromBattery    | Number:Energy            | Current home consumption obtained from the battery                               |      R     |
 | deviceLocalHomeconsumptionFromGrid       | Number:Energy            | Current home consumption obtained from the grid                                  |      R     |
-| deviceLocalOwnconsumption                | Number:Energy            | Current own comsumption                                                          |      R     |
+| deviceLocalOwnconsumption                | Number:Energy            | Current own consumption                                                          |      R     |
 | deviceLocalHomeconsumptionFromPV         | Number:Energy            | Current home consumption obtained from photovoltaic                              |      R     |
 | deviceLocalHomeconsumptionTotal          | Number:Energy            | Current total homeconsumption                                                    |      R     |
 | deviceLocalLimitEVUAbsolute              | Number:Energy            | Permitted feed-in quantity as absolute value as specified by the energy supplier |      R     |
@@ -221,7 +221,7 @@ demo.things
 Thing kostalinverter:kostalinverter:inverter [ url="http://192.168.0.128" ]
 ```
 
-If the thing goes online then the connection to the web interface is successful.
+If the Thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
 You optionally can define a `userName` and a `password` parameter if the access to the webinterface is protected and a desired `refreshInterval` (the time interval between updates, default 60 seconds).
 
@@ -260,7 +260,7 @@ The refresh interval should be chosen wisely.
 To small interval may led to high workload for the inverter.
 It is recommended to use an interval of 30 seconds.
 
-Full sample of thing configuration:
+Full sample of Thing configuration:
 
 ```java
 Thing kostalinverter:PLENTICOREPLUS100WITHBATTERY:MyPlentiCore100WithBattery [ url = "192.168.1.2", userPassword="myPassword", refreshInternalInSeconds="30"]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,7 @@ public class HueEmulationConfig {
      */
     public @Nullable String discoveryIp;
     public int discoveryHttpPort = 0;
+    public boolean useSemanticModel = false;
     /** Comma separated list of tags */
     public String restrictToTagsSwitches = "Switchable";
     /** Comma separated list of tags */

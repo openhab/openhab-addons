@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.fronius.internal.handler;
 
 import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,29 +96,29 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateChannels();
     }
 
-    private void initializeBatteryControl(String hostname, @Nullable String username, @Nullable String password) {
+    private void initializeBatteryControl(String scheme, String hostname, @Nullable String username,
+            @Nullable String password) {
         if (username == null || password == null) {
+            logger.info(
+                    "Credentials are not configured in the bridge. Battery control is not available for Thing '{}'.",
+                    thing.getUID());
             return;
         }
-
-        String apiPrefix = "";
 
         InverterInfo localInverterInfo = inverterInfo;
         if (localInverterInfo != null) {
             String firmwareVersion = localInverterInfo.firmware();
-            int lastDotIndex = firmwareVersion.lastIndexOf('.');
-            float version = Float.parseFloat(firmwareVersion.substring(0, lastDotIndex));
-            if (version >= 1.36) {
-                apiPrefix = "/api";
-            } else {
-                logger.warn("Fronius Symo Inverter firmware version {} is not supported for battery control.",
-                        firmwareVersion);
+            if (firmwareVersion != null) {
+                int hyphenIndex = firmwareVersion.indexOf('-');
+                String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
+                SemverVersion version = SemverVersion.fromString(versionString);
+                batteryControl = new FroniusBatteryControl(httpClient, version, scheme, hostname, username, password);
                 return;
             }
         }
-
-        batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + apiPrefix), username,
-                password);
+        logger.warn(
+                "The firmware version of the Fronius inverter could not be determined. Battery control is not available for Thing '{}'.",
+                thing.getUID());
     }
 
     private void updateProperties() {
@@ -138,14 +138,17 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(FroniusBaseDeviceConfiguration.class);
+        FroniusBaseDeviceConfiguration config = this.config = getConfigAs(FroniusBaseDeviceConfiguration.class);
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
-            inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
-            updateProperties();
-            initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+        if (bridge == null) {
+            logger.warn("bridge is null in initialize(), this is a bug, please report it.");
+            return;
         }
+        FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+        inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
+        updateProperties();
+        initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                bridgeConfig.password);
         super.initialize();
     }
 
@@ -159,17 +162,22 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         super.handleBridgeConfigurationUpdate(configurationParameters);
         Bridge bridge = getBridge();
         FroniusBaseDeviceConfiguration config = this.config;
-        if (bridge != null && config != null) {
-            FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
-            inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
-            updateProperties();
-            initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+        if (bridge == null || config == null) {
+            logger.warn(
+                    "bridge or config is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.");
+            return;
         }
+        FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
+        inverterInfo = getInverterInfo(bridgeConfig.scheme, bridgeConfig.hostname, config.deviceId);
+        updateProperties();
+        initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                bridgeConfig.password);
     }
 
     public @Nullable FroniusBatteryControl getBatteryControl() {
         if (batteryControl == null) {
-            logger.warn("Battery control is not available. Check the bridge configuration.");
+            logger.warn("Battery control is not available for Thing '{}'. Check the bridge configuration.",
+                    thing.getUID());
         }
         return batteryControl;
     }
@@ -344,7 +352,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param unit The default unit to use when value is null
      * @return a QuantityType from the given value
      */
-    private QuantityType<?> getQuantityOrZero(@Nullable ValueUnit value, Unit unit) {
+    private QuantityType<?> getQuantityOrZero(@Nullable ValueUnit value, Unit<?> unit) {
         QuantityType<?> val = null;
         if (value != null) {
             val = value.asQuantityType().toUnit(unit);

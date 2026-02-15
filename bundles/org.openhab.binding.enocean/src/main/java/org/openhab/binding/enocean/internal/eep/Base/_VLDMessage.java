@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public abstract class _VLDMessage extends EEP {
 
     public _VLDMessage() {
-        super();
     }
 
     public _VLDMessage(ERP1Message packet) {

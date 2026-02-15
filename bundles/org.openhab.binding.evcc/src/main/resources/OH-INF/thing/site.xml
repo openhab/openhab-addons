@@ -195,6 +195,83 @@
 		<description>Indicates whether green power is available for loadpoints</description>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="site-grid-current-l1">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Grid Current 1</label>
+		<description>Grid phase 1 current</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="site-grid-current-l2">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Grid Current 2</label>
+		<description>Grid phase 2 current</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="site-grid-current-l3">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Grid Current 3</label>
+		<description>Grid phase 3 current</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="site-grid-voltage-l1">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Charge Voltage 1</label>
+		<description>Actual charge voltage of charger phase L1</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="site-grid-voltage-l2">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Charge Voltage 2</label>
+		<description>Actual charge voltage of charger phase L2</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="site-grid-voltage-l3">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Charge Voltage 3</label>
+		<description>Actual charge voltage of charger phase L3</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="site-grid-energy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Grid Energy</label>
+		<description>Consumed energy from the grid</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="site-grid-power">
 		<item-type unitHint="W">Number:Power</item-type>
 		<label>Grid Power</label>
@@ -237,14 +314,14 @@
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="site-interval">
-		<item-type>Number</item-type>
+		<item-type unitHint="s">Number:Time</item-type>
 		<label>Interval</label>
 		<description>Refresh interval configured for evcc</description>
 		<category>Settings</category>
-		<state pattern="%d" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="site-pv-energy">
-		<item-type unitHint="Wh">Number:Energy</item-type>
+		<item-type unitHint="kWh">Number:Energy</item-type>
 		<label>PV Energy</label>
 		<description>Accumulated energy provided through photovoltaic systems</description>
 		<category>Energy</category>
@@ -315,10 +392,10 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="site-startup">
+	<channel-type id="site-startup-completed">
 		<item-type>Switch</item-type>
-		<label>Start Up</label>
-		<description>Indicates whether restart is needed or not</description>
+		<label>Start Up Complete</label>
+		<description>Indicates whether start up is completed or not</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Enabled</tag>

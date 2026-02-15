@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,8 +45,8 @@ public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(RuuviTagBindingConstants.THING_TYPE_BEACON)) {
-            return new RuuviTagHandler(thing);
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            return new RuuviHandler(thing);
         }
 
         return null;

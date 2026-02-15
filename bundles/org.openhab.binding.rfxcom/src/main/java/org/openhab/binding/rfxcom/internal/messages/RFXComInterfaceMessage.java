@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,7 +125,13 @@ public class RFXComInterfaceMessage extends RFXComBaseMessage {
         PRO1(0x05, "Pro1"),
         PRO2(0x06, "Pro2"),
         PROXL1(0x10, "ProXL1"),
-        PROXL2(0x12, "ProXL2"), // Discovered in the wild (not from RFXtrx SDK)
+        PROXL2_UN(0x12, "ProXL2"), // Discovered in the wild (not from RFXtrx SDK)
+        PROXL2(0x13, "ProXL2"),
+        RFX433(0x14, "RFX433"),
+        RFX868(0x15, "RFX868"),
+        PROXL95(0x16, "ProXL95"),
+        RFU(0x17, "RFU"),
+        RFX310(0x18, "RFX310 //RFXusb with 310MHz receiver"),
         UNKNOWN(0xFF, "Unknown");
 
         private final int type;

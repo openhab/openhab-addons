@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.tibber.internal;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -24,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Stian Kjoglum - Initial contribution
  * @author Bernd Weymann - Enhance used constants
+ * @author Bernd Weymann - Add Map collection for price / cost channels
  */
 @NonNullByDefault
 public class TibberBindingConstants {
@@ -43,9 +46,13 @@ public class TibberBindingConstants {
     public static final String CHANNEL_GROUP_STATISTICS = "statistics";
 
     // price channels
-    public static final String CHANNEL_SPOT_PRICE = "spot-price";
+    public static final String CHANNEL_TOTAL_PRICE = "total";
+    public static final String CHANNEL_SPOT_PRICE = "spot";
+    public static final String CHANNEL_DEPRECATED_SPOT_PRICE = "spot-price";
+    public static final String CHANNEL_TAX = "tax";
     public static final String CHANNEL_PRICE_LEVELS = "level";
     public static final String CHANNEL_AVERAGE = "average";
+    public static final String CHANNEL_EVENT = "event";
 
     // live channels
     public static final String CHANNEL_CONSUMPTION = "consumption";
@@ -72,6 +79,17 @@ public class TibberBindingConstants {
     public static final String CHANNEL_DAILY_PRODUCTION = "daily-production";
     public static final String CHANNEL_LAST_HOUR_PRODUCTION = "last-hour-production";
 
+    // List of all events
+    public static final String EVENT_DAY_AHEAD_AVAILABLE = "DAY_AHEAD_AVAILABLE";
+
+    public static final Map<String, String> PRICE_COST_CHANNELS = Map.of(
+            CHANNEL_GROUP_PRICE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_TOTAL_PRICE, "price",
+            CHANNEL_GROUP_PRICE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_SPOT_PRICE, "price",
+            CHANNEL_GROUP_PRICE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_TAX, "price",
+            CHANNEL_GROUP_PRICE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_PRICE_LEVELS, "price-level",
+            CHANNEL_GROUP_PRICE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_AVERAGE, "price",
+            CHANNEL_GROUP_STATISTICS + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_DAILY_COST, "cost");
+
     public static final String CURRENCY_QUERY_RESOURCE_PATH = "/graphql/currency.graphql";
     public static final String PRICE_QUERY_RESOURCE_PATH = "/graphql/prices.graphql";
     public static final String REALTIME_QUERY_RESOURCE_PATH = "/graphql/realtime.graphql";
@@ -84,10 +102,11 @@ public class TibberBindingConstants {
     public static final String DISCONNECT_MESSAGE = "{\"type\":\"connection_terminate\",\"payload\":null}";
     public static final String SUBSCRIPTION_MESSAGE = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription { liveMeasurement(homeId:\\\"%s\\\") { timestamp power lastMeterConsumption lastMeterProduction accumulatedConsumption accumulatedConsumptionLastHour accumulatedCost currency minPower averagePower maxPower voltagePhase1 voltagePhase2 voltagePhase3 currentL1 currentL2 currentL3 powerProduction accumulatedProduction accumulatedProductionLastHour minPowerProduction maxPowerProduction }}\"}}";
 
-    public static final String[] CURRENCY_QUERY_JSON_PATH = new String[] { "data", "viewer", "home",
-            "currentSubscription", "priceInfo", "current" };
+    public static final String[] INITIAL_QUERY_JSON_PATH = new String[] { "data", "viewer", "home" };
     public static final String[] PRICE_INFO_JSON_PATH = new String[] { "data", "viewer", "home", "currentSubscription",
             "priceInfo" };
+    public static final String[] CURRENCY_QUERY_JSON_PATH = new String[] { "data", "viewer", "home",
+            "currentSubscription", "priceInfo", "current" };
     public static final String[] REALTIME_FEATURE_JSON_PATH = new String[] { "data", "viewer", "home", "features" };
     public static final String[] SOCKET_MESSAGE_JSON_PATH = new String[] { "payload", "data", "liveMeasurement" };
 

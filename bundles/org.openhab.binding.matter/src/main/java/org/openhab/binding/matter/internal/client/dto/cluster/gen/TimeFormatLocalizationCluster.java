@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -65,8 +64,8 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
         V24HR(1, "24 Hr"),
         USE_ACTIVE_LOCALE(255, "Use Active Locale");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private HourFormatEnum(Integer value, String label) {
             this.value = value;
@@ -99,8 +98,8 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
         TAIWANESE(11, "Taiwanese"),
         USE_ACTIVE_LOCALE(255, "Use Active Locale");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CalendarTypeEnum(Integer value, String label) {
             this.value = value;

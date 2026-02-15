@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,6 +59,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRsp
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigPm1;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigSwitch;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.ShellyDeviceConfigCB;
@@ -122,7 +123,8 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             Map.entry(SHELLY2_EVENT_3PUSH, SHELLY_BTNEVENT_3SHORTPUSH),
             Map.entry(SHELLY2_EVENT_LPUSH, SHELLY_BTNEVENT_LONGPUSH),
             Map.entry(SHELLY2_EVENT_LSPUSH, SHELLY_BTNEVENT_LONGSHORTPUSH),
-            Map.entry(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH));
+            Map.entry(SHELLY2_EVENT_SLPUSH, SHELLY_BTNEVENT_SHORTLONGPUSH),
+            Map.entry(SHELLY_BTNEVENT_HOLDING, SHELLY_BTNEVENT_HOLDING));
 
     public static final Map<Integer, String> MAP_BLU_INPUT_EVENT_TYPE = Map.ofEntries(//
             // BTHome
@@ -174,6 +176,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         addRelaySettings(relays, dc.switch2);
         addRelaySettings(relays, dc.switch3);
         addRelaySettings(relays, dc.switch100);
+        addRelaySettings(relays, dc.pm10);
         return !relays.isEmpty() ? relays : null;
     }
 
@@ -192,6 +195,18 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         rsettings.autoOff = getBool(cs.autoOff) ? cs.autoOffDelay : 0;
         rsettings.hasTimer = false;
         rsettings.btnType = mapValue(MAP_INMODE_BTNTYPE, getString(cs.mode).toLowerCase());
+        relays.add(rsettings);
+    }
+
+    private void addRelaySettings(ArrayList<@Nullable ShellySettingsRelay> relays, @Nullable Shelly2DevConfigPm1 pm) {
+        if (pm == null) {
+            return;
+        }
+
+        ShellySettingsRelay rsettings = new ShellySettingsRelay();
+        rsettings.id = pm.id;
+        rsettings.isValid = pm.id != null;
+        rsettings.name = pm.name;
         relays.add(rsettings);
     }
 
@@ -271,7 +286,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         ShellySettingsRelay rstatus;
         ShellyShortStatusRelay sr;
         if (rs.id == null) { // firmware 1.6.1 returns id = null!
-            rs.id = id;
+            rs.id = id >= 10 ? id - 10 : id; // ids start at 10
         }
         int rIdx = getRelayIdx(profile, rs.id);
         if (profile.hasRelays) {
@@ -1004,16 +1019,28 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return request;
     }
 
-    protected String mapValue(Map<String, String> map, @Nullable String key) {
-        if (key == null || key.isEmpty()) {
+    protected String mapValue(Map<String, String> map, String key) {
+        if (key.isEmpty()) {
             return "";
         }
-        if (!map.containsKey(key)) {
+
+        String value = map.get(key);
+        if (value == null) {
             logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
                     map);
             return "";
         }
-        String value = getString(map.get(key));
+        logger.trace("{}: API value was mapped to '{}'", thingName, value);
+        return value;
+    }
+
+    protected String mapIntValue(Map<Integer, String> map, int key) {
+        String value = map.get(key);
+        if (value == null) {
+            logger.warn("{}: Unknown API value '{}' (map data={}), please create an issue on GitHub", thingName, key,
+                    map);
+            return "";
+        }
         logger.trace("{}: API value '{}' was mapped to '{}'", thingName, key, value);
         return value;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ abstract class PLCCommonConfiguration {
      *
      * @return True, if channels update to be forced and false otherwise
      */
-    public Boolean isUpdateForced() {
+    public boolean isUpdateForced() {
         return force;
     }
 
@@ -39,7 +39,7 @@ abstract class PLCCommonConfiguration {
      *
      * @param force Force update of Siemens LOGO! block
      */
-    public void setForceUpdate(final Boolean force) {
+    public void setForceUpdate(final boolean force) {
         this.force = force;
     }
 

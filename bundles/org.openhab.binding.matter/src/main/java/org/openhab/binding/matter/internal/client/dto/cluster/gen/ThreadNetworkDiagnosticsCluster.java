@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -741,8 +740,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         HARDWARE_FAILURE(2, "Hardware Failure"),
         NETWORK_JAMMED(3, "Network Jammed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NetworkFaultEnum(Integer value, String label) {
             this.value = value;
@@ -764,8 +763,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         CONNECTED(0, "Connected"),
         NOT_CONNECTED(1, "Not Connected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ConnectionStatusEnum(Integer value, String label) {
             this.value = value;
@@ -792,8 +791,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         ROUTER(5, "Router"),
         LEADER(6, "Leader");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RoutingRoleEnum(Integer value, String label) {
             this.value = value;

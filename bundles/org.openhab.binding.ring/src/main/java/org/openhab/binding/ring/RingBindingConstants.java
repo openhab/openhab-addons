@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,9 @@ public class RingBindingConstants {
     public static final String CHANNEL_CONTROL_ENABLED = "control#enabled";
 
     public static final String CHANNEL_STATUS_BATTERY = "status#battery";
+
+    public static final String CHANNEL_STATUS_SNAPSHOT = "status#snapshot";
+    public static final String CHANNEL_STATUS_SNAPSHOT_TIMESTAMP = "status#snapshot-timestamp";
 
     public static final String CHANNEL_EVENT_URL = "event#url";
     public static final String CHANNEL_EVENT_CREATED_AT = "event#createdAt";

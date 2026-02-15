@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -266,8 +265,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         NON_VOLATILE_MEMORY_ERROR(9, "Non Volatile Memory Error"),
         TAMPER_DETECTED(10, "Tamper Detected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private HardwareFaultEnum(Integer value, String label) {
             this.value = value;
@@ -294,8 +293,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         BLE_FAULT(5, "Ble Fault"),
         ETHERNET_FAULT(6, "Ethernet Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RadioFaultEnum(Integer value, String label) {
             this.value = value;
@@ -319,8 +318,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         NETWORK_JAMMED(2, "Network Jammed"),
         CONNECTION_FAILED(3, "Connection Failed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NetworkFaultEnum(Integer value, String label) {
             this.value = value;
@@ -345,8 +344,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         CELLULAR(3, "Cellular"),
         THREAD(4, "Thread");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private InterfaceTypeEnum(Integer value, String label) {
             this.value = value;
@@ -373,8 +372,8 @@ public class GeneralDiagnosticsCluster extends BaseCluster {
         SOFTWARE_UPDATE_COMPLETED(5, "Software Update Completed"),
         SOFTWARE_RESET(6, "Software Reset");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BootReasonEnum(Integer value, String label) {
             this.value = value;

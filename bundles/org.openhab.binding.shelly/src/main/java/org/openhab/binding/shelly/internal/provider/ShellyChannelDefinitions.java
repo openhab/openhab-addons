@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,15 +18,10 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -146,6 +141,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -240,6 +236,15 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING)) // Sense
 
+                // BLU Remote
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CHANNEL, "sensorChannel", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONX, "sensorRotationX", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONY, "sensorRotationY", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONZ, "sensorRotationZ", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DIRECTION, "sensorDirection", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DISTANCE, "sensorDistance", ITEMT_DISTANCE))
+
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
@@ -277,8 +282,8 @@ public class ShellyChannelDefinitions {
     }
 
     public static @Nullable ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
-        String group = substringBefore(channelName, "#");
-        String channel = substringAfter(channelName, "#");
+        String group = substringBefore(channelName, ChannelUID.CHANNEL_GROUP_SEPARATOR);
+        String channel = substringAfter(channelName, ChannelUID.CHANNEL_GROUP_SEPARATOR);
 
         if (group.startsWith(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
@@ -300,7 +305,7 @@ public class ShellyChannelDefinitions {
             channel = CHANNEL_STATUS_EVENTCOUNT;
         }
 
-        String channelId = group + "#" + channel;
+        String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channel;
         return CHANNEL_DEFINITIONS.get(channelId);
     }
 
@@ -312,6 +317,8 @@ public class ShellyChannelDefinitions {
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {
         Map<String, Channel> add = new LinkedHashMap<>();
+
+        addChannel(thing, add, !profile.fwVersion.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE);
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
         addChannel(thing, add, !profile.gateway.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_GATEWAY);
@@ -455,7 +462,8 @@ public class ShellyChannelDefinitions {
             for (int i = 0; i < profile.numInputs; i++) {
                 String group = profile.getInputGroup(i);
                 String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
-                addChannel(thing, add, !profile.isButton, group, CHANNEL_INPUT + suffix);
+                addChannel(thing, add, !profile.isBlu && !profile.isButton && !profile.isMultiButton, group,
+                        CHANNEL_INPUT + suffix);
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
@@ -564,10 +572,18 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_VIBRATION);
         }
 
-        // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
+        // Shelly DW/DW2/BLU DW
+        // Depending on timing the device only reports tilt or illuminance in the 1st packet only distance or vibration
+        // In this case create both channels, also if only one is included in the first packet
         if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.lux != null || sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR,
                     CHANNEL_SENSOR_TILT);
+        }
+
+        // Depending on timing Shelly BLU distance reports in the 1st packet only distance or vibration
+        // In this case create both channels, also if only one is included in the first packet
+        if (sdata.distance != null || profile.isDistance) {
+            addChannel(thing, newChannels, sdata.distance != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE);
         }
 
         // Gas
@@ -584,6 +600,16 @@ public class ShellyChannelDefinitions {
 
         // Sense
         addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_SENSOR, CHANNEL_SENSE_KEY);
+
+        // BLU Remote
+        if (profile.isRemote) {
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONX);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONY);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONZ);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DIRECTION);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS);
+        }
 
         // UNI
         addChannel(thing, newChannels, sdata.adcs != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE);
@@ -624,7 +650,7 @@ public class ShellyChannelDefinitions {
     private static void addChannel(Thing thing, Map<String, Channel> newChannels, boolean supported, String group,
             String channelName) throws IllegalArgumentException {
         if (supported) {
-            String channelId = group + "#" + channelName;
+            String channelId = group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channelName;
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
             ShellyChannel channelDef = getDefinition(channelId);
             if (channelDef != null) {
@@ -676,24 +702,14 @@ public class ShellyChannelDefinitions {
         }
     }
 
-    public class ShellyChannel {
+    private class ShellyChannel {
         private final ShellyTranslationProvider messages;
-        public String group = "";
-        public String groupLabel = "";
-        public String groupDescription = "";
-
-        public String channel = "";
-        public String label = "";
-        public String description = "";
-        public String itemType = "";
-        public String typeId = "";
-        public String category = "";
-        public Set<String> tags = new HashSet<>();
-        public @Nullable Unit<?> unit;
-        public Optional<Integer> min = Optional.empty();
-        public Optional<Integer> max = Optional.empty();
-        public Optional<Integer> step = Optional.empty();
-        public Optional<String> pattern = Optional.empty();
+        private final String group;
+        private final String channel;
+        private final String label;
+        private final String description;
+        private final String itemType;
+        private final String typeId;
 
         public ShellyChannel(ShellyTranslationProvider messages, String group, String channel, String typeId,
                 String itemType, String... category) {
@@ -703,84 +719,15 @@ public class ShellyChannelDefinitions {
             this.itemType = itemType;
             this.typeId = typeId;
 
-            groupLabel = getText(PREFIX_GROUP + group + ".label");
-            if (groupLabel.startsWith(PREFIX_GROUP)) {
-                groupLabel = "";
-            }
-            groupDescription = getText(PREFIX_GROUP + group + ".description");
-            if (groupDescription.startsWith(PREFIX_GROUP)) {
-                groupDescription = "";
-            }
-            label = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
-            if (label.startsWith(PREFIX_CHANNEL)) {
-                label = "";
-            }
-            description = getText(PREFIX_CHANNEL + typeId + ".description");
-            if (description.startsWith(PREFIX_CHANNEL)) {
-                description = ""; // no resource found
-            }
+            String text = getText(PREFIX_CHANNEL + typeId.replace(':', '.') + ".label");
+            label = text.startsWith(PREFIX_CHANNEL) ? "" : text;
+
+            text = getText(PREFIX_CHANNEL + typeId + ".description");
+            description = text.startsWith(PREFIX_CHANNEL) ? "" : text;
         }
 
-        public String getChanneId() {
-            return group + "#" + channel;
-        }
-
-        public String getGroupLabel() {
-            return getGroupAttribute("group");
-        }
-
-        public String getGroupDescription() {
-            return getGroupAttribute("group");
-        }
-
-        public String getLabel() {
-            return getChannelAttribute("label");
-        }
-
-        public String getDescription() {
-            return getChannelAttribute("description");
-        }
-
-        public boolean getAdvanced() {
-            String attr = getChannelAttribute("advanced");
-            return attr.isEmpty() ? false : Boolean.valueOf(attr);
-        }
-
-        public boolean getReadyOnly() {
-            String attr = getChannelAttribute("readOnly");
-            return attr.isEmpty() ? false : Boolean.valueOf(attr);
-        }
-
-        public String getCategory() {
-            return getChannelAttribute("category");
-        }
-
-        public String getMin() {
-            return getChannelAttribute("min");
-        }
-
-        public String getMax() {
-            return getChannelAttribute("max");
-        }
-
-        public String getStep() {
-            return getChannelAttribute("step");
-        }
-
-        public String getPattern() {
-            return getChannelAttribute("pattern");
-        }
-
-        public String getGroupAttribute(String attribute) {
-            String key = PREFIX_GROUP + group + "." + attribute;
-            String value = messages.getText(key);
-            return !value.equals(key) ? value : "";
-        }
-
-        public String getChannelAttribute(String attribute) {
-            String key = PREFIX_CHANNEL + channel + "." + attribute;
-            String value = messages.getText(key);
-            return !value.equals(key) ? value : "";
+        public String getChannelId() {
+            return group + ChannelUID.CHANNEL_GROUP_SEPARATOR + channel;
         }
 
         private String getText(String key) {
@@ -792,20 +739,20 @@ public class ShellyChannelDefinitions {
         private final Map<String, ShellyChannel> map = new HashMap<>();
 
         private ChannelMap add(ShellyChannel def) {
-            map.put(def.getChanneId(), def);
+            map.put(def.getChannelId(), def);
             return this;
         }
 
         public ShellyChannel get(String channelName) throws IllegalArgumentException {
             ShellyChannel def = null;
-            if (channelName.contains("#")) {
+            if (channelName.contains(ChannelUID.CHANNEL_GROUP_SEPARATOR)) {
                 def = map.get(channelName);
                 if (def != null) {
                     return def;
                 }
             }
             for (HashMap.Entry<String, ShellyChannel> entry : map.entrySet()) {
-                if (entry.getValue().channel.contains("#" + channelName)) {
+                if (entry.getValue().channel.contains(ChannelUID.CHANNEL_GROUP_SEPARATOR + channelName)) {
                     def = entry.getValue();
                     break;
                 }

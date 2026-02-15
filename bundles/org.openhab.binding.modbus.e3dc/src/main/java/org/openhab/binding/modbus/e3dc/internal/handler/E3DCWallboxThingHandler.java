@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import java.util.OptionalInt;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.modbus.e3dc.internal.E3DCWallboxConfiguration;
+import org.openhab.binding.modbus.e3dc.internal.config.E3DCWallboxConfiguration;
 import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxArray;
 import org.openhab.binding.modbus.e3dc.internal.dto.WallboxBlock;

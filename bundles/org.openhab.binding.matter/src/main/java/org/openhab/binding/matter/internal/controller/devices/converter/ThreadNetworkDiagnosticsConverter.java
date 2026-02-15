@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,22 +43,9 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
 
     @Override
     public void pollCluster() {
-        // read the whole cluster
         handler.readCluster(ThreadNetworkDiagnosticsCluster.class, endpointNumber, initializingCluster.id)
                 .thenAccept(cluster -> {
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, cluster.channel);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE,
-                            cluster.routingRole);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME,
-                            cluster.networkName);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, cluster.panId);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID,
-                            cluster.extendedPanId);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
-                            gson.toJson(cluster.neighborTable));
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
-                            gson.toJson(cluster.routeTable));
+                    updateThingProperties(cluster);
                 }).exceptionally(e -> {
                     logger.debug("Error polling thread network diagnostics", e);
                     return null;
@@ -79,18 +66,21 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
     @Override
     public void initState() {
         logger.debug("initState");
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, initializingCluster.channel);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE,
-                initializingCluster.routingRole);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME,
-                initializingCluster.networkName);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, initializingCluster.panId);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID,
-                initializingCluster.extendedPanId);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, initializingCluster.rloc16);
-        String neighborTable = initializingCluster.neighborTable != null
-                ? gson.toJson(initializingCluster.neighborTable)
-                : null;
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE, neighborTable);
+        updateThingProperties(initializingCluster);
+    }
+
+    private void updateThingProperties(ThreadNetworkDiagnosticsCluster cluster) {
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, cluster.channel);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE, cluster.routingRole);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME, cluster.networkName);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, cluster.panId);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, cluster.extendedPanId);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
+                cluster.neighborTable != null ? gson.toJson(cluster.neighborTable) : null);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
+                cluster.routeTable != null ? gson.toJson(cluster.routeTable) : null);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS,
+                cluster.extAddress != null ? gson.toJson(cluster.extAddress) : null);
     }
 }

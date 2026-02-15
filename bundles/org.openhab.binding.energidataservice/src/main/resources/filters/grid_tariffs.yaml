@@ -11,6 +11,7 @@
   chargeTypeCodes:
     - "30TR_C_ET"
   notes:
+    - "Nettarif C"
     - "Nettarif C time"
 # Dinel
 - gln: "5790000610099"

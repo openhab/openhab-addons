@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 
 import com.google.gson.JsonObject;
 
@@ -32,18 +33,19 @@ import com.google.gson.JsonObject;
  *
  * @author Marcel Goerentz - Initial contribution
  */
+@Component(service = EvccDiscoveryMapper.class)
 @NonNullByDefault
 public class StatisticsDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonObject statistics = state.getAsJsonObject(JSON_MEMBER_STATISTICS);
+        JsonObject statistics = state.getAsJsonObject(JSON_KEY_STATISTICS);
         if (statistics == null) {
             return results;
         }
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_STATISTICS, bridgeHandler.getThing().getUID(),
-                "statistics");
+                JSON_KEY_STATISTICS);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("Statistics")
                 .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_STATISTICS)
                 .withRepresentationProperty(PROPERTY_TYPE).build();

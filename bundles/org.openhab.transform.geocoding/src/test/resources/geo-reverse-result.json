@@ -1,0 +1,34 @@
+{
+	"place_id": 133893663,
+	"licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+	"osm_type": "way",
+	"osm_id": 51960750,
+	"lat": "52.5295514",
+	"lon": "13.4284712",
+	"category": "building",
+	"type": "commercial",
+	"place_rank": 30,
+	"importance": 0.18640586217879376,
+	"addresstype": "building",
+	"name": "Huss Medienhaus",
+	"display_name": "Huss Medienhaus, 22, Am Friedrichshain, Winsviertel, Prenzlauer Berg, Pankow, Berlin, 10407, Germany",
+	"address": {
+		"building": "Huss Medienhaus",
+		"house_number": "22",
+		"road": "Am Friedrichshain",
+		"quarter": "Winsviertel",
+		"suburb": "Prenzlauer Berg",
+		"borough": "Pankow",
+		"city": "Berlin",
+		"ISO3166-2-lvl4": "DE-BE",
+		"postcode": "10407",
+		"country": "Germany",
+		"country_code": "de"
+	},
+	"boundingbox": [
+		"52.5291601",
+		"52.5299426",
+		"13.4279307",
+		"13.4289798"
+	]
+}

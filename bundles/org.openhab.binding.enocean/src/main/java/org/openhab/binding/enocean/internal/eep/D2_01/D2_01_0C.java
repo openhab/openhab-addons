@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,6 @@ public class D2_01_0C extends D2_01 {
     protected static final byte CMD_ACTUATOR_PILOT_WIRE_RESPONSE = 0x0A;
 
     public D2_01_0C() {
-        super();
     }
 
     public D2_01_0C(ERP1Message packet) {

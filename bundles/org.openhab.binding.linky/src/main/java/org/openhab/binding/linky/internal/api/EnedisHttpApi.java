@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -259,7 +259,7 @@ public class EnedisHttpApi {
     }
 
     private MeterReading getMeasures(ThingLinkyRemoteHandler handler, String apiUrl, String mps, String prmId,
-            LocalDate from, LocalDate to) throws LinkyException {
+            String segment, LocalDate from, LocalDate to, boolean useIndex) throws LinkyException {
         String dtStart = from.format(linkyBridgeHandler.getApiDateFormat());
         String dtEnd = to.format(linkyBridgeHandler.getApiDateFormat());
 
@@ -268,25 +268,30 @@ public class EnedisHttpApi {
             ResponseMeter meterResponse = getData(handler, url, ResponseMeter.class);
             return meterResponse.meterReading;
         } else {
-            String url = String.format(apiUrl, mps, prmId, dtStart, dtEnd);
+            String url = String.format(apiUrl, mps, prmId, segment, dtStart, dtEnd);
             ConsumptionReport consomptionReport = getData(handler, url, ConsumptionReport.class);
-            return MeterReading.convertFromComsumptionReport(consomptionReport);
+            return MeterReading.convertFromComsumptionReport(consomptionReport, useIndex);
         }
     }
 
-    public MeterReading getEnergyData(ThingLinkyRemoteHandler handler, String mps, String prmId, LocalDate from,
-            LocalDate to) throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getDailyConsumptionUrl(), mps, prmId, from, to);
+    public MeterReading getEnergyData(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
+            LocalDate from, LocalDate to) throws LinkyException {
+        return getMeasures(handler, linkyBridgeHandler.getDailyConsumptionUrl(), mps, prmId, segment, from, to, false);
     }
 
-    public MeterReading getLoadCurveData(ThingLinkyRemoteHandler handler, String mps, String prmId, LocalDate from,
-            LocalDate to) throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, from, to);
+    public MeterReading getEnergyIndex(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
+            LocalDate from, LocalDate to) throws LinkyException {
+        return getMeasures(handler, linkyBridgeHandler.getDailyIndexUrl(), mps, prmId, segment, from, to, true);
     }
 
-    public MeterReading getPowerData(ThingLinkyRemoteHandler handler, String mps, String prmId, LocalDate from,
-            LocalDate to) throws LinkyException {
-        return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), mps, prmId, from, to);
+    public MeterReading getLoadCurveData(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
+            LocalDate from, LocalDate to) throws LinkyException {
+        return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), mps, prmId, segment, from, to, false);
+    }
+
+    public MeterReading getPowerData(ThingLinkyRemoteHandler handler, String mps, String prmId, String segment,
+            LocalDate from, LocalDate to) throws LinkyException {
+        return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), mps, prmId, segment, from, to, false);
     }
 
     public ResponseTempo getTempoData(ThingBaseRemoteHandler handler, LocalDate from, LocalDate to)

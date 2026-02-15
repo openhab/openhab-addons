@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ public class ConfigurationException extends RuntimeException {
     private static final long serialVersionUID = 5736865225953884234L;
 
     public ConfigurationException() {
-        super();
     }
 
     public ConfigurationException(String message) {

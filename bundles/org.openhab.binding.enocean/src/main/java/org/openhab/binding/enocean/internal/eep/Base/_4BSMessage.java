@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ public abstract class _4BSMessage extends EEP {
     }
 
     public _4BSMessage() {
-        super();
     }
 
     public static final byte TEACHIN_BIT = 0x08;

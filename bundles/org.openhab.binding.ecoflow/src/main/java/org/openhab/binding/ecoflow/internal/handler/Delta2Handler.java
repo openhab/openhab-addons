@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.ecoflow.internal.handler;
 
 import static org.openhab.binding.ecoflow.internal.EcoflowBindingConstants.DeltaChannels.*;
@@ -129,8 +128,7 @@ public class Delta2Handler extends AbstractEcoflowHandler {
             new ChannelMapping("pd", "XT150Watts2", CHANNEL_ID_MAX_EXTRA_BATTERY2_POWER, 1, Units.WATT));
 
     public Delta2Handler(Thing thing, boolean isDelta2Max) {
-        super(thing, isDelta2Max ? Stream.concat(MAPPINGS.stream(), MAX_ONLY_MAPPINGS.stream()).toList() : MAPPINGS,
-                "params");
+        super(thing, isDelta2Max ? Stream.concat(MAPPINGS.stream(), MAX_ONLY_MAPPINGS.stream()).toList() : MAPPINGS);
     }
 
     @Override

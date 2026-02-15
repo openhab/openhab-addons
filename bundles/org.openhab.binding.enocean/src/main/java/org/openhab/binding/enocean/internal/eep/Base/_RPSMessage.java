@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,6 @@ public abstract class _RPSMessage extends EEP {
     public static final byte NU_FLAG = 0x10;
 
     public _RPSMessage() {
-        super();
     }
 
     public _RPSMessage(ERP1Message packet) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -219,8 +218,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
         CHARGING(65, "Charging"),
         DOCKED(66, "Docked");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationalStateEnum(Integer value, String label) {
             this.value = value;
@@ -256,8 +255,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
         WATER_TANK_LID_OPEN(70, "Water Tank Lid Open"),
         MOP_CLEANING_PAD_MISSING(71, "Mop Cleaning Pad Missing");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ErrorStateEnum(Integer value, String label) {
             this.value = value;

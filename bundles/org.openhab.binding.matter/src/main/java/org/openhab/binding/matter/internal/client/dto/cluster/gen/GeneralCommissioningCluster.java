@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -176,8 +175,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
         TC_ACKNOWLEDGEMENTS_NOT_RECEIVED(6, "Tc Acknowledgements Not Received"),
         TC_MIN_VERSION_NOT_MET(7, "Tc Min Version Not Met");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CommissioningErrorEnum(Integer value, String label) {
             this.value = value;
@@ -204,8 +203,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
         OUTDOOR(1, "Outdoor"),
         INDOOR_OUTDOOR(2, "Indoor Outdoor");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RegulatoryLocationTypeEnum(Integer value, String label) {
             this.value = value;

@@ -12,7 +12,7 @@ This binding supports the following Thing types
 
 | Thing      | Thing Type | Description                                                            |
 |------------|------------|------------------------------------------------------------------------|
-| envisalink | Bridge     | The EyezOn Envisalink 3/2DS interface.                                 |
+| envisalink | Bridge     | The EyezOn Envisalink 4/3/2DS interface.                                 |
 | it100      | Bridge     | The DSC IT-100 RS-232 interface.                                       |
 | tcpserver  | Bridge     | The DSC IT-100 TCP Server network interface.                           |
 | panel      | Thing      | The basic representation of the DSC Alarm System.                      |
@@ -128,6 +128,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
     <tr><td>zone_tamper</td><td>Switch</td><td>A zone tamper condition has happened.</td></tr>
     <tr><td>zone_fault</td><td>Switch</td><td>A zone fault condition has happened.</td></tr>
     <tr><td>zone_tripped</td><td>Switch</td><td>A zone has tripped.</td></tr>
+    <tr><td>zone_battery_low</td><td>Switch</td><td>For wireless zones, indicates a low battery condition. Requires Envisalink 4 or higher.</td></tr>
     <tr><td>keypad_ready_led</td><td>Number</td><td>Keypad Ready LED Status. The values are:
 <br/>
 0=OFF<br/>
@@ -241,6 +242,7 @@ Switch ZONE1_IN_ALARM "Zone 1 Alarm Condition" (DSCAlarmZones) {channel="dscalar
 Switch ZONE1_TAMPER "Zone 1 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_tamper"}
 Switch ZONE1_FAULT "Zone 1 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_fault"}
 Switch ZONE1_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_tripped"}
+Switch ZONE1_BATTERY_LOW "Zone 1 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone1:zone_battery_low"}
 
 Contact ZONE9_STATUS "Front Door Sensor (Zone 9)" <door> (DSCAlarmZones, FrontFoyer, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone9:zone_status"}
 String ZONE9_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_message"}
@@ -249,6 +251,7 @@ Switch ZONE9_IN_ALARM "Zone 9 Alarm Condition" (DSCAlarmZones) {channel="dscalar
 Switch ZONE9_TAMPER "Zone 9 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_tamper"}
 Switch ZONE9_FAULT "Zone 9 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_fault"}
 Switch ZONE9_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_tripped"}
+Switch ZONE9_BATTERY_LOW "Zone 9 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone9:zone_battery_low"}
 
 Contact ZONE10_STATUS "Deck Door Sensor (Zone 10)" <door> (DSCAlarmZones, FamilyRoom, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone10:zone_status"}
 String ZONE10_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_message"}
@@ -257,6 +260,7 @@ Switch ZONE10_IN_ALARM "Zone 10 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE10_TAMPER "Zone 10 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_tamper"}
 Switch ZONE10_FAULT "Zone 10 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_fault"}
 Switch ZONE10_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_tripped"}
+Switch ZONE10_BATTERY_LOW "Zone 10 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone10:zone_battery_low"}
 
 Contact ZONE11_STATUS "Back Door Sensor (Zone 11)" <door> (DSCAlarmZones, UtilityRoom, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone11:zone_status"}
 String ZONE11_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_message"}
@@ -265,6 +269,7 @@ Switch ZONE11_IN_ALARM "Zone 11 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE11_TAMPER "Zone 11 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_tamper"}
 Switch ZONE11_FAULT "Zone 11 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_fault"}
 Switch ZONE11_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_tripped"}
+Switch ZONE11_BATTERY_LOW "Zone 11 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone11:zone_battery_low"}
 
 Contact ZONE12_STATUS "Side Door Sensor (Zone 12)" <door> (DSCAlarmZones, SideFoyer, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone12:zone_status"}
 String ZONE12_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_message"}
@@ -273,6 +278,7 @@ Switch ZONE12_IN_ALARM "Zone 12 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE12_TAMPER "Zone 12 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_tamper"}
 Switch ZONE12_FAULT "Zone 12 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_fault"}
 Switch ZONE12_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_tripped"}
+Switch ZONE12_BATTERY_LOW "Zone 12 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone12:zone_battery_low"}
 
 Contact ZONE13_STATUS "Garage Door 1 Sensor (Zone 13)" <door> (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone13:zone_status"}
 String ZONE13_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_message"}
@@ -281,6 +287,7 @@ Switch ZONE13_IN_ALARM "Zone 13 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE13_TAMPER "Zone 13 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_tamper"}
 Switch ZONE13_FAULT "Zone 13 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_fault"}
 Switch ZONE13_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_tripped"}
+Switch ZONE13_BATTERY_LOW "Zone 13 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone13:zone_battery_low"}
 
 Contact ZONE14_STATUS "Garage Door 2 Sensor (Zone 14)" <garagedoor> (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone14:zone_status"}
 String ZONE14_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_message"}
@@ -289,6 +296,7 @@ Switch ZONE14_IN_ALARM "Zone 14 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE14_TAMPER "Zone 14 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_tamper"}
 Switch ZONE14_FAULT "Zone 14 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_fault"}
 Switch ZONE14_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_tripped"}
+Switch ZONE14_BATTERY_LOW "Zone 14 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone14:zone_battery_low"}
 
 Contact ZONE15_STATUS "Garage Window Sensor (Zone 15)" (DSCAlarmZones, Garage, DSCAlarmDoorWindow) {channel="dscalarm:zone:MyBridgeName:zone15:zone_status"}
 String ZONE15_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_message"}
@@ -297,6 +305,7 @@ Switch ZONE15_IN_ALARM "Zone 15 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE15_TAMPER "Zone 15 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_tamper"}
 Switch ZONE15_FAULT "Zone 15 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_fault"}
 Switch ZONE15_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_tripped"}
+Switch ZONE15_BATTERY_LOW "Zone 15 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone15:zone_battery_low"}
 
 Contact ZONE21_STATUS "Family Room Motion Sensor (Zone 21)" <motionDetector> (DSCAlarmZones,  FamilyRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone21:zone_status"}
 String ZONE21_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_message"}
@@ -305,6 +314,7 @@ Switch ZONE21_IN_ALARM "Zone 21 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE21_TAMPER "Zone 21 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_tamper"}
 Switch ZONE21_FAULT "Zone 21 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_fault"}
 Switch ZONE21_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_tripped"}
+Switch ZONE21_BATTERY_LOW "Zone 21 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone21:zone_battery_low"}
 
 Contact ZONE22_STATUS "Office Motion Sensor (Zone 22)" <motionDetector> (DSCAlarmZones,  Office, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone22:zone_status"}
 String ZONE22_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_message"}
@@ -313,6 +323,7 @@ Switch ZONE22_IN_ALARM "Zone 22 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE22_TAMPER "Zone 22 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_tamper"}
 Switch ZONE22_FAULT "Zone 22 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_fault"}
 Switch ZONE22_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_tripped"}
+Switch ZONE22_BATTERY_LOW "Zone 22 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone22:zone_battery_low"}
 
 Contact ZONE23_STATUS "Dining Room Motion Sensor (Zone 23)" <motionDetector> (DSCAlarmZones, DiningRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone23:zone_status"}
 String ZONE23_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_message"}
@@ -321,6 +332,7 @@ Switch ZONE23_IN_ALARM "Zone 23 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE23_TAMPER "Zone 23 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_tamper"}
 Switch ZONE23_FAULT "Zone 23 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_fault"}
 Switch ZONE23_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_tripped"}
+Switch ZONE23_BATTERY_LOW "Zone 23 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone23:zone_battery_low"}
 
 Contact ZONE24_STATUS "Living Room Motion Sensor (Zone 24)" <motionDetector> (DSCAlarmZones,  LivingRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone24:zone_status"}
 String ZONE24_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_message"}
@@ -329,6 +341,7 @@ Switch ZONE24_IN_ALARM "Zone 24 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE24_TAMPER "Zone 24 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_tamper"}
 Switch ZONE24_FAULT "Zone 24 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_fault"}
 Switch ZONE24_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_tripped"}
+Switch ZONE24_BATTERY_LOW "Zone 24 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone24:zone_battery_low"}
 
 Contact ZONE25_STATUS "Utility Room Motion Sensor (Zone 25)" <motionDetector> (DSCAlarmZones,  UtilityRoom, DSCAlarmMotion) {channel="dscalarm:zone:MyBridgeName:zone25:zone_status"}
 String ZONE25_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_message"}
@@ -337,6 +350,7 @@ Switch ZONE25_IN_ALARM "Zone 25 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE25_TAMPER "Zone 25 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_tamper"}
 Switch ZONE25_FAULT "Zone 25 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_fault"}
 Switch ZONE25_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_tripped"}
+Switch ZONE25_BATTERY_LOW "Zone 25 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone25:zone_battery_low"}
 
 Contact ZONE51_STATUS "Utility Room Smoke Detector (Zone 51)" <smokeDetector> (DSCAlarmZones,  UtilityRoom, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone51:zone_status"}
 String ZONE51_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_message"}
@@ -345,6 +359,7 @@ Switch ZONE51_IN_ALARM "Zone 51 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE51_TAMPER "Zone 51 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_tamper"}
 Switch ZONE51_FAULT "Zone 51 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_fault"}
 Switch ZONE51_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_tripped"}
+Switch ZONE51_BATTERY_LOW "Zone 51 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone51:zone_battery_low"}
 
 Contact ZONE52_STATUS "Dining Room Smoke Detector (Zone 52)" <smokeDetector> (DSCAlarmZones, DiningRoom, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone52:zone_status"}
 String ZONE52_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_message"}
@@ -353,6 +368,7 @@ Switch ZONE52_IN_ALARM "Zone 52 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE52_TAMPER "Zone 52 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_tamper"}
 Switch ZONE52_FAULT "Zone 52 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_fault"}
 Switch ZONE52_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_tripped"}
+Switch ZONE52_BATTERY_LOW "Zone 52 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone52:zone_battery_low"}
 
 Contact ZONE53_STATUS "Front Foyer Smoke Detector (Zone 53)" <smokeDetector> (DSCAlarmZones, FrontFoyer, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone53:zone_status"}
 String ZONE53_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_message"}
@@ -361,6 +377,7 @@ Switch ZONE53_IN_ALARM "Zone 53 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE53_TAMPER "Zone 53 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_tamper"}
 Switch ZONE53_FAULT "Zone 53 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_fault"}
 Switch ZONE53_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_tripped"}
+Switch ZONE53_BATTERY_LOW "Zone 53 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone53:zone_battery_low"}
 
 Contact ZONE54_STATUS "Upstairs Hall Smoke Detector (Zone 54)" <smokeDetector> (DSCAlarmZones, UpstairsHall, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone54:zone_status"}
 String ZONE54_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_message"}
@@ -369,6 +386,7 @@ Switch ZONE54_IN_ALARM "Zone 54 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE54_TAMPER "Zone 54 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_tamper"}
 Switch ZONE54_FAULT "Zone 54 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_fault"}
 Switch ZONE54_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_tripped"}
+Switch ZONE54_BATTERY_LOW "Zone 54 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone54:zone_battery_low"}
 
 Contact ZONE55_STATUS "Master Bedroom Smoke Detector (Zone 55)" <smokeDetector> (DSCAlarmZones, Bedroom, DSCAlarmSmoke) {channel="dscalarm:zone:MyBridgeName:zone55:zone_status"}
 String ZONE55_MESSAGE "Zone Message: [%s]" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_message"}
@@ -377,6 +395,7 @@ Switch ZONE55_IN_ALARM "Zone 55 Alarm Condition" (DSCAlarmZones) {channel="dscal
 Switch ZONE55_TAMPER "Zone 55 Tamper Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_tamper"}
 Switch ZONE55_FAULT "Zone 55 Fault Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_fault"}
 Switch ZONE55_TRIPPED (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_tripped"}
+Switch ZONE55_BATTERY_LOW "Zone 55 Low Battery Condition" (DSCAlarmZones) {channel="dscalarm:zone:MyBridgeName:zone55:zone_battery_low"}
 
 /* DSC Alarm Keypad Items */
 Number KEYPAD_READY_LED "Ready LED Status" <readyLED> (DSCAlarmKeypads) {channel="dscalarm:keypad:MyBridgeName:keypad:keypad_ready_led"}
@@ -448,6 +467,7 @@ Here is an example sitemap:
                             Switch item=ZONE1_IN_ALARM
                             Switch item=ZONE1_TAMPER
                             Switch item=ZONE1_FAULT
+                            Switch item=ZONE1_BATTERY_LOW
                         }
                     }
 
@@ -457,6 +477,7 @@ Here is an example sitemap:
                             Switch item=ZONE9_IN_ALARM
                             Switch item=ZONE9_TAMPER
                             Switch item=ZONE9_FAULT
+                            Switch item=ZONE9_BATTERY_LOW
                         }
                     }
                     Text item=ZONE10_STATUS {
@@ -465,6 +486,7 @@ Here is an example sitemap:
                             Switch item=ZONE10_IN_ALARM
                             Switch item=ZONE10_TAMPER
                             Switch item=ZONE10_FAULT
+                            Switch item=ZONE10_BATTERY_LOW
                         }
                     }
                     Text item=ZONE11_STATUS {
@@ -473,6 +495,7 @@ Here is an example sitemap:
                             Switch item=ZONE11_IN_ALARM
                             Switch item=ZONE11_TAMPER
                             Switch item=ZONE11_FAULT
+                            Switch item=ZONE11_BATTERY_LOW
                         }
                     }
                     Text item=ZONE12_STATUS {
@@ -481,6 +504,7 @@ Here is an example sitemap:
                             Switch item=ZONE12_IN_ALARM
                             Switch item=ZONE12_TAMPER
                             Switch item=ZONE12_FAULT
+                            Switch item=ZONE12_BATTERY_LOW
                         }
                     }
                     Text item=ZONE13_STATUS {
@@ -489,6 +513,7 @@ Here is an example sitemap:
                             Switch item=ZONE13_IN_ALARM
                             Switch item=ZONE13_TAMPER
                             Switch item=ZONE13_FAULT
+                            Switch item=ZONE13_BATTERY_LOW
                         }
                     }
                     Text item=ZONE14_STATUS {
@@ -497,6 +522,7 @@ Here is an example sitemap:
                             Switch item=ZONE14_IN_ALARM
                             Switch item=ZONE14_TAMPER
                             Switch item=ZONE14_FAULT
+                            Switch item=ZONE14_BATTERY_LOW
                         }
                     }
                     Text item=ZONE15_STATUS {
@@ -505,6 +531,7 @@ Here is an example sitemap:
                             Switch item=ZONE15_IN_ALARM
                             Switch item=ZONE15_TAMPER
                             Switch item=ZONE15_FAULT
+                            Switch item=ZONE15_BATTERY_LOW
                         }
                     }
                     Text item=ZONE21_STATUS {
@@ -513,6 +540,7 @@ Here is an example sitemap:
                             Switch item=ZONE21_IN_ALARM
                             Switch item=ZONE21_TAMPER
                             Switch item=ZONE21_FAULT
+                            Switch item=ZONE21_BATTERY_LOW
                         }
                     }
                     Text item=ZONE22_STATUS {
@@ -521,6 +549,7 @@ Here is an example sitemap:
                             Switch item=ZONE22_IN_ALARM
                             Switch item=ZONE22_TAMPER
                             Switch item=ZONE22_FAULT
+                            Switch item=ZONE22_BATTERY_LOW
                         }
                     }
                     Text item=ZONE23_STATUS {
@@ -529,6 +558,7 @@ Here is an example sitemap:
                             Switch item=ZONE23_IN_ALARM
                             Switch item=ZONE23_TAMPER
                             Switch item=ZONE23_FAULT
+                            Switch item=ZONE23_BATTERY_LOW
                         }
                     }
                     Text item=ZONE24_STATUS {
@@ -537,6 +567,7 @@ Here is an example sitemap:
                             Switch item=ZONE24_IN_ALARM
                             Switch item=ZONE24_TAMPER
                             Switch item=ZONE24_FAULT
+                            Switch item=ZONE24_BATTERY_LOW
                         }
                     }
                     Text item=ZONE25_STATUS {
@@ -545,6 +576,7 @@ Here is an example sitemap:
                             Switch item=ZONE25_IN_ALARM
                             Switch item=ZONE25_TAMPER
                             Switch item=ZONE25_FAULT
+                            Switch item=ZONE25_BATTERY_LOW
                         }
                     }
                     Text item=ZONE51_STATUS {
@@ -553,6 +585,7 @@ Here is an example sitemap:
                             Switch item=ZONE51_IN_ALARM
                             Switch item=ZONE51_TAMPER
                             Switch item=ZONE51_FAULT
+                            Switch item=ZONE51_BATTERY_LOW
                         }
                     }
                     Text item=ZONE52_STATUS {
@@ -561,6 +594,7 @@ Here is an example sitemap:
                             Switch item=ZONE52_IN_ALARM
                             Switch item=ZONE52_TAMPER
                             Switch item=ZONE52_FAULT
+                            Switch item=ZONE52_BATTERY_LOW
                         }
                     }
                     Text item=ZONE53_STATUS {
@@ -569,6 +603,7 @@ Here is an example sitemap:
                             Switch item=ZONE53_IN_ALARM
                             Switch item=ZONE53_TAMPER
                             Switch item=ZONE53_FAULT
+                            Switch item=ZONE53_BATTERY_LOW
                         }
                     }
                     Text item=ZONE54_STATUS {
@@ -577,6 +612,7 @@ Here is an example sitemap:
                             Switch item=ZONE54_IN_ALARM
                             Switch item=ZONE54_TAMPER
                             Switch item=ZONE54_FAULT
+                            Switch item=ZONE54_BATTERY_LOW
                         }
                     }
                     Text item=ZONE55_STATUS {
@@ -585,6 +621,7 @@ Here is an example sitemap:
                             Switch item=ZONE55_IN_ALARM
                             Switch item=ZONE55_TAMPER
                             Switch item=ZONE55_FAULT
+                            Switch item=ZONE55_BATTERY_LOW
                         }
                     }
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -619,8 +618,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         COMFORT(2, "Comfort"),
         TEMPERATURE(3, "Temperature");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CostTypeEnum(Integer value, String label) {
             this.value = value;
@@ -655,8 +654,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         POOL_PUMP(13, "Pool Pump"),
         OTHER(255, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ESATypeEnum(Integer value, String label) {
             this.value = value;
@@ -681,8 +680,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         POWER_ADJUST_ACTIVE(3, "Power Adjust Active"),
         PAUSED(4, "Paused");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ESAStateEnum(Integer value, String label) {
             this.value = value;
@@ -706,8 +705,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         GRID_OPT_OUT(2, "Grid Opt Out"),
         OPT_OUT(3, "Opt Out");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OptOutStateEnum(Integer value, String label) {
             this.value = value;
@@ -732,8 +731,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         USER_OPT_OUT(3, "User Opt Out"),
         CANCELLED(4, "Cancelled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CauseEnum(Integer value, String label) {
             this.value = value;
@@ -755,8 +754,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         LOCAL_OPTIMIZATION(0, "Local Optimization"),
         GRID_OPTIMIZATION(1, "Grid Optimization");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AdjustmentCauseEnum(Integer value, String label) {
             this.value = value;
@@ -779,8 +778,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         LOCAL_OPTIMIZATION(1, "Local Optimization"),
         GRID_OPTIMIZATION(2, "Grid Optimization");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ForecastUpdateReasonEnum(Integer value, String label) {
             this.value = value;
@@ -803,8 +802,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         LOCAL_OPTIMIZATION_ADJUSTMENT(1, "Local Optimization Adjustment"),
         GRID_OPTIMIZATION_ADJUSTMENT(2, "Grid Optimization Adjustment");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PowerAdjustReasonEnum(Integer value, String label) {
             this.value = value;

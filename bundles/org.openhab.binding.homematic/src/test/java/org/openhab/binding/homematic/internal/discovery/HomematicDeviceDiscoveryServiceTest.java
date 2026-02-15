@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * Tests for {@link HomematicDeviceDiscoveryServiceTest}.
@@ -49,7 +50,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
     @BeforeEach
     public void setup() throws IOException {
         this.homematicBridgeHandler = mockHomematicBridgeHandler();
-        this.homematicDeviceDiscoveryService = new HomematicDeviceDiscoveryService();
+        this.homematicDeviceDiscoveryService = new HomematicDeviceDiscoveryService(new SameThreadExecutorService());
         this.homematicDeviceDiscoveryService.setThingHandler(homematicBridgeHandler);
     }
 

@@ -19,7 +19,6 @@ public class PollReader extends Thread {
     private boolean foundClip = false;
 
     public PollReader(AbstractModemDriver modemDriver, String threadId) {
-        super();
         this.modemDriver = modemDriver;
         this.threadId = threadId;
     }

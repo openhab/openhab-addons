@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -390,8 +389,8 @@ public class ChannelCluster extends BaseCluster {
     public enum LineupInfoTypeEnum implements MatterEnum {
         MSO(0, "Mso");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LineupInfoTypeEnum(Integer value, String label) {
             this.value = value;
@@ -414,8 +413,8 @@ public class ChannelCluster extends BaseCluster {
         MULTIPLE_MATCHES(1, "Multiple Matches"),
         NO_MATCHES(2, "No Matches");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -439,8 +438,8 @@ public class ChannelCluster extends BaseCluster {
         TERRESTRIAL(2, "Terrestrial"),
         OTT(3, "Ott");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChannelTypeEnum(Integer value, String label) {
             this.value = value;

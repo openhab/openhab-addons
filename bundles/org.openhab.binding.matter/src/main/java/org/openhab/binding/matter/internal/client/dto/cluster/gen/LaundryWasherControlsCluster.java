@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -82,8 +81,8 @@ public class LaundryWasherControlsCluster extends BaseCluster {
         EXTRA(2, "Extra"),
         MAX(3, "Max");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NumberOfRinsesEnum(Integer value, String label) {
             this.value = value;

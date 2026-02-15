@@ -4,28 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="system-state">
-		<label>System State</label>
-		<channels>
-			<channel id="is-heating" typeId="is-heating-type"/>
-			<channel id="is-heating-water" typeId="is-heating-water-type"/>
-			<channel id="is-cooling" typeId="is-cooling-type"/>
-			<channel id="is-pumping" typeId="is-pumping-type"/>
-			<channel id="is-summer" typeId="is-summer-type"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="system-parameter">
-		<label>System Parameters</label>
-		<channels>
-			<channel id="operation-mode" typeId="operation-mode-type"/>
-			<channel id="comfort-temperature-heating" typeId="comfort-temperature-heating-type"/>
-			<channel id="eco-temperature-heating" typeId="eco-temperature-heating-type"/>
-			<channel id="comfort-temperature-water" typeId="comfort-temperature-water-type"/>
-			<channel id="eco-temperature-water" typeId="eco-temperature-water-type"/>
-		</channels>
-	</channel-group-type>
-
 	<channel-group-type id="system-information">
 		<label>System Information</label>
 		<channels>
@@ -44,6 +22,184 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="system-information-allwpm">
+		<label>System Information</label>
+		<description>System Information and Values (read-only channels)</description>
+		<channels>
+			<channel id="fe7-temperature" typeId="fe7-temperature-type"/>
+			<channel id="fe7-temperature-setpoint" typeId="fe7-temperature-setpoint-type"/>
+			<channel id="fek-temperature" typeId="fek-temperature-type"/>
+			<channel id="fek-temperature-setpoint" typeId="fek-temperature-setpoint-type"/>
+			<channel id="fek-humidity" typeId="fek-humidity-type"/>
+			<channel id="fek-dewpoint" typeId="fek-dewpoint-type"/>
+			<channel id="outdoor-temperature" typeId="outdoor-temperature-type"/>
+			<channel id="hc1-temperature" typeId="hc1-temperature-type"/>
+			<channel id="hc1-temperature-setpoint" typeId="hc1-temperature-setpoint-type"/>
+			<channel id="hc2-temperature" typeId="hc2-temperature-type"/>
+			<channel id="hc2-temperature-setpoint" typeId="hc2-temperature-setpoint-type"/>
+			<channel id="hp-flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="nhz-flow-temperature" typeId="nhz-flow-temperature-type"/>
+			<channel id="flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="return-temperature" typeId="return-temperature-type"/>
+			<channel id="fixed-temperature-setpoint" typeId="fixed-temperature-setpoint-type"/>
+			<channel id="buffer-temperature" typeId="buffer-temperature-type"/>
+			<channel id="buffer-temperature-setpoint" typeId="buffer-temperature-setpoint-type"/>
+			<channel id="heating-pressure" typeId="heating-pressure-type"/>
+			<channel id="flow-rate" typeId="flow-rate-type"/>
+			<channel id="hotwater-temperature" typeId="hotwater-temperature-type"/>
+			<channel id="hotwater-temperature-setpoint" typeId="hotwater-temperature-setpoint-type"/>
+			<channel id="fan-cooling-temperature" typeId="fan-cooling-temperature-type"/>
+			<channel id="fan-cooling-temperature-setpoint" typeId="fan-cooling-temperature-setpoint-type"/>
+			<channel id="area-cooling-temperature" typeId="area-cooling-temperature-type"/>
+			<channel id="area-cooling-temperature-setpoint" typeId="area-cooling-temperature-setpoint-type"/>
+			<channel id="solar-thermal-collector-temperature" typeId="solar-thermal-collector-temperature-type"/>
+			<channel id="solar-thermal-cylinder-temperature" typeId="solar-thermal-cylinder-temperature-type"/>
+			<channel id="solar-thermal-runtime" typeId="solar-thermal-runtime-type"/>
+			<channel id="external-heat-source-temperature" typeId="external-heat-source-temperature-type"/>
+			<channel id="external-heat-source-temperature-setpoint"
+				typeId="external-heat-source-temperature-setpoint-type"/>
+			<channel id="external-heat-source-runtime" typeId="external-heat-source-runtime-type"/>
+			<channel id="lower-application-limit-heating" typeId="lower-application-limit-heating-type"/>
+			<channel id="lower-application-limit-hotwater" typeId="lower-application-limit-hotwater-type"/>
+			<channel id="source-temperature" typeId="source-temperature-type"/>
+			<channel id="min-source-temperature" typeId="min-source-temperature-type"/>
+			<channel id="source-pressure" typeId="source-pressure-type"/>
+			<channel id="hotgas-temperature" typeId="hotgas-temperature-type"/>
+			<channel id="high-pressure" typeId="high-pressure-type"/>
+			<channel id="low-pressure" typeId="low-pressure-type"/>
+			<channel id="hp1-return-temperature" typeId="return-temperature-type"/>
+			<channel id="hp1-flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="hp1-hotgas-temperature" typeId="hotgas-temperature-type"/>
+			<channel id="hp1-low-pressure" typeId="low-pressure-type"/>
+			<channel id="hp1-mean-pressure" typeId="mean-pressure-type"/>
+			<channel id="hp1-high-pressure" typeId="high-pressure-type"/>
+			<channel id="hp1-flow-rate" typeId="flow-rate-type"/>
+			<channel id="hp2-return-temperature" typeId="return-temperature-type"/>
+			<channel id="hp2-flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="hp2-hotgas-temperature" typeId="hotgas-temperature-type"/>
+			<channel id="hp2-low-pressure" typeId="low-pressure-type"/>
+			<channel id="hp2-mean-pressure" typeId="mean-pressure-type"/>
+			<channel id="hp2-high-pressure" typeId="high-pressure-type"/>
+			<channel id="hp2-flow-rate" typeId="flow-rate-type"/>
+			<channel id="hp3-return-temperature" typeId="return-temperature-type"/>
+			<channel id="hp3-flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="hp3-hotgas-temperature" typeId="hotgas-temperature-type"/>
+			<channel id="hp3-low-pressure" typeId="low-pressure-type"/>
+			<channel id="hp3-mean-pressure" typeId="mean-pressure-type"/>
+			<channel id="hp3-high-pressure" typeId="high-pressure-type"/>
+			<channel id="hp3-flow-rate" typeId="flow-rate-type"/>
+			<channel id="hp4-return-temperature" typeId="return-temperature-type"/>
+			<channel id="hp4-flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="hp4-hotgas-temperature" typeId="hotgas-temperature-type"/>
+			<channel id="hp4-low-pressure" typeId="low-pressure-type"/>
+			<channel id="hp4-mean-pressure" typeId="mean-pressure-type"/>
+			<channel id="hp4-high-pressure" typeId="high-pressure-type"/>
+			<channel id="hp4-flow-rate" typeId="flow-rate-type"/>
+			<channel id="hp5-return-temperature" typeId="return-temperature-type"/>
+			<channel id="hp5-flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="hp5-hotgas-temperature" typeId="hotgas-temperature-type"/>
+			<channel id="hp5-low-pressure" typeId="low-pressure-type"/>
+			<channel id="hp5-mean-pressure" typeId="mean-pressure-type"/>
+			<channel id="hp5-high-pressure" typeId="high-pressure-type"/>
+			<channel id="hp5-flow-rate" typeId="flow-rate-type"/>
+			<channel id="hp6-return-temperature" typeId="return-temperature-type"/>
+			<channel id="hp6-flow-temperature" typeId="flow-temperature-type"/>
+			<channel id="hp6-hotgas-temperature" typeId="hotgas-temperature-type"/>
+			<channel id="hp6-low-pressure" typeId="low-pressure-type"/>
+			<channel id="hp6-mean-pressure" typeId="mean-pressure-type"/>
+			<channel id="hp6-high-pressure" typeId="high-pressure-type"/>
+			<channel id="hp6-flow-rate" typeId="flow-rate-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="system-parameter">
+		<label>System Parameters</label>
+		<channels>
+			<channel id="operation-mode" typeId="operation-mode-type"/>
+			<channel id="comfort-temperature-heating" typeId="comfort-temperature-heating-type"/>
+			<channel id="eco-temperature-heating" typeId="eco-temperature-heating-type"/>
+			<channel id="comfort-temperature-water" typeId="comfort-temperature-water-type"/>
+			<channel id="eco-temperature-water" typeId="eco-temperature-water-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="system-parameter-allwpm">
+		<label>System Parameters</label>
+		<description>System Parameters (read-write channels)</description>
+		<channels>
+			<channel id="operating-mode" typeId="operating-mode-type"/>
+			<channel id="hc1-comfort-temperature" typeId="hc1-comfort-temperature-type"/> <!-- same as "comfort-temperature-heating" -->
+			<channel id="hc1-eco-temperature" typeId="hc1-eco-temperature-type"/>         <!-- same as "eco-temperature-heating" -->
+			<channel id="hc1-heating-curve-rise" typeId="hc1-heating-curve-rise-type"/>
+			<channel id="hc2-comfort-temperature" typeId="hc2-comfort-temperature-type"/>
+			<channel id="hc2-eco-temperature" typeId="hc2-eco-temperature-type"/>
+			<channel id="hc2-heating-curve-rise" typeId="hc2-heating-curve-rise-type"/>
+			<channel id="fixed-value-operation" typeId="fixed-value-operation-type"/>
+			<channel id="heating-dual-mode-temperature" typeId="heating-dual-mode-temperature-type"/>
+			<channel id="hotwater-comfort-temperature" typeId="hotwater-comfort-temperature-type"/>
+			<channel id="hotwater-eco-temperature" typeId="hotwater-eco-temperature-type"/>
+			<channel id="hotwater-stages" typeId="hotwater-stages-type"/>
+			<channel id="hotwater-dual-mode-temperature" typeId="hotwater-dual-mode-temperature-type"/>
+			<channel id="area-cooling-flow-temperature-setpoint" typeId="area-cooling-flow-temperature-setpoint-type"/>
+			<channel id="area-cooling-flow-temperature-hysteresis" typeId="area-cooling-flow-temperature-hysteresis-type"/>
+			<channel id="area-cooling-room-temperature-setpoint" typeId="area-cooling-room-temperature-setpoint-type"/>
+			<channel id="fan-cooling-flow-temperature-setpoint" typeId="fan-cooling-flow-temperature-setpoint-type"/>
+			<channel id="fan-cooling-flow-temperature-hysteresis" typeId="fan-cooling-flow-temperature-hysteresis-type"/>
+			<channel id="fan-cooling-room-temperature-setpoint" typeId="fan-cooling-room-temperature-setpoint-type"/>
+			<channel id="reset" typeId="reset-type"/>
+			<channel id="restart-isg" typeId="restart-isg-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="system-state">
+		<label>System State</label>
+		<channels>
+			<channel id="is-heating" typeId="is-heating-type"/>
+			<channel id="is-heating-water" typeId="is-heating-water-type"/>
+			<channel id="is-cooling" typeId="is-cooling-type"/>
+			<channel id="is-pumping" typeId="is-pumping-type"/>
+			<channel id="is-summer" typeId="is-summer-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="system-state-allwpm">
+		<label>System State</label>
+		<description>System State (read-only channels)</description>
+		<channels>
+			<channel id="hc1-pump-active" typeId="hc1-pump-active-type"/>         <!-- same as "is-pumping" -->
+			<channel id="hc2-pump-active" typeId="hc2-pump-active-type"/>
+			<channel id="heat-up-program-active" typeId="heat-up-program-active-type"/>
+			<channel id="nhz-stages-running" typeId="nhz-stages-running-type"/>
+			<channel id="hp-in-heating-mode" typeId="hp-in-heating-mode-type"/>   <!-- same as "is-heating" -->
+			<channel id="hp-in-hotwater-mode" typeId="hp-in-hotwater-mode-type"/> <!-- same as "is-heating-water" -->
+			<channel id="compressor-running" typeId="compressor-running-type"/>
+			<channel id="summer-mode-active" typeId="summer-mode-active-type"/>   <!-- same as "is-summer" -->
+			<channel id="cooling-mode-active" typeId="cooling-mode-active-type"/> <!-- same as "is-cooling" -->
+			<channel id="min-one-iws-in-defrosting-mode" typeId="min-one-iws-in-defrosting-mode-type"/>
+			<channel id="silent-mode1-active" typeId="silent-mode1-active-type"/>
+			<channel id="silent-mode2-active" typeId="silent-mode2-active-type"/>
+			<channel id="power-off" typeId="power-off-type"/>
+			<channel id="compressor1-active" typeId="compressor1-active-type"/>
+			<channel id="compressor2-active" typeId="compressor2-active-type"/>
+			<channel id="compressor3-active" typeId="compressor3-active-type"/>
+			<channel id="compressor4-active" typeId="compressor4-active-type"/>
+			<channel id="compressor5-active" typeId="compressor5-active-type"/>
+			<channel id="compressor6-active" typeId="compressor6-active-type"/>
+			<channel id="buffer-charging-pump1-active" typeId="buffer-charging-pump1-active-type"/>
+			<channel id="buffer-charging-pump2-active" typeId="buffer-charging-pump2-active-type"/>
+			<channel id="buffer-charging-pump3-active" typeId="buffer-charging-pump3-active-type"/>
+			<channel id="buffer-charging-pump4-active" typeId="buffer-charging-pump4-active-type"/>
+			<channel id="buffer-charging-pump5-active" typeId="buffer-charging-pump5-active-type"/>
+			<channel id="buffer-charging-pump6-active" typeId="buffer-charging-pump6-active-type"/>
+			<channel id="nhz1-active" typeId="nhz1-active-type"/>
+			<channel id="nhz2-active" typeId="nhz2-active-type"/>
+			<channel id="fault-status" typeId="fault-status-type"/>
+			<channel id="bus-status" typeId="bus-status-type"/>
+			<channel id="defrost-initiated" typeId="defrost-initiated-type"/>
+			<channel id="active-error" typeId="active-error-type"/>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="energy-information">
 		<label>Energy Information</label>
 		<channels>
@@ -55,6 +211,166 @@
 			<channel id="consumption-heat-total" typeId="consumption-heat-total-type"/>
 			<channel id="consumption-water-today" typeId="consumption-water-today-type"/>
 			<channel id="consumption-water-total" typeId="consumption-water-total-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="energy-runtime-information-allwpm">
+		<label>Energy/Runtime Info</label>
+		<description>Energy and Runtime Information (read-only channels)</description>
+		<channels>
+			<channel id="production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="production-water-today" typeId="production-water-today-type"/>
+			<channel id="production-water-total" typeId="production-water-total-type"/>
+			<channel id="production-nhz-heat-total" typeId="production-nhz-heat-total-type"/>
+			<channel id="production-nhz-water-total" typeId="production-nhz-water-total-type"/>
+			<channel id="consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="heating-runtime" typeId="heating-runtime-type"/>
+			<channel id="hotwater-runtime" typeId="hotwater-runtime-type"/>
+			<channel id="cooling-runtime" typeId="cooling-runtime-type"/>
+			<channel id="nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="nhz12-runtime" typeId="nhz12-runtime-type"/>
+			<channel id="hp1-production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="hp1-production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="hp1-production-water-today" typeId="production-water-today-type"/>
+			<channel id="hp1-production-water-total" typeId="production-water-total-type"/>
+			<channel id="hp1-production-nhz-heat-total" typeId="production-nhz-heat-total-type"/>
+			<channel id="hp1-production-nhz-water-total" typeId="production-nhz-water-total-type"/>
+			<channel id="hp1-consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="hp1-consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="hp1-consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="hp1-consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="hp1-cp1-heating-runtime" typeId="cp1-heating-runtime-type"/>
+			<channel id="hp1-cp2-heating-runtime" typeId="cp2-heating-runtime-type"/>
+			<channel id="hp1-cp12-heating-runtime" typeId="cp12-heating-runtime-type"/>
+			<channel id="hp1-cp1-hotwater-runtime" typeId="cp1-hotwater-runtime-type"/>
+			<channel id="hp1-cp2-hotwater-runtime" typeId="cp2-hotwater-runtime-type"/>
+			<channel id="hp1-cp12-hotwater-runtime" typeId="cp12-hotwater-runtime-type"/>
+			<channel id="hp1-cooling-runtime" typeId="cooling-runtime-type"/>
+			<channel id="hp1-nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="hp1-nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="hp1-nhz12-runtime" typeId="nhz12-runtime-type"/>
+			<channel id="hp2-production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="hp2-production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="hp2-production-water-today" typeId="production-water-today-type"/>
+			<channel id="hp2-production-water-total" typeId="production-water-total-type"/>
+			<channel id="hp2-production-nhz-heat-total" typeId="production-nhz-heat-total-type"/>
+			<channel id="hp2-production-nhz-water-total" typeId="production-nhz-water-total-type"/>
+			<channel id="hp2-consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="hp2-consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="hp2-consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="hp2-consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="hp2-cp1-heating-runtime" typeId="cp1-heating-runtime-type"/>
+			<channel id="hp2-cp2-heating-runtime" typeId="cp2-heating-runtime-type"/>
+			<channel id="hp2-cp12-heating-runtime" typeId="cp12-heating-runtime-type"/>
+			<channel id="hp2-cp1-hotwater-runtime" typeId="cp1-hotwater-runtime-type"/>
+			<channel id="hp2-cp2-hotwater-runtime" typeId="cp2-hotwater-runtime-type"/>
+			<channel id="hp2-cp12-hotwater-runtime" typeId="cp12-hotwater-runtime-type"/>
+			<channel id="hp2-cooling-runtime" typeId="cooling-runtime-type"/>
+			<channel id="hp2-nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="hp2-nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="hp2-nhz12-runtime" typeId="nhz12-runtime-type"/>
+			<channel id="hp3-production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="hp3-production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="hp3-production-water-today" typeId="production-water-today-type"/>
+			<channel id="hp3-production-water-total" typeId="production-water-total-type"/>
+			<channel id="hp3-production-nhz-heat-total" typeId="production-nhz-heat-total-type"/>
+			<channel id="hp3-production-nhz-water-total" typeId="production-nhz-water-total-type"/>
+			<channel id="hp3-consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="hp3-consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="hp3-consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="hp3-consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="hp3-cp1-heating-runtime" typeId="cp1-heating-runtime-type"/>
+			<channel id="hp3-cp2-heating-runtime" typeId="cp2-heating-runtime-type"/>
+			<channel id="hp3-cp12-heating-runtime" typeId="cp12-heating-runtime-type"/>
+			<channel id="hp3-cp1-hotwater-runtime" typeId="cp1-hotwater-runtime-type"/>
+			<channel id="hp3-cp2-hotwater-runtime" typeId="cp2-hotwater-runtime-type"/>
+			<channel id="hp3-cp12-hotwater-runtime" typeId="cp12-hotwater-runtime-type"/>
+			<channel id="hp3-cooling-runtime" typeId="cooling-runtime-type"/>
+			<channel id="hp3-nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="hp3-nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="hp3-nhz12-runtime" typeId="nhz12-runtime-type"/>
+			<channel id="hp4-production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="hp4-production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="hp4-production-water-today" typeId="production-water-today-type"/>
+			<channel id="hp4-production-water-total" typeId="production-water-total-type"/>
+			<channel id="hp4-production-nhz-heat-total" typeId="production-nhz-heat-total-type"/>
+			<channel id="hp4-production-nhz-water-total" typeId="production-nhz-water-total-type"/>
+			<channel id="hp4-consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="hp4-consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="hp4-consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="hp4-consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="hp4-cp1-heating-runtime" typeId="cp1-heating-runtime-type"/>
+			<channel id="hp4-cp2-heating-runtime" typeId="cp2-heating-runtime-type"/>
+			<channel id="hp4-cp12-heating-runtime" typeId="cp12-heating-runtime-type"/>
+			<channel id="hp4-cp1-hotwater-runtime" typeId="cp1-hotwater-runtime-type"/>
+			<channel id="hp4-cp2-hotwater-runtime" typeId="cp2-hotwater-runtime-type"/>
+			<channel id="hp4-cp12-hotwater-runtime" typeId="cp12-hotwater-runtime-type"/>
+			<channel id="hp4-cooling-runtime" typeId="cooling-runtime-type"/>
+			<channel id="hp4-nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="hp4-nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="hp4-nhz12-runtime" typeId="nhz12-runtime-type"/>
+			<channel id="hp5-production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="hp5-production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="hp5-production-water-today" typeId="production-water-today-type"/>
+			<channel id="hp5-production-water-total" typeId="production-water-total-type"/>
+			<channel id="hp5-production-nhz-heat-total" typeId="production-nhz-heat-total-type"/>
+			<channel id="hp5-production-nhz-water-total" typeId="production-nhz-water-total-type"/>
+			<channel id="hp5-consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="hp5-consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="hp5-consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="hp5-consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="hp5-cp1-heating-runtime" typeId="cp1-heating-runtime-type"/>
+			<channel id="hp5-cp2-heating-runtime" typeId="cp2-heating-runtime-type"/>
+			<channel id="hp5-cp12-heating-runtime" typeId="cp12-heating-runtime-type"/>
+			<channel id="hp5-cp1-hotwater-runtime" typeId="cp1-hotwater-runtime-type"/>
+			<channel id="hp5-cp2-hotwater-runtime" typeId="cp2-hotwater-runtime-type"/>
+			<channel id="hp5-cp12-hotwater-runtime" typeId="cp12-hotwater-runtime-type"/>
+			<channel id="hp5-cooling-runtime" typeId="cooling-runtime-type"/>
+			<channel id="hp5-nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="hp5-nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="hp5-nhz12-runtime" typeId="nhz12-runtime-type"/>
+			<channel id="hp6-production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="hp6-production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="hp6-production-water-today" typeId="production-water-today-type"/>
+			<channel id="hp6-production-water-total" typeId="production-water-total-type"/>
+			<channel id="hp6-production-nhz-heat-total" typeId="production-nhz-heat-total-type"/>
+			<channel id="hp6-production-nhz-water-total" typeId="production-nhz-water-total-type"/>
+			<channel id="hp6-consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="hp6-consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="hp6-consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="hp6-consumption-water-total" typeId="consumption-water-total-type"/>
+			<channel id="hp6-cp1-heating-runtime" typeId="cp1-heating-runtime-type"/>
+			<channel id="hp6-cp2-heating-runtime" typeId="cp2-heating-runtime-type"/>
+			<channel id="hp6-cp12-heating-runtime" typeId="cp12-heating-runtime-type"/>
+			<channel id="hp6-cp1-hotwater-runtime" typeId="cp1-hotwater-runtime-type"/>
+			<channel id="hp6-cp2-hotwater-runtime" typeId="cp2-hotwater-runtime-type"/>
+			<channel id="hp6-cp12-hotwater-runtime" typeId="cp12-hotwater-runtime-type"/>
+			<channel id="hp6-cooling-runtime" typeId="cooling-runtime-type"/>
+			<channel id="hp6-nhz1-runtime" typeId="nhz1-runtime-type"/>
+			<channel id="hp6-nhz2-runtime" typeId="nhz2-runtime-type"/>
+			<channel id="hp6-nhz12-runtime" typeId="nhz12-runtime-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sg-ready-energy-management-settings">
+		<label>SGReady EM Settings</label>
+		<description>SG Ready - Energy Management Settings (read-write channels)</description>
+		<channels>
+			<channel id="sg-ready-on-off-switch" typeId="sg-ready-on-off-switch-type"/>
+			<channel id="sg-ready-input-lines" typeId="sg-ready-input-lines-type"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="sg-ready-energy-management-system-information">
+		<label>SGReady EM SysInfo</label>
+		<description>SG Ready - Energy Management System Information (read-only channels)</description>
+		<channels>
+			<channel id="sg-ready-operating-state" typeId="sg-ready-operating-state-type"/>
+			<channel id="sg-ready-controller-identification" typeId="sg-ready-controller-identification-type"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

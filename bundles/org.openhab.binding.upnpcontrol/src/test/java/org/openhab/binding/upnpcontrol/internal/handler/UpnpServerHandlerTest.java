@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -169,10 +169,9 @@ public class UpnpServerHandlerTest extends UpnpHandlerTest {
         // stub config for initialize
         when(config.as(UpnpControlServerConfiguration.class)).thenReturn(new UpnpControlServerConfiguration());
 
-        handler = spy(
-                new UpnpServerHandler(requireNonNull(thing), requireNonNull(upnpIOService), requireNonNull(upnpService),
-                        requireNonNull(upnpRenderers), requireNonNull(upnpStateDescriptionProvider),
-                        requireNonNull(upnpCommandDescriptionProvider), configuration));
+        handler = spy(new UpnpServerHandler(requireNonNull(thing), requireNonNull(upnpIOService),
+                requireNonNull(upnpRenderers), requireNonNull(upnpStateDescriptionProvider),
+                requireNonNull(upnpCommandDescriptionProvider), configuration));
 
         initHandler(requireNonNull(handler));
 

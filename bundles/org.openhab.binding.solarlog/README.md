@@ -2,22 +2,22 @@
 
 The [Solar-Log Family](https://www.solar-log.com/en/) of monitoring devices for PV installations provide a MODBUS (TCP) and JSON-based API to access a number of internal data related to power generation and consumption. This binding implements access to the data via the JSON API.
 
-## Use of the binding
+## Usage
 
-The Solar-Log is exposed as one thing with a number of channels that can be used to read the values for different aspects of your Solar-Log installation.
+The Solar-Log is exposed as one Thing with a number of channels that can be used to read the values for different aspects of your Solar-Log installation.
 
-## Setup of the binding
+## Configuration
 
 You can either configure the Thing via the openHAB UI or via a `*.things` file, according to the following example:
 
-`Thing solarlog:meter:pv "Solar-Log 300" @ "Utility Room" [ url="http://solar-log", refreshInterval=15]`
+`Thing solarlog:meter:pv "Solar-Log 300" @ "Utility Room" [ url="http://solar-log", refreshInterval=15 ]`
 
 The parameters to be used are simple:
 
 - `url` denotes the URL of your Solar-Log. If you have not changed anything, this defaults to `http://solar-log`.
-- `refreshInterval` is the interval to fetch new data. Solar-Log updates its data every 15 - 60 seconds. `15` is the default value. Values lower than this will return the result from the last 15 seconds period. No value lower than this can be set in the UI.
+- `refreshInterval` is the interval to fetch new data. Solar-Log updates its data every 15–60 seconds. `15` is the default value. Values lower than this will return the same result within the last 15-second period. Values lower than this cannot be set in the UI.
 
-Currently, the binding does not support authenticated access to the Solar-Log JSON API (which was introduced with newer firmwares). If must set the API access to `Open` in the Solar-Log configuration in order for the binding to work.
+Currently, the binding does not support authenticated access to the Solar-Log JSON API (which was introduced with newer firmware). You must set the API access to `Open` in the Solar-Log configuration in order for the binding to work.
 
 ## Available channels
 
@@ -29,7 +29,7 @@ The following table is taken from the official manual and contains all available
 | ------------------ | ---------------------------------------------- | -------------------------------------------------------------------------- |
 | lastupdate         | Time in the format dd.mm.yy; hh.minmin, secsec | 100 Time                                                                   |
 | pac                | W                                              | 101 Total output PAC from all of the inverters and meters in inverter mode |
-| pdc                | W                                              | 102 Total output PAC from all of the inverters                             |
+| pdc                | W                                              | 102 Total output PDC from all of the inverters                             |
 | uac                | V                                              | 103 Average voltage UAC from the inverter                                  |
 | udc                | V                                              | 104 Average voltage UDC from the inverter                                  |
 | yieldday           | Wh                                             | 105 Total yield for the day from all of the inverters                      |

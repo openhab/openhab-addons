@@ -4,34 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="battery-voltage">
-		<item-type>Number:ElectricPotential</item-type>
-		<label>Battery Voltage</label>
-		<description>The current battery voltage</description>
-		<category>Energy</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="battery-alarm">
-		<item-type>String</item-type>
-		<label>Battery Alarm</label>
-		<description>The battery alarm state</description>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Voltage</tag>
-		</tags>
-		<state readOnly="true">
-			<options>
-				<option value="minThreshold">Below min threshold</option>
-				<option value="threshold1">Below threshold 1</option>
-				<option value="threshold2">Below threshold 2</option>
-				<option value="threshold3">Below threshold 3</option>
-				<option value="noThreshold">No battery alarm</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="powersource-batpercentremaining">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Percent Remaining</label>
@@ -421,7 +393,30 @@
 	<channel-type id="doorlock-lockstate">
 		<item-type>Switch</item-type>
 		<label>Door Lock State</label>
-		<description>Locks and unlocks the door and maintains the lock state</description>
+		<description>Locks and unlocks the door and maintains the lock state. If the door lock supports unbolting, this will
+			reflect the latched state.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="doorlock-boltstate">
+		<item-type>Switch</item-type>
+		<label>Door Bolt State</label>
+		<description>Bolts and unbolts the door and maintains the bolt state.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="doorlock-doorstate">
+		<item-type>Contact</item-type>
+		<label>Door Sensor State</label>
+		<description>Door Sensor State</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -429,6 +424,38 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
+	<channel-type id="doorlock-alarm">
+		<kind>trigger</kind>
+		<label>Door Lock Alarm</label>
+		<description>Event that fires when a lock alarm occurs with a payload containing the alarm code</description>
+		<event>
+			<options>
+				<option value="0">Lock Jammed</option>
+				<option value="1">Lock Factory Reset</option>
+				<option value="3">Lock Radio Power Cycled</option>
+				<option value="4">Wrong Code Entry Limit</option>
+				<option value="5">Front Escutcheon Removed</option>
+				<option value="6">Door Forced Open</option>
+				<option value="7">Door Ajar</option>
+				<option value="8">Forced User</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="doorlock-lockoperationerror">
+		<kind>trigger</kind>
+		<label>Door Lock Lock Operation Error</label>
+		<description>Event that fires when a lock operation error occurs with a payload containing the lock operation type</description>
+		<event>
+			<options>
+				<option value="0">Lock</option>
+				<option value="1">Unlock</option>
+				<option value="2">Non Access User Event</option>
+				<option value="3">Forced User Event</option>
+				<option value="4">Unlatch</option>
+			</options>
+		</event>
+	</channel-type>
 
 	<channel-type id="electricalenergymeasurement-energymeasurmement-energy">
 		<item-type>Number:Energy</item-type>
@@ -547,6 +574,275 @@
 				<option value="6">Extremely Poor</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<!-- Generic Concentration Measurement Channels (shared across all concentration measurement clusters) -->
+	<channel-type id="concentrationmeasurement-measuredvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Concentration</label>
+		<description>Indicates the measured concentration.</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="concentrationmeasurement-levelvalue">
+		<item-type>Number</item-type>
+		<label>Concentration Level</label>
+		<description>Indicates the concentration level as an enumeration (0=Unknown, 1=Low, 2=Medium, 3=High, 4=Critical).</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Unknown</option>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+				<option value="4">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="concentrationmeasurement-peakmeasuredvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Peak Concentration</label>
+		<description>Indicates the peak (maximum) concentration measured during the measurement window.</description>
+		<category>Chart</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="concentrationmeasurement-averagemeasuredvalue">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Average Concentration</label>
+		<description>Indicates the average concentration measured during the measurement window.</description>
+		<category>Chart</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Smoke/CO Alarm Channels -->
+	<channel-type id="smokecoalarm-expressedstate">
+		<item-type>Number</item-type>
+		<label>Expressed State</label>
+		<description>Indicates the visibly and audibly expressed alarm state with the highest priority.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Smoke Alarm</option>
+				<option value="2">CO Alarm</option>
+				<option value="3">Battery Alert</option>
+				<option value="4">Testing</option>
+				<option value="5">Hardware Fault</option>
+				<option value="6">End Of Service</option>
+				<option value="7">Interconnect Smoke</option>
+				<option value="8">Interconnect CO</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-smokestate">
+		<item-type>Number</item-type>
+		<label>Smoke Alarm</label>
+		<description>Indicates whether the smoke sensor is currently triggering an alarm.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-costate">
+		<item-type>Number</item-type>
+		<label>CO Alarm</label>
+		<description>Indicates whether the CO sensor is currently triggering an alarm.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-batteryalert">
+		<item-type>Number</item-type>
+		<label>Battery Alert</label>
+		<description>Indicates whether the battery power resource fault detection is triggered.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-devicemuted">
+		<item-type>Number</item-type>
+		<label>Device Muted</label>
+		<description>Indicates whether the audible expression of the device is currently muted.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Not Muted</option>
+				<option value="1">Muted</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-testinprogress">
+		<item-type>Switch</item-type>
+		<label>Test In Progress</label>
+		<description>Indicates whether the device self-test is currently activated.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-hardwarefault">
+		<item-type>Switch</item-type>
+		<label>Hardware Fault</label>
+		<description>Indicates whether the hardware fault detection mechanism is triggered.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-endofservice">
+		<item-type>Number</item-type>
+		<label>End Of Service</label>
+		<description>Indicates whether the end-of-service has been triggered at the device.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Expired</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-interconnectsmoke">
+		<item-type>Number</item-type>
+		<label>Interconnect Smoke Alarm</label>
+		<description>Indicates whether the interconnected smoke alarm is currently triggering from another device.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-interconnectco">
+		<item-type>Number</item-type>
+		<label>Interconnect CO Alarm</label>
+		<description>Indicates whether the interconnected CO alarm is currently triggering from another device.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>CO</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Warning</option>
+				<option value="2">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-contaminationstate">
+		<item-type>Number</item-type>
+		<label>Contamination State</label>
+		<description>Indicates the contamination level of the smoke sensor.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Low</option>
+				<option value="2">Warning</option>
+				<option value="3">Critical</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-smokesensitivity">
+		<item-type>Number</item-type>
+		<label>Smoke Sensitivity</label>
+		<description>Indicates the sensitivity level of the smoke sensor.</description>
+		<category>Alarm</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">High</option>
+				<option value="1">Standard</option>
+				<option value="2">Low</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smokecoalarm-expirydate">
+		<item-type>DateTime</item-type>
+		<label>Expiry Date</label>
+		<description>Indicates the date when the device reaches its stated expiry date.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

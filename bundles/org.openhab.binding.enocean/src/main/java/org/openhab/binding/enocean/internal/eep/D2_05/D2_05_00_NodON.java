@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,6 @@ import org.openhab.core.types.State;
 public class D2_05_00_NodON extends D2_05_00 {
 
     public D2_05_00_NodON() {
-        super();
     }
 
     public D2_05_00_NodON(ERP1Message packet) {

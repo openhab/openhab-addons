@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -75,8 +74,8 @@ public class AdministratorCommissioningCluster extends BaseCluster {
         ENHANCED_WINDOW_OPEN(1, "Enhanced Window Open"),
         BASIC_WINDOW_OPEN(2, "Basic Window Open");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CommissioningWindowStatusEnum(Integer value, String label) {
             this.value = value;
@@ -99,8 +98,8 @@ public class AdministratorCommissioningCluster extends BaseCluster {
         PAKE_PARAMETER_ERROR(3, "Pake Parameter Error"),
         WINDOW_NOT_OPEN(4, "Window Not Open");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;

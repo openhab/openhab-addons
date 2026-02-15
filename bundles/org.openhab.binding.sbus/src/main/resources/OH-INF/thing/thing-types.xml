@@ -36,13 +36,44 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Temperature Device -->
+	<!-- Temperature Sensor Device -->
+	<thing-type id="temperature-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Temperature Sensor</label>
+		<description>Sbus temperature sensor</description>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Temperature Device (Deprecated - use temperature-sensor instead) -->
 	<thing-type id="temperature">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>Sbus Temperature Sensor</label>
-		<description>Sbus temperature sensor device</description>
+		<label>Sbus Temperature Sensor (Deprecated)</label>
+		<description>Sbus temperature sensor device (deprecated, use temperature-sensor instead)</description>
 		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">
@@ -98,8 +129,8 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Contact Device -->
-	<thing-type id="contact">
+	<!-- Contact Sensor Device -->
+	<thing-type id="contact-sensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
@@ -107,6 +138,15 @@
 		<description>Sbus contact sensor device</description>
 		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<config-description>
+			<parameter name="type" type="text">
+				<label>Device Type</label>
+				<description>Type of contact sensor device</description>
+				<options>
+					<option value="012c">012C (Dry Contact Sensor)</option>
+					<option value="02ca">02CA (Multi-Sensor)</option>
+				</options>
+				<default>012c</default>
+			</parameter>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
 				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
@@ -124,6 +164,68 @@
 				<label>Refresh Interval</label>
 				<description>Refresh interval in seconds</description>
 				<default>30</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Motion Sensor Device -->
+	<thing-type id="motion-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Motion Sensor</label>
+		<description>Sbus motion sensor device </description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
+				<default>0</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Lux Sensor Device -->
+	<thing-type id="lux-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Lux Sensor</label>
+		<description>Sbus light level sensor device </description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
+				<default>0</default>
 				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
@@ -260,5 +362,42 @@
 		</config-description>
 	</channel-type>
 
+	<channel-type id="motion-channel">
+		<item-type>Switch</item-type>
+		<label>Motion Detection</label>
+		<description>Motion detection state (ON=motion detected, OFF=no motion)</description>
+		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="channelNumber" type="integer">
+				<label>Channel Number</label>
+				<description>The physical channel number on the Sbus device</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="lux-channel">
+		<item-type>Number:Illuminance</item-type>
+		<label>Light Level</label>
+		<description>Light level in LUX units</description>
+		<category>Sun</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+		<config-description>
+			<parameter name="channelNumber" type="integer">
+				<label>Channel Number</label>
+				<description>The physical channel number on the Sbus device</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
+	</channel-type>
 
 </thing:thing-descriptions>

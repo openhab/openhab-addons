@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -44,8 +43,8 @@ public class KeypadInputCluster extends BaseCluster {
         UNSUPPORTED_KEY(1, "Unsupported Key"),
         INVALID_KEY_IN_CURRENT_STATE(2, "Invalid Key In Current State");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -150,8 +149,8 @@ public class KeypadInputCluster extends BaseCluster {
         F5(117, "F 5"),
         DATA(118, "Data");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CecKeyCodeEnum(Integer value, String label) {
             this.value = value;

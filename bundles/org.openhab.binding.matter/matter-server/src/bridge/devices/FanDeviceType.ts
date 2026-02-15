@@ -26,8 +26,7 @@ export class FanDeviceType extends BaseDeviceType {
 
     override defaultClusterValues() {
         return {
-            fanControl: { ...CustomFanControlServer.DEFAULTS },
-            onOff: { ...CustomOnOffServer.DEFAULTS },
+            fanControl: { ...CustomFanControlServer.DEFAULTS }
         };
     }
 }

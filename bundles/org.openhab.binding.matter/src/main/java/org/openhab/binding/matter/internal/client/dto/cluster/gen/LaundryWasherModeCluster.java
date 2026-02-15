@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -127,8 +126,8 @@ public class LaundryWasherModeCluster extends BaseCluster {
         GENERIC_FAILURE(2, "Generic Failure"),
         INVALID_IN_MODE(3, "Invalid In Mode");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -162,8 +161,8 @@ public class LaundryWasherModeCluster extends BaseCluster {
         HEAVY(16386, "Heavy"),
         WHITES(16387, "Whites");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

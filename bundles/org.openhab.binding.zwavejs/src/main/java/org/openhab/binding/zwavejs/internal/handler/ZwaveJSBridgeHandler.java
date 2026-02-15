@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.zwavejs.internal.handler;
+
+import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_COMMAND_CLASS_NOTIFICATION;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_NOTIFICATION_PROPERTY;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,6 +58,8 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link ZwaveJSBridgeHandler} is responsible for handling communication between the
@@ -162,10 +167,18 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             return;
         }
 
+        ZwaveNodeListener nodeListener;
+
         if (message instanceof EventMessage eventMsg && eventMsg.event != null) {
             String eventType = eventMsg.event.event;
-            ZwaveNodeListener nodeListener = nodeListeners.get(eventMsg.event.nodeId);
+            nodeListener = nodeListeners.get(eventMsg.event.nodeId);
             switch (eventType) {
+                case "notification":
+                    if (nodeListener != null) {
+                        Event event = normalizeNotificationEvent(eventMsg.event);
+                        nodeListener.onNodeStateChanged(event);
+                    }
+                    break;
                 case "value updated":
                 case "value notification":
                     if (nodeListener != null) {
@@ -193,11 +206,28 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                         discovery.addNodeDiscovery(eventMsg.event.node);
                     }
                     break;
+                case "statistics updated":
+                    if (nodeListener != null && eventMsg.event.statistics != null) {
+                        nodeListener.onStatisticsUpdated(eventMsg.event.statistics);
+                    }
+                    break;
                 default:
                     logger.trace("Unhandled event type: {}", eventType);
             }
-            return;
         }
+    }
+
+    public static Event normalizeNotificationEvent(Event event) {
+        Event normalizedEvent = new Event();
+        normalizedEvent.event = event.event;
+        normalizedEvent.args = new Args();
+        normalizedEvent.args.commandClass = event.ccId;
+        normalizedEvent.args.commandClassName = VIRTUAL_COMMAND_CLASS_NOTIFICATION;
+        normalizedEvent.args.propertyName = VIRTUAL_NOTIFICATION_PROPERTY;
+        normalizedEvent.args.endpoint = event.endpointIndex;
+        normalizedEvent.args.newValue = new Gson().toJson(event.args);
+        normalizedEvent.nodeId = event.nodeId;
+        return normalizedEvent;
     }
 
     private @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
@@ -214,8 +244,12 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             event.args.endpoint = Integer.parseInt(parts[1]);
             event.args.commandClass = Integer.parseInt(parts[2]);
             event.args.commandClassName = parts[3];
-            event.args.propertyKey = parts[4];
-            event.args.propertyName = parts[5];
+            if (!"null".equals(parts[4]) && !parts[4].isBlank()) {
+                event.args.propertyKey = parts[4];
+            }
+            if (!"null".equals(parts[5]) && !parts[5].isBlank()) {
+                event.args.propertyName = parts[5];
+            }
             event.nodeId = Integer.parseInt(parts[6]);
         } catch (NumberFormatException e) {
             logger.warn("Error parsing messageId '{}': {}", messageId, e.getMessage());

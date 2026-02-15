@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,6 +29,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
 /**
@@ -46,50 +48,51 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     public EvccVehicleHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        vehicleId = thing.getProperties().get(PROPERTY_ID);
+        vehicleId = getPropertyOrConfigValue(PROPERTY_VEHICLE_ID);
+        type = PROPERTY_TYPE_VEHICLE;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof State) {
-            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
-            String value = command.toString();
+        if (command instanceof State state) {
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase(Locale.ROOT);
+            String value = state.toString();
             if (value.contains(" ")) {
-                value = value.substring(0, command.toString().indexOf(" "));
+                value = value.substring(0, state.toString().indexOf(" "));
             }
             String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            sendCommand(url);
+            performApiRequest(url, POST, JsonNull.INSTANCE);
         } else {
             super.handleCommand(channelUID, command);
         }
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
-        state = state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
-        super.updateFromEvccState(state);
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
+        updateStatesFromApiResponse(state);
     }
 
     @Override
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            endpoint = handler.getBaseURL() + API_PATH_VEHICLES;
-            JsonObject stateOpt = handler.getCachedEvccState();
+            endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
+            JsonObject state = stateOpt.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
             commonInitialize(state);
         });
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_MEMBER_VEHICLES) ? state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId)
+        return state.has(JSON_KEY_VEHICLES) ? state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId)
                 : new JsonObject();
     }
 }

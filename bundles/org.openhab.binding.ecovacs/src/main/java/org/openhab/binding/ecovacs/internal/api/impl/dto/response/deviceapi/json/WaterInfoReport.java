@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,5 +21,7 @@ public class WaterInfoReport {
     @SerializedName("enable")
     public int waterPlatePresent;
     @SerializedName("amount")
-    public int waterAmount;
+    public Integer waterAmount; // enum (1-4)
+    @SerializedName("customAmount")
+    public Integer customWaterAmount; // numeric value (0-100)
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -285,8 +284,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         NOT_PLAYING(2, "Not Playing"),
         BUFFERING(3, "Buffering");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PlaybackStateEnum(Integer value, String label) {
             this.value = value;
@@ -312,8 +311,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         SPEED_OUT_OF_RANGE(4, "Speed Out Of Range"),
         SEEK_OUT_OF_RANGE(5, "Seek Out Of Range");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -351,8 +350,8 @@ public class MediaPlaybackCluster extends BaseCluster {
         EMERGENCY(16, "Emergency"),
         KARAOKE(17, "Karaoke");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CharacteristicEnum(Integer value, String label) {
             this.value = value;

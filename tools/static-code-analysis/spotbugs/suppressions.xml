@@ -24,6 +24,14 @@
     <Class name="~.*Util"/>
     <Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
   </Match>
+  <Match>
+    <Package name="org.openhab.binding.astro.internal.calc"/>
+    <Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
+  </Match>
+  <Match>
+    <Package name="org.openhab.binding.astro.internal.job"/>
+    <Bug pattern="SLF4J_LOGGER_SHOULD_BE_NON_STATIC"/>
+  </Match>
   <!-- The format string is parameter, it can't be constant -->
   <Match>
     <Class name="org.openhab.core.model.script.actions.Log"/>

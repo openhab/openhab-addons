@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.io.hueemulation.internal.automation;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -74,14 +75,15 @@ public class HttpActionHandler extends BaseModuleHandler<Action> implements Acti
         // convert relative path to absolute one
         String url = config.url;
         if (url.startsWith("/")) {
-            config.url = "http://localhost:" + Integer.getInteger("org.osgi.service.http.port", 8080).toString() + url;
+            config.url = "http://localhost:"
+                    + Objects.requireNonNull(Integer.getInteger("org.osgi.service.http.port", 8080)).toString() + url;
         }
 
         httpClient = httpFactory.createHttpClient("HttpActionHandler_" + module.getId());
     }
 
     @Override
-    public @Nullable Map<String, Object> execute(Map<String, Object> context) {
+    public @Nullable Map<String, @Nullable Object> execute(Map<String, Object> context) {
         try {
             Request request = httpClient.newRequest(URI.create(config.url)).method(config.method)
                     .timeout(config.timeout, TimeUnit.SECONDS);

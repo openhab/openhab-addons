@@ -3,7 +3,7 @@
 ![govee](doc/govee-lights.png)
 
 This binding integrates Light devices from [Govee](https://www.govee.com/).
-Even though these devices are widely used, they are usually only accessable via the Cloud.
+Even though these devices are widely used, they are usually only accessible via the Cloud.
 Another option is using Bluetooth which, due to its limitation only allows to control devices within a small range.
 The Bluetooth approach is supported by the openHAB Govee Binding while this binding covers the LAN interface.
 

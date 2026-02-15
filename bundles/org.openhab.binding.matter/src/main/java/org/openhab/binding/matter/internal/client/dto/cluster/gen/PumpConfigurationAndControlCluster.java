@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -332,8 +331,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
         MAXIMUM(2, "Maximum"),
         LOCAL(3, "Local");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationModeEnum(Integer value, String label) {
             this.value = value;
@@ -359,8 +358,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
         CONSTANT_TEMPERATURE(5, "Constant Temperature"),
         AUTOMATIC(7, "Automatic");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ControlModeEnum(Integer value, String label) {
             this.value = value;

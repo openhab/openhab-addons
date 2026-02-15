@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.knx.internal.security;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,12 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.knxnetip.SecureConnection;
-import tuwien.auto.calimero.secure.Keyring;
-import tuwien.auto.calimero.secure.KnxSecureException;
-import tuwien.auto.calimero.secure.Security;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
+import io.calimero.knxnetip.SecureConnection;
+import io.calimero.secure.Keyring;
+import io.calimero.secure.KnxSecureException;
+import io.calimero.secure.Security;
 
 /**
  *
@@ -56,9 +57,7 @@ public class KNXSecurityTest {
         GroupAddress ga = new GroupAddress(8, 0, 0);
         byte[] key800enc = keys.groups().get(ga);
         assertNotNull(key800enc);
-        if (key800enc != null) {
-            assertNotEquals(0, key800enc.length);
-        }
+        assertNotEquals(0, key800enc.length);
         byte[] key800dec = keys.decryptKey(key800enc, password);
         assertEquals(16, key800dec.length);
 
@@ -107,19 +106,16 @@ public class KNXSecurityTest {
         openhabSecurity.useKeyring(keys, password);
 
         assertThrows(KnxSecureException.class, () -> {
-            KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.empty(), passwordString);
+            KNXBridgeBaseThingHandler.secHelperReadBackboneKey(null, passwordString);
         });
-        assertTrue(KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.ofNullable(keys), passwordString)
-                .isEmpty());
+        assertTrue(KNXBridgeBaseThingHandler.secHelperReadBackboneKey(keys, passwordString).isEmpty());
 
         // now check tunnel (expected to fail, not included)
         IndividualAddress secureTunnelSourceAddr = new IndividualAddress(2, 8, 20);
         assertThrows(KnxSecureException.class, () -> {
-            KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(Optional.empty(), passwordString,
-                    secureTunnelSourceAddr);
+            KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(null, passwordString, secureTunnelSourceAddr);
         });
-        assertTrue(KNXBridgeBaseThingHandler
-                .secHelperReadTunnelConfig(Optional.ofNullable(keys), passwordString, secureTunnelSourceAddr)
+        assertTrue(KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(keys, passwordString, secureTunnelSourceAddr)
                 .isEmpty());
     }
 
@@ -139,16 +135,14 @@ public class KNXSecurityTest {
         openhabSecurity.useKeyring(keys, password);
 
         assertThrows(KnxSecureException.class,
-                () -> KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.empty(), passwordString));
-        assertTrue(KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.ofNullable(keys), passwordString)
-                .isPresent());
+                () -> KNXBridgeBaseThingHandler.secHelperReadBackboneKey(null, passwordString));
+        assertTrue(KNXBridgeBaseThingHandler.secHelperReadBackboneKey(keys, passwordString).isPresent());
 
         // now check tunnel (expected to fail, not included)
         IndividualAddress secureTunnelSourceAddr = new IndividualAddress(2, 8, 20);
-        assertThrows(KnxSecureException.class, () -> KNXBridgeBaseThingHandler
-                .secHelperReadTunnelConfig(Optional.empty(), passwordString, secureTunnelSourceAddr));
-        assertTrue(KNXBridgeBaseThingHandler
-                .secHelperReadTunnelConfig(Optional.ofNullable(keys), passwordString, secureTunnelSourceAddr)
+        assertThrows(KnxSecureException.class, () -> KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(null,
+                passwordString, secureTunnelSourceAddr));
+        assertTrue(KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(keys, passwordString, secureTunnelSourceAddr)
                 .isEmpty());
     }
 
@@ -168,16 +162,14 @@ public class KNXSecurityTest {
         openhabSecurity.useKeyring(keys, password);
 
         assertThrows(KnxSecureException.class,
-                () -> KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.empty(), passwordString));
-        assertTrue(KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.ofNullable(keys), passwordString)
-                .isEmpty());
+                () -> KNXBridgeBaseThingHandler.secHelperReadBackboneKey(null, passwordString));
+        assertTrue(KNXBridgeBaseThingHandler.secHelperReadBackboneKey(keys, passwordString).isEmpty());
 
         // now check tunnel
         IndividualAddress secureTunnelSourceAddr = new IndividualAddress(1, 1, 2);
-        assertThrows(KnxSecureException.class, () -> KNXBridgeBaseThingHandler
-                .secHelperReadTunnelConfig(Optional.empty(), passwordString, secureTunnelSourceAddr));
-        assertTrue(KNXBridgeBaseThingHandler
-                .secHelperReadTunnelConfig(Optional.ofNullable(keys), passwordString, secureTunnelSourceAddr)
+        assertThrows(KnxSecureException.class, () -> KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(null,
+                passwordString, secureTunnelSourceAddr));
+        assertTrue(KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(keys, passwordString, secureTunnelSourceAddr)
                 .isPresent());
     }
 
@@ -200,12 +192,12 @@ public class KNXSecurityTest {
 
         // now check router settings:
         assertThrows(KnxSecureException.class,
-                () -> KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.empty(), passwordString));
+                () -> KNXBridgeBaseThingHandler.secHelperReadBackboneKey(null, passwordString));
         String bbKeyHex = "D947B12DDECAD528B1D5A88FD347F284";
-        byte[] bbKeyParsedLower = KNXBridgeBaseThingHandler.secHelperParseBackboneKey(bbKeyHex.toLowerCase());
+        byte[] bbKeyParsedLower = KNXBridgeBaseThingHandler
+                .secHelperParseBackboneKey(bbKeyHex.toLowerCase(Locale.ROOT));
         byte[] bbKeyParsedUpper = KNXBridgeBaseThingHandler.secHelperParseBackboneKey(bbKeyHex);
-        Optional<byte[]> bbKeyRead = KNXBridgeBaseThingHandler.secHelperReadBackboneKey(Optional.ofNullable(keys),
-                passwordString);
+        Optional<byte[]> bbKeyRead = KNXBridgeBaseThingHandler.secHelperReadBackboneKey(keys, passwordString);
         assertEquals(16, bbKeyParsedUpper.length);
         assertArrayEquals(bbKeyParsedUpper, bbKeyParsedLower);
         assertTrue(bbKeyRead.isPresent());
@@ -218,14 +210,12 @@ public class KNXSecurityTest {
         // now check tunnel settings:
         IndividualAddress secureTunnelSourceAddr = new IndividualAddress(1, 1, 2);
         IndividualAddress noSecureTunnelSourceAddr = new IndividualAddress(2, 8, 20);
-        assertThrows(KnxSecureException.class, () -> KNXBridgeBaseThingHandler
-                .secHelperReadTunnelConfig(Optional.empty(), passwordString, secureTunnelSourceAddr));
-        assertTrue(KNXBridgeBaseThingHandler
-                .secHelperReadTunnelConfig(Optional.ofNullable(keys), passwordString, noSecureTunnelSourceAddr)
+        assertThrows(KnxSecureException.class, () -> KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(null,
+                passwordString, secureTunnelSourceAddr));
+        assertTrue(KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(keys, passwordString, noSecureTunnelSourceAddr)
                 .isEmpty());
 
-        var config = KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(Optional.ofNullable(keys), passwordString,
-                secureTunnelSourceAddr);
+        var config = KNXBridgeBaseThingHandler.secHelperReadTunnelConfig(keys, passwordString, secureTunnelSourceAddr);
         assertTrue(config.isPresent());
         assertEquals(2, config.get().user);
 

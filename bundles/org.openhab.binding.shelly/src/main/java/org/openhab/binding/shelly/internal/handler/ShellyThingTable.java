@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class ShellyThingTable {
     public ShellyThingInterface getThing(String key) {
         ShellyThingInterface t = findThing(key);
         if (t == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Unknown thing for key '" + key + "'");
         }
         return t;
     }

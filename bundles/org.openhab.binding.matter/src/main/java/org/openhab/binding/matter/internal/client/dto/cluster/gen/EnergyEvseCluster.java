@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -516,8 +515,8 @@ public class EnergyEvseCluster extends BaseCluster {
         SESSION_ENDING(5, "Session Ending"),
         FAULT(6, "Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StateEnum(Integer value, String label) {
             this.value = value;
@@ -543,8 +542,8 @@ public class EnergyEvseCluster extends BaseCluster {
         DISABLED_DIAGNOSTICS(4, "Disabled Diagnostics"),
         ENABLED(5, "Enabled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SupplyStateEnum(Integer value, String label) {
             this.value = value;
@@ -581,8 +580,8 @@ public class EnergyEvseCluster extends BaseCluster {
         OVER_TEMPERATURE(15, "Over Temperature"),
         OTHER(255, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private FaultStateEnum(Integer value, String label) {
             this.value = value;
@@ -605,8 +604,8 @@ public class EnergyEvseCluster extends BaseCluster {
         EVSE_STOPPED(1, "Evse Stopped"),
         OTHER(2, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EnergyTransferStoppedReasonEnum(Integer value, String label) {
             this.value = value;

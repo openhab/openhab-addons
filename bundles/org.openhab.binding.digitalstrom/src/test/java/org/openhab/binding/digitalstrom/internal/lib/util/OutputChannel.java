@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepar
 @NonNullByDefault
 public class OutputChannel {
     public OutputChannel(OutputChannelEnum outputChannel) {
-        super();
         this.channelID = outputChannel.getChannelId();
         this.name = outputChannel.getName();
         this.id = outputChannel.getName();

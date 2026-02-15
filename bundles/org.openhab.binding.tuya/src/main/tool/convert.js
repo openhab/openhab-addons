@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -463,6 +463,8 @@ http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/s
                             }
                         }
                     }
+                    convertedEntry['readOnly'] = (entry.mode === 'ro' ? true : false);
+
                     convertedSchema[entry.code] = convertedEntry;
                 }
                 if (Object.keys(convertedSchema).length > 0) {
@@ -476,7 +478,7 @@ http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/s
         const replacer = (key, value) =>
             value instanceof Object && !(value instanceof Array) ?
                 Object.keys(value)
-                    .sort()
+                    .sort((a, b) => a - b)
                     .reduce((sorted, key) => {
                         sorted[key] = value[key];
                         return sorted;

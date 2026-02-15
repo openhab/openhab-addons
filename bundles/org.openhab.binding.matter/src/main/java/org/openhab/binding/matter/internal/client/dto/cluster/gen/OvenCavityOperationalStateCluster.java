@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -218,8 +217,8 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
         PAUSED(2, "Paused"),
         ERROR(3, "Error");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationalStateEnum(Integer value, String label) {
             this.value = value;
@@ -259,8 +258,8 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
         UNABLE_TO_COMPLETE_OPERATION(2, "Unable To Complete Operation"),
         COMMAND_INVALID_IN_STATE(3, "Command Invalid In State");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ErrorStateEnum(Integer value, String label) {
             this.value = value;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -95,8 +94,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         UP(0, "Up"),
         DOWN(1, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DegradationDirectionEnum(Integer value, String label) {
             this.value = value;
@@ -119,8 +118,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChangeIndicationEnum(Integer value, String label) {
             this.value = value;
@@ -149,8 +148,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         GTIN14(3, "Gtin 14"),
         OEM(4, "Oem");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ProductIdentifierTypeEnum(Integer value, String label) {
             this.value = value;

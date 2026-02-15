@@ -11,6 +11,12 @@ requests:
   - start: 0x0085
     end: 0x0085
     mb_functioncode: 0x03
+  - start: 0x0094
+    end: 0x009F
+    mb_functioncode: 0x03
+  - start: 0x00A6
+    end: 0x00B1
+    mb_functioncode: 0x03
   - start: 0x0202
     end: 0x022E
     mb_functioncode: 0x03
@@ -707,3 +713,305 @@ parameters:
         scale: 1
         rule: 6
         registers: [0x0229, 0x022A, 0x22B, 0x022C, 0x022D, 0x022E]
+
+  - group: Time Of Use
+    items:
+      - name: "TOU Time 1"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 9
+        isReadOnly: false
+        registers: [0x0094]
+
+      - name: "TOU Time 2"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 9
+        isReadOnly: false
+        registers: [0x0095]
+
+      - name: "TOU Time 3"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 9
+        isReadOnly: false
+        registers: [0x0096]
+
+      - name: "TOU Time 4"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 9
+        isReadOnly: false
+        registers: [0x0097]
+
+      - name: "TOU Time 5"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 9
+        isReadOnly: false
+        registers: [0x0098]
+
+      - name: "TOU Time 6"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 9
+        isReadOnly: false
+        registers: [0x0099]
+
+      - name: "TOU Power 1"
+        class: "energy"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x009A]
+
+      - name: "TOU Power 2"
+        class: "energy"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x009B]
+
+      - name: "TOU Power 3"
+        class: "energy"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x009C]
+
+      - name: "TOU Power 4"
+        class: "energy"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x009D]
+
+      - name: "TOU Power 5"
+        class: "energy"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x009E]
+
+      - name: "TOU Power 6"
+        class: "energy"
+        state_class: "measurement"
+        uom: "W"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x009F]
+
+      - name: "TOU Battery SOC 1"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x00A6]
+        icon: "mdi:battery"
+        validation:
+          min: 0
+          max: 100
+
+      - name: "TOU Battery SOC 2"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x00A7]
+        icon: "mdi:battery"
+        validation:
+          min: 0
+          max: 100
+
+      - name: "TOU Battery SOC 3"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x00A8]
+        icon: "mdi:battery"
+        validation:
+          min: 0
+          max: 100
+
+      - name: "TOU Battery SOC 4"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x00A9]
+        icon: "mdi:battery"
+        validation:
+          min: 0
+          max: 100
+
+      - name: "TOU Battery SOC 5"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x00AA]
+        icon: "mdi:battery"
+        validation:
+          min: 0
+          max: 100
+
+      - name: "TOU Battery SOC 6"
+        class: "battery"
+        state_class: "measurement"
+        uom: "%"
+        scale: 1
+        rule: 1
+        isReadOnly: false
+        registers: [0x00AB]
+        icon: "mdi:battery"
+        validation:
+          min: 0
+          max: 100
+
+      - name: "TOU Charge Enable 1"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [0x00AC]
+        isReadOnly: false
+        isstr: true
+        lookup:
+          - key: 0
+            value: "Charge disabled"
+          - key: 1
+            value: "Grid charge"
+          - key: 2
+            value: "Generator charge"
+          - key: 3
+            value: "Grid charge + Generator charge"
+
+      - name: "TOU Charge Enable 2"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [ 0x00AD ]
+        isReadOnly: false
+        isstr: true
+        lookup:
+          - key: 0
+            value: "Charge disabled"
+          - key: 1
+            value: "Grid charge"
+          - key: 2
+            value: "Generator charge"
+          - key: 3
+            value: "Grid charge + Generator charge"
+
+      - name: "TOU Charge Enable 3"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [ 0x00AE ]
+        isReadOnly: false
+        isstr: true
+        lookup:
+          - key: 0
+            value: "Charge disabled"
+          - key: 1
+            value: "Grid charge"
+          - key: 2
+            value: "Generator charge"
+          - key: 3
+            value: "Grid charge + Generator charge"
+
+      - name: "TOU Charge Enable 4"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [ 0x00AF ]
+        isReadOnly: false
+        isstr: true
+        lookup:
+          - key: 0
+            value: "Charge disabled"
+          - key: 1
+            value: "Grid charge"
+          - key: 2
+            value: "Generator charge"
+          - key: 3
+            value: "Grid charge + Generator charge"
+
+      - name: "TOU Charge Enable 5"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [ 0x00B0 ]
+        isReadOnly: false
+        isstr: true
+        lookup:
+          - key: 0
+            value: "Charge disabled"
+          - key: 1
+            value: "Grid charge"
+          - key: 2
+            value: "Generator charge"
+          - key: 3
+            value: "Grid charge + Generator charge"
+
+      - name: "TOU Charge Enable 6"
+        class: ""
+        state_class: ""
+        uom: ""
+        scale: 1
+        rule: 1
+        registers: [ 0x00B1 ]
+        isReadOnly: false
+        isstr: true
+        lookup:
+          - key: 0
+            value: "Charge disabled"
+          - key: 1
+            value: "Grid charge"
+          - key: 2
+            value: "Generator charge"
+          - key: 3
+            value: "Grid charge + Generator charge"

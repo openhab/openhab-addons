@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -445,7 +445,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
             Currency currency = config.getCurrency();
             boolean isDKK = CURRENCY_DKK.equals(currency);
             TimeSeries spotPriceTimeSeries = new TimeSeries(REPLACE);
-            LocalDate dayAheadFirstDate = electricityPriceProvider.getDayAheadTransitionDate().plusDays(1);
+            LocalDate dayAheadFirstDate = DAY_AHEAD_TRANSITION_DATE.plusDays(1);
 
             if (startDate.isBefore(dayAheadFirstDate)) {
                 ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, currency,

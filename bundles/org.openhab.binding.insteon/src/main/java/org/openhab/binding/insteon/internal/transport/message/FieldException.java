@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,6 @@ public class FieldException extends Exception {
     private static final long serialVersionUID = -4749311173073727318L;
 
     public FieldException() {
-        super();
     }
 
     public FieldException(String m) {

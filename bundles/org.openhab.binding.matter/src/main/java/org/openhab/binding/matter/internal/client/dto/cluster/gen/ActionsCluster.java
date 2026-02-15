@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -231,8 +230,8 @@ public class ActionsCluster extends BaseCluster {
         NOTIFICATION(5, "Notification"),
         ALARM(6, "Alarm");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ActionTypeEnum(Integer value, String label) {
             this.value = value;
@@ -259,8 +258,8 @@ public class ActionsCluster extends BaseCluster {
         PAUSED(2, "Paused"),
         DISABLED(3, "Disabled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ActionStateEnum(Integer value, String label) {
             this.value = value;
@@ -282,8 +281,8 @@ public class ActionsCluster extends BaseCluster {
         UNKNOWN(0, "Unknown"),
         INTERRUPTED(1, "Interrupted");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ActionErrorEnum(Integer value, String label) {
             this.value = value;
@@ -310,8 +309,8 @@ public class ActionsCluster extends BaseCluster {
         ROOM(1, "Room"),
         ZONE(2, "Zone");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EndpointListTypeEnum(Integer value, String label) {
             this.value = value;

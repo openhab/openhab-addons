@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,6 +77,7 @@ public class Shelly1ApiJsonDTO {
     public static final String SHELLY_EVENT_OUT_OFF = "out_off";
     public static final String SHELLY_EVENT_SHORTPUSH = "shortpush";
     public static final String SHELLY_EVENT_LONGPUSH = "longpush";
+
     // Button
     public static final String SHELLY_EVENT_DOUBLE_SHORTPUSH = "double_shortpush";
     public static final String SHELLY_EVENT_TRIPLE_SHORTPUSH = "triple_shortpush";
@@ -684,10 +685,6 @@ public class Shelly1ApiJsonDTO {
         public Boolean rainSensor; // Flood: true=in rain mode
 
         // FW 1.5.7: Door Window
-        @SerializedName("dark_treshold")
-        public Integer darkTreshold; // Illumination definition for "dark" in lux
-        @SerializedName("twilight_treshold")
-        public Integer twiLightTreshold; // Illumination definition for "twilight" in lux
         @SerializedName("dark_url")
         public String darkUrl; // URL to report to when luminance <= dark_threshold
         @SerializedName("twilight_url")
@@ -716,8 +713,14 @@ public class Shelly1ApiJsonDTO {
         public ShellyMotionSettings motion;
         @SerializedName("tamper_sensitivity")
         public Integer tamperSensitivity;
+        /**
+         * Illumination level threshold for dark condition.
+         */
         @SerializedName("dark_threshold")
         public Integer darkThreshold;
+        /**
+         * Illumination level threshold for twilight condition.
+         */
         @SerializedName("twilight_threshold")
         public Integer twilightThreshold;
 
@@ -1193,6 +1196,15 @@ public class Shelly1ApiJsonDTO {
         // Shelly TRV
         public Boolean calibrated;
         public ArrayList<ShellyThermnostat> thermostats;
+
+        // Shelly BLU Remote
+        public Integer channel;
+        public String direction;
+        public Integer steps;
+        public Double rotationX;
+        public Double rotationY;
+        public Double rotationZ;
+        public Double distance;
     }
 
     public static class ShellySettingsSmoke {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,12 +23,15 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.Gson;
@@ -116,10 +119,14 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYMINI_EM, true, false), //
 
                 // Shelly BLU
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
                 Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true, true), //
 
                 // Shelly Pro series
                 Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
@@ -179,7 +186,7 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYBULB, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CONTROL),
                 Arguments.of(THING_TYPE_SHELLYBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYBUTTON2, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
                 Arguments.of(THING_TYPE_SHELLYHT, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYDOORWIN, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
@@ -190,5 +197,57 @@ public class ShellyDeviceProfileTest {
                 Arguments.of(THING_TYPE_SHELLYSENSE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYTRV, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
                 Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
+    }
+
+    @Test
+    void updateFromStatusHasRelays() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        deviceProfile.hasRelays = true;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.inputs = new ArrayList<>();
+        status.inputs.add(new ShellyInputState());
+        status.inputs.add(new ShellyInputState());
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(2)));
+    }
+
+    @Test
+    void updateFromStatusHasRelaysNoInputs() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        deviceProfile.hasRelays = true;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(-1)));
+    }
+
+    @Test
+    void updateFromStatusInput() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        deviceProfile.hasRelays = false;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+        status.input = 7;
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(1)));
+    }
+
+    @Test
+    void updateFromStatusNoInput() {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        deviceProfile.hasRelays = false;
+        deviceProfile.numInputs = -1;
+
+        ShellySettingsStatus status = new ShellySettingsStatus();
+
+        deviceProfile.updateFromStatus(status);
+        assertThat(deviceProfile.numInputs, is(equalTo(-1)));
     }
 }

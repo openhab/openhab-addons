@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -113,8 +112,8 @@ public class CarbonMonoxideConcentrationMeasurementCluster extends BaseCluster {
         PM3(6, "Pm 3"),
         BQM3(7, "Bqm 3");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MeasurementUnitEnum(Integer value, String label) {
             this.value = value;
@@ -137,8 +136,8 @@ public class CarbonMonoxideConcentrationMeasurementCluster extends BaseCluster {
         WATER(1, "Water"),
         SOIL(2, "Soil");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MeasurementMediumEnum(Integer value, String label) {
             this.value = value;
@@ -163,8 +162,8 @@ public class CarbonMonoxideConcentrationMeasurementCluster extends BaseCluster {
         HIGH(3, "High"),
         CRITICAL(4, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LevelValueEnum(Integer value, String label) {
             this.value = value;

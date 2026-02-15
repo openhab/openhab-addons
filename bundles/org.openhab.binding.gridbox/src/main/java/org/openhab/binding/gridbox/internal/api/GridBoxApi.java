@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,6 +40,30 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class GridBoxApi {
+
+    private static final String EON_AUTHENTICATION_REQUEST_BODY = """
+            {
+                "grant_type": "http://auth0.com/oauth/grant-type/password-realm",
+                "username": "%s",
+                "password": "%s",
+                "audience": "my.gridx",
+                "client_id": "mG0Phmo7DmnvAqO7p6B0WOYBODppY3cc",
+                "scope": "email openid offline_access",
+                "realm": "eon-home-authentication-db"
+            }
+            """;
+
+    private static final String VIESSMANN_AUTHENTICATION_REQUEST_BODY = """
+            {
+                "grant_type": "http://auth0.com/oauth/grant-type/password-realm",
+                "username": "%s",
+                "password": "%s",
+                "audience": "my.gridx",
+                "client_id": "oZpr934Ikn8OZOHTJEcrgXkjio0I0Q7b",
+                "scope": "email openid",
+                "realm": "viessmann-authentication-db"
+            }
+            """;
 
     public class GridBoxApiSystemNotFoundException extends Exception {
 
@@ -91,17 +115,11 @@ public class GridBoxApi {
      */
     public String getIdToken(GridBoxConfiguration config)
             throws IOException, InterruptedException, GridBoxApiAuthenticationException {
-        HttpRequest.BodyPublisher userPublisher = HttpRequest.BodyPublishers.ofString("""
-                {
-                    "grant_type": "http://auth0.com/oauth/grant-type/password-realm",
-                    "username": "%s",
-                    "password": "%s",
-                    "audience": "my.gridx",
-                    "client_id": "oZpr934Ikn8OZOHTJEcrgXkjio0I0Q7b",
-                    "scope": "email openid",
-                    "realm": "viessmann-authentication-db"
-                }
-                """.formatted(config.email, config.password));
+
+        String requestBody = config.useEonAuthentication ? EON_AUTHENTICATION_REQUEST_BODY
+                : VIESSMANN_AUTHENTICATION_REQUEST_BODY;
+        HttpRequest.BodyPublisher userPublisher = HttpRequest.BodyPublishers
+                .ofString(requestBody.formatted(config.email, config.password));
 
         // @formatter:off
         HttpRequest request = HttpRequest.newBuilder(URI.create("https://gridx.eu.auth0.com/oauth/token"))

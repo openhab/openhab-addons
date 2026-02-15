@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ abstract class AbstractCleaningCommand extends AbstractNoResponseCommand {
     private final Optional<CleanMode> mode;
 
     protected AbstractCleaningCommand(String xmlAction, String jsonAction, @Nullable CleanMode mode) {
-        super();
         this.xmlAction = xmlAction;
         this.jsonAction = jsonAction;
         this.mode = Optional.ofNullable(mode);

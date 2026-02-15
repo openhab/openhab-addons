@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.ftpupload.internal.ftp;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This interface defines interface to receive data from FTP server.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface FtpServerEventListener {
 
     /**
@@ -28,5 +29,5 @@ public interface FtpServerEventListener {
      * @param filename Received filename.
      * @param data Received raw data.
      */
-    void fileReceived(@NonNull String userName, @NonNull String filename, byte[] data);
+    void fileReceived(String userName, String filename, byte[] data);
 }

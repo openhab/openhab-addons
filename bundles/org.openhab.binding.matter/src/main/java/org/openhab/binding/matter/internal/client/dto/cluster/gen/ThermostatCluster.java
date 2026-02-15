@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -894,8 +893,8 @@ public class ThermostatCluster extends BaseCluster {
     public enum ACCapacityFormatEnum implements MatterEnum {
         BT_UH(0, "Bt Uh");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ACCapacityFormatEnum(Integer value, String label) {
             this.value = value;
@@ -919,8 +918,8 @@ public class ThermostatCluster extends BaseCluster {
         T2(2, "T 2"),
         T3(3, "T 3");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ACCompressorTypeEnum(Integer value, String label) {
             this.value = value;
@@ -945,8 +944,8 @@ public class ThermostatCluster extends BaseCluster {
         HALF(4, "Half"),
         THREE_QUARTERS(5, "Three Quarters");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ACLouverPositionEnum(Integer value, String label) {
             this.value = value;
@@ -970,8 +969,8 @@ public class ThermostatCluster extends BaseCluster {
         R410A(2, "R 410 A"),
         R407C(3, "R 407 C");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ACRefrigerantTypeEnum(Integer value, String label) {
             this.value = value;
@@ -996,8 +995,8 @@ public class ThermostatCluster extends BaseCluster {
         COOLING_INVERTER(3, "Cooling Inverter"),
         HEAT_PUMP_INVERTER(4, "Heat Pump Inverter");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ACTypeEnum(Integer value, String label) {
             this.value = value;
@@ -1020,8 +1019,8 @@ public class ThermostatCluster extends BaseCluster {
         COOL(1, "Cool"),
         BOTH(2, "Both");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SetpointRaiseLowerModeEnum(Integer value, String label) {
             this.value = value;
@@ -1055,8 +1054,8 @@ public class ThermostatCluster extends BaseCluster {
         COOLING_AND_HEATING(4, "Cooling And Heating"),
         COOLING_AND_HEATING_WITH_REHEAT(5, "Cooling And Heating With Reheat");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ControlSequenceOfOperationEnum(Integer value, String label) {
             this.value = value;
@@ -1083,8 +1082,8 @@ public class ThermostatCluster extends BaseCluster {
         GOING_TO_SLEEP(6, "Going To Sleep"),
         USER_DEFINED(254, "User Defined");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PresetScenarioEnum(Integer value, String label) {
             this.value = value;
@@ -1107,8 +1106,8 @@ public class ThermostatCluster extends BaseCluster {
         SCHEDULE(1, "Schedule"),
         EXTERNAL(2, "External");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SetpointChangeSourceEnum(Integer value, String label) {
             this.value = value;
@@ -1135,8 +1134,8 @@ public class ThermostatCluster extends BaseCluster {
         FRIDAY(5, "Friday"),
         SATURDAY(6, "Saturday");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StartOfWeekEnum(Integer value, String label) {
             this.value = value;
@@ -1168,8 +1167,8 @@ public class ThermostatCluster extends BaseCluster {
         DRY(8, "Dry"),
         SLEEP(9, "Sleep");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SystemModeEnum(Integer value, String label) {
             this.value = value;
@@ -1192,8 +1191,8 @@ public class ThermostatCluster extends BaseCluster {
         COOL(3, "Cool"),
         HEAT(4, "Heat");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ThermostatRunningModeEnum(Integer value, String label) {
             this.value = value;
@@ -1215,8 +1214,8 @@ public class ThermostatCluster extends BaseCluster {
         SETPOINT_HOLD_OFF(0, "Setpoint Hold Off"),
         SETPOINT_HOLD_ON(1, "Setpoint Hold On");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TemperatureSetpointHoldEnum(Integer value, String label) {
             this.value = value;

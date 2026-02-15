@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,6 @@ public class D2_05_00 extends _VLDMessage {
     protected static final byte UP = 0x00; // 0%
 
     public D2_05_00() {
-        super();
     }
 
     public D2_05_00(ERP1Message packet) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,6 +62,7 @@ public class ZwaveJSBridgeHandlerMock extends ZwaveJSBridgeHandler {
             final Bridge thing) {
         WebSocketFactory wsFactory = mock(WebSocketFactory.class);
         final ZwaveJSBridgeHandlerMock handler = spy(new ZwaveJSBridgeHandlerMock(thing, wsFactory));
+        when(handler.getThing()).thenReturn(thing);
 
         handler.setCallback(callback);
         handler.initialize();

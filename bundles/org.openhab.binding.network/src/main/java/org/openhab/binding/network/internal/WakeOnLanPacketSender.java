@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class WakeOnLanPacketSender {
 
     public WakeOnLanPacketSender(String macAddress, @Nullable String hostname, @Nullable Integer port,
             Set<String> networkInterfaceNames) {
-        logger.debug("initialized WOL Packet Sender (mac: {}, hostname: {}, port: {}, networkInterfaceNames: {})",
+        logger.trace("initialized WOL Packet Sender (mac: {}, hostname: {}, port: {}, networkInterfaceNames: {})",
                 macAddress, hostname, port, networkInterfaceNames);
         this.macAddress = macAddress;
         this.hostname = hostname;

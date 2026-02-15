@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,8 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class TempoTariffHandler extends TariffHandler<TempoTariff> {
-    private static final String EMPTY_LINE = ";;;;;;;;";
     private static final String DATASET_ID = "0c3d1d36-c412-4620-8566-e5cbb4fa2b5a";
+    private static final String EMPTY_LINE = ";".repeat(TempoTariff.LEN_CONTROL - 1);
 
     public TempoTariffHandler(Thing thing) {
         super(thing, DATASET_ID);

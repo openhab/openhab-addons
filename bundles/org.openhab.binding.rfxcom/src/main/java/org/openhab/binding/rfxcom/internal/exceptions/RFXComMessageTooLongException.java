@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ public class RFXComMessageTooLongException extends RFXComException {
     private static final long serialVersionUID = -3352067410289719335L;
 
     public RFXComMessageTooLongException() {
-        super();
     }
 
     public RFXComMessageTooLongException(String message) {

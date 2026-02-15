@@ -79,7 +79,7 @@ message CommandRequest {
 
     SigPosStart sigpos_start = 35;
 
-    TheftalarmConfirmDamagedetection theftalarm_confirm_damagedetection = 8;
+    // TheftalarmConfirmDamagedetection theftalarm_confirm_damagedetection = 8; # removed 1.62 
     TheftalarmDeselectDamagedetection theftalarm_deselect_damagedetection= 14;
     TheftalarmDeselectInterior theftalarm_deselect_interior = 15;
     TheftalarmDeselectTow theftalarm_deselect_tow = 16;
@@ -91,16 +91,24 @@ message CommandRequest {
 
     AutomaticValetParkingActivate automatic_valet_parking_activate = 42;
 
-    ChargeFlapUnlock charge_flap_unlock = 45;
+    // ChargeFlapUnlock charge_flap_unlock = 45; # removed 1.51
     ChargeCouplerUnlock charge_coupler_unlock = 46;
 
     DeactivateVehicleKeys deactivate_vehicle_keys = 48;
     ActivateVehicleKeys activate_vehicle_keys = 49;
 
     ChargingBreakClocktimerConfigure chargingbreak_clocktimer_configure = 50;
-    WiperHealthReset wiper_health_reset = 64;
+    // WiperHealthReset wiper_health_reset = 64; # removed 1.62
+
+    HvBatteryStartConditioning hv_battery_start_conditioning = 76;
+    HvBatteryStopConditioning hv_battery_stop_conditioning = 77;
+
+
   }
 }
+
+message HvBatteryStartConditioning {}
+message HvBatteryStopConditioning {}
 
 message DeactivateVehicleKeys {
   string pin = 1;
@@ -608,7 +616,7 @@ message AutomaticValetParkingActivate {
   DriveType drive_type = 2 [ json_name = "driveType" ];
 }
 
-message ChargeFlapUnlock {}
+// message ChargeFlapUnlock {} # removed 1.51
 
 message ChargeCouplerUnlock {}
 

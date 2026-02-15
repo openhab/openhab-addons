@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:transform:geocoding">
+		<parameter name="provider" type="text" required="false">
+			<label>Geocoding Provider</label>
+			<description>Provider which is used to execute geocoding requests</description>
+			<limitToOptions>true</limitToOptions>
+			<default>nominatim-osm</default>
+			<options>
+				<option value="nominatim-osm">Nominatim / OpenStreetMap</option>
+			</options>
+		</parameter>
+		<parameter name="resolveInterval" type="text" required="false">
+			<label>Resolve Interval</label>
+			<description>Interval of reverse geocoding executions. Minimum: 1 minute</description>
+			<default>5m</default>
+		</parameter>
+		<parameter name="format" type="text" required="false">
+			<label>Address Format</label>
+			<description>Country specific address formatting</description>
+			<limitToOptions>true</limitToOptions>
+			<default>address_row</default>
+			<options>
+				<option value="address_row">Address Format Rest of World</option>
+				<option value="address_us">Address Format US/UK</option>
+				<option value="json">JSON encoded</option>
+			</options>
+		</parameter>
+		<parameter name="language" type="text" required="false">
+			<label>Language (override)</label>
+			<description>Preferred language of the result. Only necessary if openHAB locale settings shall be overwritten</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
