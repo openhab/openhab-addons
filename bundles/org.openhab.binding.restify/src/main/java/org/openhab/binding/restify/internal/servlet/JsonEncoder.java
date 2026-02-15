@@ -15,9 +15,9 @@ package org.openhab.binding.restify.internal.servlet;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -82,7 +82,7 @@ public class JsonEncoder implements Serializable {
     }
 
     private Map<String, @Nullable Object> toJsonCompatibleMap(JsonObject jsonObject) {
-        var values = new LinkedHashMap<String, @Nullable Object>();
+        var values = new TreeMap<String, @Nullable Object>();
         for (var entry : jsonObject.response().entrySet()) {
             values.put(entry.getKey(), toJsonCompatibleObject(entry.getValue()));
         }
