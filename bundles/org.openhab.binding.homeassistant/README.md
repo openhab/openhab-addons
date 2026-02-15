@@ -8,6 +8,7 @@ Each component will be represented as a Channel Group, with the attributes of th
 
 Any device that publishes the component configuration under the `homeassistant` prefix in MQTT will have their components automatically discovered and added to the Inbox.
 You can also manually create a Thing, and provide the individual component topics, as well as a different discovery prefix.
+[Device Discovery](https://www.home-assistant.io/integrations/mqtt/#device-discovery-payload) is supported as well.
 
 ## Supported Components and Channels
 
