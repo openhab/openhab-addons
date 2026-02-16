@@ -340,9 +340,6 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     }
 
     private static Vehicle toVehicle(final VehiclesResponse.VehicleInfo info) {
-        if (info.vin() == null) {
-            throw new IllegalStateException("VIN is null");
-        }
         final IVehicle.EngineType engineType = switch (info.type() != null ? info.type() : "") {
             case "EV" -> IVehicle.EngineType.EV;
             case "PHEV" -> IVehicle.EngineType.PHEV;
