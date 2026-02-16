@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Tire pressure warning status.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
 public record TirePressureWarning(@Override @SerializedName("tirePressureLampAll") int all,
         @Override @SerializedName("tirePressureLampFL") int frontLeft,

@@ -21,15 +21,27 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcus Better - Initial contribution
  */
-public record EvStatus(boolean batteryCharge, int batteryStatus, int batteryPlugin, ReserveChargeInfo reservChargeInfos,
-        List<DrivingDistance> drvDistance, ChargeRemainingTime remainTime2) {
+public record EvStatus(boolean batteryCharge, int batteryStatus, @SerializedName("batteryPlugin") int rawBatteryPlugin,
+        ReserveChargeInfo reservChargeInfos, List<DrivingDistance> drvDistance, ChargeRemainingTime remainTime2) {
+
+    public boolean batteryPlugin() {
+        return rawBatteryPlugin > 0;
+    }
 
     public record ReserveChargeInfo(@SerializedName("targetSOClist") List<TargetSOC> targetSocList) {
+        public enum PlugType {
+            DC,
+            AC
+        }
+
         /**
          * Target state of charge setting.
          */
-        public record TargetSOC(int plugType, // 0 = DC, 1 = AC
-                @SerializedName("targetSOClevel") int targetSocLevel) {
+        public record TargetSOC(@SerializedName("plugType") int rawPlugType,
+                @SerializedName("targetSOClevel") int targetSocLevel, DrivingRange dte) {
+            public PlugType plugType() {
+                return rawPlugType == 0 ? PlugType.DC : PlugType.AC;
+            }
         }
     }
 

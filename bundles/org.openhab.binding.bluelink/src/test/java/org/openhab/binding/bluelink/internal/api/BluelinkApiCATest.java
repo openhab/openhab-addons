@@ -123,7 +123,8 @@ public class BluelinkApiCATest {
         assertNotNull(evStatus);
         assertEquals(42, evStatus.batteryStatus());
         assertTrue(evStatus.batteryCharge());
-        assertEquals(2, evStatus.batteryPlugin());
+        assertEquals(2, evStatus.rawBatteryPlugin());
+        assertTrue(evStatus.batteryPlugin());
 
         final var drvDistance = evStatus.drvDistance();
         assertNotNull(drvDistance);

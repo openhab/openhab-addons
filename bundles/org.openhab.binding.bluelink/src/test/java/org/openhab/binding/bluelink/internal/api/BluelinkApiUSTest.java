@@ -63,7 +63,7 @@ public class BluelinkApiUSTest {
         stubFor(post(urlEqualTo("/v2/ac/oauth/token")).willReturn(aResponse().withStatus(200)
                 .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE_US)));
         stubFor(get(urlPathMatching("/ac/v2/enrollment/details/.*")).willReturn(aResponse().withStatus(200)
-                .withHeader("Content-Type", "application/json").withBody(ENROLLMENT_RESPONSE)));
+                .withHeader("Content-Type", "application/json").withBody(ENROLLMENT_RESPONSE_US)));
         stubFor(get(urlEqualTo("/ac/v2/rcs/rvs/vehicleStatus")).willReturn(aResponse().withStatus(200)
                 .withHeader("Content-Type", "application/json").withBody(VEHICLE_STATUS_RESPONSE_US)));
 
@@ -131,7 +131,8 @@ public class BluelinkApiUSTest {
         assertNotNull(evStatus);
         assertEquals(42, evStatus.batteryStatus());
         assertTrue(evStatus.batteryCharge());
-        assertEquals(2, evStatus.batteryPlugin());
+        assertEquals(2, evStatus.rawBatteryPlugin());
+        assertTrue(evStatus.batteryPlugin());
 
         final var reserveChargeInfo = evStatus.reservChargeInfos();
         assertNotNull(reserveChargeInfo);
