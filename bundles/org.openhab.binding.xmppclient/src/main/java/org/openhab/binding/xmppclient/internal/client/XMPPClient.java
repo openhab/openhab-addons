@@ -19,9 +19,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.jivesoftware.smack.AbstractXMPPConnection;
@@ -97,9 +94,6 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         }
 
         XMPPTCPConnectionConfiguration config;
-        HostnameVerifier hostnameVerifier = disableHostnameVerification || securityMode == SecurityMode.disabled
-                ? (hostname, session) -> true
-                : HttpsURLConnection.getDefaultHostnameVerifier();
 
         try {
             config = XMPPTCPConnectionConfiguration.builder() //
@@ -108,7 +102,6 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
                     .setUsernameAndPassword(login, password) //
                     .setXmppDomain(domain) //
                     .setSecurityMode(securityMode)//
-                    .setHostnameVerifier(hostnameVerifier)//
                     .build();
         } catch (XmppStringprepException e) {
             throw new XMPPClientConfigException(Objects.requireNonNullElse(e.getMessage(), "Unknown error message"));
@@ -127,7 +120,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
 
         try {
             connectionLocal.connect().login();
-        } catch (InterruptedException | XMPPException | SmackException | IOException e) {
+        } catch (InterruptedException | XMPPException | SmackException | IOException | IllegalStateException e) {
             throw new XMPPClientException(Objects.requireNonNullElse(e.getMessage(), "Unknown error message"),
                     e.getCause());
         }
@@ -139,7 +132,6 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         MultiUserChatManager multiUserChatManager = MultiUserChatManager.getInstanceFor(connection);
         multiUserChatManager.setAutoJoinOnReconnect(true);
         this.multiUserChatManager = multiUserChatManager;
-        httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
     }
 
     public void disconnect() {
@@ -203,8 +195,11 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         }
         HttpFileUploadManager httpFileUploadManagerLocal = httpFileUploadManager;
         if (httpFileUploadManagerLocal == null) {
-            logger.warn("XMPP httpFileUploadManager is null");
-            return;
+            httpFileUploadManagerLocal = httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
+            if (httpFileUploadManagerLocal == null) {
+                logger.warn("XMPP httpFileUploadManager is null");
+                return;
+            }
         }
         try {
             URL u = httpFileUploadManagerLocal.uploadFile(new File(filename));
