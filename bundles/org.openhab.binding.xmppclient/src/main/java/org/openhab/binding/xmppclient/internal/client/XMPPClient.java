@@ -79,7 +79,8 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     public void connect(String host, Integer port, String login, String nick, String domain, String password,
-            SecurityMode securityMode) throws XMPPClientConfigException, XMPPClientException {
+            SecurityMode securityMode, boolean disableHostnameVerification)
+            throws XMPPClientConfigException, XMPPClientException {
         disconnect();
         String serverHost = domain;
         if (!host.isBlank()) {
@@ -93,6 +94,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         }
 
         XMPPTCPConnectionConfiguration config;
+
         try {
             config = XMPPTCPConnectionConfiguration.builder() //
                     .setHost(serverHost) //
@@ -118,7 +120,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
 
         try {
             connectionLocal.connect().login();
-        } catch (InterruptedException | XMPPException | SmackException | IOException e) {
+        } catch (InterruptedException | XMPPException | SmackException | IOException | IllegalStateException e) {
             throw new XMPPClientException(Objects.requireNonNullElse(e.getMessage(), "Unknown error message"),
                     e.getCause());
         }
@@ -130,7 +132,6 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         MultiUserChatManager multiUserChatManager = MultiUserChatManager.getInstanceFor(connection);
         multiUserChatManager.setAutoJoinOnReconnect(true);
         this.multiUserChatManager = multiUserChatManager;
-        httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
     }
 
     public void disconnect() {
@@ -194,8 +195,11 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
         }
         HttpFileUploadManager httpFileUploadManagerLocal = httpFileUploadManager;
         if (httpFileUploadManagerLocal == null) {
-            logger.warn("XMPP httpFileUploadManager is null");
-            return;
+            httpFileUploadManagerLocal = httpFileUploadManager = HttpFileUploadManager.getInstanceFor(connection);
+            if (httpFileUploadManagerLocal == null) {
+                logger.warn("XMPP httpFileUploadManager is null");
+                return;
+            }
         }
         try {
             URL u = httpFileUploadManagerLocal.uploadFile(new File(filename));
