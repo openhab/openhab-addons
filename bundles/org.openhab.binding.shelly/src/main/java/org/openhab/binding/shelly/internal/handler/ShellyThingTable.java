@@ -30,8 +30,8 @@ import org.osgi.service.component.annotations.Deactivate;
  * The{@link ShellyThingTable} implements a simple table to allow dispatching incoming events to the proper thing
  * handler.
  * <p>
- * <b>Note:</b> This class is a component and is supposed to be a singleton. Therefore, do <b>not</b> create it
- * using the constructor directly.
+ * <b>Note:</b> This class is an OSGi component and is intended to be managed as a singleton by the framework.
+ * Therefore, do <b>not</b> instantiate it directly via its constructor; always obtain the instance from OSGi.
  *
  * @author Markus Michels - Initial contribution
  */
@@ -86,7 +86,13 @@ public class ShellyThingTable {
         return table.size();
     }
 
-    public void startDiscoveryService(BundleContext bundleContext) {
+    /**
+     * Start the discovery service by registering the service with OSGi.
+     *
+     * @param bundleContext the {@link BundleContext} to use.
+     * @throws IllegalStateException If the {@link BundleContext} is no longer valid.
+     */
+    public void startDiscoveryService(BundleContext bundleContext) throws IllegalStateException {
         synchronized (this) {
             ShellyBasicDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {

@@ -397,7 +397,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         synchronized (this) {
             handler = this.websocketHandler;
 
-            // set session+client=null, clear send queue
+            // set session=null, clear send queue
             // this also prevents another socket closed issued by thingOffline()->api-close()->close()
             cleanup();
         }
@@ -422,7 +422,7 @@ public class Shelly2RpcSocket implements WriteCallback {
         synchronized (this) {
             websocketHandler = this.websocketHandler;
 
-            // set session+client=null, clear send queue
+            // set session=null, clear send queue
             // this also prevents another socket closed issued by thingOffline()->api-close()->close()
             cleanup();
         }
@@ -480,7 +480,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * Create and configures a new {@link WebSocketClient}.
      *
      * @param webSocketFactory the {@link WebSocketFactory} to use to create the new client instance.
-     * @param consumerName the for identifying the consumer in the Jetty thread pool.
+     * @param consumerName the name for identifying the consumer in the Jetty thread pool.
      *            Must be between 4 and 20 characters long and must contain only the following characters [a-zA-Z0-9-_]
      */
     public static WebSocketClient createWebSocketClient(WebSocketFactory webSocketFactory, String consumerName) {
