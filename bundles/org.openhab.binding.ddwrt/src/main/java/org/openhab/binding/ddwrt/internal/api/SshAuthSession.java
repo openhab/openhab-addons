@@ -13,10 +13,16 @@
 
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.EnumSet;
 import java.util.Objects;
 
+import org.apache.sshd.client.channel.ClientChannel;
+import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.session.ClientSession;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -70,6 +76,48 @@ public class SshAuthSession implements AutoCloseable {
 
     public String exec(String command, Duration timeout) throws IOException {
         return createRunner().exec(command, timeout);
+    }
+
+    /**
+     * Create an interactive shell channel and capture the MOTD (Message of the Day).
+     * This is used to detect firmware and chipset information before running commands.
+     * 
+     * @return The MOTD output, or empty string if capture fails
+     */
+    public String captureMotd() {
+        try {
+            ClientChannel channel = session.createShellChannel();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+            channel.setOut(out);
+            channel.setErr(err);
+            channel.open().verify(defaultTimeout.toMillis());
+
+            // Wait a moment for MOTD to appear
+            channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED, ClientChannelEvent.EOF),
+                    defaultTimeout.toMillis() / 2);
+
+            // Send exit to close the shell
+            OutputStream shellIn = channel.getInvertedIn();
+            if (shellIn != null) {
+                shellIn.write("exit\n".getBytes(StandardCharsets.UTF_8));
+                shellIn.flush();
+            }
+
+            // Wait for channel to close
+            channel.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), defaultTimeout.toMillis());
+
+            String motd = Objects.requireNonNull(out.toString(StandardCharsets.UTF_8).trim());
+            logger.debug("Captured MOTD: {}", motd);
+            return motd;
+
+        } catch (Exception e) {
+            logger.debug("Failed to capture MOTD: {}", e.getMessage());
+            return "";
+        } finally {
+            // Channel cleanup handled by SSHD
+        }
     }
 
     @Override
