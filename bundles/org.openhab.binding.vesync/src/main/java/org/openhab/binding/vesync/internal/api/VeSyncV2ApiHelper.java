@@ -153,7 +153,7 @@ public class VeSyncV2ApiHelper {
         if (session != null) {
             url = session.serverUrl + url;
         } else {
-            url = "https://" + US_SERVER_ADDRESS + url; // Fallback
+            url = PROTOCOL + US_SERVER_ADDRESS + url; // Fallback
         }
 
         // Apply current session authentication data
@@ -366,7 +366,7 @@ public class VeSyncV2ApiHelper {
 
         private boolean loginRegionalRedirectByAuthorizeCode()
                 throws ExecutionException, InterruptedException, TimeoutException, AuthenticationException {
-            final String redirectedRegion = "https://" + this.regionalServerUrl
+            final String redirectedRegion = PROTOCOL + this.regionalServerUrl
                     + "/user/api/accountManage/v1/loginByAuthorizeCode4Vesync";
 
             final Request request = client.newRequest(redirectedRegion).method(HttpMethod.POST)
@@ -424,7 +424,7 @@ public class VeSyncV2ApiHelper {
             response.result.acceptLanguage = loginHelper.acceptLanguage;
             response.result.countryCode = loginHelper.userCountryCode;
             response.result.registerTime = loginHelper.registerTime;
-            response.result.serverUrl = "https://" + loginHelper.regionalServerUrl;
+            response.result.serverUrl = PROTOCOL + loginHelper.regionalServerUrl;
 
             return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
