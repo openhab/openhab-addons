@@ -58,7 +58,7 @@ public class VeSyncAuthLoginWithAuthorizeCodeVeSync extends VeSyncBaseRequest {
     public String userCountryCode = "US";
 
     public VeSyncAuthLoginWithAuthorizeCodeVeSync(final String authorizeCode, final String accountId) {
-        this.method = "loginByAuthorizeCode4Vesync" + "";
+        this.method = "loginByAuthorizeCode4Vesync";
         traceId = String.valueOf(System.currentTimeMillis());
         this.authorizeCode = authorizeCode;
         this.accountId = accountId;
