@@ -147,7 +147,7 @@ public class VeSyncV2ApiHelper {
         if (session != null) {
             url = session.serverUrl + url;
         } else {
-            url = PROTOCOL + US_SERVER_ADDRESS + url; // Fallback
+            url = PROTOCOL + "://" + US_SERVER_ADDRESS + url; // Fallback
         }
 
         // Apply current session authentication data
