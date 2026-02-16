@@ -13,13 +13,12 @@
 package org.openhab.binding.sensibo.internal.handler;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.sensibo.internal.config.SensiboAccountConfiguration;
-import org.openhab.binding.sensibo.internal.model.SensiboSky;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
@@ -70,17 +68,21 @@ public class SensiboAccountHandlerTest {
     }
 
     @Test
-    public void testInitialize1() throws InterruptedException, IOException {
-        testInitialize("/get_pods_response.json", "/get_pod_details_response.json");
+    public void testInitialize1() throws IOException {
+        testInitialize("/get_pods_response.json", 1);
     }
 
     @Test
-    public void testInitializeMarco() throws InterruptedException, IOException {
-        testInitialize("/get_pods_response.json", "/get_pod_details_response_marco.json");
+    public void testInitializeMarco() throws IOException {
+        testInitialize("/get_pods_response.json", 1);
     }
 
-    private void testInitialize(String podsResponse, String podDetailsResponse)
-            throws InterruptedException, IOException {
+    @Test
+    public void testInitialize_Issue8018() throws IOException {
+        testInitialize("/get_pods_response_partial_setup.json", 4);
+    }
+
+    private void testInitialize(String podsResponse, int numExpectedPods) throws IOException {
         // Setup account
         final SensiboAccountConfiguration accountConfig = new SensiboAccountConfiguration();
         accountConfig.apiKey = "APIKEY";
@@ -96,23 +98,10 @@ public class SensiboAccountHandlerTest {
         when(sensiboAccountMock.getConfiguration()).thenReturn(configuration);
         when(sensiboAccountMock.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));
 
-        final SensiboAccountHandler subject = new SensiboAccountHandler(sensiboAccountMock, httpClient);
+        final SensiboAccountHandler handler = new SensiboAccountHandler(sensiboAccountMock, httpClient);
+        handler.initialize();
+
         // Async, poll for status
-        subject.initialize();
-
-        // Verify num things found == 1
-        int numPods = 0;
-        for (int i = 0; i < 20; i++) {
-            final List<SensiboSky> things = subject.getModel().getPods();
-            numPods = things.size();
-            if (numPods == 1) {
-                break;
-            } else {
-                // Wait some more
-                Thread.sleep(200);
-            }
-        }
-
-        assertEquals(1, numPods);
+        await().until(() -> handler.getModel().getPods().size() == numExpectedPods);
     }
 }
