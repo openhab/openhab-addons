@@ -22,20 +22,21 @@ import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 import org.slf4j.Logger;
 
 /**
- * DD-WRT device with Atheros chipset. Uses {@code wl_atheros} commands.
+ * Tomato USB device. Uses {@code wl} commands and different nvram structure.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class DDWRTAtherosDevice extends DDWRTBaseDevice {
+public class DDWRTTomatoDevice extends DDWRTBaseDevice {
 
-    public DDWRTAtherosDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
+    public DDWRTTomatoDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
     }
 
     @Override
     protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
-        String output = runner.execStdout("wl_atheros -i " + iface + " assoclist");
+        // Tomato uses similar wl commands to Broadcom but with different output format
+        String output = runner.execStdout("wl -i " + iface + " assoclist");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
@@ -47,12 +48,12 @@ public class DDWRTAtherosDevice extends DDWRTBaseDevice {
             if (trimmed.startsWith("assoclist ") && trimmed.length() >= 27) {
                 String clientMac = Objects.requireNonNull(trimmed.substring(10).trim().toLowerCase());
                 DDWRTWirelessClient client = new DDWRTWirelessClient(clientMac);
-                client.setApMac(mac);
+                client.setApMac(Objects.requireNonNull(mac));
                 client.setIface(iface);
                 client.setOnline(true);
 
-                // Query SNR for this client
-                String rssiStr = runner.execStdout("wl_atheros -i " + iface + " rssi " + clientMac);
+                // Query RSSI for this client (Tomato may support this)
+                String rssiStr = runner.execStdout("wl -i " + iface + " rssi " + clientMac);
                 if (!rssiStr.isEmpty()) {
                     try {
                         client.setSnr(Integer.parseInt(rssiStr.trim()));
@@ -70,18 +71,14 @@ public class DDWRTAtherosDevice extends DDWRTBaseDevice {
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
         List<DDWRTRadio> radios = new ArrayList<>();
-        // Try common Atheros interface names
-        for (String iface : new String[] { "ath0", "ath1", "ath2" }) {
-            String status = runner.execStdout("wl_atheros -i " + iface + " status");
-            if (!status.isEmpty()) {
-                DDWRTRadio radio = new DDWRTRadio(mac, iface);
+        // Tomato typically uses wl0, wl1 interfaces
+        for (String iface : new String[] { "wl0", "wl1", "wl2" }) {
+            String ssid = safeTrim(runner.execStdout("wl -i " + iface + " ssid"));
+            if (!ssid.isEmpty()) {
+                DDWRTRadio radio = new DDWRTRadio(Objects.requireNonNull(mac), iface);
+                radio.setSsid(ssid);
 
-                String ssid = safeTrim(runner.execStdout("nvram get " + iface + "_ssid"));
-                if (!ssid.isEmpty()) {
-                    radio.setSsid(ssid);
-                }
-
-                String chStr = safeTrim(runner.execStdout("nvram get " + iface + "_channel"));
+                String chStr = safeTrim(runner.execStdout("wl -i " + iface + " channel"));
                 if (!chStr.isEmpty()) {
                     try {
                         radio.setChannel(Integer.parseInt(chStr));
@@ -90,14 +87,14 @@ public class DDWRTAtherosDevice extends DDWRTBaseDevice {
                     }
                 }
 
-                String mode = safeTrim(runner.execStdout("nvram get " + iface + "_net_mode"));
+                String mode = safeTrim(runner.execStdout("wl -i " + iface + " mode"));
                 if (!mode.isEmpty()) {
                     radio.setMode(mode);
                 }
 
                 radio.setEnabled(true);
                 radios.add(radio);
-                logger.debug("Found Atheros radio: {}", radio);
+                logger.debug("Found Tomato radio: {}", radio);
             }
         }
         return radios;
@@ -105,39 +102,40 @@ public class DDWRTAtherosDevice extends DDWRTBaseDevice {
 
     @Override
     protected void refreshIdentity(SshRunner runner) {
+        // Tomato stores version info differently
         if (model.isEmpty()) {
-            model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
+            model = safeTrim(runner.execStdout("cat /proc/cpuinfo | grep 'system type' | cut -d: -f2"));
         }
         if (firmware.isEmpty()) {
-            firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
+            firmware = safeTrim(runner.execStdout("nvram get os_version || echo 'Tomato USB'"));
         }
     }
 
     @Override
     protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
         if (enabled) {
-            runner.execStdout("ifconfig " + iface + " up");
+            runner.execStdout("wl -i " + iface + " radio on");
         } else {
-            runner.execStdout("ifconfig " + iface + " down");
+            runner.execStdout("wl -i " + iface + " radio off");
         }
     }
 
     @Override
     protected String getDeviceMac(SshRunner runner) {
-        // Try DD-WRT nvram first (most reliable for Atheros DD-WRT)
+        // Tomato uses different nvram keys
         String mac = safeTrim(runner.execStdout("nvram get lan_hwaddr"));
         if (!mac.isEmpty()) {
             return mac;
         }
 
         // Fallback to interface MAC detection
-        mac = getMacFromIpLink(runner, "en|eth|wl|br");
+        mac = getMacFromIpLink(runner, "br|vlan|eth");
         if (!mac.isEmpty()) {
             return mac;
         }
 
-        // Additional fallback for Atheros-specific interfaces
-        mac = safeTrim(runner.execStdout("ifconfig ath0 | grep -oE '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}' | head -n1"));
+        // Additional fallback for Tomato-specific interfaces
+        mac = safeTrim(runner.execStdout("ifconfig br0 | grep -oE '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}' | head -n1"));
         if (!mac.isEmpty()) {
             return mac;
         }

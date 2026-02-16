@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
+import org.slf4j.Logger;
 
 /**
  * OpenWrt device. Uses {@code iwinfo} and {@code uci} commands.
@@ -25,8 +26,8 @@ import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 @NonNullByDefault
 public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
-    public DDWRTOpenWrtDevice(DDWRTDeviceConfiguration cfg) {
-        super(cfg);
+    public DDWRTOpenWrtDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
+        super(cfg, logger);
     }
 
     @Override
@@ -41,9 +42,13 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
     @Override
     protected void refreshIdentity(SshRunner runner) {
-        model = safeTrim(runner.execStdout("cat /tmp/sysinfo/model 2>/dev/null"));
-        firmware = safeTrim(
-                runner.execStdout("cat /etc/openwrt_release 2>/dev/null | grep DISTRIB_DESCRIPTION | cut -d\\' -f2"));
+        if (model.isEmpty()) {
+            model = safeTrim(runner.execStdout("cat /tmp/sysinfo/model"));
+        }
+        if (firmware.isEmpty()) {
+            firmware = safeTrim(
+                    runner.execStdout("cat /etc/openwrt_release | grep DISTRIB_DESCRIPTION | cut -d\\' -f2"));
+        }
     }
 
     @Override
@@ -56,13 +61,45 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
-    protected void refreshCommon(SshRunner runner) {
-        super.refreshCommon(runner);
+    protected String getLanInterface() {
+        return "br-lan";
+    }
 
-        // OpenWrt may not have nvram for WAN IP; try uci
-        if (wanIp.isEmpty()) {
-            wanIp = safeTrim(runner.execStdout(
-                    "ip -4 -o addr show dev $(uci get network.wan.device 2>/dev/null || echo eth0) 2>/dev/null | awk '{print $4}' | cut -d/ -f1"));
+    @Override
+    protected String refreshWanIp(SshRunner runner) {
+        // OpenWrt: no nvram; use ip command to get WAN address
+        String rawWanIp = safeTrim(runner.execStdout(
+                "ip -4 -o addr show dev $(uci get network.wan.device || echo eth0) | awk '{print $4}' | cut -d/ -f1"));
+        return (rawWanIp.isEmpty() || "0.0.0.0".equals(rawWanIp)) ? "" : rawWanIp;
+    }
+
+    @Override
+    protected String getWanInterface(SshRunner runner) {
+        // OpenWrt: no nvram; use uci to get WAN device
+        return safeTrim(runner.execStdout("uci get network.wan.device || echo eth0"));
+    }
+
+    @Override
+    protected String getDeviceMac(SshRunner runner) {
+        // OpenWrt: get LAN device MAC via ubus + jsonfilter + sysfs
+        String mac = safeTrim(runner.execStdout(
+                "cat \"/sys/class/net/$(ubus call network.interface.lan status | jsonfilter -e '@[\"device\"]')/address\""));
+        if (!mac.isEmpty()) {
+            return mac;
         }
+
+        // Fallback to interface MAC detection (br-lan for OpenWrt)
+        mac = getMacFromIpLink(runner, "br|lan|eth");
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        // Additional fallback using ifconfig
+        mac = safeTrim(runner.execStdout("ifconfig br-lan | grep -oE '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}' | head -n1"));
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        return "";
     }
 }

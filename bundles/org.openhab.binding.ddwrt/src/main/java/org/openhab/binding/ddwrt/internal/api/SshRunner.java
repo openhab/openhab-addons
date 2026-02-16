@@ -71,11 +71,13 @@ public class SshRunner {
     private final ClientSession session;
     private final Duration defaultTimeout;
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(SshRunner.class));
+    private final Logger logger;
 
     public SshRunner(ClientSession session, Duration defaultTimeout) {
         this.session = session;
         this.defaultTimeout = defaultTimeout;
+        this.logger = Objects
+                .requireNonNull(LoggerFactory.getLogger(SshRunner.class.getName() + "." + session.getRemoteAddress()));
     }
 
     /**
@@ -83,7 +85,6 @@ public class SshRunner {
      * Throws {@link IOException} only for session/channel-level failures, never for non-zero exit codes.
      */
     public CommandResult execResult(String command, Duration timeout) throws IOException {
-        logger.debug("{} executing command: {}", session.getRemoteAddress(), command);
         try (ChannelExec ch = session.createExecChannel(command)) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayOutputStream err = new ByteArrayOutputStream();
@@ -94,7 +95,7 @@ public class SshRunner {
             Integer rc = ch.getExitStatus();
             String stdout = out.toString(StandardCharsets.UTF_8);
             String stderr = err.toString(StandardCharsets.UTF_8);
-            logger.debug("rc={} stdout={} stderr={}", rc, stdout, stderr);
+            logger.debug("{} rc={} stdout={} stderr={}", command, rc, stdout, stderr);
             return new CommandResult(rc, stdout, stderr);
         }
     }

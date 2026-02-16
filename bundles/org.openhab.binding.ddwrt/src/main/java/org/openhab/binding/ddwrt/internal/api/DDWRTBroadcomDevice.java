@@ -20,7 +20,6 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * DD-WRT device with Broadcom chipset. Uses {@code wl} commands.
@@ -30,10 +29,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
 
-    private static final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTBroadcomDevice.class));
-
-    public DDWRTBroadcomDevice(DDWRTDeviceConfiguration cfg) {
-        super(cfg);
+    public DDWRTBroadcomDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
+        super(cfg, logger);
     }
 
     @Override
@@ -75,13 +72,13 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
         List<DDWRTRadio> radios = new ArrayList<>();
         // Try common Broadcom interface names
         for (String iface : new String[] { "eth1", "eth2", "wl0", "wl1" }) {
-            String ssid = safeTrim(runner.execStdout("wl -i " + iface + " ssid 2>/dev/null | awk -F'\"' '{print $2}'"));
+            String ssid = safeTrim(runner.execStdout("wl -i " + iface + " ssid | awk -F'\"' '{print $2}'"));
             if (!ssid.isEmpty()) {
                 DDWRTRadio radio = new DDWRTRadio(Objects.requireNonNull(mac), iface);
                 radio.setSsid(ssid);
 
-                String chStr = safeTrim(runner
-                        .execStdout("wl -i " + iface + " channel 2>/dev/null | grep 'current' | awk '{print $NF}'"));
+                String chStr = safeTrim(
+                        runner.execStdout("wl -i " + iface + " channel | grep 'current' | awk '{print $NF}'"));
                 if (!chStr.isEmpty()) {
                     try {
                         radio.setChannel(Integer.parseInt(chStr));
@@ -100,8 +97,12 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
 
     @Override
     protected void refreshIdentity(SshRunner runner) {
-        model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt 2>/dev/null | cut -d' ' -f 2-"));
-        firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt 2>/dev/null | cut -d' ' -f-2"));
+        if (model.isEmpty()) {
+            model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
+        }
+        if (firmware.isEmpty()) {
+            firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
+        }
     }
 
     @Override
@@ -111,5 +112,28 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
         } else {
             runner.execStdout("wl -i " + iface + " radio off");
         }
+    }
+
+    @Override
+    protected String getDeviceMac(SshRunner runner) {
+        // Try DD-WRT nvram first (most reliable for Broadcom DD-WRT)
+        String mac = safeTrim(runner.execStdout("nvram get lan_hwaddr"));
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        // Fallback to interface MAC detection
+        mac = getMacFromIpLink(runner, "en|eth|wl|br");
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        // Additional fallback for Broadcom-specific interfaces
+        mac = safeTrim(runner.execStdout("ifconfig eth1 | grep -oE '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}' | head -n1"));
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        return "";
     }
 }
