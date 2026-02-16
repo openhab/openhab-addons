@@ -34,16 +34,10 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthLoginWithAuthorizeCodeVeSync;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthTokenRequest;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDevicesPage;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse;
-import org.openhab.binding.vesync.internal.dto.responses.VeSyncAuthTokenResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDevicesPage;
@@ -63,7 +57,7 @@ public class VeSyncV2ApiHelper {
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncV2ApiHelper.class);
 
-    private static final int RESPONSE_TIMEOUT_SEC = 5;
+    protected static final int RESPONSE_TIMEOUT_SEC = 5;
 
     private volatile @Nullable VeSyncUserSession loggedInSession;
 
@@ -233,7 +227,7 @@ public class VeSyncV2ApiHelper {
             return;
         }
         try {
-            loggedInSession = processLogin(username, password, timezone).getUserSession();
+            loggedInSession = processLoginAuthV2(username, password, timezone).getUserSession();
         } catch (final AuthenticationException ae) {
             loggedInSession = null;
             throw ae;
@@ -244,162 +238,7 @@ public class VeSyncV2ApiHelper {
         bridge.handleNewUserSession(loggedInSession);
     }
 
-    private class LoginHelper {
-
-        private HttpClient client;
-        private String authorizeCode;
-        private String bizToken;
-        private String regionalServerUrl;
-        private String userCurrentRegion;
-        private String userCountryCode;
-
-        private String token;
-        private String accountId;
-        private String acceptLanguage;
-        private String registerTime;
-
-        private LoginHelper(HttpClient client) {
-            this.client = client;
-            this.authorizeCode = "";
-            this.bizToken = "";
-            this.regionalServerUrl = "smartapi.vesync.com";
-            this.userCurrentRegion = "US";
-            this.userCountryCode = "";
-            this.token = "";
-            this.accountId = "";
-            this.acceptLanguage = "";
-            this.registerTime = "";
-        }
-
-        private boolean requestAuthToken(final String username, final String password)
-                throws ExecutionException, InterruptedException, TimeoutException, AuthenticationException {
-            final Request request = client
-                    .newRequest("https://smartapi.vesync.com/globalPlatform/api/accountAuth/v1/authByPWDOrOTM")
-                    .method(HttpMethod.POST).timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
-
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
-
-            request.content(new StringContentProvider(
-                    VeSyncConstants.GSON.toJson(new VeSyncAuthTokenRequest(username, password, ""))));
-
-            final ContentResponse response = request.send();
-
-            // The 200 - OK confirms the server processed the request irrelevant of whether the credentials are any
-            // good.
-            if (response.getStatus() != HttpURLConnection.HTTP_OK) {
-                return false;
-            }
-
-            VeSyncAuthTokenResponse resp = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
-                    VeSyncAuthTokenResponse.class);
-
-            if (resp != null && resp.isMsgSuccess()) {
-                // Check for account lockout scenario
-                if (resp.result.accountLockTimeInSec != null && resp.result.accountLockTimeInSec > 0) {
-                    logger.warn("Account locked out for {} seconds", resp.result.accountLockTimeInSec);
-                    throw new AuthenticationException(
-                            "Account locked out for " + resp.result.accountLockTimeInSec + " seconds");
-                }
-
-                this.authorizeCode = resp.result.authorizeCode;
-                this.registerTime = resp.result.registerTime;
-            } else {
-                return false;
-            }
-            return true;
-        }
-
-        private boolean loginByAuthorizeCode()
-                throws ExecutionException, InterruptedException, TimeoutException, AuthenticationException {
-            final Request request = client
-                    .newRequest("https://smartapi.vesync.com/user/api/accountManage/v1/loginByAuthorizeCode4Vesync")
-                    .method(HttpMethod.POST).timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
-
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
-
-            request.content(new StringContentProvider(
-                    VeSyncConstants.GSON.toJson(new VeSyncAuthLoginWithAuthorizeCodeVeSync(this.authorizeCode, ""))));
-
-            final ContentResponse response = request.send();
-            if (response.getStatus() != HttpURLConnection.HTTP_OK) {
-                return false;
-            }
-
-            final VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse result = VeSyncConstants.GSON
-                    .fromJson(response.getContentAsString(), VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse.class);
-
-            if (result == null) {
-                return false;
-            }
-
-            this.userCurrentRegion = result.result.currentRegion;
-            this.userCountryCode = result.result.countryCode;
-            this.acceptLanguage = result.result.acceptLanguage;
-
-            if (result.isMsgSuccess()) {
-                this.token = result.result.token;
-                this.accountId = result.result.accountID;
-                return true;
-            }
-
-            // It is very likely now there is a redirect to an alternative data center suitable for the users region
-            if (result.msg.contains("cross region error")) {
-                // We need to determine the correct URL that goes to the data center serving that region
-                String hostingUrl = "smartapi.vesync.com";
-                switch (result.result.currentRegion) {
-                    case "EU":
-                        hostingUrl = EU_SERVER_ADDRESS;
-                        break;
-                    case "US":
-                    default:
-                        hostingUrl = US_SERVER_ADDRESS;
-                        break;
-                }
-                this.regionalServerUrl = hostingUrl;
-
-                // We will need the biz token for the transfer to a new region
-                this.bizToken = result.result.bizToken;
-                return loginRegionalRedirectByAuthorizeCode();
-            }
-            return false;
-        }
-
-        private boolean loginRegionalRedirectByAuthorizeCode()
-                throws ExecutionException, InterruptedException, TimeoutException, AuthenticationException {
-            final String redirectedRegion = PROTOCOL + this.regionalServerUrl
-                    + "/user/api/accountManage/v1/loginByAuthorizeCode4Vesync";
-
-            final Request request = client.newRequest(redirectedRegion).method(HttpMethod.POST)
-                    .timeout(RESPONSE_TIMEOUT_SEC, TimeUnit.SECONDS);
-            request.header(HttpHeader.CONTENT_TYPE, "application/json");
-
-            VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange regionChange = new VeSyncAuthLoginWithAuthorizeCodeVeSyncRegionChange(
-                    this.authorizeCode, this.userCountryCode, this.bizToken);
-
-            request.content(new StringContentProvider(VeSyncConstants.GSON.toJson(regionChange)));
-
-            final ContentResponse response = request.send();
-
-            final VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse result = VeSyncConstants.GSON
-                    .fromJson(response.getContentAsString(), VeSyncAuthLoginWithAuthorizeCodeVeSyncResponse.class);
-
-            if (result == null) {
-                return false;
-            }
-
-            if (result.isMsgSuccess()) {
-                this.token = result.result.token;
-                this.accountId = result.result.accountID;
-                return true;
-            }
-            if (result.msg.contains("cross region error")) {
-                throw new AuthenticationException("Code update required - region not supported - " + userCurrentRegion);
-            }
-            return false;
-        }
-    }
-
-    private VeSyncLoginResponse processLogin(String username, String password, String timezone)
+    private VeSyncLoginResponse processLoginAuthV2(String username, String password, String timezone)
             throws AuthenticationException {
         try {
             final HttpClient client = httpClient;
@@ -407,7 +246,7 @@ public class VeSyncV2ApiHelper {
                 throw new AuthenticationException("No HTTP Client");
             }
 
-            final LoginHelper loginHelper = new LoginHelper(client);
+            final LoginAuthV2Helper loginHelper = new LoginAuthV2Helper(client);
 
             if (!loginHelper.requestAuthToken(username, password)) {
                 // We cant continue if we don't have the authorizeCode parameter
@@ -417,16 +256,8 @@ public class VeSyncV2ApiHelper {
             if (!loginHelper.loginByAuthorizeCode()) {
                 throw new AuthenticationException("Invalid username or password");
             }
-            VeSyncLoginResponse response = new VeSyncLoginResponse();
-            response.result = new VeSyncUserSession();
-            response.result.token = loginHelper.token;
-            response.result.accountId = loginHelper.accountId;
-            response.result.acceptLanguage = loginHelper.acceptLanguage;
-            response.result.countryCode = loginHelper.userCountryCode;
-            response.result.registerTime = loginHelper.registerTime;
-            response.result.serverUrl = PROTOCOL + loginHelper.regionalServerUrl;
+            return loginHelper.getVeSyncLoginResponse();
 
-            return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AuthenticationException(e);
         }
