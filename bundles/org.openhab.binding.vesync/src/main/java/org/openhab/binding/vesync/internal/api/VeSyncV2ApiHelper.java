@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.api;
 
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V1_MANAGED_DEVICES_ENDPOINT;
+import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
@@ -148,7 +148,13 @@ public class VeSyncV2ApiHelper {
             throw new AuthenticationException("User is not logged in");
         }
 
-        url = loggedInSession.getServerUrl() + url;
+        @Nullable
+        VeSyncUserSession session = loggedInSession;
+        if (session != null) {
+            url = session.serverUrl + url;
+        } else {
+            url = "https://" + US_SERVER_ADDRESS + url; // Fallback
+        }
 
         // Apply current session authentication data
         requestData.applyAuthentication(loggedInSession);
@@ -180,9 +186,12 @@ public class VeSyncV2ApiHelper {
                 throw new AuthenticationException("No HTTP Client");
             }
 
-            if (!url.startsWith(loggedInSession.getServerUrl())) {
-                url = loggedInSession.getServerUrl() + url;
+            @Nullable
+            VeSyncUserSession session = loggedInSession;
+            if (session != null && !url.startsWith(session.getServerUrl())) {
+                url = session.getServerUrl() + url;
             }
+
             Request request = client.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
                     TimeUnit.SECONDS);
 
@@ -338,13 +347,12 @@ public class VeSyncV2ApiHelper {
                 // We need to determine the correct URL that goes to the data center serving that region
                 String hostingUrl = "smartapi.vesync.com";
                 switch (result.result.currentRegion) {
-                    // TODO: NEED TO MAP OTHER REGIONAL SERVER URLS HERE
                     case "EU":
-                        hostingUrl = "smartapi.vesync.eu";
+                        hostingUrl = EU_SERVER_ADDRESS;
                         break;
                     case "US":
                     default:
-                        hostingUrl = "smartapi.vesync.com";
+                        hostingUrl = US_SERVER_ADDRESS;
                         break;
                 }
                 this.regionalServerUrl = hostingUrl;

@@ -62,7 +62,8 @@ public interface VeSyncProtocolConstants {
      * Base URL for AUTHENTICATION REQUESTS
      */
     // String PROTOCOL = "https";
-    // String SERVER_ADDRESS = "smartapi.vesync.com";
+    String US_SERVER_ADDRESS = "smartapi.vesync.com";
+    String EU_SERVER_ADDRESS = "smartapi.vesync.eu";
     // String SERVER_ENDPOINT = PROTOCOL + "://" + SERVER_ADDRESS;
 
     // String HOST_ENDPOINT = SERVER_ENDPOINT + "/cloud";

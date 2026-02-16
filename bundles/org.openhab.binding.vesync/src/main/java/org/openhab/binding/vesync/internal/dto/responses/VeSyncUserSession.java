@@ -51,18 +51,8 @@ public class VeSyncUserSession {
     @SerializedName("acceptLanguage")
     public String acceptLanguage;
 
-    // public String getAccountId() {
-    // return accountId;
-    // }
-
-    // @SerializedName("registerAppVersion")
-    // public String registerAppVersion;
-
     @SerializedName("countryCode")
     public String countryCode;
-
-    // @SerializedName("acceptLanguage")
-    // public String acceptLanguage;
 
     @Override
     public String toString() {
