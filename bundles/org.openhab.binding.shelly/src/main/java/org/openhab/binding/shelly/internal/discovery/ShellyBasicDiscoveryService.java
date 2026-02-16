@@ -70,7 +70,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         this.thingTable = thingTable;
     }
 
-    public void registerDeviceDiscoveryService() {
+    public void registerDeviceDiscoveryService() throws IllegalStateException {
         if (discoveryService == null) {
             discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<>());
         }
