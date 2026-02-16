@@ -59,7 +59,6 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-// @SuppressWarnings("serial")
 public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
 
     public static final String DEV_TYPE_FAMILY_AIR_HUMIDIFIER = "LUH";
