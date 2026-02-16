@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
+import org.slf4j.Logger;
 
 /**
  * DD-WRT device with Marvell chipset. Uses {@code iwinfo} commands.
@@ -26,8 +27,8 @@ import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 @NonNullByDefault
 public class DDWRTMarvellDevice extends DDWRTBaseDevice {
 
-    public DDWRTMarvellDevice(DDWRTDeviceConfiguration cfg) {
-        super(cfg);
+    public DDWRTMarvellDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
+        super(cfg, logger);
     }
 
     @Override
@@ -42,8 +43,12 @@ public class DDWRTMarvellDevice extends DDWRTBaseDevice {
 
     @Override
     protected void refreshIdentity(SshRunner runner) {
-        model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt 2>/dev/null | cut -d' ' -f 2-"));
-        firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt 2>/dev/null | cut -d' ' -f-2"));
+        if (model.isEmpty()) {
+            model = safeTrim(runner.execStdout("grep -i 'Board:' /tmp/loginprompt | cut -d' ' -f 2-"));
+        }
+        if (firmware.isEmpty()) {
+            firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
+        }
     }
 
     @Override
@@ -53,5 +58,28 @@ public class DDWRTMarvellDevice extends DDWRTBaseDevice {
         } else {
             runner.execStdout("ifconfig " + iface + " down");
         }
+    }
+
+    @Override
+    protected String getDeviceMac(SshRunner runner) {
+        // Try DD-WRT nvram first (most reliable for Marvell DD-WRT)
+        String mac = safeTrim(runner.execStdout("nvram get lan_hwaddr"));
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        // Fallback to interface MAC detection
+        mac = getMacFromIpLink(runner, "en|eth|wl|br");
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        // Additional fallback for Marvell-specific interfaces
+        mac = safeTrim(runner.execStdout("ifconfig eth0 | grep -oE '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}' | head -n1"));
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        return "";
     }
 }

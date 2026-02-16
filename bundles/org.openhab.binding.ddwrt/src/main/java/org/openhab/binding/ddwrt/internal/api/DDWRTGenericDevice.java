@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Generic Linux device (Tomato USB, Raspberry Pi, etc.). Uses {@code iw} / {@code iwconfig} commands.
@@ -32,8 +31,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTGenericDevice extends DDWRTBaseDevice {
 
-    private static final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTGenericDevice.class));
-
     private static final Pattern STATION_MAC_PATTERN = Objects
             .requireNonNull(Pattern.compile("^Station\\s+([0-9a-fA-F:]{17})"));
     private static final Pattern SIGNAL_PATTERN = Objects.requireNonNull(Pattern.compile("signal:\\s*(-?\\d+)"));
@@ -42,13 +39,13 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
     private static final Pattern TX_BITRATE_PATTERN = Objects
             .requireNonNull(Pattern.compile("tx bitrate:\\s*([\\d.]+\\s*\\S+)"));
 
-    public DDWRTGenericDevice(DDWRTDeviceConfiguration cfg) {
-        super(cfg);
+    public DDWRTGenericDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
+        super(cfg, logger);
     }
 
     @Override
     protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
-        String output = runner.execStdout("iw dev " + iface + " station dump 2>/dev/null");
+        String output = runner.execStdout("iw dev " + iface + " station dump");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
@@ -98,7 +95,7 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
 
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
-        String output = runner.execStdout("iw dev 2>/dev/null");
+        String output = runner.execStdout("iw dev");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
@@ -114,8 +111,8 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
                 DDWRTRadio radio = new DDWRTRadio(Objects.requireNonNull(mac), currentIface);
                 radio.setSsid(Objects.requireNonNull(trimmed.substring(5).trim()));
 
-                String chStr = safeTrim(runner
-                        .execStdout("iw dev " + currentIface + " info 2>/dev/null | grep channel | awk '{print $2}'"));
+                String chStr = safeTrim(
+                        runner.execStdout("iw dev " + currentIface + " info | grep channel | awk '{print $2}'"));
                 if (!chStr.isEmpty()) {
                     try {
                         radio.setChannel(Integer.parseInt(chStr));
@@ -139,5 +136,28 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
         } else {
             runner.execStdout("ip link set " + iface + " down");
         }
+    }
+
+    @Override
+    protected String getDeviceMac(SshRunner runner) {
+        // Generic Linux: use standard interface MAC detection
+        String mac = getMacFromIpLink(runner, "en|eth|wl|br");
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        // Fallback to all interfaces
+        mac = getAnyMacFromIpLink(runner);
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        // Additional fallback using ifconfig
+        mac = safeTrim(runner.execStdout("ifconfig | grep -oE '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}' | head -n1"));
+        if (!mac.isEmpty()) {
+            return mac;
+        }
+
+        return "";
     }
 }

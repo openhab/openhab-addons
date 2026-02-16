@@ -20,6 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +48,28 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class DDWRTBaseDevice {
 
-    private static final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTBaseDevice.class));
+    // Per-device logger includes hostname/IP in logger name for easy identification
+    protected Logger logger;
+
+    // Banner/MOTD regex patterns
+    // DD-WRT banner: "DD-WRT v3.0-r55630 std (c) 2024 NewMedia-NET GmbH"
+    private static final Pattern DDWRT_VERSION_PATTERN = Objects
+            .requireNonNull(Pattern.compile("DD-WRT\\s+(v[\\d.\\-r\\w]+)"));
+    // DD-WRT banner: "Board: Linksys WRT3200ACM"
+    private static final Pattern DDWRT_BOARD_PATTERN = Objects
+            .requireNonNull(Pattern.compile("Board:\\s+(.+?)\\s*$", Pattern.MULTILINE));
+    // OpenWrt MOTD: "OpenWrt 24.10.4, r28959-29397011cc" or "OpenWrt 24.10.4"
+    private static final Pattern OPENWRT_VERSION_PATTERN = Objects
+            .requireNonNull(Pattern.compile("OpenWrt\\s+([\\d.]+)(?:,\\s*(r[\\w-]+))?"));
+    // Tomato MOTD: "Tomato v1.28.0000 MIPSR2-140 K26 USB AIO" or "FreshTomato 2023.5 K26MIPSR2_RTN USB VPN"
+    private static final Pattern TOMATO_VERSION_PATTERN = Objects
+            .requireNonNull(Pattern.compile("((?:Fresh)?Tomato)\\s+(v?[\\d.]+\\S*(?:\\s+\\S+)*)"));
+    // Tomato MOTD: "Welcome to the Netgear WNR3500L v2 [hostname]"
+    private static final Pattern TOMATO_WELCOME_PATTERN = Objects
+            .requireNonNull(Pattern.compile("Welcome to the\\s+(.+?)\\s+\\[([\\w-]+)\\]"));
+    // Shell prompt in MOTD: "root@hostname:~#"
+    private static final Pattern MOTD_PROMPT_PATTERN = Objects
+            .requireNonNull(Pattern.compile("(\\w+)@([\\w-]+):[~#/]"));
 
     // Identity
     protected String mac = "";
@@ -80,8 +103,9 @@ public abstract class DDWRTBaseDevice {
     // Updater callback (set by handler)
     protected volatile @Nullable DDWRTThingUpdater updater;
 
-    protected DDWRTBaseDevice(DDWRTDeviceConfiguration cfg) {
+    protected DDWRTBaseDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         this.config = cfg;
+        this.logger = logger;
     }
 
     // ---- Factory with chipset auto-detection ----
@@ -91,6 +115,8 @@ public abstract class DDWRTBaseDevice {
      * Returns the appropriate subclass. If SSH fails, returns null and tracks the failure.
      */
     public static @Nullable DDWRTBaseDevice createDevice(DDWRTNetworkCache cache, DDWRTDeviceConfiguration cfg) {
+        Logger log = Objects
+                .requireNonNull(LoggerFactory.getLogger(DDWRTBaseDevice.class.getName() + "." + cfg.hostname));
         SshAuthSession ssh = null;
         try {
             String host = Objects.requireNonNull(cfg.hostname);
@@ -99,48 +125,44 @@ public abstract class DDWRTBaseDevice {
             ssh = SshClientManager.getInstance().openAuthSession(host, cfg.port, user, cfg.password, null, null,
                     timeout);
 
+            // Capture MOTD for firmware/chipset detection first
+            String motd = ssh.captureMotd();
+
+            // Create a runner for chipset detection
             SshRunner runner = ssh.createRunner();
 
-            // Collect identity
-            String mac = runner.execStdout("nvram get lan_hwaddr");
+            // Detect chipset and create appropriate subclass using MOTD and command probing
+            String chipsetType = detectFWandChipset(runner, motd);
+            DDWRTBaseDevice device = createForFWandChipset(chipsetType, cfg, log);
+            device.chipset = chipsetType;
+            device.authSession = ssh;
+
+            // Now get MAC address using device-specific method
+            String mac = device.getDeviceMac(runner);
             if (mac.isEmpty()) {
-                // Fallback for non-nvram systems (OpenWrt, generic Linux)
-                mac = runner.execStdout(
-                        "ip -br l | grep -E '^(en|eth|wl|br)' | awk '{print tolower($3)}' | LC_ALL=C sort | head -n1");
-            }
-            if (mac.isEmpty()) {
-                logger.warn("Could not determine MAC for device at {}", cfg.hostname);
+                log.warn("Could not determine MAC for device at {}", cfg.hostname);
                 ssh.close();
                 return null;
             }
             mac = Objects.requireNonNull(mac.toLowerCase().trim());
+            device.mac = mac;
 
             // Check if device already exists in cache
             DDWRTBaseDevice existing = cache.getDevice(mac);
             if (existing != null) {
-                logger.debug("Device already exists in cache: {} (MAC: {})", cfg.hostname, mac);
+                log.debug("Device already exists in cache: {} (MAC: {})", cfg.hostname, mac);
                 // Update config if credentials changed
                 if (!Objects.equals(existing.config.password, cfg.password)
                         || !Objects.equals(existing.config.user, cfg.user) || existing.config.port != cfg.port) {
                     existing.config = cfg;
                     existing.closeSessionQuietly();
                     existing.authSession = ssh;
-                    logger.info("Updated credentials for device: {} (MAC: {})", cfg.hostname, mac);
+                    log.info("Updated credentials for device: {} (MAC: {})", cfg.hostname, mac);
                 } else {
                     ssh.close();
                 }
                 return existing;
             }
-
-            // Detect chipset and create appropriate subclass
-            String chipsetType = detectFWandChipset(runner);
-            DDWRTBaseDevice device = createForFWandChipset(chipsetType, cfg);
-            device.mac = mac;
-            device.chipset = chipsetType;
-            device.authSession = ssh;
-
-            // Collect remaining identity info
-            device.hostname = safeTrim(runner.execStdout("hostname"));
 
             // Capture welcome banner
             String banner = safeTrim(ssh.getWelcomeBanner());
@@ -148,16 +170,23 @@ public abstract class DDWRTBaseDevice {
                 device.welcomeBanner = banner;
             }
 
-            // Model and firmware: chipset-specific (overridden by subclasses)
+            // Parse banner and MOTD to extract firmware, model, hostname via regex
+            parseBannerAndMotd(device, banner, motd);
+
+            // Fallback: get hostname via SSH if not parsed from MOTD prompt
+            if (device.hostname.isEmpty()) {
+                device.hostname = safeTrim(runner.execStdout("hostname"));
+            }
+
+            // Fallback: chipset-specific identity (only fills empty fields)
             device.refreshIdentity(runner);
 
             device.online = true;
             cache.putDevice(mac, device);
-            logger.info("Created {} device: {} (MAC: {}, model: {})", chipsetType, cfg.hostname, mac, device.model);
+            log.info("Created {} device: {} (MAC: {}, model: {})", chipsetType, cfg.hostname, mac, device.model);
             return device;
-
         } catch (Exception e) {
-            logger.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
+            log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
             if (ssh != null) {
                 try {
                     ssh.close();
@@ -170,13 +199,61 @@ public abstract class DDWRTBaseDevice {
     }
 
     /**
-     * Detect chipset by probing for known wireless tools.
+     * Detect chipset by probing for known wireless tools and analyzing MOTD.
      */
-    private static String detectFWandChipset(SshRunner runner) {
+    private static String detectFWandChipset(SshRunner runner, String motd) {
+        // First try to detect from MOTD
+        if (!motd.isEmpty()) {
+            String motdLower = motd.toLowerCase();
+
+            // Check for OpenWrt in MOTD
+            if (motdLower.contains("openwrt")) {
+                return "openwrt";
+            }
+
+            // Check for Tomato in MOTD
+            if (motdLower.contains("tomato")) {
+                return "tomato";
+            }
+
+            // Check for DD-WRT in MOTD
+            if (motdLower.contains("dd-wrt")) {
+                // Further distinguish by checking for specific tools
+                SshRunner.CommandResult result;
+                try {
+                    result = runner.execResult("which wl_atheros");
+                    if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
+                        return "atheros";
+                    }
+                } catch (Exception e) {
+                    // continue
+                }
+
+                try {
+                    result = runner.execResult("which wl");
+                    if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
+                        return "broadcom";
+                    }
+                } catch (Exception e) {
+                    // continue
+                }
+
+                try {
+                    result = runner.execResult("which iwinfo");
+                    if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
+                        return "marvell";
+                    }
+                } catch (Exception e) {
+                    // continue
+                }
+            }
+        }
+
+        // Fallback to command probing if MOTD detection failed
         // Try Atheros (DD-WRT)
         SshRunner.CommandResult result;
         try {
-            result = runner.execResult("which wl_atheros 2>/dev/null");
+            result = runner.execResult("which wl_atheros");
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 return "atheros";
             }
@@ -186,7 +263,7 @@ public abstract class DDWRTBaseDevice {
 
         // Try Broadcom (DD-WRT)
         try {
-            result = runner.execResult("which wl 2>/dev/null");
+            result = runner.execResult("which wl");
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 return "broadcom";
             }
@@ -196,10 +273,10 @@ public abstract class DDWRTBaseDevice {
 
         // Try iwinfo (OpenWrt / Marvell DD-WRT)
         try {
-            result = runner.execResult("which iwinfo 2>/dev/null");
+            result = runner.execResult("which iwinfo");
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 // Distinguish OpenWrt from Marvell DD-WRT
-                SshRunner.CommandResult openwrtCheck = runner.execResult("cat /etc/openwrt_release 2>/dev/null");
+                SshRunner.CommandResult openwrtCheck = runner.execResult("cat /etc/openwrt_release");
                 if (openwrtCheck.isSuccess() && !openwrtCheck.getStdout().trim().isEmpty()) {
                     return "openwrt";
                 }
@@ -211,9 +288,19 @@ public abstract class DDWRTBaseDevice {
 
         // Try iw (generic Linux)
         try {
-            result = runner.execResult("which iw 2>/dev/null");
+            result = runner.execResult("which iw");
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
                 return "generic";
+            }
+        } catch (Exception e) {
+            // continue
+        }
+
+        // Try Tomato detection (check for Tomato-specific files or nvram)
+        try {
+            result = runner.execResult("nvram get os_name");
+            if (result.isSuccess() && result.getStdout().toLowerCase().contains("tomato")) {
+                return "tomato";
             }
         } catch (Exception e) {
             // continue
@@ -222,14 +309,76 @@ public abstract class DDWRTBaseDevice {
         return "generic";
     }
 
-    private static DDWRTBaseDevice createForFWandChipset(String chipset, DDWRTDeviceConfiguration cfg) {
+    private static DDWRTBaseDevice createForFWandChipset(String chipset, DDWRTDeviceConfiguration cfg, Logger log) {
         return switch (chipset) {
-            case "atheros" -> new DDWRTAtherosDevice(cfg);
-            case "broadcom" -> new DDWRTBroadcomDevice(cfg);
-            case "marvell" -> new DDWRTMarvellDevice(cfg);
-            case "openwrt" -> new DDWRTOpenWrtDevice(cfg);
-            default -> new DDWRTGenericDevice(cfg);
+            case "atheros" -> new DDWRTAtherosDevice(cfg, log);
+            case "broadcom" -> new DDWRTBroadcomDevice(cfg, log);
+            case "marvell" -> new DDWRTMarvellDevice(cfg, log);
+            case "openwrt" -> new DDWRTOpenWrtDevice(cfg, log);
+            case "tomato" -> new DDWRTTomatoDevice(cfg, log);
+            default -> new DDWRTGenericDevice(cfg, log);
         };
+    }
+
+    /**
+     * Parse the SSH banner and MOTD to extract firmware type/version, board model, and hostname
+     * using regex. Populates the device fields directly, saving SSH commands.
+     */
+    private static void parseBannerAndMotd(DDWRTBaseDevice device, String banner, String motd) {
+        // DD-WRT banner: extract version and board
+        if (!banner.isEmpty()) {
+            Matcher versionMatcher = DDWRT_VERSION_PATTERN.matcher(banner);
+            if (versionMatcher.find()) {
+                device.firmware = Objects.requireNonNull(safeTrim("DD-WRT " + versionMatcher.group(1)));
+            }
+            Matcher boardMatcher = DDWRT_BOARD_PATTERN.matcher(banner);
+            if (boardMatcher.find()) {
+                device.model = Objects.requireNonNull(safeTrim(boardMatcher.group(1)));
+            }
+        }
+
+        // MOTD parsing: OpenWrt, Tomato, and shell prompt hostname
+        if (!motd.isEmpty()) {
+            // OpenWrt MOTD: extract version
+            Matcher owrtMatcher = OPENWRT_VERSION_PATTERN.matcher(motd);
+            if (owrtMatcher.find()) {
+                String ver = "OpenWrt " + owrtMatcher.group(1);
+                if (owrtMatcher.group(2) != null) {
+                    ver += " " + owrtMatcher.group(2);
+                }
+                device.firmware = Objects.requireNonNull(safeTrim(ver));
+            }
+
+            // Tomato MOTD: extract version (e.g. "Tomato v1.28..." or "FreshTomato 2023.5...")
+            Matcher tomatoVerMatcher = TOMATO_VERSION_PATTERN.matcher(motd);
+            if (tomatoVerMatcher.find()) {
+                device.firmware = Objects
+                        .requireNonNull(safeTrim(tomatoVerMatcher.group(1) + " " + tomatoVerMatcher.group(2)));
+            }
+
+            // Tomato MOTD: extract model and hostname from Welcome line
+            Matcher tomatoWelcomeMatcher = TOMATO_WELCOME_PATTERN.matcher(motd);
+            if (tomatoWelcomeMatcher.find()) {
+                if (device.model.isEmpty()) {
+                    device.model = Objects.requireNonNull(safeTrim(tomatoWelcomeMatcher.group(1)));
+                }
+                String parsedHostname = safeTrim(tomatoWelcomeMatcher.group(2));
+                if (!parsedHostname.isEmpty()) {
+                    device.hostname = parsedHostname;
+                }
+            }
+
+            // Shell prompt: extract hostname (e.g. "root@movie-ap:~#")
+            if (device.hostname.isEmpty()) {
+                Matcher promptMatcher = MOTD_PROMPT_PATTERN.matcher(motd);
+                if (promptMatcher.find()) {
+                    String parsedHostname = safeTrim(promptMatcher.group(2));
+                    if (!parsedHostname.isEmpty()) {
+                        device.hostname = parsedHostname;
+                    }
+                }
+            }
+        }
     }
 
     // ---- Thread pool management ----
@@ -243,7 +392,7 @@ public abstract class DDWRTBaseDevice {
                 r -> new Thread(r, "ddwrt-" + (hostname.isEmpty() ? Objects.requireNonNull(mac) : hostname)));
         executor = ex;
         refreshJob = ex.scheduleWithFixedDelay(this::safeRefresh, 0, intervalSeconds, TimeUnit.SECONDS);
-        logger.debug("Started refresh for device {} every {}s", mac, intervalSeconds);
+        logger.debug("Started refresh every {}s", intervalSeconds);
     }
 
     /**
@@ -268,7 +417,7 @@ public abstract class DDWRTBaseDevice {
         try {
             refresh();
         } catch (Exception e) {
-            logger.debug("Refresh failed for device {}: {}", mac, e.getMessage());
+            logger.debug("Refresh failed: {}", e.getMessage());
             online = false;
             DDWRTThingUpdater u = updater;
             if (u != null) {
@@ -309,7 +458,9 @@ public abstract class DDWRTBaseDevice {
      * Common telemetry refresh (all chipsets).
      */
     protected void refreshCommon(SshRunner runner) {
-        uptime = safeTrim(runner.execStdout("uptime -s"));
+        // Portable uptime: parse /proc/uptime (works on all Linux including BusyBox)
+        uptime = safeTrim(runner.execStdout("awk '{d=int($1/86400);h=int($1%86400/3600);m=int($1%3600/60);"
+                + "printf \"%dd %dh %dm\",d,h,m}' /proc/uptime"));
 
         String loadStr = safeTrim(runner.execStdout("cat /proc/loadavg | awk '{print $1}'"));
         if (!loadStr.isEmpty()) {
@@ -324,8 +475,7 @@ public abstract class DDWRTBaseDevice {
         cpuTemp = refreshCpuTemp(runner);
 
         // WAN IP — treat 0.0.0.0 as "no WAN" (AP-only devices)
-        String rawWanIp = safeTrim(runner.execStdout("nvram get wan_ipaddr 2>/dev/null"));
-        wanIp = (rawWanIp.isEmpty() || "0.0.0.0".equals(rawWanIp)) ? "" : rawWanIp;
+        wanIp = refreshWanIp(runner);
 
         // Interface traffic from /proc/net/dev
         parseInterfaceTraffic(runner);
@@ -337,32 +487,40 @@ public abstract class DDWRTBaseDevice {
      * chipset-specific parsing.
      */
     protected double refreshCpuTemp(SshRunner runner) {
-        String tempStr = safeTrim(runner.execStdout("cat /proc/dmu/temperature 2>/dev/null | grep -oE '[0-9.]+'"));
+        // Single command: try DMU first, fall back to thermal_zone (avoids guaranteed rc=1)
+        String tempStr = safeTrim(runner.execStdout(
+                "cat /proc/dmu/temperature | grep -oE '[0-9.]+' || cat /sys/class/thermal/thermal_zone0/temp"));
         if (tempStr.isEmpty()) {
-            tempStr = safeTrim(runner.execStdout("cat /sys/class/thermal/thermal_zone0/temp 2>/dev/null"));
-            if (!tempStr.isEmpty()) {
-                try {
-                    // thermal_zone reports millidegrees
-                    return Double.parseDouble(tempStr) / 1000.0;
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-                return 0.0;
-            }
+            return 0.0;
         }
-        if (!tempStr.isEmpty()) {
-            try {
-                return Double.parseDouble(tempStr);
-            } catch (NumberFormatException e) {
-                // ignore
-            }
+        try {
+            double val = Double.parseDouble(tempStr);
+            // thermal_zone reports millidegrees (values > 1000); DMU reports degrees directly
+            return val > 1000.0 ? val / 1000.0 : val;
+        } catch (NumberFormatException e) {
+            return 0.0;
         }
-        return 0.0;
+    }
+
+    /**
+     * Get WAN IP address. Default uses nvram. Subclasses without nvram should override.
+     */
+    protected String refreshWanIp(SshRunner runner) {
+        String rawWanIp = safeTrim(runner.execStdout("nvram get wan_ipaddr"));
+        return (rawWanIp.isEmpty() || "0.0.0.0".equals(rawWanIp)) ? "" : rawWanIp;
+    }
+
+    /**
+     * Get the LAN bridge interface name for /proc/net/dev traffic parsing.
+     * Default is "br0" (DD-WRT/Tomato). OpenWrt overrides to "br-lan".
+     */
+    protected String getLanInterface() {
+        return "br0";
     }
 
     private void parseInterfaceTraffic(SshRunner runner) {
         // WAN interface — only fetch if device has a real WAN IP (is a gateway)
-        String wanIface = isGateway() ? safeTrim(runner.execStdout("nvram get wan_iface 2>/dev/null")) : "";
+        String wanIface = isGateway() ? getWanInterface(runner) : "";
         if (!wanIface.isEmpty()) {
             String wanLine = safeTrim(
                     runner.execStdout("cat /proc/net/dev | grep '" + wanIface + "' | awk '{print $2, $10}'"));
@@ -379,8 +537,10 @@ public abstract class DDWRTBaseDevice {
             }
         }
 
-        // LAN interface (br0)
-        String lanLine = safeTrim(runner.execStdout("cat /proc/net/dev | grep 'br0' | awk '{print $2, $10}'"));
+        // LAN interface (overridable: br0 for DD-WRT/Tomato, br-lan for OpenWrt)
+        String lanIface = getLanInterface();
+        String lanLine = safeTrim(
+                runner.execStdout("cat /proc/net/dev | grep '" + lanIface + "' | awk '{print $2, $10}'"));
         if (!lanLine.isEmpty()) {
             String[] parts = lanLine.split("\\s+");
             if (parts.length >= 2) {
@@ -392,6 +552,13 @@ public abstract class DDWRTBaseDevice {
                 }
             }
         }
+    }
+
+    /**
+     * Get the WAN interface name. Default uses nvram. Subclasses without nvram should override.
+     */
+    protected String getWanInterface(SshRunner runner) {
+        return safeTrim(runner.execStdout("nvram get wan_iface"));
     }
 
     /**
@@ -419,10 +586,14 @@ public abstract class DDWRTBaseDevice {
      */
     protected void refreshIdentity(SshRunner runner) {
         // Generic Linux: DMI or device-tree for model
-        model = safeTrim(runner.execStdout(
-                "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null || cat /proc/device-tree/model 2>/dev/null"));
+        if (model.isEmpty()) {
+            model = safeTrim(
+                    runner.execStdout("cat /sys/devices/virtual/dmi/id/product_name || cat /proc/device-tree/model"));
+        }
         // Generic Linux: os-release for firmware/distro
-        firmware = safeTrim(runner.execStdout("cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d'\"' -f2"));
+        if (firmware.isEmpty()) {
+            firmware = safeTrim(runner.execStdout("cat /etc/os-release | grep PRETTY_NAME | cut -d'\"' -f2"));
+        }
     }
 
     /**
@@ -461,6 +632,33 @@ public abstract class DDWRTBaseDevice {
     }
 
     /**
+     * Get a MAC address from 'ip l' output, filtering by interface name prefixes.
+     * Uses BusyBox-compatible 'ip l' (not 'ip -br l').
+     *
+     * @param runner SSH runner
+     * @param ifacePrefixes awk regex alternation of interface prefixes, e.g. "en|eth|wl|br"
+     * @return lowercase MAC address, or empty string if not found
+     */
+    protected static String getMacFromIpLink(SshRunner runner, String ifacePrefixes) {
+        return safeTrim(runner.execStdout("ip l | awk '/^[0-9]+: (" + ifacePrefixes
+                + ")/{f=1} f && /link\\/ether/{print tolower($2); f=0}' | LC_ALL=C sort | head -n1"));
+    }
+
+    /**
+     * Get the first MAC address from any interface via 'ip l' output.
+     * BusyBox-compatible fallback when interface name filtering is not needed.
+     */
+    protected static String getAnyMacFromIpLink(SshRunner runner) {
+        return safeTrim(runner.execStdout("ip l | awk '/link\\/ether/{print tolower($2)}' | head -n1"));
+    }
+
+    /**
+     * Get the MAC address for this device using chipset-specific method.
+     * This method is called after firmware/chipset detection.
+     */
+    protected abstract String getDeviceMac(SshRunner runner);
+
+    /**
      * Enable or disable a wireless radio interface.
      */
     protected void setRadioEnabled(SshRunner runner, String iface, boolean enabled) {
@@ -477,7 +675,7 @@ public abstract class DDWRTBaseDevice {
                 String cmd = "root".equals(config.user) ? "reboot" : "sudo reboot";
                 s.createRunner().execStdout(cmd);
             } catch (Exception e) {
-                logger.warn("Reboot command failed for {}: {}", mac, e.getMessage());
+                logger.warn("Reboot command failed: {}", e.getMessage());
             }
         }
     }
@@ -514,14 +712,14 @@ public abstract class DDWRTBaseDevice {
             String test = runner.execStdout("echo ok");
             if ("ok".equals(test)) {
                 authSession = newSession;
-                logger.info("Recovered SSH session for device: {}", mac);
+                logger.info("Recovered SSH session");
                 return newSession;
             } else {
                 newSession.close();
                 return null;
             }
         } catch (Exception e) {
-            logger.debug("Session recovery failed for {}: {}", mac, e.getMessage());
+            logger.debug("Session recovery failed: {}", e.getMessage());
             return null;
         }
     }

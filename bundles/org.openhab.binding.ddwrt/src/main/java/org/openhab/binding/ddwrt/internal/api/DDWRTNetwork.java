@@ -44,6 +44,9 @@ public class DDWRTNetwork {
     // Failed device configurations by hostname for retry during refresh
     private final Map<String, DDWRTDeviceConfiguration> failedDeviceConfigs = new ConcurrentHashMap<>();
 
+    // Per-host locks to prevent concurrent createDevice calls for the same hostname
+    private final Map<String, Object> hostLocks = new ConcurrentHashMap<>();
+
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetwork.class));
 
     // ---- Configuration ----
@@ -68,7 +71,7 @@ public class DDWRTNetwork {
                     devCfg.password = netCfg.password;
                     devCfg.refreshInterval = netCfg.refreshInterval;
 
-                    DDWRTBaseDevice device = DDWRTBaseDevice.createDevice(cache, devCfg);
+                    DDWRTBaseDevice device = createDeviceLocked(devCfg);
                     if (device != null) {
                         device.startRefresh(netCfg.refreshInterval);
                     } else {
@@ -130,7 +133,7 @@ public class DDWRTNetwork {
     public @Nullable DDWRTBaseDevice addOrUpdateDevice(DDWRTDeviceConfiguration cfg) {
         logger.debug("Manual add/update device for hostname: {}", cfg.hostname);
         try {
-            DDWRTBaseDevice device = DDWRTBaseDevice.createDevice(cache, cfg);
+            DDWRTBaseDevice device = createDeviceLocked(cfg);
             if (device != null) {
                 failedDeviceConfigs.remove(cfg.hostname);
                 DDWRTNetworkConfiguration netCfg = config;
@@ -158,7 +161,7 @@ public class DDWRTNetwork {
             copy.forEach((hostname, cfg) -> {
                 try {
                     logger.debug("Retrying connection to failed device: {}", hostname);
-                    DDWRTBaseDevice device = DDWRTBaseDevice.createDevice(cache, cfg);
+                    DDWRTBaseDevice device = createDeviceLocked(cfg);
                     if (device != null) {
                         failedDeviceConfigs.remove(hostname);
                         DDWRTNetworkConfiguration netCfg = config;
@@ -173,10 +176,29 @@ public class DDWRTNetwork {
         }
     }
 
+    /**
+     * Create a device with per-host locking to prevent duplicate SSH sessions.
+     * If another thread is already creating a device for the same host, this blocks until done,
+     * then returns the cached device (if the first thread succeeded) or retries.
+     */
+    private @Nullable DDWRTBaseDevice createDeviceLocked(DDWRTDeviceConfiguration cfg) {
+        Object lock = hostLocks.computeIfAbsent(cfg.hostname, k -> new Object());
+        synchronized (lock) {
+            // Check if device was already created by another thread while we waited
+            DDWRTBaseDevice existing = getDeviceByHostname(cfg.hostname);
+            if (existing != null) {
+                logger.debug("Device already exists for {}, skipping createDevice", cfg.hostname);
+                return existing;
+            }
+            return DDWRTBaseDevice.createDevice(cache, cfg);
+        }
+    }
+
     /** Stop all device thread pools and clear the cache. Called on bridge dispose. */
     public void dispose() {
         cache.getDevices().forEach(DDWRTBaseDevice::dispose);
         cache.clearAll();
         failedDeviceConfigs.clear();
+        hostLocks.clear();
     }
 }

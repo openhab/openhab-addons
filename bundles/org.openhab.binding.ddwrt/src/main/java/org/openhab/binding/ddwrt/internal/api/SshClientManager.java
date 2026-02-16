@@ -111,6 +111,24 @@ public class SshClientManager {
         }
     }
 
+    /**
+     * Check if a file is likely a private key (not a .pub, config, known_hosts, etc.).
+     */
+    private static boolean isLikelyPrivateKey(File file) {
+        if (!file.isFile()) {
+            return false;
+        }
+        String name = file.getName();
+        // Skip known non-key files
+        if (name.endsWith(".pub") || name.startsWith("known_hosts") || name.startsWith("config")
+                || name.startsWith("authorized_keys") || name.endsWith("~")) {
+            return false;
+        }
+        // Accept files starting with "id_" (id_rsa, id_ed25519, id_ecdsa, id_dsa)
+        // or any other file without a common non-key extension
+        return true;
+    }
+
     @SuppressWarnings("null")
     public SshAuthSession openAuthSession(String host, int port, String user, @Nullable String password,
             @Nullable String privateKeyRef, @Nullable String pinnedFingerprint, Duration defaultTimeout)
@@ -124,7 +142,6 @@ public class SshClientManager {
 
         AtomicReference<@Nullable String> bannerRef = new AtomicReference<>(null);
 
-        // :TODO: ballle98/openhab-addons#14 Add support for openwrt and tomato
         cs.setUserInteraction(new BannerCapturingUserInteraction(bannerRef));
 
         if (password != null && !password.isBlank()) {
@@ -153,9 +170,13 @@ public class SshClientManager {
         }
 
         if (!keyFiles.isEmpty()) {
-            logger.debug("keys present");
+            logger.debug("{} files found in key directories", keyFiles.size());
             for (File privateKeyFile : keyFiles) {
-                logger.debug("keys from {}", privateKeyFile.getPath());
+                if (!isLikelyPrivateKey(privateKeyFile)) {
+                    logger.trace("Skipping non-key file: {}", privateKeyFile.getName());
+                    continue;
+                }
+                logger.debug("Loading key from {}", privateKeyFile.getPath());
                 try {
                     FileKeyPairProvider keyPairProvider = new FileKeyPairProvider(
                             Collections.singletonList(privateKeyFile.toPath()));
@@ -166,11 +187,10 @@ public class SshClientManager {
                         // Add private key identity
                         cs.addPublicKeyIdentity(keyPairs.iterator().next());
                     } else {
-                        logger.warn("No valid key pairs found in {}", privateKeyFile.getName());
+                        logger.debug("No valid key pairs found in {}", privateKeyFile.getName());
                     }
                 } catch (Exception ex) {
-                    logger.warn("Skipping file {}: not a valid key file. Reason: {}", privateKeyFile.getName(),
-                            ex.getMessage());
+                    logger.debug("Skipping {}: {}", privateKeyFile.getName(), ex.getMessage());
                 }
             }
         }

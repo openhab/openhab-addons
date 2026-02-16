@@ -62,7 +62,7 @@ public final class IwinfoParser {
      * Parse {@code iwinfo <iface> assoclist} output into wireless client objects.
      */
     public static List<DDWRTWirelessClient> parseAssoclist(SshRunner runner, String iface, String apMac) {
-        String output = runner.execStdout("iwinfo " + iface + " assoclist 2>/dev/null");
+        String output = runner.execStdout("iwinfo " + iface + " assoclist");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
@@ -115,7 +115,7 @@ public final class IwinfoParser {
      */
     public static List<DDWRTRadio> enumerateRadios(SshRunner runner, String deviceMac) {
         // iwinfo without args lists interfaces with their ESSID and channel
-        String output = runner.execStdout("iwinfo 2>/dev/null");
+        String output = runner.execStdout("iwinfo");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
         }
@@ -143,8 +143,8 @@ public final class IwinfoParser {
                     radio.setEnabled(true);
 
                     // Get channel info
-                    String chStr = runner.execStdout("iwinfo " + currentIface
-                            + " info 2>/dev/null | grep -i channel | head -1 | grep -oE '[0-9]+'");
+                    String chStr = runner.execStdout(
+                            "iwinfo " + currentIface + " info | grep -i channel | head -1 | grep -oE '[0-9]+'");
                     if (!chStr.isEmpty()) {
                         try {
                             radio.setChannel(Integer.parseInt(chStr.trim().split("\n")[0]));
