@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
+// @SuppressWarnings("serial")
 public class VeSyncDeviceAirPurifierHandler extends VeSyncBaseDeviceHandler {
 
     public static final String DEV_TYPE_FAMILY_AIR_PURIFIER = "LAP";

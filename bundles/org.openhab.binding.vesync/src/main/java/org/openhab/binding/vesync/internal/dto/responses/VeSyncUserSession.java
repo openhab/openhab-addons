@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses;
 
+import javax.validation.constraints.NotNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -26,6 +28,13 @@ public class VeSyncUserSession {
 
     public String token;
 
+    @NotNull
+    public String serverUrl = "";
+
+    public @NotNull String getServerUrl() {
+        return serverUrl;
+    }
+
     public String getToken() {
         return token;
     }
@@ -33,24 +42,30 @@ public class VeSyncUserSession {
     @SerializedName("registerTime")
     public String registerTime;
 
-    @SerializedName("accountID")
     public String accountId;
 
     public String getAccountId() {
         return accountId;
     }
 
-    @SerializedName("registerAppVersion")
-    public String registerAppVersion;
+    @SerializedName("acceptLanguage")
+    public String acceptLanguage;
+
+    // public String getAccountId() {
+    // return accountId;
+    // }
+
+    // @SerializedName("registerAppVersion")
+    // public String registerAppVersion;
 
     @SerializedName("countryCode")
     public String countryCode;
 
-    @SerializedName("acceptLanguage")
-    public String acceptLanguage;
+    // @SerializedName("acceptLanguage")
+    // public String acceptLanguage;
 
     @Override
     public String toString() {
-        return "Data [user=AB" + ", token=" + token + "]";
+        return "Data [token=" + token + "]";
     }
 }

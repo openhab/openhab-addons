@@ -33,7 +33,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
@@ -455,7 +454,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             }
             VeSyncClient client = getVeSyncClient();
             if (client != null) {
-                final String url = VeSyncProtocolConstants.SERVER_ENDPOINT + "/" + urlPath;
+                final String url = "/" + urlPath;
                 return client.reqV2Authorized(url, deviceLookupKey, request);
             } else {
                 throw new DeviceUnknownException("Missing client");
