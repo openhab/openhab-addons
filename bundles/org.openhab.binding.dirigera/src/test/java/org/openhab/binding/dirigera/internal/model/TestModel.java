@@ -176,6 +176,7 @@ class TestModel {
         while (!gateway.isKnownDevice(deviceId) && Duration.between(start, check).getSeconds() < 10) {
             try {
                 Thread.sleep(100);
+                check = Instant.now();
             } catch (InterruptedException e) {
                 fail(e.getMessage());
             }

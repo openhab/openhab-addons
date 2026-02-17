@@ -67,5 +67,8 @@ public class DicoveryServiceMock extends DirigeraDiscoveryService {
                 check = Instant.now();
             }
         }
+        if (discoveries.size() != size) {
+            fail("Discovery size expected " + size + " but was " + discoveries.size());
+        }
     }
 }

@@ -62,6 +62,7 @@ public class SceneHandler extends BaseHandler {
             } else {
                 updateStatus(ThingStatus.ONLINE);
             }
+            gateway().registerDevice(this, config.id);
 
             // check if different undo duration is configured
             if (values.has("undoAllowedDuration")) {

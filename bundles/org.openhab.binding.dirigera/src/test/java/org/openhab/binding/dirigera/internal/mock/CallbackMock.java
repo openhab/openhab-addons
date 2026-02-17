@@ -73,7 +73,7 @@ public class CallbackMock implements ThingHandlerCallback {
                 try {
                     this.wait(100);
                 } catch (InterruptedException e) {
-                    fail("Interruppted waiting for ONLINE");
+                    fail(e.getMessage());
                 }
                 check = Instant.now();
             }

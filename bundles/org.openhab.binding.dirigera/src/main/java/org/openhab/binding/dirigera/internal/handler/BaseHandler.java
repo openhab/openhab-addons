@@ -147,22 +147,44 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         }
     }
 
-    public void checkBridge() {
-        // go from INITIALIZING to UNKNOWN, initialized but not ready
+    public synchronized void checkBridge() {
+        // disposed flag set - go away
+        if (disposed) {
+            return;
+        }
+
+        ThingStatus handlerStatus = getThing().getStatus();
+
+        /*
+         * UNKNOWN => device initialization in progress, do nothing and wait for it to finish with resulting
+         * ONLINE(OFFLINE response
+         * CONFIGURATION_ERROR => something went wrong during initialize, don't continue
+         */
+        if (ThingStatus.UNKNOWN.equals(handlerStatus)
+                || ThingStatusDetail.CONFIGURATION_ERROR.equals(thing.getStatusInfo().getStatusDetail())) {
+            return;
+        }
+
+        // INITIALIZING => initialize called with success, instances are set up but device initialization not yet
+        // started, so set status to UNKNOWN to trigger bridgeStatusChanged again after initializing device
         if (ThingStatus.INITIALIZING.equals(getThing().getStatus())) {
             updateStatus(ThingStatus.UNKNOWN);
         }
-        // check if bridge is ONLINE, thing not yet ONLINE and not disposed to start device initialization
+
+        // Bridge ONLINE, thing anything else than ONLINE => initialize device and wait for it to finish with resulting
+        // ONLINE(OFFLINE response, if
         if (ThingStatus.ONLINE.equals(gateway().getThing().getStatus())
-                && !ThingStatus.ONLINE.equals(getThing().getStatus()) && !disposed) {
-            synchronized (this) {
-                if (initializationFuture == null) {
-                    initializationFuture = scheduler.schedule(child::initializeDevice, 0, TimeUnit.SECONDS);
-                } // initializeDevice already in progress, do nothing and wait for it to finish
-            }
+                && !ThingStatus.ONLINE.equals(getThing().getStatus())) {
+            initializationFuture = scheduler.schedule(child::initializeDevice, 0, TimeUnit.SECONDS);
         }
     }
 
+    /**
+     * Check Handler sanity
+     * Initial channel update
+     * Thing properties
+     * Register device at gateway
+     */
     public void initializeDevice() {
         if (!checkHandler()) {
             // if handler doesn't match model status will be set to offline and it will stay until correction
@@ -175,9 +197,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
             updateProperties();
             gateway().registerDevice(child, config.id);
         }
-        synchronized (this) {
-            initializationFuture = null;
-        }
     }
 
     @Override
@@ -186,7 +205,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         checkBridge();
     }
 
-    private void updateProperties() {
+    protected void updateProperties() {
         // fill canSend and canReceive capabilities
         Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
         Object canReceiveCapabilities = modelProperties.get(Model.PROPERTY_CAN_RECEIVE);
@@ -476,14 +495,25 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     @Override
     public void dispose() {
         disposed = true;
+        ScheduledFuture<?> localFuture = initializationFuture;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+            initializationFuture = null;
+        }
         online = false;
-        gateway().unregisterDevice(child, config.id);
+        Gateway localGateway = gateway;
+        if (localGateway != null) {
+            localGateway.unregisterDevice(child, config.id);
+        }
         super.dispose();
     }
 
     @Override
     public void handleRemoval() {
-        gateway().deleteDevice(child, config.id);
+        Gateway localGateway = gateway;
+        if (localGateway != null) {
+            localGateway.deleteDevice(child, config.id);
+        }
         super.handleRemoval();
     }
 

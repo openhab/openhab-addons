@@ -46,9 +46,9 @@ class TestSimplePlug {
     String deviceId = "6379a590-dc0a-47b5-b35b-7b46dfefd282_1";
     ThingTypeUID thingTypeUID = THING_TYPE_SIMPLE_PLUG;
 
-    private static SimplePlugHandler handler = mock(SimplePlugHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
+    private SimplePlugHandler handler = mock(SimplePlugHandler.class);
+    private CallbackMock callback = mock(CallbackMock.class);
+    private Thing thing = mock(Thing.class);
 
     @Test
     void testHandlerCreation() {
