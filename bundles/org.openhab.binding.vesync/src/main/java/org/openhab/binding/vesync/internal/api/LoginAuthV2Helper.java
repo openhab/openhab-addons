@@ -147,19 +147,19 @@ class LoginAuthV2Helper {
             return false;
         }
 
-        userCurrentRegion = result.result.currentRegion;
-        loginData.countryCode = result.result.countryCode;
-        loginData.acceptLanguage = result.result.acceptLanguage;
+        if (result.result != null) {
+            userCurrentRegion = result.result.currentRegion;
+            loginData.countryCode = result.result.countryCode;
+            loginData.acceptLanguage = result.result.acceptLanguage;
 
-        if (result.msg != null) {
-            if (result.result != null && result.isMsgSuccess()) {
+            if (result.isMsgSuccess()) {
                 loginData.token = result.result.token;
                 loginData.accountId = result.result.accountID;
                 return true;
             }
 
             // It is very likely now there is a redirect to an alternative data center suitable for the users region
-            if (result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
+            if (result.msg != null && result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
                 // We need to determine the correct URL that goes to the data center serving that region
                 String hostingUrl;
                 switch (result.result.currentRegion) {
