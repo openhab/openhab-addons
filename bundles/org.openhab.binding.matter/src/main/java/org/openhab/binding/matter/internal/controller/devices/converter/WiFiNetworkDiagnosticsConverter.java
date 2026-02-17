@@ -48,7 +48,7 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
 
     @Override
     public void pollCluster() {
-        if (handler.isLinked(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI)) {
+        if (isChannelLinked(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI)) {
             // we only need to read a single attribute, not the whole cluster
             handler.readAttribute(endpointNumber, initializingCluster.name,
                     WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI).thenAccept(rssi -> {

@@ -201,9 +201,10 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     }
 
     // Making this public
-    @Override
-    public boolean isLinked(String channelId) {
-        return isLinked(channelId);
+    public boolean isLinked(int endpointNumber, String channelId) {
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), String.valueOf(endpointNumber));
+        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
+        return isLinked(channelUID);
     }
 
     @Override
