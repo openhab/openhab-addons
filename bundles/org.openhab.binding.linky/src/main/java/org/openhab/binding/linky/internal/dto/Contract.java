@@ -62,4 +62,20 @@ public class Contract {
 
         return result;
     }
+
+    public static Contract convertFromContract(ContractSynth contractSynth, ContractState contractState) {
+        Contract result = new Contract();
+
+        result.segment = contractState.segment;
+        result.subscribedPower = contractState.subscribedPower.value + " " + contractState.subscribedPower.unit;
+        result.lastActivationDate = contractSynth.consumptionLastActivationDate;
+        result.distributionTariff = contractState.distributionTariff;
+        result.offpeakHours = "";
+        result.contractStatus = "";
+        result.contractType = contractState.contractType;
+        result.lastDistributionTariffChangeDate = "";
+
+        return result;
+    }
+
 }
