@@ -18,6 +18,7 @@ import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolCon
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.US_SERVER_ADDRESS;
 
 import java.net.HttpURLConnection;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -51,11 +52,11 @@ class LoginAuthV2Helper {
     private final HttpClient client;
     private final VeSyncUserSession loginData = new VeSyncUserSession();
 
-    private final static String US_TOKEN_REQ_URL = PROTOCOL + "://" + US_SERVER_ADDRESS
+    private static final String US_TOKEN_REQ_URL = PROTOCOL + "://" + US_SERVER_ADDRESS
             + "/globalPlatform/api/accountAuth/v1/authByPWDOrOTM";
-    private final static String US_AUTH_BY_TOKEN = PROTOCOL + "://" + US_SERVER_ADDRESS
+    private static final String US_AUTH_BY_TOKEN = PROTOCOL + "://" + US_SERVER_ADDRESS
             + "/user/api/accountManage/v1/loginByAuthorizeCode4Vesync";
-    private final static String AUTH_CONTENT_TYPE = "application/json";
+    private static final String AUTH_CONTENT_TYPE = "application/json";
 
     private String authorizeCode;
     private String bizToken;
@@ -101,7 +102,6 @@ class LoginAuthV2Helper {
                 VeSyncAuthTokenResponse.class);
 
         if (resp != null && resp.isMsgSuccess()) {
-
             // Check for account lockout scenario
             if (resp.result.accountLockTimeInSec != null && resp.result.accountLockTimeInSec > 0) {
                 logger.warn("Account locked out for {} seconds", resp.result.accountLockTimeInSec);
@@ -158,7 +158,7 @@ class LoginAuthV2Helper {
         }
 
         // It is very likely now there is a redirect to an alternative data center suitable for the users region
-        if (result.msg.toLowerCase().contains("cross region error")) {
+        if (result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
             // We need to determine the correct URL that goes to the data center serving that region
             String hostingUrl = US_SERVER_ADDRESS;
             switch (result.result.currentRegion) {
@@ -206,7 +206,7 @@ class LoginAuthV2Helper {
             loginData.accountId = result.result.accountID;
             return true;
         }
-        if (result.msg.toLowerCase().contains("cross region error")) {
+        if (result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
             throw new AuthenticationException("Code update required - region not supported - " + userCurrentRegion);
         }
         return false;

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.vesync.internal.dto.responses;
 
-import javax.validation.constraints.NotNull;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -28,10 +26,9 @@ public class VeSyncUserSession {
 
     public String token;
 
-    @NotNull
-    public String serverUrl = "";
+    public String serverUrl;
 
-    public @NotNull String getServerUrl() {
+    public String getServerUrl() {
         return serverUrl;
     }
 

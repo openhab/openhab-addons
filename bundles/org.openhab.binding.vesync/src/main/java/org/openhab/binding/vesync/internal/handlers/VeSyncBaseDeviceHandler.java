@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -296,7 +297,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
                 logger.debug("Searching for device mac id : {}", configMac);
                 @Nullable
                 VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap()
-                        .get(configMac.toLowerCase());
+                        .get(configMac.toLowerCase(Locale.ENGLISH));
 
                 if (metadata != null && metadata.macId != null) {
                     return metadata.macId;
