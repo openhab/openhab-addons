@@ -281,13 +281,15 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
 
         VeSyncResponse responseFrame = VeSyncConstants.GSON.fromJson(result, VeSyncResponse.class);
 
-        if (responseFrame != null && !"0.".equals(responseFrame.code)
-                && responseFrame.msg.toLowerCase(Locale.ENGLISH).contains("token")) {
-            logger.trace("Refreshing API token due to error response regarding the token");
-            VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
-            final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
-            api.login(config.username, passwordMd5, "Europe/London");
-            return api.reqV2Authorized(url, macId, requestData);
+        if (responseFrame != null && responseFrame.code != null && responseFrame.msg != null) {
+            final String message = responseFrame.msg;
+            if (!"0".equals(responseFrame.code) && message.toLowerCase(Locale.ENGLISH).contains("token")) {
+                logger.trace("Refreshing API token due to error response regarding the token");
+                final VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
+                final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
+                api.login(config.username, passwordMd5, "Europe/London");
+                return api.reqV2Authorized(url, macId, requestData);
+            }
         }
 
         return result;
