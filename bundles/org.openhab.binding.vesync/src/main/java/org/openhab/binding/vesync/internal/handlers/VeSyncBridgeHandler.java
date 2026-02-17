@@ -18,6 +18,7 @@ import static org.openhab.binding.vesync.internal.VeSyncConstants.DEVICE_PROP_BR
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -30,11 +31,13 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
+import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.api.VeSyncV2ApiHelper;
 import org.openhab.binding.vesync.internal.discovery.DeviceMetaDataUpdatedHandler;
 import org.openhab.binding.vesync.internal.discovery.VeSyncDiscoveryService;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
+import org.openhab.binding.vesync.internal.dto.responses.VeSyncResponse;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncUserSession;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
 import org.openhab.binding.vesync.internal.exceptions.DeviceUnknownException;
@@ -270,6 +273,23 @@ public class VeSyncBridgeHandler extends BaseBridgeHandler implements VeSyncClie
     @Override
     public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException {
-        return api.reqV2Authorized(url, macId, requestData);
+        // This is common to all call's check the response code for token expiry, if the token has expired
+        // then perform a new login before a final attempt. all errors such as invalid token or expired token all have
+        // token
+        // in the message.
+        String result = api.reqV2Authorized(url, macId, requestData);
+
+        VeSyncResponse responseFrame = VeSyncConstants.GSON.fromJson(result, VeSyncResponse.class);
+
+        if (responseFrame != null && !"0.".equals(responseFrame.code)
+                && responseFrame.msg.toLowerCase(Locale.ENGLISH).contains("token")) {
+            logger.trace("Refreshing API token due to error response regarding the token");
+            VeSyncBridgeConfiguration config = getConfigAs(VeSyncBridgeConfiguration.class);
+            final String passwordMd5 = VeSyncV2ApiHelper.calculateMd5(config.password);
+            api.login(config.username, passwordMd5, "Europe/London");
+            return api.reqV2Authorized(url, macId, requestData);
+        }
+
+        return result;
     }
 }
