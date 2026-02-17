@@ -47,9 +47,9 @@ class TestAirPurifier {
     private static String deviceId = "a8319695-0729-428c-9465-aadc0b738995";
     private static ThingTypeUID thingTypeUID = THING_TYPE_AIR_PURIFIER;
 
-    private static AirPurifierHandler handler = mock(AirPurifierHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
+    private AirPurifierHandler handler = mock(AirPurifierHandler.class);
+    private CallbackMock callback = mock(CallbackMock.class);
+    private Thing thing = mock(Thing.class);
 
     @Test
     void testHandlerCreation() {

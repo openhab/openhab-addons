@@ -46,9 +46,9 @@ class TestSwitchLight {
     String deviceId = "eb9a4367-9e23-4d37-9566-401a7ae7caf0_2";
     ThingTypeUID thingTypeUID = THING_TYPE_SWITCH_LIGHT;
 
-    private static SwitchLightHandler handler = mock(SwitchLightHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
+    private SwitchLightHandler handler = mock(SwitchLightHandler.class);
+    private CallbackMock callback = mock(CallbackMock.class);
+    private Thing thing = mock(Thing.class);
 
     @Test
     void testHandlerCreation() {

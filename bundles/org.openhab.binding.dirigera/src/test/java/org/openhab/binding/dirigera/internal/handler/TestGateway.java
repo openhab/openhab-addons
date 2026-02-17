@@ -40,12 +40,12 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 class TestGateway {
-    private static String deviceId = "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1";
+    private String deviceId = "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1";
 
-    private static DirigeraHandler handler = mock(DirigeraHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
-    private static String mockFile = "src/test/resources/gateway/home-with-coordinates.json";
+    private DirigeraHandler handler = mock(DirigeraHandler.class);
+    private CallbackMock callback = mock(CallbackMock.class);
+    private Thing thing = mock(Thing.class);
+    private String mockFile = "src/test/resources/gateway/home-with-coordinates.json";
 
     @Test
     void testBridgeCreation() {

@@ -39,8 +39,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * {@link TestDoubleShortcutController} Tests device handler creation, initializing and refresh of channels
@@ -49,14 +47,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class TestDoubleShortcutController {
-    private final Logger logger = LoggerFactory.getLogger(TestDoubleShortcutController.class);
 
     String deviceId = "854bdf30-86b8-48f5-b070-16ff5ab12be4_1";
     ThingTypeUID thingTypeUID = THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER;
 
-    private static DoubleShortcutControllerHandler handler = mock(DoubleShortcutControllerHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
+    private DoubleShortcutControllerHandler handler = mock(DoubleShortcutControllerHandler.class);
+    private CallbackMock callback = mock(CallbackMock.class);
+    private Thing thing = mock(Thing.class);
 
     @Test
     void testHandlerCreation() {

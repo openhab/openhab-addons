@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handlerplug;
+package org.openhab.binding.dirigera.internal.handler.plug;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -21,7 +21,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.plug.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.library.types.DateTimeType;

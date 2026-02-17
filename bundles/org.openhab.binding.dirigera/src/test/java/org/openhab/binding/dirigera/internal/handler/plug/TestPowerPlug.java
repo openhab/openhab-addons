@@ -10,66 +10,70 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handlerplug;
+package org.openhab.binding.dirigera.internal.handler.plug;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.plug.SimplePlugHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
+import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 
 /**
- * {@link TestSimplePlug} Tests device handler creation, initializing and refresh of channels
+ * {@link TestPowerPlug} Tests device handler creation, initializing and refresh of channels
  *
  * @author Bernd Weymann - Initial Contribution
  */
 @NonNullByDefault
-class TestSimplePlug {
-    String deviceId = "6379a590-dc0a-47b5-b35b-7b46dfefd282_1";
-    ThingTypeUID thingTypeUID = THING_TYPE_SIMPLE_PLUG;
-
-    private SimplePlugHandler handler = mock(SimplePlugHandler.class);
-    private CallbackMock callback = mock(CallbackMock.class);
-    private Thing thing = mock(Thing.class);
+class TestPowerPlug {
+    String deviceId = "a4c6a33a-9c6a-44bf-bdde-f99aff00eca4_1";
+    ThingTypeUID thingTypeUID = THING_TYPE_POWER_PLUG;
 
     @Test
     void testHandlerCreation() {
-        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
-                false, List.of());
-        ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
-        assertTrue(factoryHandler instanceof SimplePlugHandler);
-        handler = (SimplePlugHandler) factoryHandler;
-        thing = handler.getThing();
-        ThingHandlerCallback proxyCallback = handler.getCallback();
-        assertNotNull(proxyCallback);
-        assertTrue(proxyCallback instanceof CallbackMock);
-        callback = (CallbackMock) proxyCallback;
+        HandlerFactoryMock hfm = new HandlerFactoryMock(mock(StorageService.class));
+        assertTrue(hfm.supportsThingType(thingTypeUID));
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        ThingHandler th = hfm.createHandler(thing);
+        assertNotNull(th);
+        assertTrue(th instanceof PowerPlugHandler);
     }
 
     @Test
     void testInitialization() {
-        testHandlerCreation();
-        assertNotNull(handler);
-        assertNotNull(thing);
-        assertNotNull(callback);
+        Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge();
+        ThingImpl thing = new ThingImpl(thingTypeUID, "test-device");
+        thing.setBridgeUID(hubBridge.getBridgeUID());
+        PowerPlugHandler handler = new PowerPlugHandler(thing, SMART_PLUG_MAP);
+        CallbackMock callback = new CallbackMock();
+        callback.setBridge(hubBridge);
+        handler.setCallback(callback);
+
+        // set the right id
+        Map<String, Object> config = new HashMap<>();
+        config.put("id", deviceId);
+        handler.handleConfigurationUpdate(config);
+
+        handler.initialize();
+        callback.waitForOnline();
         checkPowerPlugStates(callback);
 
         callback.clear();
@@ -84,25 +88,33 @@ class TestSimplePlug {
     }
 
     void checkPowerPlugStates(CallbackMock callback) {
-        State otaStatus = callback.getState("dirigera:simple-plug:test-device:ota-status");
+        State otaStatus = callback.getState("dirigera:power-plug:test-device:ota-status");
         assertNotNull(otaStatus);
         assertTrue(otaStatus instanceof DecimalType);
         assertEquals(0, ((DecimalType) otaStatus).intValue(), "OTA Status");
-        State otaState = callback.getState("dirigera:simple-plug:test-device:ota-state");
+        State otaState = callback.getState("dirigera:power-plug:test-device:ota-state");
         assertNotNull(otaState);
         assertTrue(otaState instanceof DecimalType);
         assertEquals(0, ((DecimalType) otaState).intValue(), "OTA State");
-        State otaProgess = callback.getState("dirigera:simple-plug:test-device:ota-progress");
+        State otaProgess = callback.getState("dirigera:power-plug:test-device:ota-progress");
         assertNotNull(otaProgess);
         assertTrue(otaProgess instanceof QuantityType);
         assertTrue(((QuantityType<?>) otaProgess).getUnit().equals(Units.PERCENT));
         assertEquals(0, ((QuantityType<?>) otaProgess).intValue(), "OTA Progress");
 
-        State onOffState = callback.getState("dirigera:simple-plug:test-device:power");
+        State disableLightState = callback.getState("dirigera:power-plug:test-device:disable-status-light");
+        assertNotNull(disableLightState);
+        assertTrue(disableLightState instanceof OnOffType);
+        assertTrue(OnOffType.ON.equals((disableLightState)), "Disable Light On");
+        State childlockState = callback.getState("dirigera:power-plug:test-device:child-lock");
+        assertNotNull(childlockState);
+        assertTrue(childlockState instanceof OnOffType);
+        assertTrue(OnOffType.OFF.equals((childlockState)), "Child Lock Off");
+        State onOffState = callback.getState("dirigera:power-plug:test-device:power");
         assertNotNull(onOffState);
         assertTrue(onOffState instanceof OnOffType);
-        assertTrue(OnOffType.ON.equals((onOffState)), "Power On");
-        State startupState = callback.getState("dirigera:simple-plug:test-device:startup");
+        assertTrue(OnOffType.OFF.equals((onOffState)), "Power Off");
+        State startupState = callback.getState("dirigera:power-plug:test-device:startup");
         assertNotNull(startupState);
         assertTrue(startupState instanceof DecimalType);
         assertEquals(0, ((DecimalType) startupState).intValue(), "Startup Behavior");

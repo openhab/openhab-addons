@@ -44,9 +44,9 @@ class TestShortcutController {
     String deviceId = "92dbcea1-3d7e-4d6a-a009-bdf3a1ae6691_1";
     ThingTypeUID thingTypeUID = THING_TYPE_SINGLE_SHORTCUT_CONTROLLER;
 
-    private static ShortcutControllerHandler handler = mock(ShortcutControllerHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
+    private ShortcutControllerHandler handler = mock(ShortcutControllerHandler.class);
+    private CallbackMock callback = mock(CallbackMock.class);
+    private Thing thing = mock(Thing.class);
 
     @Test
     void testHandlerCreation() {

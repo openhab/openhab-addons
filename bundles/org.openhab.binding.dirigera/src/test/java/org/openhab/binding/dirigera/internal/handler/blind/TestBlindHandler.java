@@ -43,12 +43,12 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 class TestBlindHandler {
-    String deviceId = "eadfad54-9d23-4475-92b6-0ee3d6f8b481_1";
-    ThingTypeUID thingTypeUID = THING_TYPE_BLIND;
+    private static String deviceId = "eadfad54-9d23-4475-92b6-0ee3d6f8b481_1";
+    private static ThingTypeUID thingTypeUID = THING_TYPE_BLIND;
 
-    private static BlindHandler handler = mock(BlindHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
+    private BlindHandler handler = mock(BlindHandler.class);
+    private CallbackMock callback = mock(CallbackMock.class);
+    private Thing thing = mock(Thing.class);
 
     @Test
     void testHandlerCreation() {
