@@ -151,30 +151,32 @@ class LoginAuthV2Helper {
         loginData.countryCode = result.result.countryCode;
         loginData.acceptLanguage = result.result.acceptLanguage;
 
-        if (result.isMsgSuccess()) {
-            loginData.token = result.result.token;
-            loginData.accountId = result.result.accountID;
-            return true;
-        }
-
-        // It is very likely now there is a redirect to an alternative data center suitable for the users region
-        if (result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
-            // We need to determine the correct URL that goes to the data center serving that region
-            String hostingUrl = US_SERVER_ADDRESS;
-            switch (result.result.currentRegion) {
-                case "EU":
-                    hostingUrl = EU_SERVER_ADDRESS;
-                    break;
-                case "US":
-                default:
-                    hostingUrl = US_SERVER_ADDRESS;
-                    break;
+        if (result.msg != null) {
+            if (result.result != null && result.isMsgSuccess()) {
+                loginData.token = result.result.token;
+                loginData.accountId = result.result.accountID;
+                return true;
             }
-            loginData.serverUrl = PROTOCOL + "://" + hostingUrl;
 
-            // We will need the biz token for the transfer to a new region
-            this.bizToken = result.result.bizToken;
-            return loginRegionalRedirectByAuthorizeCode();
+            // It is very likely now there is a redirect to an alternative data center suitable for the users region
+            if (result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
+                // We need to determine the correct URL that goes to the data center serving that region
+                String hostingUrl;
+                switch (result.result.currentRegion) {
+                    case "EU":
+                        hostingUrl = EU_SERVER_ADDRESS;
+                        break;
+                    case "US":
+                    default:
+                        hostingUrl = US_SERVER_ADDRESS;
+                        break;
+                }
+                loginData.serverUrl = PROTOCOL + "://" + hostingUrl;
+
+                // We will need the biz token for the transfer to a new region
+                this.bizToken = result.result.bizToken;
+                return loginRegionalRedirectByAuthorizeCode();
+            }
         }
         return false;
     }
