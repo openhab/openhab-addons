@@ -127,29 +127,29 @@ Please check that proposed value is correct according to the place.
 
 This binding has its own IconProvider and makes available the following list of icons
 
-| Icon Name              | Dynamic | Illustration |
-|------------------------|---------|--------------|
-| oh:airparif:aq         |   Yes   | ![Air Quality](doc/images/aq.svg) |
-| oh:airparif:alder      |   Yes   | ![Alder](doc/images/alder.svg) |
-| oh:airparif:ash        |   Yes   | ![Ash](doc/images/ash.svg) |
-| oh:airparif:birch      |   Yes   | ![Birch](doc/images/birch.svg) |
-| oh:airparif:chestnut   |   Yes   | ![Chestnut](doc/images/chestnut.svg) |
-| oh:airparif:cypress    |   Yes   | ![Cypress](doc/images/cypress.svg) |
-| oh:airparif:grasses    |   Yes   | ![Grasses](doc/images/grasses.svg) |
-| oh:airparif:hazel      |   Yes   | ![Hazel](doc/images/hazel.svg) |
-| oh:airparif:hornbeam   |   Yes   | ![Hornbeam](doc/images/hornbeam.svg) |
-| oh:airparif:linden     |   Yes   | ![Linden](doc/images/linden.svg) |
-| oh:airparif:oak        |   Yes   | ![Oak](doc/images/oak.svg) |
-| oh:airparif:olive      |   Yes   | ![Olive](doc/images/olive.svg) |
-| oh:airparif:plane      |   Yes   | ![Plane](doc/images/plane.svg) |
-| oh:airparif:plantain   |   Yes   | ![Plantain](doc/images/plantain.svg) |
-| oh:airparif:pollen     |   Yes   | x |
-| oh:airparif:poplar     |   Yes   | ![Poplar](doc/images/poplar.svg) |
-| oh:airparif:ragweed    |   Yes   | ![Ragweed](doc/images/ragweed.svg) |
-| oh:airparif:rumex      |   Yes   | ![Rumex](doc/images/rumex.svg) |
+| Icon Name              | Dynamic | Illustration                             |
+|------------------------|---------|------------------------------------------|
+| oh:airparif:aq         |   Yes   | ![Air Quality](doc/images/aq.svg)        |
+| oh:airparif:pollen     |   Yes   | ![Air Quality](doc/images/pollen.svg)    |
+| oh:airparif:alder      |   Yes   | ![Alder](doc/images/alder.svg)           |
+| oh:airparif:ash        |   Yes   | ![Ash](doc/images/ash.svg)               |
+| oh:airparif:birch      |   Yes   | ![Birch](doc/images/birch.svg)           |
+| oh:airparif:chestnut   |   Yes   | ![Chestnut](doc/images/chestnut.svg)     |
+| oh:airparif:cypress    |   Yes   | ![Cypress](doc/images/cypress.svg)       |
+| oh:airparif:grasses    |   Yes   | ![Grasses](doc/images/grasses.svg)       |
+| oh:airparif:hazel      |   Yes   | ![Hazel](doc/images/hazel.svg)           |
+| oh:airparif:hornbeam   |   Yes   | ![Hornbeam](doc/images/hornbeam.svg)     |
+| oh:airparif:linden     |   Yes   | ![Linden](doc/images/linden.svg)         |
+| oh:airparif:oak        |   Yes   | ![Oak](doc/images/oak.svg)               |
+| oh:airparif:olive      |   Yes   | ![Olive](doc/images/olive.svg)           |
+| oh:airparif:plane      |   Yes   | ![Plane](doc/images/plane.svg)           |
+| oh:airparif:plantain   |   Yes   | ![Plantain](doc/images/plantain.svg)     |
+| oh:airparif:poplar     |   Yes   | ![Poplar](doc/images/poplar.svg)         |
+| oh:airparif:ragweed    |   Yes   | ![Ragweed](doc/images/ragweed.svg)       |
+| oh:airparif:rumex      |   Yes   | ![Rumex](doc/images/rumex.svg)           |
 | oh:airparif:urticaceae |   Yes   | ![Urticaceae](doc/images/urticaceae.svg) |
-| oh:airparif:willow     |   Yes   | ![Willow](doc/images/willow.svg) |
-| oh:airparif:wormwood   |   Yes   | ![Wormwood](doc/images/wormwood.svg) |
+| oh:airparif:willow     |   Yes   | ![Willow](doc/images/willow.svg)         |
+| oh:airparif:wormwood   |   Yes   | ![Wormwood](doc/images/wormwood.svg)     |
 
 ## Full Example
 
