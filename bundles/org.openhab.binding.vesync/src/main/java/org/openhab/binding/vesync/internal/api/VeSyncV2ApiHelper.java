@@ -144,7 +144,7 @@ public class VeSyncV2ApiHelper {
 
         @Nullable
         VeSyncUserSession session = loggedInSession;
-        if (session != null) {
+        if (session != null && session.serverUrl != null) {
             url = session.serverUrl + url;
         } else {
             url = PROTOCOL + "://" + US_SERVER_ADDRESS + url; // Fallback

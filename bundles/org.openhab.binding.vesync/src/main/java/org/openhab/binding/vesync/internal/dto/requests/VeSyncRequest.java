@@ -23,8 +23,6 @@ import com.google.gson.annotations.SerializedName;
  */
 public class VeSyncRequest extends VeSyncBaseRequest {
 
-    public transient HttpMethod httpMethod;
-
     @SerializedName("timeZone")
     public String timeZone = "America/New_York";
 

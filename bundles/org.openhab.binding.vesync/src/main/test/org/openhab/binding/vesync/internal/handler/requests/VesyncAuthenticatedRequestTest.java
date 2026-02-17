@@ -31,7 +31,7 @@ import org.openhab.binding.vesync.internal.dto.responses.VesyncLoginResponse;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-public class VeSyncAuthTokenRequestTest {
+public class VesyncAuthenticatedRequestTest {
 
     public static final VesyncLoginResponse.VesyncUserSession testUser = VeSyncConstants.GSON.fromJson(
             org.openhab.binding.vesync.internal.handler.responses.VesyncLoginResponseTest.testGoodLoginResponseBody,
