@@ -68,7 +68,15 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+<<<<<<< HEAD
 public class BaseHandler extends BaseThingHandler implements DebugHandler {
+=======
+public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
+    private static final ThingStatusInfo UNKNOWN_INITIALZING = new ThingStatusInfo(ThingStatus.UNKNOWN,
+            ThingStatusDetail.NONE, null);
+    private static final ThingStatusInfo UNKNOWN_NOT_READY = new ThingStatusInfo(ThingStatus.UNKNOWN,
+            ThingStatusDetail.NOT_YET_READY, null);
+>>>>>>> 5fa6d41be5 (fixes from real life tests)
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
     private List<PowerListener> powerListeners = new ArrayList<>();
     private @Nullable ScheduledFuture<?> initializationFuture;
@@ -153,29 +161,25 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
             return;
         }
 
-        ThingStatus handlerStatus = getThing().getStatus();
-
         /*
          * UNKNOWN => device initialization in progress, do nothing and wait for it to finish with resulting
          * ONLINE(OFFLINE response
          * CONFIGURATION_ERROR => something went wrong during initialize, don't continue
          */
-        if (ThingStatus.UNKNOWN.equals(handlerStatus)
-                || ThingStatusDetail.CONFIGURATION_ERROR.equals(thing.getStatusInfo().getStatusDetail())) {
+        ThingStatusInfo handlerStatusInfo = getThing().getStatusInfo();
+        if (UNKNOWN_INITIALZING.equals(handlerStatusInfo)
+                || ThingStatusDetail.CONFIGURATION_ERROR.equals(handlerStatusInfo.getStatusDetail())) {
             return;
-        }
-
-        // INITIALIZING => initialize called with success, instances are set up but device initialization not yet
-        // started, so set status to UNKNOWN to trigger bridgeStatusChanged again after initializing device
-        if (ThingStatus.INITIALIZING.equals(getThing().getStatus())) {
-            updateStatus(ThingStatus.UNKNOWN);
         }
 
         // Bridge ONLINE, thing anything else than ONLINE => initialize device and wait for it to finish with resulting
         // ONLINE(OFFLINE response, if
         if (ThingStatus.ONLINE.equals(gateway().getThing().getStatus())
-                && !ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                && !ThingStatus.ONLINE.equals(handlerStatusInfo.getStatus())) {
+            updateStatus(UNKNOWN_INITIALZING.getStatus(), UNKNOWN_INITIALZING.getStatusDetail(), null);
             initializationFuture = scheduler.schedule(child::initializeDevice, 0, TimeUnit.SECONDS);
+        } else {
+            updateStatus(UNKNOWN_NOT_READY.getStatus(), UNKNOWN_NOT_READY.getStatusDetail(), null);
         }
     }
 
