@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class SynopAnalyzerBindingConstants {
-    private static final String BINDING_ID = "synopanalyzer";
+    public static final String BINDING_ID = "synopanalyzer";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_SYNOP = new ThingTypeUID(BINDING_ID, "synopanalyzer");

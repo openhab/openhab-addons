@@ -15,6 +15,15 @@ There is exactly one supported Thing type, which represents a SYNOP message: `sy
 If a system location is set, the nearest available SYNOP station will be automatically discovered for this location.
 The search radius expands with each successive scan.
 
+## Provided icon set
+
+This binding has its own IconProvider and makes available the following list of icons
+
+| Icon Name                   | Dynamic | Illustration                                      |
+| --------------------------- | ------- | ------------------------------------------------- |
+| oh:synopanalyzer:beaufort   | Yes     | ![Beaufort](doc/images/beaufort.svg)              |
+| oh:synopanalyzer:octa       | Yes     | ![Octa](doc/images/octa.svg)                      |
+
 ## Thing Configuration
 
 - `stationId` — The WMO station number (see the [station list](https://www.ogimet.com/gsynop_nav.phtml.en)).
@@ -60,6 +69,46 @@ Number:Pressure    Synop_Pressure    "Pressure [%.1f %unit%]"     <pressure>   {
 Number:Angle       Synop_Wind_Angle  "Wind Angle [%d °]"          <wind>       { channel = "synopanalyzer:synopanalyzer:trappes:wind-angle" }
 String             Synop_Wind_Direction "Direction [%s]"                        { channel = "synopanalyzer:synopanalyzer:trappes:wind-direction" }
 Number:Speed       Synop_Wind_Speed  "Wind Speed [%.2f %unit%]"   <wind>       { channel = "synopanalyzer:synopanalyzer:trappes:wind-speed" }
-Number             Synop_Octa        "Octa [%d]/8"                              { channel = "synopanalyzer:synopanalyzer:trappes:octa" }
+Number             Synop_Octa        "Octa [%d]/8"  <oh:synopanalyzer:octa>    { channel = "synopanalyzer:synopanalyzer:trappes:octa" }
 DateTime           Synop_time        "Observation Time [%1$ta %1$tR]" <clock>  { channel = "synopanalyzer:synopanalyzer:trappes:time-utc" }
+```
+
+### Transformations
+
+octa.map
+```text
+0=○ No clouds
+1=⌽ A few clouds
+2=◔ A few clouds
+3=◑ Scattered clouds
+4=◑ Scattered clouds
+5=◕ Broken sky
+6=◕ Broken sky
+7=◕ Broken sky
+8=● Overcast sky
+9=⊗ Obscured sky
+
+UNDEF=Unknown ⁉
+NULL=Unknown ⁉
+-=Unknown ⁉
+=Unknown ⁉
+```
+
+beaufort.scale
+```text
+[0..1[=Calm
+[1..2[=Very light breeze
+[2..3[=Light breeze
+[3..4[=Gentle breeze
+[4..5[=Moderate breeze
+[5..6[=Fresh breeze
+[6..7[=Strong breeze
+[7..8[=Near gale
+[8..9[=Gale
+[9..10[=Strong gale
+[10..11[=Storm
+[11..12[=Violent storm
+[12..15[=Hurricane
+[..]=Unknown ⁉
+NaN=Not initialized (NaN)
 ```

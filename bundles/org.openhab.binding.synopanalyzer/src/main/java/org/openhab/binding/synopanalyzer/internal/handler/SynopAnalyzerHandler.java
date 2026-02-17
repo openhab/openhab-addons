@@ -131,13 +131,13 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             String answer = HttpUtil.executeUrl(HttpMethod.GET, url, REQUEST_TIMEOUT_MS);
             List<String> messages = Arrays.asList(answer.split("\n"));
             if (!messages.isEmpty()) {
-                String message = messages.get(messages.size() - 1);
+                String message = messages.getLast();
                 logger.debug(message);
                 if (message.startsWith(formattedStationId)) {
                     logger.debug("Valid Synop message received");
 
                     List<String> messageParts = Arrays.asList(message.split(","));
-                    String synopMessage = messageParts.get(messageParts.size() - 1);
+                    String synopMessage = messageParts.getLast();
 
                     return createSynopObject(synopMessage);
                 }

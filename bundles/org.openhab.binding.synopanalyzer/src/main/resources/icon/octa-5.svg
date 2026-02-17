@@ -1,0 +1,8 @@
+<svg viewBox="0 0 505 505" xmlns="http://www.w3.org/2000/svg">
+  <circle style="transform-box:fill-box;transform-origin:50% 50%" cx="252.5" cy="252.5" stroke="#000" stroke-width="10"
+    fill="transparent" r="245" />
+  <path d="M253.52 7.34c134.563.152 248.14 110.661 243.98 245.16l-245.064.823.064-.823V7.5" stroke="#000" />
+  <path d="M252.5 7.5v490" fill="#d8d8d8" stroke="#000" stroke-width="10" />
+  <path d="M252.116 496.393c134.563-.152 248.14-110.661 243.98-245.16l-245.064-.823.064.823v245" stroke="#000" />
+  <path d="M7.5 252.5h490" fill="#d8d8d8" stroke="#000" stroke-width="10" />
+</svg>
