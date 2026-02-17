@@ -57,6 +57,7 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatusInfo) {
+        System.out.println("Status updated: " + thing + " = " + thingStatusInfo);
         synchronized (this) {
             thing.setStatusInfo(thingStatusInfo);
             statusInfo = thingStatusInfo;

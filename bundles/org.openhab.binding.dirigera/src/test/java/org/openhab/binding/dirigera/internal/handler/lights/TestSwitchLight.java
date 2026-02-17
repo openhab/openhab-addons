@@ -13,7 +13,6 @@
 package org.openhab.binding.dirigera.internal.handler.lights;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.light.SwitchLightHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
@@ -46,27 +46,24 @@ class TestSwitchLight {
     String deviceId = "eb9a4367-9e23-4d37-9566-401a7ae7caf0_2";
     ThingTypeUID thingTypeUID = THING_TYPE_SWITCH_LIGHT;
 
-    private SwitchLightHandler handler = mock(SwitchLightHandler.class);
-    private CallbackMock callback = mock(CallbackMock.class);
-    private Thing thing = mock(Thing.class);
-
-    @Test
-    void testHandlerCreation() {
+    BaseHandler getHandler() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
                 false, List.of());
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
         assertTrue(factoryHandler instanceof SwitchLightHandler);
-        handler = (SwitchLightHandler) factoryHandler;
-        thing = handler.getThing();
+        assertTrue(factoryHandler instanceof BaseHandler);
+        BaseHandler handler = (SwitchLightHandler) factoryHandler;
         ThingHandlerCallback proxyCallback = handler.getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
-        callback = (CallbackMock) proxyCallback;
+        return handler;
     }
 
     @Test
     void testInitialization() {
-        testHandlerCreation();
+        BaseHandler handler = getHandler();
+        Thing thing = handler.getThing();
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(handler);
         assertNotNull(thing);
         assertNotNull(callback);
@@ -81,7 +78,8 @@ class TestSwitchLight {
     @Test
     void testCommands() {
         DirigeraAPISimu.patchMap.clear();
-        testHandlerCreation();
+        BaseHandler handler = getHandler();
+        Thing thing = handler.getThing();
         // DirigeraAPISimu api = (DirigeraAPISimu) ((DirigeraHandler) hubBridge.getHandler()).api();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), OnOffType.ON);
         DirigeraAPISimu.waitForPatch();

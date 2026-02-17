@@ -13,13 +13,13 @@
 package org.openhab.binding.dirigera.internal.handler.plug;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.core.library.types.DecimalType;
@@ -45,27 +45,24 @@ class TestSimplePlug {
     String deviceId = "6379a590-dc0a-47b5-b35b-7b46dfefd282_1";
     ThingTypeUID thingTypeUID = THING_TYPE_SIMPLE_PLUG;
 
-    private SimplePlugHandler handler = mock(SimplePlugHandler.class);
-    private CallbackMock callback = mock(CallbackMock.class);
-    private Thing thing = mock(Thing.class);
-
-    @Test
-    void testHandlerCreation() {
+    BaseHandler getHandler() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
                 false, List.of());
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
         assertTrue(factoryHandler instanceof SimplePlugHandler);
-        handler = (SimplePlugHandler) factoryHandler;
-        thing = handler.getThing();
+        assertTrue(factoryHandler instanceof BaseHandler);
+        BaseHandler handler = (SimplePlugHandler) factoryHandler;
         ThingHandlerCallback proxyCallback = handler.getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
-        callback = (CallbackMock) proxyCallback;
+        return handler;
     }
 
     @Test
     void testInitialization() {
-        testHandlerCreation();
+        BaseHandler handler = getHandler();
+        Thing thing = handler.getThing();
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(handler);
         assertNotNull(thing);
         assertNotNull(callback);

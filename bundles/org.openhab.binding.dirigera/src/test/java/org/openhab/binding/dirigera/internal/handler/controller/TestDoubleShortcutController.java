@@ -13,7 +13,6 @@
 package org.openhab.binding.dirigera.internal.handler.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.Collections;
@@ -25,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.FileReader;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
@@ -34,6 +34,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -51,31 +52,25 @@ class TestDoubleShortcutController {
     String deviceId = "854bdf30-86b8-48f5-b070-16ff5ab12be4_1";
     ThingTypeUID thingTypeUID = THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER;
 
-    private DoubleShortcutControllerHandler handler = mock(DoubleShortcutControllerHandler.class);
-    private CallbackMock callback = mock(CallbackMock.class);
-    private Thing thing = mock(Thing.class);
-
-    @Test
-    void testHandlerCreation() {
+    BaseHandler getHandler() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
                 false, List.of());
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
         assertTrue(factoryHandler instanceof DoubleShortcutControllerHandler);
-        handler = (DoubleShortcutControllerHandler) factoryHandler;
-        thing = handler.getThing();
+        assertTrue(factoryHandler instanceof BaseHandler);
+        BaseHandler handler = (BaseHandler) factoryHandler;
         ThingHandlerCallback proxyCallback = handler.getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
-        callback = (CallbackMock) proxyCallback;
+        return handler;
     }
 
     @Test
     void testInitialization() {
-        testHandlerCreation();
-
-        handler.initialize();
-        callback.waitForOnline();
-        checkStates(callback);
+        BaseHandler handler = getHandler();
+        Thing thing = handler.getThing();
+        CallbackMock callback = (CallbackMock) handler.getCallback();
+        assertNotNull(callback);
 
         callback.clear();
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_OTA_STATUS), RefreshType.REFRESH);
@@ -108,7 +103,10 @@ class TestDoubleShortcutController {
 
     @Test
     void testTriggers() {
-        testInitialization();
+        DoubleShortcutControllerHandler handler = (DoubleShortcutControllerHandler) getHandler();
+        CallbackMock callback = (CallbackMock) handler.getCallback();
+        assertNotNull(callback);
+
         String updateSequence = FileReader
                 .readFileInString("src/test/resources/websocket/scene-pressed/scene-trigger-sequence.json");
         JSONArray sequence = new JSONArray(updateSequence);
@@ -130,9 +128,13 @@ class TestDoubleShortcutController {
     void testRemoval() {
         DirigeraAPISimu.scenesAdded.clear();
         DirigeraAPISimu.scenesDeleted.clear();
-        testInitialization();
+        BaseHandler handler = getHandler();
+        CallbackMock callback = (CallbackMock) handler.getCallback();
+        assertNotNull(callback);
+
         handler.dispose();
         handler.handleRemoval();
+        callback.waitForStatus(ThingStatus.REMOVED);
         Collections.sort(DirigeraAPISimu.scenesAdded);
         Collections.sort(DirigeraAPISimu.scenesDeleted);
         assertEquals(6, DirigeraAPISimu.scenesAdded.size(), "Scenes added size");
