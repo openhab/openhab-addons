@@ -68,15 +68,11 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-<<<<<<< HEAD
 public class BaseHandler extends BaseThingHandler implements DebugHandler {
-=======
-public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHandler {
     private static final ThingStatusInfo UNKNOWN_INITIALZING = new ThingStatusInfo(ThingStatus.UNKNOWN,
             ThingStatusDetail.NONE, null);
     private static final ThingStatusInfo UNKNOWN_NOT_READY = new ThingStatusInfo(ThingStatus.UNKNOWN,
             ThingStatusDetail.NOT_YET_READY, null);
->>>>>>> 5fa6d41be5 (fixes from real life tests)
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
     private List<PowerListener> powerListeners = new ArrayList<>();
     private @Nullable ScheduledFuture<?> initializationFuture;
