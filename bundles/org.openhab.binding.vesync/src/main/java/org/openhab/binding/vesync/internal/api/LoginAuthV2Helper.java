@@ -111,10 +111,11 @@ class LoginAuthV2Helper {
 
             authorizeCode = resp.result.authorizeCode;
             loginData.registerTime = resp.result.registerTime;
-        } else if (resp != null) {
-            if (resp.getCode().equals("-11202129") || resp.getMsg().contains("the account does not exist")) {
+        } else if (resp != null && resp.code != null && resp.msg != null) {
+            final String msg = resp.msg.toLowerCase(Locale.ENGLISH);
+            if ("-11202129".equals(resp.code) || msg.contains("the account does not exist")) {
                 throw new AuthenticationException("The account does not exist");
-            } else if (resp.getCode().equals("-11201129") || resp.getMsg().contains("account or password incorrect")) {
+            } else if ("-11201129".equals(resp.code) || msg.contains("account or password incorrect")) {
                 throw new AuthenticationException("Account or password incorrect");
             } else {
                 return false;
@@ -208,7 +209,7 @@ class LoginAuthV2Helper {
             loginData.accountId = result.result.accountID;
             return true;
         }
-        if (result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
+        if (result.msg != null && result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
             throw new AuthenticationException("Code update required - region not supported - " + userCurrentRegion);
         }
         return false;
