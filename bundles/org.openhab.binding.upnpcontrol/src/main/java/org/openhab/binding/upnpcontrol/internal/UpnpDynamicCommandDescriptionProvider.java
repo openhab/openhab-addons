@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.upnpcontrol.internal;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Channel;
@@ -37,26 +36,31 @@ public class UpnpDynamicCommandDescriptionProvider implements DynamicCommandDesc
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<ChannelUID, @Nullable CommandDescription> descriptions = new ConcurrentHashMap<>();
+    // All access must be guarded by "this"
+    private final Map<ChannelUID, @Nullable CommandDescription> descriptions = new HashMap<>();
 
     public void setDescription(ChannelUID channelUID, @Nullable CommandDescription description) {
         logger.debug("Adding command description for channel {}", channelUID);
-        descriptions.put(channelUID, description);
+        synchronized (this) {
+            descriptions.put(channelUID, description);
+        }
     }
 
     public void removeAllDescriptions() {
         logger.debug("Removing all command descriptions");
-        descriptions.clear();
+        synchronized (this) {
+            descriptions.clear();
+        }
     }
 
     @Override
-    public @Nullable CommandDescription getCommandDescription(Channel channel,
+    public synchronized @Nullable CommandDescription getCommandDescription(Channel channel,
             @Nullable CommandDescription originalCommandDescription, @Nullable Locale locale) {
         return descriptions.get(channel.getUID());
     }
 
     @Deactivate
-    public void deactivate() {
+    public synchronized void deactivate() {
         descriptions.clear();
     }
 }

@@ -190,6 +190,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
      *
      */
     public class FetchTVProperties implements Callable<Optional<TVProperties>> {
+        @Override
         public Optional<TVProperties> call() throws Exception {
             logger.trace("{}: getting TV properties", host);
             Optional<TVProperties> properties = Optional.empty();

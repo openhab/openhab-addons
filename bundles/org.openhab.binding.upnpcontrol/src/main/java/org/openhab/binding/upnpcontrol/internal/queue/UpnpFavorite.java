@@ -138,7 +138,12 @@ public class UpnpFavorite {
 
         try {
             // ensure full path exists
-            file.getParentFile().mkdirs();
+            File parent = file.getParentFile();
+            if (parent == null) {
+                logger.debug("Could not save favorite {}, invalid path \"{}\"", name, path);
+                return;
+            }
+            parent.mkdirs();
 
             String json = gson.toJson(favorite);
             final byte[] contents = json.getBytes(StandardCharsets.UTF_8);

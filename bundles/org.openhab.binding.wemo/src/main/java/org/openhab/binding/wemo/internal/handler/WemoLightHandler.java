@@ -265,13 +265,14 @@ public class WemoLightHandler extends WemoBaseThingHandler {
     }
 
     @Override
-    public @Nullable String getUDN() {
+    public String getUDN() {
         WemoBridgeHandler wemoBridge = getWemoBridgeHandler();
         if (wemoBridge == null) {
             logger.debug("wemoBridgeHandler not found");
-            return null;
+            return UNDEFINED_UDN;
         }
-        return (String) wemoBridge.getThing().getConfiguration().get(UDN);
+        String result = (String) wemoBridge.getThing().getConfiguration().get(UDN);
+        return result == null ? UNDEFINED_UDN : result;
     }
 
     /**
