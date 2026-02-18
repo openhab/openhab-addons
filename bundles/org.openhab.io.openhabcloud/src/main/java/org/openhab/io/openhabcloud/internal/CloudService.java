@@ -259,7 +259,9 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     protected void deactivate() {
         logger.debug("openHAB Cloud connector deactivated");
         NotificationAction.unsetCloudService(this);
-        cloudClient.shutdown();
+        if (cloudClient != null) {
+            cloudClient.shutdown();
+        }
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -269,16 +271,14 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     @Modified
     protected void modified(Map<String, ?> config) {
-        Object baseUrl;
-        if (config != null && (baseUrl = config.get(CFG_MODE)) != null) {
-            remoteAccessEnabled = "remote".equals(config.get(CFG_MODE));
+        if (config != null && config.get(CFG_MODE) instanceof String cfgMode) {
+            remoteAccessEnabled = "remote".equals(cfgMode);
         } else {
             logger.debug("remoteAccessEnabled is not set, keeping value '{}'", remoteAccessEnabled);
-            baseUrl = null;
         }
 
-        if (baseUrl instanceof String baseUrlStr) {
-            cloudBaseUrl = baseUrlStr;
+        if (config != null && config.get(CFG_BASE_URL) instanceof String cfgBaseUrl) {
+            cloudBaseUrl = cfgBaseUrl;
         } else {
             cloudBaseUrl = DEFAULT_URL;
         }

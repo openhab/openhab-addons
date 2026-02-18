@@ -49,8 +49,8 @@ public class NotificationAction {
     }
 
     /**
-     * Set the specified {@link CloudService} as the instance to use for handling static notification actions. An action
-     * will only be taken if the specified instance is the currently set instance.
+     * Unset the specified {@link CloudService} as the instance to use for handling static notification actions. An
+     * action will only be taken if the specified instance is the currently set instance.
      *
      * @param cloudService the {@link CloudService} to unset.
      * @return {@code true} if the {@link CloudService} instance was unset, {@code false} otherwise.
