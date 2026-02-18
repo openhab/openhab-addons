@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandlerTest;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
@@ -52,7 +52,7 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class ForecastDiscoveryMapperTest {
     private static JsonObject exampleResponse = new JsonObject();
-    private final EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+    private final EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
     private final Bridge bridge = mock(Bridge.class);
     private final Bundle bundle = mock(Bundle.class);
     private final BundleContext ctx = mock(BundleContext.class);

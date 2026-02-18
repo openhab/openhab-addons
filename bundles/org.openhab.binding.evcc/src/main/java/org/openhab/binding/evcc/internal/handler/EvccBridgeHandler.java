@@ -32,7 +32,8 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.evcc.internal.EvccBridgeConfiguration;
-import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
+import org.openhab.binding.evcc.internal.api.QueuedRequest;
+import org.openhab.binding.evcc.internal.discovery.EvccThingDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -84,7 +85,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(EvccDiscoveryService.class);
+        return Set.of(EvccThingDiscoveryService.class);
     }
 
     @Override
@@ -221,7 +222,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private void notifyListeners(JsonObject state) {
         for (EvccThingLifecycleAware listener : listeners) {
             try {
-                listener.prepareApiResponseForChannelStateUpdate(state);
+                listener.initializeThingFromLatestState(state);
             } catch (Exception e) {
                 if (listener instanceof BaseThingHandler handler) {
                     logger.warn("Listener {} couldn't parse evcc state", handler.getThing().getUID(), e);
@@ -239,7 +240,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     public void register(EvccThingLifecycleAware handler) {
         listeners.addIfAbsent(handler);
         if (!lastState.isEmpty()) {
-            handler.prepareApiResponseForChannelStateUpdate(lastState);
+            handler.initializeThingFromLatestState(lastState);
         }
     }
 

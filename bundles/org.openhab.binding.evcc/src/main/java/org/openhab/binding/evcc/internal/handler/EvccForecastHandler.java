@@ -16,6 +16,7 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,20 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
+        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
+            endpoint = handler.getBaseURL();
+            updateStatus(ThingStatus.ONLINE);
+            handler.register(this);
+        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
+    }
+
+    @Override
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_FORECAST);
+    }
+
+    public void odlInitialize() {
+        // super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             if (!SUPPORTED_FORECAST_TYPES.contains(subType)) {
                 logger.warn("Unsupported forecast type: {}", subType);
@@ -79,8 +94,6 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                     state.addProperty("scaled", 0);
                 }
                 state.addProperty(subType, 0);
-                commonInitialize(state);
-                isInitialized = true;
                 handler.register(this);
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -92,8 +105,8 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        if (!isInitialized || state.isJsonNull() || state.isEmpty()) {
+    public void initializeThingFromLatestState(JsonObject state) {
+        if (state.isJsonNull() || state.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         }
@@ -104,7 +117,7 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                 forecastArray = extractCorrespondingForecast(state);
                 JsonObject solar = state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType);
                 modifyJSON(solar);
-                updateStatesFromApiResponse(solar);
+                createChannelsAndSetStatesFromApiResponse(solar);
                 float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
                 propagate(forecastArray, getThingKey("scaled"),
                         obj -> parseScaledForecast(obj, getThingKey(subType), scale));
@@ -153,6 +166,23 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
         TimeSeries ts = getTimeSeries(array, parser);
         setForecastChannelState(ts, uid);
         sendTimeSeries(uid, ts);
+    }
+
+    @Override
+    public void handleUpdate(String key, JsonElement value) {
+        JsonArray forecastArray;
+        if (subType.equals("solar") && value instanceof JsonObject solar) {
+            forecastArray = solar.has("timeseries") ? solar.getAsJsonArray("timeseries") : new JsonArray();
+            modifyJSON(solar);
+            float scale = solar.get(JSON_KEY_SCALE).getAsFloat();
+            propagate(forecastArray, getThingKey("scaled"),
+                    obj -> parseScaledForecast(obj, getThingKey(subType), scale));
+        } else if (value instanceof JsonArray forecast) {
+            forecastArray = forecast;
+        } else {
+            return;
+        }
+        propagate(forecastArray, getThingKey(subType), obj -> parseForecast(obj, getThingKey(subType)));
     }
 
     private TimeSeries getTimeSeries(JsonArray forecastArray, Function<JsonObject, @Nullable ForecastData> parser) {
@@ -229,6 +259,11 @@ public class EvccForecastHandler extends EvccBaseThingHandler {
                         ? state.getAsJsonObject(JSON_KEY_FORECAST).getAsJsonObject(subType)
                         : new JsonObject()
                 : new JsonObject();
+    }
+
+    @Override
+    public Object getIdentifier() {
+        return subType;
     }
 
     private record FieldMapping(String valueField, String timestampField) {

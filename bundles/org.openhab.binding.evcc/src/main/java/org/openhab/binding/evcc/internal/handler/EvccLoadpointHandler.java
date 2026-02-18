@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -62,23 +64,11 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_LOADPOINTS, String.valueOf(index + 1));
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-
-            if (this instanceof EvccHeatingHandler heating) {
-                heating.updateJSON(stateOpt.getAsJsonObject());
-            }
-
-            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
-
-            modifyJSON(state);
-            commonInitialize(state);
-        });
+            updateStatus(ThingStatus.ONLINE);
+            handler.register(this);
+        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
     }
 
     @Override
@@ -114,10 +104,20 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_LOADPOINTS);
+    }
+
+    @Override
+    public Integer getIdentifier() {
+        return (Integer) index;
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
         state = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
         modifyJSON(state);
-        updateStatesFromApiResponse(state);
+        createChannelsAndSetStatesFromApiResponse(state);
     }
 
     private void modifyJSON(JsonObject state) {

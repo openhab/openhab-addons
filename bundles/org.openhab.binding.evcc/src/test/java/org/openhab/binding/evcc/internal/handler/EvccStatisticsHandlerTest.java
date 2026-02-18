@@ -82,7 +82,8 @@ public class EvccStatisticsHandlerTest extends AbstractThingHandlerTestClass<Evc
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "statistics"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        @Nullable
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
     }
@@ -93,9 +94,8 @@ public class EvccStatisticsHandlerTest extends AbstractThingHandlerTestClass<Evc
 
         @Test
         public void handlerIsInitialized() {
-            handler.isInitialized = true;
 
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.initializeThingFromLatestState(exampleResponse);
             assertTrue(updateStateCalled);
             assertEquals(16, updateStateCounter);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
@@ -103,7 +103,7 @@ public class EvccStatisticsHandlerTest extends AbstractThingHandlerTestClass<Evc
 
         @Test
         public void handlerIsNotInitialized() {
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.OFFLINE, lastThingStatus);
         }
     }

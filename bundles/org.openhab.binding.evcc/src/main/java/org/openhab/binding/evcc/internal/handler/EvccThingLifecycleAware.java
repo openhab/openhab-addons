@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -24,11 +27,19 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public interface EvccThingLifecycleAware {
     /**
-     * This method shall update the channels from the JSON received from the evcc API
+     * This method shall create the channels from the JSON received from the evcc API
      * 
      * @param state the responded JSON
      */
-    void prepareApiResponseForChannelStateUpdate(JsonObject state);
+    void initializeThingFromLatestState(JsonObject state);
+
+    /**
+     *
+     * This method shall return the possible JSON root object keys that the handler will process
+     *
+     * @return Collection of root keys
+     */
+    Collection<String> getRootTypes();
 
     /**
      * This method shall return the to the thing corresponding JSON object
@@ -37,4 +48,26 @@ public interface EvccThingLifecycleAware {
      * @return to the thing corresponding JSON object
      */
     JsonObject getStateFromCachedState(JsonObject state);
+
+    /**
+     * This method shall handle the mini updates received from the evcc WS
+     * 
+     * @param key the key of the updated value
+     * @param value the updated value
+     */
+    void handleUpdate(String key, JsonElement value);
+
+    /**
+     * This method shall return the type of the thing
+     *
+     * @return the type of the thing
+     */
+    String getType();
+
+    /**
+     * This method shall return the index of the thing (if applicable)
+     *
+     * @return the index of the thing
+     */
+    Object getIdentifier();
 }

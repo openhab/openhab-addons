@@ -116,7 +116,7 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
     @SuppressWarnings("null")
     @Test
     public void testInitializeWithBridgeHandlerWithValidState() {
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
@@ -130,28 +130,27 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
 
         @Test
         public void handlerIsInitialized() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
-            handler.isInitialized = true;
+            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
 
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
         }
 
         @Test
         public void handlerIsNotInitialized() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
 
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.UNKNOWN, lastThingStatus);
         }
 
         @Test
         public void stateContainsGridConfigured() {
-            handler.bridgeHandler = mock(EvccBridgeHandler.class);
+            handler.bridgeHandler = mock(EvccWsBridgeHandler.class);
 
             exampleResponse.addProperty("gridConfigured", true);
             exampleResponse.add("grid", gridConfigured);
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.initializeThingFromLatestState(exampleResponse);
             assertEquals(modifiedVerifyObject, exampleResponse);
         }
     }

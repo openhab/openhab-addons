@@ -17,7 +17,6 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandler;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.binding.evcc.internal.handler.EvccForecastHandler;
 import org.openhab.binding.evcc.internal.handler.EvccHeatingHandler;
 import org.openhab.binding.evcc.internal.handler.EvccLoadpointHandler;
@@ -26,6 +25,7 @@ import org.openhab.binding.evcc.internal.handler.EvccPvHandler;
 import org.openhab.binding.evcc.internal.handler.EvccSiteHandler;
 import org.openhab.binding.evcc.internal.handler.EvccStatisticsHandler;
 import org.openhab.binding.evcc.internal.handler.EvccVehicleHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -80,7 +80,8 @@ public class EvccHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID type = thing.getThingTypeUID();
 
         if (THING_TYPE_SERVER.equals(type)) {
-            handler = new EvccBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
+            handler = new EvccWsBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
+            // handler = new EvccBridgeHandler((Bridge) thing, httpClientFactory, i18nProvider, localeProvider);
         } else if (THING_TYPE_SITE.equals(type)) {
             handler = new EvccSiteHandler(thing, channelTypeRegistry);
         } else if (THING_TYPE_VEHICLE.equals(type)) {

@@ -14,6 +14,8 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,22 +45,26 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     @Override
     public void initialize() {
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-
-            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
-            commonInitialize(state);
-        });
+        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
+            updateStatus(ThingStatus.ONLINE);
+            handler.register(this);
+        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_PV);
+    }
+
+    @Override
+    public Integer getIdentifier() {
+        return (Integer) index;
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
         state = state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
-        updateStatesFromApiResponse(state);
+        createChannelsAndSetStatesFromApiResponse(state);
     }
 
     @Override

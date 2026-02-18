@@ -23,7 +23,7 @@ import java.util.stream.StreamSupport;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
 import org.openhab.binding.evcc.internal.discovery.Utils;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -43,7 +43,7 @@ import com.google.gson.JsonObject;
 public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler) {
         AtomicInteger counter = new AtomicInteger(0);
         return getBatteryArray(state).stream()
                 .flatMap(deviceArray -> StreamSupport.stream(deviceArray.spliterator(), false))
