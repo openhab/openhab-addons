@@ -13,6 +13,7 @@ Import-Package: \
 
 -runrequires: \
 	bnd.identity;id='org.openhab.binding.homeassistant.tests',\
+	bnd.identity;id='org.graalvm.python.python-language',\
 	bnd.identity;id='org.graalvm.python.python-resources'
 
 
@@ -51,7 +52,6 @@ Import-Package: \
 	com.h2database.mvstore;version='[2.1.212,2.1.213)',\
 	com.zaxxer.HikariCP;version='[2.4.7,2.4.8)',\
 	io.dropwizard.metrics.core;version='[3.2.2,3.2.3)',\
-	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)',\
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.apache.felix.http.servlet-api;version='[1.2.0,1.2.1)',\
 	org.osgi.service.component;version='[1.5.1,1.5.2)',\
@@ -145,7 +145,7 @@ Import-Package: \
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.21.0,2.21.1)',\
 	com.fasterxml.jackson.core.jackson-core;version='[2.21.0,2.21.1)',\
 	com.fasterxml.jackson.core.jackson-databind;version='[2.21.0,2.21.1)',\
-	jakarta.ws.rs-api;version='[2.1.6,2.1.7)',\
 	org.graalvm.python.python-language;version='[25.0.1,25.0.2)',\
 	org.graalvm.python.python-resources;version='[25.0.1,25.0.2)',\
-	org.osgi.service.cm;version='[1.6.1,1.6.2)'
+	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
+	org.apache.commons.commons-codec;version='[1.16.0,1.16.1)'
