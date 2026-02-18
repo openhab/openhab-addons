@@ -200,6 +200,15 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             transport.close();
         }
         ipTransport = null;
+
+        // see https://github.com/openhab/openhab-addons/issues/19979 => ensure the state is fully reset
+        // on dispose() in case initialize() is subsequently called again on the same handler instance
+        rwService = null;
+        isConfigured = false;
+        connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
+        throttler.reset();
+        sessionUpgradeInProgress.set(false);
+
         super.dispose();
     }
 

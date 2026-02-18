@@ -536,6 +536,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModel = null;
         lightModelLinks.clear();
         lightModelClientHSBTypeChannel = null;
+        stopMoveChannel = null;
         eventedCharacteristics.clear();
         polledCharacteristics.clear();
         super.dispose();
