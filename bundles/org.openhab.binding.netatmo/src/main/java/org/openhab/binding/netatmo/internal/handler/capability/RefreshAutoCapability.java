@@ -36,7 +36,7 @@ public class RefreshAutoCapability extends RefreshCapability {
 
     private final Logger logger = LoggerFactory.getLogger(RefreshAutoCapability.class);
 
-    private Instant dataTimeStamp = Instant.MIN;
+    private @Nullable Instant dataTimestamp = null;
 
     public RefreshAutoCapability(CommonInterface handler) {
         super(handler);
@@ -44,38 +44,38 @@ public class RefreshAutoCapability extends RefreshCapability {
 
     @Override
     public void expireData() {
-        dataTimeStamp = Instant.MIN;
+        dataTimestamp = null;
         super.expireData();
     }
 
     @Override
     protected Duration calcDelay() {
-        if (Instant.MIN.equals(dataTimeStamp)) {
+        Instant timestamp = dataTimestamp;
+        if (timestamp == null) {
             return PROBING_INTERVAL;
         }
 
-        Duration dataAge = Duration.between(dataTimeStamp, Instant.now());
-
+        Duration dataAge = Duration.between(timestamp, Instant.now());
         Duration delay = dataValidity.minus(dataAge);
-        if (delay.isNegative() || delay.isZero()) {
-            logger.debug("{} did not update data in expected time, return to probing", thingUID);
-            dataTimeStamp = Instant.MIN;
-            return PROBING_INTERVAL;
+
+        if (delay.isPositive()) {
+            return delay.plus(DEFAULT_DELAY);
         }
 
-        return delay.plus(DEFAULT_DELAY);
+        logger.debug("{} did not update data in expected time, return to probing", thingUID);
+        dataTimestamp = null;
+        return PROBING_INTERVAL;
     }
 
     @Override
     protected void updateNAThing(NAThing newData) {
         super.updateNAThing(newData);
-        ZonedDateTime lastSeen = newData.getLastSeen();
-        dataTimeStamp = lastSeen != null ? lastSeen.toInstant() : Instant.MIN;
+        dataTimestamp = newData.getLastSeen() instanceof ZonedDateTime ls ? ls.toInstant() : null;
     }
 
     @Override
     protected void afterNewData(@Nullable NAObject newData) {
-        properties.put("probing", Boolean.valueOf(Instant.MIN.equals(dataTimeStamp)).toString());
+        properties.put("probing", Boolean.valueOf(dataTimestamp == null).toString());
         super.afterNewData(newData);
     }
 }

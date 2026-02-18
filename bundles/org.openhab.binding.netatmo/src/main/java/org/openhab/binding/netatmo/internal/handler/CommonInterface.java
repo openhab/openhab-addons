@@ -92,8 +92,8 @@ public interface CommonInterface {
                 : null;
     }
 
-    default Optional<ScheduledFuture<?>> schedule(Runnable arg0, Duration delay) {
-        return Optional.of(getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS));
+    default ScheduledFuture<?> schedule(Runnable arg0, Duration delay) {
+        return getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS);
     }
 
     default @Nullable ApiBridgeHandler getAccountHandler() {
