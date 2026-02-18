@@ -345,7 +345,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            addBluThing(message.src, e.blu, thingTable);
+                                            addBluThing(getString(message.src), e.blu, thingTable);
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",

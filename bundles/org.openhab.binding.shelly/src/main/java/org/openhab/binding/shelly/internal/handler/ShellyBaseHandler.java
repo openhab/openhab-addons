@@ -321,7 +321,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize();
+        api.initialize(thingName, config);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && config.password.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -329,9 +329,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(device.hostname).toLowerCase();
+            api.setConfig(thingName, config); // update config
         }
 
-        api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
         String mode = getString(tmpPrf.device.mode);
@@ -368,7 +368,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             tmpPrf.updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
 
-        tmpPrf.status = api.getStatus(); // update thing properties
+        tmpPrf.status = api.getStatus(false); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
         addStateOptions(tmpPrf);
 
@@ -552,14 +552,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
 
             skipUpdate++;
-            ThingStatus thingStatus = getThing().getStatus();
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
+                ThingStatus thingStatus = getThing().getStatus();
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
-                ShellySettingsStatus status = api.getStatus();
+                ShellySettingsStatus status = api.getStatus(true);
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
