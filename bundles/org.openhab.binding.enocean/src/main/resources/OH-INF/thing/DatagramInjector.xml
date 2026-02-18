@@ -20,8 +20,8 @@
 			<parameter name="sendingProfileId" type="text" required="true">
 				<label>Sending Profile</label>
 				<options>
-					<option value="FTK_D5_00_01">FTK Window Contact (D5-00-01) provided as switch </option>
-					<option value="MOTION_A5_07_01">Motion Detection (A5-07-01) provided as switch </option>
+					<option value="FTK_D5_00_01">FTK Window Contact (D5-00-01) provided as switch</option>
+					<option value="MOTION_A5_07_01">Motion Detection (A5-07-01) provided as switch</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>

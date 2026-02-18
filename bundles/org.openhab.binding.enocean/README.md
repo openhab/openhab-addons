@@ -99,7 +99,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 | multiFunctionSmokeDetector      | D2-14/F6-05       | 0x30/02                 | smokeDetection, batteryLow                                  | Insafe+, Afriso ASD     | Discovery |
 | heatRecoveryVentilation         | D2-50             | 0x00,01,10,11           | a lot of different state channels                           | Dimplex DL WE2          | Discovery |
 | classicDevice                   | F6-02             | 0x01-02                 | virtualRockerswitchA, virtualRockerswitchB                  | -                       | Teach-in  |
-| datagramInjector                | D5-00             | 0x01 (FTK profile)      | switch                                                      | FTK-like contact use cases | Manually |
+| datagramInjector                | D5-00-01/A5-07-01 | 0x01/01                 | switch                                                      | FTK-like contact and motion use cases | Manually |
 
 ¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
 
@@ -468,8 +468,8 @@ For profile `FTK_D5_00_01` the channel command is converted as follows:
 
 For profile `MOTION_A5_07_01` the channel command is converted as follows:
 
-- `ON` -> motion detected
-- `OFF` -> no motion detected
+- `ON` -> sends motion detected telegram (retriggers periodically while `ON`)
+- `OFF` -> stops periodic retrigger, no telegram sent
 
 Example Thing DSL definition:
 
