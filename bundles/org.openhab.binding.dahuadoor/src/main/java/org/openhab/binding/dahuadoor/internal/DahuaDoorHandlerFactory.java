@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.HttpCookieStore;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -29,8 +30,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DahuaDoorHandlerFactory} is responsible for creating things and thing
@@ -42,17 +41,20 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.dahuadoor", service = ThingHandlerFactory.class)
 public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(DahuaDoorHandlerFactory.class);
+    @SuppressWarnings("null")
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO);
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
-    public DahuaDoorHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+    public DahuaDoorHandlerFactory(@Reference HttpClientFactory httpClientFactory) throws Exception {
+        this.httpClient = httpClientFactory.createHttpClient("dahuadoor");
+        this.httpClient.setCookieStore(new HttpCookieStore.Empty());
+        this.httpClient.start();
     }
 
     @Deactivate
-    public void deactivate() {
+    public void deactivate() throws Exception {
+        httpClient.stop();
     }
 
     @Override
