@@ -157,7 +157,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
                 thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
             } else {
                 if (e.getCause() instanceof IllegalArgumentException) {
-                    logger.debug("{}: Unable to discover device: {}", name, e);
+                    logger.debug("{}: Unable to discover device", name, e);
                 } else {
                     logger.debug("{}: Unable to discover device: {}", name, e.getMessage());
                 }
