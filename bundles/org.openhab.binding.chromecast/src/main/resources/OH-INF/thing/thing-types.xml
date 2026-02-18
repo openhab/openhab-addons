@@ -188,11 +188,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="appId" advanced="true">
+	<channel-type id="appId">
 		<item-type>String</item-type>
 		<label>App Id</label>
 		<description>Id of the currently running application</description>
-		<state readOnly="true"/>
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="statustext" advanced="true">

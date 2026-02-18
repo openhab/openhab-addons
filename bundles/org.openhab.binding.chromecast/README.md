@@ -48,7 +48,6 @@ With manual thing configuration the parameter `port` for audio group must be det
 |-------------|---------|----------|----------|---------|------------------------------------------------------|
 | ipAddress   | -       | Yes      | No       | String  | The hostname or IP address of the Chromecast device. |
 | port        | 8009    | No       | Yes      | Integer | The port where the Chromecast is listening           |
-| refreshRate | 10      | No       | Yes      | Integer | The refresh (poll) interval in seconds.              |
 
 ## Channels
 
