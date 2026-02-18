@@ -65,6 +65,8 @@ public interface VeSyncProtocolConstants {
     String US_SERVER_ADDRESS = "smartapi.vesync.com";
     String EU_SERVER_ADDRESS = "smartapi.vesync.eu";
 
+    String US_SERVER = PROTOCOL + "://" + US_SERVER_ADDRESS;
+
     String V1_MANAGED_DEVICES_ENDPOINT = "/cloud/v1/deviceManaged/devices";
     String V2_BYPASS_ENDPOINT = "/cloud/v2/deviceManaged/bypassV2";
 }

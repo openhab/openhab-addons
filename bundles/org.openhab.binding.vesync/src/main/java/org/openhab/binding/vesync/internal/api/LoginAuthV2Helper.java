@@ -52,10 +52,8 @@ class LoginAuthV2Helper {
     private final HttpClient client;
     private final VeSyncUserSession loginData = new VeSyncUserSession();
 
-    private static final String US_TOKEN_REQ_URL = PROTOCOL + "://" + US_SERVER_ADDRESS
-            + "/globalPlatform/api/accountAuth/v1/authByPWDOrOTM";
-    private static final String US_AUTH_BY_TOKEN = PROTOCOL + "://" + US_SERVER_ADDRESS
-            + "/user/api/accountManage/v1/loginByAuthorizeCode4Vesync";
+    private static final String US_TOKEN_REQ_URL = US_SERVER + "/globalPlatform/api/accountAuth/v1/authByPWDOrOTM";
+    private static final String US_AUTH_BY_TOKEN = US_SERVER + "/user/api/accountManage/v1/loginByAuthorizeCode4Vesync";
     private static final String AUTH_CONTENT_TYPE = "application/json";
 
     private String authorizeCode;
