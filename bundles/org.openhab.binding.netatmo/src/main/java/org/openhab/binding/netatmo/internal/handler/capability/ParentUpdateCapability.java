@@ -40,13 +40,13 @@ public class ParentUpdateCapability extends Capability {
 
     @Override
     public void initialize() {
-        handler.schedule(() -> {
+        this.job = handler.schedule(() -> {
             logger.debug("Requesting parents data update for Thing '{}'", thingUID);
             CommonInterface bridgeHandler = handler.getBridgeHandler();
             if (bridgeHandler != null) {
                 bridgeHandler.expireData();
             }
-        }, DEFAULT_DELAY).ifPresent(job -> this.job = job);
+        }, DEFAULT_DELAY);
     }
 
     @Override
