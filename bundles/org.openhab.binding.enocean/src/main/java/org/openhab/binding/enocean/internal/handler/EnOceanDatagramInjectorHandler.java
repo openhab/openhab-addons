@@ -212,6 +212,7 @@ public class EnOceanDatagramInjectorHandler extends EnOceanBaseThingHandler {
                             channel.getConfiguration());
                 } else {
                     stopMotionRetriggerJob();
+                    updateState(channelUID, OnOffType.OFF);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -258,6 +259,11 @@ public class EnOceanDatagramInjectorHandler extends EnOceanBaseThingHandler {
         }
 
         return false;
+    }
+
+    @Override
+    public void dispose() {
+        stopMotionRetriggerJob();
     }
 
     @Override
