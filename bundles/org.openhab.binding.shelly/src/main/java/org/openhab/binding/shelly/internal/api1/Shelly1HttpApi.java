@@ -83,8 +83,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
-        profile.device = getDeviceInfo();
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        setConfig(thingName, config);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     @Override
-    public ShellySettingsStatus getStatus() throws ShellyApiException {
+    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
         String json = "";
         try {
             json = httpRequest(SHELLY_URL_STATUS);

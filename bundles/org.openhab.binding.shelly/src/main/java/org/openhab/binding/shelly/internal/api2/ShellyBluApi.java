@@ -78,16 +78,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
-        if (!initialized) {
-            initialized = true;
-            connected = false;
-        }
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        super.initialize(thingName, config);
+        connected = false;
     }
 
     @Override
@@ -145,7 +138,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public ShellySettingsStatus getStatus() throws ShellyApiException {
+    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
         if (!connected) {
             throw new ShellyApiException("Thing is not yet initialized -> status not available");
         }

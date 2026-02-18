@@ -17,7 +17,6 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.TreeMap;
@@ -128,23 +127,23 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new TreeMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
+            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
             if (gen2) {
                 api = new Shelly2ApiClient(name, config, httpClient);
             } else {
                 api = new Shelly1HttpApi(name, config, httpClient);
             }
-            api.initialize();
+            api.initialize(name, config);
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
-                name = devInfo.hostname;
+                config.serviceName = name = devInfo.hostname;
             }
 
-            thingType = substringBeforeLast(name, "-");
-            mode = devInfo.mode;
+            thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;
+            mode = getString(devInfo.mode);
             profile = api.getDeviceProfile(ShellyThingCreator.getThingTypeUID(name, model, mode), devInfo);
             deviceName = profile.name;
             properties = ShellyBaseHandler.fillDeviceProperties(profile);
@@ -157,9 +156,13 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
                 // create shellyunknown thing - will be changed during thing initialization with valid credentials
                 thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
             } else {
-                logger.debug("{}: Unable to discover device: {}", name, e.getMessage());
+                if (e.getCause() instanceof IllegalArgumentException) {
+                    logger.debug("{}: Unable to discover device: {}", name, e);
+                } else {
+                    logger.debug("{}: Unable to discover device: {}", name, e.getMessage());
+                }
             }
-        } catch (IllegalArgumentException | IOException e) { // maybe some format description was buggy
+        } catch (IllegalArgumentException e) { // maybe some format description was buggy
             logger.debug("Discovery: Unable to discover thing", e);
         } finally {
             if (api != null) {
@@ -188,12 +191,14 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         return null;
     }
 
-    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address)
-            throws IOException {
+    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String ipAddress,
+            String serviceName) {
         ShellyThingConfiguration config = new ShellyThingConfiguration();
-        config.deviceIp = address;
-        config.userId = bindingConfig.defaultUserId;
-        config.password = bindingConfig.defaultPassword;
+        config.serviceName = serviceName;
+        config.deviceIp = ipAddress;
+        config.userId = getString(bindingConfig.defaultUserId);
+        config.password = getString(bindingConfig.defaultPassword);
+        config.localIp = getString(bindingConfig.localIP);
         return config;
     }
 

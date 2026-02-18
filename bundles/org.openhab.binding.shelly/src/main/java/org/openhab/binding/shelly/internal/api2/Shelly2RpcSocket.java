@@ -147,8 +147,8 @@ public class Shelly2RpcSocket implements WriteCallback {
         synchronized (this) {
             disconnect(); // for safety
 
-            // Connect async
             try {
+                // Connect async
                 client.connect(this, uri, request);
             } catch (RuntimeException | IOException e) {
                 // Keep this if your Jetty version still declares IOException on start()/connect path
@@ -345,7 +345,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            addBluThing(message.src, e.blu, thingTable);
+                                            addBluThing(getString(message.src), e.blu, thingTable);
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
