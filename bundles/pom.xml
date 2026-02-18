@@ -523,6 +523,7 @@
   <properties>
     <m2e.jdt.annotationpath>target/dependency</m2e.jdt.annotationpath>
     <dep.noembedding/>
+    <markdownlint.skip>false</markdownlint.skip>
   </properties>
 
   <dependencies>
@@ -778,6 +779,44 @@
             <goals>
               <goal>validate</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>2.0.0</version>
+
+        <configuration>
+          <skip>${markdownlint.skip}</skip>
+
+          <!-- Central toolchain for markdownlint (Node 24) -->
+          <installDirectory>${maven.multiModuleProjectDirectory}/target/.mvn/node-markdownlint</installDirectory>
+          <nodeVersion>v24.12.0</nodeVersion>
+
+          <!-- Recommended: pin npm too for reproducibility -->
+          <npmVersion>11.6.2</npmVersion>
+        </configuration>
+
+        <executions>
+          <execution>
+            <id>install-node-and-npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>validate</phase>
+          </execution>
+
+          <execution>
+            <id>markdownlint</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>validate</phase>
+            <configuration>
+              <workingDirectory>${project.basedir}</workingDirectory>
+              <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config ${maven.multiModuleProjectDirectory}/.github/.markdownlint.yaml</arguments>
+            </configuration>
           </execution>
         </executions>
       </plugin>
