@@ -16,23 +16,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * Configuration for send-only datagram injector thing.
  *
- * @author Daniel Weber - Initial contribution
+ * @author openHAB Contributors
  */
 @NonNullByDefault
-public class EnOceanActuatorConfig extends EnOceanBaseConfig {
+public class EnOceanDatagramInjectorConfig extends EnOceanBaseConfig {
 
-    public int channel;
-    public @Nullable Integer senderIdOffset = null;
     public @Nullable String senderAddress = null;
-    public String manufacturerId = "";
-    public String teachInType = "";
 
-    public String sendingEEPId = "";
+    public String sendingProfileId = "";
 
-    public int pollingInterval;
-
-    public boolean broadcastMessages;
-
-    public boolean suppressRepeating;
+    public boolean suppressRepeating = false;
 }

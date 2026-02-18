@@ -213,7 +213,8 @@ public enum EEPType {
             CHANNEL_HUMIDITY, CHANNEL_ILLUMINATION, CHANNEL_BATTERY_LEVEL, CHANNEL_WINDOWBREACHEVENT,
             CHANNEL_PROTECTIONPLUSEVENT, CHANNEL_PUSHBUTTON, CHANNEL_PUSHBUTTON2, CHANNEL_VACATIONMODETOGGLEEVENT),
 
-    ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT),
+    ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT,
+            CHANNEL_GENERAL_SWITCHING),
     ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
             CHANNEL_CONTACT),
     ContactAndSwitch03(RORG.RPS, 0x10, 0x00, false, "EltakoFPE", ELTAKOID, F6_10_00_EltakoFPE.class, THING_TYPE_CONTACT,
@@ -286,7 +287,7 @@ public enum EEPType {
             THING_TYPE_TEMPERATUREHUMIDITYSENSOR, CHANNEL_TEMPERATURE, CHANNEL_HUMIDITY),
 
     OCCUPANCYSENSOR_A5_07_01(RORG._4BS, 0x07, 0x01, false, A5_07_01.class, THING_TYPE_OCCUPANCYSENSOR,
-            CHANNEL_MOTIONDETECTION, CHANNEL_BATTERY_VOLTAGE),
+            CHANNEL_MOTIONDETECTION, CHANNEL_GENERAL_SWITCHING, CHANNEL_BATTERY_VOLTAGE),
     OCCUPANCYSENSOR_A5_07_02(RORG._4BS, 0x07, 0x02, false, A5_07_02.class, THING_TYPE_OCCUPANCYSENSOR,
             CHANNEL_MOTIONDETECTION, CHANNEL_BATTERY_VOLTAGE),
     OCCUPANCYSENSOR_A5_07_03(RORG._4BS, 0x07, 0x03, false, A5_07_03.class, THING_TYPE_OCCUPANCYSENSOR,
@@ -730,7 +731,11 @@ public enum EEPType {
 
     public boolean isChannelSupported(String channelId, String channelTypeId) {
         return supportedChannels.containsKey(channelId) || VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)
-                || supportedChannels.values().stream().anyMatch(c -> c.channelTypeUID.getId().equals(channelTypeId));
+                || supportedChannels.values().stream().anyMatch(c -> {
+                    String supportedChannelTypeId = c.channelTypeUID.getId();
+                    return supportedChannelTypeId.equals(channelTypeId)
+                            || supportedChannelTypeId.endsWith(":" + channelTypeId);
+                });
     }
 
     public @Nullable ThingTypeUID getThingTypeUID() {
