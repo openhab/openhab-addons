@@ -286,12 +286,12 @@ public class VehicleHandler extends BaseThingHandler {
                             return;
                         }
                         switch (((DecimalType) command).intValue()) {
-                            case 0:
+                            case 2:
                                 DoorsLock dl = DoorsLock.newBuilder().build();
                                 cr = crBuilder.setDoorsLock(dl).build();
                                 localAccountHandler.sendCommand(createCM(cr));
                                 break;
-                            case 1:
+                            case 0:
                                 if (Constants.NOT_SET.equals(pin)) {
                                     logger.trace("Security PIN missing in Account bridge");
                                     return;
