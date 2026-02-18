@@ -10,18 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dirigera.internal.handlerplug;
+package org.openhab.binding.dirigera.internal.handler.plug;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
-import org.openhab.binding.dirigera.internal.handler.plug.SmartPlugHandler;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.library.types.DateTimeType;
@@ -48,29 +47,24 @@ class TestSmartPlug {
     String deviceId = "ec549fa8-4e35-4f27-90e9-bb67e68311f2_1";
     ThingTypeUID thingTypeUID = THING_TYPE_SMART_PLUG;
 
-    private static SmartPlugHandler handler = mock(SmartPlugHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
-
-    @Test
-    void testHandlerCreation() {
+    BaseHandler getHandler() {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/devices/home-all-devices.json",
                 false, List.of());
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(thingTypeUID, hubBridge, deviceId);
         assertTrue(factoryHandler instanceof SmartPlugHandler);
-        handler = (SmartPlugHandler) factoryHandler;
-        thing = handler.getThing();
+        assertTrue(factoryHandler instanceof BaseHandler);
+        BaseHandler handler = (SmartPlugHandler) factoryHandler;
         ThingHandlerCallback proxyCallback = handler.getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
-        callback = (CallbackMock) proxyCallback;
-        handler.initialize();
-        callback.waitForOnline();
+        return handler;
     }
 
     @Test
     void testInitialization() {
-        testHandlerCreation();
+        BaseHandler handler = getHandler();
+        Thing thing = handler.getThing();
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(handler);
         assertNotNull(thing);
         assertNotNull(callback);
@@ -95,7 +89,9 @@ class TestSmartPlug {
     @Test
     void testCommands() {
         DirigeraAPISimu.patchMap.clear();
-        testHandlerCreation();
+        BaseHandler handler = getHandler();
+        Thing thing = handler.getThing();
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(handler);
         assertNotNull(thing);
         assertNotNull(callback);

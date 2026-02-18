@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +46,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
@@ -66,17 +69,20 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BaseHandler extends BaseThingHandler implements DebugHandler {
+    private static final ThingStatusInfo UNKNOWN_INITIALZING = new ThingStatusInfo(ThingStatus.UNKNOWN,
+            ThingStatusDetail.NONE, null);
+    private static final ThingStatusInfo UNKNOWN_NOT_READY = new ThingStatusInfo(ThingStatus.UNKNOWN,
+            ThingStatusDetail.NOT_YET_READY, null);
     private final Logger logger = LoggerFactory.getLogger(BaseHandler.class);
     private List<PowerListener> powerListeners = new ArrayList<>();
+    private @Nullable ScheduledFuture<?> initializationFuture;
     private @Nullable Gateway gateway;
 
     // to be overwritten by child class in order to route the updates to the right instance
-    protected @Nullable BaseHandler child;
-
+    protected BaseHandler child;
     // maps to route properties to channels and vice versa
     protected Map<String, String> property2ChannelMap;
     protected Map<String, String> channel2PropertyMap;
-
     // cache to handle each refresh command properly
     protected Map<String, State> channelStateMap;
 
@@ -111,6 +117,7 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         property2ChannelMap = mapping;
         channel2PropertyMap = reverse(mapping);
         channelStateMap = initializeCache(mapping);
+        this.child = this;
     }
 
     protected void setChildHandler(BaseHandler child) {
@@ -125,42 +132,80 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         // first get bridge as Gateway
         Bridge bridge = getBridge();
         if (bridge != null) {
-            updateStatus(ThingStatus.UNKNOWN);
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
                 if (handler instanceof Gateway gw) {
                     gateway = gw;
+                    checkBridge();
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/dirigera.device.status.wrong-bridge-type");
-                    return;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/dirigera.device.missing-bridge-handler");
-                return;
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/dirigera.device.status.missing-bridge");
-            return;
-        }
-
-        if (!checkHandler()) {
-            // if handler doesn't match model status will be set to offline and it will stay until correction
-            return;
-        }
-
-        if (!config.id.isBlank()) {
-            updateProperties();
-            BaseHandler proxy = child;
-            if (proxy != null) {
-                gateway().registerDevice(proxy, config.id);
-            }
         }
     }
 
-    private void updateProperties() {
+    public synchronized void checkBridge() {
+        // disposed flag set - go away
+        if (disposed) {
+            return;
+        }
+
+        /*
+         * UNKNOWN => device initialization in progress, do nothing and wait for it to finish with resulting
+         * ONLINE(OFFLINE response
+         * CONFIGURATION_ERROR => something went wrong during initialize, don't continue
+         */
+        ThingStatusInfo handlerStatusInfo = getThing().getStatusInfo();
+        if (UNKNOWN_INITIALZING.equals(handlerStatusInfo)
+                || ThingStatusDetail.CONFIGURATION_ERROR.equals(handlerStatusInfo.getStatusDetail())) {
+            return;
+        }
+
+        // Bridge ONLINE, thing anything else than ONLINE => initialize device and wait for it to finish with resulting
+        // ONLINE(OFFLINE response, if
+        if (ThingStatus.ONLINE.equals(gateway().getThing().getStatus())
+                && !ThingStatus.ONLINE.equals(handlerStatusInfo.getStatus())) {
+            updateStatus(UNKNOWN_INITIALZING.getStatus(), UNKNOWN_INITIALZING.getStatusDetail(), null);
+            initializationFuture = scheduler.schedule(child::initializeDevice, 0, TimeUnit.SECONDS);
+        } else {
+            updateStatus(UNKNOWN_NOT_READY.getStatus(), UNKNOWN_NOT_READY.getStatusDetail(), null);
+        }
+    }
+
+    /**
+     * Check Handler sanity
+     * Initial channel update
+     * Thing properties
+     * Register device at gateway
+     */
+    public void initializeDevice() {
+        if (!checkHandler()) {
+            // if handler doesn't match model status will be set to offline and it will stay until correction
+            return;
+        } else {
+            JSONObject values = gateway().api().readDevice(config.id);
+            handleUpdate(values);
+        }
+        if (!config.id.isBlank()) {
+            updateProperties();
+            gateway().registerDevice(child, config.id);
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        checkBridge();
+    }
+
+    protected void updateProperties() {
         // fill canSend and canReceive capabilities
         Map<String, Object> modelProperties = gateway().model().getPropertiesFor(config.id);
         Object canReceiveCapabilities = modelProperties.get(Model.PROPERTY_CAN_RECEIVE);
@@ -450,19 +495,24 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
     @Override
     public void dispose() {
         disposed = true;
+        ScheduledFuture<?> localFuture = initializationFuture;
+        if (localFuture != null) {
+            localFuture.cancel(true);
+            initializationFuture = null;
+        }
         online = false;
-        BaseHandler proxy = child;
-        if (proxy != null) {
-            gateway().unregisterDevice(proxy, config.id);
+        Gateway localGateway = gateway;
+        if (localGateway != null) {
+            localGateway.unregisterDevice(child, config.id);
         }
         super.dispose();
     }
 
     @Override
     public void handleRemoval() {
-        BaseHandler proxy = child;
-        if (proxy != null) {
-            gateway().deleteDevice(proxy, config.id);
+        Gateway localGateway = gateway;
+        if (localGateway != null) {
+            localGateway.deleteDevice(child, config.id);
         }
         super.handleRemoval();
     }
@@ -487,7 +537,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE,
                         "@text/dirigera.device.status.id-not-found" + " [\"" + config.id + "\"]");
             } else {
-                // String message = "Handler " + thing.getThingTypeUID() + " doesn't match with model " + modelTTUID;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/dirigera.device.status.ttuid-mismatch" + " [\"" + thing.getThingTypeUID() + "\",\""
                                 + modelTTUID + "\"]");

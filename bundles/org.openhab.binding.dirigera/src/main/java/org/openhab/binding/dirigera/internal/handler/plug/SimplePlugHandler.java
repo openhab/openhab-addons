@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.core.thing.Thing;
 
@@ -34,15 +33,5 @@ public class SimplePlugHandler extends BaseHandler {
         super.setChildHandler(this);
         // links of types which can be established towards this device
         linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        if (super.checkHandler()) {
-            // handling of first update, also for PowerPlug and SmartPlug child classes!
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
     }
 }
