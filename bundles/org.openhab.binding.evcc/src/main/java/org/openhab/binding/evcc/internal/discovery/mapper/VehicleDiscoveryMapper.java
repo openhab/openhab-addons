@@ -22,7 +22,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.evcc.internal.EvccBindingConstants;
 import org.openhab.binding.evcc.internal.discovery.Utils;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
@@ -41,7 +41,7 @@ import com.google.gson.JsonObject;
 public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
 
     @Override
-    public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
+    public Collection<DiscoveryResult> discover(JsonObject state, EvccWsBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
         JsonObject vehicles = state.getAsJsonObject(JSON_KEY_VEHICLES);
         if (vehicles == null) {

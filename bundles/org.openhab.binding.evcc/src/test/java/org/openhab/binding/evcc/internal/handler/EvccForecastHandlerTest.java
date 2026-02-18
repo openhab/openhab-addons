@@ -107,22 +107,21 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
             when(thing.getConfiguration()).thenReturn(configuration);
             when(thing.getChannels()).thenReturn(new ArrayList<>());
             handler = spy(createHandler());
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         }
 
         @Test
         public void handlerIsInitialized() {
-            handler.isInitialized = true;
 
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.ONLINE, lastThingStatus);
         }
 
         @Test
         public void handlerIsNotInitialized() {
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+            handler.initializeThingFromLatestState(exampleResponse);
             assertSame(ThingStatus.OFFLINE, lastThingStatus);
         }
     }
@@ -157,7 +156,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
                 when(thing.getChannels()).thenReturn(new ArrayList<>());
             }
             handler = spy(createHandler());
-            EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+            EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
             handler.bridgeHandler = bridgeHandler;
             when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse.deepCopy());
         }
@@ -165,8 +164,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void co2ForecastSubtype() {
             setup("co2");
-            handler.isInitialized = true;
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+            handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
             assertEquals(1, updateStateCounter);
@@ -177,8 +175,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void feedinForecastSubtype() {
             setup("feedin");
-            handler.isInitialized = true;
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+            handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
             assertEquals(1, updateStateCounter);
@@ -189,8 +186,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void gridForecastSubtype() {
             setup("grid");
-            handler.isInitialized = true;
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+            handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
             assertEquals(1, updateStateCounter);
@@ -201,8 +197,7 @@ public class EvccForecastHandlerTest extends AbstractThingHandlerTestClass<EvccF
         @Test
         public void solarForecastSubtype() {
             setup("solar");
-            handler.isInitialized = true;
-            handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+            handler.initializeThingFromLatestState(exampleResponse.deepCopy());
             assertSame(ThingStatus.ONLINE, lastThingStatus);
             assertTrue(updateStateCalled);
             assertEquals(6, updateStateCounter);

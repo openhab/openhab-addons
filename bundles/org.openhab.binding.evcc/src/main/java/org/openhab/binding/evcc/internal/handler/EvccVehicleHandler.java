@@ -14,7 +14,10 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -66,9 +69,19 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
-        updateStatesFromApiResponse(state);
+    public Collection<String> getRootTypes() {
+        return List.of(JSON_KEY_VEHICLES);
+    }
+
+    @Override
+    public String getIdentifier() {
+        return Objects.requireNonNullElse(vehicleId, "");
+    }
+
+    @Override
+    public void initializeThingFromLatestState(JsonObject state) {
+        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
+        createChannelsAndSetStatesFromApiResponse(state);
     }
 
     @Override
@@ -98,18 +111,11 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         }
 
         super.initialize();
-        Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
+        Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> {
             endpoint = String.join("/", handler.getBaseURL(), API_PATH_VEHICLES);
-            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
-            if (stateOpt.isEmpty()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                return;
-            }
-
-            JsonObject state = stateOpt.getAsJsonObject(JSON_KEY_VEHICLES)
-                    .getAsJsonObject(getPropertyOrConfigValue(PROPERTY_VEHICLE_ID));
-            commonInitialize(state);
-        });
+            updateStatus(ThingStatus.ONLINE);
+            handler.register(this);
+        }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR));
     }
 
     @Override

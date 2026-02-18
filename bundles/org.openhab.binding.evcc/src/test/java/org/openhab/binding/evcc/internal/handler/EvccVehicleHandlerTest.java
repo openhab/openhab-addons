@@ -96,7 +96,7 @@ public class EvccVehicleHandlerTest extends AbstractThingHandlerTestClass<EvccVe
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
     }

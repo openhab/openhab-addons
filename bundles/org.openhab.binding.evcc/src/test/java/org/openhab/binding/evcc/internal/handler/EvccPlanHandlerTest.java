@@ -58,6 +58,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanHandler> {
 
+    private boolean updateStateCalled = false;
+    private int updateStateCounter = 0;
     private String capturedUrl = "";
     private JsonElement capturedPayload = JsonNull.INSTANCE;
     private String capturedMethod = "";
@@ -88,6 +90,12 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
             }
 
             @Override
+            public void updateState(ChannelUID uid, State state) {
+                updateStateCalled = true;
+                updateStateCounter++;
+            }
+
+            @Override
             protected void performApiRequest(String url, String method, JsonElement payload) {
                 capturedUrl = url;
                 capturedPayload = payload;
@@ -108,7 +116,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
@@ -133,7 +141,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         when(configuration.get(PROPERTY_VEHICLE_ID)).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         LocaleProvider lp = mock(LocaleProvider.class);
         TranslationProvider tp = mock(TranslationProvider.class);
         Bundle bundle = mock(Bundle.class);
@@ -151,10 +159,17 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
     @Test
     void updatingOneTimePlanShouldNormalizeTimeAndBuildUrl() {
         handler.initialize();
+        assertTrue(updateStateCalled);
+        assertEquals(4, updateStateCounter);
+        updateStateCalled = false;
+        updateStateCounter = 0;
 
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
-        // Set new SoC & time via handleCommand
+        assertTrue(updateStateCalled);
+        assertEquals(4, updateStateCounter);
+
+        // Set new SoC & time via handleCommand (pending commands collection)
         ChannelUID socCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_SOC);
         ChannelUID timeCh = new ChannelUID(thing.getUID(), "plan-time");
         ChannelUID precCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_PRECONDITION);
@@ -190,7 +205,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID socCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_SOC);
         State socState = new StringType("85 %");
@@ -209,7 +224,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID wdCh = new ChannelUID(thing.getUID(), "plan-weekdays");
         State wdState = new StringType("Monday;Wednesday;Sunday"); // Sunday maps to 0
@@ -234,7 +249,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID timeCh = new ChannelUID(thing.getUID(), "plan-time");
         State timeState = new StringType("2025-12-20T09:00:00.000+0100");
@@ -256,7 +271,7 @@ public class EvccPlanHandlerTest extends AbstractThingHandlerTestClass<EvccPlanH
         changeConfiguration();
 
         handler.initialize();
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse.deepCopy());
+        handler.initializeThingFromLatestState(exampleResponse.deepCopy());
 
         ChannelUID preCCh = new ChannelUID(thing.getUID(), CHANNEL_PLAN_PRECONDITION);
         State precState = new StringType("1800 s");

@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.evcc.internal.handler.EvccBatteryHandlerTest;
-import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
+import org.openhab.binding.evcc.internal.handler.EvccWsBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -50,7 +50,7 @@ import com.google.gson.JsonParser;
 public class PlanDiscoveryMapperTest {
 
     private static JsonObject exampleResponse = new JsonObject();
-    private final EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+    private final EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
     private final Bridge bridge = mock(Bridge.class);
     private final LocaleProvider lp = mock(LocaleProvider.class);
     private final TranslationProvider tp = mock(TranslationProvider.class);

@@ -91,7 +91,7 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
         when(configuration.get("id")).thenReturn("vehicle_1");
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
 
@@ -119,23 +119,21 @@ public class EvccHeatingHandlerTest extends AbstractThingHandlerTestClass<EvccHe
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.isInitialized = true;
-
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
     @Test
     public void testJsonGetsModifiedCorrectly() {
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        handler.initializeThingFromLatestState(exampleResponse);
         assertEquals(heatingObject, exampleResponse.getAsJsonArray("loadpoints").get(0));
     }
 

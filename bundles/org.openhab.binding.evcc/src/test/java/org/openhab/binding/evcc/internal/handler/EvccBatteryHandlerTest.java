@@ -90,7 +90,7 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
 
-        EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
+        EvccWsBridgeHandler bridgeHandler = mock(EvccWsBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
         batteryState = exampleResponse.getAsJsonObject("battery").getAsJsonArray("devices").get(0).getAsJsonObject();
@@ -98,10 +98,9 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
 
     @SuppressWarnings("null")
     @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.isInitialized = false;
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-        verify(handler).updateStatesFromApiResponse(batteryState);
+    public void testInitializeThingFromLatestStateIsNotInitialized() {
+        handler.initializeThingFromLatestState(exampleResponse);
+        verify(handler).initializeThingFromLatestState(batteryState);
         assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
@@ -114,9 +113,8 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
 
     @SuppressWarnings("null")
     @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsInitialized() {
-        handler.isInitialized = true;
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+    public void testInitializeThingFromLatestStateIsInitialized() {
+        handler.initializeThingFromLatestState(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
     }
 
