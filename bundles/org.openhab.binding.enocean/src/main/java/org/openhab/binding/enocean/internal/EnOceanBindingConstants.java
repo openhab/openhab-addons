@@ -101,6 +101,7 @@ public class EnOceanBindingConstants {
 
     public static final String CHANNEL_DIMMER = "dimmer";
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
+    public static final String CHANNEL_STATEMACHINESTATE = "statemachine";
     public static final String CHANNEL_ANGLE = "angle";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
@@ -242,6 +243,9 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_ROLLERSHUTTER,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ROLLERSHUTTER),
                             CoreItemFactory.ROLLERSHUTTER)),
+            Map.entry(CHANNEL_STATEMACHINESTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATEMACHINESTATE),
+                            CoreItemFactory.STRING)),
             Map.entry(CHANNEL_ANGLE,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_ANGLE),
                             CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR + Angle.class.getSimpleName())),
