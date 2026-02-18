@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="binding:restify">
+		<parameter name="enforceAuthentication" type="boolean" required="false">
+			<label>Enforce Authentication</label>
+			<description>Require authorization for all endpoints, even if endpoint-specific authorization is not configured.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="defaultBasic" type="text" required="false">
+			<label>Default Basic Authorization</label>
+			<description>Default Basic authorization in format username:password, used when endpoint authorization is not
+				configured.</description>
+		</parameter>
+		<parameter name="defaultBearer" type="text" required="false">
+			<label>Default Bearer Authorization</label>
+			<description>Default Bearer token used when endpoint authorization is not configured.</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

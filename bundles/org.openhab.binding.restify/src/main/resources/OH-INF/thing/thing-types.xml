@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="restify"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="endpoint">
+		<label>RESTify Endpoint</label>
+		<description>Configurable REST endpoint that returns a JSON response from a script.</description>
+		<config-description>
+			<parameter name="path" type="text" required="true">
+				<label>Context Path</label>
+				<description>Path of the endpoint. You can query it by http(s)://${oh}/restify/${path}</description>
+			</parameter>
+			<parameter name="method" type="text" required="true">
+				<label>HTTP Method</label>
+				<advanced>true</advanced>
+				<description>
+					HTTP method this endpoint accepts.
+				</description>
+				<default>GET</default>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="GET">GET</option>
+					<option value="POST">POST</option>
+					<option value="PUT">PUT</option>
+					<option value="DELETE">DELETE</option>
+				</options>
+			</parameter>
+			<parameter name="endpoint" type="text" required="true">
+				<context>script</context>
+				<label>Endpoint</label>
+				<description>
+					Script that generates the JSON response returned by this endpoint.
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
