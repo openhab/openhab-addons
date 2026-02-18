@@ -169,6 +169,32 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return false;
         }
 
+        // Check if a full sender ID is provided
+        String senderIdHex = getConfiguration().senderId;
+        if (senderIdHex != null && !senderIdHex.isEmpty()) {
+            // Validate that RS485 mode is enabled when using direct sender ID
+            if (!bridgeHandler.isRS485Enabled()) {
+                configurationErrorDescription = "Sender ID can only be used when RS485 mode is enabled on the bridge. "
+                        + "Either enable RS485 mode or use senderIdOffset instead.";
+                return false;
+            }
+
+            try {
+                this.senderId = HexUtils.hexToBytes(senderIdHex);
+                if (this.senderId.length != 4) {
+                    configurationErrorDescription = "Sender ID must be exactly 8 hex characters (4 bytes), e.g., FF00AA01 or 00112233";
+                    return false;
+                }
+                this.updateProperty(PROPERTY_SENDINGENOCEAN_ID, HexUtils.bytesToHex(this.senderId));
+                // No need to register with bridge when using full address
+                return true;
+            } catch (IllegalArgumentException e) {
+                configurationErrorDescription = "Invalid sender ID format: " + e.getMessage()
+                        + ". Expected 8 hex characters (0-9, A-F), e.g., FF00AA01";
+                return false;
+            }
+        }
+
         // Generic things are treated as actuator things, however to support also generic sensors one can omit
         // senderIdOffset
         // TODO: seperate generic actuators from generic sensors?

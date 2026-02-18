@@ -171,6 +171,8 @@ Each EnOcean gateway supports 127 unique SenderIds.
 The SenderId of a thing can be set manually or determined automatically by the binding.
 In case of an UTE teach-in the next unused SenderId is taken automatically.
 To set this SenderId to a specific one, you have to use the nextSenderId parameter of your gateway.
+For actuator things you can also set a full `senderId` (8 hex chars) directly.
+This option is available as advanced parameter and is only applicable when the bridge parameter `rs485=true` (Eltako RS485 bus).
 
 ## Thing Configuration
 
@@ -179,6 +181,11 @@ Therefore if you do not want to use the UI, a mixed mode configuration approach 
 To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
+
+For actuator thing types (`centralCommand`, `classicDevice`, `genericThing`, `measurementSwitch`, `rollershutter`,
+`thermostat`, `heatRecoveryVentilation`) the optional `senderId` parameter is marked as advanced and only used when
+the bridge is configured with `rs485=true`. Otherwise `senderIdOffset` is used and direct `senderId` values are
+rejected during validation.
 
 |Thing type                       | Parameter         | Meaning                     | Possible Values |
 |---------------------------------|-------------------|-----------------------------|---|
