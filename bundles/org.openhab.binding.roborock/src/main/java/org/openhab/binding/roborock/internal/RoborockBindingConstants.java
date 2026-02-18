@@ -57,6 +57,8 @@ public class RoborockBindingConstants {
     public static final String AES_ECB_PADDING = "AES/ECB/PKCS5Padding";
     public static final String AES_CBC_NO_PADDING = "AES/CBC/NoPadding";
     public static final String VERSION_1_0 = "1.0";
+    public static final int PROTOCOL_JSON = 102;
+    public static final int PROTOCOL_MAP = 301;
     public static final int SEQ_OFFSET = 3;
     public static final int RANDOM_OFFSET = 7;
     public static final int TIMESTAMP_OFFSET = 11;
@@ -65,6 +67,12 @@ public class RoborockBindingConstants {
     public static final int HEADER_LENGTH_WITHOUT_CRC = 19; // 3 (version) + 4 (seq) + 4 (random) + 4 (timestamp) + 2
                                                             // (protocol) + 2 (payloadLen)
     public static final int CRC_LENGTH = 4;
+    public static final int MAP_TRANSPORT_HEADER_LENGTH = 24;
+    public static final int MAP_ENDPOINT_LENGTH = 8;
+    public static final int MAP_RESERVED_LENGTH = 8;
+    public static final int MAP_REQUEST_ID_OFFSET = 16;
+    public static final int MAP_TAIL_LENGTH = 6;
+    public static final int MAP_REQUEST_CORRELATION_TIMEOUT_MS = 120000;
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "status#battery";
