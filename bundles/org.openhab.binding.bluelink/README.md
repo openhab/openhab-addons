@@ -39,6 +39,9 @@ registered to your account.
 
 The EU region uses an OAuth2 refresh token instead of username/password authentication.
 Put your refresh token in the `password` field.
+A refresh token is typically valid for 180 days, after which you will need to provide a new one.
+The following script may be used to obtain a refresh token: [RustyDust/bluelink_refresh_token](https://github.com/RustyDust/bluelink_refresh_token).
+
 The `username` field is not required for EU.
 Control actions (lock, unlock, climate, charging) are not available for the EU region.
 
