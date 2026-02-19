@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.StatusCode;
@@ -88,7 +87,6 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -128,21 +126,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
             WebSocketClient webSocketClient) {
         super(thingName, thing);
-        this.thingTable = thingTable;
-        this.client = webSocketClient;
-    }
-
-    /**
-     * Simple initialization - called by discovery handler
-     *
-     * @param thingName Symbolic thing name
-     * @param config Thing Configuration
-     * @param httpClient HTTP Client to be passed to ShellyHttpClient
-     */
-    public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingConfiguration config,
-            HttpClient httpClient, WebSocketClient webSocketClient) {
-        super(thingName, config, httpClient);
-        this.thingName = thingName;
         this.thingTable = thingTable;
         this.client = webSocketClient;
     }
