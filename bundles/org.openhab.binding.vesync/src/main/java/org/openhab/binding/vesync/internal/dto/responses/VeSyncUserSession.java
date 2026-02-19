@@ -26,6 +26,12 @@ public class VeSyncUserSession {
 
     public String token;
 
+    public String serverUrl;
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
     public String getToken() {
         return token;
     }
@@ -33,24 +39,20 @@ public class VeSyncUserSession {
     @SerializedName("registerTime")
     public String registerTime;
 
-    @SerializedName("accountID")
     public String accountId;
 
     public String getAccountId() {
         return accountId;
     }
 
-    @SerializedName("registerAppVersion")
-    public String registerAppVersion;
+    @SerializedName("acceptLanguage")
+    public String acceptLanguage;
 
     @SerializedName("countryCode")
     public String countryCode;
 
-    @SerializedName("acceptLanguage")
-    public String acceptLanguage;
-
     @Override
     public String toString() {
-        return "Data [user=AB" + ", token=" + token + "]";
+        return "Data [token=" + token + "]";
     }
 }
