@@ -128,23 +128,22 @@ public class CameraCapability extends HomeSecurityThingCapability {
     private void updateSubGroup(WebhookEvent event, String group) {
         handler.updateState(group, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
         handler.updateState(group, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
-        updatePictureOnValidUrl(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
-        updatePictureOnValidUrl(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
+        ifUrlPresent(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
+        ifUrlPresent(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
         handler.updateState(group, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
-        final String message = event.getName();
-        handler.updateState(group, CHANNEL_EVENT_MESSAGE,
-                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+        handler.updateState(group, CHANNEL_EVENT_MESSAGE, toStringType(event.getName()));
         State personId = event.getPersons().isEmpty() ? UnDefType.NULL
                 : toStringType(event.getPersons().values().iterator().next().getId());
         handler.updateState(personChannelUID, personId);
     }
 
-    private void updatePictureOnValidUrl(@Nullable String url, String group, String pictureChannel, String urlChannel) {
-        if (url != null) {
-            handler.updateState(group, pictureChannel, toRawType(url));
-            handler.updateState(group, urlChannel, toStringType(url));
+    private void ifUrlPresent(@Nullable String url, String group, String pictureChannel, String urlChannel) {
+        if (url == null || url.isBlank()) {
+            return;
         }
+        handler.updateState(group, pictureChannel, toRawType(url));
+        handler.updateState(group, urlChannel, toStringType(url));
     }
 
     @Override
