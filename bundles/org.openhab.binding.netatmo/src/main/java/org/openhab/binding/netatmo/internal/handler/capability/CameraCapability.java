@@ -185,13 +185,9 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     public @Nullable String ping(String vpnUrl) {
         return getSecurityCapability().map(cap -> {
-            String pingResult = cap.ping(vpnUrl);
-            if (pingResult == null) {
-                return null;
-            }
-            UriBuilder builder = UriBuilder.fromPath(pingResult);
             URI apiLocalUrl = null;
             try {
+                UriBuilder builder = UriBuilder.fromPath(vpnUrl);
                 apiLocalUrl = builder.build();
                 if (apiLocalUrl.getHost().startsWith("169.254.")) {
                     logger.warn("Suspicious local IP address received: {}", apiLocalUrl);
