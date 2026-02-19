@@ -19,7 +19,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
-import org.openhab.binding.mercedesme.internal.handler.VehicleHandler;
 import org.openhab.binding.mercedesme.internal.utils.Utils;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -37,9 +36,15 @@ import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
  */
 @NonNullByDefault
 public class TestUpdate implements AccessTokenRefreshListener {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VehicleHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestUpdate.class);
 
     private static HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
+
+    // NOTE: This is a manual test utility. Update the following placeholder values
+    // with valid data from your environment before running:
+    // - EMAIL: your Mercedes me account email address
+    // - VIN: the vehicle identification number to query
+    // - STORAGE: the storage key from jsondb (mercedesme.json) associated with the account
     private static final String EMAIL = "YOUR_EMAIL_ADDRESS";
     private static final String VIN = "YOUR_VIN";
     private static final String STORAGE = "YOUR_STORAGE_FROM_JSONDB_MERCEDESME.JSON";
