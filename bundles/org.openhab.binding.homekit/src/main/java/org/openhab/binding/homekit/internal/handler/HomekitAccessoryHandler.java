@@ -1198,8 +1198,17 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         String targetLabel = sourceThing.getLabel();
         Matcher matcher = THING_LABEL_PATTERN.matcher(targetLabel);
-        targetLabel = matcher.matches() ? matcher.group(1).trim() + " (" + matcher.group(2) + "-1)"
-                : targetLabel + " (1)";
+        if (matcher.matches()) {
+            String baseLabel = matcher.group(1);
+            String suffix = matcher.group(2);
+            if (baseLabel != null && !baseLabel.isBlank() && suffix != null && !suffix.isBlank()) {
+                targetLabel = baseLabel.trim() + " (" + suffix + "-1)";
+            } else {
+                targetLabel = targetLabel + " (1)";
+            }
+        } else {
+            targetLabel = targetLabel + " (1)";
+        }
 
         String targetUniqueId = STRING_AID_FMT.formatted(sourceUniqueId, 1);
         ThingUID targetUID = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, targetBridge.getUID(), "1");
@@ -1273,9 +1282,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             managedThingProvider.add(newThing);
             thingAdded = true;
             managedThingProvider.remove(oldThing.getUID()); // remove existing Thing only after successful adds
-            discoveryParticipant.suppressId(uniqueId, true); // and suppress its re-discovery
-            logger.info("Successfully auto-migrated {} to {} with {}", oldThing.getUID(), newBridge.getUID(),
-                    newThing.getUID());
         } catch (Exception e) {
             if (thingAdded) {
                 try {
@@ -1296,7 +1302,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             migrating.set(false);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "@text/status.migrating-accessory-to-bridge-failed");
+            return;
         }
+        discoveryParticipant.suppressId(uniqueId, true); // suppress re-discovery of existing (now old) thing
+        logger.info("Successfully auto-migrated {} to {} with {}", oldThing.getUID(), newBridge.getUID(),
+                newThing.getUID());
     }
 
     @Override
