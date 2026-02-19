@@ -67,7 +67,7 @@ class LoginAuthV2Helper {
         userCurrentRegion = "US";
 
         // To reduce any potential issues preset this to the global instance
-        loginData.serverUrl = PROTOCOL + "://" + US_SERVER_ADDRESS;
+        loginData.serverUrl = US_SERVER;
     }
 
     protected VeSyncLoginResponse getVeSyncLoginResponse() {
