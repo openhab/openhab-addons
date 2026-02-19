@@ -50,6 +50,7 @@ public class RingBindingConstants {
     public static final String CHANNEL_EVENT_KIND = "event#kind";
     public static final String CHANNEL_EVENT_DOORBOT_ID = "event#doorbotId";
     public static final String CHANNEL_EVENT_DOORBOT_DESCRIPTION = "event#doorbotDescription";
+    public static final String CHANNEL_EVENT_EXTENDED_DESCRIPTION = "event#extendedDescription";
 
     public static final String SERVLET_VIDEO_PATH = "/ring/video";
 
