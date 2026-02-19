@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
@@ -49,7 +50,7 @@ import com.google.gson.JsonElement;
 @NonNullByDefault
 public abstract class BoschSHCService<TState extends BoschSHCServiceState> extends AbstractBoschSHCService {
 
-    protected final Logger logger = LoggerFactory.getLogger(BoschSHCService.class);
+    private final Logger logger = LoggerFactory.getLogger(BoschSHCService.class);
 
     /**
      * Class of service state
@@ -141,8 +142,10 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
+     * @throws BoschSHCException
      */
-    public void setState(TState state) throws InterruptedException, TimeoutException, ExecutionException {
+    public void setState(TState state)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         String deviceId = getDeviceId();
         if (deviceId == null) {
             return;
@@ -151,7 +154,18 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> exten
         if (bridgeHandler == null) {
             return;
         }
-        bridgeHandler.putState(deviceId, getServiceName(), state);
+
+        @Nullable
+        ContentResponse response = bridgeHandler.putState(deviceId, getServiceName(), state);
+        if (response != null) {
+            int status = response.getStatus();
+            if (status >= 400) {
+                String responseBody = response.getContentAsString();
+                throw new BoschSHCException(String.format(
+                        "Error while updating state for service %s. SHC returned status code %d with response %s",
+                        getServiceName(), status, responseBody));
+            }
+        }
     }
 
     /**
