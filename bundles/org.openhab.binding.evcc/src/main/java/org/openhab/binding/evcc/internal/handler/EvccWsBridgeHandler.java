@@ -12,17 +12,11 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
-
-import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
