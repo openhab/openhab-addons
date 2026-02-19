@@ -171,8 +171,7 @@ public class Utils {
 
     public static ZonedDateTime getZdtFromUTC(Instant utc) {
         try {
-            ZonedDateTime zdt = utc.atZone(timeZoneProvider.getTimeZone());
-            return zdt;
+            return utc.atZone(timeZoneProvider.getTimeZone());
         } catch (DateTimeException dtpe) {
             LOGGER.warn("Exception parsing time {} Reason: {}", utc, dtpe.getMessage());
             throw dtpe;

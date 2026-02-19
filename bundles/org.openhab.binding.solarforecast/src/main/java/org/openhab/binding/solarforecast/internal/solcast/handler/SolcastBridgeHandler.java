@@ -139,7 +139,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
     public void updateData() {
         // 1) check if there are planes attached return immediately if not
         if (planes.isEmpty()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NOT_YET_READY,
                     "@text/solarforecast.site.status.no-planes");
             return;
         }
