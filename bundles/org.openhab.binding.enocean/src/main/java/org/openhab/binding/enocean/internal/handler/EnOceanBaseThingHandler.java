@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.handler;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_STATUS_REQUEST_EVENT;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
@@ -93,6 +93,9 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         if (getBridgeHandler() != null) {
             if (bridgeStatus == ThingStatus.ONLINE) {
                 initializeConfig();
+                if (applyThingStructureUpdates()) {
+                    return;
+                }
                 if (validateConfig()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
@@ -125,6 +128,10 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
     }
 
     abstract void initializeConfig();
+
+    protected boolean applyThingStructureUpdates() {
+        return false;
+    }
 
     abstract boolean validateConfig();
 
@@ -196,6 +203,10 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         }
 
         return UnDefType.UNDEF;
+    }
+
+    public void setState(ChannelUID channelUID, State state) {
+        updateState(channelUID, state);
     }
 
     protected State getCurrentState(String channelId) {

@@ -484,3 +484,57 @@ ChannelId|openHABCommand=EnoceanData(Hex)
 genericSwitch|ON=01000009
 genericSwitch|OFF=01000008
 ```
+
+## FSB14 Advanced Blind Control
+
+The Eltako FSB14 supports advanced blind control with independent positioning of height and slat angle when using `configMode="blinds"`.
+For detailed information see the [community discussion](https://community.openhab.org/t/statemachine-for-eltako-fsb14-rollershutters/145978).
+
+### Configuration Example
+
+```java
+Thing enocean:rollershutter:gateway:fsb14 [ 
+    enoceanId="000000EC", 
+    senderIdOffset=108, 
+    sendingEEPId="A5_3F_7F_EltakoFSB", 
+    receivingEEPId="F6_00_00,A5_3F_7F_EltakoFSB" 
+] {
+    Channels:
+        Type rollershutter:rollershutter [shutTime=65, swapTime=14, configMode="blinds"]
+}
+```
+
+### Available Channels
+
+When `configMode="blinds"` is set, three channels are available:
+
+| Channel | Type | Description |
+|---------|------|-------------|
+| rollershutter | Rollershutter | Height control (0-100%), requires autoupdate="false" |
+| dimmer | Dimmer | Slat angle control (0-100%), requires autoupdate="false" |
+| statemachine | String | Current state (IDLE, MOVEMENT_*, POSITION_REACHED, INVALID) |
+
+### Channel Configuration Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| shutTime | int | Full travel time in seconds (required) |
+| swapTime | int | Slat rotation time in 100ms units (e.g., 14 = 1.4s) |
+| configMode | String | Set to "blinds" or "rollershutter" for advanced control with state machine |
+|  |  | Omit parameter or set to "legacy" for simple rollershutter control without state machine |
+
+### Calibration
+
+On first use, the state machine must be calibrated. Two methods are available:
+
+1. **Automatic:** Send an UP or DOWN command via openHAB to move the blind/rollershutter to an end position
+2. **Manual:** Physically operate the blind/rollershutter (e.g., via wall switch) until it reaches an end stop
+
+In both cases, the state machine transitions from INVALID to IDLE state once calibration is complete.
+The calibration state is persisted in Thing properties and restored after restart.
+
+### Hardware Requirements
+
+⚠️ **Important:** The FSB14 must send feedback telegrams for state machine operation.
+Configure the FAM14 with the PCT14 tool: add the FSB14 to the feedback list and set the operating mode to 7.
+For FSB14 addresses > 126, a bus connection (FAM14/FGW14-USB) is required as feedback is not sent via radio.
