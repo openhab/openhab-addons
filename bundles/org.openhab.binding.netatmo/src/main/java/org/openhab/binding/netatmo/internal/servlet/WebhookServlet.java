@@ -97,7 +97,7 @@ public class WebhookServlet extends NetatmoServlet {
         processEvent(new String(req.getInputStream().readAllBytes(), StandardCharsets.UTF_8));
     }
 
-    private void processEvent(String data) throws IOException {
+    private void processEvent(String data) {
         if (!data.isEmpty()) {
             logger.debug("Event transmitted from restService: {}", data);
             try {

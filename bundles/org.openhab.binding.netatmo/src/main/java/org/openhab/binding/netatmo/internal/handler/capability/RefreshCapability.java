@@ -102,9 +102,8 @@ public class RefreshCapability extends Capability {
             if (Math.abs(ChronoUnit.SECONDS.between(expectedExecution, scheduledExecution)) <= 3) {
                 logger.debug("'{}' refresh as already pending roughly as the same time, will not reschedule", thingUID);
                 return;
-            } else {
-                stopJob();
             }
+            stopJob();
         }
         logger.debug("'{}' next refresh in {}", thingUID, delay);
         handler.schedule(this::proceedWithUpdate, delay).ifPresent(job -> this.refreshJob = job);

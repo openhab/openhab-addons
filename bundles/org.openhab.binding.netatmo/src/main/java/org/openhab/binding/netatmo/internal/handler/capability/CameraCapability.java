@@ -73,8 +73,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
             List<ChannelHelper> channelHelpers) {
         super(handler, descriptionProvider, channelHelpers);
         this.personChannelUID = new ChannelUID(thingUID, GROUP_LAST_EVENT, CHANNEL_EVENT_PERSON_ID);
-        this.cameraHelper = (CameraChannelHelper) channelHelpers.stream().filter(CameraChannelHelper.class::isInstance)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+        this.cameraHelper = channelHelpers.stream().filter(CameraChannelHelper.class::isInstance)
+                .map(CameraChannelHelper.class::cast).findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "CameraCapability must find a CameraChannelHelper, please file a bug report."));
     }
 
@@ -128,8 +128,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
     private void updateSubGroup(WebhookEvent event, String group) {
         handler.updateState(group, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
         handler.updateState(group, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
-        updatePictureIfUrlPresent(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
-        updatePictureIfUrlPresent(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
+        updatePictureOnValidUrl(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
+        updatePictureOnValidUrl(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
         handler.updateState(group, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
         final String message = event.getName();
@@ -140,11 +140,10 @@ public class CameraCapability extends HomeSecurityThingCapability {
         handler.updateState(personChannelUID, personId);
     }
 
-    private void updatePictureIfUrlPresent(@Nullable String snapShotUrl, String group, String pictureChannel,
-            String urlChannel) {
-        if (snapShotUrl != null) {
-            handler.updateState(group, pictureChannel, toRawType(snapShotUrl));
-            handler.updateState(group, urlChannel, toStringType(snapShotUrl));
+    private void updatePictureOnValidUrl(@Nullable String url, String group, String pictureChannel, String urlChannel) {
+        if (url != null) {
+            handler.updateState(group, pictureChannel, toRawType(url));
+            handler.updateState(group, urlChannel, toStringType(url));
         }
     }
 
@@ -185,9 +184,9 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     public @Nullable String ping(String vpnUrl) {
         return getSecurityCapability().map(cap -> {
-            UriBuilder builder = UriBuilder.fromPath(cap.ping(vpnUrl));
             URI apiLocalUrl = null;
             try {
+                UriBuilder builder = UriBuilder.fromPath(cap.ping(vpnUrl));
                 apiLocalUrl = builder.build();
                 if (apiLocalUrl.getHost().startsWith("169.254.")) {
                     logger.warn("Suspicious local IP address received: {}", apiLocalUrl);
