@@ -158,17 +158,15 @@ class LoginAuthV2Helper {
             // It is very likely now there is a redirect to an alternative data center suitable for the users region
             if (result.msg != null && result.msg.toLowerCase(Locale.ENGLISH).contains("cross region error")) {
                 // We need to determine the correct URL that goes to the data center serving that region
-                String hostingUrl;
                 switch (result.result.currentRegion) {
                     case "EU":
-                        hostingUrl = EU_SERVER_ADDRESS;
+                        loginData.serverUrl = EU_SERVER;
                         break;
                     case "US":
                     default:
-                        hostingUrl = US_SERVER_ADDRESS;
+                        loginData.serverUrl = US_SERVER;
                         break;
                 }
-                loginData.serverUrl = PROTOCOL + "://" + hostingUrl;
 
                 // We will need the biz token for the transfer to a new region
                 this.bizToken = result.result.bizToken;
