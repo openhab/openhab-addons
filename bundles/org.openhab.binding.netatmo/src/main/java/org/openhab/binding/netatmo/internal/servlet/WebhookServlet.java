@@ -121,8 +121,7 @@ public class WebhookServlet extends NetatmoServlet {
 
     private void notifyListeners(WebhookEvent event) {
         event.getNAObjectList().forEach(id -> {
-            Capability module = dataListeners.get(id);
-            if (module != null) {
+            if (dataListeners.get(id) instanceof Capability module) {
                 logger.trace("Dispatching webhook event to {}", id);
                 module.setNewData(event);
             }

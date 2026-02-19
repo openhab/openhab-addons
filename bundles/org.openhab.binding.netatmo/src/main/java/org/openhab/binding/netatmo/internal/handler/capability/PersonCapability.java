@@ -106,12 +106,14 @@ public class PersonCapability extends HomeSecurityThingCapability {
     @Override
     public List<NAObject> updateReadings() {
         List<NAObject> result = new ArrayList<>();
-        getSecurityCapability().ifPresent(cap -> {
-            HomeEvent event = cap.getLastPersonEvent(handler.getId());
-            if (event != null) {
-                result.add(event);
-            }
-        });
+        if (pullMode()) {
+            getSecurityCapability().ifPresent(cap -> {
+                HomeEvent event = cap.getLastPersonEvent(handler.getId());
+                if (event != null) {
+                    result.add(event);
+                }
+            });
+        }
         return result;
     }
 }

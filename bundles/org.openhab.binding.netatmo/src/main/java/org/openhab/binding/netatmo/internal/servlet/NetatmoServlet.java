@@ -32,18 +32,17 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class NetatmoServlet extends HttpServlet {
     private static final long serialVersionUID = 5671438863935117735L;
-    private static final String BASE_PATH = "/" + BINDING_ID + "/";
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(NetatmoServlet.class);
     private final HttpService httpService;
     private final String path;
 
     protected final ApiBridgeHandler handler;
 
     public NetatmoServlet(ApiBridgeHandler handler, HttpService httpService, String localPath) {
-        this.path = BASE_PATH + localPath + "/" + handler.getId();
-        this.handler = handler;
+        this.path = "/" + BINDING_ID + "/" + localPath + "/" + handler.getId();
         this.httpService = httpService;
+        this.handler = handler;
     }
 
     public void startListening() {

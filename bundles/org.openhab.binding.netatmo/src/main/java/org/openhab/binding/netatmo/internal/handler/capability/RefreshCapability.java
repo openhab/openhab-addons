@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RefreshCapability extends Capability {
-    protected static final Duration ASAP = Duration.ofSeconds(2);
+    public static final Duration ASAP = Duration.ofSeconds(2);
     protected static final Duration OFFLINE_DELAY = Duration.ofMinutes(15);
     protected static final Duration PROBING_INTERVAL = Duration.ofMinutes(2);
 

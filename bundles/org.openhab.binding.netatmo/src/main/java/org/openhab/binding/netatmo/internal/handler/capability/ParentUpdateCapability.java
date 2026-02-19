@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,8 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ParentUpdateCapability extends Capability {
-    private static final Duration DEFAULT_DELAY = Duration.ofSeconds(2);
-
     private final Logger logger = LoggerFactory.getLogger(ParentUpdateCapability.class);
     private @Nullable ScheduledFuture<?> job;
 
@@ -42,11 +39,10 @@ public class ParentUpdateCapability extends Capability {
     public void initialize() {
         this.job = handler.schedule(() -> {
             logger.debug("Requesting parents data update for Thing '{}'", thingUID);
-            CommonInterface bridgeHandler = handler.getBridgeHandler();
-            if (bridgeHandler != null) {
+            if (handler.getBridgeHandler() instanceof CommonInterface bridgeHandler) {
                 bridgeHandler.expireData();
             }
-        }, DEFAULT_DELAY);
+        }, RefreshCapability.ASAP);
     }
 
     @Override

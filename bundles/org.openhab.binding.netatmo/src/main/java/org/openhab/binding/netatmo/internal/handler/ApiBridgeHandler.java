@@ -103,7 +103,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
-    private static final Duration API_LIMIT_INTERVAL = Duration.ofHours(1);
+    private static final int API_LIMIT_INTERVAL_S = 3600;
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
@@ -372,11 +372,18 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                             "Error deserializing error: %s".formatted(statusCode.getMessage()));
                 }
             }
-            if (statusCode == Code.TOO_MANY_REQUESTS
-                    || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
+            if (statusCode == Code.TOO_MANY_REQUESTS) {
+                String message = null;
                 String delayStr = response.getHeaders().get(HttpHeader.RETRY_AFTER);
-                Duration delay = delayStr != null ? Duration.ofSeconds(Integer.valueOf(delayStr)) : API_LIMIT_INTERVAL;
-                prepareReconnection("@text/maximum-usage-reached", delay, null, null);
+                int delay = delayStr != null ? Integer.valueOf(delayStr) : Integer.MAX_VALUE;
+                if (exception.getStatusCode() == ServiceError.CONCURRENCY_LIMIT_TIMED_OUT) {
+                    delay = Math.min(delay, TIMEOUT_S);
+                    message = "@text/concurrency-limit-timed-out [ \"%d\" ]";
+                } else { // ServiceError.MAXIMUM_USAGE_REACHED
+                    delay = Math.min(delay, API_LIMIT_INTERVAL_S);
+                    message = "@text/maximum-usage-reached [ \"%d\" ]";
+                }
+                prepareReconnection(message.formatted(delay), Duration.ofSeconds(delay), null, null);
             }
             throw exception;
         } catch (InterruptedException e) {

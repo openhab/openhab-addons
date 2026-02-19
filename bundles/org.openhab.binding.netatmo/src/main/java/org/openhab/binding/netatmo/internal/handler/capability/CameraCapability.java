@@ -185,6 +185,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
     public @Nullable String ping(String vpnUrl) {
         return getSecurityCapability().map(cap -> {
 <<<<<<< Upstream, based on main
+<<<<<<< Upstream, based on main
 =======
             String pingResult = cap.ping(vpnUrl);
             if (pingResult == null) {
@@ -192,9 +193,15 @@ public class CameraCapability extends HomeSecurityThingCapability {
             }
             UriBuilder builder = UriBuilder.fromPath(pingResult);
 >>>>>>> 65af4fa Update this PR
+=======
+>>>>>>> 43180bc Enable push / pull mode when webhook is set
             URI apiLocalUrl = null;
             try {
+<<<<<<< Upstream, based on main
                 UriBuilder builder = UriBuilder.fromPath(cap.ping(vpnUrl));
+=======
+                UriBuilder builder = UriBuilder.fromPath(vpnUrl);
+>>>>>>> 43180bc Enable push / pull mode when webhook is set
                 apiLocalUrl = builder.build();
                 if (apiLocalUrl.getHost().startsWith("169.254.")) {
                     logger.warn("Suspicious local IP address received: {}", apiLocalUrl);
