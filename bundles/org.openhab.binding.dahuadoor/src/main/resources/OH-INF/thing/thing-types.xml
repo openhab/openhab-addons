@@ -42,7 +42,7 @@
 	<!-- Sample Channel Type -->
 	<channel-type id="bell-button">
 		<kind>trigger</kind>
-		<label>Trigger Channel Door Button</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Door Button Trigger</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
 		<description>Trigger channel for Dahua Door button</description>
 		<event>
 			<options>

@@ -75,6 +75,7 @@
 /bundles/org.openhab.binding.cm11a/ @BobRak
 /bundles/org.openhab.binding.comfoair/ @boehan
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
+/bundles/org.openhab.binding.dahuadoor/ @svnsssd
 /bundles/org.openhab.binding.daikin/ @caffineehacker
 /bundles/org.openhab.binding.dali/ @rs22
 /bundles/org.openhab.binding.danfossairunit/ @pravussum
@@ -89,7 +90,6 @@
 /bundles/org.openhab.binding.dmx/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.dolbycp/ @Cybso
 /bundles/org.openhab.binding.dominoswiss/ @Friesoch
-/bundles/org.openhab.binding.dahuadoor/ @svnsssd
 /bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.draytonwiser/ @andrew-schofield
 /bundles/org.openhab.binding.dscalarm/ @RSStephens

@@ -108,16 +108,12 @@ public class DahuaEventClient implements Runnable {
     }
 
     public void keepAlive(int delay) {
-        final Logger localLogger = logger;
-        if (localLogger == null) {
-            return;
-        }
         final Socket localSock = sock;
         if (localSock == null) {
             return;
         }
 
-        localLogger.trace("Started keepAlive thread");
+        logger.trace("Started keepAlive thread");
         while (execThread) {
             Map<String, Object> queryArgs = new HashMap<>();
             queryArgs.put("method", "global.keepAlive");
@@ -204,7 +200,6 @@ public class DahuaEventClient implements Runnable {
         byte[] header = new byte[32];
         ByteBuffer bbuffer;
         int lenRecved = 1;
-        int lenExpect = 1;
         int timeout = 5;
 
         final Socket localSock = sock;
@@ -259,9 +254,15 @@ public class DahuaEventClient implements Runnable {
                     break;
                 }
                 bbuffer.order(ByteOrder.LITTLE_ENDIAN);
-                // Length fields are 32-bit in the header
+                // DHIP Protocol Header Structure (32 bytes):
+                // Offset 0-7: Magic value (0x2000000044484950)
+                // Offset 8-11: Session ID
+                // Offset 12-15: Sequence number
+                // Offset 16-19: Length of received data (lenRecved)
+                // Offset 20-23: Reserved
+                // Offset 24-27: Expected length for multi-part messages
+                // Offset 28-31: Reserved
                 lenRecved = bbuffer.getInt(16);
-                lenExpect = bbuffer.getInt(24);
                 bbuffer.get(header, 0, 32);
                 bbuffer = bbuffer.position(32).slice(); // cut bbuffer by 32 Bytes
 
@@ -348,20 +349,31 @@ public class DahuaEventClient implements Runnable {
                 return false;
             }
             jsonData = new Gson().fromJson(data.get(0), Map.class);
-            if (jsonData != null && jsonData.containsKey("result") && (boolean) jsonData.get("result")) {
-                logger.trace("Login success");
-                Object paramsObj = jsonData.get("params");
-                if (paramsObj instanceof Map) {
-                    Map<String, Object> paramsMap = (Map<String, Object>) paramsObj;
-                    Object intervalObj = paramsMap.get("keepAliveInterval");
-                    if (intervalObj instanceof Number) {
-                        this.keepAliveInterval = ((Number) intervalObj).intValue();
+            if (jsonData != null) {
+                if (Boolean.TRUE.equals(jsonData.get("result"))) {
+                    logger.trace("Login success");
+                    Object paramsObj = jsonData.get("params");
+                    if (paramsObj instanceof Map) {
+                        Map<String, Object> paramsMap = (Map<String, Object>) paramsObj;
+                        Object intervalObj = paramsMap.get("keepAliveInterval");
+                        if (intervalObj instanceof Number) {
+                            this.keepAliveInterval = ((Number) intervalObj).intValue();
+                        }
                     }
+                    return true;
                 }
-                return true;
+                Object errorObj = jsonData.get("error");
+                if (errorObj instanceof Map) {
+                    Map<?, ?> errorMap = (Map<?, ?>) errorObj;
+                    Object code = errorMap.get("code");
+                    Object message = errorMap.get("message");
+                    logger.trace("Login failed: {} {}", code, message);
+                } else {
+                    logger.trace("Login failed: {}", jsonData);
+                }
+            } else {
+                logger.trace("Login failed: empty or invalid JSON response");
             }
-            logger.trace("Login failed: {} {}", ((Map<String, Object>) jsonData.get("error")).get("code"),
-                    ((Map<String, Object>) jsonData.get("error")).get("message"));
         } catch (Exception e) {
             logger.trace("Login error: {}", e.getMessage());
         }
@@ -377,10 +389,7 @@ public class DahuaEventClient implements Runnable {
                 try {
                     Thread.sleep(60000);
                 } catch (InterruptedException e) {
-                    final Logger localLogger = logger;
-                    if (localLogger != null) {
-                        localLogger.debug("Thread interrupted during error wait", e);
-                    }
+                    logger.debug("Thread interrupted during error wait", e);
                 }
             }
             error = true;
@@ -447,10 +456,7 @@ public class DahuaEventClient implements Runnable {
                 sock.close();
             }
         } catch (Exception e) {
-            final Logger localLogger = logger;
-            if (localLogger != null) {
-                localLogger.trace("Error while closing socket", e);
-            }
+            logger.trace("Error while closing socket", e);
         }
     }
 }

@@ -41,7 +41,6 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.dahuadoor", service = ThingHandlerFactory.class)
 public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
-    @SuppressWarnings("null")
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO);
     private final HttpClient httpClient;
 

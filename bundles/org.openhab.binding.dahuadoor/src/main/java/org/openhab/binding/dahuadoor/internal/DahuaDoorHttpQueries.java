@@ -42,8 +42,8 @@ public class DahuaDoorHttpQueries {
 
     private static final int REQUEST_TIMEOUT_SECONDS = 10;
     private static final String SNAPSHOT_PATH = "/cgi-bin/snapshot.cgi";
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    @SuppressWarnings("null")
     private final Logger logger = LoggerFactory.getLogger(DahuaDoorHttpQueries.class);
 
     private @Nullable DahuaDoorConfiguration config;
@@ -387,7 +387,7 @@ public class DahuaDoorHttpQueries {
 
     private String randomHex(int length) {
         byte[] bytes = new byte[length / 2];
-        new SecureRandom().nextBytes(bytes);
+        SECURE_RANDOM.nextBytes(bytes);
         StringBuilder builder = new StringBuilder(length);
         for (byte b : bytes) {
             builder.append(String.format("%02x", b));

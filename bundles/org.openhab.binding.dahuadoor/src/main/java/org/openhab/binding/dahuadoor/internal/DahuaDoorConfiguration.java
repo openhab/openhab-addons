@@ -24,7 +24,7 @@ public class DahuaDoorConfiguration {
 
     /**
      * Configuration parameters for the Dahua door device, including hostname, authentication
-     * credentials, snapshot path, and the refresh interval in seconds.
+     * credentials, and snapshot path.
      */
     public String hostname = "";
     public String username = "";

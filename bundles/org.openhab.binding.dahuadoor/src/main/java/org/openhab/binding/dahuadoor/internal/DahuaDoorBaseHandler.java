@@ -145,7 +145,12 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
-        if (config.snapshotpath == null || config.snapshotpath.isEmpty()) {
+        final DahuaDoorConfiguration localConfig = config;
+        if (localConfig == null) {
+            logger.warn("Configuration not initialized");
+            return;
+        }
+        if (localConfig.snapshotpath == null || localConfig.snapshotpath.isEmpty()) {
             logger.warn("Path for Snapshots is invalid");
             return;
         }
@@ -155,7 +160,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
         }
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-        String filename = config.snapshotpath + "/DoorBell_" + timestamp + ".jpg";
+        String filename = localConfig.snapshotpath + "/DoorBell_" + timestamp + ".jpg";
 
         try (FileOutputStream fos = new FileOutputStream(new File(filename))) {
             fos.write(buffer);
@@ -163,7 +168,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
             logger.warn("Could not write image to file '{}', check permissions and path", filename, e);
         }
 
-        String latestSnapshotFilename = config.snapshotpath + "/Doorbell.jpg";
+        String latestSnapshotFilename = localConfig.snapshotpath + "/Doorbell.jpg";
         try {
             Files.copy(Paths.get(filename), Paths.get(latestSnapshotFilename), StandardCopyOption.REPLACE_EXISTING);
         } catch (Exception e) {
@@ -259,8 +264,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                     case "CallSnap":
                         handleCallSnap(eventData);
                         break;
-                    case "HungupPhone":
-                        handleHungPhone(eventList, eventData);
+                    case "HangupPhone":
+                        handleHangupPhone(eventList, eventData);
                         break;
                     case "Hangup":
                         handleHangup(eventList, eventData);
@@ -296,7 +301,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                         handleSecurityImport(eventList, eventData);
                         break;
                     case "DGSErrorReport":
-                        handleDSGErrorReport(eventList, eventData);
+                        handleDGSErrorReport(eventList, eventData);
                         break;
                     case "Upgrade":
                         handleUpgrade(eventList, eventData);
@@ -370,7 +375,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                 eventData.get("State").getAsString(), eventData.get("LocaleTime").getAsString());
     }
 
-    private void handleDSGErrorReport(JsonObject eventList, JsonObject eventData) {
+    private void handleDGSErrorReport(JsonObject eventList, JsonObject eventData) {
         logger.debug("Event: DGSErrorReport, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
                 eventData.get("LocaleTime").getAsString());
     }
@@ -394,7 +399,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     private void handleNewFile(JsonObject eventList, JsonObject eventData) {
         logger.debug("Event: NewFile, Action {}, File {}, Folder {}, LocaleTime {}, Index {}",
                 eventList.get("Action").getAsString(), eventData.get("File").getAsString(),
-                eventData.get("Filter").getAsString(), eventData.get("LocaleTime").getAsString(),
+                eventData.get("Folder").getAsString(), eventData.get("LocaleTime").getAsString(),
                 eventList.get("Index").getAsString());
     }
 
@@ -434,8 +439,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                 eventData.get("LocaleTime").getAsString());
     }
 
-    private void handleHungPhone(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: HungupPhone, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+    private void handleHangupPhone(JsonObject eventList, JsonObject eventData) {
+        logger.debug("Event: HangupPhone, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
                 eventData.get("LocaleTime").getAsString());
     }
 

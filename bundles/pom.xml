@@ -109,6 +109,7 @@
     <module>org.openhab.binding.cm11a</module>
     <module>org.openhab.binding.comfoair</module>
     <module>org.openhab.binding.coolmasternet</module>
+    <module>org.openhab.binding.dahuadoor</module>
     <module>org.openhab.binding.daikin</module>
     <module>org.openhab.binding.dali</module>
     <module>org.openhab.binding.danfossairunit</module>
@@ -123,7 +124,6 @@
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.dolbycp</module>
     <module>org.openhab.binding.dominoswiss</module>
-    <module>org.openhab.binding.dahuadoor</module>
     <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.draytonwiser</module>
     <module>org.openhab.binding.dscalarm</module>
