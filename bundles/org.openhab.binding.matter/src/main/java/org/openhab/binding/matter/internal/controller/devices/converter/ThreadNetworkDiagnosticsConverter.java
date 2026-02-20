@@ -49,14 +49,19 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
     @Override
     public void onEvent(AttributeChangedMessage message) {
         switch (message.path.attributeName) {
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16:
+                updateThingAttributeProperty(message.path.attributeName, message.value);
+                break;
             case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE:
             case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE:
             case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS:
                 updateThingAttributeProperty(message.path.attributeName,
                         message.value != null ? gson.toJson(message.value) : null);
-                break;
-            default:
-                updateThingAttributeProperty(message.path.attributeName, message.value);
                 break;
         }
         super.onEvent(message);

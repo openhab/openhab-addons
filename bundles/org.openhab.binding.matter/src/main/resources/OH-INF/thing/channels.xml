@@ -379,15 +379,15 @@
 	</channel-type>
 
 	<channel-type id="wifinetworkdiagnostics-rssi">
-		<item-type>Number</item-type>
+		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal</label>
-		<description>Wi-Fi signal strength indicator in dBm.</description>
+		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>RSSI</tag>
 		</tags>
-		<state readOnly="true" pattern="%d dBm"></state>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
 	<channel-type id="doorlock-lockstate">

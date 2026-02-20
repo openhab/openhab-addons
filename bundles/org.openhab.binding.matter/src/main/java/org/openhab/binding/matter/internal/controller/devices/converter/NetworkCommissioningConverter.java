@@ -42,17 +42,6 @@ public class NetworkCommissioningConverter extends GenericConverter<NetworkCommi
     }
 
     @Override
-    public void pollCluster() {
-        handler.readCluster(NetworkCommissioningCluster.class, endpointNumber, initializingCluster.id)
-                .thenAccept(cluster -> {
-                    updateThingProperties(cluster);
-                }).exceptionally(e -> {
-                    logger.debug("Error polling network commissioning", e);
-                    return null;
-                });
-    }
-
-    @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         return Collections.emptyMap();
     }
@@ -60,14 +49,21 @@ public class NetworkCommissioningConverter extends GenericConverter<NetworkCommi
     @Override
     public void onEvent(AttributeChangedMessage message) {
         switch (message.path.attributeName) {
+            case NetworkCommissioningCluster.ATTRIBUTE_MAX_NETWORKS:
+            case NetworkCommissioningCluster.ATTRIBUTE_SCAN_MAX_TIME_SECONDS:
+            case NetworkCommissioningCluster.ATTRIBUTE_CONNECT_MAX_TIME_SECONDS:
+            case NetworkCommissioningCluster.ATTRIBUTE_INTERFACE_ENABLED:
+            case NetworkCommissioningCluster.ATTRIBUTE_LAST_NETWORKING_STATUS:
+            case NetworkCommissioningCluster.ATTRIBUTE_LAST_NETWORK_ID:
+            case NetworkCommissioningCluster.ATTRIBUTE_LAST_CONNECT_ERROR_VALUE:
+            case NetworkCommissioningCluster.ATTRIBUTE_THREAD_VERSION:
+                updateThingAttributeProperty(message.path.attributeName, message.value);
+                break;
             case NetworkCommissioningCluster.ATTRIBUTE_NETWORKS:
             case NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS:
             case NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES:
                 updateThingAttributeProperty(message.path.attributeName,
                         message.value != null ? gson.toJson(message.value) : null);
-                break;
-            default:
-                updateThingAttributeProperty(message.path.attributeName, message.value);
                 break;
         }
         super.onEvent(message);
