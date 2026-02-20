@@ -190,7 +190,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (profile.device.type == null) {
             profile.device = getDeviceInfo();
         }
-        boolean wasInitialized = profile.initialized;
 
         Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
         profile.settingsJson = gson.toJson(dc);
@@ -350,10 +349,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
-        profile.initialized = true;
-        if (!wasInitialized) {
-            getStatus(true); // make sure profile.status is initialized (e.g,. relay/meter status)
+        if (!profile.initialized && profile.alwaysOn) {
+            getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
+            asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
+        profile.initialized = true;
 
         try {
             if (profile.alwaysOn && dc.ble != null) {
@@ -806,7 +806,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
+    public ShellySettingsStatus getStatus() throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         ShellySettingsStatus status = profile.status;
         Shelly2DeviceStatusResult ds = apiRequest(SHELLYRPC_METHOD_GETSTATUS, null, Shelly2DeviceStatusResult.class);
@@ -869,9 +869,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
 
-        if (ping) {
-            asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
-        }
         return status;
     }
 
@@ -883,7 +880,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException {
         if (getProfile().status.wifiSta.ssid == null) {
             // Update status when not yet initialized
-            getStatus(false);
+            getStatus();
         }
         return relayStatus;
     }

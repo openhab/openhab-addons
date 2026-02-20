@@ -167,7 +167,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     @Override
-    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
+    public ShellySettingsStatus getStatus() throws ShellyApiException {
         String json = "";
         try {
             json = httpRequest(SHELLY_URL_STATUS);
