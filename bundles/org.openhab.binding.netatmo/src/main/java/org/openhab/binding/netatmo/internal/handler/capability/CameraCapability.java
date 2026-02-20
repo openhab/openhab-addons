@@ -128,8 +128,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
     private void updateSubGroup(WebhookEvent event, String group) {
         handler.updateState(group, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
         handler.updateState(group, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
-        ifUrlPresent(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
-        ifUrlPresent(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
+        updatePictureIfUrlPresent(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
+        updatePictureIfUrlPresent(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
         handler.updateState(group, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
         handler.updateState(group, CHANNEL_EVENT_MESSAGE, toStringType(event.getName()));
@@ -138,7 +138,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         handler.updateState(personChannelUID, personId);
     }
 
-    private void ifUrlPresent(@Nullable String url, String group, String pictureChannel, String urlChannel) {
+    private void updatePictureIfUrlPresent(@Nullable String url, String group, String pictureChannel, String urlChannel) {
         if (url == null || url.isBlank()) {
             return;
         }
