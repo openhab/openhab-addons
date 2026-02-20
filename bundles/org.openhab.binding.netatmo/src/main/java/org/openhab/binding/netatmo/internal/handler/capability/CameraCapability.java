@@ -138,7 +138,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
         handler.updateState(personChannelUID, personId);
     }
 
-    private void updatePictureIfUrlPresent(@Nullable String url, String group, String pictureChannel, String urlChannel) {
+    private void updatePictureIfUrlPresent(@Nullable String url, String group, String pictureChannel,
+            String urlChannel) {
         if (url == null || url.isBlank()) {
             return;
         }
