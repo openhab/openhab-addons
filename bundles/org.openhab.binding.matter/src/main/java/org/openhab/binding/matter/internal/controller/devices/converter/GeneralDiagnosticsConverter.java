@@ -53,9 +53,6 @@ public class GeneralDiagnosticsConverter extends GenericConverter<GeneralDiagnos
                 updateThingAttributeProperty(message.path.attributeName,
                         message.value != null ? gson.toJson(message.value) : null);
                 break;
-            default:
-                updateThingAttributeProperty(message.path.attributeName, message.value);
-                break;
         }
         super.onEvent(message);
     }
