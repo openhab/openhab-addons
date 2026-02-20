@@ -24,15 +24,12 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
 import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,31 +103,148 @@ public class DahuaDoorHttpQueries {
     }
 
     public void openDoor(int doorNo) {
-        final @Nullable HttpClient localHttpClient = httpClient;
         final @Nullable DahuaDoorConfiguration localConfig = config;
 
-        if (localHttpClient == null || localConfig == null) {
-            logger.warn("HTTP client or configuration not initialized");
+        if (localConfig == null) {
+            logger.warn("Configuration not initialized");
             return;
         }
 
         try {
-            URI uri = new URI("http://" + localConfig.hostname + "/cgi-bin/accessControl.cgi");
-            Request request = localHttpClient.newRequest(uri).timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            request.param("action", "openDoor");
-            request.param("UserID", "101");
-            request.param("Type", "Remote");
-            request.param("channel", Integer.toString(doorNo));
-            ContentResponse response = request.send();
-            if (response.getStatus() == 200) {
+            String path = "/cgi-bin/accessControl.cgi?action=openDoor&UserID=101&Type=Remote&channel=" + doorNo;
+            OpenDoorHttpResponse response = sendOpenDoorRequest(localConfig, path, null);
+
+            if (response.statusCode == 200) {
                 logger.debug("Open Door Success");
+            } else if (response.statusCode == 401) {
+                String challenge = response.wwwAuthenticate;
+                if (challenge != null) {
+                    String digestHeader = createDigestAuthorizationHeaderForOpenDoor(challenge, localConfig, path);
+                    if (digestHeader != null) {
+                        OpenDoorHttpResponse authResponse = sendOpenDoorRequest(localConfig, path, digestHeader);
+                        if (authResponse.statusCode == 200) {
+                            logger.debug("Open Door Success (with authentication)");
+                        } else {
+                            logger.debug("Open door request failed with HTTP status {} for door {} on {}",
+                                    authResponse.statusCode, doorNo, localConfig.hostname);
+                        }
+                    }
+                } else {
+                    logger.debug("Open door request failed with HTTP status {} for door {} on {}", response.statusCode,
+                            doorNo, localConfig.hostname);
+                }
             } else {
-                logger.debug("Open door request failed with HTTP status {} for door {} on {}", response.getStatus(),
+                logger.debug("Open door request failed with HTTP status {} for door {} on {}", response.statusCode,
                         doorNo, localConfig.hostname);
             }
         } catch (Exception e) {
             logger.warn("Could not open door {} on {}", doorNo, localConfig.hostname, e);
         }
+    }
+
+    private OpenDoorHttpResponse sendOpenDoorRequest(DahuaDoorConfiguration localConfig, String path,
+            @Nullable String authorizationHeader) throws Exception {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(localConfig.hostname, 80), REQUEST_TIMEOUT_SECONDS * 1000);
+            socket.setSoTimeout(REQUEST_TIMEOUT_SECONDS * 1000);
+
+            StringBuilder request = new StringBuilder();
+            request.append("GET ").append(path).append(" HTTP/1.1\r\n");
+            request.append("Host: ").append(localConfig.hostname).append("\r\n");
+            request.append("Connection: close\r\n");
+            if (authorizationHeader != null) {
+                request.append("Authorization: ").append(authorizationHeader).append("\r\n");
+            }
+            request.append("\r\n");
+
+            OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(request.toString().getBytes(StandardCharsets.ISO_8859_1));
+            outputStream.flush();
+
+            byte[] rawResponse = readHttpResponse(socket.getInputStream());
+            return parseOpenDoorResponse(rawResponse);
+        }
+    }
+
+    private OpenDoorHttpResponse parseOpenDoorResponse(byte[] rawResponse) {
+        String headerText = new String(rawResponse, StandardCharsets.ISO_8859_1);
+        String[] lines = headerText.split("\\r\\n");
+
+        int statusCode = 0;
+        if (lines.length > 0) {
+            String[] statusParts = lines[0].split(" ");
+            if (statusParts.length > 1) {
+                try {
+                    statusCode = Integer.parseInt(statusParts[1]);
+                } catch (NumberFormatException e) {
+                    statusCode = 0;
+                }
+            }
+        }
+
+        String wwwAuthenticate = null;
+        for (int i = 1; i < lines.length; i++) {
+            String line = lines[i];
+            if (line.regionMatches(true, 0, "WWW-Authenticate:", 0, "WWW-Authenticate:".length())) {
+                wwwAuthenticate = line.substring("WWW-Authenticate:".length()).trim();
+                break;
+            }
+        }
+
+        return new OpenDoorHttpResponse(statusCode, wwwAuthenticate);
+    }
+
+    private @Nullable String createDigestAuthorizationHeaderForOpenDoor(String challenge,
+            DahuaDoorConfiguration localConfig, String path) throws Exception {
+        if (!challenge.toLowerCase().startsWith("digest")) {
+            return null;
+        }
+
+        Map<String, String> digestParams = parseDigestChallenge(challenge.substring(6).trim());
+        String realm = digestParams.get("realm");
+        String nonce = digestParams.get("nonce");
+        if (realm == null || nonce == null) {
+            return null;
+        }
+
+        String qop = digestParams.get("qop");
+        if (qop != null && qop.contains(",")) {
+            qop = qop.split(",")[0].trim();
+        }
+
+        String ha1 = md5Hex(localConfig.username + ":" + realm + ":" + localConfig.password);
+        String ha2 = md5Hex("GET:" + path);
+
+        StringBuilder auth = new StringBuilder("Digest ");
+        auth.append("username=\"").append(escapeDigestValue(localConfig.username)).append("\"");
+        auth.append(", realm=\"").append(escapeDigestValue(realm)).append("\"");
+        auth.append(", nonce=\"").append(escapeDigestValue(nonce)).append("\"");
+        auth.append(", uri=\"").append(path).append("\"");
+
+        String response;
+        if (qop != null && !qop.isBlank()) {
+            String nonceCount = "00000001";
+            String cnonce = randomHex(16);
+            response = md5Hex(ha1 + ":" + nonce + ":" + nonceCount + ":" + cnonce + ":" + qop + ":" + ha2);
+            auth.append(", qop=").append(qop);
+            auth.append(", nc=").append(nonceCount);
+            auth.append(", cnonce=\"").append(cnonce).append("\"");
+        } else {
+            response = md5Hex(ha1 + ":" + nonce + ":" + ha2);
+        }
+
+        String opaque = digestParams.get("opaque");
+        if (opaque != null) {
+            auth.append(", opaque=\"").append(escapeDigestValue(opaque)).append("\"");
+        }
+
+        String algorithm = digestParams.get("algorithm");
+        if (algorithm != null) {
+            auth.append(", algorithm=").append(algorithm);
+        }
+
+        auth.append(", response=\"").append(response).append("\"");
+        return auth.toString();
     }
 
     private SnapshotHttpResponse sendSnapshotRequest(DahuaDoorConfiguration localConfig,
@@ -417,5 +531,8 @@ public class DahuaDoorHttpQueries {
     }
 
     private record SnapshotHttpResponse(int statusCode, Map<String, String> headers, byte[] body) {
+    }
+
+    private record OpenDoorHttpResponse(int statusCode, @Nullable String wwwAuthenticate) {
     }
 }

@@ -282,8 +282,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                     case "RequestCallState":
                         handleRequestCallState(eventList, eventData);
                         break;
-                    case "PassiveHungup":
-                        handlePassiveHungup(eventList, eventData);
+                    case "PassiveHangup":
+                        handlePassiveHangup(eventList, eventData);
                         break;
                     case "ProfileAlarmTransmit":
                         handleProfileAlarmTransit(eventList, eventData);
@@ -397,10 +397,15 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     private void handleNewFile(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: NewFile, Action {}, File {}, Folder {}, LocaleTime {}, Index {}",
-                eventList.get("Action").getAsString(), eventData.get("File").getAsString(),
-                eventData.get("Folder").getAsString(), eventData.get("LocaleTime").getAsString(),
-                eventList.get("Index").getAsString());
+        String action = eventList.has("Action") ? eventList.get("Action").getAsString() : "unknown";
+        String file = eventData.has("File") ? eventData.get("File").getAsString() : "unknown";
+        String folder = eventData.has("Filter") ? eventData.get("Filter").getAsString() : "unknown";
+        // not a typo: Filter works for folder, seems to be a naming error in the Dahua firmware
+        String localeTime = eventData.has("LocaleTime") ? eventData.get("LocaleTime").getAsString() : "unknown";
+        String index = eventList.has("Index") ? eventList.get("Index").getAsString() : "unknown";
+
+        logger.debug("Event: NewFile, Action {}, File {}, Folder {}, LocaleTime {}, Index {}", action, file, folder,
+                localeTime, index);
     }
 
     private void handleProfileAlarmTransit(JsonObject eventList, JsonObject eventData) {
@@ -409,8 +414,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
                 eventData.get("DevSrcType").getAsString(), eventData.get("SenseMethod").getAsString());
     }
 
-    private void handlePassiveHungup(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: PassiveHungup, Action {}, LocaleTime {}, Index {}", eventList.get("Action").getAsString(),
+    private void handlePassiveHangup(JsonObject eventList, JsonObject eventData) {
+        logger.debug("Event: PassiveHangup, Action {}, LocaleTime {}, Index {}", eventList.get("Action").getAsString(),
                 eventData.get("LocaleTime").getAsString(), eventData.get("Index").getAsString());
     }
 
@@ -435,7 +440,7 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     private void handleHangup(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: Hungup, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
+        logger.debug("Event: Hangup, Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
                 eventData.get("LocaleTime").getAsString());
     }
 
