@@ -26,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Luca Calcaterra - Initial contribution
  * @author Wietse van Buitenen - Added heatpump device
+ * @author Alessio Galliazzo - Added heatpump functionalities for flow temperature and temperature control
  */
 @NonNullByDefault
 public class MelCloudBindingConstants {
@@ -48,8 +49,16 @@ public class MelCloudBindingConstants {
     public static final String CHANNEL_VANE_VERTICAL = "vaneVertical";
     public static final String CHANNEL_SET_TEMPERATURE_ZONE1 = "setTemperatureZone1";
     public static final String CHANNEL_ROOM_TEMPERATURE_ZONE1 = "roomTemperatureZone1";
+    public static final String CHANNEL_SET_TEMPERATURE_ZONE2 = "setTemperatureZone2";
+    public static final String CHANNEL_ROOM_TEMPERATURE_ZONE2 = "roomTemperatureZone2";
     public static final String CHANNEL_FORCED_HOTWATERMODE = "forcedHotWaterMode";
     public static final String CHANNEL_TANKWATERTEMPERATURE = "tankWaterTemperature";
+    public static final String CHANNEL_TANK_TARGET_WATER_TEMPERATURE = "tankTargetWaterTemperature";
+
+    public static final String CHANNEL_HEAT_TEMPERATURE_MODE_ZONE1 = "heatTemperatureModeZone1";
+    public static final String CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE1 = "heatFlowTemperatureZone1";
+    public static final String CHANNEL_HEAT_TEMPERATURE_MODE_ZONE2 = "heatTemperatureModeZone2";
+    public static final String CHANNEL_HEAT_FLOW_TEMPERATURE_ZONE2 = "heatFlowTemperatureZone2";
 
     // Read Only Channels
     public static final String CHANNEL_ROOM_TEMPERATURE = "roomTemperature";
