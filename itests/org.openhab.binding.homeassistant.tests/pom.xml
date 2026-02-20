@@ -104,6 +104,12 @@
       <artifactId>org.graalvm.truffle.truffle-runtime</artifactId>
       <version>${graalvm.version}</version>
     </dependency>
+    <!-- added due to inconsistency of resolved versions -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>${commons.codec.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
