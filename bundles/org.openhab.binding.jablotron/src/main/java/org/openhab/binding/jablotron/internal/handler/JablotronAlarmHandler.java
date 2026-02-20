@@ -17,6 +17,7 @@ import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -206,7 +207,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected void updateLastEvent(JablotronHistoryDataEvent event) {
-        updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(Instant.parse(event.getDate())));
+        updateLastEventTime(event);
         updateState(CHANNEL_LAST_EVENT, new StringType(event.getEventText()));
         updateState(CHANNEL_LAST_EVENT_CLASS, new StringType(event.getIconType()));
         updateState(CHANNEL_LAST_EVENT_INVOKER, new StringType(event.getInvokerName()));
@@ -222,7 +223,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         if (event != null) {
             switch (channel) {
                 case CHANNEL_LAST_EVENT_TIME:
-                    updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(Instant.parse(event.getDate())));
+                    updateLastEventTime(event);
                     break;
                 case CHANNEL_LAST_EVENT:
                     updateState(CHANNEL_LAST_EVENT, new StringType(event.getEventText()));
@@ -237,6 +238,19 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
                     updateState(CHANNEL_LAST_EVENT_SECTION, new StringType(event.getSectionName()));
                     break;
             }
+        }
+    }
+
+    private void updateLastEventTime(JablotronHistoryDataEvent event) {
+        String date = event.getDate();
+        if (date.isBlank()) {
+            logger.debug("Received empty event date for alarm {}", getThing().getUID());
+            return;
+        }
+        try {
+            updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(Instant.parse(date)));
+        } catch (DateTimeParseException e) {
+            logger.warn("Unable to parse event date '{}' for alarm {}", date, getThing().getUID());
         }
     }
 
