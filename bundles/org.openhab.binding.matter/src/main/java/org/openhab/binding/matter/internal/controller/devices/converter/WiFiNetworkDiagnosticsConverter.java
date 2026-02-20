@@ -23,8 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.WiFiNetworkDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -48,12 +47,15 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
 
     @Override
     public void pollCluster() {
+        logger.debug("Is channel linked for endpoint {}:{} {}", handler.getNodeId(), endpointNumber,
+                isChannelLinked(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI));
         if (isChannelLinked(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI)) {
+            logger.debug("Polling wifi network diagnostics RSSI for endpoint {}:{}", handler.getNodeId(),
+                    endpointNumber);
             // we only need to read a single attribute, not the whole cluster
             handler.readAttribute(endpointNumber, initializingCluster.name,
                     WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI).thenAccept(rssi -> {
-                        updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI,
-                                new QuantityType<>(Integer.parseInt(rssi), Units.DECIBEL_MILLIWATTS));
+                        updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI, new DecimalType(Integer.parseInt(rssi)));
                         updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, rssi);
                     }).exceptionally(e -> {
                         logger.debug("Error polling wifi network diagnostics", e);
@@ -65,7 +67,7 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         Channel channel = ChannelBuilder
-                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI), "Number:Power")
+                .create(new ChannelUID(channelGroupUID, CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI), "Number")
                 .withType(CHANNEL_WIFINETWORKDIAGNOSTICS_RSSI).build();
         return Collections.singletonMap(channel, null);
     }
@@ -75,8 +77,7 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
         switch (message.path.attributeName) {
             case WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI:
                 if (message.value instanceof Number number) {
-                    updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI,
-                            new QuantityType<>(number, Units.DECIBEL_MILLIWATTS));
+                    updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI, new DecimalType(number.intValue()));
                     updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, number);
                 }
                 break;
@@ -87,9 +88,7 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
     @Override
     public void initState() {
         updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI,
-                initializingCluster.rssi != null
-                        ? new QuantityType<>(initializingCluster.rssi, Units.DECIBEL_MILLIWATTS)
-                        : UnDefType.NULL);
+                initializingCluster.rssi != null ? new DecimalType(initializingCluster.rssi) : UnDefType.NULL);
         updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, initializingCluster.rssi);
     }
 }

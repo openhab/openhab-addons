@@ -200,13 +200,6 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         }
     }
 
-    // Making this public
-    public boolean isLinked(int endpointNumber, String channelId) {
-        ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), String.valueOf(endpointNumber));
-        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
-        return isLinked(channelUID);
-    }
-
     @Override
     public void onEvent(AttributeChangedMessage message) {
         logger.debug("AttributeChangedMessage for endpoint {}", message.path.endpointId);
@@ -248,6 +241,19 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), endpointNumber.toString());
         ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
         super.triggerChannel(channelUID, event);
+    }
+
+    /**
+     * Check if a channel is linked.
+     *
+     * @param endpointNumber The endpoint number.
+     * @param channelId The channel ID.
+     * @return True if the channel is linked, false otherwise.
+     */
+    public boolean isLinked(int endpointNumber, String channelId) {
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), String.valueOf(endpointNumber));
+        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
+        return isLinked(channelUID);
     }
 
     /**
