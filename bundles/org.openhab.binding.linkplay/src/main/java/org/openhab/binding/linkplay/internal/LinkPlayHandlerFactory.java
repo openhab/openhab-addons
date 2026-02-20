@@ -34,6 +34,7 @@ import org.jupnp.registry.RegistryListener;
 import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpDeviceListener;
 import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpRegistry;
 import org.openhab.binding.linkplay.internal.group.LinkPlayGroupService;
+import org.openhab.binding.linkplay.internal.handler.LinkPlayHandler;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.common.ThreadPoolManager;

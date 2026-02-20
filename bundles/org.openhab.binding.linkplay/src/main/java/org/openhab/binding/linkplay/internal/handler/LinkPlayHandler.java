@@ -10,25 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linkplay.internal;
+package org.openhab.binding.linkplay.internal.handler;
 
 import static org.openhab.binding.linkplay.internal.LinkPlayBindingConstants.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -40,10 +35,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.jupnp.UpnpService;
-import org.jupnp.controlpoint.ControlPoint;
-import org.jupnp.model.message.header.UDNHeader;
 import org.jupnp.model.meta.RemoteDevice;
-import org.jupnp.model.types.UDN;
+import org.openhab.binding.linkplay.internal.LinkPlayBindingConstants;
+import org.openhab.binding.linkplay.internal.LinkPlayCommandDescriptionProvider;
+import org.openhab.binding.linkplay.internal.LinkPlayConfiguration;
 import org.openhab.binding.linkplay.internal.client.http.LinkPlayConnectionUtils;
 import org.openhab.binding.linkplay.internal.client.http.LinkPlayHTTPClient;
 import org.openhab.binding.linkplay.internal.client.http.dto.AudioOutputHardwareMode;
@@ -54,16 +49,15 @@ import org.openhab.binding.linkplay.internal.client.http.dto.PresetList;
 import org.openhab.binding.linkplay.internal.client.http.dto.Slave;
 import org.openhab.binding.linkplay.internal.client.http.dto.SourceInputMode;
 import org.openhab.binding.linkplay.internal.client.http.dto.TrackMetadata;
+import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpClient;
+import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpClientHandler;
 import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpCommands;
 import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpDeviceListener;
 import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpRegistry;
-import org.openhab.binding.linkplay.internal.client.upnp.PlayList;
-import org.openhab.binding.linkplay.internal.client.upnp.PlayListInfo;
 import org.openhab.binding.linkplay.internal.client.upnp.PlayMode;
 import org.openhab.binding.linkplay.internal.client.upnp.PlayQueue;
 import org.openhab.binding.linkplay.internal.client.upnp.TransportState;
 import org.openhab.binding.linkplay.internal.client.upnp.UpnpEntry;
-import org.openhab.binding.linkplay.internal.client.upnp.UpnpValueListener;
 import org.openhab.binding.linkplay.internal.client.upnp.UpnpXMLParser;
 import org.openhab.binding.linkplay.internal.group.LinkPlayGroupParticipant;
 import org.openhab.binding.linkplay.internal.group.LinkPlayGroupService;
@@ -100,47 +94,30 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDeviceListener, UpnpIOParticipant,
-        LinkPlayGroupParticipant, LinkPlayUpnpCommands.UpnpActionExecutor {
+public class LinkPlayHandler extends BaseThingHandler
+        implements LinkPlayUpnpDeviceListener, UpnpIOParticipant, LinkPlayGroupParticipant, LinkPlayUpnpClientHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LinkPlayHandler.class);
 
-    private static final String SERVICE_AV_TRANSPORT = "AVTransport";
-    private static final String SERVICE_RENDERING_CONTROL = "RenderingControl";
-
-    private static final Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(SERVICE_AV_TRANSPORT,
-            SERVICE_RENDERING_CONTROL);
-
-    private static final int SUBSCRIPTION_DURATION = 1800; // this is the maxAgeSeconds for the device
     private static final int RECONNECT_DELAY = 30;
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> upnpServiceCheck;
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> positionJob;
-    private @Nullable ScheduledFuture<?> notificationTimeoutJob;
-    private final Object upnpLock = new Object();
-    // Are we currently playing a notification?
-    private final AtomicBoolean inNotification = new AtomicBoolean(false);
     // Are we currently initializing the device?
     private final AtomicBoolean isInitializing = new AtomicBoolean(false);
-    // Do we still need to initialize the device from UPnP
-    private final AtomicBoolean needsUpnpInitialization = new AtomicBoolean(true);
     // Have we been disposed, prevent further calls to the device when shutting down
     private boolean disposed;
     private LinkPlayHTTPClient apiClient;
-    private final LinkPlayUpnpCommands commands = new LinkPlayUpnpCommands(this);
+    private final LinkPlayUpnpClient upnpClient;
+    private final LinkPlayNotificationHandler notificationHandler;
     private final LinkPlayUpnpRegistry linkPlayUpnpRegistry;
     private final UpnpIOService upnpIOService;
     private final UpnpService upnpService;
     private final LinkPlayGroupService linkPlayGroupService;
-    // UPnP pending futures, used to track the status of UPnP requests
-    private final Set<CompletableFuture<?>> pendingFutures = ConcurrentHashMap.newKeySet();
-    private final CopyOnWriteArrayList<UpnpValueListener> upnpValueListeners = new CopyOnWriteArrayList<>();
     private final LinkPlayCommandDescriptionProvider linkPlayCommandDescriptionProvider;
-    private final Map<String, Boolean> subscriptionState = Collections.synchronizedMap(new HashMap<>());
     private final Map<ChannelUID, State> stateCache = new HashMap<>();
     private Collection<LinkPlayGroupParticipant> allGroupParticipants = new ArrayList<>();
-    private @Nullable RemoteDevice remoteDevice;
     private String groupName = "";
     private String udn = "";
     private String host = "";
@@ -165,12 +142,13 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         this.linkPlayCommandDescriptionProvider = linkPlayCommandDescriptionProvider;
         this.httpClient = httpClient;
         apiClient = new LinkPlayHTTPClient(httpClient);
+        this.upnpClient = new LinkPlayUpnpClient(this, upnpIOService, upnpService, scheduler);
+        this.notificationHandler = new LinkPlayNotificationHandler(this, upnpClient, scheduler);
     }
 
     @Override
     public void initialize() {
         isInitializing.set(false);
-        needsUpnpInitialization.set(true);
         disposed = false;
         inGroup = false;
         isLeader = false;
@@ -179,7 +157,8 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         logger.trace("initialize: {}", udn);
         updateStatus(ThingStatus.UNKNOWN);
         linkPlayUpnpRegistry.addDeviceListener(udn, this);
-        upnpIOService.registerParticipant(this);
+        upnpClient.initialize(udn);
+        upnpIOService.registerParticipant(upnpClient);
 
         /**
          * kicks off a service check to discover the device (and continues to run every 15 seconds until the device
@@ -198,15 +177,11 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         cancelReconnectJob();
         cancelUpnpServiceCheckJob();
         cancelPositionJob();
-        cancelNotificationTimeoutJob();
-        removeSubscriptions();
-        upnpIOService.removeStatusListener(this);
-        upnpIOService.unregisterParticipant(this);
+        notificationHandler.dispose();
+        upnpClient.dispose();
+        upnpIOService.removeStatusListener(upnpClient);
+        upnpIOService.unregisterParticipant(upnpClient);
         linkPlayUpnpRegistry.removeDeviceListener(udn);
-        for (CompletableFuture<?> f : pendingFutures) {
-            f.completeExceptionally(new IllegalStateException("Handler disposed"));
-        }
-        pendingFutures.clear();
     }
 
     @Override
@@ -356,7 +331,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                     break;
                 case LinkPlayBindingConstants.CHANNEL_SOURCE_INPUT:
                     if (command instanceof StringType stringType) {
-                        Optional<SourceInputMode> modeOpt = Arrays.stream(SourceInputMode.values())
+                        Optional<SourceInputMode> modeOpt = java.util.Arrays.stream(SourceInputMode.values())
                                 .filter(m -> m.toString().equalsIgnoreCase(stringType.toString())).findFirst();
                         if (modeOpt.isPresent()) {
                             apiClient.setPlayerCmdSwitchMode(modeOpt.get()).get();
@@ -425,15 +400,15 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         super.updateState(channelUID, state);
     }
 
-    // UPnP IO Participant methods
+    // UPnP IO Participant delegation
 
     @Override
     public synchronized void updateDeviceConfig(RemoteDevice device) {
         if (disposed) {
             return;
         }
-        remoteDevice = device;
-        if (ThingStatus.ONLINE != getThing().getStatus() || needsUpnpInitialization.get()) {
+        upnpClient.setRemoteDevice(device);
+        if (ThingStatus.ONLINE != getThing().getStatus() || upnpClient.needsUpnpInitialization()) {
             scheduler.schedule(() -> initFromUpnp(device), 0, TimeUnit.MILLISECONDS);
         }
         int maxAgeSeconds = device.getIdentity().getMaxAgeSeconds();
@@ -454,69 +429,17 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.warn("{}: onValueReceived: device is not online!!!!", udn);
-            return;
-        }
-        if (logger.isTraceEnabled()) {
-            logger.debug("{}: onValueReceived: {} {} {}", udn, service, variable, value);
-
-        } else {
-            // ignore logging position related variables
-            if (logger.isDebugEnabled() && !("AbsTime".equals(variable) || "RelCount".equals(variable)
-                    || "RelTime".equals(variable) || "AbsCount".equals(variable) || "Track".equals(variable)
-                    || "TrackDuration".equals(variable))) {
-                logger.debug("{}: onValueReceived: {} {} {}", udn, service, variable, value);
-            }
-        }
-        if (value == null || service == null) {
-            return;
-        }
-
-        switch (service) {
-            case SERVICE_AV_TRANSPORT:
-                Map<String, String> avt = UpnpXMLParser.getAVTransportFromXML(value);
-                handleAvTransportEvent(avt);
-                break;
-            case SERVICE_RENDERING_CONTROL:
-                Map<String, @Nullable String> rc = UpnpXMLParser.getRenderingControlFromXML(value);
-                handleRenderingControlEvent(rc);
-                break;
-            default:
-                logger.debug("{}: onValueReceived unknown service: {} {} {}", udn, service, variable, value);
-                break;
-        }
-
-        upnpValueListeners.forEach(listener -> {
-            try {
-                listener.onUpnpValueReceived(variable, value, service);
-                // catch generic exceptions so we don't break the entire listener chain
-            } catch (Exception e) {
-                logger.debug("{}: Error in UPnP value listener", udn, e);
-            }
-        });
+        upnpClient.onValueReceived(variable, value, service);
     }
 
     @Override
     public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        logger.debug("{}: onServiceSubscribed: {} {}", udn, service, succeeded);
-        if (service != null) {
-            subscriptionState.put(service, succeeded);
-            checkUpnpOnlineStatus();
-        }
+        upnpClient.onServiceSubscribed(service, succeeded);
     }
 
     @Override
     public void onStatusChanged(boolean status) {
-        logger.debug("{}: onStatusChanged: {}", udn, status);
-        if (status) {
-            upnpServiceCheck();
-        } else {
-            // When a device is a member of a group and not the leader it shuts off UPnP communication.
-            if (!inGroup || isLeader) {
-                setOffline("UPnP connection lost");
-            }
-        }
+        upnpClient.onStatusChanged(status);
     }
 
     @Override
@@ -623,7 +546,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
      * If the device is currently in a playlist, the playlist will be paused while the notification is playing, and then
      * resumed after the notification playback is complete.
      * If the device is not currently in a playlist, the notification will be played as a single track.
-     * 
+     *
      * @param url The URL of the notification to play
      * @return A future that completes when the notification playback is complete
      */
@@ -632,217 +555,276 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         if (inGroup && !isLeader) {
             return linkPlayGroupService.playNotification(this, url);
         }
+        return notificationHandler.playNotification(url);
+    }
 
-        if (inNotification.compareAndExchange(false, true)) {
-            logger.debug("{}: Notification already in progress", udn);
-            return CompletableFuture.failedFuture(new IllegalStateException("Notification already in progress"));
+    // Public methods for helper classes to access
+
+    public String getUdn() {
+        return udn;
+    }
+
+    // LinkPlayUpnpClientHandler interface implementation
+
+    @Override
+    public boolean shouldProcessUpnpEvents() {
+        return getThing().getStatus() == ThingStatus.ONLINE;
+    }
+
+    @Override
+    public void onUpnpSubscriptionStateChanged(boolean allSubscriptionsSuccessful) {
+        // group members turn UPnP off when they are not the leader, so ignore UPnP checks
+        if (inGroup && !isLeader) {
+            return;
         }
+        if (!allSubscriptionsSuccessful) {
+            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NOT_YET_READY, "Waiting for UPnP subscriptions");
+            return;
+        }
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
+    }
 
-        final CompletableFuture<@Nullable Void> returnFuture = new CompletableFuture<@Nullable Void>();
-        pendingFutures.add(returnFuture);
-        logger.debug("{}: Notification: currentStatus: {}", udn, currentTransportState);
-        // Track if the notification playback has started
-        AtomicBoolean started = new AtomicBoolean(false);
-        // Cleanup when the notification playback is complete
-        returnFuture.whenComplete((result, throwable) -> {
-            logger.debug("{} Notification Playback Complete", udn);
-            cancelNotificationTimeoutJob();
-            inNotification.set(false);
-            pendingFutures.remove(returnFuture);
-        });
-        cancelNotificationTimeoutJob();
-        // Add timeout to prevent hanging forever
-        notificationTimeoutJob = scheduler.schedule(() -> {
-            if (!returnFuture.isDone()) {
-                returnFuture.completeExceptionally(
-                        new TimeoutException("Notification playback did not start within 30 seconds"));
+    @Override
+    public void onUpnpServiceAvailable() {
+        upnpServiceCheck();
+    }
+
+    @Override
+    public void onUpnpServiceStatusChanged(boolean available) {
+        if (available) {
+            upnpServiceCheck();
+        } else {
+            // When a device is a member of a group and not the leader it shuts off UPnP communication.
+            if (!inGroup || isLeader) {
+                setOffline("UPnP connection lost");
             }
-        }, 30, TimeUnit.SECONDS);
+        }
+    }
 
-        try {
-            PlayQueue playQueue = getPlayListQueue();
-            if (playQueue != null && !playQueue.getCurrentPlayListName().isBlank()) {
-                // if we are in a playlist, we will backup the current one, switch to the notification playlist, and
-                // then switch back to the original playlist
-                String queueName = playQueue.getCurrentPlayListName();
-                Map<String, String> q = commands.browseQueue(queueName).get();
-                final String savedQueueContext = q.get("QueueContext");
-                if (savedQueueContext == null || savedQueueContext.isEmpty()) {
-                    returnFuture.completeExceptionally(new IllegalStateException("QueueContext is null or empty"));
-                    return returnFuture;
-                }
-                commands.backUpQueue(savedQueueContext).get();
-                final String notifyListName = "Notification";
-                final String notifyPlaylistXml = UpnpXMLParser.createSimplePlayListXml(url, notifyListName);
-                // Delete queue, verify deletion, create new queue, verify creation
-                commands.deleteQueue(notifyListName).thenCompose(v -> verifyQueueDeleted(notifyListName))
-                        .thenCompose(v -> commands.createQueue(notifyPlaylistXml))
-                        .thenCompose(v -> verifyQueueCreated(notifyListName)).thenRun(() -> getPlayListQueue()).get();
-                // Listen for UPnP AVTransport events to determine when the notification playback has started or stopped
-                final UpnpValueListener listener = (variable, value, service) -> {
-                    if (SERVICE_AV_TRANSPORT.equals(service) && value != null) {
-                        Map<String, String> avt = UpnpXMLParser.getAVTransportFromXML(value);
-                        TransportState transportState = TransportState.fromString(avt.get("TransportState"));
-                        if (transportState != null) {
-                            switch (transportState) {
-                                case PLAYING:
-                                    logger.debug("{}: Notification Playback started", udn);
-                                    started.set(true);
-                                    cancelNotificationTimeoutJob();
-                                    break;
-                                case STOPPED:
-                                    logger.debug("{}: Notification Playback stopped hasStarted: {}", udn,
-                                            started.get());
-                                    if (started.get()) {
-                                        try {
-                                            // Calculate the last play index before async operations
-                                            int lastPlayIndex = 1;
-                                            if (UpnpXMLParser.getPlayListFromBrowseQueueResponse(
-                                                    savedQueueContext) instanceof PlayList savedPlayList
-                                                    && savedPlayList
-                                                            .getListInfo() instanceof PlayListInfo playListInfo) {
-                                                lastPlayIndex = playListInfo.getLastPlayIndex();
-                                            }
-                                            final int playIndex = lastPlayIndex;
+    @Override
+    public void onAvTransportEvent(Map<String, String> avt) {
+        TransportState transportState = TransportState.fromString(avt.get("TransportState"));
+        if (transportState != null) {
+            // ignore TRANSITIONING state for PlayerStatus update
+            if (transportState != currentTransportState && transportState != TransportState.TRANSITIONING) {
+                PlayPauseType playPauseType = transportState == TransportState.PLAYING ? PlayPauseType.PLAY
+                        : PlayPauseType.PAUSE;
 
-                                            // Replace queue, verify replacement, then resume playback
-                                            commands.replaceQueue(savedQueueContext)
-                                                    .thenCompose(v -> verifyQueueReplaced(queueName))
-                                                    .thenCompose(v -> commands.playQueueWithIndex(queueName,
-                                                            String.valueOf(playIndex)))
-                                                    .thenCompose(v -> commands.deleteQueue(notifyListName)).get();
-                                        } catch (ExecutionException | InterruptedException e) {
-                                            logger.error("{}: Error while removing notification track: {}", udn,
-                                                    e.getMessage(), e);
-                                        }
-                                        returnFuture.complete(null);
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
+                currentTransportState = transportState;
+                PlaybackStatus playbackStatus = switch (transportState) {
+                    case PLAYING -> PlaybackStatus.PLAYING;
+                    case PAUSED_PLAYBACK -> PlaybackStatus.PAUSED;
+                    case STOPPED -> PlaybackStatus.STOPPED;
+                    case TRANSITIONING -> PlaybackStatus.PLAYING;
+                    default -> PlaybackStatus.STOPPED;
                 };
-                returnFuture.whenComplete((result, throwable) -> {
-                    unregisterUpnpValueListener(listener);
-                });
-                registerUpnpValueListener(listener);
-                commands.playQueueWithIndex(notifyListName, "1").get();
+                updateState(GROUP_PLAYBACK, CHANNEL_PLAYBACK_STATE, new StringType(playbackStatus.name()));
+                updateState(GROUP_PLAYBACK, CHANNEL_PLAYER_CONTROL, playPauseType);
+            }
+            if (transportState == TransportState.PLAYING) {
+                schedulePositionJob();
+                refreshPlayListQueue();
             } else {
-                // if we are not in a playlist, we will just play the notification
-                String didl = UpnpXMLParser.createNotificationMetadataForUri(url, "Notification");
-                commands.setAvTransportUri(url, didl).get();
-                final UpnpValueListener listener = (variable, value, service) -> {
-                    if (SERVICE_AV_TRANSPORT.equals(service) && value != null) {
-                        Map<String, String> avt = UpnpXMLParser.getAVTransportFromXML(value);
-                        TransportState transportState = TransportState.fromString(avt.get("TransportState"));
-                        if (transportState != null) {
-                            switch (transportState) {
-                                case PLAYING:
-                                    logger.debug("{}: Notification Playback started", udn);
-                                    started.set(true);
-                                    break;
-                                case STOPPED:
-                                    logger.debug("{}: Notification Playback stopped hasStarted: {}", udn,
-                                            started.get());
-                                    if (started.get()) {
-                                        returnFuture.complete(null);
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                };
-                returnFuture.whenComplete((result, throwable) -> {
-                    unregisterUpnpValueListener(listener);
-                });
-                registerUpnpValueListener(listener);
-                commands.play().get();
+                cancelPositionJob();
             }
-        } catch (ExecutionException | InterruptedException e) {
-            logger.error("{}: Error while playing notification: {}", udn, e.getMessage(), e);
-            returnFuture.completeExceptionally(e);
         }
-        return returnFuture;
-    }
 
-    // UPnP commands
-    @Override
-    public CompletableFuture<Map<String, String>> executeAction(String serviceId, String actionId,
-            @Nullable Map<String, String> inputs) {
-        return executeAction(null, serviceId, actionId, inputs);
-    }
+        // if we're in a notification, we don't want to update any other info
+        if (notificationHandler.isInNotification()) {
+            return;
+        }
 
-    @Override
-    public CompletableFuture<Map<String, String>> executeAction(@Nullable String namespace, String serviceId,
-            String actionId, @Nullable Map<String, String> inputs) {
-        if (disposed) {
-            return CompletableFuture.failedFuture(new IllegalStateException("Handler is disposed"));
+        PlayMode playMode = PlayMode.fromString(avt.get("CurrentPlayMode"));
+        if (playMode != null) {
+            Integer loopCode = switch (playMode) {
+                case NORMAL -> 4; // Off
+                case REPEAT_ONE, REPEATONE -> 1; // Repeat One
+                case REPEAT_ALL, REPEATALL, REPEAT -> 0; // Repeat All
+                case SHUFFLE, SHUFFLE_NOREPEAT, RANDOM, SHUFFLE_ALL -> 3; // Shuffle only
+            };
+            updateState(GROUP_PLAYBACK, CHANNEL_REPEAT_SHUFFLE_MODE, new DecimalType(loopCode));
         }
-        if (!"GetPositionInfo".equals(actionId)) {
-            logger.debug("{}: Executing action {}:{} with inputs {}", udn, serviceId, actionId, inputs);
-        }
-        CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
-        pendingFutures.add(future);
-        scheduler.execute(() -> {
-            Map<String, String> result = upnpIOService.invokeAction(this, namespace, serviceId, actionId, inputs);
-            if (logger.isTraceEnabled() && !"GetPositionInfo".equals(actionId)) {
-                logger.trace("{}: Action result: {}", udn, result);
+
+        String relPos = avt.get("RelativeTimePosition");
+        if (isValidUpnpResponse(relPos)) {
+            int seconds = LinkPlayUpnpCommands.hhMmSsToSeconds(Objects.requireNonNull(relPos));
+            if (seconds >= 0) {
+                updateState(GROUP_PLAYBACK, CHANNEL_TRACK_POSITION, new DecimalType(seconds));
+                currentPosition = seconds;
             }
-            future.complete(result != null ? result : Collections.emptyMap());
-        });
-        future.whenComplete((r, t) -> {
-            pendingFutures.remove(future);
-        });
-        return future;
-    }
-
-    @Override
-    public CompletableFuture<Void> executeVoidAction(String serviceId, String actionId,
-            @Nullable Map<String, String> inputs) {
-        return executeVoidAction(null, serviceId, actionId, inputs);
-    }
-
-    @Override
-    public CompletableFuture<Void> executeVoidAction(@Nullable String namespace, String serviceId, String actionId,
-            @Nullable Map<String, String> inputs) {
-        if (disposed) {
-            return CompletableFuture.failedFuture(new IllegalStateException("Handler is disposed"));
         }
-        logger.debug("{}: Executing ack action {}:{} with inputs {}", udn, serviceId, actionId, inputs);
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
-            upnpIOService.invokeAction(this, namespace, serviceId, actionId, inputs);
-        }, scheduler);
-        pendingFutures.add(future);
-        future.whenComplete((r, t) -> pendingFutures.remove(future));
-        return future;
+
+        String duration = avt.get("CurrentTrackDuration");
+        if (isValidUpnpResponse(duration)) {
+            int seconds = LinkPlayUpnpCommands.hhMmSsToSeconds(Objects.requireNonNull(duration));
+            if (seconds >= 0) {
+                updateState(GROUP_PLAYBACK, CHANNEL_TRACK_DURATION, new DecimalType(seconds));
+                currentDuration = seconds;
+            }
+        }
+
+        String mdXmlString = avt.get("CurrentTrackMetaData");
+        if (isValidUpnpResponse(mdXmlString)) {
+            String mdXml = Objects.requireNonNull(mdXmlString);
+            List<UpnpEntry> entries = UpnpXMLParser.getEntriesFromXML(mdXml);
+            if (!entries.isEmpty()) {
+                UpnpEntry entry = entries.get(0);
+                if (!entry.getTitle().isEmpty()) {
+                    updateState(GROUP_METADATA, CHANNEL_TRACK_TITLE, new StringType(entry.getTitle()));
+                }
+                String artist = !entry.getArtist().isEmpty() ? entry.getArtist() : entry.getCreator();
+                if (!artist.isEmpty()) {
+                    updateState(GROUP_METADATA, CHANNEL_TRACK_ARTIST, new StringType(artist));
+                }
+                if (!entry.getAlbum().isEmpty()) {
+                    updateState(GROUP_METADATA, CHANNEL_TRACK_ALBUM, new StringType(entry.getAlbum()));
+                }
+                if (!entry.getAlbumArtUri().isEmpty()) {
+                    updateAlbumArtChannels(entry.getAlbumArtUri());
+                }
+            }
+        }
+        @Nullable
+        String currentTrackUri = avt.get("AVTransportURI");
+        if (currentTrackUri == null) {
+            currentTrackUri = avt.get("CurrentTrackURI");
+        }
+        if (currentTrackUri != null) {
+            updateState(GROUP_METADATA, CHANNEL_TRACK_URI, new StringType(currentTrackUri));
+            refreshPlayListQueue();
+        }
+
+        if (avt.get("TrackSource") instanceof String trackSource) {
+            updateState(GROUP_METADATA, CHANNEL_TRACK_SOURCE, new StringType(trackSource));
+        }
     }
 
-    /**
-     * Register a listener for UPnP value events.
-     * The listener will be called whenever any UPnP value is received from the device.
-     *
-     * @param listener The listener to register
-     */
-    public void registerUpnpValueListener(UpnpValueListener listener) {
-        upnpValueListeners.add(listener);
+    @Override
+    public void onRenderingControlEvent(Map<String, @Nullable String> rc) {
+        for (Map.Entry<String, @Nullable String> e : rc.entrySet()) {
+            String key = e.getKey();
+            String value = e.getValue();
+            logger.debug("{}: handleRenderingControlEvent: {} {}", udn, key, value);
+            if (value == null) {
+                continue;
+            }
+            if (key.endsWith("Volume")) {
+                try {
+                    int volume = Integer.parseInt(value);
+                    currentVolume = volume;
+                    updateState(GROUP_PLAYBACK, CHANNEL_VOLUME, new PercentType(volume));
+                } catch (NumberFormatException ignored) {
+                    logger.debug("{}: Error parsing volume: {}", udn, value, ignored);
+                }
+            } else if (key.endsWith("Mute")) {
+                OnOffType muteState = "1".equals(value) ? OnOffType.ON : OnOffType.OFF;
+                updateState(GROUP_PLAYBACK, CHANNEL_MUTE, muteState);
+            } else if ("Slave".equals(key)) {
+                updateMultiroom();
+            }
+        }
     }
 
-    /**
-     * Unregister a previously registered UPnP value listener.
-     *
-     * @param listener The listener to unregister
-     */
-    public void unregisterUpnpValueListener(UpnpValueListener listener) {
-        upnpValueListeners.remove(listener);
+    // Helper methods for UPnP event processing
+
+    private boolean isValidUpnpResponse(@Nullable String value) {
+        return value != null && !value.isBlank() && !"NOT_IMPLEMENTED".equals(value);
+    }
+
+    // Public methods (not from interface)
+
+    public boolean isInGroup() {
+        return inGroup;
+    }
+
+    public boolean isGroupLeader() {
+        return isLeader;
+    }
+
+    public TransportState getCurrentTransportState() {
+        return currentTransportState;
+    }
+
+    public void setCurrentTransportState(TransportState state) {
+        this.currentTransportState = state;
+    }
+
+    public void setCurrentPosition(int position) {
+        this.currentPosition = position;
+    }
+
+    public void setCurrentDuration(int duration) {
+        this.currentDuration = duration;
+    }
+
+    public void setCurrentVolume(int volume) {
+        this.currentVolume = volume;
+    }
+
+    public PresetList getPresetInfo() {
+        return presetInfo;
+    }
+
+    public void updateAlbumArtChannels(@Nullable String albumArtUri) {
+        if (albumArtUri == null || !albumArtUri.trim().startsWith("http")) {
+            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART_URL,
+                    UnDefType.NULL);
+            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART,
+                    UnDefType.NULL);
+            currentAlbumArtUri = null;
+            return;
+        }
+        if (albumArtUri.equals(currentAlbumArtUri)) {
+            return;
+        }
+        currentAlbumArtUri = albumArtUri;
+        updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART_URL,
+                new StringType(albumArtUri));
+        try {
+            State albumArt = HttpUtil.downloadImage(albumArtUri.trim());
+            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART,
+                    albumArt != null ? albumArt : UnDefType.NULL);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Invalid album art URI: {}", albumArtUri, e);
+        }
+    }
+
+    public void updateMultiroom() {
+        linkPlayGroupService.refreshMemberSlaveList(this);
+    }
+
+    public void schedulePositionJob() {
+        cancelPositionJob();
+        if (!disposed) {
+            positionJob = scheduler.scheduleWithFixedDelay(this::updatePosition, 0, 1, TimeUnit.SECONDS);
+        } else {
+            logger.warn("{}: Not scheduling position job, device is not online!", udn);
+        }
+    }
+
+    public void cancelPositionJob() {
+        cancelJob(positionJob);
+        positionJob = null;
+    }
+
+    public void setOffline(String reason) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        RemoteDevice device = upnpClient.getRemoteDevice();
+        upnpClient.clearSubscriptionState();
+        if (device != null) {
+            cancelReconnectJob();
+            if (!disposed) {
+                reconnectJob = scheduler.schedule(() -> initFromUpnp(device), RECONNECT_DELAY, TimeUnit.SECONDS);
+            }
+        }
+        upnpClient.sendDeviceSearchRequest();
     }
 
     // Derives the host and port from the Upnp device and attempts to connect to the api
     private void initFromUpnp(RemoteDevice device) {
-        if (ThingStatus.ONLINE == getThing().getStatus() && !needsUpnpInitialization.get()) {
+        if (ThingStatus.ONLINE == getThing().getStatus() && !upnpClient.needsUpnpInitialization()) {
             return;
         }
         logger.debug("{} Device Namespace: {}", udn, device.getType().getNamespace());
@@ -888,10 +870,10 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                     OnOffType.OFF);
             refreshPlayer();
             upnpServiceCheck();
-            checkUpnpOnlineStatus();
+            onUpnpSubscriptionStateChanged(upnpClient.isFullySubscribed());
         } finally {
             isInitializing.set(false);
-            needsUpnpInitialization.set(false);
+            upnpClient.setNeedsUpnpInitialization(false);
         }
     }
 
@@ -928,57 +910,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             updateStatus(ThingStatus.ONLINE);
         } finally {
             isInitializing.set(false);
-            needsUpnpInitialization.set(true);
-        }
-    }
-
-    /**
-     * Checks if the device is online and updates the thing status accordingly
-     */
-    private void checkUpnpOnlineStatus() {
-        // group members turn UPnP off when they are not the leader, so ignore UPnP checks
-        if (inGroup && !isLeader) {
-            return;
-        }
-        for (String s : SERVICE_SUBSCRIPTIONS) {
-            if (!subscriptionState.getOrDefault(s, true)) {
-                updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.NOT_YET_READY,
-                        "Waiting forUPnP " + s + " subscription");
-                return;
-            }
-        }
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    /**
-     * Helper function to set the device offline and schedules a reconnect job
-     * 
-     * @param reason The reason for the device going offline
-     */
-    private synchronized void setOffline(String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        RemoteDevice device = remoteDevice;
-        subscriptionState.clear();
-        if (device != null) {
-            cancelReconnectJob();
-            if (!disposed) {
-                reconnectJob = scheduler.schedule(() -> initFromUpnp(device), RECONNECT_DELAY, TimeUnit.SECONDS);
-            }
-        }
-        sendDeviceSearchRequest();
-    }
-
-    /**
-     * Sends a UPnP device search request to the control point, keeps the device registration active with the UPnP
-     * service
-     */
-    private void sendDeviceSearchRequest() {
-        ControlPoint controlPoint = upnpService.getControlPoint();
-        if (controlPoint != null) {
-            controlPoint.search(new UDNHeader(new UDN(getUDN())));
-            logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
+            upnpClient.setNeedsUpnpInitialization(true);
         }
     }
 
@@ -994,150 +926,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             if (slave != null) {
                 initFromGroup(slave);
             } else {
-                sendDeviceSearchRequest();
-            }
-        }
-    }
-
-    /**
-     * Handles the AVTransport UPnP event from the device, this is the primary event that updates the player status and
-     * metadata
-     * 
-     * @param avt
-     */
-    private void handleAvTransportEvent(Map<String, String> avt) {
-        TransportState transportState = TransportState.fromString(avt.get("TransportState"));
-        if (transportState != null) {
-            // ignore TRANSITIONING state for PlayerStatus update
-            if (transportState != currentTransportState && transportState != TransportState.TRANSITIONING) {
-                PlayPauseType playPauseType = transportState == TransportState.PLAYING ? PlayPauseType.PLAY
-                        : PlayPauseType.PAUSE;
-
-                currentTransportState = transportState;
-                PlaybackStatus playbackStatus = switch (transportState) {
-                    case PLAYING -> PlaybackStatus.PLAYING;
-                    case PAUSED_PLAYBACK -> PlaybackStatus.PAUSED;
-                    case STOPPED -> PlaybackStatus.STOPPED;
-                    case TRANSITIONING -> PlaybackStatus.PLAYING;
-                    default -> PlaybackStatus.STOPPED;
-                };
-                updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_PLAYBACK_STATE,
-                        new StringType(playbackStatus.name()));
-                updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_PLAYER_CONTROL,
-                        playPauseType);
-            }
-            if (transportState == TransportState.PLAYING) {
-                schedulePositionJob();
-                refreshPlayListQueue();
-            } else {
-                cancelPositionJob();
-            }
-        }
-
-        // if we're in a notification, we don't want to update any other info
-        if (inNotification.get()) {
-            return;
-        }
-
-        PlayMode playMode = PlayMode.fromString(avt.get("CurrentPlayMode"));
-        if (playMode != null) {
-            Integer loopCode = switch (playMode) {
-                case NORMAL -> 4; // Off
-                case REPEAT_ONE, REPEATONE -> 1; // Repeat One
-                case REPEAT_ALL, REPEATALL, REPEAT -> 0; // Repeat All
-                case SHUFFLE, SHUFFLE_NOREPEAT, RANDOM, SHUFFLE_ALL -> 3; // Shuffle only
-            };
-            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_REPEAT_SHUFFLE_MODE,
-                    new DecimalType(loopCode));
-        }
-
-        String relPos = avt.get("RelativeTimePosition");
-        if (isValidUpnpResponse(relPos)) {
-            int seconds = LinkPlayUpnpCommands.hhMmSsToSeconds(Objects.requireNonNull(relPos));
-            if (seconds >= 0) {
-                updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_POSITION,
-                        new DecimalType(seconds));
-                currentPosition = seconds;
-            }
-        }
-
-        String duration = avt.get("CurrentTrackDuration");
-        if (isValidUpnpResponse(duration)) {
-            int seconds = LinkPlayUpnpCommands.hhMmSsToSeconds(Objects.requireNonNull(duration));
-            if (seconds >= 0) {
-                updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_DURATION,
-                        new DecimalType(seconds));
-                currentDuration = seconds;
-            }
-        }
-
-        String mdXmlString = avt.get("CurrentTrackMetaData");
-        if (isValidUpnpResponse(mdXmlString)) {
-            String mdXml = Objects.requireNonNull(mdXmlString);
-            List<UpnpEntry> entries = UpnpXMLParser.getEntriesFromXML(mdXml);
-            if (!entries.isEmpty()) {
-                UpnpEntry entry = entries.get(0);
-                if (!entry.getTitle().isEmpty()) {
-                    updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_TRACK_TITLE,
-                            new StringType(entry.getTitle()));
-                }
-                String artist = !entry.getArtist().isEmpty() ? entry.getArtist() : entry.getCreator();
-                if (!artist.isEmpty()) {
-                    updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_TRACK_ARTIST,
-                            new StringType(artist));
-                }
-                if (!entry.getAlbum().isEmpty()) {
-                    updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_TRACK_ALBUM,
-                            new StringType(entry.getAlbum()));
-                }
-                if (!entry.getAlbumArtUri().isEmpty()) {
-                    updateAlbumArtChannels(entry.getAlbumArtUri());
-                }
-            }
-        }
-        @Nullable
-        String currentTrackUri = avt.get("AVTransportURI");
-        if (currentTrackUri == null) {
-            currentTrackUri = avt.get("CurrentTrackURI");
-        }
-        if (currentTrackUri != null) {
-            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_TRACK_URI,
-                    new StringType(currentTrackUri));
-            refreshPlayListQueue();
-        }
-
-        if (avt.get("TrackSource") instanceof String trackSource) {
-            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_TRACK_SOURCE,
-                    new StringType(trackSource));
-        }
-    }
-
-    /**
-     * Handles the RenderingControl UPnP event from the device, this is used to update the volume and mute state
-     * 
-     * @param rc
-     */
-    private void handleRenderingControlEvent(Map<String, @Nullable String> rc) {
-        for (Map.Entry<String, @Nullable String> e : rc.entrySet()) {
-            String key = e.getKey();
-            String value = e.getValue();
-            logger.debug("{}: handleRenderingControlEvent: {} {}", udn, key, value);
-            if (value == null) {
-                continue;
-            }
-            if (key.endsWith("Volume")) {
-                try {
-                    currentVolume = Integer.parseInt(value);
-                    updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_VOLUME,
-                            new PercentType(currentVolume));
-                } catch (NumberFormatException ignored) {
-                    logger.debug("{}: Error parsing volume: {}", udn, value, ignored);
-                }
-            } else if (key.endsWith("Mute")) {
-                OnOffType muteState = "1".equals(value) ? OnOffType.ON : OnOffType.OFF;
-                updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_MUTE, muteState);
-            } else if ("Slave".equals(key)) {
-                updateMultiroom();
+                upnpClient.sendDeviceSearchRequest();
             }
         }
     }
@@ -1150,6 +939,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             if (currentTransportState != TransportState.PLAYING) {
                 return;
             }
+            LinkPlayUpnpCommands commands = upnpClient.getCommands();
             Map<String, String> result = commands.getPositionInfo().get();
             if (result.get("RelTime") instanceof String track) {
                 currentPosition = LinkPlayUpnpCommands.hhMmSsToSeconds(track);
@@ -1163,19 +953,6 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             }
         } catch (InterruptedException | ExecutionException | IllegalArgumentException e) {
             logger.debug("{}: Error while retrieving position info: {}", udn, e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Schedules a job to update the position of the current track from a UPnP request to the device (every second when
-     * playing)
-     */
-    private void schedulePositionJob() {
-        cancelPositionJob();
-        if (!disposed) {
-            positionJob = scheduler.scheduleWithFixedDelay(this::updatePosition, 0, 1, TimeUnit.SECONDS);
-        } else {
-            logger.warn("{}: Not scheduling position job, device is not online!", udn);
         }
     }
 
@@ -1202,7 +979,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
     /**
      * Updates the player status channels from the device using the HTTP API
-     * 
+     *
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
@@ -1278,7 +1055,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
     /**
      * Updates the track metadata channels from the device using the HTTP API
-     * 
+     *
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
@@ -1367,7 +1144,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
     /**
      * Updates the preset info channels from the device using the HTTP API
-     * 
+     *
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
@@ -1398,7 +1175,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
     /**
      * Updates the device status channels from the device using the HTTP API
-     * 
+     *
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
@@ -1415,150 +1192,6 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             updateAddRemoveMemberCommandDescription();
         }
         logger.debug("Device status: {}", deviceStatus);
-    }
-
-    private void updateMultiroom() {
-        linkPlayGroupService.refreshMemberSlaveList(this);
-    }
-
-    /**
-     * Requests the play list queue from the device using UPnP
-     * 
-     * @return The play list queue
-     */
-    private @Nullable PlayQueue getPlayListQueue() {
-        try {
-            Map<String, String> result = commands.browseQueue("TotalQueue").get();
-            if (result.get("QueueContext") instanceof String queueContext && !queueContext.isBlank()) {
-                if (UpnpXMLParser.getPlayQueueFromXML(queueContext) instanceof PlayQueue playQueue) {
-                    logger.debug("{}: Play list queue current play list name: {}", udn,
-                            playQueue.getCurrentPlayListName());
-                    return playQueue;
-                } else {
-                    logger.debug("{}: Could not parse PlayQueue from TotalQueueResponse", udn);
-                }
-            } else {
-                logger.debug("{}: Could not parse QueueContext from TotalQueueResponse", udn);
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            logger.trace("{}: Error while retrieving play list queue: {}", udn, e.getMessage(), e);
-        }
-        return null;
-    }
-
-    /**
-     * Refreshes the play list queue from the device and updates play list channels
-     * 
-     * @return The play list queue
-     */
-    private void refreshPlayListQueue() {
-        logger.debug("{}: refreshPlayListQueue", udn);
-        PlayQueue pq = getPlayListQueue();
-        if (pq == null) {
-            logger.debug("{}: Could not retrieve play list queue", udn);
-            return;
-        }
-        String currentPlayListName = pq.getCurrentPlayListName();
-        if (currentPlayListName.isBlank()) {
-            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_CURRENT_PLAYLIST_NAME,
-                    UnDefType.UNDEF);
-            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_PLAY_PRESET,
-                    UnDefType.UNDEF);
-            return;
-        }
-        String playListName = currentPlayListName.split("_#")[0];
-        updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_CURRENT_PLAYLIST_NAME,
-                new StringType(playListName));
-        if (presetInfo.presetList != null) {
-            for (int i = 0; i < presetInfo.presetList.size(); i++) {
-                PresetList.Preset p = presetInfo.presetList.get(i);
-                if (p.name.equals(playListName)) {
-                    updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_PLAY_PRESET,
-                            new DecimalType(i + 1));
-                }
-            }
-        }
-    }
-
-    /**
-     * Checks the UPnP service status of the device and updates the thing status accordingly. Also sends a device search
-     * request to the device.
-     */
-    private void upnpServiceCheck() {
-        sendDeviceSearchRequest();
-        // group members turn UPnP off when they are not the leader, so ignore UPnP checks
-        if (!upnpIOService.isRegistered(this) && (!inGroup || isLeader)) {
-            logger.debug("{}: UPnP device not yet registered", udn);
-            if (getThing().getStatus() == ThingStatus.ONLINE) {
-                setOffline("UPnP device not yet registered");
-            }
-            removeSubscriptions();
-        } else {
-            addSubscriptions();
-            try {
-                updatePresetInfo();
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                logger.trace("{}: Error while retrieving preset info: {}", udn, e.getMessage(), e);
-            }
-            try {
-                updateDeviceStatus();
-            } catch (InterruptedException | ExecutionException | TimeoutException | RejectedExecutionException e) {
-                logger.trace("{}: Error while retrieving device status: {}", udn, e.getMessage(), e);
-            }
-        }
-    }
-
-    private void addSubscriptions() {
-        synchronized (upnpLock) {
-            if (disposed) {
-                return;
-            }
-            // Set up GENA Subscriptions
-            if (upnpIOService.isRegistered(this)) {
-                for (String subscription : SERVICE_SUBSCRIPTIONS) {
-                    Boolean state = subscriptionState.get(subscription);
-                    if (state == null || !state) {
-                        logger.debug("{}: Subscribing to service {}...", udn, subscription);
-                        upnpIOService.addSubscription(this, subscription, SUBSCRIPTION_DURATION);
-                        subscriptionState.put(subscription, true);
-                    }
-                }
-            }
-        }
-    }
-
-    private void removeSubscriptions() {
-        synchronized (upnpLock) {
-            for (String subscription : SERVICE_SUBSCRIPTIONS) {
-                logger.debug("{}: Unsubscribing from service {}...", udn, subscription);
-                upnpIOService.removeSubscription(this, subscription);
-            }
-            subscriptionState.clear();
-        }
-    }
-
-    private void updateAlbumArtChannels(@Nullable String albumArtUri) {
-        if (albumArtUri == null || !albumArtUri.trim().startsWith("http")) {
-            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART_URL,
-                    UnDefType.NULL);
-            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART,
-                    UnDefType.NULL);
-            currentAlbumArtUri = null;
-            return;
-        }
-        if (albumArtUri.equals(currentAlbumArtUri)) {
-            return;
-        }
-        currentAlbumArtUri = albumArtUri;
-        updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART_URL,
-                new StringType(albumArtUri));
-        try {
-            State albumArt = HttpUtil.downloadImage(albumArtUri.trim());
-            updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_ALBUM_ART,
-                    albumArt != null ? albumArt : UnDefType.NULL);
-        } catch (IllegalArgumentException e) {
-            logger.debug("Invalid album art URI: {}", albumArtUri, e);
-        }
     }
 
     private void updatePresetPicChannels(String groupId, @Nullable String picUrl) {
@@ -1578,13 +1211,41 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
     }
 
     /**
+     * Refreshes the play list queue from the device and updates play list channels
+     */
+    private void refreshPlayListQueue() {
+        logger.debug("{}: refreshPlayListQueue", udn);
+        PlayQueue pq = upnpClient.getPlayListQueue();
+        if (pq == null) {
+            logger.debug("{}: Could not retrieve play list queue", udn);
+            return;
+        }
+        String currentPlayListName = pq.getCurrentPlayListName();
+        if (currentPlayListName.isBlank()) {
+            updateState(GROUP_PLAYBACK, CHANNEL_CURRENT_PLAYLIST_NAME, UnDefType.UNDEF);
+            updateState(GROUP_PLAYBACK, CHANNEL_PLAY_PRESET, UnDefType.UNDEF);
+            return;
+        }
+        String playListName = currentPlayListName.split("_#")[0];
+        updateState(GROUP_PLAYBACK, CHANNEL_CURRENT_PLAYLIST_NAME, new StringType(playListName));
+        if (presetInfo.presetList != null) {
+            for (int i = 0; i < presetInfo.presetList.size(); i++) {
+                PresetList.Preset p = presetInfo.presetList.get(i);
+                if (p.name.equals(playListName)) {
+                    updateState(GROUP_PLAYBACK, CHANNEL_PLAY_PRESET, new DecimalType(i + 1));
+                }
+            }
+        }
+    }
+
+    /**
      * Helper function to update a state channel for a group or device
-     * 
+     *
      * @param groupId The group ID
      * @param channelId The channel ID
      * @param state The state to update
      */
-    private void updateState(String groupId, String channelId, State state) {
+    public void updateState(String groupId, String channelId, State state) {
         boolean isGroupChannel = GROUP_PROXY_CHANNELS.contains(channelId);
         String groupIdChannel = groupId + "#" + channelId;
         if (inGroup && isGroupChannel) {
@@ -1600,7 +1261,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
     /**
      * LinkPlay uses some strange return types when values are unknown. This tries to handle those when setting states.
-     * 
+     *
      * @param value
      * @param stateClass
      * @return State or UnDefType.NULL if the value is null or unknown
@@ -1655,7 +1316,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
     /**
      * Updates the add and remove member command description for the multiroom groups
-     * 
+     *
      * @param slaves The list of slaves in the group (LinkPlay terminology for members)
      */
     private void updateAddRemoveMemberCommandDescription(@Nullable List<Slave> slaves) {
@@ -1693,95 +1354,47 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         linkPlayCommandDescriptionProvider.setDescription(channelUID, commandDescription);
     }
 
-    private boolean isValidUpnpResponse(@Nullable String value) {
-        return value != null && !value.isBlank() && !"NOT_IMPLEMENTED".equals(value);
+    /**
+     * Checks the UPnP service status of the device and updates the thing status accordingly. Also sends a device search
+     * request to the device.
+     */
+    private void upnpServiceCheck() {
+        upnpClient.sendDeviceSearchRequest();
+        // group members turn UPnP off when they are not the leader, so ignore UPnP checks
+        if (!upnpClient.isRegistered() && (!inGroup || isLeader)) {
+            logger.debug("{}: UPnP device not yet registered", udn);
+            if (getThing().getStatus() == ThingStatus.ONLINE) {
+                setOffline("UPnP device not yet registered");
+            }
+            upnpClient.removeSubscriptions();
+        } else {
+            upnpClient.addSubscriptions();
+            try {
+                updatePresetInfo();
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                logger.trace("{}: Error while retrieving preset info: {}", udn, e.getMessage(), e);
+            }
+            try {
+                updateDeviceStatus();
+            } catch (InterruptedException | ExecutionException | TimeoutException | RejectedExecutionException e) {
+                logger.trace("{}: Error while retrieving device status: {}", udn, e.getMessage(), e);
+            }
+        }
     }
 
     private void cancelReconnectJob() {
         cancelJob(reconnectJob);
+        reconnectJob = null;
     }
 
     private void cancelUpnpServiceCheckJob() {
         cancelJob(upnpServiceCheck);
-    }
-
-    private void cancelPositionJob() {
-        cancelJob(positionJob);
-    }
-
-    private void cancelNotificationTimeoutJob() {
-        cancelJob(notificationTimeoutJob);
+        upnpServiceCheck = null;
     }
 
     private void cancelJob(@Nullable ScheduledFuture<?> job) {
         if (job != null) {
             job.cancel(true);
         }
-        job = null;
-    }
-
-    /**
-     * Verifies that a queue has been deleted by attempting to browse it.
-     *
-     * @param queueName the name of the queue to verify deletion
-     * @return CompletableFuture that completes when queue is verified deleted
-     */
-    @SuppressWarnings("null")
-    private CompletableFuture<Void> verifyQueueDeleted(String queueName) {
-        return commands.browseQueue(queueName).handle((result, throwable) -> {
-            // Queue is deleted if browseQueue fails or returns null/empty QueueContext
-            if (throwable != null || result == null || result.get("QueueContext") == null
-                    || result.get("QueueContext").isEmpty()) {
-                logger.debug("{}: Queue '{}' verified deleted", udn, queueName);
-                return null;
-            } else {
-                logger.warn("{}: Queue '{}' still exists after deletion attempt", udn, queueName);
-                throw new IllegalStateException("Queue '" + queueName + "' still exists after deletion");
-            }
-        });
-    }
-
-    /**
-     * Verifies that a queue has been created by attempting to browse it.
-     *
-     * @param queueName the name of the queue to verify creation
-     * @return CompletableFuture that completes when queue is verified created
-     */
-    @SuppressWarnings("null")
-    private CompletableFuture<Void> verifyQueueCreated(String queueName) {
-        return commands.browseQueue(queueName).thenApply(result -> {
-            // Queue is created if browseQueue succeeds and returns non-empty QueueContext
-            if (result != null && result.get("QueueContext") != null && !result.get("QueueContext").isEmpty()) {
-                logger.debug("{}: Queue '{}' verified created", udn, queueName);
-                return null;
-            } else {
-                logger.warn("{}: Queue '{}' not found after creation attempt", udn, queueName);
-                throw new IllegalStateException("Queue '" + queueName + "' not created");
-            }
-        });
-    }
-
-    /**
-     * Verifies that a queue has been replaced by browsing the default queue.
-     *
-     * @param expectedQueueName the expected queue name after replacement
-     * @return CompletableFuture that completes when queue is verified replaced
-     */
-    @SuppressWarnings("null")
-    private CompletableFuture<Void> verifyQueueReplaced(String expectedQueueName) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                PlayQueue playQueue = getPlayListQueue();
-                if (playQueue != null && expectedQueueName.equals(playQueue.getCurrentPlayListName())) {
-                    logger.debug("{}: Queue replaced to '{}' verified", udn, expectedQueueName);
-                    return null;
-                } else {
-                    logger.warn("{}: Queue not replaced to '{}' as expected", udn, expectedQueueName);
-                    throw new IllegalStateException("Queue not replaced to '" + expectedQueueName + "'");
-                }
-            } catch (Exception e) {
-                throw new IllegalStateException("Failed to verify queue replacement", e);
-            }
-        }, scheduler);
     }
 }

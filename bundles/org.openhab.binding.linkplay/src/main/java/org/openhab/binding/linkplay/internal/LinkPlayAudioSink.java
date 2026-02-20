@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linkplay.internal.handler.LinkPlayHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.audio.AudioSinkSync;
