@@ -113,7 +113,6 @@ public class LinkPlayHandler extends BaseThingHandler
     private final LinkPlayNotificationHandler notificationHandler;
     private final LinkPlayUpnpRegistry linkPlayUpnpRegistry;
     private final UpnpIOService upnpIOService;
-    private final UpnpService upnpService;
     private final LinkPlayGroupService linkPlayGroupService;
     private final LinkPlayCommandDescriptionProvider linkPlayCommandDescriptionProvider;
     private final Map<ChannelUID, State> stateCache = new HashMap<>();
@@ -137,7 +136,6 @@ public class LinkPlayHandler extends BaseThingHandler
         super(thing);
         this.linkPlayUpnpRegistry = linkPlayUpnpRegistry;
         this.upnpIOService = upnpIOService;
-        this.upnpService = upnpService;
         this.linkPlayGroupService = linkPlayGroupService;
         this.linkPlayCommandDescriptionProvider = linkPlayCommandDescriptionProvider;
         this.httpClient = httpClient;

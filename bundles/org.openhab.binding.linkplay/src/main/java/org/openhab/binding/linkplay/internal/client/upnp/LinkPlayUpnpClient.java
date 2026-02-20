@@ -113,8 +113,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
         return commands;
     }
 
-    // UpnpIOParticipant implementation
-
     @Override
     public String getUDN() {
         return udn;
@@ -178,8 +176,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
         handler.onUpnpServiceStatusChanged(status);
     }
 
-    // UPnP Action Executor implementation
-
     @Override
     public CompletableFuture<Map<String, String>> executeAction(String serviceId, String actionId,
             @Nullable Map<String, String> inputs) {
@@ -229,8 +225,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
         return future;
     }
 
-    // Subscription management
-
     public void addSubscriptions() {
         synchronized (upnpLock) {
             if (disposed) {
@@ -276,8 +270,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
         return upnpIOService.isRegistered(this);
     }
 
-    // Device search
-
     public void sendDeviceSearchRequest() {
         ControlPoint controlPoint = upnpService.getControlPoint();
         if (controlPoint != null) {
@@ -286,8 +278,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
         }
     }
 
-    // Value listener registration
-
     public void registerUpnpValueListener(UpnpValueListener listener) {
         upnpValueListeners.add(listener);
     }
@@ -295,8 +285,6 @@ public class LinkPlayUpnpClient implements UpnpIOParticipant, LinkPlayUpnpComman
     public void unregisterUpnpValueListener(UpnpValueListener listener) {
         upnpValueListeners.remove(listener);
     }
-
-    // Playlist queue operations
 
     public @Nullable PlayQueue getPlayListQueue() {
         try {
