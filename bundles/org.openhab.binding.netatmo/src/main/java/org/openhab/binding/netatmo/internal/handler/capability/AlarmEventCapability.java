@@ -50,9 +50,7 @@ public class AlarmEventCapability extends HomeSecurityThingCapability {
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
 
-        final String message = event.getName();
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
-                message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE, toStringType(event.getName()));
     }
 
     @Override
