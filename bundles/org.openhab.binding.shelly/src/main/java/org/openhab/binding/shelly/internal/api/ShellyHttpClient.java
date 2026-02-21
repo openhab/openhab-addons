@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -63,24 +64,26 @@ public class ShellyHttpClient {
     public static final String CONTENT_TYPE_FORM_URLENC = "application/x-www-form-urlencoded";
 
     protected final HttpClient httpClient;
-    protected ShellyThingConfiguration config = new ShellyThingConfiguration();
-    protected String thingName;
+    protected ShellyThingConfiguration config;
+    protected volatile String thingName;
     protected final Gson gson = new Gson();
     protected int timeoutErrors = 0;
     protected int timeoutsRecovered = 0;
-    private ShellyDeviceProfile profile;
+    private final ShellyDeviceProfile profile;
     protected boolean basicAuth = false;
 
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
-        this(thingName, thing.getThingConfig(), thing.getHttpClient());
+        this.thingName = thingName;
+        this.config = thing.getThingConfig();
+        this.httpClient = thing.getHttpClient();
         this.profile = thing.getProfile();
     }
 
     public ShellyHttpClient(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
-        profile = new ShellyDeviceProfile();
         this.thingName = thingName;
-        setConfig(thingName, config);
+        this.config = config;
         this.httpClient = httpClient;
+        this.profile = new ShellyDeviceProfile();
     }
 
     public void setConfig(String thingName, ShellyThingConfiguration config) {
@@ -233,7 +236,9 @@ public class ShellyHttpClient {
         }
         if (!SHELLY2_AUTHTTYPE_DIGEST.equalsIgnoreCase(challenge.authType)
                 || !SHELLY2_AUTHALG_SHA256.equalsIgnoreCase(challenge.algorithm)) {
-            throw new IllegalArgumentException("Unsupported Auth type/algorithm requested by device");
+            throw new IllegalArgumentException(
+                    String.format(Locale.ROOT, "Unsupported Auth type (%s) or algorithm (%s) requested by device",
+                            challenge.authType, challenge.algorithm));
         }
         Shelly2AuthRsp response = new Shelly2AuthRsp();
         response.username = user;

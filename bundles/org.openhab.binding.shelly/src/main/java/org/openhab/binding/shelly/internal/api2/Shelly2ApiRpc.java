@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,9 +32,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.EofException;
 import org.eclipse.jetty.websocket.api.StatusCode;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
@@ -65,11 +67,9 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClien
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2ConfigParms;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp.Shelly2DeviceConfigApRE;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceSettings;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusLight;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult.Shelly2RGBWStatus;
@@ -87,7 +87,6 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -109,9 +108,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final ShellyThingTable thingTable;
 
     protected boolean initialized = false;
-    private boolean discovery = false;
-    private Shelly2RpcSocket rpcSocket = new Shelly2RpcSocket();
+    private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
+    private final WebSocketClient client;
 
     // Plus devices support up to 3 scripts, Pro devices up to 10
     // We need to find a free script id when uploading our script
@@ -124,25 +123,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * @param thingName Symbolic thing name
      * @param thing Thing Handler (ThingHandlerInterface)
      */
-    public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
+    public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
+            WebSocketClient webSocketClient) {
         super(thingName, thing);
-        this.thingName = thingName;
-        this.thing = thing;
         this.thingTable = thingTable;
-    }
-
-    /**
-     * Simple initialization - called by discovery handler
-     *
-     * @param thingName Symbolic thing name
-     * @param config Thing Configuration
-     * @param httpClient HTTP Client to be passed to ShellyHttpClient
-     */
-    public Shelly2ApiRpc(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
-        super(thingName, config, httpClient);
-        this.thingName = thingName;
-        this.thingTable = new ShellyThingTable(); // create empty table;
-        this.discovery = true;
+        this.client = webSocketClient;
     }
 
     @Override
@@ -151,8 +136,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
             disconnect();
         }
-        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp);
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket != null) {
+            rpcSocket.disconnect();
+        }
+        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client);
         rpcSocket.addMessageHandler(this);
+        this.rpcSocket = rpcSocket;
         initialized = true;
     }
 
@@ -342,55 +332,43 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         profile.initialized = true;
-        if (!discovery) {
-            getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
-            asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
+        getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
+        asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
 
-            try {
-                if (profile.alwaysOn && dc.ble != null) {
-                    logger.debug("{}: BLU Gateway support is {} for this device", thingName,
-                            config.enableBluGateway ? "enabled" : "disabled");
-                    if (config.enableBluGateway) {
-                        boolean bluetooth = getBool(dc.ble.enable);
-                        boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
-                        if (!bluetooth) {
-                            logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
-                        }
-                        if (observer) {
-                            logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
-                                    thingName);
-                        }
-                        boolean restart = false;
-                        if (!bluetooth || observer) {
-                            logger.info("{}: Setup openHAB BLU Gateway", thingName);
-                            restart = setBluetooth(true);
-                        }
+        try {
+            if (profile.alwaysOn && dc.ble != null) {
+                logger.debug("{}: BLU Gateway support is {} for this device", thingName,
+                        config.enableBluGateway ? "enabled" : "disabled");
+                if (config.enableBluGateway) {
+                    boolean bluetooth = getBool(dc.ble.enable);
+                    boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
+                    if (!bluetooth) {
+                        logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
+                    }
+                    if (observer) {
+                        logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
+                                thingName);
+                    }
+                    boolean restart = false;
+                    if (!bluetooth || observer) {
+                        logger.info("{}: Setup openHAB BLU Gateway", thingName);
+                        restart = setBluetooth(true);
+                    }
 
-                        installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
+                    installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
 
-                        if (restart) {
-                            logger.info("{}: Restart device to activate BLU Gateway", thingName);
-                            deviceReboot();
-                            getThing().reinitializeThing();
-                        }
+                    if (restart) {
+                        logger.info("{}: Restart device to activate BLU Gateway", thingName);
+                        deviceReboot();
+                        getThing().reinitializeThing();
                     }
                 }
-            } catch (ShellyApiException e) {
-                logger.debug("{}: Device config failed", thingName, e);
             }
+        } catch (ShellyApiException e) {
+            logger.debug("{}: Device config failed", thingName, e);
         }
 
         return profile;
-    }
-
-    private void fillWiFiSta(@Nullable Shelly2DeviceConfigSta from, ShellySettingsWiFiNetwork to) {
-        to.enabled = from != null && !getString(from.ssid).isEmpty();
-        if (from != null) {
-            to.ssid = from.ssid;
-            to.ip = from.ip;
-            to.mask = from.netmask;
-            to.dns = from.nameserver;
-        }
     }
 
     private void checkSetWsCallback() throws ShellyApiException {
@@ -606,7 +584,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onConnect(String deviceIp, boolean connected) {
-        ShellyThingTable thingTable = this.thingTable;
         thing = thingTable.getThing(deviceIp);
         logger.debug("{}: Get thing from thingTable", thingName);
     }
@@ -616,8 +593,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         logger.debug("{}: NotifyStatus update received: {}", thingName, gson.toJson(message));
         ShellyThingInterface t = thing;
         if (t == null) {
-            logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={}, discovery={})",
-                    thingName, thingName, message.src, message.dst, discovery);
+            logger.debug("{}: No matching thing on NotifyStatus for {}, ignore (src={}, dst={})", thingName, thingName,
+                    message.src, message.dst);
             return;
         }
         if (t.isStopping()) {
@@ -773,7 +750,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
             if ("Bye".equalsIgnoreCase(reason)) {
                 logger.debug("{}: Device went to sleep mode or was restarted", thingName);
-            } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
+            } else if (statusCode == StatusCode.ABNORMAL && getProfile().alwaysOn) {
                 // e.g. device rebooted
                 if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
                     thingOffline("WebSocket connection closed abnormally");
@@ -787,7 +764,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onError(Throwable cause) {
-        logger.debug("{}: WebSocket error", thingName, cause);
+        if (logger.isDebugEnabled()) {
+            if (cause instanceof EofException || cause instanceof EOFException) {
+                logger.debug("{}: WebSocket was closed ungracefully", thingName);
+            } else {
+                logger.debug("{}: WebSocket error", thingName, cause);
+            }
+        }
         ShellyThingInterface thing = this.thing;
         if (thing != null && thing.getProfile().alwaysOn) {
             thingOffline("WebSocket error");
@@ -800,21 +783,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             thing.setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
                     "offline.status-error-unexpected-error", reason);
         }
-    }
-
-    @Override
-    public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
-        Shelly2DeviceSettings device = callApi("/shelly", Shelly2DeviceSettings.class);
-        ShellySettingsDevice info = new ShellySettingsDevice();
-        info.hostname = getString(device.id);
-        info.name = getString(device.name);
-        info.fw = getString(device.fw);
-        info.type = getString(device.model);
-        info.mac = getString(device.mac);
-        info.auth = getBool(device.auth);
-        info.gen = getInteger(device.gen);
-        info.mode = mapValue(MAP_PROFILE, getString(device.profile));
-        return info;
     }
 
     @Override
@@ -1277,9 +1245,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private void asyncApiRequest(String method) throws ShellyApiException {
         Shelly2RpcBaseMessage request = buildRequest(method, null);
         reconnect();
-        rpcSocket.sendMessage(gson.toJson(request)); // submit, result wull be async
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket != null) {
+            rpcSocket.sendMessage(gson.toJson(request)); // submit, result will be async
+        } else {
+            throw new ShellyApiException("RPC socket isn't connected, cannot send async request");
+        }
     }
 
+    @Override
     public <T> T apiRequest(String method, @Nullable Object params, Class<T> classOfT) throws ShellyApiException {
         String json = "";
         Shelly2RpcBaseMessage req = buildRequest(method, params);
@@ -1350,13 +1324,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     private void reconnect() throws ShellyApiException {
-        if (!rpcSocket.isConnected()) {
-            logger.debug("{}: Connect Rpc Socket (discovery = {})", thingName, discovery);
-            rpcSocket.connect();
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket != null) {
+            if (!rpcSocket.isConnected()) {
+                logger.debug("{}: Connect RPC Socket", thingName);
+                rpcSocket.connect();
+            }
+        } else {
+            throw new ShellyApiException("RPC socket is not connected");
         }
     }
 
     private void disconnect() {
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket == null) {
+            return;
+        }
         if (rpcSocket.isConnected()) {
             logger.trace("{}: Disconnect Rpc Socket", thingName);
         }
@@ -1369,9 +1352,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void close() {
+        Shelly2RpcSocket rpcSocket = this.rpcSocket;
+        if (rpcSocket == null) {
+            logger.debug("{}: Cannot close RPC socket since it's null", thingName);
+            initialized = false;
+            return;
+        }
         if (initialized || rpcSocket.isConnected()) {
-            logger.debug("{}: Closing Rpc API (socket is {}, discovery={})", thingName,
-                    rpcSocket.isConnected() ? "connected" : "disconnected", discovery);
+            logger.debug("{}: Closing Rpc API (socket is {})", thingName,
+                    rpcSocket.isConnected() ? "connected" : "disconnected");
         }
         disconnect();
         initialized = false;
