@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.solaredge.internal.connector;
 
+import java.io.EOFException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.concurrent.TimeoutException;
+
+import javax.net.ssl.SSLException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus.Code;
@@ -57,5 +64,28 @@ public class CommunicationStatus {
             return httpCode.getMessage();
         }
         return "";
+    }
+
+    /**
+     * Returns a sanitized message suitable for Thing status details.
+     */
+    public final String getUserFacingMessage() {
+        Exception error = this.error;
+        if (error != null) {
+            if (error instanceof SocketTimeoutException || error instanceof TimeoutException) {
+                return "Request timed out";
+            } else if (error instanceof UnknownHostException) {
+                return "DNS resolution failed";
+            } else if (error instanceof EOFException || error instanceof SSLException) {
+                return "Connection to SolarEdge interrupted";
+            }
+            return "Communication error";
+        }
+
+        Code httpCode = this.httpCode;
+        if (httpCode != null && httpCode.getMessage() != null && !httpCode.getMessage().isEmpty()) {
+            return httpCode.getMessage();
+        }
+        return "Communication error";
     }
 }
