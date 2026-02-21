@@ -445,8 +445,8 @@ public class DahuaDoorBaseHandler extends BaseThingHandler implements DHIPEventL
     }
 
     private void handleHangupPhone(JsonObject eventList, JsonObject eventData) {
-        logger.debug("Event: HungupPhone (handled as HangupPhone), Action {}, LocaleTime {}", eventList.get("Action").getAsString(),
-                eventData.get("LocaleTime").getAsString());
+        logger.debug("Event: HungupPhone (handled as HangupPhone), Action {}, LocaleTime {}",
+                eventList.get("Action").getAsString(), eventData.get("LocaleTime").getAsString());
     }
 
     private void handleCallSnap(JsonObject eventData) {
