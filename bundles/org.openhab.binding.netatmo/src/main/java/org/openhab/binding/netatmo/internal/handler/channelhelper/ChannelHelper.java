@@ -73,7 +73,7 @@ public abstract class ChannelHelper {
                     }
                 }
             }
-            if (localData instanceof NAObject) {
+            if (localData != null) {
                 result = internalGetObject(channelId, localData);
                 if (result != null) {
                     return result;
@@ -84,26 +84,32 @@ public abstract class ChannelHelper {
         return result;
     }
 
+    @SuppressWarnings("unused")
     protected @Nullable State internalGetObject(String channelId, NAObject localData) {
         return null;
     }
 
+    @SuppressWarnings("unused")
     protected @Nullable State internalGetOther(String channelId) {
         return null;
     }
 
+    @SuppressWarnings("unused")
     protected @Nullable State internalGetDashboard(String channelId, Dashboard dashboard) {
         return null;
     }
 
+    @SuppressWarnings("unused")
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
         return null;
     }
 
+    @SuppressWarnings("unused")
     protected @Nullable State internalGetEvent(String channelId, Event event) {
         return null;
     }
 
+    @SuppressWarnings("unused")
     protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
         return null;
     }
