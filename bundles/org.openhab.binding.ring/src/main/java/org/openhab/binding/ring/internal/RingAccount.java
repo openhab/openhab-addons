@@ -49,4 +49,11 @@ public interface RingAccount {
      * @throws AuthenticationException when request is invalid.
      */
     byte[] getSnapshot(String id);
+
+    /**
+     * Send a command to the Ring API
+     *
+     * @param url to be sent to the Ring API
+     */
+    void sendCommand(String url);
 }

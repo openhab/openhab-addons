@@ -587,6 +587,17 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
     }
 
     @Override
+    public void sendCommand(String url) {
+        try {
+            logger.debug("sending url {} to Ring API", url);
+            restClient.sendCommand(url, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.invalid-response");
+        }
+    }
+
+    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(RingDiscoveryService.class);
     }
