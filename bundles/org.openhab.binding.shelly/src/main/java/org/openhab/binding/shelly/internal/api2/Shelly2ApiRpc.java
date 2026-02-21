@@ -334,7 +334,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         if (!profile.initialized && profile.alwaysOn) {
-            getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
+            getStatus(false); // make sure profile.status is initialized (e.g,. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
         profile.initialized = true;
@@ -748,6 +748,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
+    public void onPong() {
+        if (thing != null) {
+            thing.restartWatchdog();
+        }
+    }
+
+    @Override
     public void onClose(int statusCode, String description) {
         try {
             String reason = getString(description);
@@ -790,7 +797,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public ShellySettingsStatus getStatus() throws ShellyApiException {
+    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         ShellySettingsStatus status = profile.status;
         Shelly2DeviceStatusResult ds = apiRequest(SHELLYRPC_METHOD_GETSTATUS, null, Shelly2DeviceStatusResult.class);
@@ -853,7 +860,21 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
 
+        if (ping) {
+            sendPing();
+        }
+
         return status;
+    }
+
+    private void sendPing() {
+        Shelly2RpcSocket rpcSocket;
+        synchronized (this) {
+            rpcSocket = this.rpcSocket;
+        }
+        if (rpcSocket != null) {
+            rpcSocket.ping();
+        }
     }
 
     @Override
@@ -864,7 +885,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellyStatusRelay getRelayStatus(int relayIndex) throws ShellyApiException {
         if (getProfile().status.wifiSta.ssid == null) {
             // Update status when not yet initialized
-            getStatus();
+            getStatus(false);
         }
         return relayStatus;
     }

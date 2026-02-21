@@ -21,6 +21,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +36,10 @@ import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketFrame;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -56,7 +59,7 @@ import com.google.gson.Gson;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@WebSocket(maxIdleTime = Integer.MAX_VALUE)
+@WebSocket(maxIdleTime = 5 * 60 * 1000)
 public class Shelly2RpcSocket implements WriteCallback {
     private final Logger logger = LoggerFactory.getLogger(Shelly2RpcSocket.class);
     private final Gson gson = new Gson();
@@ -377,10 +380,6 @@ public class Shelly2RpcSocket implements WriteCallback {
         return session != null && session.isOpen();
     }
 
-    public boolean isInbound() {
-        return inbound;
-    }
-
     /**
      * WebSocket closed, notify thing handler (close initiated by the binding)
      *
@@ -433,6 +432,45 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
         if (websocketHandler != null) {
             websocketHandler.onError(cause);
+        }
+    }
+
+    public void ping() {
+        Session session;
+        synchronized (this) {
+            session = this.session;
+        }
+        if (session != null && session.isOpen()) {
+            RemoteEndpoint remote = session.getRemote();
+            String ipAddress = remote.getInetSocketAddress().getHostString();
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Sending WebSocket PING to {}", thingName, ipAddress);
+            }
+            try {
+                remote.sendPing(ByteBuffer.allocate(0));
+            } catch (IOException e) {
+                logger.debug("{}: Faied to send WebSocket PING to {}", thingName, ipAddress, e);
+            }
+        }
+    }
+
+    @OnWebSocketFrame
+    public void onFrame(Session session, Frame frame) {
+        switch (frame.getOpCode()) {
+            case 0xA: // PONG opcode
+            case 0x9: // PING opcode (optional)
+                // Jetty auto-responds with PONG by default
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{}: WebSocket PONG received", thingName);
+                }
+                Shelly2RpctInterface websocketHandler;
+                synchronized (this) {
+                    websocketHandler = this.websocketHandler;
+                }
+                if (websocketHandler != null) {
+                    websocketHandler.onPong();
+                }
+                break;
         }
     }
 
