@@ -87,7 +87,6 @@ public class InfoVigiCru {
             public class Geometry {
                 @SerializedName("type")
                 public String type;
-
             }
         }
     }
