@@ -8,6 +8,26 @@ Each component will be represented as a Channel Group, with the attributes of th
 
 Any device that publishes the component configuration under the `homeassistant` prefix in MQTT will have their components automatically discovered and added to the Inbox.
 You can also manually create a Thing, and provide the individual component topics, as well as a different discovery prefix.
+[Device Discovery](https://www.home-assistant.io/integrations/mqtt/#device-discovery-payload) is supported as well.
+
+## Example
+
+### Things file
+
+```java
+Bridge mqtt:broker:mybroker [ host="192.168.1.10", secure=false ] {
+	// 1) Single component configuration; channels won't be created until config is received from the MQTT broker
+	Thing homeassistant:device:kitchen_button [ topics="button/kitchen_button/restart" ]
+
+	// 2) Device-level configuration topic; channels won't be created until config is received from the MQTT broker
+	Thing homeassistant:device:kitchen_device [ topics="device/kitchen" ]
+
+	// 3) Device-level configuration with full JSON in deviceConfig
+	// Channels are restored from deviceConfig immediately, so the Thing is usable
+	// even before the retained MQTT discovery message is received from the broker.
+	Thing homeassistant:device:kitchen_cached [ topics="device/kitchen", deviceConfig="{\"dev\":{\"ids\":\"ea334450945afc\",\"name\":\"Kitchen\"},\"o\":{\"name\":\"bla2mqtt\",\"sw\":\"2.1\"},\"cmps\":{\"temperature\":{\"p\":\"sensor\",\"device_class\":\"temperature\",\"unit_of_measurement\":\"°C\",\"value_template\":\"{{ value_json.temperature}}\",\"unique_id\":\"temp01ae_t\"},\"humidity\":{\"p\":\"sensor\",\"device_class\":\"humidity\",\"unit_of_measurement\":\"%\",\"value_template\":\"{{ value_json.humidity}}\",\"unique_id\":\"temp01ae_h\"}},\"state_topic\":\"sensorKitchen/state\",\"qos\":2}" ]
+}
+```
 
 ## Supported Components and Channels
 

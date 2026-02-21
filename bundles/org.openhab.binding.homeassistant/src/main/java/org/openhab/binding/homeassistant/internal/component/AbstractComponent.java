@@ -128,8 +128,7 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
      * @param singleChannelComponent if this component only ever has one channel, so should never be in a group
      */
     public AbstractComponent(ComponentFactory.ComponentContext componentContext, Class<C> clazz) {
-        this(componentContext, AbstractComponentConfiguration.create(componentContext.getPython(),
-                componentContext.getHaID().component, componentContext.getConfigJSON(), clazz));
+        this(componentContext, AbstractComponentConfiguration.create(componentContext.getDiscoveryPayload(), clazz));
     }
 
     /**
@@ -208,11 +207,13 @@ public abstract class AbstractComponent<C extends AbstractComponentConfiguration
         if (channels.size() == 1) {
             groupId = null;
             channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId), getName()));
-        } else {
+        }
+
+        if (componentContext.shouldPersistChannelConfiguration()) {
             // only the first channel needs to persist the configuration
-            channels.values().stream().skip(1).forEach(c -> {
-                c.clearConfiguration();
-            });
+            channels.values().stream().skip(1).forEach(ComponentChannel::clearConfiguration);
+        } else {
+            channels.values().forEach(ComponentChannel::clearConfiguration);
         }
     }
 

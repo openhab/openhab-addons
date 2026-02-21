@@ -5,6 +5,11 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Final
 
+from .generated.entity_platforms import EntityPlatforms
+
+# Explicit reexport to allow other modules to import Platform directly from const
+Platform = EntityPlatforms
+
 
 # Max characters for data stored in the recorder (changes to these limits would require
 # a database migration)
