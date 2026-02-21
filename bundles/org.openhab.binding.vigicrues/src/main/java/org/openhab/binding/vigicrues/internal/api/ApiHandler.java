@@ -72,20 +72,20 @@ public class ApiHandler {
     private final HttpClient httpClient;
     private final Gson gson;
 
-    private final int TERRITOIRE_ENTITY = 5;
-    private final int TRONCON_ENTITY = 8;
-    private final int STATION_ENTITY = 7;
+    private static final int TERRITOIRE_ENTITY = 5;
+    private static final int TRONCON_ENTITY = 8;
+    private static final int STATION_ENTITY = 7;
 
-    private final static String BASE_URL = "https://www.vigicrues.gouv.fr/services/";
-    private final static String INFO_URL = BASE_URL + "InfoVigiCru.geojson";
-    private final static String TRONCON_URL = BASE_URL + "TronEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
-    private final static String TERITOIRE_URL = BASE_URL + "TerEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
-    private final static String STATION_URL = BASE_URL + "StaEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
-    private final static String STATION_DETAILS_URL = BASE_URL + "station.json/index.php?CdStationHydro=%s";
-    private final static String OBSERVATION_URL = BASE_URL
+    private static final String BASE_URL = "https://www.vigicrues.gouv.fr/services/";
+    private static final String INFO_URL = BASE_URL + "InfoVigiCru.geojson";
+    private static final String TRONCON_URL = BASE_URL + "TronEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private static final String TERITOIRE_URL = BASE_URL + "TerEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private static final String STATION_URL = BASE_URL + "StaEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private static final String STATION_DETAILS_URL = BASE_URL + "station.json/index.php?CdStationHydro=%s";
+    private static final String OBSERVATION_URL = BASE_URL
             + "observations.json/index.php?CdStationHydro=%s&FormatDate=iso&GrdSerie=%s";
 
-    private final static String MEASURES_URL = BASE_URL
+    private static final String MEASURES_URL = BASE_URL
             + "https://public.opendatasoft.com/api/records/1.0/search/?dataset=vigicrues&sort=timestamp&q=%s";
     private static final String HUBEAU_URL = "https://hubeau.eaufrance.fr/api/v2/hydrometrie/referentiel/stations?format=json&size=2000";
 
