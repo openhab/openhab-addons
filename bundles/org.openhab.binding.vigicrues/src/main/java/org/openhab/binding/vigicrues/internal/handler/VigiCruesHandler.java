@@ -16,6 +16,7 @@ import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,6 +28,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Quantity;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +42,7 @@ import org.openhab.binding.vigicrues.internal.dto.vigicrues.CdStationHydro;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.InfoVigiCru;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.ObservationAnswer;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.ObssHydro;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.Serie;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.StaEntVigiCru;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.StaEntVigiCruAnswer;
 import org.openhab.core.i18n.LocationProvider;
@@ -48,7 +51,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -60,6 +62,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,8 +102,8 @@ public class VigiCruesHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         if (thing.getProperties().isEmpty()) {
-        Map<String, String> properties = discoverAttributes(config);
-        updateProperties(properties);
+            Map<String, String> properties = discoverAttributes(config);
+            updateProperties(properties);
         }
         getReferences();
         refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES);
@@ -228,6 +232,8 @@ public class VigiCruesHandler extends BaseThingHandler {
                         }
                         updateDate(OBSERVATION_TIME, observation.timestamp);
                     });
+            updateTimeSeries(HEIGHT, heights.serie, SIUnits.METRE);
+
             ObservationAnswer flows = apiHandler.getFlows(config.id);
             flows.serie.obssHydro.stream().sorted(Comparator.comparing(ObssHydro::getTimeStamp).reversed()).findFirst()
                     .map(m -> m.measure).ifPresent(flow -> {
@@ -236,6 +242,8 @@ public class VigiCruesHandler extends BaseThingHandler {
                             updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
                         }
                     });
+            updateTimeSeries(FLOW, flows.serie, Units.CUBICMETRE_PER_SECOND);
+
             String currentPortion = portion;
             if (currentPortion != null) {
                 // currentPortion
@@ -259,11 +267,11 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
     }
 
-    private void updateString(String channelId, String value) {
-        if (isLinked(channelId)) {
-            updateState(channelId, new StringType(value));
-        }
-    }
+    // private void updateString(String channelId, String value) {
+    // if (isLinked(channelId)) {
+    // updateState(channelId, new StringType(value));
+    // }
+    // }
 
     private void updateRelativeMeasure(String channelId, List<QuantityType<?>> reference, double value) {
         if (!reference.isEmpty()) {
@@ -293,6 +301,21 @@ public class VigiCruesHandler extends BaseThingHandler {
             byte[] resource = getResource(String.format("picto/crue-%d.svg", value));
             updateState(channelIcon, resource != null ? new RawType(resource, "image/svg+xml") : UnDefType.UNDEF);
         }
+    }
+
+    private synchronized <T extends Quantity<T>> void updateTimeSeries(String channelId, Serie serie, Unit<T> unit) {
+        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+
+        for (ObssHydro obsHydro : serie.obssHydro) {
+            try {
+                Instant timestamp = obsHydro.getTimeStamp().toInstant();
+                timeSeries.add(timestamp, new QuantityType<>(obsHydro.measure, unit));
+            } catch (Exception ex) {
+                logger.error("error occurs during updatePowerTimeSeries : {}", ex.getMessage(), ex);
+            }
+        }
+
+        sendTimeSeries(channelId, timeSeries);
     }
 
     private byte @Nullable [] getResource(String iconPath) {
