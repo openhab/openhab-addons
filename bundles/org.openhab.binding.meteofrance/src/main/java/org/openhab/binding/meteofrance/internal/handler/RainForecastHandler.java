@@ -155,7 +155,7 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
             }
             sendTimeSeries(intensityChannelUID, timeSeries);
         } else {
-            logger.info("No rein forecast provided, will retry on next schedule");
+            logger.info("No rain forecast provided, new attempt on next schedule");
         }
 
         updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
