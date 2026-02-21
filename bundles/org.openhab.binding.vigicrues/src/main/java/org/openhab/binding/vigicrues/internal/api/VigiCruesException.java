@@ -24,7 +24,7 @@ public class VigiCruesException extends Exception {
     private static final long serialVersionUID = -7781683052187130152L;
 
     public VigiCruesException(Throwable e) {
-        super(null, e);
+        super(e.getMessage(), e);
     }
 
     public VigiCruesException(String msg) {
