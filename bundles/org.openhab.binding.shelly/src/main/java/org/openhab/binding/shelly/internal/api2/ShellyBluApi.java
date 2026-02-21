@@ -141,7 +141,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public ShellySettingsStatus getStatus() throws ShellyApiException {
+    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
         if (!connected) {
             throw new ShellyApiException("Thing is not yet initialized -> status not available");
         }

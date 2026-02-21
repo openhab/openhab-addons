@@ -37,7 +37,7 @@ public interface ShellyApiInterface extends ShellyDiscoveryInterface {
 
     void setConfig(String thingName, ShellyThingConfiguration config);
 
-    ShellySettingsStatus getStatus() throws ShellyApiException;
+    ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException;
 
     void setLedStatus(String ledName, boolean value) throws ShellyApiException;
 
