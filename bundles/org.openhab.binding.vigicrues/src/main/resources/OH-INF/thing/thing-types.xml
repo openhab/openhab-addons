@@ -35,7 +35,7 @@
 		<config-description>
 			<parameter name="id" type="text" required="true">
 				<label>Identifier</label>
-				<description>Id of the station</description>
+				<description>Id of the station</description> 
 			</parameter>
 			<parameter name="refresh" type="integer" min="1" required="true" unit="min">
 				<label>Refresh Interval</label>
@@ -46,7 +46,7 @@
 	</thing-type>
 
 	<channel-type id="flow">
-		<item-type>Number:VolumetricFlowRate</item-type>
+		<item-type unitHint="m^3/s">Number:VolumetricFlowRate</item-type>
 		<label>Current Flow</label>
 		<description>Current river flow</description>
 		<category>flow</category>
