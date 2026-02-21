@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -380,17 +381,22 @@ public class DeviceHandler extends ViessmannThingHandler {
 
         storedChannelValues.putProperty(channelUID.getId(), value.toString());
 
-        if (channelUID.getId().contains("holiday")) {
-            logger.debug("Command cached for activation via active channel");
-            return;
-        }
-
         UriParam up = resolveCommand(prop, channelId, suffix, params, com, value);
 
         if (up == null) {
             logger.trace("No matching StringType command for Channel {}", channelUID);
             return;
         }
+
+        if (channelUID.getId().contains("holiday")) {
+            logger.debug("Command cached for activation via active channel");
+            String url = up.uri().replace("schedule", "unschedule");
+            String param = "{}";
+            sendChannelCommand(url, param, 0, false);
+            updateState(channelId + "#active", OnOffType.OFF);
+            return;
+        }
+
         sendChannelCommand(up.uri(), up.param(), 0, false);
     }
 
@@ -1046,10 +1052,12 @@ public class DeviceHandler extends ViessmannThingHandler {
                         break;
                     case "boolean":
                         OnOffType state = bool ? OnOffType.ON : OnOffType.OFF;
-                        updateState(msg.getChannelId(), state);
                         if (featureDataDTO.feature.contains("oneTimeCharge")
                                 || featureDataDTO.feature.contains("holiday")) {
                             updateState(subMsg.getChannelId(), state);
+                        }
+                        if (!featureDataDTO.feature.contains("holiday")) {
+                            updateState(msg.getChannelId(), state);
                         }
                         break;
                     case "house-heating-load":
@@ -1065,14 +1073,24 @@ public class DeviceHandler extends ViessmannThingHandler {
                             final String channelId = msg.getChannelId();
                             final String stored = storedChannelValues.getProperty(channelId);
 
+                            String startDate = "start".equals(entry) ? valueEntry
+                                    : storedChannelValues.getProperty(channelId.replace("#end", "#start"));
+                            String endDate = "end".equals(entry) ? valueEntry
+                                    : storedChannelValues.getProperty(channelId.replace("#start", "#end"));
+
+                            boolean isActive = isTodayWithinRange(startDate, endDate);
+                            if (!isActive) {
+                                LocalDate today = LocalDate.now(ViessmannUtil.getOpenHABZoneId());
+                                String ld = today.format(API_DATE_FORMATTER);
+                                isActive = isTodayWithinRange(ld, endDate);
+                            }
+                            updateState(subMsg.getChannelId(), isActive ? OnOffType.ON : OnOffType.OFF);
+
                             if (valueEntry.isBlank()) {
                                 valueEntry = (stored == null || stored.isBlank()) ? getApiDate("end".equals(entry))
                                         : stored;
 
                                 msg.setValue(valueEntry);
-                                updateState(subMsg.getChannelId(), OnOffType.OFF);
-                            } else {
-                                updateState(subMsg.getChannelId(), OnOffType.ON);
                             }
 
                             updateState(channelId, StringType.valueOf(valueEntry));
@@ -1349,6 +1367,29 @@ public class DeviceHandler extends ViessmannThingHandler {
             date = date.plusDays(1);
         }
         return date.format(API_DATE_FORMATTER);
+    }
+
+    private boolean isTodayWithinRange(@Nullable String startDateAsString, @Nullable String endDateAsString) {
+        LocalDate startDate = parseApiDate(startDateAsString);
+        LocalDate endDate = parseApiDate(endDateAsString);
+        if (startDate == null || endDate == null) {
+            return false;
+        }
+
+        LocalDate today = LocalDate.now(ViessmannUtil.getOpenHABZoneId());
+        return !today.isBefore(startDate) && !today.isAfter(endDate.minusDays(1));
+    }
+
+    private @Nullable LocalDate parseApiDate(@Nullable String dateAsString) {
+        if (dateAsString == null || dateAsString.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(dateAsString, API_DATE_FORMATTER);
+        } catch (DateTimeParseException e) {
+            logger.debug("Invalid date format '{}', expected yyyy-MM-dd", dateAsString);
+            return null;
+        }
     }
 
     private void updateChannelState(String channelId, String stateAsString, @Nullable String unit) {
