@@ -25,12 +25,16 @@ import com.google.gson.annotations.SerializedName;
 public class Serie {
     @SerializedName("CdStationHydro")
     public String cdStationHydro;
+
     @SerializedName("LbStationHydro")
     public String lbStationHydro;
+
     @SerializedName("Link")
     public String link;
+
     @SerializedName("GrdSerie")
     public String grdSerie;
+
     @SerializedName("ObssHydro")
     public List<ObssHydro> obssHydro;
 }

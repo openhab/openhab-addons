@@ -63,12 +63,28 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = ApiHandler.class)
 @NonNullByDefault
 public class ApiHandler {
-    private static final String HUBEAU_URL = "https://hubeau.eaufrance.fr/api/v1/hydrometrie/referentiel/stations?format=json&size=2000";
     private static final int TIMEOUT_S = 30;
 
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
     private final Gson gson;
+
+    private final int TERRITOIRE_ENTITY = 5;
+    private final int TRONCON_ENTITY = 8;
+    private final int STATION_ENTITY = 7;
+
+    private final static String BASE_URL = "https://www.vigicrues.gouv.fr/services/";
+    private final static String INFO_URL = BASE_URL + "InfoVigiCru.geojson?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private final static String TRONCON_URL = BASE_URL + "TronEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private final static String TERITOIRE_URL = BASE_URL + "TerEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private final static String STATION_URL = BASE_URL + "StaEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private final static String STATION_DETAILS_URL = BASE_URL + "station.json/index.php?CdStationHydro=%s";
+    private final static String OBSERVATION_URL = BASE_URL
+            + "observations.json/index.php?CdStationHydro=%s&FormatDate=iso&GrdSerie=%s";
+
+    private final static String MEASURES_URL = BASE_URL
+            + "https://public.opendatasoft.com/api/records/1.0/search/?dataset=vigicrues&sort=timestamp&q=%s";
+    private static final String HUBEAU_URL = "https://hubeau.eaufrance.fr/api/v1/hydrometrie/referentiel/stations?format=json&size=2000";
 
     @Activate
     public ApiHandler(@Reference TimeZoneProvider timeZoneProvider,
@@ -116,38 +132,32 @@ public class ApiHandler {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new VigiCruesException(e);
         } catch (JsonSyntaxException e) {
-            return execute(url, responseType);
+            throw e;
         }
     }
 
     public InfoVigiCru getTronconStatus(String tronconId) throws VigiCruesException {
-        final String baseUrl = "https://www.vigicrues.gouv.fr/services/InfoVigiCru.geojson?TypEntVigiCru=8&CdEntVigiCru=%s";
-        return execute(baseUrl.formatted(tronconId), InfoVigiCru.class);
+        return execute(INFO_URL.formatted(TRONCON_ENTITY, tronconId), InfoVigiCru.class);
     }
 
     public TerEntVigiCru getTroncon(String stationId) throws VigiCruesException {
-        final String baseUrl = "https://www.vigicrues.gouv.fr/services/TronEntVigiCru.json?TypEntVigiCru=8&CdEntVigiCru=%s";
-        return execute(baseUrl.formatted(stationId), TerEntVigiCru.class);
+        return execute(TRONCON_URL.formatted(TRONCON_ENTITY, stationId), TerEntVigiCru.class);
     }
 
     public TerEntVigiCru getTerritoire(String stationId) throws VigiCruesException {
-        final String baseUrl = "https://www.vigicrues.gouv.fr/services/TerEntVigiCru.json?TypEntVigiCru=5&CdEntVigiCru=%s";
-        return execute(baseUrl.formatted(stationId), TerEntVigiCru.class);
+        return execute(TERITOIRE_URL.formatted(TERRITOIRE_ENTITY, stationId), TerEntVigiCru.class);
     }
 
     public StaEntVigiCruAnswer getStationFeeds(String stationId) throws VigiCruesException {
-        final String baseUrl = "https://www.vigicrues.gouv.fr/services/StaEntVigiCru.json?TypEntVigiCru=7&CdEntVigiCru=%s";
-        return execute(baseUrl.formatted(stationId), StaEntVigiCruAnswer.class);
+        return execute(STATION_URL.formatted(STATION_ENTITY, stationId), StaEntVigiCruAnswer.class);
     }
 
     public CdStationHydro getStationDetails(String stationId) throws VigiCruesException {
-        final String baseUrl = "https://www.vigicrues.gouv.fr/services/station.json/index.php?CdStationHydro=%s";
-        return execute(baseUrl.formatted(stationId), CdStationHydro.class);
+        return execute(STATION_DETAILS_URL.formatted(stationId), CdStationHydro.class);
     }
 
     public OpenDatasoftResponse getMeasures(String stationId) throws VigiCruesException {
-        final String baseUrl = "https://public.opendatasoft.com/api/records/1.0/search/?dataset=vigicrues&sort=timestamp&q=%s";
-        return execute(baseUrl.formatted(stationId), OpenDatasoftResponse.class);
+        return execute(MEASURES_URL.formatted(stationId), OpenDatasoftResponse.class);
     }
 
     public HubEauResponse discoverStations(PointType location, int range) throws VigiCruesException {
@@ -170,7 +180,6 @@ public class ApiHandler {
     }
 
     private ObservationAnswer getObservations(String stationId, String obsType) throws VigiCruesException {
-        final String baseUrl = "https://www.vigicrues.gouv.fr/services/observations.json/index.php?CdStationHydro=%s&FormatDate=iso&GrdSerie=%s";
-        return execute(baseUrl.formatted(stationId, obsType), ObservationAnswer.class);
+        return execute(OBSERVATION_URL.formatted(stationId, obsType), ObservationAnswer.class);
     }
 }
