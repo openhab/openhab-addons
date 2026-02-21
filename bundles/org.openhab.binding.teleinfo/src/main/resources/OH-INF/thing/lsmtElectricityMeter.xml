@@ -7,14 +7,15 @@
 	<thing-type id="lsmt_electricitymeter" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialcontroller"/>
+			<bridge-type-ref id="d2lcontroller"/>
 		</supported-bridge-type-refs>
 
 		<label>Linky Three-phase</label>
 		<description>Three-phase Linky Electricity meter in standard mode</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="commonLSMGroup" typeId="commonLSMGroupType"/>
-			<channel-group id="threePhasedLSMGroup" typeId="threePhasedLSMGroupType"/>
+			<channel-group id="commonLSMGroup" typeId="commonLSMGroup"/>
+			<channel-group id="threePhasedLSMGroup" typeId="threePhasedLSMGroup"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>
