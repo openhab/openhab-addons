@@ -20,6 +20,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -143,11 +144,12 @@ public class CloudClient {
     /*
      * This weak map holds HTTP requests identifiers
      */
-    private final WeakHashMap<Request, Integer> requestIds = new WeakHashMap<>();
+    private final Map<Request, Integer> requestIds = Collections.synchronizedMap(new WeakHashMap<>());
     /*
      * This weak map holds HTTP requests upgraded websocket connection
      */
-    private final WeakHashMap<HttpRequest, OpenHABWebSocketConnection> websocketConnections = new WeakHashMap<>();
+    private final Map<HttpRequest, OpenHABWebSocketConnection> websocketConnections = Collections
+            .synchronizedMap(new WeakHashMap<>());
 
     /*
      * This variable indicates if connection to the openHAB Cloud is currently in an established state
@@ -640,7 +642,7 @@ public class CloudClient {
             // Find and abort running request
             Request request = runningRequests.get(requestId);
             if (request != null) {
-                var webSocketConnection = websocketConnections.get(request);
+                var webSocketConnection = websocketConnections.get((HttpRequest) request);
                 if (webSocketConnection == null) {
                     request.abort(new InterruptedException());
                 } else {
@@ -946,11 +948,11 @@ public class CloudClient {
         private final List<String> protocols = List.of("websocket");
         private final Supplier<Socket> ioSocketSupplier;
         private final Map<Request, Integer> requestIds;
-        private final WeakHashMap<HttpRequest, OpenHABWebSocketConnection> websocketConnections;
+        private final Map<HttpRequest, OpenHABWebSocketConnection> websocketConnections;
         private final HttpClient client;
 
         public WebSocketProxyUpgrade(Supplier<Socket> ioSocketSupplier, Map<Request, Integer> requestIds,
-                WeakHashMap<HttpRequest, OpenHABWebSocketConnection> websocketConnections, HttpClient httpClient) {
+                Map<HttpRequest, OpenHABWebSocketConnection> websocketConnections, HttpClient httpClient) {
             this.ioSocketSupplier = ioSocketSupplier;
             this.requestIds = requestIds;
             this.websocketConnections = websocketConnections;
@@ -1185,7 +1187,10 @@ public class CloudClient {
             JSONObject responseJson = new JSONObject();
             try {
                 responseJson.put("id", requestId);
-                socketIOSupplier.get().emit("websocketClose", responseJson);
+                var socketIO = socketIOSupplier.get();
+                if (socketIO != null && socketIO.connected()) {
+                    socketIO.emit("websocketClose", responseJson);
+                }
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
