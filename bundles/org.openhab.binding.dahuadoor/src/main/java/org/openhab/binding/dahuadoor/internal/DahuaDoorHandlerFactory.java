@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dahuadoor.internal;
 
-import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.THING_TYPE_VTO;
+import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.*;
 
 import java.util.Set;
 
@@ -41,7 +41,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.dahuadoor", service = ThingHandlerFactory.class)
 public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO, THING_TYPE_VTO2202,
+            THING_TYPE_VTO3211);
     private final HttpClient httpClient;
 
     @Activate
@@ -65,10 +66,20 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        DahuaDoorBaseHandler handler = null;
+
         if (THING_TYPE_VTO.equals(thingTypeUID)) {
-            DahuaDoorBaseHandler dahuaDoorHandler = new DahuaDoorBaseHandler(thing);
-            dahuaDoorHandler.setHttpClient(httpClient);
-            return dahuaDoorHandler;
+            // Deprecated: Map old VTO thing type to VTO2202Handler for backward compatibility
+            handler = new DahuaVto2202Handler(thing);
+        } else if (THING_TYPE_VTO2202.equals(thingTypeUID)) {
+            handler = new DahuaVto2202Handler(thing);
+        } else if (THING_TYPE_VTO3211.equals(thingTypeUID)) {
+            handler = new DahuaVto3211Handler(thing);
+        }
+
+        if (handler != null) {
+            handler.setHttpClient(httpClient);
+            return handler;
         }
 
         return null;

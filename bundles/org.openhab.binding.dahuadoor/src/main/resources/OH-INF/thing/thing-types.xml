@@ -57,11 +57,19 @@
 		<description>Image of door when bell button is pressed</description>
 	</channel-type>
 
+	<channel-type id="open-door">
+		<item-type>Switch</item-type>
+		<label>Open Door</label>
+		<description>Command to open door relay</description>
+	</channel-type>
+
+	<!-- Legacy channel types for backward compatibility -->
 	<channel-type id="open-door-1">
 		<item-type>Switch</item-type>
 		<label>Open Door 1</label>
 		<description>Open door 1</description>
 	</channel-type>
+
 	<channel-type id="open-door-2">
 		<item-type>Switch</item-type>
 		<label>Open Door 2</label>
