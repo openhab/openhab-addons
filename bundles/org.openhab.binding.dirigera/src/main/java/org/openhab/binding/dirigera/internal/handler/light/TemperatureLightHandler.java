@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.light;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.ATTRIBUTES_KEY_COLOR_TEMPERATURE;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -32,6 +33,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link TemperatureLightHandler} for lights with brightness and color temperature
@@ -40,6 +43,7 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
  */
 @NonNullByDefault
 public class TemperatureLightHandler extends DimmableLightHandler {
+    private final Logger logger = LoggerFactory.getLogger(TemperatureLightHandler.class);
     private PercentType currentColorTemp = new PercentType();
 
     protected final DirigeraStateDescriptionProvider stateProvider;
@@ -60,7 +64,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         super.initialize();
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
-            JSONObject attributes = values.getJSONObject(Model.ATTRIBUTES);
+            JSONObject attributes = values.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             // check for settings of color temperature in attributes
             TreeMap<String, String> properties = new TreeMap<>(editProperties());
             Iterator<String> attributesIterator = attributes.keys();
@@ -68,12 +72,31 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 String key = attributesIterator.next();
                 if ("colorTemperatureMin".equals(key)) {
                     colorTemperatureMin = attributes.getInt(key);
-                    properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin));
                 } else if ("colorTemperatureMax".equals(key)) {
                     colorTemperatureMax = attributes.getInt(key);
-                    properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax));
                 }
             }
+
+            // KAJPLATS is delivering color temperature in Mired https://en.wikipedia.org/wiki/Mired
+            if (colorTemperatureMin - colorTemperatureMax < 0) {
+                properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin) + "M");
+                properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax) + "M");
+                colorTemperatureMin = 1000000 / colorTemperatureMin;
+                colorTemperatureMax = 1000000 / colorTemperatureMax;
+            } else {
+                properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin) + "K");
+                properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax) + "K");
+            }
+            range = colorTemperatureMin - colorTemperatureMax;
+            // now check if config overrides values
+            if (lightConfig.colorTemperatureMin > 0) {
+                colorTemperatureMin = lightConfig.colorTemperatureMin;
+            }
+            if (lightConfig.colorTemperatureMax > 0) {
+                colorTemperatureMax = lightConfig.colorTemperatureMax;
+            }
+            range = colorTemperatureMin - colorTemperatureMax;
+
             StateDescriptionFragment fragment = StateDescriptionFragmentBuilder.create()
                     .withMinimum(BigDecimal.valueOf(colorTemperatureMax))
                     .withMaximum(BigDecimal.valueOf(colorTemperatureMin)).withStep(BigDecimal.valueOf(100))
@@ -87,12 +110,14 @@ public class TemperatureLightHandler extends DimmableLightHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("DIRIGERA COLOR_LIGHT {} handle command {} for channel {}", thing.getLabel(), command,
+                channelUID.getIdWithoutGroup());
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
         switch (channel) {
             case CHANNEL_LIGHT_TEMPERATURE_ABS:
-                targetProperty = "colorTemperature";
+                targetProperty = ATTRIBUTES_KEY_COLOR_TEMPERATURE;
             case CHANNEL_LIGHT_TEMPERATURE:
                 long kelvinValue = -1;
                 int percentValue = -1;
@@ -109,7 +134,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                  * some color lights which inherit this temperature light don't have the temperature capability.
                  * As workaround child class ColorLightHandler is handling color temperature
                  */
-                if (receiveCapabilities.contains(Model.COLOR_TEMPERATURE_CAPABILITY) && percentValue != -1
+                if (receiveCapabilities.contains(Model.CAPABILITIES_VALUE_COLOR_TEMPERATURE) && percentValue != -1
                         && kelvinValue != -1) {
                     JSONObject attributes = new JSONObject();
                     attributes.put(targetProperty, kelvinValue);
@@ -128,8 +153,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
@@ -137,11 +162,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                 if (targetChannel != null) {
                     switch (targetChannel) {
                         case CHANNEL_LIGHT_TEMPERATURE:
-                            int kelvin = attributes.getInt(key);
-                            // seems some lamps are delivering temperature values out of range
-                            // keep it in range with min/max
-                            kelvin = Math.min(kelvin, colorTemperatureMin);
-                            kelvin = Math.max(kelvin, colorTemperatureMax);
+                            int kelvin = assertRange(attributes.getInt(key), colorTemperatureMax, colorTemperatureMin);
                             int percent = getPercent(kelvin);
                             currentColorTemp = new PercentType(percent);
                             updateState(new ChannelUID(thing.getUID(), targetChannel), currentColorTemp);
@@ -154,11 +175,17 @@ public class TemperatureLightHandler extends DimmableLightHandler {
         }
     }
 
-    protected long getKelvin(int percent) {
+    protected int getKelvin(int percent) {
+        logger.warn("Get Kelvin for percent {} with min {} max {} range {}", percent, colorTemperatureMin,
+                colorTemperatureMax, range);
         return Math.round(colorTemperatureMin - (range * percent / 100));
     }
 
     protected int getPercent(long kelvin) {
-        return Math.min(100, Math.max(0, Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range))));
+        return assertRange(Math.round(100 - ((kelvin - colorTemperatureMax) * 100 / range)), 0, 100);
+    }
+
+    private int assertRange(int value, int min, int max) {
+        return Math.min(max, Math.max(min, value));
     }
 }

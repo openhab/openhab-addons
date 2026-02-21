@@ -15,6 +15,7 @@ package org.openhab.binding.dirigera.internal.handler.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
 
 import java.util.Collections;
 import java.util.List;
@@ -120,10 +121,10 @@ class TestDoubleShortcutController {
         String sceneId = sceneMapping.get(deviceId + ":" + CHANNEL_BUTTON_1 + ":singlePress");
         assertNotNull(sceneId);
         JSONObject first = sequence.getJSONObject(0).getJSONObject("data");
-        first.put(PROPERTY_DEVICE_ID, sceneId);
+        first.put(JSON_KEY_DEVICE_ID, sceneId);
         handler.handleUpdate(first);
         JSONObject second = sequence.getJSONObject(1).getJSONObject("data");
-        second.put(PROPERTY_DEVICE_ID, sceneId);
+        second.put(JSON_KEY_DEVICE_ID, sceneId);
         handler.handleUpdate(second);
         assertEquals("SHORT_PRESSED", callback.triggerMap.get("dirigera:double-shortcut:test-device:button1"),
                 "Pressed trigger sent");

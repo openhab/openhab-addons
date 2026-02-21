@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler.light;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_POWER_STATE;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -55,7 +56,8 @@ public class BaseLight extends BaseHandler implements PowerListener {
         super(thing, mapping);
         super.setChildHandler(this);
         // links of types which can be established towards this device
-        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR);
+        linkCandidateTypes = List.of(DEVICE_TYPE_LIGHT_CONTROLLER, DEVICE_TYPE_MOTION_SENSOR,
+                DEVICE_TYPE_OCCUPANCY_SENSOR, DEVICE_TYPE_GENERIC_SWITCH);
     }
 
     @Override

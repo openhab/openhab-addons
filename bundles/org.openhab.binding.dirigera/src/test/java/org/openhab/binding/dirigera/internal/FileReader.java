@@ -14,12 +14,12 @@ package org.openhab.binding.dirigera.internal;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.dirigera.internal.interfaces.ResourceProvider;
 
 /**
  * {@link FileReader} reads from file into String
@@ -27,21 +27,25 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class FileReader {
+public class FileReader implements ResourceProvider {
 
-    public static String readFileInString(String filename) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "CP1252"));) {
-            StringBuffer buf = new StringBuffer();
-            String sCurrentLine;
-
-            while ((sCurrentLine = br.readLine()) != null) {
-                buf.append(sCurrentLine);
-            }
-            return buf.toString();
+    public static String readFileInString(String fileName) {
+        try {
+            return Files.readString(Paths.get(fileName));
         } catch (IOException e) {
-            // fail if file cannot be read
-            fail("File " + filename + " not found");
+            fail(e.getMessage());
         }
-        return "ERR";
+        fail("Should not reach this point!");
+        return "";
+    }
+
+    @Override
+    public String getResourceFile(String resourcePath) {
+        return readFileInString("src/main/resources" + resourcePath);
+    }
+
+    @Override
+    public String getResourceFileUncompressed(String resourcePath) {
+        return readFileInString("src/main/resources" + resourcePath);
     }
 }
