@@ -141,6 +141,77 @@ class NetworkCommissioningConverterTest extends BaseMatterConverterTest {
     }
 
     @Test
+    void testOnEventWithNetworks() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = NetworkCommissioningCluster.ATTRIBUTE_NETWORKS;
+        message.value = new ArrayList<>();
+        converter.onEvent(message);
+        // Structured attribute should be JSON-serialized
+        verify(converter, times(1)).updateThingAttributeProperty(eq(NetworkCommissioningCluster.ATTRIBUTE_NETWORKS),
+                Mockito.anyString());
+    }
+
+    @Test
+    void testOnEventWithNetworksNull() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = NetworkCommissioningCluster.ATTRIBUTE_NETWORKS;
+        message.value = null;
+        converter.onEvent(message);
+        verify(converter, times(1)).updateThingAttributeProperty(eq(NetworkCommissioningCluster.ATTRIBUTE_NETWORKS),
+                eq(null));
+    }
+
+    @Test
+    void testOnEventWithSupportedWiFiBands() {
+        List<WiFiBandEnum> wiFiBands = new ArrayList<>();
+        wiFiBands.add(WiFiBandEnum.V2G4);
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS;
+        message.value = wiFiBands;
+        converter.onEvent(message);
+        // Structured attribute should be JSON-serialized
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS), Mockito.anyString());
+    }
+
+    @Test
+    void testOnEventWithSupportedWiFiBandsNull() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS;
+        message.value = null;
+        converter.onEvent(message);
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS), eq(null));
+    }
+
+    @Test
+    void testOnEventWithSupportedThreadFeatures() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES;
+        message.value = new ArrayList<>();
+        converter.onEvent(message);
+        // Structured attribute should be JSON-serialized
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES), Mockito.anyString());
+    }
+
+    @Test
+    void testOnEventWithSupportedThreadFeaturesNull() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES;
+        message.value = null;
+        converter.onEvent(message);
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES), eq(null));
+    }
+
+    @Test
     void testInitState() {
         converter.initState();
         verify(converter, atLeastOnce())
