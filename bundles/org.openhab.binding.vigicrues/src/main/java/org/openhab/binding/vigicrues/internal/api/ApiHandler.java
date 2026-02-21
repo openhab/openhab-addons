@@ -61,6 +61,7 @@ import com.google.gson.JsonSyntaxException;
  * url and transform the answer in the appropriate dto class
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - fix to work with 2026 api version
  */
 
 @Component(service = ApiHandler.class)

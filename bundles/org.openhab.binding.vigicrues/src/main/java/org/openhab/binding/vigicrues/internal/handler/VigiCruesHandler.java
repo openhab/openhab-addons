@@ -73,6 +73,7 @@ import org.slf4j.LoggerFactory;
  * updating channels
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - fix to work with 2026 api version
  */
 @NonNullByDefault
 public class VigiCruesHandler extends BaseThingHandler {
@@ -223,7 +224,7 @@ public class VigiCruesHandler extends BaseThingHandler {
         StationConfiguration config = getConfigAs(StationConfiguration.class);
         try {
             ObservationAnswer heights = apiHandler.getHeights(config.id);
-            heights.serie.obssHydro.stream().sorted(Comparator.comparing(ObssHydro::getTimeStamp).reversed())
+            heights.serie.obssHydro.stream().sorted(Comparator.comparing((ObssHydro o) -> o.timestamp).reversed())
                     .findFirst().ifPresent(observation -> {
                         double height = observation.measure;
                         if (height != -1) {
@@ -235,8 +236,8 @@ public class VigiCruesHandler extends BaseThingHandler {
             updateTimeSeries(HEIGHT, heights.serie, SIUnits.METRE);
 
             ObservationAnswer flows = apiHandler.getFlows(config.id);
-            flows.serie.obssHydro.stream().sorted(Comparator.comparing(ObssHydro::getTimeStamp).reversed()).findFirst()
-                    .map(m -> m.measure).ifPresent(flow -> {
+            flows.serie.obssHydro.stream().sorted(Comparator.comparing((ObssHydro o) -> o.timestamp).reversed())
+                    .findFirst().map(m -> m.measure).ifPresent(flow -> {
                         if (flow != -1) {
                             updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
                             updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
@@ -256,22 +257,12 @@ public class VigiCruesHandler extends BaseThingHandler {
                     InfoVigiCru.Feature.FeatureProperties props = opt.get();
                     updateAlert(ALERT, props.nivInfViCr - 1);
                 }
-                logger.info("");
-                //
-                // updateString(SHORT_COMMENT, status.vicInfoVigiCru.vicSituActuInfoVigiCru);
-                // updateString(COMMENT, status.vicInfoVigiCru.vicQualifInfoVigiCru);
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (VigiCruesException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
-
-    // private void updateString(String channelId, String value) {
-    // if (isLinked(channelId)) {
-    // updateState(channelId, new StringType(value));
-    // }
-    // }
 
     private void updateRelativeMeasure(String channelId, List<QuantityType<?>> reference, double value) {
         if (!reference.isEmpty()) {
@@ -308,7 +299,7 @@ public class VigiCruesHandler extends BaseThingHandler {
 
         for (ObssHydro obsHydro : serie.obssHydro) {
             try {
-                Instant timestamp = obsHydro.getTimeStamp().toInstant();
+                Instant timestamp = obsHydro.timestamp.toInstant();
                 timeSeries.add(timestamp, new QuantityType<>(obsHydro.measure, unit));
             } catch (Exception ex) {
                 logger.error("error occurs during updatePowerTimeSeries : {}", ex.getMessage(), ex);

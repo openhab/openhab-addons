@@ -28,8 +28,4 @@ public class ObssHydro {
 
     @SerializedName("ResObsHydro")
     public double measure;
-
-    public ZonedDateTime getTimeStamp() {
-        return timestamp;
-    }
 }
