@@ -223,6 +223,9 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                 progressCallback.defineSequence(ProgressStep.DOWNLOADING, ProgressStep.UPDATING);
                 this.progressCallback = progressCallback;
             } catch (InterruptedException | ExecutionException e) {
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
                 logger.debug("Failed to start firmware update for device {}", getNodeId(), e);
                 progressCallback.failed(MatterBindingConstants.OTA_FIRMWARE_UPDATE_FAILED, e.getLocalizedMessage());
             }
@@ -242,8 +245,11 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
             if (progressCallback != null) {
                 progressCallback.canceled();
             }
-            progressCallback = null;
+            this.progressCallback = null;
         } catch (InterruptedException | ExecutionException e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             logger.debug("Failed to cancel firmware update for device {}", getNodeId(), e);
         }
     }
@@ -385,6 +391,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                     progressCallback.success();
                     this.progressCallback = null;
                 }
+                break;
             case QUERYING:
             case DELAYED_ON_QUERY:
                 break;

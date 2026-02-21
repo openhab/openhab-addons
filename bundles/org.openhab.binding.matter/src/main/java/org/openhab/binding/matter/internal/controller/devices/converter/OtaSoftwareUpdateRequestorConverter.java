@@ -41,10 +41,10 @@ import org.openhab.core.types.StateDescription;
 @NonNullByDefault
 public class OtaSoftwareUpdateRequestorConverter extends GenericConverter<OtaSoftwareUpdateRequestorCluster> {
 
-    private UpdateStateEnum lastUpdateState = UpdateStateEnum.UNKNOWN;
-    private int lastUpdateStateProgress = 0;
-    private boolean updateAvailable = false;
-    private boolean updatePossible = false;
+    private volatile UpdateStateEnum lastUpdateState = UpdateStateEnum.UNKNOWN;
+    private volatile int lastUpdateStateProgress = 0;
+    private volatile boolean updateAvailable = false;
+    private volatile boolean updatePossible = false;
 
     public OtaSoftwareUpdateRequestorConverter(OtaSoftwareUpdateRequestorCluster cluster,
             MatterBaseThingHandler handler, int endpointNumber, String labelPrefix) {

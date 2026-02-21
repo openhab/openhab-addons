@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -91,10 +93,13 @@ public class MatterFirmwareProvider implements FirmwareProvider {
             BigInteger nodeId = nodeHandler.getNodeId();
             OtaFirmwareEntry firmwareEntry = firmwareCache.putIfAbsentAndGet(nodeId, () -> {
                 try {
-                    OtaUpdateInfo updateInfo = nodeHandler.checkForOTAUpdate().get();
+                    OtaUpdateInfo updateInfo = nodeHandler.checkForOTAUpdate().get(30, TimeUnit.SECONDS);
                     return new OtaFirmwareEntry(updateInfo);
-                } catch (InterruptedException | ExecutionException e) {
-                    logger.error("Failed to check for firmware update for device {}", nodeId, e);
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    if (e instanceof InterruptedException) {
+                        Thread.currentThread().interrupt();
+                    }
+                    logger.debug("Failed to check for firmware update for device {}", nodeId, e);
                     return new OtaFirmwareEntry(null);
                 }
             });
@@ -110,7 +115,7 @@ public class MatterFirmwareProvider implements FirmwareProvider {
                         URL url = new URI(updateInfo.releaseNotesUrl).toURL();
                         builder.withOnlineChangelog(url);
                     } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
-                        logger.error("Failed to create URL for release notes URL {}", updateInfo.releaseNotesUrl, e);
+                        logger.debug("Failed to create URL for release notes URL {}", updateInfo.releaseNotesUrl, e);
                     }
                 }
                 return Collections.singleton(builder.build());

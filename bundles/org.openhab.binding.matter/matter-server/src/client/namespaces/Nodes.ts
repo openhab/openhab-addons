@@ -66,7 +66,7 @@ export class Nodes {
                 if (!node.isConnected) {
                     continue;
                 }
-                const nodeData = await this.controllerNode.serializePairedNode(node);
+                const nodeData = await this.controllerNode.serializePairedNode(node, undefined, false);
                 data.push(nodeData);
             } catch (error) {
                 logger.error(`Error serializing node ${nodeId}: ${error}`);
@@ -171,7 +171,7 @@ export class Nodes {
 
         const commissionedNodeId = await this.controllerNode.commissioningController.commissionNode(options);
 
-        console.log(`Commissioned Node: ${commissionedNodeId}`);
+        logger.info(`Commissioned Node: ${commissionedNodeId}`);
         return commissionedNodeId;
     }
 
@@ -215,7 +215,7 @@ export class Nodes {
      */
     async removeFabric(nodeId: number | string, index: number) {
         if (this.controllerNode.commissioningController === undefined) {
-            console.log("Controller not initialized, nothing to disconnect.");
+            logger.warn("Controller not initialized, nothing to disconnect.");
             return;
         }
 
@@ -272,7 +272,7 @@ export class Nodes {
     async basicCommissioningWindow(nodeId: number | string, timeout = 900) {
         const node = this.controllerNode.getNode(nodeId);
         await node.openBasicCommissioningWindow(timeout);
-        console.log(`Basic Commissioning Window for node ${nodeId} opened`);
+        logger.info(`Basic Commissioning Window for node ${nodeId} opened`);
     }
 
     /**
@@ -285,12 +285,12 @@ export class Nodes {
         const node = this.controllerNode.getNode(nodeId);
         const data = await node.openEnhancedCommissioningWindow(timeout);
 
-        console.log(`Enhanced Commissioning Window for node ${nodeId} opened`);
+        logger.info(`Enhanced Commissioning Window for node ${nodeId} opened`);
         const { qrPairingCode, manualPairingCode } = data;
 
-        console.log(QrCode.get(qrPairingCode));
-        console.log(`QR Code URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=${qrPairingCode}`);
-        console.log(`Manual pairing code: ${manualPairingCode}`);
+        logger.debug(QrCode.get(qrPairingCode));
+        logger.debug(`QR Code URL: https://project-chip.github.io/connectedhomeip/qrcode.html?data=${qrPairingCode}`);
+        logger.info(`Manual pairing code: ${manualPairingCode}`);
         return data;
     }
 
@@ -300,7 +300,7 @@ export class Nodes {
      */
     async logNode(nodeId: number | string) {
         const node = this.controllerNode.getNode(nodeId);
-        console.log("Logging structure of Node ", node.nodeId.toString());
+        logger.info("Logging structure of Node ", node.nodeId.toString());
         node.logStructure();
     }
 
@@ -328,12 +328,12 @@ export class Nodes {
             throw new Error(`No update info found for node ${nodeId}`);
         }
         const { vendorId, productId, softwareVersion, softwareVersionString } = updateInfo;
-        console.log(`Updating node ${nodeId} to version ${softwareVersionString} with vendorId ${vendorId} and productId ${productId}`);
+        logger.info(`Updating node ${nodeId} to version ${softwareVersionString} with vendorId ${vendorId} and productId ${productId}`);
         const peerAddress = this.controllerNode.commissioningController?.fabric.addressOf(node.nodeId);
         if (peerAddress === undefined) {
             throw new Error(`Peer address not found for node ${nodeId}`);
         }
-        console.log(`Updating node ${nodeId} to firmware with vendorId ${vendorId} and productId ${productId} and softwareVersion ${softwareVersion}`);
+        logger.info(`Updating node ${nodeId} to firmware with vendorId ${vendorId} and productId ${productId} and softwareVersion ${softwareVersion}`);
         await this.controllerNode.commissioningController?.otaProvider.act(agent => {
             return agent
                 .get(SoftwareUpdateManager).forceUpdate(peerAddress, vendorId, productId, softwareVersion);
@@ -351,6 +351,6 @@ export class Nodes {
                 .get(SoftwareUpdateManager)
                 .removeConsent(peerAddress)
         );
-        console.log(`Consent removed for node ${nodeId}`);
+        logger.info(`Consent removed for node ${nodeId}`);
     }
 }

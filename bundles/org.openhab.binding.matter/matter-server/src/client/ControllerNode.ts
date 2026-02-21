@@ -362,7 +362,7 @@ export class ControllerNode {
      * @param endpointId Optional endpointId to serialize. If omitted, the root endpoint will be serialized.
      * @returns
      */
-    async serializePairedNode(node: PairedNode, endpointId?: number) {
+    async serializePairedNode(node: PairedNode, endpointId?: number, requestFromRemote: boolean = true) {
         if (!this.commissioningController) {
             throw new Error("CommissioningController not initialized");
         }
@@ -390,7 +390,7 @@ export class ControllerNode {
                     if (/^\d+$/.test(attributeName)) continue;
                     const attribute = cluster.attributes[attributeName];
                     if (!attribute) continue;
-                    const attributeValue = await attribute.get();
+                    const attributeValue = await attribute.get(requestFromRemote);
                     logger.debug(`Attribute ${attributeName} value: ${attributeValue}`);
                     if (attributeValue !== undefined) {
                         clusterData[attributeName] = attributeValue;
