@@ -28,6 +28,9 @@ import javax.net.ssl.TrustManager;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
 import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
@@ -74,7 +77,7 @@ public class ApiHandler {
     private final int STATION_ENTITY = 7;
 
     private final static String BASE_URL = "https://www.vigicrues.gouv.fr/services/";
-    private final static String INFO_URL = BASE_URL + "InfoVigiCru.geojson?TypEntVigiCru=%s&CdEntVigiCru=%s";
+    private final static String INFO_URL = BASE_URL + "InfoVigiCru.geojson";
     private final static String TRONCON_URL = BASE_URL + "TronEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
     private final static String TERITOIRE_URL = BASE_URL + "TerEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
     private final static String STATION_URL = BASE_URL + "StaEntVigiCru.json?TypEntVigiCru=%s&CdEntVigiCru=%s";
@@ -84,7 +87,7 @@ public class ApiHandler {
 
     private final static String MEASURES_URL = BASE_URL
             + "https://public.opendatasoft.com/api/records/1.0/search/?dataset=vigicrues&sort=timestamp&q=%s";
-    private static final String HUBEAU_URL = "https://hubeau.eaufrance.fr/api/v1/hydrometrie/referentiel/stations?format=json&size=2000";
+    private static final String HUBEAU_URL = "https://hubeau.eaufrance.fr/api/v2/hydrometrie/referentiel/stations?format=json&size=2000";
 
     @Activate
     public ApiHandler(@Reference TimeZoneProvider timeZoneProvider,
@@ -124,20 +127,44 @@ public class ApiHandler {
     }
 
     private <T> T execute(String url, Class<T> responseType) throws VigiCruesException {
+        String jsonResponse = "";
+        int retry = 0;
         try {
-            ContentResponse response = httpClient.newRequest(url).timeout(TIMEOUT_S, TimeUnit.SECONDS).method("GET")
-                    .send();
-            String jsonResponse = response.getContentAsString();
+            while (retry < 3) {
+                Request req = httpClient.newRequest(url).timeout(TIMEOUT_S, TimeUnit.SECONDS).method("GET");
+                req.header("User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36");
+                req.header("Accept",
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+                req.header("Accept-Encoding", "gzip, deflate, br, zstd");
+                req.header("Accept-Language", "en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7");
+
+                FutureResponseListener listener = new FutureResponseListener(req, 50 * 1024 * 1024);
+                req.send(listener);
+
+                ContentResponse response = listener.get(TIMEOUT_S, TimeUnit.SECONDS);
+                retry++;
+
+                int status = response.getStatus();
+                if (status == HttpStatus.OK_200) {
+                    jsonResponse = response.getContentAsString();
+                    if (jsonResponse.contains("Site en maintenance")) {
+                        Thread.sleep(200);
+                        continue;
+                    }
+                    return gson.fromJson(jsonResponse, responseType);
+                }
+            }
             return gson.fromJson(jsonResponse, responseType);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new VigiCruesException(e);
         } catch (JsonSyntaxException e) {
-            throw e;
+            throw new VigiCruesException(e);
         }
     }
 
-    public InfoVigiCru getTronconStatus(String tronconId) throws VigiCruesException {
-        return execute(INFO_URL.formatted(TRONCON_ENTITY, tronconId), InfoVigiCru.class);
+    public InfoVigiCru getTronconStatus() throws VigiCruesException {
+        return execute(INFO_URL, InfoVigiCru.class);
     }
 
     public TerEntVigiCru getTroncon(String stationId) throws VigiCruesException {
@@ -146,6 +173,10 @@ public class ApiHandler {
 
     public TerEntVigiCru getTerritoire(String stationId) throws VigiCruesException {
         return execute(TERITOIRE_URL.formatted(TERRITOIRE_ENTITY, stationId), TerEntVigiCru.class);
+    }
+
+    public StaEntVigiCruAnswer getTerritoireDetails(String stationId) throws VigiCruesException {
+        return execute(STATION_URL.formatted(TERRITOIRE_ENTITY, stationId), StaEntVigiCruAnswer.class);
     }
 
     public StaEntVigiCruAnswer getStationFeeds(String stationId) throws VigiCruesException {

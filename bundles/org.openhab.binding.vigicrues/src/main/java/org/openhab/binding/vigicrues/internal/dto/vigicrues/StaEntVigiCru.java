@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.vigicrues.internal.dto.vigicrues;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -80,4 +82,7 @@ public class StaEntVigiCru {
 
     @SerializedName("VigilanceCrues")
     public VigilanceCrues vigilanceCrues;
+
+    @SerializedName("aNMoinsUn")
+    public List<ANMoinsUn> aNMoinsUn;
 }

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -35,13 +36,12 @@ import org.openhab.binding.vigicrues.internal.api.ApiHandler;
 import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse.StationData;
-import org.openhab.binding.vigicrues.internal.dto.vigicrues.ANMoinsUn;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.CdStationHydro;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.InfoVigiCru;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.ObservationAnswer;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.ObssHydro;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.StaEntVigiCru;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.StaEntVigiCruAnswer;
-import org.openhab.binding.vigicrues.internal.dto.vigicrues.TerEntVigiCru;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -98,8 +98,8 @@ public class VigiCruesHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         if (thing.getProperties().isEmpty()) {
-            Map<String, String> properties = discoverAttributes(config);
-            updateProperties(properties);
+        Map<String, String> properties = discoverAttributes(config);
+        updateProperties(properties);
         }
         getReferences();
         refreshJob = scheduler.scheduleWithFixedDelay(this::updateAndPublish, 0, config.refresh, TimeUnit.MINUTES);
@@ -159,12 +159,11 @@ public class VigiCruesHandler extends BaseThingHandler {
             refineStation.vigilanceCrues.cruesHistoriques.stream()
                     .forEach(crue -> properties.putAll(crue.getDescription()));
             String codeTerritoire = refineStation.vigilanceCrues.pereBoitEntVigiCru.cdEntVigiCru;
-            TerEntVigiCru territoire = apiHandler.getTerritoire(codeTerritoire);
-            for (ANMoinsUn troncon : territoire.listEntVigiCru.get(0).aNMoinsUn) {
-                TerEntVigiCru detail = apiHandler.getTroncon(troncon.cdEntVigiCruInferieur);
-                if (detail.listEntVigiCru.get(0).aNMoinsUn.stream()
-                        .anyMatch(s -> config.id.equalsIgnoreCase(s.cdEntVigiCruInferieur))) {
-                    properties.put(TRONCON, troncon.cdEntVigiCruInferieur);
+            StaEntVigiCruAnswer territoire = apiHandler.getTerritoireDetails(codeTerritoire);
+
+            for (StaEntVigiCru troncon : territoire.listEntVigiCru) {
+                if (troncon.aNMoinsUn.stream().anyMatch(s -> config.id.equalsIgnoreCase(s.cdEntVigiCruInferieur))) {
+                    properties.put(TRONCON, troncon.cdEntVigiCru);
                     break;
                 }
             }
@@ -239,10 +238,20 @@ public class VigiCruesHandler extends BaseThingHandler {
                     });
             String currentPortion = portion;
             if (currentPortion != null) {
-                InfoVigiCru status = apiHandler.getTronconStatus(currentPortion);
-                updateAlert(ALERT, status.vicInfoVigiCru.vicNivInfoVigiCru - 1);
-                updateString(SHORT_COMMENT, status.vicInfoVigiCru.vicSituActuInfoVigiCru);
-                updateString(COMMENT, status.vicInfoVigiCru.vicQualifInfoVigiCru);
+                // currentPortion
+                InfoVigiCru status = apiHandler.getTronconStatus();
+                Optional<InfoVigiCru.Feature.FeatureProperties> opt = status.features.stream()
+                        .filter(s -> currentPortion.equalsIgnoreCase(s.properties.cdEntCru)).map(s -> s.properties)
+                        .findAny();
+
+                if (opt.isPresent()) {
+                    InfoVigiCru.Feature.FeatureProperties props = opt.get();
+                    updateAlert(ALERT, props.nivInfViCr - 1);
+                }
+                logger.info("");
+                //
+                // updateString(SHORT_COMMENT, status.vicInfoVigiCru.vicSituActuInfoVigiCru);
+                // updateString(COMMENT, status.vicInfoVigiCru.vicQualifInfoVigiCru);
             }
             updateStatus(ThingStatus.ONLINE);
         } catch (VigiCruesException e) {
