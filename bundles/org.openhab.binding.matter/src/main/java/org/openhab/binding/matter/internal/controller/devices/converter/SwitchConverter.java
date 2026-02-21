@@ -40,8 +40,6 @@ import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 
-import com.google.gson.Gson;
-
 /**
  * A converter for translating {@link SwitchCluster} events and attributes to openHAB channels and back again.
  *
@@ -49,7 +47,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class SwitchConverter extends GenericConverter<SwitchCluster> {
-    private Gson gson = new Gson();
 
     public SwitchConverter(SwitchCluster cluster, MatterBaseThingHandler handler, int endpointNumber,
             String labelPrefix) {
@@ -115,7 +112,7 @@ public class SwitchConverter extends GenericConverter<SwitchCluster> {
     public void onEvent(EventTriggeredMessage message) {
         String eventName = message.path.eventName.toLowerCase(Locale.ROOT);
         for (TriggerEvent event : message.events) {
-            triggerChannel("switch-" + eventName, gson.toJson(event.data));
+            triggerChannel("switch-" + eventName, GSON.toJson(event.data));
         }
     }
 

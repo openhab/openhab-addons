@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -75,7 +77,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     protected BigInteger nodeId = BigInteger.valueOf(0);
     private Integer pollInterval = 0;
     private Map<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
-    private @Nullable ProgressCallback progressCallback;
+    private volatile @Nullable ProgressCallback progressCallback;
 
     public NodeHandler(Bridge bridge, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
@@ -219,14 +221,14 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
             try {
                 // Start the firmware update, we will be called back when this starts and set the thing status to
                 // firmware updating
-                client.otaStartUpdate(getNodeId()).get();
+                client.otaStartUpdate(getNodeId()).get(30, TimeUnit.SECONDS);
                 progressCallback.defineSequence(ProgressStep.DOWNLOADING, ProgressStep.UPDATING);
                 this.progressCallback = progressCallback;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.debug("Failed to start firmware update for device {}", getNodeId(), e);
                 progressCallback.failed(MatterBindingConstants.OTA_FIRMWARE_UPDATE_FAILED, e.getLocalizedMessage());
-            } catch (ExecutionException e) {
+            } catch (ExecutionException | TimeoutException e) {
                 logger.debug("Failed to start firmware update for device {}", getNodeId(), e);
                 progressCallback.failed(MatterBindingConstants.OTA_FIRMWARE_UPDATE_FAILED, e.getLocalizedMessage());
             }
@@ -241,7 +243,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     @Override
     public void cancel() {
         try {
-            cancelOTAUpdate().get();
+            cancelOTAUpdate().get(30, TimeUnit.SECONDS);
             ProgressCallback progressCallback = this.progressCallback;
             if (progressCallback != null) {
                 progressCallback.canceled();
@@ -250,7 +252,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Failed to cancel firmware update for device {}", getNodeId(), e);
-        } catch (ExecutionException e) {
+        } catch (ExecutionException | TimeoutException e) {
             logger.debug("Failed to cancel firmware update for device {}", getNodeId(), e);
         }
     }
@@ -439,6 +441,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     private void handleOtaUpdateStateProgress(int progress, UpdateStateEnum stateTransition) {
         logger.debug("OTA Update State Progress: {} for node {}", progress, getNodeId());
         ThingStatus status = getThing().getStatus();
+        ProgressCallback progressCallback = this.progressCallback;
         switch (stateTransition) {
             case DOWNLOADING:
                 updateStatus(status, ThingStatusDetail.FIRMWARE_UPDATING, translationService.getTranslation(

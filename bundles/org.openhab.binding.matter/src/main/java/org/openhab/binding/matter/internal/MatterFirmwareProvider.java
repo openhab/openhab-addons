@@ -53,7 +53,8 @@ public class MatterFirmwareProvider implements FirmwareProvider {
 
     private final Logger logger = LoggerFactory.getLogger(MatterFirmwareProvider.class);
     // Cache the OTA update information for 1 day
-    ExpiringCacheMap<BigInteger, OtaFirmwareEntry> firmwareCache = new ExpiringCacheMap<>(Duration.ofDays(1));
+    private final ExpiringCacheMap<BigInteger, OtaFirmwareEntry> firmwareCache = new ExpiringCacheMap<>(
+            Duration.ofDays(1));
 
     @Activate
     public MatterFirmwareProvider() {
