@@ -19,6 +19,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyInputState;
@@ -66,8 +67,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param thingTable Table of known things (build at runtime)
      * @param thing Thing Handler (ThingHandlerInterface)
      */
-    public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing) {
-        super(thingName, thingTable, thing);
+    public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
+            WebSocketClient webSocketClient) {
+        super(thingName, thingTable, thing, webSocketClient);
 
         ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();
@@ -76,16 +78,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
-        if (!initialized) {
-            initialized = true;
-            connected = false;
-        }
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        super.initialize(thingName, config);
+        connected = false;
     }
 
     @Override
@@ -143,7 +138,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public ShellySettingsStatus getStatus() throws ShellyApiException {
+    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
         if (!connected) {
             throw new ShellyApiException("Thing is not yet initialized -> status not available");
         }

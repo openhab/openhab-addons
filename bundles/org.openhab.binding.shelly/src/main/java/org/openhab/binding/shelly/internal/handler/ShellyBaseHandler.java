@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
@@ -141,7 +142,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
      */
     public ShellyBaseHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
         super(thing);
 
         this.thingTable = thingTable;
@@ -158,9 +159,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
         gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
         if (blu) {
-            this.api = new ShellyBluApi(thingName, thingTable, this);
+            this.api = new ShellyBluApi(thingName, thingTable, this, webSocketClient);
         } else if (gen2) {
-            this.api = new Shelly2ApiRpc(thingName, thingTable, this);
+            this.api = new Shelly2ApiRpc(thingName, thingTable, this, webSocketClient);
         } else {
             this.api = new Shelly1HttpApi(thingName, this);
         }
@@ -320,7 +321,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize();
+        api.initialize(thingName, config);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && config.password.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -328,9 +329,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(device.hostname).toLowerCase();
+            api.setConfig(thingName, config); // update config
         }
 
-        api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
         String mode = getString(tmpPrf.device.mode);
@@ -367,7 +368,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             tmpPrf.updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
 
-        tmpPrf.status = api.getStatus(); // update thing properties
+        tmpPrf.status = api.getStatus(false); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
         addStateOptions(tmpPrf);
 
@@ -551,14 +552,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
 
             skipUpdate++;
-            ThingStatus thingStatus = getThing().getStatus();
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
+                ThingStatus thingStatus = getThing().getStatus();
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
-                ShellySettingsStatus status = api.getStatus();
+                ShellySettingsStatus status = api.getStatus(profile.alwaysOn);
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;
@@ -610,7 +611,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String secondaryIp = config.deviceIp + ":" + client.mport.toString();
                 String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
                 DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
-                        bindingConfig, httpClient, messages);
+                        bindingConfig, httpClient, messages, thingTable);
                 if (result != null) {
                     thingTable.discoveredResult(result);
                 }
