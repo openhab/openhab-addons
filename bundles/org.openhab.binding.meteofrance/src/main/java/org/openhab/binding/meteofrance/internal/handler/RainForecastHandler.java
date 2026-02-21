@@ -137,27 +137,29 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
         setForecast(forecastProps.forecast);
     }
 
-    private void setForecast(List<Forecast> forecast) {
-        TimeSeries timeSeries = new TimeSeries(REPLACE);
-        ZonedDateTime now = ZonedDateTime.now();
-
+    private void setForecast(@Nullable List<Forecast> forecast) {
         State currentState = null;
         long untilNextRun = 0;
-        for (Forecast prevision : forecast) {
-            State state = prevision.rainIntensity() != RainIntensity.UNKNOWN
-                    ? new DecimalType(prevision.rainIntensity().ordinal())
-                    : UnDefType.UNDEF;
-            if (currentState == null) {
-                currentState = state;
-                if (prevision.time().isAfter(now)) {
-                    untilNextRun = now.until(prevision.time(), ChronoUnit.SECONDS);
-                }
-            }
-            timeSeries.add(prevision.time().toInstant(), state);
-        }
-        updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
-        sendTimeSeries(intensityChannelUID, timeSeries);
 
+        if (forecast != null) {
+            TimeSeries timeSeries = new TimeSeries(REPLACE);
+            ZonedDateTime now = ZonedDateTime.now();
+            for (Forecast prevision : forecast) {
+                State state = prevision.rainIntensity() != RainIntensity.UNKNOWN
+                        ? new DecimalType(prevision.rainIntensity().ordinal())
+                        : UnDefType.UNDEF;
+                if (currentState == null) {
+                    currentState = state;
+                    if (prevision.time().isAfter(now)) {
+                        untilNextRun = now.until(prevision.time(), ChronoUnit.SECONDS);
+                    }
+                }
+                timeSeries.add(prevision.time().toInstant(), state);
+            }
+            sendTimeSeries(intensityChannelUID, timeSeries);
+        }
+
+        updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
         untilNextRun = untilNextRun != 0 ? untilNextRun : 300;
 
         logger.debug("Refresh rain intensity forecast in: {}s", untilNextRun);
