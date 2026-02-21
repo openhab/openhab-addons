@@ -44,13 +44,34 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.openhab.binding.squeezebox.internal.discovery.SqueezeBoxPlayerDiscoveryService;
+import org.openhab.binding.squeezebox.internal.dto.Album;
+import org.openhab.binding.squeezebox.internal.dto.Albums;
+import org.openhab.binding.squeezebox.internal.dto.Artist;
+import org.openhab.binding.squeezebox.internal.dto.Artists;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
 import org.openhab.binding.squeezebox.internal.dto.ButtonsDTO;
+import org.openhab.binding.squeezebox.internal.dto.Playlist;
+import org.openhab.binding.squeezebox.internal.dto.Playlists;
+import org.openhab.binding.squeezebox.internal.dto.Request;
 import org.openhab.binding.squeezebox.internal.dto.StatusResponseDTO;
+import org.openhab.binding.squeezebox.internal.dto.Track;
+import org.openhab.binding.squeezebox.internal.dto.Tracks;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaListenner;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaArtist;
+import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaQueue;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSearchResult;
+import org.openhab.core.media.model.MediaEntrySupplier;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -68,6 +89,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -87,7 +110,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Mark Hilbush - Add like/unlike functionality
  */
 @NonNullByDefault
-public class SqueezeBoxServerHandler extends BaseBridgeHandler {
+public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaListenner {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SQUEEZEBOXSERVER_THING_TYPE);
@@ -114,6 +137,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private @Nullable SqueezeServerListener listener;
     private @Nullable Future<?> reconnectFuture;
 
+    private MediaService mediaService;
+
     private String host = "";
 
     private int cliport;
@@ -129,8 +154,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private @Nullable String jsonRpcUrl;
     private @Nullable String basicAuthorization;
 
-    public SqueezeBoxServerHandler(Bridge bridge) {
+    public SqueezeBoxServerHandler(Bridge bridge, MediaService mediaService) {
         super(bridge);
+
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -147,7 +174,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public String getStreamUri(String cmdVal) {
+        return "";
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("");
     }
 
     @Override
@@ -353,7 +386,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     /**
      * Send a command to the Squeeze Server.
      */
-    private synchronized void sendCommand(String command) {
+    public synchronized void sendCommand(String command) {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return;
         }
@@ -422,8 +455,276 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         } catch (IllegalThreadStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+
+        mediaService.addMediaListenner(SqueezeBoxBindingConstants.BINDING_ID, this);
+
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+
+        MediaEntrySupplier mediaSource = mediaRegistry.registerEntry(SqueezeBoxBindingConstants.BINDING_ID, () -> {
+            return new MediaEntrySupplier(SqueezeBoxBindingConstants.BINDING_ID, SqueezeBoxBindingConstants.BINDING_LABEL,
+                    "/static/Lyrion.png");
+        });
+
         // Mark the server ONLINE. bridgeStatusChanged will cause the players to come ONLINE
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    private @Nullable Albums getArtistAlbums(String key) {
+        long start = 0;
+        long size = 10;
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("albums", start, size, "artist_id:" + key, "tags:lyjta");
+        String response = executePost(jsonRpcUrl, req);
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("albums_loop");
+
+            Albums albums = gson.fromJson(childs, Albums.class);
+            return albums;
+        }
+
+        return null;
+    }
+
+    private @Nullable Albums getAlbums(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        Request req = Request.fromParams("albums", start, size, "tags:lyjta");
+        String response = executePost(jsonRpcUrl, req);
+
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("albums_loop");
+
+            Albums albums = gson.fromJson(childs, Albums.class);
+            return albums;
+        }
+
+        return null;
+    }
+
+    private @Nullable Tracks getCurrentPlaylist(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("playlist save currentPlayList").setPlayerId("00:04:20:16:20:80");
+        String response = executePost(jsonRpcUrl, req);
+
+        req = Request.fromParams("playlist playlistsinfo id").setPlayerId("00:04:20:16:20:80");
+        response = executePost(jsonRpcUrl, req);
+
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("id");
+            String playlistId = childs.getAsString();
+
+            Tracks tracks = getPlaylistTrack(playlistId);
+            return tracks;
+        }
+
+        return null;
+    }
+
+    private @Nullable Playlists getPlaylists(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("playlists", start, size, "tags:lyjta");
+        String response = executePost(jsonRpcUrl, req);
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("playlists_loop");
+
+            Playlists playlist = gson.fromJson(childs, Playlists.class);
+            return playlist;
+        }
+
+        return null;
+    }
+
+    public @Nullable Track getTrack(String key) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("titles", 0, 100, "track_id:" + key, "tags:u");
+        String response = executePost(jsonRpcUrl, req);
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks.get(0);
+        }
+
+        return null;
+    }
+
+    private @Nullable Tracks getTracks(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("titles", start, size, "tags:ac");
+        String response = executePost(jsonRpcUrl, req);
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks;
+        }
+
+        return null;
+    }
+
+    private @Nullable Tracks getAlbumTracks(String key) {
+        long start = 0;
+        long size = 100;
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("titles", start, size, "album_id:" + key, "tags:ac");
+        String response = executePost(jsonRpcUrl, req);
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks;
+        }
+
+        return null;
+    }
+
+    private @Nullable Tracks getPlaylistTrack(String key) {
+        long start = 0;
+        long size = 100;
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        Request req = Request.fromParams("playlists tracks", start, size, "playlist_id:" + key, "tags:ac");
+        String response = executePost(jsonRpcUrl, req);
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("playlisttracks_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks;
+        }
+
+        return null;
+    }
+
+    private @Nullable Artists getArtists(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("artists", start, size, "tags:tyj4");
+        String response = executePost(jsonRpcUrl, req);
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("artists_loop");
+
+            Artists artists = gson.fromJson(childs, Artists.class);
+            return artists;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
+        if (mediaEntry.getKey().equals(SqueezeBoxBindingConstants.BINDING_ID)) {
+            mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums", "/static/Albums.png");
+            });
+
+            mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists", "/static/Artists.png");
+            });
+
+            mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
+            });
+
+            mediaEntry.registerEntry("Tracks", () -> {
+                return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
+            });
+        } else if ("Playlists".equals(mediaEntry.getKey())) {
+            List<Playlist> playlists = getPlaylists(start, size);
+            if (playlists != null) {
+                mediaService.RegisterCollections(mediaEntry, playlists, MediaPlayList.class);
+            }
+        } else if ("Tracks".equals(mediaEntry.getKey())) {
+            List<Track> tracks = getTracks(start, size);
+            if (tracks != null) {
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            }
+        } else if ("Albums".equals(mediaEntry.getKey())) {
+            List<Album> albums = getAlbums(start, size);
+            if (albums != null) {
+                mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+            }
+        } else if ("Artists".equals(mediaEntry.getKey())) {
+            List<Artist> artists = getArtists(start, size);
+            if (artists != null) {
+                mediaService.RegisterCollections(mediaEntry, artists, MediaArtist.class);
+            }
+        } else if (mediaEntry instanceof MediaArtist) {
+            MediaArtist mediaArtist = (MediaArtist) mediaEntry;
+            List<Album> albumList = getArtistAlbums(mediaArtist.getKey());
+            if (albumList != null) {
+                mediaService.RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
+            }
+        } else if (mediaEntry instanceof MediaAlbum) {
+            MediaAlbum album = (MediaAlbum) mediaEntry;
+            List<Track> trackList = getAlbumTracks(album.getKey());
+            if (trackList != null) {
+                mediaService.RegisterCollections(mediaEntry, trackList, MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaPlayList) {
+            MediaPlayList playlist = (MediaPlayList) mediaEntry;
+            List<Track> trackList = getPlaylistTrack(playlist.getKey());
+            if (trackList != null) {
+                mediaService.RegisterCollections(mediaEntry, trackList, MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaQueue) {
+            logger.trace("MediaQueue");
+            Tracks tracks = getCurrentPlaylist(start, size);
+            ((MediaQueue) mediaEntry).Clear();
+            if (tracks != null) {
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaSearchResult) {
+            MediaSearchResult searchResult = (MediaSearchResult) mediaEntry;
+        }
     }
 
     /**
@@ -589,7 +890,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     players.put(macAddress, player);
                     updatePlayer(listener -> listener.playerAdded(player));
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjcA");
+                    sendCommand(player.macAddress + " status - 1 subscribe:1 tags:yagJlNKjcA");
                 }
             }
             for (final SqueezeBoxPlayer player : players.values()) {
@@ -1037,23 +1338,28 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
-        private @Nullable String executePost(String url, String content) {
-            // @formatter:off
-            HttpRequestBuilder builder = HttpRequestBuilder.postTo(url)
-                .withTimeout(Duration.ofSeconds(5))
-                .withContent(content)
-                .withHeader("charset", "utf-8")
-                .withHeader("Content-Type", "application/json");
-            // @formatter:on
-            if (basicAuthorization != null) {
-                builder = builder.withHeader("Authorization", "Basic " + basicAuthorization);
-            }
-            try {
-                return builder.getContentAsString();
-            } catch (IOException e) {
-                logger.debug("Bridge: IOException on jsonrpc call: {}", e.getMessage(), e);
-                return null;
-            }
+    }
+
+    private @Nullable String executePost(String url, Request req) {
+        return executePost(url, gson.toJson(req));
+    }
+
+    private @Nullable String executePost(String url, String content) {
+        // @formatter:off
+        HttpRequestBuilder builder = HttpRequestBuilder.postTo(url)
+            .withTimeout(Duration.ofSeconds(5))
+            .withContent(content)
+            .withHeader("charset", "utf-8")
+            .withHeader("Content-Type", "application/json");
+        // @formatter:on
+        if (basicAuthorization != null) {
+            builder = builder.withHeader("Authorization", "Basic " + basicAuthorization);
+        }
+        try {
+            return builder.getContentAsString();
+        } catch (IOException e) {
+            logger.debug("Bridge: IOException on jsonrpc call: {}", e.getMessage(), e);
+            return null;
         }
     }
 
