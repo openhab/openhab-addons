@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -144,7 +145,8 @@ public class MatterControllerClient extends MatterWebsocketClient {
             future = sendMessage("nodes", "pairNode", new Object[] { "", parts[0], parts[1] }, PAIRING_TIMEOUT_SECONDS);
         } else {
             // MT is a matter QR code, other wise remove any dashes in a manual pairing code
-            String pairCode = parts[0].toUpperCase().indexOf("MT:") == 0 ? parts[0] : parts[0].replaceAll("-", "");
+            String pairCode = parts[0].toUpperCase(Locale.ROOT).indexOf("MT:") == 0 ? parts[0]
+                    : parts[0].replaceAll("-", "");
             future = sendMessage("nodes", "pairNode", new Object[] { pairCode }, PAIRING_TIMEOUT_SECONDS);
         }
         return future.thenApply(obj -> {

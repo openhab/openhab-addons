@@ -17,6 +17,7 @@ import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,7 +113,7 @@ public class SwitchConverter extends GenericConverter<SwitchCluster> {
 
     @Override
     public void onEvent(EventTriggeredMessage message) {
-        String eventName = message.path.eventName.toLowerCase();
+        String eventName = message.path.eventName.toLowerCase(Locale.ROOT);
         for (TriggerEvent event : message.events) {
             triggerChannel("switch-" + eventName, gson.toJson(event.data));
         }

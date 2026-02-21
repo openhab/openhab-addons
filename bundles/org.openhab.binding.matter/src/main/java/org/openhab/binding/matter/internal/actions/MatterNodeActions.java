@@ -89,10 +89,10 @@ public class MatterNodeActions implements ThingActions {
                     PairingCodes code = client.enhancedCommissioningWindow(handler.getNodeId()).get(30,
                             TimeUnit.SECONDS);
                     return Map.of("manualPairingCode", code.manualPairingCode, "qrPairingCode", code.qrPairingCode);
-                } catch (InterruptedException | ExecutionException | TimeoutException | JsonParseException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to generate new pairing code for device {}", handler.getNodeId(), e);
+                } catch (ExecutionException | TimeoutException | JsonParseException e) {
                     logger.debug("Failed to generate new pairing code for device {}", handler.getNodeId(), e);
                 }
             }
@@ -113,10 +113,11 @@ public class MatterNodeActions implements ThingActions {
                 try {
                     client.removeNode(handler.getNodeId()).get(30, TimeUnit.SECONDS);
                     return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
                     logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
@@ -141,10 +142,11 @@ public class MatterNodeActions implements ThingActions {
                     return result.isEmpty()
                             ? translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_FABRICS)
                             : result;
-                } catch (InterruptedException | ExecutionException | TimeoutException | JsonParseException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to retrieve fabrics {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException | JsonParseException e) {
                     logger.debug("Failed to retrieve fabrics {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
@@ -164,10 +166,11 @@ public class MatterNodeActions implements ThingActions {
                 try {
                     client.removeFabric(handler.getNodeId(), indexNumber).get(30, TimeUnit.SECONDS);
                     return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to remove fabric {} {} ", handler.getNodeId(), indexNumber, e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
                     logger.debug("Failed to remove fabric {} {} ", handler.getNodeId(), indexNumber, e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
@@ -191,10 +194,11 @@ public class MatterNodeActions implements ThingActions {
                         MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_AVAILABLE,
                         updateInfo.softwareVersionString, updateInfo.vendorId, updateInfo.productId,
                         updateInfo.softwareVersion);
-            } catch (InterruptedException | ExecutionException | TimeoutException | JsonParseException e) {
-                if (e instanceof InterruptedException) {
-                    Thread.currentThread().interrupt();
-                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Failed to check for firmware update for device {}", handler.getNodeId(), e);
+                return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+            } catch (ExecutionException | TimeoutException | JsonParseException e) {
                 logger.debug("Failed to check for firmware update for device {}", handler.getNodeId(), e);
                 return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
             }
@@ -214,10 +218,11 @@ public class MatterNodeActions implements ThingActions {
                     client.otaStartUpdate(handler.getNodeId()).get(60, TimeUnit.SECONDS);
                     return translationService
                             .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to start firmware update for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
                     logger.debug("Failed to start firmware update for device {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }
@@ -237,10 +242,11 @@ public class MatterNodeActions implements ThingActions {
                     handler.cancelOTAUpdate().get(30, TimeUnit.SECONDS);
                     return translationService
                             .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to cancel firmware update for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
                     logger.debug("Failed to cancel firmware update for device {}", handler.getNodeId(), e);
                     return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
                 }

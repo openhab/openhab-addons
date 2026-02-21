@@ -95,10 +95,11 @@ public class MatterFirmwareProvider implements FirmwareProvider {
                 try {
                     OtaUpdateInfo updateInfo = nodeHandler.checkForOTAUpdate().get(30, TimeUnit.SECONDS);
                     return new OtaFirmwareEntry(updateInfo);
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                    if (e instanceof InterruptedException) {
-                        Thread.currentThread().interrupt();
-                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to check for firmware update for device {}", nodeId, e);
+                    return new OtaFirmwareEntry(null);
+                } catch (ExecutionException | TimeoutException e) {
                     logger.debug("Failed to check for firmware update for device {}", nodeId, e);
                     return new OtaFirmwareEntry(null);
                 }
