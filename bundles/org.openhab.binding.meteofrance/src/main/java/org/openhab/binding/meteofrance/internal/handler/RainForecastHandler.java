@@ -154,6 +154,8 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
                 timeSeries.add(prevision.time().toInstant(), state);
             }
             sendTimeSeries(intensityChannelUID, timeSeries);
+        } else {
+            logger.info("No rein forecast provided, will retry on next schedule");
         }
 
         updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
