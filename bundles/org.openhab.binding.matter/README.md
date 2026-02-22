@@ -310,6 +310,7 @@ Possible channels include:
 | wifinetworkdiagnostics-rssi                                         | Number:Power             | Signal                       | Wi-Fi signal strength indicator.                                                                                                                                                                                                                                     | QualityOfService | true     | %d %unit%   |                                                                                                                                                                      |
 | windowcovering-lift                                                 | Rollershutter            | Window Covering Lift         | Sets the window covering level - supporting open/close and up/down type commands                                                                                                                                                                                     | Blinds           |          | %.0f %%     |                                                                                                                                                                      |
 >>>>>>> main
+
 ## Supported Matter Device Types
 
 The following is a list of known Matter device types supported by openHAB as defined in the Matter Device Library Specification Version 1.4.1.
