@@ -119,12 +119,12 @@ public class EnOceanDatagramInjectorHandler extends EnOceanBaseThingHandler {
         }
 
         try {
-            String senderId = localConfig.senderId;
-            if (senderId == null || !validateEnoceanId(senderId)) {
+            String senderIdHex = localConfig.senderId;
+            if (senderIdHex == null || !validateEnoceanId(senderIdHex)) {
                 configurationErrorDescription = "Sender address is not valid";
                 return false;
             }
-            senderId = HexUtils.hexToBytes(senderId);
+            this.senderId = HexUtils.hexToBytes(senderIdHex);
             destinationId = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
             this.updateProperty(PROPERTY_SENDINGENOCEAN_ID, HexUtils.bytesToHex(this.senderId));
         } catch (Exception e) {
