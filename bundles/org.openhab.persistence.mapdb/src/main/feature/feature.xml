@@ -4,6 +4,12 @@
 
 	<feature name="openhab-persistence-mapdb" description="MapDB Persistence" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
+		<bundle dependency="true">wrap:mvn:org.jetbrains.kotlin/kotlin-stdlib/1.9.23$Bundle-SymbolicName=kotlin-stdlib&amp;Export-Package=*%3Bversion=1.9.23</bundle>
+		<bundle dependency="true">wrap:mvn:net.jpountz.lz4/lz4/1.3.0$Bundle-SymbolicName=lz4&amp;Export-Package=net.jpountz.*%3Bversion=1.8.0</bundle>
+		<bundle dependency="true">wrap:mvn:org.eclipse.collections/eclipse-collections-api/10.4.0$Bundle-SymbolicName=eclipse-collections-api&amp;Export-Package=org.eclipse.collections.*%3Bversion=10.4.0</bundle>
+		<bundle dependency="true">wrap:mvn:org.eclipse.collections/eclipse-collections/10.4.0$Bundle-SymbolicName=eclipse-collections&amp;Export-Package=org.eclipse.collections.*%3Bversion=10.4.0</bundle>
+		<bundle dependency="true">wrap:mvn:org.mapdb/elsa/3.0.0-M5$Bundle-SymbolicName=elsa&amp;Export-Package=org.mapdb.elsa.*%3Bversion=3.0.6</bundle>
+		<bundle start-level="80">wrap:mvn:org.mapdb/mapdb/3.1.0$Bundle-SymbolicName=mapdb&amp;Import-Package=*%3Bresolution%3A%3Doptional</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.mapdb/${project.version}</bundle>
 	</feature>
 
