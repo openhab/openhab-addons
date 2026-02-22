@@ -31,13 +31,11 @@ public class AdministratorCommissioningCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x003C;
     public static final String CLUSTER_NAME = "AdministratorCommissioning";
     public static final String CLUSTER_PREFIX = "administratorCommissioning";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_WINDOW_STATUS = "windowStatus";
     public static final String ATTRIBUTE_ADMIN_FABRIC_INDEX = "adminFabricIndex";
     public static final String ATTRIBUTE_ADMIN_VENDOR_ID = "adminVendorId";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates whether a new Commissioning window has been opened by an Administrator, using either the
@@ -52,7 +50,7 @@ public class AdministratorCommissioningCluster extends BaseCluster {
     /**
      * When the WindowStatus attribute is not set to WindowNotOpen, this attribute shall indicate the FabricIndex
      * associated with the Fabric scoping of the Administrator that opened the window. This may be used to
-     * cross-reference in the Fabrics attribute of the Node Operational Credentials cluster.
+     * cross-reference in the Fabrics attribute of the Operational Credentials cluster.
      * If, during an open commissioning window, the fabric for the Administrator that opened the window is removed, then
      * this attribute shall be set to null.
      * When the WindowStatus attribute is set to WindowNotOpen, this attribute shall be set to null.
@@ -224,7 +222,6 @@ public class AdministratorCommissioningCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "windowStatus : " + windowStatus + "\n";
         str += "adminFabricIndex : " + adminFabricIndex + "\n";

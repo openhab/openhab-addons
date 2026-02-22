@@ -28,7 +28,6 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0200;
     public static final String CLUSTER_NAME = "PumpConfigurationAndControl";
     public static final String CLUSTER_PREFIX = "pumpConfigurationAndControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_MAX_PRESSURE = "maxPressure";
     public static final String ATTRIBUTE_MAX_SPEED = "maxSpeed";
@@ -54,7 +53,6 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPERATION_MODE = "operationMode";
     public static final String ATTRIBUTE_CONTROL_MODE = "controlMode";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute specifies the maximum pressure the pump can achieve. It is a physical limit, and does not apply to
@@ -99,8 +97,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      */
     public Integer maxCompPressure; // 6 int16 R V
     /**
-     * This attribute specifies the minimum speed the pump can achieve when it is working with the ControlMode attribute
-     * set to ConstantSpeed.
+     * This attribute specifies the minimum speed the pump can achieve when it is working with the Con trolMode
+     * attribute set to ConstantSpeed.
      * Valid range is 0 to 65,534 RPM (steps of 1 RPM). Null if the value is invalid.
      */
     public Integer minConstSpeed; // 7 uint16 R V
@@ -132,7 +130,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * This attribute specifies the maximum temperature the pump can maintain in the system when it is working with the
      * ControlMode attribute set to ConstantTemperature.
      * MaxConstTemp shall be greater than or equal to MinConstTemp Valid range is –273.15 °C to 327.67 °C (steps of 0.01
-     * °C). Null if the value is invalid.
+     * °C).
+     * Null if the value is invalid.
      */
     public Integer maxConstTemp; // 12 int16 R V
     /**
@@ -147,7 +146,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * following points are true:
      * • The pump is physically set to run with the local settings
      * • The LocalOverride bit in the PumpStatus attribute is set,
-     * See OperationMode and ControlMode attributes for a detailed description of the operation and control of the pump.
+     * See OperationMode Attribute and ControlMode Attribute for a detailed description of the operation and control of
+     * the pump.
      */
     public OperationModeEnum effectiveOperationMode; // 17 OperationModeEnum R V
     /**
@@ -161,7 +161,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * sensor or a temperature sensor respectively, regardless of the value of the ControlMode attribute.
      * In case the ControlMode attribute is not included on the device and no remote sensors are connected, the value of
      * the EffectiveControlMode shall match the vendor-specific behavior of the pump.
-     * See OperationMode and ControlMode attributes for detailed a description of the operation and control of the pump.
+     * See OperationMode Attribute and ControlMode Attribute for detailed a description of the operation and control of
+     * the pump.
      */
     public ControlModeEnum effectiveControlMode; // 18 ControlModeEnum R V
     /**
@@ -202,8 +203,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * This attribute specifies the accumulated energy consumption of the pump through the entire lifetime of the pump
      * in kWh. The value of the LifetimeEnergyConsumed attribute is updated dynamically as the energy consumption of the
      * pump increases. If LifetimeEnergyConsumed rises above maximum value it “rolls over” and starts at 0 (zero).
-     * This attribute is writeable, in order to allow setting to an appropriate value after maintenance.
-     * Valid range is 0 kWh to 4,294,967,294 kWh.
+     * This attribute is writeable, in order to allow setting to an appropriate value after maintenance. Valid range is
+     * 0 kWh to 4,294,967,294 kWh.
      * Null if the value is unknown.
      */
     public Integer lifetimeEnergyConsumed; // 23 uint32 RW VM
@@ -229,7 +230,7 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     public OperationModeEnum operationMode; // 32 OperationModeEnum RW VM
     /**
      * This attribute specifies the control mode of the pump as defined in ControlModeEnum.
-     * See the OperationMode attribute for a detailed description of the operation and control of the pump.
+     * See OperationMode Attribute for a detailed description of the operation and control of the pump.
      * ControlMode may be changed at any time, even when the pump is running. The behavior of the pump at the point of
      * changing is vendor-specific.
      * In the case a device does not support a specific control mode, the write interaction to this attribute with an
@@ -493,7 +494,6 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "maxPressure : " + maxPressure + "\n";
         str += "maxSpeed : " + maxSpeed + "\n";

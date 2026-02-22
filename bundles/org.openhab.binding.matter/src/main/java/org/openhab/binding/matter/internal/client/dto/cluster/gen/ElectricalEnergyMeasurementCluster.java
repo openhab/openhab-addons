@@ -28,7 +28,6 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0091;
     public static final String CLUSTER_NAME = "ElectricalEnergyMeasurement";
     public static final String CLUSTER_PREFIX = "electricalEnergyMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ACCURACY = "accuracy";
     public static final String ATTRIBUTE_CUMULATIVE_ENERGY_IMPORTED = "cumulativeEnergyImported";
@@ -37,7 +36,6 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
     public static final String ATTRIBUTE_PERIODIC_ENERGY_EXPORTED = "periodicEnergyExported";
     public static final String ATTRIBUTE_CUMULATIVE_ENERGY_RESET = "cumulativeEnergyReset";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the accuracy of energy measurement by this server. The value of the MeasurementType field on this
@@ -151,6 +149,8 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
      * A server which has determined the time in UTC shall use the timestamp fields to specify the measurement period.
      * Such a server may also include the systime fields to indicate how many seconds had passed since boot for a given
      * timestamp; this allows for client-side resolution of UTC time for previous reports that only included systime.
+     * Elements using this data type shall indicate whether it represents cumulative or periodic energy, e.g. in the
+     * name or in the element description.
      */
     public static class EnergyMeasurementStruct {
         /**
@@ -274,6 +274,45 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
         }
     }
 
+    // Enums
+    public enum MeasurementTypeEnum implements MatterEnum {
+        UNSPECIFIED(0, "Unspecified"),
+        VOLTAGE(1, "Voltage"),
+        ACTIVE_CURRENT(2, "Active Current"),
+        REACTIVE_CURRENT(3, "Reactive Current"),
+        APPARENT_CURRENT(4, "Apparent Current"),
+        ACTIVE_POWER(5, "Active Power"),
+        REACTIVE_POWER(6, "Reactive Power"),
+        APPARENT_POWER(7, "Apparent Power"),
+        RMS_VOLTAGE(8, "Rms Voltage"),
+        RMS_CURRENT(9, "Rms Current"),
+        RMS_POWER(10, "Rms Power"),
+        FREQUENCY(11, "Frequency"),
+        POWER_FACTOR(12, "Power Factor"),
+        NEUTRAL_CURRENT(13, "Neutral Current"),
+        ELECTRICAL_ENERGY(14, "Electrical Energy"),
+        REACTIVE_ENERGY(15, "Reactive Energy"),
+        APPARENT_ENERGY(16, "Apparent Energy");
+
+        private final Integer value;
+        private final String label;
+
+        private MeasurementTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
     // Bitmaps
     public static class FeatureMap {
         /**
@@ -322,7 +361,6 @@ public class ElectricalEnergyMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "accuracy : " + accuracy + "\n";
         str += "cumulativeEnergyImported : " + cumulativeEnergyImported + "\n";

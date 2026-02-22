@@ -24,8 +24,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
 
-import com.google.gson.Gson;
-
 /**
  * A converter for translating {@link GeneralDiagnosticsCluster} events and attributes to openHAB channels and
  * back again.
@@ -34,7 +32,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class GeneralDiagnosticsConverter extends GenericConverter<GeneralDiagnosticsCluster> {
-    private Gson gson = new Gson();
 
     public GeneralDiagnosticsConverter(GeneralDiagnosticsCluster cluster, MatterBaseThingHandler handler,
             int endpointNumber, String labelPrefix) {
@@ -51,7 +48,8 @@ public class GeneralDiagnosticsConverter extends GenericConverter<GeneralDiagnos
         switch (message.path.attributeName) {
             case GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES:
                 updateThingAttributeProperty(message.path.attributeName,
-                        message.value != null ? gson.toJson(message.value) : null);
+                        message.value != null ? GSON.toJson(message.value) : null);
+
                 break;
         }
         super.onEvent(message);
@@ -65,6 +63,6 @@ public class GeneralDiagnosticsConverter extends GenericConverter<GeneralDiagnos
 
     private void updateThingProperties(GeneralDiagnosticsCluster cluster) {
         updateThingAttributeProperty(GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES,
-                cluster.networkInterfaces != null ? gson.toJson(cluster.networkInterfaces) : null);
+                cluster.networkInterfaces != null ? GSON.toJson(cluster.networkInterfaces) : null);
     }
 }

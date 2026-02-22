@@ -31,7 +31,6 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0039;
     public static final String CLUSTER_NAME = "BridgedDeviceBasicInformation";
     public static final String CLUSTER_PREFIX = "bridgedDeviceBasicInformation";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_DATA_MODEL_REVISION = "dataModelRevision";
     public static final String ATTRIBUTE_VENDOR_NAME = "vendorName";
     public static final String ATTRIBUTE_VENDOR_ID = "vendorId";
@@ -55,9 +54,9 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     public static final String ATTRIBUTE_PRODUCT_APPEARANCE = "productAppearance";
     public static final String ATTRIBUTE_SPECIFICATION_VERSION = "specificationVersion";
     public static final String ATTRIBUTE_MAX_PATHS_PER_INVOKE = "maxPathsPerInvoke";
+    public static final String ATTRIBUTE_CONFIGURATION_VERSION = "configurationVersion";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This attribute shall be set to the revision number of the Data Model against which the Node is certified. The
      * value of this attribute shall be one of the valid values listed in Section 7.1.1, “Revision History”.
@@ -110,11 +109,10 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      */
     public String hardwareVersionString; // 8 string R V
     /**
-     * This attribute shall contain the current version number for the software running on this Node. The version number
-     * can be compared using a total ordering to determine if a version is logically newer than another one. A larger
-     * value of SoftwareVersion is newer than a lower value, from the perspective of software updates (see Section
-     * 11.20.3.3, “Availability of Software Images”). Nodes may query this field to determine the currently running
-     * version of software on another given Node.
+     * This attribute shall contain the current version number for the software running on this Node. A larger value of
+     * SoftwareVersion is newer than a lower value, from the perspective of software updates (see Section 11.20.3.3,
+     * “Availability of Software Images”). Nodes may query this field to determine the currently running version of
+     * software on another given Node.
      */
     public Integer softwareVersion; // 9 uint32 R V
     /**
@@ -207,18 +205,17 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     public ProductAppearanceStruct productAppearance; // 20 ProductAppearanceStruct R V
     /**
      * This attribute shall contain the current version number for the specification version this Node was certified
-     * against. The version number can be compared using a total ordering to determine if a version is logically newer
-     * than another one. A larger value of SpecificationVersion is newer than a lower value.
+     * against. A larger value of SpecificationVersion is newer than a lower value.
      * Nodes may query this field to determine the currently supported version of the specification on another given
      * Node.
      * The format of this number is segmented as its four component bytes. Bit positions for the fields are as follows:
-     * For example, a SpecificationVersion value of 0x0102AA00 is composed of 4 version components, representing a
-     * version 1.2.170.0.
+     * For example, a SpecificationVersion value of 0x01040200 is composed of 4 version components, representing a
+     * version 1.4.2.0.
      * In the example above:
-     * • Major version is the uppermost byte (0x01).
-     * • Minor version is the following byte (0x02).
-     * • Patch version is 170/0xAA.
-     * • Reserved1 value is 0.
+     * • Major version is the most significant byte (0x01).
+     * • Minor version is the second most significant byte (0x04).
+     * • Dot version is the third most significant byte (0x02).
+     * • Reserved1 value is the least significant byte (0x00).
      * The initial revision (1.0) of this specification (1.0) was 0x01000000. Matter Spring 2024 release (1.3) was
      * 0x01030000.
      * If the SpecificationVersion is absent or zero, such as in Basic Information cluster revisions prior to Revision
@@ -236,6 +233,11 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * Revision 3, clients shall assume a value of 1.
      */
     public Integer maxPathsPerInvoke; // 22 uint16 R V
+    /**
+     * This attribute shall contain the current version number for the configuration of the Node. A larger value of
+     * ConfigurationVersion shall indicate a newer configuration than a lower value.
+     */
+    public Integer configurationVersion; // 24 uint32 R V
     public FeatureMap featureMap; // 65532 FeatureMap
 
     // Structs
@@ -476,7 +478,6 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "dataModelRevision : " + dataModelRevision + "\n";
         str += "vendorName : " + vendorName + "\n";
         str += "vendorId : " + vendorId + "\n";
@@ -500,6 +501,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
         str += "productAppearance : " + productAppearance + "\n";
         str += "specificationVersion : " + specificationVersion + "\n";
         str += "maxPathsPerInvoke : " + maxPathsPerInvoke + "\n";
+        str += "configurationVersion : " + configurationVersion + "\n";
         str += "featureMap : " + featureMap + "\n";
         return str;
     }

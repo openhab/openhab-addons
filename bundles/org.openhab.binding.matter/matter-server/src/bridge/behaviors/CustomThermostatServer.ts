@@ -4,18 +4,30 @@ import { ThermostatServer } from "@matter/node/behaviors/thermostat";
 import { DeviceFunctions } from "../DeviceFunctions";
 
 export class CustomThermostatServer extends ThermostatServer {
-    static readonly DEFAULTS = {
+    static readonly DEFAULTS_COMMON = {
         systemMode: 0,
-        localTemperature: 0,
-        minHeatSetpointLimit: 0,
-        maxHeatSetpointLimit: 3500,
-        absMinHeatSetpointLimit: 0,
-        absMaxHeatSetpointLimit: 3500,
+        localTemperature: 0,       
+    } as const;
+
+    static readonly DEFAULTS_COOL = {
         minCoolSetpointLimit: 0,
         absMinCoolSetpointLimit: 0,
         maxCoolSetpointLimit: 3500,
         absMaxCoolSetpointLimit: 3500,
+    } as const;
+
+    static readonly DEFAULTS_HEAT = {
+        minHeatSetpointLimit: 0,
+        absMinHeatSetpointLimit: 0,
+        maxHeatSetpointLimit: 3500,
+        absMaxHeatSetpointLimit: 3500,
+    } as const;
+
+    static readonly DEFAULTS_AUTO = {
         minSetpointDeadBand: 0,
+    } as const;
+
+    static readonly DEFAULTS = {
     } as const;
 
     static features(values: any): Thermostat.Feature[] {

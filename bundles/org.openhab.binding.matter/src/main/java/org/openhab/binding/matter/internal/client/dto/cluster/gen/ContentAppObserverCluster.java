@@ -31,9 +31,6 @@ public class ContentAppObserverCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0510;
     public static final String CLUSTER_NAME = "ContentAppObserver";
     public static final String CLUSTER_PREFIX = "contentAppObserver";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Enums
     public enum StatusEnum implements MatterEnum {
@@ -88,7 +85,6 @@ public class ContentAppObserverCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

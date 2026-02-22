@@ -31,7 +31,6 @@ public class ColorControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0300;
     public static final String CLUSTER_NAME = "ColorControl";
     public static final String CLUSTER_PREFIX = "colorControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CURRENT_HUE = "currentHue";
     public static final String ATTRIBUTE_CURRENT_SATURATION = "currentSaturation";
@@ -86,7 +85,6 @@ public class ColorControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_COUPLE_COLOR_TEMP_TO_LEVEL_MIN_MIREDS = "coupleColorTempToLevelMinMireds";
     public static final String ATTRIBUTE_START_UP_COLOR_TEMPERATURE_MIREDS = "startUpColorTemperatureMireds";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * The CurrentHue attribute contains the current hue value of the light. It is updated as fast as practical during
@@ -147,8 +145,7 @@ public class ColorControlCluster extends BaseCluster {
      */
     public Integer currentY; // 4 uint16 R V
     /**
-     * This attribute shall indicate what mechanism, if any, is in use for compensation for color/intensity drift over
-     * time.
+     * Indicates what mechanism, if any, is in use for compensation for color/intensity drift over time.
      */
     public DriftCompensationEnum driftCompensation; // 5 DriftCompensationEnum R V
     /**
@@ -212,10 +209,13 @@ public class ColorControlCluster extends BaseCluster {
      */
     public Integer primary1Y; // 18 uint16 R V
     /**
-     * Indicates a representation of the maximum intensity of this primary as defined in the Dimming Light Curve in the
-     * Ballast Configuration cluster (see Ballast Configuration Cluster), normalized such that the primary with the
-     * highest maximum intensity contains the value 254.
+     * Indicates a representation of the maximum intensity of this primary as defined in Section 3.1.3, “The Dimming
+     * Light Curve”, normalized such that the primary with the highest maximum intensity contains the value 254.
      * A value of null shall indicate that this primary is not available.
+     * 3.2.7.28. Primary2X, Primary2Y, Primary2Intensity, Primary3X, Primary3Y, Primary3Intensity, Primary4X, Primary4Y,
+     * Primary4Intensity, Primary5X, Primary5Y, Primary5Intensity, Primary6X, Primary6Y and Primary6Intensity Attributes
+     * These attributes shall represent the capabilities of the 2nd, 3rd, 4th, 5th and 6th primaries, where present, in
+     * the same way as for the Primary1X, Primary1Y and Primary1Intensity attributes.
      */
     public Integer primary1Intensity; // 19 uint8 R V
     public Integer primary2X; // 21 uint16 R V
@@ -262,10 +262,14 @@ public class ColorControlCluster extends BaseCluster {
      */
     public Integer colorPointRy; // 51 uint16 RW VM
     /**
-     * Indicates a representation of the relative intensity of the red color point as defined in the Dimming Light Curve
-     * in the Ballast Configuration cluster (see Ballast Configuration Cluster), normalized such that the color point
-     * with the highest relative intensity contains the value 254.
+     * Indicates a representation of the relative intensity of the red color point as defined in Section 3.1.3, “The
+     * Dimming Light Curve”, normalized such that the color point with the highest relative intensity contains the value
+     * 254.
      * A value of null shall indicate an invalid value.
+     * 3.2.7.34. ColorPointGX, ColorPointGY, ColorPointGIntensity, ColorPointBX, ColorPointBY and ColorPointBIntensity
+     * Attributes These attributes shall represent the chromaticity values and intensities of the green and blue color
+     * points, in the same way as for the ColorPointRX, ColorPointRY and ColorPointRIntensity attributes.
+     * If any one of these red, green or blue color point attributes is implemented then they shall all be implemented.
      */
     public Integer colorPointRIntensity; // 52 uint8 RW VM
     public Integer colorPointGx; // 54 uint16 RW VM
@@ -297,11 +301,11 @@ public class ColorControlCluster extends BaseCluster {
      * Indicates the current active status of the color loop. If this attribute has the value 0, the color loop shall
      * NOT be active. If this attribute has the value 1, the color loop shall be active.
      */
-    public ColorLoopActive colorLoopActive; // 16386 enum16 R V
+    public ColorLoopActive colorLoopActive; // 16386 enum8 R V
     /**
-     * Indicates the current direction of the color loop. If this attribute has the value 0, the EnhancedCurrentHue
-     * attribute shall be decremented. If this attribute has the value 1, the EnhancedCurrentHue attribute shall be
-     * incremented.
+     * Indicates the current direction of the color loop. If this attribute has the value Decrement, the
+     * EnhancedCurrentHue attribute shall be decremented. If this attribute has the value Increment, the
+     * EnhancedCurrentHue attribute shall be incremented.
      */
     public ColorLoopDirectionEnum colorLoopDirection; // 16387 ColorLoopDirectionEnum R V
     /**
@@ -325,14 +329,14 @@ public class ColorControlCluster extends BaseCluster {
      */
     public ColorCapabilities colorCapabilities; // 16394 map16 R V
     /**
-     * This attribute shall indicate the minimum mired value supported by the hardware. ColorTempPhysicalMinMireds
-     * corresponds to the maximum color temperature in kelvins supported by the hardware.
+     * Indicates the minimum mired value supported by the hardware. ColorTempPhysicalMinMireds corresponds to the
+     * maximum color temperature in kelvins supported by the hardware.
      * ColorTempPhysicalMinMireds &lt;&#x3D; ColorTemperatureMireds.
      */
     public Integer colorTempPhysicalMinMireds; // 16395 uint16 R V
     /**
-     * This attribute shall indicate the maximum mired value supported by the hardware. ColorTempPhysicalMaxMireds
-     * corresponds to the minimum color temperature in kelvins supported by the hardware.
+     * Indicates the maximum mired value supported by the hardware. ColorTempPhysicalMaxMireds corresponds to the
+     * minimum color temperature in kelvins supported by the hardware.
      * ColorTemperatureMireds &lt;&#x3D; ColorTempPhysicalMaxMireds.
      */
     public Integer colorTempPhysicalMaxMireds; // 16396 uint16 R V
@@ -345,7 +349,8 @@ public class ColorControlCluster extends BaseCluster {
      * CoupleColorTempToLevelMinMireds &lt;&#x3D; ColorTemperatureMireds
      * Note that since this attribute is stored as a micro reciprocal degree (mired) value (i.e. color temperature in
      * kelvins &#x3D; 1,000,000 / CoupleColorTempToLevelMinMireds), the CoupleColorTempToLevelMinMireds attribute
-     * corresponds to an upper bound on the value of the color temperature in kelvins supported by the device.
+     * corresponds to an upper bound on the value of the color temperature
+     * in kelvins supported by the device.
      */
     public Integer coupleColorTempToLevelMinMireds; // 16397 uint16 R V
     /**
@@ -1048,6 +1053,8 @@ public class ColorControlCluster extends BaseCluster {
 
     /**
      * This command is provided to allow MoveTo and Step commands to be stopped.
+     * NOTE This automatically provides symmetry to the Level Control cluster.
+     * NOTE The StopMoveStep command has no effect on an active color loop.
      */
     public static ClusterCommand stopMoveStep(OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -1122,7 +1129,6 @@ public class ColorControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "currentHue : " + currentHue + "\n";
         str += "currentSaturation : " + currentSaturation + "\n";

@@ -31,7 +31,6 @@ public class LevelControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0008;
     public static final String CLUSTER_NAME = "LevelControl";
     public static final String CLUSTER_PREFIX = "levelControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CURRENT_LEVEL = "currentLevel";
     public static final String ATTRIBUTE_REMAINING_TIME = "remainingTime";
@@ -48,7 +47,6 @@ public class LevelControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPTIONS = "options";
     public static final String ATTRIBUTE_START_UP_CURRENT_LEVEL = "startUpCurrentLevel";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the current level of this device. The meaning of &#x27;level&#x27; is device dependent.
@@ -79,8 +77,7 @@ public class LevelControlCluster extends BaseCluster {
      */
     public Integer maxLevel; // 3 uint8 R V
     /**
-     * This attribute shall indicate the frequency at which the device is at CurrentLevel. A CurrentFrequency of 0 is
-     * unknown.
+     * Indicates the frequency at which the device is at CurrentLevel. A CurrentFrequency of 0 is unknown.
      * Changes to this attribute shall only be marked as reportable in the following cases:
      * • At most once per second, or
      * • At the start of the movement/transition, or
@@ -237,7 +234,7 @@ public class LevelControlCluster extends BaseCluster {
         public boolean lighting;
         /**
          * 
-         * Supports frequency attributes and behavior.
+         * NOTE The Frequency feature is provisional.
          */
         public boolean frequency;
 
@@ -404,7 +401,6 @@ public class LevelControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "currentLevel : " + currentLevel + "\n";
         str += "remainingTime : " + remainingTime + "\n";

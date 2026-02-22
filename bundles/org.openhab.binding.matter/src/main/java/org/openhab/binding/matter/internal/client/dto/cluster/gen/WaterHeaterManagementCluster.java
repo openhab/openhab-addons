@@ -31,7 +31,6 @@ public class WaterHeaterManagementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0094;
     public static final String CLUSTER_NAME = "WaterHeaterManagement";
     public static final String CLUSTER_PREFIX = "waterHeaterManagement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_HEATER_TYPES = "heaterTypes";
     public static final String ATTRIBUTE_HEAT_DEMAND = "heatDemand";
@@ -40,7 +39,6 @@ public class WaterHeaterManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_TANK_PERCENTAGE = "tankPercentage";
     public static final String ATTRIBUTE_BOOST_STATE = "boostState";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the heat sources that the water heater can call on for heating. If a bit is set then the water heater
@@ -68,8 +66,6 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * ### Energy required to
      * heat the water to 60°C &#x3D; 4182 x 40 x 100 &#x3D; 16,728,000 J
      * Converting Joules in to Wh of heat (divide by 3600):
-     * &#x3D; 16,728,000 J / 3600
-     * &#x3D; 4647 Wh (4.65kWh)
      * If the TankPercent feature is supported, then this estimate shall also take into account the percentage of the
      * water in the tank which is already hot.
      * &gt; [!NOTE]
@@ -103,7 +99,7 @@ public class WaterHeaterManagementCluster extends BaseCluster {
     public Integer tankPercentage; // 4 percent R V
     /**
      * Indicates whether the Boost, as triggered by a Boost command, is currently Active or Inactive.
-     * See Boost and CancelBoost commands for more details.
+     * See Section 9.5.8.1, “Boost Command” and Section 9.5.8.2, “CancelBoost Command” for more details.
      */
     public BoostStateEnum boostState; // 5 BoostStateEnum R V
 
@@ -272,7 +268,6 @@ public class WaterHeaterManagementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "heaterTypes : " + heaterTypes + "\n";
         str += "heatDemand : " + heatDemand + "\n";

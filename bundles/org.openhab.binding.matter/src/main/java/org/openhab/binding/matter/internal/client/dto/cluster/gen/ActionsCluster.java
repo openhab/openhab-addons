@@ -32,12 +32,10 @@ public class ActionsCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0025;
     public static final String CLUSTER_NAME = "Actions";
     public static final String CLUSTER_PREFIX = "actions";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_ACTION_LIST = "actionList";
     public static final String ATTRIBUTE_ENDPOINT_LISTS = "endpointLists";
     public static final String ATTRIBUTE_SETUP_URL = "setupUrl";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * The ActionList attribute holds the list of actions. Each entry shall have an unique ActionID, and its
      * EndpointListID shall exist in the EndpointLists attribute.
@@ -375,6 +373,7 @@ public class ActionsCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to trigger an instantaneous action.
      * This command triggers an action (state change) on the involved endpoints, in a &quot;fire and forget&quot;
      * manner. Afterwards, the action’s state shall be Inactive.
      * Example: recall a scene on a number of lights.
@@ -391,6 +390,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to trigger an instantaneous action with a transition over a given time.
      * It is recommended that, where possible (e.g., it is not possible for attributes with Boolean data type), a
      * gradual transition SHOULD take place from the old to the new state over this time period. However, the exact
      * transition is manufacturer dependent.
@@ -415,6 +415,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to trigger the commencement of an action.
      * This command triggers the commencement of an action on the involved endpoints. Afterwards, the action’s state
      * shall be Active.
      * Example: start a dynamic lighting pattern (such as gradually rotating the colors around the setpoints of the
@@ -434,6 +435,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to trigger the commencement of an action with a duration.
      * This command triggers the commencement of an action on the involved endpoints, and shall change the action’s
      * state to Active. After the specified Duration, the action will stop, and the action’s state shall change to
      * Inactive.
@@ -455,6 +457,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to stop an action.
      * This command stops the ongoing action on the involved endpoints. Afterwards, the action’s state shall be
      * Inactive.
      * Example: stop a dynamic lighting pattern which was previously started with StartAction.
@@ -471,6 +474,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to pause an action.
      * This command pauses an ongoing action, and shall change the action’s state to Paused.
      * Example: pause a dynamic lighting effect (the lights stay at their current color) which was previously started
      * with StartAction.
@@ -487,6 +491,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to pause an action with a duration.
      * This command pauses an ongoing action, and shall change the action’s state to Paused. After the specified
      * Duration, the ongoing action will be automatically resumed. which shall change the action’s state to Active.
      * Example: pause a dynamic lighting effect (the lights stay at their current color) for 10 minutes
@@ -511,6 +516,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to resume an action.
      * This command resumes a previously paused action, and shall change the action’s state to Active.
      * The difference between ResumeAction and StartAction is that ResumeAction will continue the action from the state
      * where it was paused, while StartAction will start the action from the beginning.
@@ -529,6 +535,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to enable an action.
      * This command enables a certain action or automation. Afterwards, the action’s state shall be Active.
      * Example: enable a motion sensor to control the lights in an area.
      */
@@ -544,6 +551,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to enable an action with a duration.
      * This command enables a certain action or automation, and shall change the action’s state to be Active. After the
      * specified Duration, the action or automation will stop, and the action’s state shall change to Disabled.
      * Example: enable a &quot;presence mimicking&quot; behavior for the lights in your home during a vacation; the
@@ -565,6 +573,7 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to disable an action.
      * This command disables a certain action or automation, and shall change the action’s state to Inactive.
      * Example: disable a motion sensor to no longer control the lights in an area.
      */
@@ -580,9 +589,11 @@ public class ActionsCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to disable an action with a duration.
      * This command disables a certain action or automation, and shall change the action’s state to Disabled. After the
      * specified Duration, the action or automation will re-start, and the action’s state shall change to either
-     * Inactive or Active, depending on the actions (see examples 4 and 6).
+     * Inactive or Active, depending on the actions (see Section 9.14.8.4, “Example 4: Wake-up routine” and Section
+     * 9.14.8.6, “Example 6: Alarm system”).
      * Example: disable a &quot;wakeup&quot; experience for a period of 1 week when going on holiday (to prevent them
      * from turning on in the morning while you’re not at home). After this period, the wakeup experience will control
      * the lights as before.
@@ -604,7 +615,6 @@ public class ActionsCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "actionList : " + actionList + "\n";
         str += "endpointLists : " + endpointLists + "\n";
         str += "setupUrl : " + setupUrl + "\n";

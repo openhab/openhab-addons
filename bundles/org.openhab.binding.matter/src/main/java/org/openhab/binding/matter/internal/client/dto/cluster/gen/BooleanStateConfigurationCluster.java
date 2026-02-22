@@ -31,7 +31,6 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0080;
     public static final String CLUSTER_NAME = "BooleanStateConfiguration";
     public static final String CLUSTER_PREFIX = "booleanStateConfiguration";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CURRENT_SENSITIVITY_LEVEL = "currentSensitivityLevel";
     public static final String ATTRIBUTE_SUPPORTED_SENSITIVITY_LEVELS = "supportedSensitivityLevels";
@@ -42,7 +41,6 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
     public static final String ATTRIBUTE_ALARMS_SUPPORTED = "alarmsSupported";
     public static final String ATTRIBUTE_SENSOR_FAULT = "sensorFault";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the currently selected sensitivity level.
@@ -82,9 +80,9 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      */
     public AlarmModeBitmap alarmsSuppressed; // 4 AlarmModeBitmap R V
     /**
-     * Indicates the alarm modes that will be emitted if the sensor is triggered.
-     * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0. A bit shall indicate
-     * whether the alarm mode is enabled or disabled:
+     * Indicates the alarm modes that will be emitted if the sensor is triggered. If an alarm mode is not supported, the
+     * bit indicating this alarm mode shall always be 0.
+     * A bit shall indicate whether the alarm mode is enabled or disabled:
      * • 0 &#x3D; Disabled
      * • 1 &#x3D; Enabled
      */
@@ -229,7 +227,6 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "currentSensitivityLevel : " + currentSensitivityLevel + "\n";
         str += "supportedSensitivityLevels : " + supportedSensitivityLevels + "\n";

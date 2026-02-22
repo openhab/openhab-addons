@@ -28,13 +28,11 @@ public class FlowMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0404;
     public static final String CLUSTER_NAME = "FlowMeasurement";
     public static final String CLUSTER_PREFIX = "flowMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_MEASURED_VALUE = "measuredValue";
     public static final String ATTRIBUTE_MIN_MEASURED_VALUE = "minMeasuredValue";
     public static final String ATTRIBUTE_MAX_MEASURED_VALUE = "maxMeasuredValue";
     public static final String ATTRIBUTE_TOLERANCE = "tolerance";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the flow in m/h as follows:
      * MeasuredValue &#x3D; 10 x Flow
@@ -68,7 +66,6 @@ public class FlowMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "measuredValue : " + measuredValue + "\n";
         str += "minMeasuredValue : " + minMeasuredValue + "\n";
         str += "maxMeasuredValue : " + maxMeasuredValue + "\n";

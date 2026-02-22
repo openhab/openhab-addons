@@ -235,6 +235,9 @@ public class MatterBindingConstants {
     public static final String CHANNEL_ID_BOOLEANSTATE_STATEVALUE = "booleanstate-statevalue";
     public static final ChannelTypeUID CHANNEL_BOOLEANSTATE_STATEVALUE = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_BOOLEANSTATE_STATEVALUE);
+    public static final String CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = "otasoftwareupdaterequestor-updateavailable";
+    public static final ChannelTypeUID CHANNEL_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE = new ChannelTypeUID(
+            BINDING_ID, CHANNEL_ID_OTASOFTWAREUPDATEREQUESTOR_UPDATEAVAILABLE);
     public static final String CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI = "wifinetworkdiagnostics-rssi";
     public static final ChannelTypeUID CHANNEL_WIFINETWORKDIAGNOSTICS_RSSI = new ChannelTypeUID(BINDING_ID,
             CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI);
@@ -424,11 +427,24 @@ public class MatterBindingConstants {
     public static final String THING_ACTION_LABEL_NODE_REMOVE_FABRIC_RESULT = "@text/thing-action.node.removeFabric.result.label";
     public static final String THING_ACTION_LABEL_NODE_REMOVE_FABRIC_INDEX = "@text/thing-action.node.removeFabric.index.label";
     public static final String THING_ACTION_DESC_NODE_REMOVE_FABRIC_INDEX = "@text/thing-action.node.removeFabric.index.description";
+    public static final String THING_ACTION_LABEL_NODE_CHECK_FIRMWARE_UPDATE = "@text/thing-action.node.checkForFirmwareUpdate.label";
+    public static final String THING_ACTION_DESC_NODE_CHECK_FIRMWARE_UPDATE = "@text/thing-action.node.checkForFirmwareUpdate.description";
+    public static final String THING_ACTION_LABEL_NODE_CHECK_FIRMWARE_UPDATE_RESULT = "@text/thing-action.node.checkForFirmwareUpdate.result.label";
+    public static final String THING_ACTION_LABEL_NODE_START_FIRMWARE_UPDATE = "@text/thing-action.node.startFirmwareUpdate.label";
+    public static final String THING_ACTION_DESC_NODE_START_FIRMWARE_UPDATE = "@text/thing-action.node.startFirmwareUpdate.description";
+    public static final String THING_ACTION_LABEL_NODE_START_FIRMWARE_UPDATE_RESULT = "@text/thing-action.node.startFirmwareUpdate.result.label";
+    public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.label";
+    public static final String THING_ACTION_DESC_NODE_CANCEL_FIRMWARE_UPDATE = "@text/thing-action.node.cancelFirmwareUpdate.description";
+    public static final String THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE_RESULT = "@text/thing-action.node.cancelFirmwareUpdate.result.label";
 
     // Action Result Messages
     public static final String THING_ACTION_RESULT_SUCCESS = "@text/thing-action.result.success";
     public static final String THING_ACTION_RESULT_NO_HANDLER = "@text/thing-action.result.no-handler";
     public static final String THING_ACTION_RESULT_NO_FABRICS = "@text/thing-action.result.no-fabrics";
+    public static final String THING_ACTION_RESULT_NO_FIRMWARE_UPDATE = "@text/thing-action.result.no-firmware-update";
+    public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_AVAILABLE = "@text/thing-action.result.firmware-update-available";
+    public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED = "@text/thing-action.result.firmware-update-started";
+    public static final String THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED = "@text/thing-action.result.firmware-update-cancelled";
 
     // Matter OTBR Actions
     public static final String THING_ACTION_LABEL_OTBR_LOAD_EXTERNAL_DATASET = "@text/thing-action.otbr.loadExternalDataset.label";
@@ -524,6 +540,13 @@ public class MatterBindingConstants {
     // Matter Controller Statuses
     public static final String THING_STATUS_DETAIL_CONTROLLER_WAITING_FOR_DATA = "@text/thing-status.detail.controller.waitingForData";
     public static final String THING_STATUS_DETAIL_ENDPOINT_THING_NOT_REACHABLE = "@text/thing-status.detail.endpoint.thingNotReachable";
+    public static final String THING_STATUS_DETAIL_FIRMWARE_UPDATE_AVAILABLE = "@text/thing-status.detail.node.firmwareUpdateAvailable";
+    public static final String THING_STATUS_DETAIL_FIRMWARE_DOWNLOADING = "@text/thing-status.detail.node.firmwareDownloading";
+    public static final String THING_STATUS_DETAIL_FIRMWARE_DOWNLOADING_WITH_PROGRESS = "@text/thing-status.detail.node.firmwareDownloadingWithProgress";
+    public static final String THING_STATUS_DETAIL_FIRMWARE_APPLYING = "@text/thing-status.detail.node.firmwareApplying";
+    public static final String THING_STATUS_DETAIL_FIRMWARE_DELAYED_ON_APPLY = "@text/thing-status.detail.node.firmwareDelayedOnApply";
+    public static final String THING_STATUS_DETAIL_FIRMWARE_ROLLING_BACK = "@text/thing-status.detail.node.firmwareRollingBack";
+    public static final String THING_STATUS_DETAIL_FIRMWARE_DELAYED_ON_USER_CONSENT = "@text/thing-status.detail.node.firmwareDelayedOnUserConsent";
 
     // Discovery
     public static final String DISCOVERY_MATTER_BRIDGE_ENDPOINT_LABEL = "@text/discovery.matter.bridge-endpoint.label";
@@ -578,4 +601,9 @@ public class MatterBindingConstants {
     public static final String CONFIG_DESC_DOORLOCK_PIN_CREDENTIAL = "@text/thing-type.config.matter.node.doorlock_pin_credential.description";
     public static final String CONFIG_DESC_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.description";
     public static final String CONFIG_DESC_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.description";
+
+    // Firmware Update - Note theses are the raw i18n keys, not the translated strings
+    public static final String OTA_FIRMWARE_UPDATE_FAILED = "ota.matter.firmwareUpdateFailed";
+    public static final String OTA_FIRMWARE_UPDATE_FAILED_ROLLING_BACK = "ota.matter.firmwareUpdateFailedRollingBack";
+    public static final String OTA_FIRMWARE_UPDATE_FAILED_DELAYED_ON_USER_CONSENT = "ota.matter.firmwareUpdateFailedDelayedOnUserConsent";
 }

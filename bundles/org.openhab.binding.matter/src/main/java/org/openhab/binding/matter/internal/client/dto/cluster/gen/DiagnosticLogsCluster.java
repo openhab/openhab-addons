@@ -31,9 +31,6 @@ public class DiagnosticLogsCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0032;
     public static final String CLUSTER_NAME = "DiagnosticLogs";
     public static final String CLUSTER_PREFIX = "diagnosticLogs";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Enums
     public enum IntentEnum implements MatterEnum {
@@ -139,7 +136,6 @@ public class DiagnosticLogsCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

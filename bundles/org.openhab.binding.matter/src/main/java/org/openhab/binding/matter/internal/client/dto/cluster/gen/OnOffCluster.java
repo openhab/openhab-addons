@@ -31,7 +31,6 @@ public class OnOffCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0006;
     public static final String CLUSTER_NAME = "OnOff";
     public static final String CLUSTER_PREFIX = "onOff";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ON_OFF = "onOff";
     public static final String ATTRIBUTE_GLOBAL_SCENE_CONTROL = "globalSceneControl";
@@ -39,7 +38,6 @@ public class OnOffCluster extends BaseCluster {
     public static final String ATTRIBUTE_OFF_WAIT_TIME = "offWaitTime";
     public static final String ATTRIBUTE_START_UP_ON_OFF = "startUpOnOff";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute indicates whether the device type implemented on the endpoint is turned off or turned on, in these
@@ -305,7 +303,6 @@ public class OnOffCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "onOff : " + onOff + "\n";
         str += "globalSceneControl : " + globalSceneControl + "\n";

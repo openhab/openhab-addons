@@ -31,11 +31,9 @@ public class IdentifyCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0003;
     public static final String CLUSTER_NAME = "Identify";
     public static final String CLUSTER_PREFIX = "identify";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_IDENTIFY_TIME = "identifyTime";
     public static final String ATTRIBUTE_IDENTIFY_TYPE = "identifyType";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the remaining length of time, in seconds, that the endpoint will continue to identify itself.
      * If this attribute is set to a value other than 0 then the device shall enter its identification state, in order
@@ -43,6 +41,12 @@ public class IdentifyCluster extends BaseCluster {
      * consists of flashing a light with a period of 0.5 seconds. The IdentifyTime attribute shall be decremented every
      * second while in this state.
      * If this attribute reaches or is set to the value 0 then the device shall terminate its identification state.
+     * Changes to this attribute shall only be marked as reportable in the following cases:
+     * • When it changes from 0 to any other value and vice versa, or
+     * • When it is written by a client, or
+     * • When the value is set by an Identify command.
+     * Since this attribute is not being reported during a regular countdown, clients SHOULD NOT rely on the reporting
+     * of this attribute in order to keep track of the remaining duration.
      */
     public Integer identifyTime; // 0 uint16 RW VO
     /**
@@ -171,7 +175,6 @@ public class IdentifyCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "identifyTime : " + identifyTime + "\n";
         str += "identifyType : " + identifyType + "\n";
         return str;

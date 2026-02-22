@@ -36,6 +36,20 @@ public class BaseCluster {
     public int id;
     public String name;
 
+    // Global cluster attribute name constants
+    public static final String ATTRIBUTE_ACCEPTED_COMMAND_LIST = "acceptedCommandList";
+    public static final String ATTRIBUTE_ATTRIBUTE_LIST = "attributeList";
+    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
+    public static final String ATTRIBUTE_EVENT_LIST = "eventList";
+    public static final String ATTRIBUTE_GENERATED_COMMAND_LIST = "generatedCommandList";
+
+    // Global cluster attributes (present in all clusters per Matter spec)
+    public List<Integer> acceptedCommandList; // 65529 list
+    public List<Integer> attributeList; // 65531 list
+    public Integer clusterRevision; // 65533 uint16
+    public List<Integer> eventList; // 65530
+    public List<Integer> generatedCommandList; // 65528 list
+
     public interface MatterEnum {
         Integer getValue();
 
@@ -153,17 +167,13 @@ public class BaseCluster {
         }
     }
 
-    public static class Date {
-        public Integer year; // uint8
-        public Integer month; // uint8
-        public Integer day; // uint8
-        public Integer dayOfWeek; // uint8
+    public static class Currency {
+        public Integer currency; // uint16
+        public Integer decimalPoints; // uint8
 
-        public Date(Integer year, Integer month, Integer day, Integer dayOfWeek) {
-            this.year = year;
-            this.month = month;
-            this.day = day;
-            this.dayOfWeek = dayOfWeek;
+        public Currency(Integer currency, Integer decimalPoints) {
+            this.currency = currency;
+            this.decimalPoints = decimalPoints;
         }
     }
 
@@ -179,6 +189,16 @@ public class BaseCluster {
         }
     }
 
+    public static class Price {
+        public BigInteger amount; // money
+        public Currency currency; // currency
+
+        public Price(BigInteger amount, Currency currency) {
+            this.amount = amount;
+            this.currency = currency;
+        }
+    }
+
     public static class Semtag {
         public Integer mfgCode; // vendor-id
         public Integer namespaceId; // namespace
@@ -190,20 +210,6 @@ public class BaseCluster {
             this.namespaceId = namespaceId;
             this.tag = tag;
             this.label = label;
-        }
-    }
-
-    public static class Tod {
-        public Integer hours; // uint8
-        public Integer minutes; // uint8
-        public Integer seconds; // uint8
-        public Integer hundredths; // uint8
-
-        public Tod(Integer hours, Integer minutes, Integer seconds, Integer hundredths) {
-            this.hours = hours;
-            this.minutes = minutes;
-            this.seconds = seconds;
-            this.hundredths = hundredths;
         }
     }
 
@@ -247,7 +253,10 @@ public class BaseCluster {
         FREQUENCY(11, "Frequency"),
         POWER_FACTOR(12, "PowerFactor"),
         NEUTRAL_CURRENT(13, "NeutralCurrent"),
-        ELECTRICAL_ENERGY(14, "ElectricalEnergy");
+        ELECTRICAL_ENERGY(14, "ElectricalEnergy"),
+        REACTIVE_ENERGY(15, "ReactiveEnergy"),
+        APPARENT_ENERGY(16, "ApparentEnergy"),
+        SOIL_MOISTURE(17, "SoilMoisture");
 
         public final Integer value;
         public final String label;
@@ -278,6 +287,31 @@ public class BaseCluster {
         public final String label;
 
         private SoftwareVersionCertificationStatusEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+    public enum ThreeLevelAutoEnum implements MatterEnum {
+        AUTO(0, "Auto"),
+        LOW(1, "Low"),
+        MEDIUM(2, "Medium"),
+        HIGH(3, "High");
+
+        public final Integer value;
+        public final String label;
+
+        private ThreeLevelAutoEnum(Integer value, String label) {
             this.value = value;
             this.label = label;
         }
@@ -387,7 +421,10 @@ public class BaseCluster {
         INVALID_IN_STATE(203, "InvalidInState"),
         NO_COMMAND_RESPONSE(204, "NoCommandResponse"),
         TERMS_AND_CONDITIONS_CHANGED(205, "TermsAndConditionsChanged"),
-        MAINTENANCE_REQUIRED(206, "MaintenanceRequired");
+        MAINTENANCE_REQUIRED(206, "MaintenanceRequired"),
+        DYNAMIC_CONSTRAINT_ERROR(207, "DynamicConstraintError"),
+        ALREADY_EXISTS(208, "AlreadyExists"),
+        INVALID_TRANSPORT_TYPE(209, "InvalidTransportType");
 
         public final Integer value;
         public final String label;
@@ -413,7 +450,7 @@ public class BaseCluster {
         public boolean wildcardSkipRootNode;
         public boolean wildcardSkipGlobalAttributes;
         public boolean wildcardSkipAttributeList;
-        public boolean reserved;
+        public boolean doNotUse;
         public boolean wildcardSkipCommandLists;
         public boolean wildcardSkipCustomElements;
         public boolean wildcardSkipFixedAttributes;
@@ -421,13 +458,13 @@ public class BaseCluster {
         public boolean wildcardSkipDiagnosticsClusters;
 
         public WildcardPathFlagsBitmap(boolean wildcardSkipRootNode, boolean wildcardSkipGlobalAttributes,
-                boolean wildcardSkipAttributeList, boolean reserved, boolean wildcardSkipCommandLists,
+                boolean wildcardSkipAttributeList, boolean doNotUse, boolean wildcardSkipCommandLists,
                 boolean wildcardSkipCustomElements, boolean wildcardSkipFixedAttributes,
                 boolean wildcardSkipChangesOmittedAttributes, boolean wildcardSkipDiagnosticsClusters) {
             this.wildcardSkipRootNode = wildcardSkipRootNode;
             this.wildcardSkipGlobalAttributes = wildcardSkipGlobalAttributes;
             this.wildcardSkipAttributeList = wildcardSkipAttributeList;
-            this.reserved = reserved;
+            this.doNotUse = doNotUse;
             this.wildcardSkipCommandLists = wildcardSkipCommandLists;
             this.wildcardSkipCustomElements = wildcardSkipCustomElements;
             this.wildcardSkipFixedAttributes = wildcardSkipFixedAttributes;

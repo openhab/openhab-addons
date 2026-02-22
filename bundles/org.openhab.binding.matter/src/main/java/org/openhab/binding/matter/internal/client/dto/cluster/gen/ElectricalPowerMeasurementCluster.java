@@ -29,7 +29,6 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0090;
     public static final String CLUSTER_NAME = "ElectricalPowerMeasurement";
     public static final String CLUSTER_PREFIX = "electricalPowerMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_POWER_MODE = "powerMode";
     public static final String ATTRIBUTE_NUMBER_OF_MEASUREMENT_TYPES = "numberOfMeasurementTypes";
@@ -51,7 +50,6 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
     public static final String ATTRIBUTE_POWER_FACTOR = "powerFactor";
     public static final String ATTRIBUTE_NEUTRAL_CURRENT = "neutralCurrent";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This shall indicate the current mode of the server. For some servers, such as an EV, this may change depending on
@@ -118,6 +116,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
     /**
      * This shall indicate the most recent ApparentCurrent (square root sum of the squares of active and reactive
      * currents) reading in milliamps (mA).
+     * A positive value represents current flowing into the server, while a negative value represents current flowing
+     * out of the server.
      * The reporting interval of this attribute shall be manufacturer dependent. The server may choose to omit
      * publication of deltas considered not meaningful.
      * The server shall NOT mark this attribute ready for report if the last time this was done was more recently than 1
@@ -153,7 +153,7 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * If the Polyphase Power feature is supported, this value represents the combined reactive power imported or
      * exported.
      */
-    public BigInteger reactivePower; // 9 power-mW R V
+    public BigInteger reactivePower; // 9 power-mVAR R V
     /**
      * This shall indicate the most recent ApparentPower reading in millivolt-amps (mVA).
      * A positive value represents power imported, while a negative value represents power exported.
@@ -165,7 +165,7 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * shall NOT delay marking this attribute as ready for report for longer than 60 seconds.
      * If the apparent power cannot be measured, a value of null shall be returned.
      */
-    public BigInteger apparentPower; // 10 power-mW R V
+    public BigInteger apparentPower; // 10 power-mVA R V
     /**
      * This shall indicate the most recent RMSVoltage reading in millivolts (mV).
      * The reporting interval of this attribute shall be manufacturer dependent. The server may choose to omit
@@ -249,8 +249,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * This shall indicate the most recent NeutralCurrent reading in milliamps (mA). Typically this is a derived value,
      * taking the magnitude of the vector sum of phase currents.
      * If the neutral current cannot be measured or derived, a value of null shall be returned.
-     * A positive value represents an imbalance between the phase currents when power is imported.
-     * A negative value represents an imbalance between the phase currents when power is exported.
+     * A positive value represents an imbalance between the phase currents when power is imported. A negative value
+     * represents an imbalance between the phase currents when power is exported.
      * The reporting interval of this attribute shall be manufacturer dependent. The server may choose to omit
      * publication of deltas considered not meaningful.
      * The server shall NOT mark this attribute ready for report if the last time this was done was more recently than 1
@@ -416,6 +416,44 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
         }
     }
 
+    public enum MeasurementTypeEnum implements MatterEnum {
+        UNSPECIFIED(0, "Unspecified"),
+        VOLTAGE(1, "Voltage"),
+        ACTIVE_CURRENT(2, "Active Current"),
+        REACTIVE_CURRENT(3, "Reactive Current"),
+        APPARENT_CURRENT(4, "Apparent Current"),
+        ACTIVE_POWER(5, "Active Power"),
+        REACTIVE_POWER(6, "Reactive Power"),
+        APPARENT_POWER(7, "Apparent Power"),
+        RMS_VOLTAGE(8, "Rms Voltage"),
+        RMS_CURRENT(9, "Rms Current"),
+        RMS_POWER(10, "Rms Power"),
+        FREQUENCY(11, "Frequency"),
+        POWER_FACTOR(12, "Power Factor"),
+        NEUTRAL_CURRENT(13, "Neutral Current"),
+        ELECTRICAL_ENERGY(14, "Electrical Energy"),
+        REACTIVE_ENERGY(15, "Reactive Energy"),
+        APPARENT_ENERGY(16, "Apparent Energy");
+
+        private final Integer value;
+        private final String label;
+
+        private MeasurementTypeEnum(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
     // Bitmaps
     public static class FeatureMap {
         /**
@@ -465,7 +503,6 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "powerMode : " + powerMode + "\n";
         str += "numberOfMeasurementTypes : " + numberOfMeasurementTypes + "\n";

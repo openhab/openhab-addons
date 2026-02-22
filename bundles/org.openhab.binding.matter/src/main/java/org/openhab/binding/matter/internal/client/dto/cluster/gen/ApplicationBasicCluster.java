@@ -29,7 +29,6 @@ public class ApplicationBasicCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x050D;
     public static final String CLUSTER_NAME = "ApplicationBasic";
     public static final String CLUSTER_PREFIX = "applicationBasic";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_VENDOR_NAME = "vendorName";
     public static final String ATTRIBUTE_VENDOR_ID = "vendorId";
     public static final String ATTRIBUTE_APPLICATION_NAME = "applicationName";
@@ -39,7 +38,6 @@ public class ApplicationBasicCluster extends BaseCluster {
     public static final String ATTRIBUTE_APPLICATION_VERSION = "applicationVersion";
     public static final String ATTRIBUTE_ALLOWED_VENDOR_LIST = "allowedVendorList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This attribute shall specify a human readable (displayable) name of the vendor for the Content App.
      */
@@ -142,7 +140,6 @@ public class ApplicationBasicCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "vendorName : " + vendorName + "\n";
         str += "vendorId : " + vendorId + "\n";
         str += "applicationName : " + applicationName + "\n";

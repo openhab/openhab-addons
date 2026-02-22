@@ -32,7 +32,6 @@ public class ServiceAreaCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0150;
     public static final String CLUSTER_NAME = "ServiceArea";
     public static final String CLUSTER_PREFIX = "serviceArea";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_SUPPORTED_AREAS = "supportedAreas";
     public static final String ATTRIBUTE_SUPPORTED_MAPS = "supportedMaps";
@@ -41,7 +40,6 @@ public class ServiceAreaCluster extends BaseCluster {
     public static final String ATTRIBUTE_ESTIMATED_END_TIME = "estimatedEndTime";
     public static final String ATTRIBUTE_PROGRESS = "progress";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute shall contain the list of areas that can be included in the SelectedAreas attribute’s list. Each
@@ -99,10 +97,10 @@ public class ServiceAreaCluster extends BaseCluster {
      * The value of this attribute may change at any time via an out-of-band interaction outside of the server, such as
      * interactions with a user interface.
      * When updating the SupportedMaps attribute list by deleting entries, or by setting the attribute to an empty list,
-     * the SupportedLocations attribute shall be updated such that all entries in that list meet the constraints
-     * indicated in the description of the SupportedLocations attribute. This may result in the server removing entries
-     * from the SupportedAreas attribute list. See the SupportedAreas attribute description for the implications of
-     * changing that attribute.
+     * the SupportedAreas attribute shall be updated such that all entries in that list meet the constraints indicated
+     * in the description of the SupportedAreas attribute. This may result in the server removing entries from the
+     * SupportedAreas attribute list. See the SupportedAreas attribute description for the implications of changing that
+     * attribute.
      * The SupportedMaps attribute list changes mentioned above SHOULD NOT be allowed while the device is operating, to
      * reduce the impact on the clients, and the potential confusion for the users.
      */
@@ -145,7 +143,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * This may happen, for example, because no operation is in progress or because the completion time is unknown.
      * Null if the CurrentArea attribute is null.
      * If the Progress attribute is available, and it contains an entry matching CurrentArea, the server may use the
-     * time estimate provided in the InitialTimeEstimate field of that entry to compute the EstimatedEndTime attribute.
+     * time estimate provided in the EstimatedTime field of that entry to compute the EstimatedEndTime attribute.
      * The value of this attribute shall only be reported in the following cases:
      * • when it changes to or from 0
      * • when it decreases
@@ -333,8 +331,8 @@ public class ServiceAreaCluster extends BaseCluster {
          * including any time spent while paused.
          * A value of null indicates that the total operational time is unknown.
          * There may be cases where the total operational time exceeds the maximum value that can be conveyed by this
-         * attribute, and in such instances this attribute shall be populated with null. Null if the Status field is not
-         * set to Completed or Skipped.
+         * attribute, and in such instances this attribute shall be populated with null.
+         * Null if the Status field is not set to Completed or Skipped.
          */
         public Integer totalOperationalTime; // elapsed-s
         /**
@@ -486,8 +484,6 @@ public class ServiceAreaCluster extends BaseCluster {
     /**
      * This command is used to skip the given area, and to attempt operating at other areas on the SupportedAreas
      * attribute list.
-     * This command shall NOT be implemented if the CurrentArea attribute and the Progress attribute are both not
-     * implemented. Else, this command shall be optionally implemented.
      * On receipt of this command the device shall respond with a SkipAreaResponse command.
      */
     public static ClusterCommand skipArea(Integer skippedArea) {
@@ -501,7 +497,6 @@ public class ServiceAreaCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "supportedAreas : " + supportedAreas + "\n";
         str += "supportedMaps : " + supportedMaps + "\n";

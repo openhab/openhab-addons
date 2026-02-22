@@ -24,8 +24,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
 
-import com.google.gson.Gson;
-
 /**
  * A converter for translating {@link NetworkCommissioningCluster} events and attributes to openHAB channels and
  * back again.
@@ -34,7 +32,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class NetworkCommissioningConverter extends GenericConverter<NetworkCommissioningCluster> {
-    private Gson gson = new Gson();
 
     public NetworkCommissioningConverter(NetworkCommissioningCluster cluster, MatterBaseThingHandler handler,
             int endpointNumber, String labelPrefix) {
@@ -63,7 +60,7 @@ public class NetworkCommissioningConverter extends GenericConverter<NetworkCommi
             case NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS:
             case NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES:
                 updateThingAttributeProperty(message.path.attributeName,
-                        message.value != null ? gson.toJson(message.value) : null);
+                        message.value != null ? GSON.toJson(message.value) : null);
                 break;
         }
         super.onEvent(message);
@@ -78,7 +75,7 @@ public class NetworkCommissioningConverter extends GenericConverter<NetworkCommi
     private void updateThingProperties(NetworkCommissioningCluster cluster) {
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_MAX_NETWORKS, cluster.maxNetworks);
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_NETWORKS,
-                cluster.networks != null ? gson.toJson(cluster.networks) : null);
+                cluster.networks != null ? GSON.toJson(cluster.networks) : null);
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_SCAN_MAX_TIME_SECONDS,
                 cluster.scanMaxTimeSeconds);
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_CONNECT_MAX_TIME_SECONDS,
@@ -90,9 +87,9 @@ public class NetworkCommissioningConverter extends GenericConverter<NetworkCommi
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_LAST_CONNECT_ERROR_VALUE,
                 cluster.lastConnectErrorValue);
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_WI_FI_BANDS,
-                cluster.supportedWiFiBands != null ? gson.toJson(cluster.supportedWiFiBands) : null);
+                cluster.supportedWiFiBands != null ? GSON.toJson(cluster.supportedWiFiBands) : null);
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_SUPPORTED_THREAD_FEATURES,
-                cluster.supportedThreadFeatures != null ? gson.toJson(cluster.supportedThreadFeatures) : null);
+                cluster.supportedThreadFeatures != null ? GSON.toJson(cluster.supportedThreadFeatures) : null);
         updateThingAttributeProperty(NetworkCommissioningCluster.ATTRIBUTE_THREAD_VERSION, cluster.threadVersion);
     }
 }
