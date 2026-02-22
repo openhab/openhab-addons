@@ -614,7 +614,7 @@ public class EnOceanBindingConstants {
 
     // Thing config parameter
     public static final String PARAMETER_SENDERIDOFFSET = "senderIdOffset";
-    public static final String PARAMETER_SENDERADDRESS = "senderAddress";
+    public static final String PARAMETER_SENDERID = "senderId";
     public static final String PARAMETER_SENDINGEEPID = "sendingEEPId";
     public static final String PARAMETER_RECEIVINGEEPID = "receivingEEPId";
 
