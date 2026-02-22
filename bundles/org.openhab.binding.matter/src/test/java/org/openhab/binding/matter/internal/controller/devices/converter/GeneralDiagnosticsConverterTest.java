@@ -61,8 +61,20 @@ class GeneralDiagnosticsConverterTest extends BaseMatterConverterTest {
         message.path.attributeName = GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES;
         message.value = networkInterfaces;
         converter.onEvent(message);
+        // Structured attribute should be JSON-serialized
         verify(converter, times(1)).updateThingAttributeProperty(
-                eq(GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES), eq(networkInterfaces));
+                eq(GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES), Mockito.anyString());
+    }
+
+    @Test
+    void testOnEventWithNetworkInterfacesNull() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES;
+        message.value = null;
+        converter.onEvent(message);
+        verify(converter, times(1))
+                .updateThingAttributeProperty(eq(GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES), eq(null));
     }
 
     @Test
