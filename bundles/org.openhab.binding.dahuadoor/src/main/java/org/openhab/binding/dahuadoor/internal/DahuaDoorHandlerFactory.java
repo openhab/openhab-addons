@@ -41,8 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.dahuadoor", service = ThingHandlerFactory.class)
 public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO, THING_TYPE_VTO2202,
-            THING_TYPE_VTO3211);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO2202, THING_TYPE_VTO3211);
     private final HttpClient httpClient;
 
     @Activate
@@ -68,10 +67,7 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
         DahuaDoorBaseHandler handler = null;
 
-        if (THING_TYPE_VTO.equals(thingTypeUID)) {
-            // Deprecated: Map old VTO thing type to VTO2202Handler for backward compatibility
-            handler = new DahuaVto2202Handler(thing);
-        } else if (THING_TYPE_VTO2202.equals(thingTypeUID)) {
+        if (THING_TYPE_VTO2202.equals(thingTypeUID)) {
             handler = new DahuaVto2202Handler(thing);
         } else if (THING_TYPE_VTO3211.equals(thingTypeUID)) {
             handler = new DahuaVto3211Handler(thing);

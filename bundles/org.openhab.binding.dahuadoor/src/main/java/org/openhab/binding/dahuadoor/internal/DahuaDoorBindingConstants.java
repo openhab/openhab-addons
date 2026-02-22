@@ -27,9 +27,6 @@ public class DahuaDoorBindingConstants {
     private static final String BINDING_ID = "dahuadoor";
 
     // List of all Thing Type UIDs
-    @Deprecated
-    public static final ThingTypeUID THING_TYPE_VTO = new ThingTypeUID(BINDING_ID, "dahua_vto2202");
-
     public static final ThingTypeUID THING_TYPE_VTO2202 = new ThingTypeUID(BINDING_ID, "vto2202");
     public static final ThingTypeUID THING_TYPE_VTO3211 = new ThingTypeUID(BINDING_ID, "vto3211");
 
