@@ -1,4 +1,4 @@
-# Modbus FoxEss Inverters (Solakon ONE, Avocado 22 Pro, etc.)
+# Modbus Fox ESS Inverters (Solakon ONE, Avocado 22 Pro, etc.)
 
 This binding integrates the FoxESS solar inverters into openHAB.
 
