@@ -18,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,6 +130,75 @@ class ThreadNetworkDiagnosticsConverterTest extends BaseMatterConverterTest {
                 eq(BigInteger.valueOf(223372036854775807L)));
         verify(converter, atLeastOnce())
                 .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16), eq(43981));
+    }
+
+    @Test
+    void testOnEventWithNeighborTable() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE;
+        message.value = new ArrayList<>();
+        converter.onEvent(message);
+        // Structured attribute should be JSON-serialized
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE), Mockito.anyString());
+    }
+
+    @Test
+    void testOnEventWithNeighborTableNull() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE;
+        message.value = null;
+        converter.onEvent(message);
+        verify(converter, times(1))
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE), eq(null));
+    }
+
+    @Test
+    void testOnEventWithRouteTable() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE;
+        message.value = new ArrayList<>();
+        converter.onEvent(message);
+        // Structured attribute should be JSON-serialized
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE), Mockito.anyString());
+    }
+
+    @Test
+    void testOnEventWithRouteTableNull() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE;
+        message.value = null;
+        converter.onEvent(message);
+        verify(converter, times(1))
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE), eq(null));
+    }
+
+    @Test
+    void testOnEventWithExtAddress() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS;
+        message.value = BigInteger.valueOf(1234567890L);
+        converter.onEvent(message);
+        // Structured attribute should be JSON-serialized
+        verify(converter, times(1)).updateThingAttributeProperty(
+                eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS), Mockito.anyString());
+    }
+
+    @Test
+    void testOnEventWithExtAddressNull() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS;
+        message.value = null;
+        converter.onEvent(message);
+        verify(converter, times(1))
+                .updateThingAttributeProperty(eq(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS), eq(null));
     }
 
     @Test
