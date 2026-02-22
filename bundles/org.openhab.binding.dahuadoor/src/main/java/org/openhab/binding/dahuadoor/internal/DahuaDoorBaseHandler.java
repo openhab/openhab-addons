@@ -77,7 +77,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (queries == null) {
+        DahuaDoorHttpQueries localQueries = queries;
+        if (localQueries == null) {
             logger.warn("HTTP queries not initialized, cannot handle command");
             return;
         }
@@ -86,7 +87,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             case CHANNEL_OPEN_DOOR_1:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        queries.openDoor(1);
+                        localQueries.openDoor(1);
                         updateState(channelUID, OnOffType.OFF);
                     }
                 }
@@ -94,7 +95,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             case CHANNEL_OPEN_DOOR_2:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        queries.openDoor(2);
+                        localQueries.openDoor(2);
                         updateState(channelUID, OnOffType.OFF);
                     }
                 }
@@ -108,25 +109,25 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     @Override
     public void initialize() {
-        config = getConfigAs(DahuaDoorConfiguration.class);
+        DahuaDoorConfiguration localConfig = getConfigAs(DahuaDoorConfiguration.class);
+        config = localConfig;
 
         // Validate required configuration
-        if (config.hostname == null || config.hostname.isBlank() || config.username == null || config.username.isBlank()
-                || config.password == null || config.password.isBlank()) {
+        if (localConfig.hostname.isBlank() || localConfig.username.isBlank() || localConfig.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Hostname, username and password must be configured.");
             return;
         }
 
-        if (config.snapshotpath == null || config.snapshotpath.isBlank()) {
+        if (localConfig.snapshotpath.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Snapshot path must be configured.");
             return;
         }
 
-        client = new DahuaEventClient(config.hostname, config.username, config.password, this, scheduler,
+        client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password, this, scheduler,
                 this::errorInformer);
-        queries = new DahuaDoorHttpQueries(httpClient, config);
+        queries = new DahuaDoorHttpQueries(httpClient, localConfig);
 
         // Mark thing as online; errorInformer will switch to OFFLINE on failures
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected to device");
@@ -134,12 +135,14 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
 
     @Override
     public void dispose() {
-        if (client != null) {
-            client.dispose();
+        DahuaEventClient localClient = client;
+        if (localClient != null) {
+            localClient.dispose();
             client = null;
         }
-        if (queries != null) {
-            queries.dispose();
+        DahuaDoorHttpQueries localQueries = queries;
+        if (localQueries != null) {
+            localQueries.dispose();
             queries = null;
         }
     }
@@ -150,7 +153,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             logger.warn("Configuration not initialized");
             return;
         }
-        if (localConfig.snapshotpath == null || localConfig.snapshotpath.isEmpty()) {
+        if (localConfig.snapshotpath.isEmpty()) {
             logger.warn("Path for Snapshots is invalid");
             return;
         }
@@ -194,11 +197,12 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         }
         triggerChannel(channel.getUID(), "PRESSED");
 
-        if (queries == null) {
+        DahuaDoorHttpQueries localQueries = queries;
+        if (localQueries == null) {
             logger.warn("HTTP queries not initialized, cannot retrieve doorbell image");
             return;
         }
-        byte[] buffer = queries.requestImage();
+        byte[] buffer = localQueries.requestImage();
         updateChannelImage(buffer);
         saveSnapshot(buffer);
     }
@@ -332,8 +336,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
                 }
             }
         } catch (Exception e) {
-            String rawPayload = (data != null) ? data.toString() : "null";
-            logger.debug("Exception while handling DahuaDoor event. Raw payload: {}", rawPayload, e);
+            logger.debug("Exception while handling DahuaDoor event. Raw payload: {}", data.toString(), e);
         }
     }
 

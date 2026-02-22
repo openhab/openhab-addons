@@ -134,16 +134,14 @@ public class DahuaEventClient implements Runnable {
                 ArrayList<String> data;
                 try {
                     data = receive();
-                    if (data != null) {
-                        for (String packet : data) {
-                            JsonObject jsonPacket = gson.fromJson(packet, JsonObject.class);
-                            if (jsonPacket != null) {
-                                if (jsonPacket.has("result")) {
-                                    logger.trace("keepAlive back");
-                                    keepAliveReceived = true;
-                                } else if ("client.notifyEventStream".equals(jsonPacket.get("method").getAsString())) {
-                                    eventListener.eventHandler(jsonPacket);
-                                }
+                    for (String packet : data) {
+                        JsonObject jsonPacket = gson.fromJson(packet, JsonObject.class);
+                        if (jsonPacket != null) {
+                            if (jsonPacket.has("result")) {
+                                logger.trace("keepAlive back");
+                                keepAliveReceived = true;
+                            } else if ("client.notifyEventStream".equals(jsonPacket.get("method").getAsString())) {
+                                eventListener.eventHandler(jsonPacket);
                             }
                         }
                     }
@@ -160,10 +158,6 @@ public class DahuaEventClient implements Runnable {
     }
 
     public void send(String packet) throws IOException {
-        if (packet == null) {
-            packet = "";
-        }
-
         byte[] payloadBytes = packet.getBytes(StandardCharsets.UTF_8);
         ByteBuffer buffer = ByteBuffer.allocate(32 + payloadBytes.length);
         buffer.order(ByteOrder.BIG_ENDIAN);
@@ -290,6 +284,7 @@ public class DahuaEventClient implements Runnable {
         return p2pReturnData;
     }
 
+    @SuppressWarnings("unchecked")
     public boolean login() {
         logger.trace("Start login");
 
@@ -345,7 +340,7 @@ public class DahuaEventClient implements Runnable {
 
             send(new Gson().toJson(queryArgs));
             data = receive();
-            if (data == null) {
+            if (data.isEmpty()) {
                 return false;
             }
             jsonData = new Gson().fromJson(data.get(0), Map.class);
@@ -395,8 +390,9 @@ public class DahuaEventClient implements Runnable {
             error = true;
             try {
 
-                sock = new Socket(host, 5000);
-                sock.setSoTimeout(5000); // Set timeout to 5 seconds
+                Socket localSock = new Socket(host, 5000);
+                sock = localSock;
+                localSock.setSoTimeout(5000); // Set timeout to 5 seconds
                 error = false;
 
                 if (!login()) {
@@ -406,8 +402,9 @@ public class DahuaEventClient implements Runnable {
                         execThread = false;
                     }
                     try {
-                        if (sock != null) {
-                            sock.close();
+                        Socket sockToClose = sock;
+                        if (sockToClose != null) {
+                            sockToClose.close();
                         }
                     } catch (IOException e) {
                         logger.trace("Error closing socket after login failure", e);
@@ -424,11 +421,13 @@ public class DahuaEventClient implements Runnable {
 
                 send(new Gson().toJson(queryArgs));
                 ArrayList<String> data = receive();
-                if (data.isEmpty() || !gson.fromJson(data.get(0), JsonObject.class).has("result")) {
+                JsonObject jsonData = data.isEmpty() ? null : gson.fromJson(data.get(0), JsonObject.class);
+                if (jsonData == null || !jsonData.has("result")) {
                     logger.trace("Failure eventManager.attach");
                     try {
-                        if (sock != null) {
-                            sock.close();
+                        Socket sockToClose = sock;
+                        if (sockToClose != null) {
+                            sockToClose.close();
                         }
                     } catch (IOException e) {
                         logger.trace("Error closing socket after attach failure", e);
@@ -452,8 +451,9 @@ public class DahuaEventClient implements Runnable {
             }
         }
         try {
-            if (sock != null) {
-                sock.close();
+            Socket sockToClose = sock;
+            if (sockToClose != null) {
+                sockToClose.close();
             }
         } catch (Exception e) {
             logger.trace("Error while closing socket", e);

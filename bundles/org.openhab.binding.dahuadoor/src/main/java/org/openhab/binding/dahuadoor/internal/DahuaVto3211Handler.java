@@ -82,12 +82,13 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
         triggerChannel(bellChannel.getUID(), "PRESSED");
 
         // Retrieve and update door image
-        if (queries == null) {
+        DahuaDoorHttpQueries localQueries = queries;
+        if (localQueries == null) {
             logger.warn("HTTP queries not initialized, cannot retrieve doorbell image");
             return;
         }
 
-        byte[] buffer = queries.requestImage();
+        byte[] buffer = localQueries.requestImage();
         if (buffer != null && buffer.length > 0) {
             // Update image channel for the specific button
             RawType image = new RawType(buffer, "image/jpeg");
