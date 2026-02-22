@@ -45,8 +45,8 @@ public class FormaldehydeConcentrationMeasurementCluster extends BaseCluster {
     /**
      * Indicates the most recent measurement as a single-precision floating-point number. MeasuredValue’s unit is
      * represented by MeasurementUnit.
-     * A value of null indicates that the measurement is unknown or outside the valid range. MinMeasuredValue and
-     * MaxMeasuredValue define the valid range for MeasuredValue.
+     * A value of null indicates that the measurement is unknown or outside the valid range.
+     * MinMeasuredValue and MaxMeasuredValue define the valid range for MeasuredValue.
      */
     public Float measuredValue; // 0 single R V
     /**
@@ -97,7 +97,7 @@ public class FormaldehydeConcentrationMeasurementCluster extends BaseCluster {
 
     // Enums
     /**
-     * Where mentioned, Billion refers to 10, Trillion refers to 1012 (short scale).
+     * Where mentioned, Billion refers to 10^9, Trillion refers to 10^12 (short scale).
      */
     public enum MeasurementUnitEnum implements MatterEnum {
         PPM(0, "Ppm"),

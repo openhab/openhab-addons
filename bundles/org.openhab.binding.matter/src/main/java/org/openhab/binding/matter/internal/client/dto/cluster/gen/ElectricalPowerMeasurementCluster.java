@@ -141,8 +141,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      */
     public BigInteger activePower; // 8 power-mW R V
     /**
-     * This shall indicate the most recent ReactivePower reading in millivolt-amps reactive (mVAR). A positive value
-     * represents power imported, while a negative value represents power exported.
+     * This shall indicate the most recent ReactivePower reading in millivolt-amps reactive (mVAR).
+     * A positive value represents power imported, while a negative value represents power exported.
      * The reporting interval of this attribute shall be manufacturer dependent. The server may choose to omit
      * publication of deltas considered not meaningful.
      * The server shall NOT mark this attribute ready for report if the last time this was done was more recently than 1
@@ -249,8 +249,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
      * This shall indicate the most recent NeutralCurrent reading in milliamps (mA). Typically this is a derived value,
      * taking the magnitude of the vector sum of phase currents.
      * If the neutral current cannot be measured or derived, a value of null shall be returned.
-     * A positive value represents an imbalance between the phase currents when power is imported. A negative value
-     * represents an imbalance between the phase currents when power is exported.
+     * A positive value represents an imbalance between the phase currents when power is imported.
+     * A negative value represents an imbalance between the phase currents when power is exported.
      * The reporting interval of this attribute shall be manufacturer dependent. The server may choose to omit
      * publication of deltas considered not meaningful.
      * The server shall NOT mark this attribute ready for report if the last time this was done was more recently than 1
@@ -315,14 +315,14 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
         public Integer endTimestamp; // epoch-s
         /**
          * This field shall be the most recent timestamp in UTC that the value in the Min field was measured.
-         * This field shall be greater than or equal to the value of the StartTimestamp field. This field shall be less
-         * than or equal to the value of the EndTimestamp field.
+         * This field shall be greater than or equal to the value of the StartTimestamp field.
+         * This field shall be less than or equal to the value of the EndTimestamp field.
          */
         public Integer minTimestamp; // epoch-s
         /**
-         * This field shall be the most recent timestamp in UTC of the value in the Max field. This field shall be
-         * greater than or equal to the value of the StartTimestamp field. This field shall be less than or equal to the
-         * value of the EndTimestamp field.
+         * This field shall be the most recent timestamp in UTC of the value in the Max field.
+         * This field shall be greater than or equal to the value of the StartTimestamp field.
+         * This field shall be less than or equal to the value of the EndTimestamp field.
          */
         public Integer maxTimestamp; // epoch-s
         /**
@@ -338,14 +338,14 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
          */
         public BigInteger endSystime; // systime-ms
         /**
-         * This field shall be the measurement time since boot of the value in the Min field was measured. This field
-         * shall be greater than or equal to the value of the StartSystime field.
+         * This field shall be the measurement time since boot of the value in the Min field was measured.
+         * This field shall be greater than or equal to the value of the StartSystime field.
          * This field shall be less than or equal to the value of the EndSystime field.
          */
         public BigInteger minSystime; // systime-ms
         /**
-         * This field shall be the measurement time since boot of the value in the Max field. This field shall be
-         * greater than or equal to the value of the StartSystime field.
+         * This field shall be the measurement time since boot of the value in the Max field.
+         * This field shall be greater than or equal to the value of the StartSystime field.
          * This field shall be less than or equal to the value of the EndSystime field.
          */
         public BigInteger maxSystime; // systime-ms

@@ -210,7 +210,7 @@ public class JointFabricAdministratorCluster extends BaseCluster {
     /**
      * This command shall be used for communicating to client the endpoint that holds the Joint Fabric Administrator
      * Cluster.
-     * ### This field shall contain the unique identifier for the endpoint that holds the Joint Fabric Administrator
+     * This field shall contain the unique identifier for the endpoint that holds the Joint Fabric Administrator
      * Cluster.
      */
     public static ClusterCommand announceJointFabricAdministrator(Integer endpointId) {

@@ -456,8 +456,8 @@ public class ContentControlCluster extends BaseCluster {
      * field and directly increase the RemainingScreenTime attribute by the specified BonusTime value.
      * A server that does not support the PM feature shall respond with InvalidPINCode to clients that only have Operate
      * privilege unless:
-     * • It has been provided with the PIN value to expect via an out of band mechanism, and
-     * • The client has provided a PINCode that matches the expected PIN value.
+     * - It has been provided with the PIN value to expect via an out of band mechanism, and
+     * - The client has provided a PINCode that matches the expected PIN value.
      */
     public static ClusterCommand addBonusTime(String pinCode, Integer bonusTime) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -495,7 +495,7 @@ public class ContentControlCluster extends BaseCluster {
     /**
      * The purpose of this command is to specify whether programs with no Content rating must be blocked by this media
      * device.
-     * Upon receipt of the UnblockUnratedContent command, the media device shall set the BlockUn rated attribute to
+     * Upon receipt of the UnblockUnratedContent command, the media device shall set the BlockUnrated attribute to
      * FALSE.
      */
     public static ClusterCommand unblockUnratedContent() {

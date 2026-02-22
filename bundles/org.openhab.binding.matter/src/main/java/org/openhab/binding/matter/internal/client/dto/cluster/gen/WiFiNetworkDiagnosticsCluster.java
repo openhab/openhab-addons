@@ -134,9 +134,9 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
          * The Status field shall be set to the Status Code value that was present in the last frame related to
          * association where Status Code was not equal to zero and which caused the failure of a last trial attempt, if
          * this last failure was due to one of the following Management frames:
-         * • Association Response (Type 0, Subtype 1)
-         * • Reassociation Response (Type 0, Subtype 3)
-         * • Authentication (Type 0, Subtype 11)
+         * - Association Response (Type 0, Subtype 1)
+         * - Reassociation Response (Type 0, Subtype 3)
+         * - Authentication (Type 0, Subtype 11)
          * Table 9-50 &quot;Status codes&quot; of IEEE 802.11-2020 contains a description of all values possible.
          */
         public Integer status; // uint16
@@ -296,12 +296,12 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * This command is used to reset the count attributes.
      * Reception of this command shall reset the following attributes to 0:
-     * • BeaconLostCount
-     * • BeaconRxCount
-     * • PacketMulticastRxCount
-     * • PacketMulticastTxCount
-     * • PacketUnicastRxCount
-     * • PacketUnicastTxCount
+     * - BeaconLostCount
+     * - BeaconRxCount
+     * - PacketMulticastRxCount
+     * - PacketMulticastTxCount
+     * - PacketUnicastRxCount
+     * - PacketUnicastTxCount
      */
     public static ClusterCommand resetCounts() {
         return new ClusterCommand("resetCounts");

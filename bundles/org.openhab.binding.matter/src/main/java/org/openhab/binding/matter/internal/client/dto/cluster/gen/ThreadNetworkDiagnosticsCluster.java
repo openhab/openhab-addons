@@ -411,9 +411,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * Indicates the channels within channel page 0, in the 2.4GHz ISM band. The channels are represented in most
      * significant bit order, with bit value 1 meaning selected, bit value 0 meaning unselected. For example, the most
-     * significant bit of the left-most byte indicates channel
-     * 0. If channel 0 and channel 10 are selected, the mask would be: 80 20 00 00. Null when there is no dataset
-     * configured.
+     * significant bit of the left-most byte indicates channel 0. If channel 0 and channel 10 are selected, the mask
+     * would be: 80 20 00 00. Null when there is no dataset configured.
      */
     public OctetString channelPage0Mask; // 60 octstr R V
     /**
@@ -569,7 +568,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public static class RouteTableStruct {
         /**
          * This field shall specify the IEEE 802.15.4 extended address for the Node for which this route table entry
-         * corresponds. The uint64 value is composed by taking the 8 octets of the extended address EUI- 64 and treating
+         * corresponds. The uint64 value is composed by taking the 8 octets of the extended address EUI-64 and treating
          * them as a big-endian integer. For example, octet string (in hexadecimal, from first octet to last)
          * 00112233AABBCCDD would lead to a value of 0x00112233AABBCCDD.
          */
@@ -845,7 +844,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * This command is used to reset the count attributes.
      * Reception of this command shall reset the following attributes to 0:
-     * • OverrunCount
+     * - OverrunCount
      * Upon completion, this command shall send a status code of SUCCESS back to the initiator.
      */
     public static ClusterCommand resetCounts() {

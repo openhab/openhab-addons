@@ -225,7 +225,7 @@ public class DeviceTypes {
      * mounted permanently, the Mounted Dimmable Load Control device type shall be used, with the Dimmable Plug-In Unit
      * device type optionally added to the DeviceTypeList of the Descriptor cluster in addition to the Mounted Dimmable
      * Load Control device type (see [ref_MountedDimmableLoadControlServerGuidance]).
-     * ### Before Matter 1.4, mounted dimmable load control units typically used the Dimmable Plug-In Unit device type.
+     * Before Matter 1.4, mounted dimmable load control units typically used the Dimmable Plug-In Unit device type.
      * Clients can encounter devices which were made before or after these specification updates. Therefore, clients
      * SHOULD use the following heuristic to distinguish the type of physical device based on the device type revision
      * found on an endpoint (&quot;--&quot; means the device type is not listed).
@@ -275,12 +275,12 @@ public class DeviceTypes {
      * the air above the cooking surface or by recirculating and filtering it. It may also contain a light for
      * illuminating the cooking surface.
      * Extractor Hoods may also be known by the following names:
-     * • Hoods
-     * • Extractor Fans
-     * • Extractors
-     * • Range Hoods
-     * • Telescoping Hoods
-     * • Telescoping Extractors
+     * - Hoods
+     * - Extractor Fans
+     * - Extractors
+     * - Range Hoods
+     * - Telescoping Hoods
+     * - Telescoping Extractors
      **/
     public static final Integer EXTRACTOR_HOOD = 122;
     /**
@@ -347,10 +347,10 @@ public class DeviceTypes {
      * Plug-In Unit is intended only for dimmer-capable smart plugs that are not permanently connected, and which can be
      * unplugged from their power source.
      * &gt; [!NOTE]
-     * &gt; Since this device type was added in Matter 1.4, for endpoints using this device type
-     * it is recommended to add the subset device type Dimmable Plug-In Unit to the DeviceTypeList of the Descriptor
-     * cluster on the same endpoint for backward compatibility with existing clients.
-     * See [ref_MountedDimmablePlugInUnitClientGuidance] for client guidance with these two device types.
+     * &gt; Since this device type was added in Matter 1.4, for endpoints using this device type it is recommended to
+     * add the subset device type Dimmable Plug-In Unit to the DeviceTypeList of the Descriptor cluster on the same
+     * endpoint for backward compatibility with existing clients. See [ref_MountedDimmablePlugInUnitClientGuidance] for
+     * client guidance with these two device types.
      **/
     public static final Integer MOUNTED_DIMMABLE_LOAD_CONTROL = 272;
     /**
@@ -362,8 +362,8 @@ public class DeviceTypes {
      * &gt; [!NOTE]
      * &gt; Since this device type was added in Matter 1.4, for endpoints using this device type it is recommended to
      * add the subset device type On/Off Plug-in Unit to the DeviceTypeList of the Descriptor cluster on the same
-     * endpoint for backward compatibility with existing clients.
-     * See [ref_MountedOnOffClientGuidance] for client guidance with these two device types.
+     * endpoint for backward compatibility with existing clients. See [ref_MountedOnOffClientGuidance] for client
+     * guidance with these two device types.
      **/
     public static final Integer MOUNTED_ON_OFF_CONTROL = 271;
     /**
@@ -403,7 +403,7 @@ public class DeviceTypes {
      * permanently, the Mounted On/Off Control device type shall be used, with the On/Off Plug-In Unit device type
      * optionally added in the DeviceTypeList of the Descriptor cluster in addition to the On/Off Plug-In Unit device
      * type (see [ref_MountedOnOffControlServerGuidance]).
-     * ### Before Matter 1.4, mounted units typically used the On/Off Plug-In Unit device type. Clients can encounter
+     * Before Matter 1.4, mounted units typically used the On/Off Plug-In Unit device type. Clients can encounter
      * devices which were made before or after these specification updates. Therefore, clients SHOULD use the following
      * heuristic to distinguish the type of physical device based on the device type revision found on an endpoint
      * (&quot;--&quot; means the device type is not listed).
@@ -467,9 +467,9 @@ public class DeviceTypes {
     /**
      * This defines conformance for a root node endpoint (see System Model specification). This endpoint is akin to a
      * &quot;read me first&quot; endpoint that describes itself and the other endpoints that make up the node.
-     * • Device types with Endpoint scope shall NOT be supported on the same endpoint as this device type.
-     * • Clusters with an Application role shall NOT be supported on the same endpoint as this device type.
-     * • Other device types with Node scope may be supported on the same endpoint as this device type.
+     * - Device types with Endpoint scope shall NOT be supported on the same endpoint as this device type.
+     * - Clusters with an Application role shall NOT be supported on the same endpoint as this device type.
+     * - Other device types with Node scope may be supported on the same endpoint as this device type.
      **/
     public static final Integer ROOT_NODE = 22;
     /**
@@ -498,7 +498,8 @@ public class DeviceTypes {
      **/
     public static final Integer SOLAR_POWER = 23;
     /**
-     * This defines conformance to the Speaker device type. This feature controls the speaker volume of the device.
+     * This defines conformance to the Speaker device type.
+     * This feature controls the speaker volume of the device.
      * To control unmute/mute, the On/Off cluster shall be used. A value of TRUE for the OnOff attribute shall represent
      * the volume on (not muted) state, while a value of FALSE shall represent the volume off (muted) state. For volume
      * level control, the Level cluster shall be used.

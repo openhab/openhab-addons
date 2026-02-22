@@ -89,10 +89,10 @@ public class TimeSynchronizationCluster extends BaseCluster {
      */
     public String defaultNtp; // 4 string R V
     /**
-     * This attribute shall contain a list of time zone offsets from UTC and when they shall take effect.
-     * This attribute uses a list of time offset configurations to allow Nodes to handle scheduled regulatory time zone
-     * changes. This attribute shall NOT be used to indicate daylight savings time changes (see Section 11.17.8.7,
-     * “DSTOffset Attribute” for daylight savings time).
+     * This attribute shall contain a list of time zone offsets from UTC and when they shall take effect. This attribute
+     * uses a list of time offset configurations to allow Nodes to handle scheduled regulatory time zone changes. This
+     * attribute shall NOT be used to indicate daylight savings time changes (see Section 11.17.8.7, “DSTOffset
+     * Attribute” for daylight savings time).
      * The first entry shall have a ValidAt entry of 0. If there is a second entry, it shall have a non-zero ValidAt
      * time.
      * If a node supports a TimeZoneDatabase, and it has data for the given time zone Name and the given Offset matches,
@@ -101,8 +101,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
      * time zone, if required.
      * If a node does not support a TimeZoneDatabase, the Name field of the TimeZoneStruct is only applicable for
      * client-side localization. In particular:
-     * • If the node does not support a TimeZoneDatabase, the Name field shall NOT be used to calculate the local time.
-     * • If the node does not support a TimeZoneDatabase, the Name field shall NOT be used to calculate DST start or end
+     * - If the node does not support a TimeZoneDatabase, the Name field shall NOT be used to calculate the local time.
+     * - If the node does not support a TimeZoneDatabase, the Name field shall NOT be used to calculate DST start or end
      * dates.
      * When time passes, the node SHOULD remove any entries which are no longer active and change the ValidAt time for
      * the currently used TimeZoneStruct list item to zero.
@@ -511,10 +511,11 @@ public class TimeSynchronizationCluster extends BaseCluster {
     }
 
     /**
-     * This command is used to set the TrustedTimeSource attribute. Upon receipt of this command:
-     * • If the TrustedTimeSource field in the command is null, the node shall set the TrustedTimeSource attribute to
+     * This command is used to set the TrustedTimeSource attribute.
+     * Upon receipt of this command:
+     * - If the TrustedTimeSource field in the command is null, the node shall set the TrustedTimeSource attribute to
      * null and shall generate a MissingTrustedTimeSource event.
-     * • Otherwise, the node shall set the TrustedTimeSource attribute to a struct which has NodeID and Endpoint fields
+     * - Otherwise, the node shall set the TrustedTimeSource attribute to a struct which has NodeID and Endpoint fields
      * matching those in the TrustedTimeSource field and has its FabricIndex field set to the command’s accessing fabric
      * index.
      */
@@ -553,8 +554,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
 
     /**
      * This command is used to set the DST offsets for a node.
-     * • If the length of DSTOffset is larger than DSTOffsetListMaxSize, the node shall respond with RESOURCE_EXHAUSTED.
-     * • Else if the list entries do not conform to the list requirements for DSTOffset attribute, the node shall
+     * - If the length of DSTOffset is larger than DSTOffsetListMaxSize, the node shall respond with RESOURCE_EXHAUSTED.
+     * - Else if the list entries do not conform to the list requirements for DSTOffset attribute, the node shall
      * respond with CONSTRAINT_ERROR.
      * If there are no errors in the list, the DSTOffset field shall be copied to the DSTOffset attribute.
      * If the DSTOffset attribute change causes a corresponding change to the DST state, a DSTStatus event shall be

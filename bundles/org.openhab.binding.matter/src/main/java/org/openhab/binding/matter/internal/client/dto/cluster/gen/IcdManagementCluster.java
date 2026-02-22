@@ -82,7 +82,7 @@ public class IcdManagementCluster extends BaseCluster {
      * unless specified otherwise in the requirement column of the UserActiveModeTriggerHint table.
      * ActuateSensorLightsBlink, ResetButtonLightsBlink and SetupButtonLightsBlink (i.e. bits 7, 9 and 14) have a
      * dependency on the UserActiveModeTriggerInstruction attribute but do not require the attribute to be present.
-     * ### An ICD can indicate multiple ways of being put into Active Mode by setting multiple bits in the bitmap at the
+     * An ICD can indicate multiple ways of being put into Active Mode by setting multiple bits in the bitmap at the
      * same time. However, a device shall NOT set more than one bit which has a dependency on the
      * UserActiveModeTriggerInstruction attribute.
      */
@@ -111,8 +111,8 @@ public class IcdManagementCluster extends BaseCluster {
     public String userActiveModeTriggerInstruction; // 7 string R V
     /**
      * Indicates the operating mode of the ICD as specified in the OperatingModeEnum.
-     * • If the ICD is operating as a LIT ICD, OperatingMode shall be LIT.
-     * • If the ICD is operating as a SIT ICD, OperatingMode shall be SIT.
+     * - If the ICD is operating as a LIT ICD, OperatingMode shall be LIT.
+     * - If the ICD is operating as a SIT ICD, OperatingMode shall be SIT.
      */
     public OperatingModeEnum operatingMode; // 8 OperatingModeEnum R V
     /**
@@ -135,8 +135,8 @@ public class IcdManagementCluster extends BaseCluster {
          * same as the CheckInNodeID. The MonitoredSubject gives the registering client the flexibility of having a
          * different CheckInNodeID from the MonitoredSubject. A subscription shall count as an active subscription for
          * this entry if:
-         * • It is on the associated fabric of this entry, and
-         * • The subject of this entry matches the ISD of the SubscriptionRequest message that created the subscription.
+         * - It is on the associated fabric of this entry, and
+         * - The subject of this entry matches the ISD of the SubscriptionRequest message that created the subscription.
          * Matching shall be determined using the subject_matches function defined in the Access Control Privilege
          * Granting Algorithm.
          * For example, if the MonitoredSubject is Node ID 0x1111_2222_3333_AAAA, and one of the subscribers to the
@@ -355,8 +355,8 @@ public class IcdManagementCluster extends BaseCluster {
      * ### Effect on Receipt
      * When receiving a StayActiveRequest command, the server shall calculate the maximum PromisedActiveDuration it can
      * remain active as the greater of the following two values:
-     * • StayActiveDuration: Specified in the received command by the client.
-     * • Remaining Active Time: The server’s planned remaining active time based on the ActiveModeThreshold and its
+     * - StayActiveDuration: Specified in the received command by the client.
+     * - Remaining Active Time: The server’s planned remaining active time based on the ActiveModeThreshold and its
      * internal resources and power budget.
      * A server may replace StayActiveDuration with Minimum Active Duration in the above calculation.
      * PromisedActiveDuration represents the guaranteed minimum time the server will remain active, taking into account

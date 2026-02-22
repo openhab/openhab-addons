@@ -74,7 +74,8 @@ public class EnergyPreferenceCluster extends BaseCluster {
     public List<EnergyPriorityEnum> energyPriorities; // 2 list R V
     /**
      * Indicates a list of BalanceStructs, each representing a condition or set of conditions for the device to enter a
-     * low power mode. This shall contain at least two BalanceStructs.
+     * low power mode.
+     * This shall contain at least two BalanceStructs.
      * Each BalanceStruct shall have a Step field larger than the Step field on the previous BalanceStruct in the list.
      */
     public List<BalanceStruct> lowPowerModeSensitivities; // 3 list R V

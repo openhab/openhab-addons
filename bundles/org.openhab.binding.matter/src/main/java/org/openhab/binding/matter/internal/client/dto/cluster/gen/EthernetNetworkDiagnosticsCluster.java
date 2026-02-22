@@ -151,11 +151,11 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * This command is used to reset the count attributes.
      * Reception of this command shall reset the following attributes to 0:
-     * • PacketRxCount
-     * • PacketTxCount
-     * • TxErrCount
-     * • CollisionCount
-     * • OverrunCount
+     * - PacketRxCount
+     * - PacketTxCount
+     * - TxErrCount
+     * - CollisionCount
+     * - OverrunCount
      */
     public static ClusterCommand resetCounts() {
         return new ClusterCommand("resetCounts");

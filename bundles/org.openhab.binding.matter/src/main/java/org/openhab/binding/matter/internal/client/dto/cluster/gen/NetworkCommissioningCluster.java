@@ -150,9 +150,9 @@ public class NetworkCommissioningCluster extends BaseCluster {
         /**
          * Every network is uniquely identified (for purposes of commissioning) by a NetworkID mapping to the following
          * technology-specific properties:
-         * • SSID for Wi-Fi
-         * • Extended PAN ID for Thread
-         * • Network interface instance name at operating system (or equivalent unique name) for Ethernet.
+         * - SSID for Wi-Fi
+         * - Extended PAN ID for Thread
+         * - Network interface instance name at operating system (or equivalent unique name) for Ethernet.
          * The semantics of the NetworkID field therefore varies between network types accordingly. It contains SSID for
          * Wi-Fi networks, Extended PAN ID (XPAN ID) for Thread networks and netif name for Ethernet networks.
          * &gt; [!NOTE]
@@ -327,7 +327,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
     /**
      * The ThreadCapabilitiesBitmap encodes the supported Thread features and capabilities of a Thread-enabled network
      * interface.
-     * NOTE The valid combinations of capabilities are restricted and dependent on Thread version.
+     * &gt; [!NOTE]
+     * &gt; The valid combinations of capabilities are restricted and dependent on Thread version.
      */
     public static class ThreadCapabilitiesBitmap {
         public boolean isBorderRouterCapable;
@@ -385,8 +386,8 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * This command is used to scan for available networks on the network interface associated with the cluster
      * instance.
      * This command shall scan on the Cluster instance’s associated network interface for either of:
-     * • All available networks (non-directed scanning)
-     * • Specific networks (directed scanning)
+     * - All available networks (non-directed scanning)
+     * - Specific networks (directed scanning)
      * Scanning for available networks detects all networks of the type corresponding to the cluster server instance’s
      * associated network interface that are possible to join, such as all visible Wi-Fi access points for Wi-Fi cluster
      * server instances, all Thread PANs for Thread cluster server instances, within bounds of the maximum response
@@ -483,7 +484,7 @@ public class NetworkCommissioningCluster extends BaseCluster {
      * then this command shall fail with a FAILSAFE_REQUIRED status code sent back to the initiator.
      * If the Networks attribute does not contain a matching entry, the command shall immediately respond with
      * NetworkConfigResponse having NetworkingStatus status field set to NetworkIdNotFound.
-     * On success, the NetworkConfigResponse command shall have its NetworkIndex field set to the 0- based index of the
+     * On success, the NetworkConfigResponse command shall have its NetworkIndex field set to the 0-based index of the
      * entry in the Networks attribute that was just removed, and a NetworkingStatus status field set to Success.
      */
     public static ClusterCommand removeNetwork(OctetString networkId, BigInteger breadcrumb) {

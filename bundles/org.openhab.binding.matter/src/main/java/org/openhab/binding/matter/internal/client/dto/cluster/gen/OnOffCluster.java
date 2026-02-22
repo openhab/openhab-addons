@@ -198,15 +198,15 @@ public class OnOffCluster extends BaseCluster {
          * 
          * When this feature is supported, the device exposing this server cluster exhibits &quot;dead front&quot;
          * behavior when the &quot;OnOff&quot; attribute is FALSE (Off). This &quot;dead front&quot; behavior includes:
-         * • clusters other than this cluster that are also exposed may respond with failures to Invoke and Write
+         * - clusters other than this cluster that are also exposed may respond with failures to Invoke and Write
          * interactions. Such failure responses when in a &quot;dead front&quot; shall be with an INVALID_IN_STATE
          * status code.
-         * • clusters other than this cluster may change the values of their attributes to best-effort values, due to
+         * - clusters other than this cluster may change the values of their attributes to best-effort values, due to
          * the actual values not being defined or available in this state. Device type specifications that require
          * support for the DF feature SHOULD define what these best-effort values are.
-         * • Report Transactions shall continue to be generated. Such transactions may include best-effort values as
+         * - Report Transactions shall continue to be generated. Such transactions may include best-effort values as
          * noted above.
-         * • Event generation logic for clusters other than this cluster is unchanged (noting possible use of
+         * - Event generation logic for clusters other than this cluster is unchanged (noting possible use of
          * best-effort attribute values as in the preceding bullets).
          * When this feature is supported and the OnOff attribute changes from TRUE to FALSE (e.g. when receiving an Off
          * Command, or due to a manual interaction on the device), it shall start executing this &quot;dead front&quot;

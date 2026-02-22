@@ -36,12 +36,13 @@ public class IlluminanceMeasurementCluster extends BaseCluster {
 
     /**
      * Indicates the illuminance in Lux (symbol lx) as follows:
-     * • MeasuredValue &#x3D; 10,000 x log10(illuminance) + 1,
+     * - MeasuredValue &#x3D; 10,000 x log10(illuminance) + 1,
      * where 1 lx &lt;&#x3D; illuminance &lt;&#x3D; 3.576 Mlx, corresponding to a MeasuredValue in the range 1 to
-     * 0xFFFE. The MeasuredValue attribute can take the following values:
-     * • 0 indicates a value of illuminance that is too low to be measured,
-     * • MinMeasuredValue &lt;&#x3D; MeasuredValue &lt;&#x3D; MaxMeasuredValue under normal circumstances,
-     * • null indicates that the illuminance measurement is invalid.
+     * 0xFFFE.
+     * The MeasuredValue attribute can take the following values:
+     * - 0 indicates a value of illuminance that is too low to be measured,
+     * - MinMeasuredValue &lt;&#x3D; MeasuredValue &lt;&#x3D; MaxMeasuredValue under normal circumstances,
+     * - null indicates that the illuminance measurement is invalid.
      * The MeasuredValue attribute is updated continuously as new measurements are made.
      */
     public Integer measuredValue; // 0 uint16 R V

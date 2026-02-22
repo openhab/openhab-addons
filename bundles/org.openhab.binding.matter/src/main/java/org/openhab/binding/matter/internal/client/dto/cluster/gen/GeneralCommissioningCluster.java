@@ -56,8 +56,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
      */
     public BigInteger breadcrumb; // 0 uint64 RW VA
     /**
-     * This attribute shall describe critical parameters needed at the beginning of commissioning flow.
-     * See Section 11.10.5.3, “BasicCommissioningInfo Type” for more information.
+     * This attribute shall describe critical parameters needed at the beginning of commissioning flow. See Section
+     * 11.10.5.3, “BasicCommissioningInfo Type” for more information.
      */
     public BasicCommissioningInfo basicCommissioningInfo; // 1 BasicCommissioningInfo R V
     /**
@@ -288,17 +288,17 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * which use PASE connections, the opportunity to use the failsafe during the relatively short commissioning window.
      * Otherwise, the command shall arm or re-arm the &quot;fail-safe timer&quot; with an expiry time set for a duration
      * of ExpiryLengthSeconds, or disarm it, depending on the situation:
-     * • If ExpiryLengthSeconds is 0 and the fail-safe timer was already armed and the accessing fabric matches the
+     * - If ExpiryLengthSeconds is 0 and the fail-safe timer was already armed and the accessing fabric matches the
      * Fabric currently associated with the fail-safe context, then the fail-safe timer shall be immediately expired
      * (see further below for side-effects of expiration).
-     * • If ExpiryLengthSeconds is 0 and the fail-safe timer was not armed, then this command invocation shall lead to a
+     * - If ExpiryLengthSeconds is 0 and the fail-safe timer was not armed, then this command invocation shall lead to a
      * success response with no side-effects against the fail-safe context.
-     * • If ExpiryLengthSeconds is non-zero and the fail-safe timer was not currently armed, then the fail-safe timer
+     * - If ExpiryLengthSeconds is non-zero and the fail-safe timer was not currently armed, then the fail-safe timer
      * shall be armed for that duration.
-     * • If ExpiryLengthSeconds is non-zero and the fail-safe timer was currently armed, and the accessing Fabric
+     * - If ExpiryLengthSeconds is non-zero and the fail-safe timer was currently armed, and the accessing Fabric
      * matches the fail-safe context’s associated Fabric, then the fail-safe timer shall be re-armed to expire in
      * ExpiryLengthSeconds.
-     * • Otherwise, the command shall leave the current fail-safe state unchanged and immediately respond with
+     * - Otherwise, the command shall leave the current fail-safe state unchanged and immediately respond with
      * ArmFailSafeResponse containing an ErrorCode value of BusyWithOtherAdmin, indicating a likely conflict between
      * commissioners.
      * The value of the Breadcrumb field shall be written to the Breadcrumb on successful execution of the command.
@@ -308,21 +308,21 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * ### Fail Safe Context
      * When first arming the fail-safe timer, a &#x27;Fail Safe Context&#x27; shall be created on the receiver, to track
      * the following state information while the fail-safe is armed:
-     * • The fail-safe timer duration.
-     * • The state of all Network Commissioning Networks attribute configurations, to allow recovery of connectivity
+     * - The fail-safe timer duration.
+     * - The state of all Network Commissioning Networks attribute configurations, to allow recovery of connectivity
      * after Fail-Safe expiry.
-     * • Whether an AddNOC command or UpdateNOC command has taken place.
-     * • A fabric-index for the fabric-scoping of the context, starting at the accessing fabric index for the
+     * - Whether an AddNOC command or UpdateNOC command has taken place.
+     * - A fabric-index for the fabric-scoping of the context, starting at the accessing fabric index for the
      * ArmFailSafe command, and updated with the Fabric Index associated with an AddNOC or an UpdateNOC command being
      * invoked successfully during the ongoing Fail-Safe timer period.
-     * • The operational credentials associated with any Fabric whose configuration is affected by the UpdateNOC
+     * - The operational credentials associated with any Fabric whose configuration is affected by the UpdateNOC
      * command.
-     * • Optionally: the previous state of non-fabric-scoped data that is mutated during the fail-safe period.
+     * - Optionally: the previous state of non-fabric-scoped data that is mutated during the fail-safe period.
      * Note the following to assist in understanding the above state-keeping, which summarizes other normative
      * requirements in the respective sections:
-     * • The AddNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, and only if no
+     * - The AddNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, and only if no
      * UpdateNOC command was previously processed within the same fail-safe timer period.
-     * • The UpdateNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, can only be
+     * - The UpdateNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, can only be
      * invoked over a CASE session, and only if no AddNOC command was previously processed in the same fail-safe timer
      * period.
      * On creation of the Fail Safe Context a second timer shall be created to expire at MaxCumulativeFailsafeSeconds as
@@ -435,9 +435,9 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * This command shall only result in success with an ErrorCode value of OK in the CommissioningCompleteResponse if
      * received over a CASE session and the accessing fabric index matches the Fabric Index associated with the current
      * Fail-Safe context. In other words:
-     * • If no AddNOC command had been successfully invoked, the CommissioningComplete command must originate from the
+     * - If no AddNOC command had been successfully invoked, the CommissioningComplete command must originate from the
      * Fabric that initiated the Fail-Safe context.
-     * • After an AddNOC command has been successfully invoked, the CommissioningComplete command must originate from
+     * - After an AddNOC command has been successfully invoked, the CommissioningComplete command must originate from
      * the Fabric which was joined through the execution of that command, which updated the Fail-Safe context’s Fabric
      * Index.
      * On successful execution of the CommissioningComplete command, where the CommissioningCompleteResponse has an

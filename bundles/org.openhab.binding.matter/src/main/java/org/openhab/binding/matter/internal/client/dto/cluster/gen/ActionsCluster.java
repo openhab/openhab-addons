@@ -49,14 +49,14 @@ public class ActionsCluster extends BaseCluster {
      * The SetupURL attribute (when provided) shall indicate a URL; its syntax shall follow the syntax as specified in
      * RFC 1738, max. 512 ASCII characters and shall use the https scheme. The location referenced by this URL shall
      * provide additional information for the actions provided:
-     * • When used without suffix, it shall provide information about the various actions which the cluster provides.
-     * ◦ Example: SetupURL could take the value of example://Actions or https://domain.example/ Matter/bridgev1/Actions
+     * - When used without suffix, it shall provide information about the various actions which the cluster provides.
+     * - Example: SetupURL could take the value of example://Actions or https://domain.example/Matter/bridgev1/Actions
      * for this generic case (access generic info how to use actions provided by this cluster).
-     * • When used with a suffix of &quot;/?a&#x3D;&quot; and the decimal value of ActionID for one of the actions, it
+     * - When used with a suffix of &quot;/?a&#x3D;&quot; and the decimal value of ActionID for one of the actions, it
      * may provide information about that particular action. This could be a deeplink to manufacturer-app/website
      * (associated somehow to the server node) with the information/edit-screen for this action so that the user can
      * view and update details of the action, e.g. edit the scene, or change the wake-up experience time period.
-     * ◦ Example of SetupURL with suffix added: example://Actions/?a&#x3D;12345 or
+     * - Example of SetupURL with suffix added: example://Actions/?a&#x3D;12345 or
      * https://domain.example/Matter/bridgev1/Actions/?a&#x3D;12345 for linking to specific info/editing of the action
      * with ActionID 0x3039.
      */
@@ -69,8 +69,8 @@ public class ActionsCluster extends BaseCluster {
      * It provides feedback to the client about the progress of the action.
      * Example: When InstantActionWithTransition is invoked (with an InvokeID data field), two StateChanged events will
      * be generated:
-     * • one when the transition starts (NewState&#x3D;Active)
-     * • one when the transition completed (NewState&#x3D;Inactive)
+     * - one when the transition starts (NewState&#x3D;Active)
+     * - one when the transition completed (NewState&#x3D;Inactive)
      */
     public static class StateChanged {
         /**
@@ -101,15 +101,15 @@ public class ActionsCluster extends BaseCluster {
      * Example: When InstantActionWithTransition is invoked (with an InvokeID data field), and another controller
      * changes the state of one or more of the involved endpoints during the transition, thus interrupting the
      * transition triggered by the action, two events would be generated:
-     * • StateChanged when the transition starts (NewState&#x3D;Active)
-     * • ActionFailed when the interrupting command occurs (NewState&#x3D;Inactive, Error&#x3D;interrupted)
+     * - StateChanged when the transition starts (NewState&#x3D;Active)
+     * - ActionFailed when the interrupting command occurs (NewState&#x3D;Inactive, Error&#x3D;interrupted)
      * Example: When InstantActionWithTransition is invoked (with an InvokeID data field &#x3D; 1), and the same client
      * invokes an InstantAction with (the same or another ActionId and) InvokeID &#x3D; 2, and this second command
      * interrupts the transition triggered by the first command, these events would be generated:
-     * • StateChanged (InvokeID&#x3D;1, NewState&#x3D;Active) when the transition starts
-     * • ActionFailed (InvokeID&#x3D;2, NewState&#x3D;Inactive, Error&#x3D;interrupted) when the second command
+     * - StateChanged (InvokeID&#x3D;1, NewState&#x3D;Active) when the transition starts
+     * - ActionFailed (InvokeID&#x3D;2, NewState&#x3D;Inactive, Error&#x3D;interrupted) when the second command
      * interrupts the transition
-     * • StateChanged (InvokeID&#x3D;2, NewState&#x3D;Inactive) upon the execution of the action for the second command
+     * - StateChanged (InvokeID&#x3D;2, NewState&#x3D;Inactive) upon the execution of the action for the second command
      */
     public static class ActionFailed {
         /**

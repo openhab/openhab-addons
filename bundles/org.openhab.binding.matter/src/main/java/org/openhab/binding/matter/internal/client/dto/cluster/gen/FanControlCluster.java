@@ -118,8 +118,8 @@ public class FanControlCluster extends BaseCluster {
      */
     public Integer speedCurrent; // 6 uint8 R V
     /**
-     * This attribute is a bitmap that indicates the rocking motions that are supported by the server. If this attribute
-     * is supported by the server, at least one bit shall be set in this attribute.
+     * This attribute is a bitmap that indicates the rocking motions that are supported by the server.
+     * If this attribute is supported by the server, at least one bit shall be set in this attribute.
      */
     public RockBitmap rockSupport; // 7 RockBitmap R V
     /**
@@ -133,8 +133,8 @@ public class FanControlCluster extends BaseCluster {
      */
     public RockBitmap rockSetting; // 8 RockBitmap RW VO
     /**
-     * This attribute is a bitmap that indicates what wind modes are supported by the server. If this attribute is
-     * supported by the server, at least one bit shall be set in this attribute.
+     * This attribute is a bitmap that indicates what wind modes are supported by the server.
+     * If this attribute is supported by the server, at least one bit shall be set in this attribute.
      */
     public WindBitmap windSupport; // 9 WindBitmap R V
     /**

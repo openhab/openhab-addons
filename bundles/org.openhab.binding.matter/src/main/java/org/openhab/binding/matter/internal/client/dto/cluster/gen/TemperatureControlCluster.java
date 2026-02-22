@@ -60,8 +60,8 @@ public class TemperatureControlCluster extends BaseCluster {
      * Indicates the discrete value by which the TemperatureSetpoint attribute can be changed via the SetTemperature
      * command.
      * For example, if the value of MinTemperature is 25.00C (2500) and the Step value is 0.50C (50), valid values of
-     * the TargetTemperature field of the SetTemperature command would be 25.50C
-     * (2550), 26.00C (2600), 26.50C (2650), etc.
+     * the TargetTemperature field of the SetTemperature command would be 25.50C (2550), 26.00C (2600), 26.50C (2650),
+     * etc.
      */
     public Integer step; // 3 temperature R V
     /**

@@ -103,7 +103,8 @@ public class EcosystemInformationCluster extends BaseCluster {
         public List<String> uniqueLocationIDs; // list
         /**
          * This field shall indicate the timestamp of when the UniqueLocationIDs was last modified.
-         * NOTE If multiple server instances update the UniqueLocationIDs field at the same time, it is possible one of
+         * &gt; [!NOTE]
+         * &gt; If multiple server instances update the UniqueLocationIDs field at the same time, it is possible one of
          * the updates will be missed. This is considered an acceptable limitation to reduce the complexity of the
          * design. Since this is meant to be provided from user input, it is unlikely these signals would be happening
          * at one time.
@@ -146,9 +147,8 @@ public class EcosystemInformationCluster extends BaseCluster {
          */
         public String uniqueLocationId; // string
         /**
-         * This field shall indicate the location (e.g. living room, driveway) and associated metadata that is
-         * provided externally if the user consents. (For example, provided by the user in an ecosystem specific
-         * interface.)
+         * This field shall indicate the location (e.g. living room, driveway) and associated metadata that is provided
+         * externally if the user consents. (For example, provided by the user in an ecosystem specific interface.)
          * &quot;Location&quot; in this context is typically used by the user’s grouping into rooms, areas or other
          * logical groupings of how devices are used. So a device might be part of multiple such &quot;Locations&quot;s.
          */

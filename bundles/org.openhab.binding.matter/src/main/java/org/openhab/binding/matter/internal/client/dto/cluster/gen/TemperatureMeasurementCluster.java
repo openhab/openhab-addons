@@ -34,7 +34,8 @@ public class TemperatureMeasurementCluster extends BaseCluster {
     public static final String ATTRIBUTE_TOLERANCE = "tolerance";
 
     /**
-     * Indicates the measured temperature. The null value indicates that the temperature is unknown.
+     * Indicates the measured temperature.
+     * The null value indicates that the temperature is unknown.
      */
     public Integer measuredValue; // 0 temperature R V
     /**

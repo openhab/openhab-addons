@@ -55,15 +55,15 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      */
     public Integer maxCookTime; // 1 elapsed-s R V
     /**
-     * Indicates the power level associated with the operation of the device. If the MinPower, MaxPower, and PowerStep
-     * attributes are not supported:
-     * • The minimum value of this attribute shall be 10,
-     * • The maximum value of this attribute shall be 100,
-     * • The value shall be in even multiples of 10,
-     * • The default value shall be 100.
+     * Indicates the power level associated with the operation of the device.
+     * If the MinPower, MaxPower, and PowerStep attributes are not supported:
+     * - The minimum value of this attribute shall be 10,
+     * - The maximum value of this attribute shall be 100,
+     * - The value shall be in even multiples of 10,
+     * - The default value shall be 100.
      * If the MinPower, MaxPower, and PowerStep attributes are supported:
-     * • The value of this attribute shall be between MinPower and MaxPower inclusive.
-     * • The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep &#x3D;&#x3D; 0
+     * - The value of this attribute shall be between MinPower and MaxPower inclusive.
+     * - The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep &#x3D;&#x3D; 0
      */
     public Integer powerSetting; // 2 uint8 R V
     /**
@@ -75,8 +75,8 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      */
     public Integer maxPower; // 4 uint8 R V
     /**
-     * Indicates the increment of power that can be set on the server. The value of this attribute shall be between 1
-     * and MaxPower inclusive.
+     * Indicates the increment of power that can be set on the server.
+     * The value of this attribute shall be between 1 and MaxPower inclusive.
      * The value of this attribute shall be such that (MaxPower - MinPower) % PowerStep &#x3D;&#x3D; 0
      * For example, if MinPower is 1, MaxPower is 10, and PowerSetting can be set to any integer between MinPower and
      * MaxPower, PowerStep would be set to 1.
@@ -157,8 +157,8 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     }
 
     /**
-     * This command is used to add more time to the CookTime attribute of the server. This command supports these
-     * fields:
+     * This command is used to add more time to the CookTime attribute of the server.
+     * This command supports these fields:
      */
     public static ClusterCommand addMoreTime(Integer timeToAdd) {
         Map<String, Object> map = new LinkedHashMap<>();

@@ -102,8 +102,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * This attribute SHOULD be updated periodically by ESAs to reflect any changes in internal state, for example
      * temperature or stored energy, which would affect the power or duration limits.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds on changes, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds on changes, or
+     * - When it changes from null to any other value and vice versa.
      */
     public PowerAdjustCapabilityStruct powerAdjustmentCapability; // 5 PowerAdjustCapabilityStruct R V
     /**
@@ -113,10 +113,10 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * A server may reset this value attribute to null on a reboot, and it does not need to persist any previous
      * forecasts.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds on changes, or
-     * • When it changes from null to any other value and vice versa, or
-     * • As a result of a command which causes the forecast to be updated, or
-     * • As a result of a change in the opt-out status which in turn may cause the ESA to recalculate its forecast.
+     * - At most once every 10 seconds on changes, or
+     * - When it changes from null to any other value and vice versa, or
+     * - As a result of a command which causes the forecast to be updated, or
+     * - As a result of a change in the opt-out status which in turn may cause the ESA to recalculate its forecast.
      */
     public ForecastStruct forecast; // 6 ForecastStruct R V
     /**
@@ -181,7 +181,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     /**
-     * This event shall be generated when the ESA enters the Paused state. There is no data for this event.
+     * This event shall be generated when the ESA enters the Paused state.
+     * There is no data for this event.
      */
     public static class Paused {
         public Paused() {
@@ -330,8 +331,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public Integer endTime; // epoch-s
         /**
-         * This field shall indicate the earliest start time, in UTC, that the entire Forecast can be shifted to. A null
-         * value indicates that it can be started immediately.
+         * This field shall indicate the earliest start time, in UTC, that the entire Forecast can be shifted to.
+         * A null value indicates that it can be started immediately.
          */
         public Integer earliestStartTime; // epoch-s
         /**
@@ -429,7 +430,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * Manufacturers can use this value to indicate a variety of states in an unspecified way. For example, they may
          * choose to use values between 0-100 as a percentage of compressor modulation, or could use these values as
          * Enum states meaning heating with fan, heating without fan etc.
-         * NOTE An ESA shall always use the same value to represent the same operating state.
+         * &gt; [!NOTE]
+         * &gt; An ESA shall always use the same value to represent the same operating state.
          * By providing this information a smart EMS may be able to learn the observed power draw when the ESA is put
          * into a specific state. It can potentially then use the ManufacturerESAState field in the Forecast attribute
          * along with observed power drawn to predict the power draw from the appliance and potentially ask it to modify
@@ -543,8 +545,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the new requested power that the ESA shall operate at. It MUST be between the
          * AbsMinPower and AbsMaxPower attributes as advertised by the ESA if it supports PFR.
-         * This is a signed value and can be used to indicate charging or discharging. If the ESA does NOT support PFR
-         * this value shall be ignored by the ESA.
+         * This is a signed value and can be used to indicate charging or discharging.
+         * If the ESA does NOT support PFR this value shall be ignored by the ESA.
          */
         public BigInteger nominalPower; // power-mW
         /**

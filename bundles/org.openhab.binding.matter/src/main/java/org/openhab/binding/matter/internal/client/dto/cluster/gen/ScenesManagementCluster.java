@@ -111,44 +111,6 @@ public class ScenesManagementCluster extends BaseCluster {
          * AttributeID, as described in the Value* Fields subsection.
          * The AttributeID field shall NOT refer to an attribute without the Scenes (&quot;S&quot;) designation in the
          * Quality column of the cluster specification.
-         * ### 1.4.7.3.2. ValueUnsigned8, ValueSigned8, ValueUnsigned16, ValueSigned16, ValueUnsigned32, ValueSigned32,
-         * ValueUnsigned64, ValueSigned64 Fields
-         * These fields shall indicate the attribute value as part of an extension field set, associated with a given
-         * AttributeID under an ExtensionFieldSetStruct’s ClusterID. Which of the fields is used shall be determined by
-         * the type of the attribute indicated by AttributeID as follows:
-         * • Data types bool, map8, and uint8 shall map to ValueUnsigned8.
-         * • Data types int8 shall map to ValueSigned8.
-         * • Data types map16 and uint16 shall map to ValueUnsigned16.
-         * • Data types int16 shall map to ValueSigned16.
-         * • Data types map32, uint24, and uint32 shall map to ValueUnsigned32.
-         * • Data types int24 and int32 shall map to ValueSigned32.
-         * • Data types map64, uint40, uint48, uint56 and uint64 shall map to ValueUnsigned64.
-         * • Data types int40, int48, int56 and int64 shall map to ValueSigned64.
-         * • For derived types, the mapping shall be based on the base type. For example, an attribute of type percent
-         * shall be treated as if it were of type uint8, whereas an attribute of type percent100ths shall be treated as
-         * if it were of type uint16.
-         * • For boolean nullable attributes, any value that is not 0 or 1 shall be considered to have the null value.
-         * • For boolean non-nullable attributes, any value that is not 0 or 1 shall be considered to have the value
-         * FALSE.
-         * • For non-boolean nullable attributes, any value that is not a valid numeric value for the attribute’s type
-         * after accounting for range reductions due to being nullable and constraints shall be considered to have the
-         * null value for the type.
-         * • For non-boolean non-nullable attributes, any value that is not a valid numeric value for the attribute’s
-         * type after accounting for constraints shall be considered to be the valid attribute value that is closest to
-         * the provided value.
-         * ◦ In the event that an invalid provided value is of equal numerical distance to the two closest valid values,
-         * the lowest of those values shall be considered the closest valid attribute value.
-         * If the used field does not match the data type of the attribute indicated by AttributeID, the
-         * AttributeValuePairStruct shall be considered invalid.
-         * Examples of processing are:
-         * • ColorControl cluster CurrentX (AttributeID 0x0003) has a type of uint16 and is not nullable.
-         * ◦ ValueUnsigned16 of 0xAB12 would be used as-is, as it is in range.
-         * ◦ ValueUnsigned16 of 0xFF80 is outside of the range allowed for attribute CurrentX, and would be saturated to
-         * the closest valid value, which is the maximum of the attribute’s constraint range: 0xFEFF.
-         * • LevelControl cluster CurrentLevel (AttributeID 0x0000) has a type of uint8 and is nullable.
-         * ◦ ValueUnsigned8 of 0xA1 would be used as-is, as it is in range.
-         * ◦ ValueUnsigned8 of 0xFF is outside the range allowed for nullable attribute CurrentLevel, and would be
-         * considered as the null value.
          */
         public Integer attributeId; // attrib-id
         public Integer valueUnsigned8; // uint8

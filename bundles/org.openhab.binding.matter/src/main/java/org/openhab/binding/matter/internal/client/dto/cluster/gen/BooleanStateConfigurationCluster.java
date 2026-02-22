@@ -52,8 +52,8 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      * Indicates the number of supported sensitivity levels by the device.
      * These supported sensitivity levels shall be ordered by sensitivity, where a value of 0 shall be considered the
      * lowest sensitivity level (least sensitive) and the highest supported value shall be considered the highest
-     * sensitivity level.
-     * The number of supported sensitivity levels SHOULD represent unique sensitivity levels supported by the device.
+     * sensitivity level. The number of supported sensitivity levels SHOULD represent unique sensitivity levels
+     * supported by the device.
      */
     public Integer supportedSensitivityLevels; // 1 uint8 R V
     /**
@@ -63,34 +63,35 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
     /**
      * Indicates which specific alarm modes on the server are currently active. When the sensor is no longer triggered,
      * this attribute shall be set to the inactive state, by setting the bit to 0, for all supported alarm modes.
-     * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0. A bit shall indicate
-     * whether the alarm mode inactive or not:
-     * • 0 &#x3D; Inactive
-     * • 1 &#x3D; Active
+     * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0.
+     * A bit shall indicate whether the alarm mode inactive or not:
+     * - 0 &#x3D; Inactive
+     * - 1 &#x3D; Active
      */
     public AlarmModeBitmap alarmsActive; // 3 AlarmModeBitmap R V
     /**
      * Indicates which specific alarm modes on the server are currently suppressed. When the sensor is no longer
      * triggered, this attribute shall be set to the unsuppressed state, by setting the bit to 0, for all supported
      * alarm modes.
-     * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0. A bit shall indicate
-     * whether the alarm mode is suppressed or not:
-     * • 0 &#x3D; Not suppressed
-     * • 1 &#x3D; Suppressed
+     * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0.
+     * A bit shall indicate whether the alarm mode is suppressed or not:
+     * - 0 &#x3D; Not suppressed
+     * - 1 &#x3D; Suppressed
      */
     public AlarmModeBitmap alarmsSuppressed; // 4 AlarmModeBitmap R V
     /**
-     * Indicates the alarm modes that will be emitted if the sensor is triggered. If an alarm mode is not supported, the
-     * bit indicating this alarm mode shall always be 0.
+     * Indicates the alarm modes that will be emitted if the sensor is triggered.
+     * If an alarm mode is not supported, the bit indicating this alarm mode shall always be 0.
      * A bit shall indicate whether the alarm mode is enabled or disabled:
-     * • 0 &#x3D; Disabled
-     * • 1 &#x3D; Enabled
+     * - 0 &#x3D; Disabled
+     * - 1 &#x3D; Enabled
      */
     public AlarmModeBitmap alarmsEnabled; // 5 AlarmModeBitmap R V
     /**
-     * Indicates the alarms supported by the sensor. A bit shall indicate whether the alarm mode is supported:
-     * • 0 &#x3D; Not supported
-     * • 1 &#x3D; Supported
+     * Indicates the alarms supported by the sensor.
+     * A bit shall indicate whether the alarm mode is supported:
+     * - 0 &#x3D; Not supported
+     * - 1 &#x3D; Supported
      */
     public AlarmModeBitmap alarmsSupported; // 6 AlarmModeBitmap R V
     /**
@@ -174,9 +175,9 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
          * This feature shall indicate that the device is able to suppress the supported alarm modes, when the user
          * acknowledges the alarm. This is intended to stop visual and/or audible alarms, when the user has become aware
          * that the sensor is triggered, but it is no longer desired to have the alarm modes active on the device, e.g.:
-         * • The triggering cause have been resolved by the user, but the sensor has not yet stopped detecting the
+         * - The triggering cause have been resolved by the user, but the sensor has not yet stopped detecting the
          * triggering cause.
-         * • The user is not able to address the triggering cause, but is aware of the alarm and suppress/acknowledge it
+         * - The user is not able to address the triggering cause, but is aware of the alarm and suppress/acknowledge it
          * be addressed at a later point.
          * Acknowledge of alarms will for the remainder of this cluster be referred to as suppress.
          * A suppressed alarm is still considered active and will remain so unless it is actively disabled or the

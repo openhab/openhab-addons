@@ -144,8 +144,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
     /**
      * Upon receipt of this command, the server shall launch the application with optional data. The application shall
      * be either
-     * • the specified application, if the Application Platform feature is supported;
-     * • otherwise the application corresponding to the endpoint.
+     * - the specified application, if the Application Platform feature is supported;
+     * - otherwise the application corresponding to the endpoint.
      * The endpoint shall launch and bring to foreground the requisite application if the application is not already
      * launched and in foreground. The Status attribute shall be updated to ActiveVisibleFocus on the Application Basic
      * cluster of the Endpoint corresponding to the launched application. The Status attribute shall be updated on any
@@ -167,8 +167,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
     /**
      * Upon receipt of this command, the server shall stop the application if it is running. The application shall be
      * either
-     * • the specified application, if the Application Platform feature is supported;
-     * • otherwise the application corresponding to the endpoint.
+     * - the specified application, if the Application Platform feature is supported;
+     * - otherwise the application corresponding to the endpoint.
      * The Status attribute shall be updated to Stopped on the Application Basic cluster of the Endpoint corresponding
      * to the stopped application. The Status attribute shall be updated on any other application whose Status may have
      * changed as a result of this command.
@@ -184,8 +184,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
 
     /**
      * Upon receipt of this command, the server shall hide the application. The application shall be either
-     * • the specified application, if the Application Platform feature is supported;
-     * • otherwise the application corresponding to the endpoint.
+     * - the specified application, if the Application Platform feature is supported;
+     * - otherwise the application corresponding to the endpoint.
      * The endpoint may decide to stop the application based on manufacturer specific behavior or resource constraints
      * if any. The Status attribute shall be updated to ActiveHidden or Stopped, depending on the action taken, on the
      * Application Basic cluster of the Endpoint corresponding to the application on which the action was taken. The

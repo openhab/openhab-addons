@@ -70,29 +70,29 @@ public class MediaPlaybackCluster extends BaseCluster {
      * SampledPosition attribute shall be updated whenever a change in either the playback speed or the playback
      * position is triggered outside the normal playback of the media. The events which may cause this to happen
      * include:
-     * • Starting or resumption of playback
-     * • Seeking
-     * • Skipping forward or backward
-     * • Fast-forwarding or rewinding
-     * • Updating of playback speed as a result of explicit request, or as a result of buffering events
+     * - Starting or resumption of playback
+     * - Seeking
+     * - Skipping forward or backward
+     * - Fast-forwarding or rewinding
+     * - Updating of playback speed as a result of explicit request, or as a result of buffering events
      */
     public PlaybackPositionStruct sampledPosition; // 3 PlaybackPositionStruct R V
     /**
      * Indicates the speed at which the current media is being played. The new PlaybackSpeed shall be reflected in this
      * attribute whenever any of the following occurs:
-     * • Starting of playback
-     * • Resuming of playback
-     * • Fast-forwarding
-     * • Rewinding
+     * - Starting of playback
+     * - Resuming of playback
+     * - Fast-forwarding
+     * - Rewinding
      * The PlaybackSpeed shall reflect the ratio of time elapsed in the media to the actual time taken for the playback
      * assuming no changes to media playback (for example buffering events or requests to pause/rewind/forward).
-     * • A value for PlaybackSpeed of 1 shall indicate normal playback where, for example, playback for 1 second causes
+     * - A value for PlaybackSpeed of 1 shall indicate normal playback where, for example, playback for 1 second causes
      * the media to advance by 1 second within the duration of the media.
-     * • A value for PlaybackSpeed which is greater than 0 shall indicate that as playback is happening the media is
+     * - A value for PlaybackSpeed which is greater than 0 shall indicate that as playback is happening the media is
      * currently advancing in time within the duration of the media.
-     * • A value for PlaybackSpeed which is less than 0 shall indicate that as playback is happening the media is
+     * - A value for PlaybackSpeed which is less than 0 shall indicate that as playback is happening the media is
      * currently going back in time within the duration of the media.
-     * • A value for PlaybackSpeed of 0 shall indicate that the media is currently not playing back. When the
+     * - A value for PlaybackSpeed of 0 shall indicate that the media is currently not playing back. When the
      * CurrentState attribute has the value of PAUSED, NOT_PLAYING or BUFFERING, the PlaybackSpeed shall be set to 0 to
      * reflect that the media is not playing.
      * Following examples illustrate the PlaybackSpeed attribute values in various conditions.
@@ -435,7 +435,8 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
-     * This command is used to pause playback of the media. Upon receipt, this shall pause playback of the media.
+     * This command is used to pause playback of the media.
+     * Upon receipt, this shall pause playback of the media.
      */
     public static ClusterCommand pause() {
         return new ClusterCommand("pause");
@@ -451,8 +452,8 @@ public class MediaPlaybackCluster extends BaseCluster {
     }
 
     /**
-     * This command is used to start playback of the media from the beginning. Upon receipt, this shall Start Over with
-     * the current media playback item.
+     * This command is used to start playback of the media from the beginning.
+     * Upon receipt, this shall Start Over with the current media playback item.
      */
     public static ClusterCommand startOver() {
         return new ClusterCommand("startOver");

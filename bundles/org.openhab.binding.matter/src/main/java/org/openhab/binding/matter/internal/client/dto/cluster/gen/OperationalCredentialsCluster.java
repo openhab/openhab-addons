@@ -62,8 +62,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
     /**
      * Indicates the number of Fabrics to which the device is currently commissioned. This attribute shall be equal to
      * the following:
-     * • The number of entries in the NOCs attribute.
-     * • The number of entries in the Fabrics attribute.
+     * - The number of entries in the NOCs attribute.
+     * - The number of entries in the Fabrics attribute.
      * Upon Factory Data Reset, this attribute shall be set to a default value of 0.
      */
     public Integer commissionedFabrics; // 3 uint8 R V
@@ -366,9 +366,9 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * command shall fail with a CONSTRAINT_ERROR status code sent back to the initiator.
      * If any of the following conditions arise, the Node shall process an error by responding with an NOCResponse with
      * a StatusCode of InvalidNOC as described in Section 11.18.6.7.2, “Handling Errors”:
-     * • The NOC provided in the NOCValue does not refer in its subject to the FabricID associated with the accessing
+     * - The NOC provided in the NOCValue does not refer in its subject to the FabricID associated with the accessing
      * fabric.
-     * • The ICAC provided in the ICACValue (if present) has a FabricID in its subject that does not match the FabricID
+     * - The ICAC provided in the ICACValue (if present) has a FabricID in its subject that does not match the FabricID
      * associated with the accessing fabric.
      * Otherwise, the command is considered an update of existing credentials for a given Fabric, and the following
      * shall apply:
@@ -404,8 +404,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * This command shall be used by an Administrator to set the user-visible Label field for a given Fabric, as
      * reflected by entries in the Fabrics attribute. An Administrator shall use this command to set the Label to a
      * string (possibly selected by the user themselves) that the user can recognize and relate to this Administrator
-     * • during the commissioning process, and
-     * • whenever the user chooses to update this string.
+     * - during the commissioning process, and
+     * - whenever the user chooses to update this string.
      * The Label field, along with the VendorID field in the same entry of the Fabrics attribute, SHOULD be used by
      * Administrators to provide additional per-fabric context when operations such as RemoveFabric are considered or
      * used.
@@ -426,15 +426,15 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * This command is used by Administrators to remove a given Fabric and delete all associated fabric-scoped data.
      * If the given Fabric being removed is the last one to reference a given Trusted Root CA Certificate stored in the
      * Trusted Root Certificates list, then that Trusted Root Certificate shall be removed.
-     * ### WARNING
-     * This command, if referring to an already existing Fabric not under the control of the invoking Administrator,
-     * shall ONLY be invoked after obtaining some form of explicit user consent through some method executed by the
-     * Administrator or Commissioner. This method of obtaining consent SHOULD employ as much data as possible about the
-     * existing Fabric associations within the Fabrics list, so that likelihood is as small as possible of a user
-     * removing a Fabric unwittingly. If a method exists for an Administrator or Commissioner to convey Fabric Removal
-     * to an entity related to that Fabric, whether in-band or out-of-band, then this method SHOULD be used to notify
-     * the other Administrative Domain’s party of the removal. Otherwise, users may only observe the removal of a Fabric
-     * association as persistently failing attempts to reach a Node operationally.
+     * &gt; [!WARNING]
+     * &gt; This command, if referring to an already existing Fabric not under the control of the invoking
+     * Administrator, shall ONLY be invoked after obtaining some form of explicit user consent through some method
+     * executed by the Administrator or Commissioner. This method of obtaining consent SHOULD employ as much data as
+     * possible about the existing Fabric associations within the Fabrics list, so that likelihood is as small as
+     * possible of a user removing a Fabric unwittingly. If a method exists for an Administrator or Commissioner to
+     * convey Fabric Removal to an entity related to that Fabric, whether in-band or out-of-band, then this method
+     * SHOULD be used to notify the other Administrative Domain’s party of the removal. Otherwise, users may only
+     * observe the removal of a Fabric association as persistently failing attempts to reach a Node operationally.
      */
     public static ClusterCommand removeFabric(Integer fabricIndex) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -476,9 +476,9 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * This command is used to manage the VendorID and VIDVerificationStatement fields of the Fabrics attribute, and the
      * VVSC field of an entry in the NOCs attribute.
      * This command shall be used to one or more of the following:
-     * • Update the VendorID associated with an entry in the Fabrics attribute.
-     * • Associate or remove a VIDVerificationStatement associated with an entry in the Fabrics attribute.
-     * • Associate or remove a VendorVerificationSigningCertificate (VVSC) associated with an entry in the NOCs
+     * - Update the VendorID associated with an entry in the Fabrics attribute.
+     * - Associate or remove a VIDVerificationStatement associated with an entry in the Fabrics attribute.
+     * - Associate or remove a VendorVerificationSigningCertificate (VVSC) associated with an entry in the NOCs
      * attribute.
      * This command shall only operate against the Fabrics and NOCs attribute entries associated with the accessing
      * fabric index.
@@ -488,18 +488,18 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * If the VVSC field is present, but the ICAC field is already present in the NOCs attribute entry associated with
      * the accessing fabric index, then the command shall fail with a status code of INVALID_COMMAND.
      * If the VIDVerificationStatement field is present:
-     * • If the length of the field’s value is neither exactly 0 nor exactly 85, then the command shall fail with a
+     * - If the length of the field’s value is neither exactly 0 nor exactly 85, then the command shall fail with a
      * status code of CONSTRAINT_ERROR.
-     * • If the length of the field’s value is exactly 0, then the VIDVerificationStatement field in the Fabrics
+     * - If the length of the field’s value is exactly 0, then the VIDVerificationStatement field in the Fabrics
      * attribute entry associated with the accessing fabric index shall be erased and the field shall disappear from the
      * Fabrics entry.
-     * • If the length of the field’s value is exactly 85, then the VIDVerificationStatement field in the Fabrics
+     * - If the length of the field’s value is exactly 85, then the VIDVerificationStatement field in the Fabrics
      * attribute entry associated with the accessing fabric index shall have its value replaced with the value from the
      * command field.
      * If the VVSC field is present:
-     * • If the length of the field’s value is exactly 0, then the VVSC field in the NOCs attribute entry associated
+     * - If the length of the field’s value is exactly 0, then the VVSC field in the NOCs attribute entry associated
      * with the accessing fabric index shall be erased and the field shall disappear from the NOCs entry.
-     * • If the length of the field’s value is not 0, then the VVSC field in the NOCs attribute entry associated with
+     * - If the length of the field’s value is not 0, then the VVSC field in the NOCs attribute entry associated with
      * the accessing fabric index shall have its value replaced with the value from the command field. The contents of
      * the certificate need not be validated by the server. Clients shall validate the contents at time of use.
      * If the command was invoked within a fail-safe context after a successful AddNOC or UpdateNOC command, then the

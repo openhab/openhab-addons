@@ -42,8 +42,8 @@ public class UserLabelCluster extends BaseCluster {
      */
     public static class LabelStruct {
         /**
-         * The Label or Value semantic is not defined here. Label examples: &quot;room&quot;, &quot;zone&quot;,
-         * &quot;group&quot;, &quot;direction&quot;.
+         * The Label or Value semantic is not defined here.
+         * Label examples: &quot;room&quot;, &quot;zone&quot;, &quot;group&quot;, &quot;direction&quot;.
          */
         public String label; // string
         /**

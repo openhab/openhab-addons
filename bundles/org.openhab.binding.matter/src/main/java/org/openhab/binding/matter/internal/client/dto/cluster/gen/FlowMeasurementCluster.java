@@ -34,7 +34,7 @@ public class FlowMeasurementCluster extends BaseCluster {
     public static final String ATTRIBUTE_TOLERANCE = "tolerance";
 
     /**
-     * Indicates the flow in m/h as follows:
+     * Indicates the flow in m^3/h as follows:
      * MeasuredValue &#x3D; 10 x Flow
      * The null value indicates that the flow measurement is unknown, otherwise the range shall be as described in
      * Measured Value.

@@ -619,8 +619,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
     // commands
     /**
      * This command shall be used to add a KeySet to the Joint Fabric Datastore Cluster of the accessing fabric.
-     * GroupKeySet represents the KeySet to be added to the Joint Fabric Datastore Cluster. Upon receipt of this
-     * command, the Datastore shall:
+     * GroupKeySet represents the KeySet to be added to the Joint Fabric Datastore Cluster.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Ensure there are no KeySets in the KeySetList attribute with the given GroupKeySetID.
      * 2. If a match is found, return CONSTRAINT_ERROR.
      * 3. Add the Epoch Key Entry for the KeySet to the KeySetList attribute.
@@ -635,8 +635,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
 
     /**
      * This command shall be used to update a KeySet in the Joint Fabric Datastore Cluster of the accessing fabric.
-     * GroupKeySet represents the KeySet to be updated in the Joint Fabric Datastore Cluster. Upon receipt of this
-     * command, the Datastore shall:
+     * GroupKeySet represents the KeySet to be updated in the Joint Fabric Datastore Cluster.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Find the Epoch Key Entry for the KeySet in the KeySetList attribute with the given GroupKeySetID, and update
      * any changed fields.
      * 2. If entry is not found, return NOT_FOUND.
@@ -744,8 +744,7 @@ public class JointFabricDatastoreCluster extends BaseCluster {
      * iii. If the FriendlyName changed:
      * A. Iterate through each Endpoint Information Entry:
      * I. If the GroupIDList contains an entry with the given GroupID:
-     * 1. Update the GroupIDList Entry in the Datastore with the new values and Status
-     * ### Pending
+     * 1. Update the GroupIDList Entry in the Datastore with the new values and Status Pending
      * 2. Update the Groups on the given Node with the new values.
      * 1. If the update succeeds, set the Status to Committed on the GroupIDList Entry in the Datastore.
      * 2. If not successful, the pending change shall be applied in a subsequent Node Refresh.
@@ -852,8 +851,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
 
     /**
      * The command shall be used to add a node to the Joint Fabric Datastore Cluster of the accessing fabric.
-     * NodeID represents the node to be added to the Joint Fabric Datastore Cluster. Upon receipt of this command, the
-     * Datastore shall:
+     * NodeID represents the node to be added to the Joint Fabric Datastore Cluster.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Update CommissioningStatusEntry of the Node Information Entry with the given NodeID to Pending.
      * If a Node Information Entry exists for the given NodeID, this command shall return INVALID_CONSTRAINT.
      */
@@ -1006,8 +1005,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
      * the accessing fabric.
      * GroupID represents the unique identifier for the group to be added to the endpoint.
      * EndpointID represents the unique identifier for the endpoint to be updated in the Joint Fabric Datastore Cluster.
-     * NodeID represents the unique identifier for the node to which the endpoint belongs. Upon receipt of this command,
-     * the Datastore shall:
+     * NodeID represents the unique identifier for the node to which the endpoint belongs.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Confirm that an Endpoint Information Entry exists for the given NodeID and EndpointID, and if not, return
      * NOT_FOUND.
      * 2. Ensure the Group Key List for the Node Information Entry with the given NodeID includes the KeySet for the
@@ -1045,8 +1044,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
      * of the accessing fabric.
      * GroupID represents the unique identifier for the group to be removed from the endpoint.
      * EndpointID represents the unique identifier for the endpoint to be updated in the Joint Fabric Datastore Cluster.
-     * NodeID represents the unique identifier for the node to which the endpoint belongs. Upon receipt of this command,
-     * the Datastore shall:
+     * NodeID represents the unique identifier for the node to which the endpoint belongs.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Confirm that an Endpoint Information Entry exists for the given NodeID and EndpointID, and if not, return
      * NOT_FOUND.
      * 2. Ensure the Group List for the Endpoint Information Entry with the given NodeID and EndpointID does not include
@@ -1085,8 +1084,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
      * the accessing fabric.
      * Binding represents the binding to be added to the endpoint.
      * EndpointID represents the unique identifier for the endpoint to be updated in the Joint Fabric Datastore Cluster.
-     * NodeID represents the unique identifier for the node to which the endpoint belongs. Upon receipt of this command,
-     * the Datastore shall:
+     * NodeID represents the unique identifier for the node to which the endpoint belongs.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Confirm that an Endpoint Information Entry exists for the given NodeID and EndpointID, and if not, return
      * NOT_FOUND.
      * 2. Ensure the Binding List for the Node Information Entry with the given NodeID includes the given Binding. If it
@@ -1119,8 +1118,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
      * ListID represents the unique identifier for the binding entry in the Datastore’s EndpointBindingList attribute to
      * be removed from the endpoint.
      * EndpointID represents the unique identifier for the endpoint to be updated in the Joint Fabric Datastore Cluster.
-     * NodeID represents the unique identifier for the node to which the endpoint belongs. Upon receipt of this command,
-     * the Datastore shall:
+     * NodeID represents the unique identifier for the node to which the endpoint belongs.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Confirm that an Endpoint Information Entry exists for the given NodeID and EndpointID, and if not, return
      * NOT_FOUND.
      * 2. Ensure the Binding List for the Node Information Entry with the given NodeID does not include an entry with
@@ -1148,8 +1147,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
 
     /**
      * This command shall be used to add an ACL to a node in the Joint Fabric Datastore Cluster of the accessing fabric.
-     * NodeID represents the unique identifier for the node to which the ACL is to be added. ACLEntry represents the ACL
-     * to be added to the Joint Fabric Datastore Cluster.
+     * NodeID represents the unique identifier for the node to which the ACL is to be added.
+     * ACLEntry represents the ACL to be added to the Joint Fabric Datastore Cluster.
      * Upon receipt of this command, the Datastore shall:
      * 1. Confirm that a Node Information Entry exists for the given NodeID, and if not, return NOT_FOUND.
      * 2. Ensure the ACL List for the given NodeID includes the given ACLEntry. If it does not:
@@ -1175,8 +1174,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
      * fabric.
      * ListID represents the unique identifier for the DatastoreACLEntryStruct to be removed from the Datastore’s list
      * of DatastoreACLEntry.
-     * NodeID represents the unique identifier for the node from which the ACL is to be removed. Upon receipt of this
-     * command, the Datastore shall:
+     * NodeID represents the unique identifier for the node from which the ACL is to be removed.
+     * Upon receipt of this command, the Datastore shall:
      * 1. Confirm that a Node Information Entry exists for the given NodeID, and if not, return NOT_FOUND.
      * 2. Ensure the ACL List for the given NodeID does not include the given ACLEntry. If it does:
      * a. Update the status to DeletePending for the given ACLEntry in the ACL List.

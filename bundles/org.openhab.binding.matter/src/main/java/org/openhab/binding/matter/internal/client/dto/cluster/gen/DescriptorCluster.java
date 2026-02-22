@@ -67,9 +67,9 @@ public class DescriptorCluster extends BaseCluster {
      * the left side.
      * It may also be used to provide information about an endpoint (e.g. the relative location of a Temperature sensor
      * in a Temperature Controlled Cabinet).
-     * • A client SHOULD use these tags to convey disambiguation information and other relevant information to the user
+     * - A client SHOULD use these tags to convey disambiguation information and other relevant information to the user
      * (e.g. showing it in a user interface), as appropriate.
-     * • A client SHOULD use these tags in its logic to make decisions, as appropriate.
+     * - A client SHOULD use these tags in its logic to make decisions, as appropriate.
      * For example, a client may identify which endpoint maps to a certain function, orientation or labeling.
      * A client may use the Label field of each SemanticTagStruct, if present in each structure, to indicate
      * characteristics of an endpoint, or to augment what is provided in the TagID field of the same structure.
@@ -78,9 +78,9 @@ public class DescriptorCluster extends BaseCluster {
     /**
      * Indicates an identifier which allows to uniquely identify the functionality exposed on an endpoint, and therefore
      * shall be unique within the device. It is constructed in a manufacturer specific manner.
-     * • If a globally unique identifier is used, the same rules as defined for the UniqueID attribute in the Basic
+     * - If a globally unique identifier is used, the same rules as defined for the UniqueID attribute in the Basic
      * Information cluster apply.
-     * • If the identifier is only unique in the scope of the device, and cannot be used to track the device, then it
+     * - If the identifier is only unique in the scope of the device, and cannot be used to track the device, then it
      * may remain unchanged at factory reset.
      * The value does not need to be human readable, since it is intended for machine to machine (M2M) communication.
      */

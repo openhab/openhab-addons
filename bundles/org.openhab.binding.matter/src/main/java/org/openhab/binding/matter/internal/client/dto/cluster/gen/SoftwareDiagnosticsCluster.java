@@ -149,8 +149,8 @@ public class SoftwareDiagnosticsCluster extends BaseCluster {
     /**
      * This command is used to reset the high watermarks for heap and stack memory.
      * Receipt of this command shall reset the following values which track high and lower watermarks:
-     * • The StackFreeMinimum field of the ThreadMetrics attribute
-     * • The CurrentHeapHighWatermark attribute
+     * - The StackFreeMinimum field of the ThreadMetrics attribute
+     * - The CurrentHeapHighWatermark attribute
      * ### Effect on Receipt
      * On receipt of this command, the Node shall make the following modifications to attributes it supports:
      * If implemented, the server shall set the value of the CurrentHeapHighWatermark attribute to the value of the

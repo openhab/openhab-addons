@@ -42,8 +42,8 @@ public class EnergyEvseModeCluster extends BaseCluster {
     /**
      * This attribute shall contain the list of supported modes that may be selected for the CurrentMode attribute. Each
      * item in this list represents a unique mode as indicated by the Mode field of the ModeOptionStruct.
-     * Each entry in this list shall have a unique value for the Mode field. Each entry in this list shall have a unique
-     * value for the Label field.
+     * Each entry in this list shall have a unique value for the Mode field.
+     * Each entry in this list shall have a unique value for the Label field.
      * The set of ModeTags listed in each entry in this list shall be distinct from the sets of ModeTags listed in the
      * other entries. This comparison shall NOT depend on the order of the ModeTags in the lists. Two sets shall be
      * considered distinct if one of them contains an element that the other one does not. Note that the two sets could
@@ -136,15 +136,15 @@ public class EnergyEvseModeCluster extends BaseCluster {
          * Each mode tag in this field shall be distinct from other mode tags in this field. For example, a simplified
          * list containing [Auto, Auto] would not be allowed.
          * A few examples are provided below.
-         * • A mode named &quot;100%&quot; can have both the High (manufacturer specific) and Max (standard) mode tag.
+         * - A mode named &quot;100%&quot; can have both the High (manufacturer specific) and Max (standard) mode tag.
          * Clients seeking the mode for either High or Max will find the same mode in this case.
-         * • A mode that includes a LowEnergy tag can be displayed by the client using a widget icon that shows a green
+         * - A mode that includes a LowEnergy tag can be displayed by the client using a widget icon that shows a green
          * leaf.
-         * • A mode that includes a LowNoise tag may be used by the client when the user wishes for a lower level of
+         * - A mode that includes a LowNoise tag may be used by the client when the user wishes for a lower level of
          * audible sound, less likely to disturb the household’s activities.
-         * • A mode that includes a LowEnergy tag (standard, defined in this cluster specification) and also a Delicate
+         * - A mode that includes a LowEnergy tag (standard, defined in this cluster specification) and also a Delicate
          * tag (standard, defined in the namespace of a Laundry Mode derived cluster).
-         * • A mode that includes both a generic Quick tag (defined here), and Vacuum and Mop tags, (defined in the RVC
+         * - A mode that includes both a generic Quick tag (defined here), and Vacuum and Mop tags, (defined in the RVC
          * Clean cluster that is a derivation of this cluster).
          */
         public List<ModeTagStruct> modeTags; // list

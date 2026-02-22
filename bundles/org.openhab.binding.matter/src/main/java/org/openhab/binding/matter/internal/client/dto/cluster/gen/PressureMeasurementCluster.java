@@ -67,18 +67,18 @@ public class PressureMeasurementCluster extends BaseCluster {
      */
     public Integer scaledValue; // 16 int16 R V
     /**
-     * Indicates the minimum value of ScaledValue that can be measured. The null value indicates that the value is not
-     * available.
+     * Indicates the minimum value of ScaledValue that can be measured.
+     * The null value indicates that the value is not available.
      */
     public Integer minScaledValue; // 17 int16 R V
     /**
-     * Indicates the maximum value of ScaledValue that can be measured. The null value indicates that the value is not
-     * available.
+     * Indicates the maximum value of ScaledValue that can be measured.
+     * The null value indicates that the value is not available.
      */
     public Integer maxScaledValue; // 18 int16 R V
     /**
-     * Indicates the magnitude of the possible error that is associated with Scaled
-     * ### Value. The true value is located in the range
+     * Indicates the magnitude of the possible error that is associated with ScaledValue. The true value is located in
+     * the range
      * (ScaledValue – ScaledTolerance) to (ScaledValue + ScaledTolerance).
      */
     public Integer scaledTolerance; // 19 uint16 R V

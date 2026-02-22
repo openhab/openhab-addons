@@ -291,9 +291,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         }
     }
 
-    /**
-     * This value shall indicate that this alarm is not alarming.
-     */
     public enum ExpressedStateEnum implements MatterEnum {
         NORMAL(0, "Normal"),
         SMOKE_ALARM(1, "Smoke Alarm"),
@@ -370,9 +367,6 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         }
     }
 
-    /**
-     * This value shall indicate that the smoke sensor has nominal contamination levels, no customer action is required.
-     */
     public enum ContaminationStateEnum implements MatterEnum {
         NORMAL(0, "Normal"),
         LOW(1, "Low"),

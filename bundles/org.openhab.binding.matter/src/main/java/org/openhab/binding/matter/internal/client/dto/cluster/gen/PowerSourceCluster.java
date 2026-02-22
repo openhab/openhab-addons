@@ -140,8 +140,8 @@ public class PowerSourceCluster extends BaseCluster {
      * provide power to the Node. Values are expressed in half percent units, ranging from 0 to 200. E.g. a value of 48
      * is equivalent to 24%. A value of NULL shall indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batPercentRemaining; // 12 uint8 R V
@@ -149,8 +149,8 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the estimated time in seconds before the battery will no longer be able to provide power to the Node. A
      * value of NULL shall indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batTimeRemaining; // 13 uint32 R V
@@ -222,8 +222,8 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the estimated time in seconds before the battery source will be at full charge. A value of NULL shall
      * indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batTimeToFullCharge; // 27 uint32 R V
@@ -257,10 +257,17 @@ public class PowerSourceCluster extends BaseCluster {
      * A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
      * The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated
      * by any instance of this cluster.
-     * ### Empty list examples
+     * ### Legacy Implementations
+     * Legacy implementations of this cluster before revision 2, before this attribute was defined, would have
+     * implemented this cluster on an application endpoint without indicating it in EndpointList (since that attribute
+     * did not exist in revision 1), because it represented a power source for the endpoint, not the entire node.
+     * For example: Bridge implementations support endpoints for bridged devices that have different power sources.
+     * Such implementations followed device type requirements and semantics outside of this cluster, because this
+     * attribute did not exist.
+     * Future updates of such a cluster instance on the same endpoint, would allow that same endpoint to be an entry in
+     * the EndpointList attribute. Therefore it is valid to list the endpoint upon which the cluster instance exists.
      * Typically, there is one power source for the node. Also common is mains power for the node with battery backup
      * power for the node. In both these common cases, for each cluster instance described, the list is empty.
-     * ### Populated list example
      * A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
      * back up source with Order as 1, which means this list is empty for the Power Source cluster associated with the
      * mains power, because it indicates the entire node, but the Power Source cluster instance associated with the

@@ -118,19 +118,19 @@ public class EnergyEvseCluster extends BaseCluster {
      * The attribute can be initially set using the EnableCharging command or by adjusting the UserMaximumChargeCurrent
      * attribute.
      * This attribute value shall be the minimum of:
-     * • CircuitCapacity - Electrician’s installation setting
-     * • CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
-     * • MaximumChargeCurrent field in the EnableCharging command
-     * • UserMaximumChargeCurrent attribute
+     * - CircuitCapacity - Electrician’s installation setting
+     * - CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
+     * - MaximumChargeCurrent field in the EnableCharging command
+     * - UserMaximumChargeCurrent attribute
      */
     public BigInteger maximumChargeCurrent; // 7 amperage-mA R V
     /**
-     * Indicates the maximum current that can be received by the EVSE from the EV. This attribute can be set using the
-     * EnableDischarging command.
+     * Indicates the maximum current that can be received by the EVSE from the EV.
+     * This attribute can be set using the EnableDischarging command.
      * This attribute value shall be the minimum of:
-     * • CircuitCapacity - Electrician’s installation setting
-     * • CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
-     * • MaximumDischargeCurrent field in the EnableDischarging command
+     * - CircuitCapacity - Electrician’s installation setting
+     * - CableAssemblyCurrentLimit (detected by the EVSE when the cable is plugged in)
+     * - MaximumDischargeCurrent field in the EnableDischarging command
      */
     public BigInteger maximumDischargeCurrent; // 8 amperage-mA R V
     /**
@@ -195,12 +195,9 @@ public class EnergyEvseCluster extends BaseCluster {
      * AddedRange (km) &#x3D; AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) AddedRange (Miles) &#x3D;
      * AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x 0.6213
      * Example:
-     * ApproxEVEfficiency (km/kWh x 1000): 4800 (i.e. 4.8km/kWh x 1000)
-     * ### AddedEnergy (Wh): 10,000
-     * AddedRange (km) &#x3D; 10,000 x 4800 / 1,000,000 &#x3D; 48 km
-     * AddedRange (Miles) &#x3D; AddedEnergy (Wh) x ApproxEVEfficiency (km/kWh x 1000) x
-     * 0.6213
-     * &#x3D; 29.82 Miles
+     * ApproxEVEfficiency (km/kWh x 1000): 4800 (i.e. 4.8km/kWh x 1000) AddedEnergy (Wh): 10,000
+     * AddedRange (km) &#x3D; 10,000 x 4800 / 1,000,000 &#x3D; 48 km AddedRange (Miles) &#x3D; AddedEnergy (Wh) x
+     * ApproxEVEfficiency (km/kWh x 1000) x 0.6213 &#x3D; 29.82 Miles
      */
     public Integer approximateEvEfficiency; // 39 uint16 RW VM
     /**
@@ -216,8 +213,8 @@ public class EnergyEvseCluster extends BaseCluster {
     /**
      * Indicates the vehicle ID read by the EVSE via ISO-15118 using the PNC feature, if the EVSE supports this
      * capability.
-     * The field may be based on the e-Mobility Account Identifier (EMAID). A null value shall indicate that this is
-     * unknown.
+     * The field may be based on the e-Mobility Account Identifier (EMAID).
+     * A null value shall indicate that this is unknown.
      */
     public String vehicleId; // 50 string R V
     public Integer sessionId; // 64 uint32 R V
@@ -416,8 +413,8 @@ public class EnergyEvseCluster extends BaseCluster {
      * local generation (solar PV) into account to provide the cheapest and cleanest energy to the EV.
      * The optimization strategy is not defined here, however in simple terms, the AddedEnergy requirement can be
      * fulfilled by knowing the charging Power (W) and the time needed to charge.
-     * To compute the Charging Time: Required Energy (Wh) &#x3D; Power (W) x ChargingTime (s) / 3600 Therefore:
-     * ChargingTime (s) &#x3D; (3600 x RequiredEnergy (wH)) / Power (W)
+     * To compute the Charging Time: Required Energy (Wh) &#x3D; Power (W) x ChargingTime (s) / 3600
+     * Therefore: ChargingTime (s) &#x3D; (3600 x RequiredEnergy (wH)) / Power (W)
      * To compute the charging time: Charging StartTime &#x3D; TargetTimeMinutesPastMidnight - ChargingTime
      */
     public static class ChargingTargetStruct {
@@ -445,16 +442,16 @@ public class EnergyEvseCluster extends BaseCluster {
          * This field represents the target SoC that the vehicle should be charged to before the
          * TargetTimeMinutesPastMidnight.
          * If the EVSE supports the SOC feature and can obtain the SoC of the vehicle:
-         * • the TargetSoC field shall take precedence over the AddedEnergy field.
-         * • the EVSE SHOULD charge to the TargetSoC and then stop the charging automatically when it reaches that
+         * - the TargetSoC field shall take precedence over the AddedEnergy field.
+         * - the EVSE SHOULD charge to the TargetSoC and then stop the charging automatically when it reaches that
          * point.
-         * • if the TargetSoC value is set to 100% then the EVSE SHOULD continue to charge the vehicle until the vehicle
+         * - if the TargetSoC value is set to 100% then the EVSE SHOULD continue to charge the vehicle until the vehicle
          * decides to stop charging.
          * If the EVSE does not support the SOC feature or cannot obtain the SoC of the vehicle:
-         * • the AddedEnergy field shall take precedence over the TargetSoC field, and if the EVSE does not support the
+         * - the AddedEnergy field shall take precedence over the TargetSoC field, and if the EVSE does not support the
          * SOC feature then the TargetSoC field may only take the values null or 100%.
-         * • if the AddedEnergy field has not been provided, the EVSE SHOULD assume the vehicle is empty
-         * and charge until the vehicle stops demanding a charge.
+         * - if the AddedEnergy field has not been provided, the EVSE SHOULD assume the vehicle is empty and charge
+         * until the vehicle stops demanding a charge.
          */
         public Integer targetSoC; // percent
         /**
