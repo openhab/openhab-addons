@@ -106,7 +106,7 @@ public class VehicleActions implements ThingActions {
             final @ActionInput(name = "temperature", type = "QuantityType<Temperature>", required = true, label = "@text/action.climate-start.input.temperature.label") QuantityType<Temperature> temperature,
             final @ActionInput(name = "heating", label = "@text/action.climate-start.input.heating.label", description = "@text/action.climate-start.input.heating.desc") boolean heating,
             final @ActionInput(name = "defrost", label = "@text/action.climate-start.input.defrost.label") boolean defrost,
-            final @ActionInput(name = "igniOnDuration", defaultValue = "10", label = "@text/action.climate-start.input.igniOnDuration.label", description = "@text/action.climate-start.input.igniOnDuration.desc") @Nullable Integer igniOnDuration) {
+            final @ActionInput(name = "igniOnDuration", defaultValue = "5", label = "@text/action.climate-start.input.igniOnDuration.label", description = "@text/action.climate-start.input.igniOnDuration.desc") @Nullable Integer igniOnDuration) {
         final BluelinkVehicleHandler hnd = handler;
         try {
             return hnd != null && hnd.climateStart(temperature, heating, defrost, igniOnDuration);

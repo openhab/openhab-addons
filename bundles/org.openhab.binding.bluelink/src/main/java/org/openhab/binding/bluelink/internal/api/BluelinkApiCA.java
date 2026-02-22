@@ -160,7 +160,7 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
             final boolean defrost, final @Nullable Integer igniOnDuration) throws BluelinkApiException {
         final String endpoint;
         final Object climateRequest;
-        final int igniOn = igniOnDuration != null ? igniOnDuration : 10;
+        final int igniOn = igniOnDuration != null ? igniOnDuration : DEFAULT_HEAT_DURATION_MINUTES;
         if (vehicle.isElectric()) {
             endpoint = "evc/rfon";
             if (brand == Brand.KIA) {

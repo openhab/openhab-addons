@@ -35,8 +35,9 @@ public record ClimateRequestICE(int airCtrl, AirTemperature airTemp, boolean def
     }
 
     public static ClimateRequestICE create(final @NonNull QuantityType<@NonNull Temperature> temperature,
-            final boolean heat, final boolean defrost, final String username, final String vin) {
-        return new ClimateRequestICE(1, AirTemperature.of(temperature), defrost, heat ? 1 : 0, 10,
+            final boolean heat, final boolean defrost, final int igniOnDuration, final String username,
+            final String vin) {
+        return new ClimateRequestICE(1, AirTemperature.of(temperature), defrost, heat ? 1 : 0, igniOnDuration,
                 SeatHeaterVentInfo.OFF, 0, username, vin);
     }
 }

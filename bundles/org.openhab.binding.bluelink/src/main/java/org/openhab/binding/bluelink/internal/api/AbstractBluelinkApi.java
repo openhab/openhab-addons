@@ -48,6 +48,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
 
     protected static final String APPLICATION_JSON = "application/json;charset=UTF-8";
     protected static final int HTTP_TIMEOUT_SECONDS = 30;
+    protected static final int DEFAULT_HEAT_DURATION_MINUTES = 5;
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected final Gson gson = new Gson();

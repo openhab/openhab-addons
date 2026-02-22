@@ -77,6 +77,12 @@ class BluelinkAccountHandlerTest extends JavaTest {
 
     private @NonNullByDefault({}) BluelinkAccountHandler handler;
 
+    @BeforeAll
+    static void setUpHttpServer() throws Exception {
+        WIREMOCK_SERVER.start();
+        HTTP_CLIENT.start();
+    }
+
     @AfterEach
     void tearDown() {
         handler.dispose();
@@ -94,15 +100,13 @@ class BluelinkAccountHandlerTest extends JavaTest {
         private final LocaleProvider localeProvider = () -> Locale.US;
 
         @BeforeAll
-        static void setUpHttpServer() throws Exception {
-            WIREMOCK_SERVER.start();
+        static void setUpStubs() {
             WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
+            WireMock.reset();
             stubFor(post(urlEqualTo("/v2/ac/oauth/token")).willReturn(aResponse().withStatus(200)
                     .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE_US)));
             stubFor(get(urlPathMatching("/ac/v2/enrollment/details/.*")).willReturn(aResponse().withStatus(200)
                     .withHeader("Content-Type", "application/json").withBody(ENROLLMENT_RESPONSE_US)));
-
-            HTTP_CLIENT.start();
         }
 
         @BeforeEach
@@ -140,17 +144,15 @@ class BluelinkAccountHandlerTest extends JavaTest {
         private final LocaleProvider localeProvider = () -> Locale.GERMAN;
 
         @BeforeAll
-        static void setUpHttpServer() throws Exception {
-            WIREMOCK_SERVER.start();
+        static void setUpStubs() {
             WireMock.configureFor("localhost", WIREMOCK_SERVER.port());
+            WireMock.reset();
             stubFor(post(urlEqualTo("/auth/api/v2/user/oauth2/token")).willReturn(aResponse().withStatus(200)
                     .withHeader("Content-Type", "application/json").withBody(TOKEN_RESPONSE_EU)));
             stubFor(post(urlEqualTo("/api/v1/spa/notifications/register")).willReturn(aResponse().withStatus(200)
                     .withHeader("Content-Type", "application/json").withBody(DEVICE_REGISTRATION_RESPONSE_EU)));
             stubFor(get(urlPathMatching("/api/v1/spa/vehicles")).willReturn(aResponse().withStatus(200)
                     .withHeader("Content-Type", "application/json").withBody(VEHICLES_RESPONSE_EU)));
-
-            HTTP_CLIENT.start();
         }
 
         @BeforeEach

@@ -181,7 +181,8 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
             climateRequest = ClimateRequestEV.create(temperature, heat, defrost);
         } else {
             url = baseUrl + "/ac/v2/rcs/rsc/start";
-            climateRequest = ClimateRequestICE.create(temperature, heat, defrost, username, vehicle.vin());
+            final int duration = igniOnDuration != null ? igniOnDuration : DEFAULT_HEAT_DURATION_MINUTES;
+            climateRequest = ClimateRequestICE.create(temperature, heat, defrost, duration, username, vehicle.vin());
         }
         return sendClimateCommand(vehicle, url, climateRequest);
     }

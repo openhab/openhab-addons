@@ -62,7 +62,7 @@ The Force Refresh action can be used to refresh on demand.
 
 ## Actions
 
-Vehicle things support the following actions. However, only `forceRefresh` is suppored in the EU region.
+Vehicle things support the following actions. However, only `forceRefresh` is supported in the EU region.
 
 | Action          | Parameters                                                 | Description                                                |
 |-----------------|------------------------------------------------------------|------------------------------------------------------------|
