@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class EnOceanDatagramInjectorConfig extends EnOceanBaseConfig {
 
-    public @Nullable String senderAddress = null;
+    public @Nullable String senderId = null;
 
     public String sendingProfileId = "";
 

@@ -13,8 +13,8 @@
 		<description>Send-only profile based command injector for EnOcean telegrams (RS485 mode required).</description>
 
 		<config-description>
-			<parameter name="senderAddress" type="text">
-				<label>Sender Address</label>
+			<parameter name="senderId" type="text">
+				<label>Sender Base Id</label>
 				<description>Virtual sender address for injector telegrams on the Eltako bus (8 hex digits, RS485 only).</description>
 			</parameter>
 			<parameter name="sendingProfileId" type="text" required="true">
