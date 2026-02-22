@@ -15,10 +15,9 @@ package org.openhab.binding.bluelink.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Token response from the Bluelink authentication API.
- *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public record SeatHeaterState(@SerializedName("flSeatHeatState") int frontLeft,
+        @SerializedName("frSeatHeatState") int frontRight, @SerializedName("rlSeatHeatState") int rearLeft,
+        @SerializedName("rrSeatHeatState") int rearRight) {
 }

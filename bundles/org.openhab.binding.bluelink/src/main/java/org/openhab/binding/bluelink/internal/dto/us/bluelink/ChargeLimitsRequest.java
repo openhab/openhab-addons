@@ -10,15 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.us.bluelink;
+
+import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Token response from the Bluelink authentication API.
+ * Charge limits request for the Bluelink API.
  *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public record ChargeLimitsRequest(@SerializedName("targetSOClist") List<TargetSOC> targetSOCList) {
+
+    public static final int PLUG_TYPE_DC = 0;
+    public static final int PLUG_TYPE_AC = 1;
+
+    public record TargetSOC(int plugType, @SerializedName("targetSOClevel") int targetSOCLevel) {
+    }
 }
