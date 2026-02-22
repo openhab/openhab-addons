@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dahuadoor"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="bell-button">
+		<kind>trigger</kind>
+		<label>Door Bell Button</label>
+		<description>Triggered when door bell button is pressed</description>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<channel-type id="door-image">
+		<item-type>Image</item-type>
+		<label>Door Image</label>
+		<description>Snapshot image taken when door bell is pressed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="open-door">
+		<item-type>Switch</item-type>
+		<label>Open Door</label>
+		<description>Open door relay</description>
+	</channel-type>
+
+</thing:thing-descriptions>
