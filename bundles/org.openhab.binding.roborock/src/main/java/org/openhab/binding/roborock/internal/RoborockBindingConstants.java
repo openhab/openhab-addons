@@ -53,18 +53,47 @@ public class RoborockBindingConstants {
     public static final String SIGN_KEY_V3 = "/api/v3/key/sign";
 
     // Protocol constants
+    /** Message digest algorithm used for key derivation helpers. */
     public static final String MD5_ALGORITHM = "MD5";
+    /** Cipher transformation for protocol-level AES/ECB encryption/decryption. */
     public static final String AES_ECB_PADDING = "AES/ECB/PKCS5Padding";
+    /** Cipher transformation for map body AES/CBC decryption. */
     public static final String AES_CBC_NO_PADDING = "AES/CBC/NoPadding";
+    /** Wire protocol version expected in Roborock transport headers. */
     public static final String VERSION_1_0 = "1.0";
+    /** Protocol id for JSON payload frames. */
+    public static final int PROTOCOL_JSON = 102;
+    /** Protocol id for map transport frames. */
+    public static final int PROTOCOL_MAP = 301;
+    /** Byte offset for the sequence number in the common message header. */
     public static final int SEQ_OFFSET = 3;
+    /** Byte offset for the random value in the common message header. */
     public static final int RANDOM_OFFSET = 7;
+    /** Byte offset for the timestamp in the common message header. */
     public static final int TIMESTAMP_OFFSET = 11;
+    /** Byte offset for the protocol id in the common message header. */
     public static final int PROTOCOL_OFFSET = 15;
+    /** Byte offset where encrypted payload bytes begin in the common message header. */
     public static final int PAYLOAD_OFFSET = 17;
+    /**
+     * Size of the protocol message header excluding CRC bytes.
+     */
     public static final int HEADER_LENGTH_WITHOUT_CRC = 19; // 3 (version) + 4 (seq) + 4 (random) + 4 (timestamp) + 2
                                                             // (protocol) + 2 (payloadLen)
+    /** Number of trailing CRC32 bytes in a transport frame. */
     public static final int CRC_LENGTH = 4;
+    /** Total bytes in the map transport header before encrypted map body bytes. */
+    public static final int MAP_TRANSPORT_HEADER_LENGTH = 24;
+    /** Endpoint field length in bytes within a map transport header. */
+    public static final int MAP_ENDPOINT_LENGTH = 8;
+    /** Reserved field length in bytes within a map transport header. */
+    public static final int MAP_RESERVED_LENGTH = 8;
+    /** Request-id field offset in bytes within a map transport header. */
+    public static final int MAP_REQUEST_ID_OFFSET = 16;
+    /** Tail field length in bytes within a map transport header. */
+    public static final int MAP_TAIL_LENGTH = 6;
+    /** Correlation timeout used to map map responses back to originating requests. */
+    public static final int MAP_REQUEST_CORRELATION_TIMEOUT_MS = 120000;
 
     // List of all Channel ids
     public static final String CHANNEL_BATTERY = "status#battery";

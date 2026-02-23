@@ -111,6 +111,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         return token;
     }
 
+    public String getEndpointPrefix() {
+        return ProtocolUtils.getEndpoint(rriot);
+    }
+
     public ThingUID getUID() {
         return thing.getUID();
     }
@@ -200,7 +204,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         logger.debug("Child registered with gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
         if (childHandler instanceof RoborockVacuumHandler vacuumHandler) {
-            childDevices.put(childThing.getUID().getId(), vacuumHandler);
+            String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
+                    childThing.getUID().getId());
+            childDevices.put(routingKey, vacuumHandler);
+            if (!routingKey.equals(childThing.getUID().getId())) {
+                childDevices.put(childThing.getUID().getId(), vacuumHandler);
+            }
+            logger.debug("Registered child routing key '{}' for thing {}", routingKey, childThing.getUID());
         } else {
             logger.debug("Initialized child handler is not a RoborockVacuumHandler: {}",
                     childHandler.getClass().getName());
@@ -211,7 +221,20 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         logger.debug("Child released from gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
                 getThing().getUID(), getThing().getLabel());
+        String routingKey = buildRoutingKey(childThing.getConfiguration().get(THING_CONFIG_DUID),
+                childThing.getUID().getId());
+        childDevices.remove(routingKey);
         childDevices.remove(childThing.getUID().getId());
+    }
+
+    static String buildRoutingKey(@Nullable Object configuredDuid, String fallbackThingId) {
+        if (configuredDuid != null) {
+            String value = configuredDuid.toString();
+            if (!value.isBlank()) {
+                return value;
+            }
+        }
+        return fallbackThingId;
     }
 
     private void initAPI() {
