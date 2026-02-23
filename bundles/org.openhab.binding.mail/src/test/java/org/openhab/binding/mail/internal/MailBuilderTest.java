@@ -16,9 +16,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -61,12 +59,8 @@ public class MailBuilderTest {
 
     @Test
     public void illegalURLThrowsException() {
-<<<<<<< Upstream, based on main
         assertThrows(IllegalArgumentException.class,
                 () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
-=======
-        assertThrows(URISyntaxException.class, () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
->>>>>>> dc4bb93 Test correction
     }
 
     @Test
@@ -78,7 +72,7 @@ public class MailBuilderTest {
 
     @Test
     public void withURLAttachmentReturnsMultiPartEmail()
-            throws AddressException, EmailException, MalformedURLException, URISyntaxException {
+            throws AddressException, EmailException, MalformedURLException {
         MailBuilder builder = new MailBuilder(TEST_EMAIL);
         String url = Path.of("src/test/resources/attachment.txt").toUri().toURL().toString();
         Email mail = builder.withText("boo").withURLAttachment(url).build();
@@ -93,7 +87,7 @@ public class MailBuilderTest {
     }
 
     @Test
-    public void fieldsSetInMail() throws EmailException, MessagingException, IOException {
+    public void fieldsSetInMail() throws EmailException, MessagingException {
         MailBuilder builder = new MailBuilder(TEST_EMAIL);
 
         assertEquals("(no subject)", builder.build().getSubject());
@@ -106,7 +100,7 @@ public class MailBuilderTest {
     }
 
     @Test
-    public void withHeaders() throws EmailException, MessagingException, IOException {
+    public void withHeaders() throws EmailException, MessagingException {
         MailBuilder builder = new MailBuilder(TEST_EMAIL);
         Email mail = builder.withHeader(HEADER_1_KEY, HEADER_1_VAL).withHeader(HEADER_2_KEY, HEADER_2_VAL).build();
 

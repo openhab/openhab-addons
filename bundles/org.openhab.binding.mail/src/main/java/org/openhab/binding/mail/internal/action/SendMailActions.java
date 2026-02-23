@@ -12,15 +12,6 @@
  */
 package org.openhab.binding.mail.internal.action;
 
-<<<<<<< Upstream, based on main
-=======
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-<<<<<<< Upstream, based on main
->>>>>>> a1a1b86 Adressing Copilot code review comments
-import java.util.ArrayList;
-=======
->>>>>>> 2802456 Small code improvement
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,14 +98,10 @@ public class SendMailActions implements ThingActions {
             if (handler == null) {
                 logger.info("Handler is null, cannot send mail.");
                 return false;
-            } else {
-                return handler.sendMail(builder.build());
             }
-<<<<<<< Upstream, based on main
+            return handler.sendMail(builder.build());
+
         } catch (AddressException | IllegalArgumentException | EmailException e) {
-=======
-        } catch (AddressException | MalformedURLException | EmailException | URISyntaxException e) {
->>>>>>> a1a1b86 Adressing Copilot code review comments
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
@@ -195,14 +182,9 @@ public class SendMailActions implements ThingActions {
             if (handler == null) {
                 logger.warn("Handler is null, cannot send mail.");
                 return false;
-            } else {
-                return handler.sendMail(builder.build());
             }
-<<<<<<< Upstream, based on main
+            return handler.sendMail(builder.build());
         } catch (AddressException | IllegalArgumentException | EmailException e) {
-=======
-        } catch (AddressException | MalformedURLException | EmailException | URISyntaxException e) {
->>>>>>> a1a1b86 Adressing Copilot code review comments
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
