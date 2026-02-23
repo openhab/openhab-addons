@@ -72,8 +72,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.givimad.piperjni.PiperJNI;
-import io.github.givimad.piperjni.PiperVoice;
+import io.github.jvoiceproject.piperjni.PiperJNI;
+import io.github.jvoiceproject.piperjni.PiperVoice;
 
 /**
  * The {@link PiperTTSService} class is a service implementation to use Piper for Text-to-Speech.
@@ -87,12 +87,12 @@ import io.github.givimad.piperjni.PiperVoice;
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PiperTTSService extends AbstractCachedTTSService {
     // piper-jni version from pom.xml
-    private static final String PIPER_VERSION = "1.2.0-c0670df";
+    private static final String PIPER_VERSION = "1.4.1";
     private static final Path PIPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "piper");
     private static final Path LIB_FOLDER = PIPER_FOLDER.resolve("lib-" + PIPER_VERSION);
     private static final Path JAR_FILE = PIPER_FOLDER.resolve("piper-jni-" + PIPER_VERSION + ".jar");
-    private static final String JAR_URL = "https://repo1.maven.org/maven2/io/github/givimad/piper-jni/" + PIPER_VERSION
-            + "/piper-jni-" + PIPER_VERSION + ".jar";
+    private static final String JAR_URL = "https://openhab.jfrog.io/artifactory/libs-online-deps/io/github/jvoice-project/piper-jni/"
+            + PIPER_VERSION + "/piper-jni-" + PIPER_VERSION + ".jar";
     private final Logger logger = LoggerFactory.getLogger(PiperTTSService.class);
     private final Object modelLock = new Object();
     private final ExecutorService executor = ThreadPoolManager.getPool("voice-pipertts");
@@ -103,7 +103,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
     private @Nullable PiperJNI piper;
     private @Nullable Future<?> activateTask;
     static {
-        System.setProperty("io.github.givimad.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
+        System.setProperty("io.github.jvoiceproject.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
     }
 
     @Activate
@@ -118,7 +118,7 @@ public class PiperTTSService extends AbstractCachedTTSService {
             try {
                 setupNativeDependencies();
                 PiperJNI piper = this.piper = new PiperJNI();
-                piper.initialize(true, false);
+                piper.initialize(true);
                 logger.debug("Using Piper version {}", piper.getPiperVersion());
                 ready = true;
             } catch (IOException e) {
@@ -149,8 +149,6 @@ public class PiperTTSService extends AbstractCachedTTSService {
                 folderName = "debian-amd64";
             } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
                 folderName = "debian-arm64";
-            } else if (osArch.contains("armv7") || osArch.contains("arm")) {
-                folderName = "debian-armv7l";
             }
         } else if (osName.contains("mac") || osName.contains("darwin")) {
             if (osArch.contains("amd64") || osArch.contains("x86_64")) {
