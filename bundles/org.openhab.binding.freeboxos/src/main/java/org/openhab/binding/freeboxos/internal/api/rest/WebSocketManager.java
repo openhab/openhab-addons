@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -65,8 +64,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
 
     private final Logger logger = LoggerFactory.getLogger(WebSocketManager.class);
     private final Map<MACAddress, ApiConsumerHandler> listeners = new HashMap<>();
-    private final ScheduledExecutorService scheduler = Objects
-            .requireNonNull(ThreadPoolManager.getScheduledPool(BINDING_ID));
+    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(BINDING_ID);
     private final Object wsLifecycleLock = new Object();
     private final ApiHandler apiHandler;
     private @Nullable WebSocketClient wsClient;
@@ -112,7 +110,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         request.setHeader(ApiHandler.AUTH_HEADER, sessionToken);
         try {
             webSocketClient.start();
-            stopReconnect();
+            stopReconnectJob();
             reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     synchronized (wsLifecycleLock) {
@@ -136,7 +134,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         }
     }
 
-    private void stopReconnect() {
+    private void stopReconnectJob() {
         if (reconnectJob instanceof ScheduledFuture job) {
             job.cancel(true);
             reconnectJob = null;
@@ -146,7 +144,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     public void dispose() {
         synchronized (wsLifecycleLock) {
             reconnectEnabled = false;
-            stopReconnect();
+            stopReconnectJob();
             if (wsClient instanceof WebSocketClient client) {
                 closeSession();
                 try {
