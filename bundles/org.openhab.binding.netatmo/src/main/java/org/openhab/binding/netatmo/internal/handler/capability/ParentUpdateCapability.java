@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
-import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,8 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ParentUpdateCapability extends Capability {
-    private static final Duration DEFAULT_DELAY = Duration.ofSeconds(2);
-
     private final Logger logger = LoggerFactory.getLogger(ParentUpdateCapability.class);
     private @Nullable ScheduledFuture<?> job;
 
@@ -40,22 +37,36 @@ public class ParentUpdateCapability extends Capability {
 
     @Override
     public void initialize() {
-        handler.schedule(() -> {
+        if (job != null) {
+            logger.debug("Data update is already requested for '{}'", thingUID);
+            return;
+        }
+
+        this.job = handler.schedule(() -> {
             logger.debug("Requesting parents data update for Thing '{}'", thingUID);
-            CommonInterface bridgeHandler = handler.getBridgeHandler();
-            if (bridgeHandler != null) {
+            if (handler.getBridgeHandler() instanceof CommonInterface bridgeHandler) {
                 bridgeHandler.expireData();
             }
-        }, DEFAULT_DELAY).ifPresent(job -> this.job = job);
+            cancelJob();
+        }, RefreshCapability.ASAP);
+    }
+
+    @Override
+    protected void beforeNewData() {
+        super.beforeNewData();
+        cancelJob();
+    }
+
+    private void cancelJob() {
+        if (job instanceof ScheduledFuture<?> local) {
+            local.cancel(true);
+            this.job = null;
+        }
     }
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = this.job;
-        if (job != null) {
-            job.cancel(true);
-        }
-        this.job = null;
+        cancelJob();
         super.dispose();
     }
 }
