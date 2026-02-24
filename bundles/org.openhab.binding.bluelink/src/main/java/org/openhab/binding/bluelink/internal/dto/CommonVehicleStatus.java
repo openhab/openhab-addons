@@ -58,5 +58,5 @@ public interface CommonVehicleStatus {
 
     boolean brakeOilStatus();
 
-    TirePressureWarnings tirePressureWarning();
+    ITirePressureWarning tirePressureWarning();
 }

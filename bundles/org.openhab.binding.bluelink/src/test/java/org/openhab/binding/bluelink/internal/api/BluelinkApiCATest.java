@@ -19,7 +19,6 @@ import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.quantity.Length;
@@ -77,8 +76,8 @@ public class BluelinkApiCATest {
     @Test
     void testGetVehicleStatus() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final AbstractBluelinkApi<?> api = new BluelinkApiCA(HTTP_CLIENT, Brand.KIA, Optional.of(baseUrl),
-                timeZoneProvider, TEST_USERNAME, TEST_PASSWORD, null);
+        final AbstractBluelinkApi<?> api = new BluelinkApiCA(HTTP_CLIENT, Brand.KIA, baseUrl, timeZoneProvider,
+                TEST_USERNAME, TEST_PASSWORD, null);
         assertTrue(api.login());
 
         final IVehicle vehicle = new Vehicle("123", "VIN1234", "Car", IVehicle.EngineType.EV, "EV9", 2022);

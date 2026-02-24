@@ -19,7 +19,6 @@ import static org.openhab.core.library.unit.ImperialUnits.FAHRENHEIT;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -79,8 +78,8 @@ public class BluelinkApiUSTest {
     @Test
     void testGetVehicleStatus() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final AbstractBluelinkApi<?> api = new BluelinkApiUS(HTTP_CLIENT, Optional.of(baseUrl), timeZoneProvider,
-                TEST_USERNAME, TEST_PASSWORD, null);
+        final AbstractBluelinkApi<?> api = new BluelinkApiUS(HTTP_CLIENT, baseUrl, timeZoneProvider, TEST_USERNAME,
+                TEST_PASSWORD, null);
         assertTrue(api.login());
 
         final IVehicle vehicle = new Vehicle("123", "VIN1234", "Car", EngineType.EV, "IONIQ5", 2022, "2", 100.0);

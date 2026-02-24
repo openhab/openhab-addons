@@ -22,7 +22,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -76,14 +75,16 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private @Nullable UUID deviceId;
 
     public BluelinkApiEU(final HttpClient httpClient, final Brand brand, final Map<String, String> properties,
-            final Optional<String> optBaseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken) {
+            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken) {
         super(httpClient, timeZoneProvider, "", refreshToken, null);
         this.refreshToken = refreshToken;
         final BrandConfig baseBrandConfig = BrandConfig.forBrand(brand);
-        this.brandConfig = optBaseUrl
-                .map(url -> new BrandConfig(url, url, baseBrandConfig.ccspServiceId, baseBrandConfig.appId,
-                        baseBrandConfig.clientSecret, baseBrandConfig.cfb, baseBrandConfig.pushType))
-                .orElseGet(() -> baseBrandConfig);
+        if (baseUrl == null) {
+            this.brandConfig = baseBrandConfig;
+        } else {
+            this.brandConfig = new BrandConfig(baseUrl, baseUrl, baseBrandConfig.ccspServiceId, baseBrandConfig.appId,
+                    baseBrandConfig.clientSecret, baseBrandConfig.cfb, baseBrandConfig.pushType);
+        }
         final String storedDeviceId = properties.get("deviceId");
         if (storedDeviceId != null && !storedDeviceId.isBlank()) {
             this.deviceId = UUID.fromString(storedDeviceId);

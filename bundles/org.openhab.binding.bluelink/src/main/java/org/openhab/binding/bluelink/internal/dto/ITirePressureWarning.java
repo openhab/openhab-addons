@@ -15,7 +15,7 @@ package org.openhab.binding.bluelink.internal.dto;
 /**
  * @author Marcus Better - Initial contribution
  */
-public interface TirePressureWarnings {
+public interface ITirePressureWarning {
     int all();
 
     int frontLeft();

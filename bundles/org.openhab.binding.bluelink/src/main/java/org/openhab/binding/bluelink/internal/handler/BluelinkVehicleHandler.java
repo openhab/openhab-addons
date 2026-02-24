@@ -363,21 +363,21 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             // Charge times
             final var remainTime2 = evStatus.remainTime2();
             if (remainTime2 != null) {
-                if (remainTime2.atc() != null) {
+                if (remainTime2.current() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_CURRENT,
-                            new QuantityType<>(remainTime2.atc().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.current().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc1() != null) {
+                if (remainTime2.fast() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_FAST,
-                            new QuantityType<>(remainTime2.etc1().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.fast().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc2() != null) {
+                if (remainTime2.portable() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_PORTABLE,
-                            new QuantityType<>(remainTime2.etc2().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.portable().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc3() != null) {
+                if (remainTime2.station() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_STATION,
-                            new QuantityType<>(remainTime2.etc3().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.station().value(), Units.MINUTE));
                 }
             }
         }
@@ -431,10 +431,6 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
 
     private void updateState(final String group, final String channel, final State state) {
         updateState(new ChannelUID(getThing().getUID(), group, channel), state);
-    }
-
-    private OpenClosedType toOpenClosed(final int value) {
-        return value > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     private OpenClosedType toOpenClosed(final boolean value) {

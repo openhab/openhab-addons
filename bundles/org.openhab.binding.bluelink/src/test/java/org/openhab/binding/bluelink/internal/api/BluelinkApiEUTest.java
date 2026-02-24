@@ -21,7 +21,6 @@ import static org.openhab.core.library.unit.SIUnits.METRE;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.measure.quantity.Length;
@@ -82,8 +81,8 @@ public class BluelinkApiEUTest {
     @Test
     void testLoginAndGetVehicleStatus() throws BluelinkApiException {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), Optional.of(baseUrl),
-                timeZoneProvider, MockApiData.TEST_REFRESH_TOKEN);
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
+                MockApiData.TEST_REFRESH_TOKEN);
         assertTrue(api.login());
 
         // Verify device ID was obtained
@@ -194,8 +193,8 @@ public class BluelinkApiEUTest {
     @Test
     void testControlActionsThrow() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), Optional.of(baseUrl),
-                timeZoneProvider, MockApiData.TEST_REFRESH_TOKEN);
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
+                MockApiData.TEST_REFRESH_TOKEN);
         assertTrue(api.login());
 
         final IVehicle vehicle = new Vehicle("test-vehicle-id", "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,

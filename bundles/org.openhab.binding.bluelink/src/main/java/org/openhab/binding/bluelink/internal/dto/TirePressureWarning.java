@@ -23,5 +23,5 @@ public record TirePressureWarning(@Override @SerializedName("tirePressureLampAll
         @Override @SerializedName("tirePressureLampFL") int frontLeft,
         @Override @SerializedName("tirePressureLampFR") int frontRight,
         @Override @SerializedName("tirePressureLampRL") int rearLeft,
-        @Override @SerializedName("tirePressureLampRR") int rearRight) implements TirePressureWarnings {
+        @Override @SerializedName("tirePressureLampRR") int rearRight) implements ITirePressureWarning {
 }

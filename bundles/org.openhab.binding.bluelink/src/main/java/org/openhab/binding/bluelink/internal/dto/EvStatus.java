@@ -55,15 +55,8 @@ public record EvStatus(boolean batteryCharge, int batteryStatus, @SerializedName
         }
     }
 
-    public record ChargeRemainingTime(
-            // Current
-            TimeValue atc,
-            // Fast
-            TimeValue etc1,
-            // Portable
-            TimeValue etc2,
-            // Station
-            TimeValue etc3) {
+    public record ChargeRemainingTime(@SerializedName("atc") TimeValue current, @SerializedName("etc1") TimeValue fast,
+            @SerializedName("etc2") TimeValue portable, @SerializedName("etc3") TimeValue station) {
 
         public record TimeValue(int value, int unit) {
         }

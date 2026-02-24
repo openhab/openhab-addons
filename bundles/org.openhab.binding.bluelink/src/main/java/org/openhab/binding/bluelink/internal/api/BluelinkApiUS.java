@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluelink.internal.api;
 
+import static java.util.Objects.requireNonNullElse;
 import static org.openhab.binding.bluelink.internal.dto.us.bluelink.ChargeLimitsRequest.PLUG_TYPE_AC;
 import static org.openhab.binding.bluelink.internal.dto.us.bluelink.ChargeLimitsRequest.PLUG_TYPE_DC;
 
@@ -20,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
@@ -69,11 +69,11 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
 
     private final String baseUrl;
 
-    public BluelinkApiUS(final HttpClient httpClient, final Optional<String> baseUrl,
+    public BluelinkApiUS(final HttpClient httpClient, final @Nullable String baseUrl,
             final TimeZoneProvider timeZoneProvider, final String username, final String password,
             final @Nullable String pin) {
         super(httpClient, timeZoneProvider, username, password, pin);
-        this.baseUrl = baseUrl.orElseGet(() -> API_ENDPOINT);
+        this.baseUrl = requireNonNullElse(baseUrl, API_ENDPOINT);
     }
 
     @Override

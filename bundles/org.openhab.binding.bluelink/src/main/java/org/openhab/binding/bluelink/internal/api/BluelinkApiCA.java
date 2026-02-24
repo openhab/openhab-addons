@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Temperature;
@@ -64,22 +63,24 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
     private final Brand brand;
     private final String baseUrl;
 
-    public BluelinkApiCA(final HttpClient httpClient, final Brand brand, final Optional<String> optBaseUrl,
+    public BluelinkApiCA(final HttpClient httpClient, final Brand brand, final @Nullable String baseUrl,
             final TimeZoneProvider timeZoneProvider, final String username, final String password,
             final @Nullable String pin) {
         super(httpClient, timeZoneProvider, username, password, pin);
         this.brand = brand;
-        this.baseUrl = optBaseUrl.map(url -> url.endsWith("/") ? url : url + "/")
-                .orElseGet(() -> getApiHostname(brand));
+        if (baseUrl == null) {
+            this.baseUrl = getApiHostname(brand);
+        } else {
+            this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+        }
     }
 
     private static String getApiHostname(final Brand brand) {
-        assert brand != Brand.UNKNOWN;
         return switch (brand) {
             case HYUNDAI -> "https://mybluelink.ca/tods/api/";
             case KIA -> "https://kiaconnect.ca/tods/api/";
             case GENESIS -> "https://genesisconnect.ca/tods/api/";
-            case UNKNOWN -> throw new IllegalArgumentException("brand not configured"); // not reached
+            case UNKNOWN -> throw new IllegalArgumentException("brand not configured");
         };
     }
 

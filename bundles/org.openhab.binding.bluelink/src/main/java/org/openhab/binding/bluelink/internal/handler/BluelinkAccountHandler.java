@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -148,13 +147,13 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         }
 
         // baseUrl override for tests
-        final Optional<String> optBaseUrl = Optional.ofNullable(config.apiBaseUrl);
+        final String baseUrl = config.apiBaseUrl;
         // After validation, we know password is non-null for all regions, and username is non-null for US/CA
         final String user = username != null ? username : "";
         this.api = switch (region) {
-            case US -> new BluelinkApiUS(httpClient, optBaseUrl, timeZoneProvider, user, password, config.pin);
-            case CA -> new BluelinkApiCA(httpClient, brand, optBaseUrl, timeZoneProvider, user, password, config.pin);
-            case EU -> new BluelinkApiEU(httpClient, brand, editProperties(), optBaseUrl, timeZoneProvider, password);
+            case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, user, password, config.pin);
+            case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, user, password, config.pin);
+            case EU -> new BluelinkApiEU(httpClient, brand, editProperties(), baseUrl, timeZoneProvider, password);
         };
         logger.debug("Created API for region {} brand {}", region, brand);
         updateStatus(ThingStatus.UNKNOWN);
