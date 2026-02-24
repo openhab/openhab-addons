@@ -13,6 +13,7 @@
 package org.openhab.binding.roborock.internal.map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
@@ -110,7 +111,7 @@ class RRMapRendererTest {
         assertEquals("cable", RRMapRenderer.obstacleTypeLabel(0));
         assertEquals("fabric/paper balls", RRMapRenderer.obstacleTypeLabel(51));
         assertEquals("furniture with a crossbar", RRMapRenderer.obstacleTypeLabel(27));
-        assertEquals(null, RRMapRenderer.obstacleTypeLabel(255));
+        assertNull(RRMapRenderer.obstacleTypeLabel(255));
     }
 
     @Test

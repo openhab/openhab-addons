@@ -37,6 +37,7 @@ import org.openhab.binding.roborock.internal.RoborockException;
 public final class RRMapRenderer {
     private static final int TARGET_MIN_MAX_DIMENSION = 1024;
     private static final int TARGET_MAX_DIMENSION = 2048;
+    // Coordinate-to-pixel conversion uses a fixed divisor of 50 (see toXCoord/toYCoord).
     private static final int MM = 50;
 
     private static final int MAP_OUTSIDE = 0x00;

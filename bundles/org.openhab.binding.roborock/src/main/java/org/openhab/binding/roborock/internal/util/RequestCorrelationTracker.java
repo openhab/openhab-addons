@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Tracks outgoing request ids and correlates them with method names.
  *
- * @author OpenHAB project contribution
+ * @author reyhard - Initial contribution
  */
 @NonNullByDefault
 public class RequestCorrelationTracker {
@@ -37,14 +37,7 @@ public class RequestCorrelationTracker {
 
         methodsByRequestId.put(requestId, methodName);
         requestTimestampsById.put(requestId, System.currentTimeMillis());
-        Set<Integer> requestIds = requestIdsByMethod.get(methodName);
-        if (requestIds == null) {
-            requestIdsByMethod.putIfAbsent(methodName, ConcurrentHashMap.newKeySet());
-            requestIds = requestIdsByMethod.get(methodName);
-        }
-        if (requestIds != null) {
-            requestIds.add(requestId);
-        }
+        requestIdsByMethod.computeIfAbsent(methodName, ignored -> ConcurrentHashMap.newKeySet()).add(requestId);
     }
 
     public @Nullable String findMethodByRequestId(int requestId) {
