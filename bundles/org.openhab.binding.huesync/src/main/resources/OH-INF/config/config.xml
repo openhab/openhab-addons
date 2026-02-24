@@ -16,7 +16,6 @@
 			<required>true</required>
 		</parameter>
 		<parameter name="port" type="integer" min="1" max="65535" groupName="connection">
-			<context></context>
 			<label>Port</label>
 			<description>Port of the HDMI Sync Box.</description>
 			<advanced>true</advanced>
@@ -24,7 +23,6 @@
 			<required>true</required>
 		</parameter>
 		<parameter name="registrationId" type="text" groupName="connection">
-			<context></context>
 			<label>Registration Id</label>
 			<description>The id of the API registration.</description>
 			<advanced>true</advanced>

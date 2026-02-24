@@ -29,9 +29,11 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalEner
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ElectricalPowerMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FanControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.FormaldehydeConcentrationMeasurementCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.GeneralDiagnosticsCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.LevelControlCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ModeSelectCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.NetworkCommissioningCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.NitrogenDioxideConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
@@ -113,6 +115,9 @@ public class ConverterRegistry {
                 ThreadNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
                 ThreadBorderRouterManagementConverter.class);
+        ConverterRegistry.registerConverter(NetworkCommissioningCluster.CLUSTER_ID,
+                NetworkCommissioningConverter.class);
+        ConverterRegistry.registerConverter(GeneralDiagnosticsCluster.CLUSTER_ID, GeneralDiagnosticsConverter.class);
         // Robotic Vacuum Cleaner converters
         ConverterRegistry.registerConverter(
                 org.openhab.binding.matter.internal.client.dto.cluster.gen.RvcRunModeCluster.CLUSTER_ID,

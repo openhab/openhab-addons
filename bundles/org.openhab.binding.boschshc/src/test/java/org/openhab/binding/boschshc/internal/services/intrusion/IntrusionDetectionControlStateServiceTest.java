@@ -78,7 +78,7 @@ class IntrusionDetectionControlStateServiceTest {
     }
 
     @Test
-    void setState() throws InterruptedException, TimeoutException, ExecutionException {
+    void setState() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         fixture.setState(testState);
         verify(bridgeHandler).putState(BoschSHCBindingConstants.SERVICE_INTRUSION_DETECTION,
                 "IntrusionDetectionControl", testState);

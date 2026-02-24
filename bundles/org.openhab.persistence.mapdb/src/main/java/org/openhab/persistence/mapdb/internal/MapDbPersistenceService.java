@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,10 +75,13 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     private static final Path DB_DIR = new File(OpenHAB.getUserDataFolder(), "persistence").toPath().resolve("mapdb");
     private static final Path BACKUP_DIR = DB_DIR.resolve("backup");
     private static final String DB_FILE_NAME = "storage.mapdb";
+    private static final long DEACTIVATE_TIMEOUT_MS = 30000; // 30 seconds
 
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceService.class);
 
     private final ExecutorService threadPool = ThreadPoolManager.getPool(getClass().getSimpleName());
+    private final AtomicInteger pendingTasks = new AtomicInteger(0);
+    private volatile boolean active;
 
     /**
      * holds the local instance of the MapDB database
@@ -91,6 +96,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Activate
     public void activate() {
         logger.debug("MapDB persistence service is being activated");
+        active = true;
 
         try {
             Files.createDirectories(DB_DIR);
@@ -147,6 +153,20 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Deactivate
     public void deactivate() {
         logger.debug("MapDB persistence service deactivated");
+        active = false;
+        long deadline = System.currentTimeMillis() + DEACTIVATE_TIMEOUT_MS;
+        while (pendingTasks.get() > 0 && System.currentTimeMillis() < deadline) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.warn("Interrupted while waiting for MapDB persistence tasks to finish.");
+                break;
+            }
+        }
+        if (pendingTasks.get() > 0) {
+            logger.warn("Timed out waiting for MapDB persistence tasks; {} tasks still pending.", pendingTasks.get());
+        }
         if (db != null) {
             db.close();
         }
@@ -175,6 +195,10 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(Item item, @Nullable String alias) {
+        if (!active) {
+            logger.info("Skipping store of item '{}' because persistence service is not active", item.getName());
+            return;
+        }
         if (item.getState() instanceof UnDefType) {
             return;
         }
@@ -192,12 +216,23 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         mItem.setTimestamp(lastStateUpdate != null ? Date.from(lastStateUpdate.toInstant()) : new Date());
         ZonedDateTime lastStateChange = item.getLastStateChange();
         mItem.setLastStateChange(lastStateChange != null ? Date.from(lastStateChange.toInstant()) : null);
-        threadPool.submit(() -> {
-            String json = serialize(mItem);
-            map.put(localAlias, json);
-            db.commit();
-            logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
-        });
+        pendingTasks.incrementAndGet();
+        try {
+            threadPool.submit(() -> {
+                try {
+                    String json = serialize(mItem);
+                    map.put(localAlias, json);
+                    db.commit();
+                    logger.debug("Stored '{}' with state '{}' as '{}' in MapDB database", localAlias, state, json);
+                } finally {
+                    pendingTasks.decrementAndGet();
+                }
+
+            });
+        } catch (RejectedExecutionException e) {
+            logger.warn("Task submission rejected for item '{}': {}", localAlias, e.getMessage());
+            pendingTasks.decrementAndGet();
+        }
     }
 
     @Override
