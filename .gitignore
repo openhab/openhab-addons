@@ -1,6 +1,5 @@
 .antlr*
 .classpath
-.directory
 .idea
 .project
 .DS_Store
@@ -31,4 +30,3 @@ pom.xml.versionsBackup
 .vim
 shell.nix
 tags
-bundles/org.openhab.binding.jellyfin/.directory
