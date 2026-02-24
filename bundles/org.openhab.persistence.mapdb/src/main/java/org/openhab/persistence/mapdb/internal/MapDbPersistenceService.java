@@ -74,7 +74,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     private static final String SERVICE_LABEL = "MapDB";
     private static final Path DB_DIR = new File(OpenHAB.getUserDataFolder(), "persistence").toPath().resolve("mapdb");
     private static final Path BACKUP_DIR = DB_DIR.resolve("backup");
-    private static final String DB_FILE_NAME = "storage.mapdb";
+    private static final String DB_FILE_NAME = "storage3.mapdb";
     private static final long DEACTIVATE_TIMEOUT_MS = 30000; // 30 seconds
 
     private final Logger logger = LoggerFactory.getLogger(MapDbPersistenceService.class);
