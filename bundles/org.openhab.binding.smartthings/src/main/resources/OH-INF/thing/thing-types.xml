@@ -16,20 +16,20 @@
 				<default></default>
 			</parameter>
 			<parameter name="clientId" type="text" required="false">
-                <label>Client ID</label>
-                <description>The apps oauth client Id)</description>
-                <default></default>
-            </parameter>
-            <parameter name="clientSecret" type="text" required="false">
-                <label>Client Secret</label>
-                <description>The apps oauth client Secret</description>
-                <default></default>
-            </parameter>
-            <parameter name="pollingTime" type="integer" required="false">
-                <label>Polling Time</label>
-                <description>The Pooling time for refreshing device (-1 : disable)</description>
-                <default>-1</default>
-            </parameter>
+				<label>Client ID</label>
+				<description>The apps oauth client Id)</description>
+				<default></default>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="false">
+				<label>Client Secret</label>
+				<description>The apps oauth client Secret</description>
+				<default></default>
+			</parameter>
+			<parameter name="pollingTime" type="integer" required="false">
+				<label>Polling Time</label>
+				<description>The Pooling time for refreshing device (-1 : disable)</description>
+				<default>-1</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>
