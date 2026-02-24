@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.teleinfo.internal.d2l.TeleinfoD2LControllerHandler;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoSerialControllerHandler;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -43,15 +44,15 @@ import org.osgi.service.component.annotations.Reference;
 public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(THING_TYPE_SERIAL_CONTROLLER,
-            THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID,
-            THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID,
-            THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
-            THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
-            THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID, THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID,
-            THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID,
-            THING_LSMM_ELECTRICITY_METER_TYPE_UID, THING_LSMM_PROD_ELECTRICITY_METER_TYPE_UID,
-            THING_LSMT_ELECTRICITY_METER_TYPE_UID, THING_LSMT_PROD_ELECTRICITY_METER_TYPE_UID)
-            .collect(Collectors.toSet());
+            THING_TYPE_D2L_CONTROLLER, THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
+            THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID,
+            THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
+            THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
+            THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID,
+            THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID,
+            THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID, THING_LSMM_ELECTRICITY_METER_TYPE_UID,
+            THING_LSMM_PROD_ELECTRICITY_METER_TYPE_UID, THING_LSMT_ELECTRICITY_METER_TYPE_UID,
+            THING_LSMT_PROD_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
 
     private final SerialPortManager serialPortManager;
 
@@ -71,6 +72,8 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_SERIAL_CONTROLLER.equals(thingTypeUID)) {
             return new TeleinfoSerialControllerHandler((Bridge) thing, serialPortManager);
+        } else if (THING_TYPE_D2L_CONTROLLER.equals(thing.getThingTypeUID())) {
+            return new TeleinfoD2LControllerHandler((Bridge) thing);
         }
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {

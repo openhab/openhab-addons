@@ -4,14 +4,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="stringType">
+	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>Teleinfo String Type</label>
 		<category>Energy</category>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="energyType">
+	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
 		<label>Teleinfo Energy Type</label>
 		<category>Energy</category>
@@ -22,7 +22,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="currentType">
+	<channel-type id="current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Teleinfo Current Type</label>
 		<category>Energy</category>
@@ -33,7 +33,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="potentialType">
+	<channel-type id="potential">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Teleinfo Potential Type</label>
 		<category>Energy</category>
@@ -44,7 +44,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="powerType">
+	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Teleinfo Power Type</label>
 		<category>Energy</category>
@@ -55,18 +55,240 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="switchType">
+	<channel-type id="power-factor">
+		<item-type>Number:Power</item-type>
+		<label>Teleinfo PowerFactor Type</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Teleinfo Switch Type</label>
 		<category>Energy</category>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="dateTimeType">
+	<channel-type id="date-time">
 		<item-type>DateTime</item-type>
 		<label>Teleinfo DateTime Type</label>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
+
+	<channel-type id="contact">
+		<item-type>Contact</item-type>
+		<label>Contact Type</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cut-off">
+		<item-type>Number</item-type>
+		<label>Cutoff Type</label>
+		<description>This status describes the current cutoff type.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Not cutoff</option>
+				<option value="1">Cutoff over power</option>
+				<option value="2">Cutoff over voltage</option>
+				<option value="3">Cutoff for delest</option>
+				<option value="4">Cutoff from Eredis</option>
+				<option value="5">Cutoff over heating with over currency</option>
+				<option value="6">Cutoff over heating without over currency</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="over-voltage-state">
+		<item-type>Number</item-type>
+		<label>Overvoltage State</label>
+		<description>Describes an over voltage condition possible state.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">No overvoltage</option>
+				<option value="1">Overvoltage</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="exceeding-power-state">
+		<item-type>Number</item-type>
+		<label>Exceeding Power State</label>
+		<description>Describe an Exceeding power condition state papp > pmax.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">No exceeding power</option>
+				<option value="1">Exceeding power</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="function">
+		<item-type>Number</item-type>
+		<label>Function Mode</label>
+		<description>Tell if the meter is in Consummer mode or Producer mode.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Consummer</option>
+				<option value="1">Producer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="direction">
+		<item-type>Number</item-type>
+		<label>Active Energy</label>
+		<description>Tell about energy direction, if negative we take energy from network, if positive we inject energy.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Active energy positive</option>
+				<option value="1">Active energy negative</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="clock-state">
+		<item-type>Number</item-type>
+		<label>Clock State</label>
+		<description>State of the clock.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Clock ok</option>
+				<option value="1">Clock degrade</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plc">
+		<item-type>Number</item-type>
+		<label>PLC Mode</label>
+		<description>Mode of the PLC</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Historic mode</option>
+				<option value="1">Standard mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="outputcom-state">
+		<item-type>Number</item-type>
+		<label>Output Com State</label>
+		<description>State of the communication output</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Desactivated</option>
+				<option value="1">Activated without security</option>
+				<option value="2">Unknow</option>
+				<option value="3">Activated with security</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="plc-state">
+		<item-type>Number</item-type>
+		<label>PLC State</label>
+		<description>State of the PLC</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">New/Unlock</option>
+				<option value="1">New/Lock</option>
+				<option value="2">Registered</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="synchro-plc-state">
+		<item-type>Number</item-type>
+		<label>PLC Synchro State</label>
+		<description>State of the PLC Synchro</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">PLC Sync</option>
+				<option value="1">PLC Not Sync</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="moving-tips">
+		<item-type>Number</item-type>
+		<label>Moving Tips</label>
+		<description>Indicate a special tariff slot for a specific period.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Not moving tips advice</option>
+				<option value="1">Moving tips advice 1</option>
+				<option value="2">Moving tips advice 2</option>
+				<option value="3">Moving tips advice 3</option>
+
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="tempo">
+		<item-type>Number</item-type>
+		<label>Tempo Color Information</label>
+		<description>This status describes the tempo color of a day.</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="0">Unknow</option>
+				<option value="1">Blue</option>
+				<option value="2">White</option>
+				<option value="3">Red</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="rate">
+		<item-type>Number</item-type>
+		<label>Numeric Rate Type</label>
+		<category>energy</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
 
 </thing:thing-descriptions>
