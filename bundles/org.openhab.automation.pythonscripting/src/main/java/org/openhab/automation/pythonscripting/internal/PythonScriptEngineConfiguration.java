@@ -62,15 +62,14 @@ public class PythonScriptEngineConfiguration {
     public static final Path PYTHON_WRAPPER_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
     public static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
-    public static final int INJECTION_DISABLED = 0;
-    public static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 1;
-    public static final int INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS = 2;
+    public static final int HELPER_MODULES_DISABLED = 0;
+    public static final int HELPER_MODULES_ENABLED_INJECTION_DISABLED = 1;
+    public static final int HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS = 2;
+    public static final int HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
 
     // The variable names must match the configuration keys in config.xml
     public static class PythonScriptingConfiguration {
-        public boolean scopeEnabled = true;
-        public boolean helperEnabled = true;
-        public int injectionEnabled = INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS;
+        public int helperModules = HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS;
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
@@ -152,8 +151,7 @@ public class PythonScriptEngineConfiguration {
      * @param initial
      */
     public void modified(Map<String, Object> config, PythonScriptEngineFactory factory) {
-        boolean oldScopeEnabled = configuration.scopeEnabled;
-        boolean oldInjectionEnabled = !isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED);
+        int oldHelperModules = configuration.helperModules;
         boolean oldDependencyTrackingEnabled = isDependencyTrackingEnabled();
 
         String oldPipModules = configuration.pipModules;
@@ -162,13 +160,9 @@ public class PythonScriptEngineConfiguration {
             PythonScriptEngineHelper.initPipModules(this, factory);
         }
 
-        if (oldScopeEnabled != isScopeEnabled()) {
-            logger.info("{} scope for Python Scripting. Please resave your scripts to apply this change.",
-                    isScopeEnabled() ? "Enabled" : "Disabled");
-        }
-        if (oldInjectionEnabled != !isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED)) {
-            logger.info("{} injection for Python Scripting. Please resave your UI-based scripts to apply this change.",
-                    !isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED) ? "Enabled" : "Disabled");
+        if (oldHelperModules != configuration.helperModules) {
+            logger.info(
+                    "Changed helper module setting for Python Scripting. Please resave your UI-based scripts to apply this change.");
         }
         if (oldDependencyTrackingEnabled != isDependencyTrackingEnabled()) {
             logger.info("{} dependency tracking for Python Scripting. Please resave your scripts to apply this change.",
@@ -180,16 +174,8 @@ public class PythonScriptEngineConfiguration {
         installedHelperLibVersion = version;
     }
 
-    public boolean isScopeEnabled() {
-        return configuration.scopeEnabled;
-    }
-
-    public boolean isHelperEnabled() {
-        return configuration.helperEnabled;
-    }
-
-    public boolean isInjection(int type) {
-        return configuration.injectionEnabled == type;
+    public boolean isHelperEnabled(int type) {
+        return configuration.helperModules == type;
     }
 
     public boolean isDependencyTrackingEnabled() {

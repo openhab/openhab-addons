@@ -108,7 +108,7 @@ public class PythonScriptEngineHelper {
             Version providedHelperLibVersion) {
         Version installedHelperLibVersion = null;
 
-        if (!configuration.isHelperEnabled()) {
+        if (!configuration.isHelperEnabled(PythonScriptEngineConfiguration.HELPER_MODULES_DISABLED)) {
             return installedHelperLibVersion;
         }
 

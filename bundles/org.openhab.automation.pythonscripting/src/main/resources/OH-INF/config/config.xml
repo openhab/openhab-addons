@@ -16,31 +16,17 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
-		<parameter name="scopeEnabled" type="boolean" required="true" groupName="environment">
-			<label>Use scope and import wrapper</label>
-			<description><![CDATA[
-			This enables a scope module and import wrapper.<br>
-			A scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code><br>
-			Additionally, you can run an import like <code>from org.openhab.core import openHAB</code>
-			]]></description>
-			<default>true</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="helperEnabled" type="boolean" required="true" groupName="environment">
-			<label>Install openHAB Python helper module (requires scope module)</label>
+		<parameter name="helperModules" type="integer" required="true" min="0" max="3" groupName="environment">
+			<label>Activate openHAB Python helper moduleInject scope and helper objects into rules (requires helper modules)</label>
 			<description><![CDATA[
 			Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer, etc.<br>
-			If disabled, the openHAB python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
+			and automatically injects `from openhab import rule, Reistry, logger` into you python code.
 			]]></description>
-			<default>true</default>
-		</parameter>
-		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="2" groupName="environment">
-			<label>Inject scope and helper objects into rules (requires helper modules)</label>
-			<description>This injects the scope and helper Registry and logger into rules.</description>
 			<options>
+				<option value="3">Auto injection enabled for all scripts</option>
 				<option value="2">Auto injection enabled only for UI and Transformation scripts (preferred)</option>
-				<option value="1">Auto injection enabled for all scripts</option>
-				<option value="0">Disable auto injection and use 'import' statements instead</option>
+				<option value="1">Auto injection disabled and use manual 'import' statements instead</option>
+				<option value="0">Disable helper module and use pure graalpy environment</option>
 			</options>
 			<default>2</default>
 		</parameter>

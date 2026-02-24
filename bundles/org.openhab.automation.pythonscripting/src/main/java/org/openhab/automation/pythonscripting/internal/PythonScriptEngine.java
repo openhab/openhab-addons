@@ -289,7 +289,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
             }
         }
 
-        if (pythonScriptEngineConfiguration.isScopeEnabled()) {
+        if (!pythonScriptEngineConfiguration.isHelperEnabled(PythonScriptEngineConfiguration.HELPER_MODULES_DISABLED)) {
             ScriptExtensionAccessor scriptExtensionAccessor = (ScriptExtensionAccessor) ctx
                     .getAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR);
             if (scriptExtensionAccessor == null) {
@@ -314,9 +314,11 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                                     .build());
 
                     // inject scope, Registry and logger
-                    if (!pythonScriptEngineConfiguration.isInjection(PythonScriptEngineConfiguration.INJECTION_DISABLED)
-                            && (ctx.getAttribute(CONTEXT_KEY_SCRIPT_FILENAME) == null || pythonScriptEngineConfiguration
-                                    .isInjection(PythonScriptEngineConfiguration.INJECTION_ENABLED_FOR_ALL_SCRIPTS))) {
+                    if (!pythonScriptEngineConfiguration
+                            .isHelperEnabled(PythonScriptEngineConfiguration.HELPER_MODULES_ENABLED_INJECTION_DISABLED)
+                            && (ctx.getAttribute(CONTEXT_KEY_SCRIPT_FILENAME) == null
+                                    || pythonScriptEngineConfiguration.isHelperEnabled(
+                                            PythonScriptEngineConfiguration.HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_ALL_SCRIPTS))) {
                         String injectionContent = "import scope\nfrom openhab import Registry, logger";
                         getPolyglotContext().eval(
                                 Source.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, injectionContent, "<generated>")
@@ -404,7 +406,8 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 value = lifecycleTracker;
             }
             if (key != null && value != null) {
-                if (pythonScriptEngineConfiguration.isScopeEnabled()) {
+                if (!pythonScriptEngineConfiguration
+                        .isHelperEnabled(PythonScriptEngineConfiguration.HELPER_MODULES_DISABLED)) {
                     scriptExtensionModuleProvider.put(key, value);
                 } else {
                     super.put(key, value);
@@ -448,31 +451,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     }
 
     @Override
-    public Object invokeFunction(String name, Object... objects) throws ScriptException, NoSuchMethodException {
-        if ("scriptUnloaded".equals(name)) {
-            /*
-             * is called from
-             * => org.openhab.core.automation.module.script.internal.ScriptEngineManagerImpl:removeEngine
-             *
-             * must be skipped, because ScriptTransformationService:disposeScriptEngine is calling engine.close several
-             * times before. Specially if the
-             * same script is used for more then 1 transformations. If the engine is already closed, the script
-             * "scriptUnloaded" will fail.
-             */
-            return null;
-        } else {
-            return super.invokeFunction(name, objects);
-        }
-    }
-
-    @Override
     public void close() {
-        /*
-         * is called from
-         * => org.openhab.core.automation.module.script.ScriptTransformationService:disposeScriptEngine
-         * => org.openhab.core.automation.module.script.internal.ScriptEngineManagerImpl:removeEngine
-         */
-
         lock.lock();
 
         if (!isClosed()) {

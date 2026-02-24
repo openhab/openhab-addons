@@ -71,30 +71,16 @@ If you use the marketplace version of this Add-on, it is necessary to use the co
 :::
 
 ```text
-# Use scope and import wrapper
-#
-# This enables a scope module and and import wrapper.
-# A scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code>
-# Additionally you can run an import like <code>from org.openhab.core import OpenHAB</code>
-#
-#org.openhab.automation.pythonscripting:scopeEnabled = true
-
-# Install openHAB Python helper module (requires scope module)
-#
-# Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer etc...
-# If disabled, the openHAB python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
-#
-#org.openhab.automation.pythonscripting:helperEnabled = true
-
 # Inject scope and helper objects into rules (requires helper modules)
 #
 # This injects the scope and helper Registry and logger into rules.
 #
+# 3 => Auto injection enabled for all scripts
 # 2 => Auto injection enabled only for UI and Transformation scripts (preferred)
-# 1 => Auto injection enabled for all scripts
-# 0 => Disable auto injection and use 'import' statements instead
+# 1 => Auto injection disabled and use manual 'import' statements instead
+# 0 => Disable helper module and use pure graalpy environment
 #
-#org.openhab.automation.pythonscripting:injectionEnabled = 2
+#org.openhab.automation.pythonscripting:helperModules = 2
 
 # Python pip modules
 #
