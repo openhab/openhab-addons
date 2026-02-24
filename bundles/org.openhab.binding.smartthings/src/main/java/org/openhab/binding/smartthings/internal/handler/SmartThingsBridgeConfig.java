@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SmartThingsBridgeConfig {
 
-    public String appName = "openhab";
+    public String appName = "";
     public String clientId = "";
     public String clientSecret = "";
 

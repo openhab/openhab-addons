@@ -115,6 +115,14 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.discoService.setSmartThingsTypeRegistry(typeRegistry);
     }
 
+    public boolean appCreated() {
+        if ("".equals(config.appName) || "".equals(config.clientId)) {
+            return false;
+        }
+
+        return true;
+    }
+
     @Override
     public void initialize() {
         // Validate the config
@@ -122,23 +130,20 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             return;
         }
 
-        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
-                SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
-                SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, SmartThingsBindingConstants.CLIENT_ID, null,
-                SmartThingsBindingConstants.SMARTTHINGS_SCOPES, true);
-
-        this.oAuthService = oAuthService;
-        oAuthService.addAccessTokenRefreshListener(SmartThingsBridgeHandler.this);
-        // this.networkConnector = new SmartThingsNetworkConnectorImpl(httpClientFactory, oAuthService);
-
-        // smartthingsApi = new SmartThingsApi(httpClientFactory, this, networkConnector, clientBuilder,
-        // eventSourceFactory);
+        registerOAuth(true);
         registerServlet();
 
+        OAuthClientService oAuthService = this.oAuthService;
+        if (oAuthService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "OAuth Service is not initialized correctly !");
+            return;
+
+        }
         updateStatus(ThingStatus.ONLINE);
 
         try {
-            org.openhab.core.auth.client.oauth2.AccessTokenResponse response = oAuthService.getAccessTokenResponse();
+            AccessTokenResponse response = oAuthService.getAccessTokenResponse();
             if (response != null && response.getAccessToken() != null) {
                 setupClient(null);
                 logger.info("token: {}", response.getAccessToken());
@@ -154,6 +159,30 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "OAuth failed: " + e.getMessage());
         }
+    }
+
+    public void registerOAuth(boolean useCli) {
+        OAuthClientService oAuthService;
+
+        // if no user app created, use the smarthings cli end point to create the app
+        if (useCli) {
+            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+                    SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
+                    SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, SmartThingsBindingConstants.CLIENT_ID, null,
+                    SmartThingsBindingConstants.SMARTTHINGS_SCOPES, true);
+
+        }
+        // if the user app created, use the clientId/clientSecret from the app
+        else {
+            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
+                    SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
+                    SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, config.clientSecret,
+                    SmartThingsBindingConstants.SMARTTHINGS_SCOPES_ST, true);
+
+        }
+
+        this.oAuthService = oAuthService;
+        oAuthService.addAccessTokenRefreshListener(SmartThingsBridgeHandler.this);
     }
 
     // ============================================================================
@@ -213,6 +242,18 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    protected void updateConfig(String appName, String oAuthClientId, String oAuthClientSecret) {
+        config.appName = appName;
+        config.clientId = oAuthClientId;
+        config.clientSecret = oAuthClientSecret;
+
+        Configuration config = getConfig();
+        config.put("appName", appName);
+        config.put("clientId", oAuthClientId);
+        config.put("clientSecret", oAuthClientSecret);
+        updateConfiguration(config);
+    }
+
     protected void setupApp(String callBackUri) {
         boolean appExist = smartthingsApi.isAppExist(config.appName);
         if (!appExist) {
@@ -221,22 +262,17 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             AppResponse appResponse = null;
             while (!success && retry < 3) {
                 String appName = config.appName;
-                if (retry > 0) {
+                if (retry > 0 || "".equals(appName)) {
                     appName = "openhab" + new Random().nextInt(65536);
                 }
 
                 try {
                     appResponse = smartthingsApi.createApp(appName, callBackUri);
 
-                    config.appName = appName;
-                    config.clientId = appResponse.oauthClientId;
-                    config.clientSecret = appResponse.oauthClientSecret;
+                    updateConfig(appName, appResponse.oauthClientId, appResponse.oauthClientSecret);
 
-                    Configuration config = getConfig();
-                    config.put("appName", appName);
-                    config.put("clientId", appResponse.oauthClientId);
-                    config.put("clientSecret", appResponse.oauthClientSecret);
-                    this.updateConfiguration(config);
+                    // We need to update oAuth as we create new application with clientId/clientSecret
+                    registerOAuth(false);
 
                     success = true;
                 } catch (SmartThingsException ex) {
@@ -250,9 +286,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unable to create app");
                 return;
             }
-
-            logger.info("");
-
         }
     }
 
@@ -330,8 +363,15 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public @Nullable AccessTokenResponse getAccessTokenByClientCredentials() {
         try {
             OAuthClientService oAuthService = this.oAuthService;
-            return oAuthService == null ? null
-                    : oAuthService.getAccessTokenByClientCredentials(SmartThingsBindingConstants.SMARTTHINGS_SCOPES);
+            if ("".equals(config.appName)) {
+                return oAuthService == null ? null
+                        : oAuthService
+                                .getAccessTokenByClientCredentials(SmartThingsBindingConstants.SMARTTHINGS_SCOPES);
+            } else {
+                return oAuthService == null ? null
+                        : oAuthService
+                                .getAccessTokenByClientCredentials(SmartThingsBindingConstants.SMARTTHINGS_SCOPES_ST);
+            }
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
             return null;
@@ -357,14 +397,21 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public String formatAuthorizationUrl(String redirectUri, String state) {
+    public String formatAuthorizationUrl(String redirectUri, String state, boolean useCli) {
         try {
             OAuthClientService oAuthService = this.oAuthService;
             if (oAuthService == null) {
                 throw new OAuthException("OAuth service is not initialized");
             }
 
-            return oAuthService.getAuthorizationUrl(redirectUri, null, state);
+            String authorizationUri = oAuthService.getAuthorizationUrl(redirectUri, null, state);
+
+            // Smarthings Cli need this additional parameters for authorization
+            if (useCli) {
+                authorizationUri = authorizationUri + "&client_type=USER_LEVEL";
+            }
+
+            return authorizationUri;
         } catch (final OAuthException e) {
             logger.debug("Error constructing AuthorizationUrl: ", e);
             return "";

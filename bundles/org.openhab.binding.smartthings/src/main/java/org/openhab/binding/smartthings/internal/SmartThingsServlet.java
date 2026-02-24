@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Dictionary;
@@ -79,15 +80,18 @@ public class SmartThingsServlet extends HttpServlet {
     private final SmartThingsAuthService smartthingsAuthService;
 
     private final String indexTemplate;
+    private final String step1Template;
     private final String confirmTemplate;
     private static final String HTML_ERROR = "<p class='block error'>Call to SmartThings failed with error: %s</p>";
 
     // Keys present in the index.html
     private static final String KEY_ERROR = "error";
     private static final String KEY_BRIDGE_URI = "bridge.uri";
-    private static final String KEY_REDIRECT_URI = "redirectUri";
+    private static final String KEY_CALLBACK_URI = "callBackUri";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_DEVICES_COUNT = "devicesCount";
+    private static final String KEY_AUTHORIZATION_URI = "authorizationUri";
+    private static final String KEY_AUTHORIZATION_URI_JS = "authorizationUriJs";
 
     private static final Pattern MESSAGE_KEY_PATTERN = Pattern.compile("\\$\\{([^\\}]+)\\}");
 
@@ -110,6 +114,7 @@ public class SmartThingsServlet extends HttpServlet {
 
         try {
             indexTemplate = readTemplate("index-oauth.html");
+            step1Template = readTemplate("step1.html");
             confirmTemplate = readTemplate("confirmation.html");
         } catch (IOException e) {
             throw new SmartThingsException("unable to initialize auth servlet", e);
@@ -134,29 +139,26 @@ public class SmartThingsServlet extends HttpServlet {
 
     private void startCallbackListener() {
         stopCallbackListener();
-        SmartThingsServlet smartthingsServlet = this;
         try {
             HttpServer server = HttpServer.create(new java.net.InetSocketAddress(61973), 0);
             callbackServer = server;
             server.createContext("/finish", exchange -> {
                 String query = exchange.getRequestURI().getQuery();
-                if (query != null && query.contains("code=")) {
-                    String code = query.split("code=")[1].split("&")[0];
-                    logger.debug("Captured auth code: {}", code);
+                try (InputStream is = exchange.getRequestBody()) {
+                    String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+                    logger.info("body:" + body);
+                }
 
-                    String response = "Authorization successful! You can now close this window.";
-                    exchange.sendResponseHeaders(200, response.length());
-                    java.io.OutputStream os = exchange.getResponseBody();
-                    os.write(response.getBytes());
-                    os.close();
+                URI uri = exchange.getRequestURI();
+                String path = uri.getRawPath();
 
-                    // Finish OAuth flow
-                    bridgeHandler.finishOAuth(smartthingsServlet.servletBaseURLSecure, code,
-                            bridgeHandler.getThing().getUID().getId());
-                    stopCallbackListener();
-                } else {
-                    exchange.sendResponseHeaders(400, 0);
-                    exchange.close();
+                String response = handleTemplate(path, query);
+                byte[] bytes = response.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
+                exchange.sendResponseHeaders(200, bytes.length);
+
+                try (java.io.OutputStream os = exchange.getResponseBody()) {
+                    os.write(bytes);
                 }
             });
             server.setExecutor(null);
@@ -201,22 +203,23 @@ public class SmartThingsServlet extends HttpServlet {
 
         logger.debug("SmartThings auth callback servlet received GET request {}.", req.getRequestURI());
 
-        String template = handleTemplate(req);
+        StringBuffer requestUrl = req.getRequestURL();
+        String requestUrlSt = requestUrl != null ? requestUrl.toString() : "";
+        String queryString = req.getQueryString();
+
+        String template = handleTemplate(requestUrlSt, queryString);
         resp.setContentType(CONTENT_TYPE);
         resp.getWriter().append(template);
         resp.getWriter().close();
     }
 
-    private String handleTemplate(@Nullable HttpServletRequest req) {
-        if (req == null) {
+    private String handleTemplate(String requestUrl, @Nullable String queryString) {
+        SmartThingsAccountHandler accountHandler = smartthingsAuthService.getSmartThingsAccountHandler();
+
+        if (accountHandler == null) {
+            logger.error("accountHandler==nul in SmartThingsServlet::handleTemplate");
             return "";
         }
-
-        StringBuffer requestUrl = req.getRequestURL();
-        String queryString = req.getQueryString();
-        servletBaseURL = requestUrl != null ? requestUrl.toString() : "";
-        servletBaseURLSecure = servletBaseURL.replace("http://", "https://").replace("8080", "8443");
-        SmartThingsAccountHandler accountHandler = smartthingsAuthService.getSmartThingsAccountHandler();
 
         Map<String, String> replaceMap = new HashMap<>();
 
@@ -241,33 +244,66 @@ public class SmartThingsServlet extends HttpServlet {
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     if (!reqCode.isBlank()) {
-                        template = confirmTemplate;
+                        if ("/finish".equals(requestUrl)) {
 
-                        smartthingsAuthService.authorize(servletBaseURLSecure, reqState, reqCode);
+                            if ("step1".equals(reqState)) {
+                                template = step1Template;
 
-                        SmartThingsApi api = bridgeHandler.getSmartThingsApi();
-                        SmartThingsDevice[] devices = api.getAllDevices();
-                        SmartThingsLocation[] locations = api.getAllLocations();
+                                logger.debug("Captured auth code: {}", reqCode);
 
-                        replaceMap.put(KEY_LOCATION, locations[0].name + " / " + locations[0].locationId);
-                        replaceMap.put(KEY_DEVICES_COUNT, "" + devices.length);
+                                // Finish OAuth flow
+                                bridgeHandler.finishOAuth(servletBaseURLSecure, reqCode,
+                                        bridgeHandler.getThing().getUID().getId());
+                                String authorizationUri = accountHandler.formatAuthorizationUrl(
+                                        SmartThingsBindingConstants.REDIRECT_URI, "step2", false);
+                                String authorizationUriJs = authorizationUri.replace("\\", "\\\\").replace("\"",
+                                        "\\\"");
+
+                                replaceMap.put(KEY_AUTHORIZATION_URI, authorizationUri);
+                                replaceMap.put(KEY_AUTHORIZATION_URI_JS, authorizationUriJs);
+
+                            } else if ("step2".equals(reqState)) {
+                                template = confirmTemplate;
+
+                                smartthingsAuthService.authorize(SmartThingsBindingConstants.REDIRECT_URI, reqState,
+                                        reqCode);
+
+                                SmartThingsApi api = bridgeHandler.getSmartThingsApi();
+                                SmartThingsDevice[] devices = api.getAllDevices();
+                                SmartThingsLocation[] locations = api.getAllLocations();
+
+                                replaceMap.put(KEY_LOCATION, locations[0].name + " / " + locations[0].locationId);
+                                replaceMap.put(KEY_DEVICES_COUNT, "" + devices.length);
+                            }
+                        }
+                    } else {
+                        // Erreur à gérer
                     }
                 } catch (SmartThingsException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
                 }
+            } else {
+                bridgeHandler.registerOAuth(true);
             }
         }
+        // index case, first time we go to servlet without any queryString
+        else {
+            // calculate the callback URL
+            servletBaseURL = requestUrl;
+            servletBaseURLSecure = servletBaseURL.replace("http://", "https://").replace("8080", "8443");
 
-        replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
-        if (accountHandler != null) {
-            String redirectUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
-                    "myState");
+            // Display it in page rendering for user confirmation
+            replaceMap.put(KEY_CALLBACK_URI, servletBaseURLSecure);
 
-            redirectUri = redirectUri + "&client_type=USER_LEVEL";
+            String authorizationUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
+                    "step1", true);
 
-            replaceMap.put(KEY_BRIDGE_URI, redirectUri);
+            // handle first redirection to Smartthings when user click button
+            replaceMap.put(KEY_BRIDGE_URI, authorizationUri);
+
         }
+
         return replaceKeysFromMap(template, replaceMap);
     }
 
@@ -296,9 +332,6 @@ public class SmartThingsServlet extends HttpServlet {
             String s = rdr.lines().collect(Collectors.joining());
 
             LifeCycle resultObj = gson.fromJson(s, LifeCycle.class);
-            if (resultObj == null) {
-                return;
-            }
 
             String eventType = resultObj.getEventType();
 
@@ -338,7 +371,6 @@ public class SmartThingsServlet extends HttpServlet {
 
                 logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
             } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_CONFIRMATION)) {
-                String appId = resultObj.confirmationData.appId();
                 String confirmUrl = resultObj.confirmationData.confirmationUrl();
 
                 String responseSt = "{";
