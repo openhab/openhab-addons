@@ -25,6 +25,11 @@
                 <description>The apps oauth client Secret</description>
                 <default></default>
             </parameter>
+            <parameter name="pollingTime" type="integer" required="false">
+                <label>Polling Time</label>
+                <description>The Pooling time for refreshing device (-1 : disable)</description>
+                <default>-1</default>
+            </parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

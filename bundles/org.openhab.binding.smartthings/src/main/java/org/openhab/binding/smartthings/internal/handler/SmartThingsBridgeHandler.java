@@ -91,6 +91,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory) {
         super(bridge);
 
+        config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
+
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
         this.bundleContext = bundleContext;
         this.httpService = httpService;
@@ -100,8 +102,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.typeRegistry = typeRegistry;
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
-
-        config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
     }
 
     @Override
@@ -126,6 +126,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     @Override
     public void initialize() {
         // Validate the config
+        config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
+
         if (!validateConfig(this.config)) {
             return;
         }
@@ -227,6 +229,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             if (callBackUri != null) {
                 setupApp(callBackUri);
             }
+
+            registerOAuth(false);
         }
     }
 
@@ -275,8 +279,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                     updateConfig(appName, appResponse.oauthClientId, appResponse.oauthClientSecret);
 
                     // We need to update oAuth as we create new application with clientId/clientSecret
-                    registerOAuth(false);
-
                     success = true;
                 } catch (SmartThingsException ex) {
                     logger.debug("failed to create app {}", appName);

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -54,6 +56,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     private String smartthingsName;
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
+    private LocalDateTime lastRefresh = LocalDateTime.now();
 
     public SmartThingsThingHandler(Thing thing) {
         super(thing);
@@ -96,21 +99,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                     SmartThingsApi api = cloudBridge.getSmartThingsApi();
                     Map<String, String> properties = this.getThing().getProperties();
                     String deviceId = properties.get("deviceId");
-                    /*
-                     * if (channelUID.getId().equals("oven_main#data")) {
-                     * jsonMsg = "";
-                     * jsonMsg += "{";
-                     * jsonMsg += "   \"commands\":";
-                     * jsonMsg += "     [";
-                     * jsonMsg += "        {";
-                     * jsonMsg += "          \"component\":\"main\",";
-                     * jsonMsg += "          \"capability`\":\"refresh\",";
-                     * jsonMsg += "          \"command\":\"refresh \"";
-                     * jsonMsg += "        }";
-                     * jsonMsg += "     ]";
-                     * jsonMsg += "}";
-                     * }
-                     */
+
                     if (deviceId != null) {
                         api.sendCommand(deviceId, jsonMsg);
                     }
@@ -256,7 +245,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         // testCommand();
         refreshDevice();
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 1, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -323,7 +312,19 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             }
         }
 
-        // refreshDevice();
+        SmartThingsCloudBridgeHandler cloudBridge = (SmartThingsCloudBridgeHandler) lcBridge.getHandler();
+        if (cloudBridge != null) {
+            int pollingTime = cloudBridge.getPollingTime();
+            if (pollingTime != -1) {
+                LocalDateTime now = LocalDateTime.now();
+
+                if (Duration.between(lastRefresh, now).getSeconds() > pollingTime) {
+                    refreshDevice();
+                    lastRefresh = now;
+                }
+            }
+
+        }
     }
 
     @Override

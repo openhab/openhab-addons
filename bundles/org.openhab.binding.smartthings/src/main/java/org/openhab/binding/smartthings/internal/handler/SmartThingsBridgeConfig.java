@@ -25,6 +25,7 @@ public class SmartThingsBridgeConfig {
     public String appName = "";
     public String clientId = "";
     public String clientSecret = "";
+    public int pollingTime = -1;
 
     @Override
     public String toString() {
@@ -32,6 +33,7 @@ public class SmartThingsBridgeConfig {
         sb.append("appName = ").append(appName);
         sb.append("clientId = ").append(clientId);
         sb.append("clientSecret = ").append(clientSecret);
+        sb.append("pollingTime = ").append(pollingTime);
         return sb.toString();
     }
 }
