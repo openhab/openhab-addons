@@ -349,7 +349,7 @@ public class SmartThingsServlet extends HttpServlet {
                 String attr = data.events[0].deviceEvent.attribute;
                 String value = data.events[0].deviceEvent.value;
 
-                logger.trace(
+                logger.error(
                         "Callback called with lifeCycle (Event): deviceId : {}, componentId: {}, capa: {}, attr: {}, value:{} ",
                         deviceId, componentId, capa, attr, value);
 

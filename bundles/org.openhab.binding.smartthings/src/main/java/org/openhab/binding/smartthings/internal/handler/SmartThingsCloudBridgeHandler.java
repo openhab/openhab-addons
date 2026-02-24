@@ -153,4 +153,8 @@ public class SmartThingsCloudBridgeHandler extends SmartThingsBridgeHandler {
     public String getAppName() {
         return config.appName;
     }
+
+    public int getPollingTime() {
+        return config.pollingTime;
+    }
 }
