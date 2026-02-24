@@ -19,13 +19,97 @@ Second version in early 2024 was never released.
 This version needs a webhook exposed to the internet to handle device events.  
 It also needs a complicated registration process, creating some SmartApps behind the scenes.
 
-The new actual version uses SSE subscriptions to handle device events.  
-It's more convenient to set up: no need for end users to set up an external webhook.  
-The registration process is also far easier:  
+The new actual version can use 3 different mechanism to handle device events.  
 
-- We use OAuth authentication in place of registration tokens.
-- All setup occurs directly inside openHAB.
-- The SmartApp tasks are totally hidden behind the scenes, not needing complex setup.
+- SSE subscriptions : currently not working as 24/02/2026, waiting for Samsung feedback to fix it
+    This is the most convenient mechanism as it is fast, modern way to be notified of event
+
+- Callback subscriptions : will be the prefered fallback method if SSE it not working.
+    This will need to have an external openhab exposed URL to internet.
+    The addons will register automatically something has https://openhab.yourdomain/smartthings/cb.
+
+- Event pooling : this is the last method if none other method are working.
+  The addons will pool the events every 10s for every device.
+  This will work, but would induce some delay in your device refreshing.
+
+## SmartThings Configuration / Authentification steps
+
+**The binding will not work until this part has been completed; do not skip this part of the setup.**
+
+We use OAuth authentication (device code flow) for all smartthings Authentification task.  
+All setup occurs directly inside openHAB.  
+You will see appName, clientId, clientSecret settings in the Smartthings Bridge configuration.  
+Leave this value empty, they will be filled automatically on first setup.
+
+
+Note! you will no longer need to have openHAB Cloud setup have in previous version.
+
+To do the registration, follow these steps:
+
+1. On first launch, you will need to setup a bridge (Smarthings Cloud Hub)
+   It will look something like this
+
+![Bridge Configuration](doc/Authorize00.png)
+
+Leave all values empty, they will be filled automatically.
+
+2. Browse to the URL: https://oh.yourdomain/smartthings
+   You should see a page like this one:
+
+![alt text](doc/Authorize01.png)
+
+3. Click on the Authorize Bridge button.  
+    You will be redirected to the following page on SmartThings.  
+    If you are already logged in, go directly to Step 5.  
+    If not, fill your email, and click on Next.  
+
+![alt text](doc/Authorize02.png)
+
+4. Fill your password, and click Connect.
+
+![alt text](doc/Authorize03.png)
+
+
+5. On this step, SmartThings should display a page like this one with an Authorize button.  
+    It will enable OpenHAB to authenticate to smartthings using smartthings-cli credentials.  
+    Click on it.  
+
+![alt text](doc/Authorize04.png)
+
+6. You will be next redirected on OpenHab side with a page like this one.  
+   Just wait a few seconds, the process should continue automatically on step 7.
+
+![alt text](doc/Authorize05.png)
+
+
+7. On this step, SmartThings should display a page like this one with a combo box to select your location.  
+    First select your location.  
+
+![alt text](doc/Authorize06.png)
+
+8. After this, SmartThings will display the authorization selection.  
+    Keep all checkboxes on, and click "Authorize".  
+
+
+![alt text](doc/Authorize07.png)
+
+9. On this last step, your browser should be redirected to OpenHAB.  
+    The page will display a confirmation with the selected location, and the number of devices found in the location.
+
+    You can now close the window, and go to the openHAB Inbox to trigger a device scan.
+
+![alt text](doc/Authorize08.png)
+
+
+10. You can go back to your Smartthings Cloud Hub / bridge.  
+    The bridge should now be online, and the appName, clientId & clientSecret filled with values.  
+    Note that a Smartthings Apps API_ONLY have been created during the process, and registered on your Smartthings accounts.
+
+    You can now close the window, and go to the openHAB Inbox to trigger a device scan.
+
+![alt text](doc/Authorize09.png)
+
+
 
 ## Supported Things
 
@@ -33,47 +117,6 @@ This binding supports most of the SmartThings devices that are defined in the [S
 
 If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
 
-## SmartThings Configuration
-
-**The binding will not work until this part has been completed; do not skip this part of the setup.**
-
-In this version, the binding needs to have a redirect URL using the openHAB Cloud service to do the first OAuth authorization. This URL will only be used during registration, and not during day-to-day use of the add-on.
-
-URL will be of this form: https://home.myopenhab.org/connectsmartthings
-
-Warning: using your personal URL, even if exposed on the internet, will not work because only the openHAB Cloud URL is registered to SmartThings.
-
-To do the registration, follow these steps:
-
-1. Browse to the URL: https://home.myopenhab.org/connectsmartthings
-   You should see a page like this one:
-
-![alt text](doc/Authorize01.png)
-
-2. Click on the Authorize Bridge button.
-    You will be redirected to the following page on SmartThings.
-    If you are already logged in, go directly to Step 4.
-   If not, fill your email, and click on Next.
-
-![alt text](doc/Authorize02.png)
-
-3. Fill your password, and click Connect.
-
-![alt text](doc/Authorize03.png)
-
-4. On this step, SmartThings should display a page with a combo box to select your location.
-    First select your location.
-    After this, SmartThings will display the authorization selection.
-    Keep all checkboxes on, and click "Authorize".
-
-![alt text](doc/Authorize04.png)
-
-5. On this last step, your browser should be redirected to openHAB.
-    The page will display a confirmation with the selected location, and the number of devices found in the location.
-
-    You can now close the window, and go to the openHAB Inbox to trigger a device scan.
-
-![alt text](doc/Authorize05.png)
 
 
 ## Discovery

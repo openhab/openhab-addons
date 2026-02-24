@@ -166,9 +166,12 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
         // if no user app created, use the smarthings cli end point to create the app
         if (useCli) {
+            if ("".equals(config.clientId)) {
+                config.clientId = SmartThingsBindingConstants.CLIENT_ID;
+            }
             oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                     SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
-                    SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, SmartThingsBindingConstants.CLIENT_ID, null,
+                    SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, null,
                     SmartThingsBindingConstants.SMARTTHINGS_SCOPES, true);
 
         }
