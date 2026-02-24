@@ -23,12 +23,17 @@ public class AppRequest {
     public String displayName;
     public String description;
     public String appType;
+    public String principalType;
 
     public OAuthConfigRequest oauth;
 
     public record webhookSmartApp(String targetUrl) {
     }
 
+    public record apiOnlyApp(String targetUrl) {
+    }
+
     public webhookSmartApp webhookSmartApp;
+    public apiOnlyApp apiOnly;
     public String[] classifications;
 }

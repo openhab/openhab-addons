@@ -10,10 +10,10 @@
 		<description>SmartThings Cloud Hub</description>
 
 		<config-description>
-			<parameter name="appName" type="text" required="true">
+			<parameter name="appName" type="text" required="false">
 				<label>AppName</label>
 				<description>The samsung apps name</description>
-				<default>openhab</default>
+				<default></default>
 			</parameter>
 			<parameter name="clientId" type="text" required="false">
                 <label>Client ID</label>

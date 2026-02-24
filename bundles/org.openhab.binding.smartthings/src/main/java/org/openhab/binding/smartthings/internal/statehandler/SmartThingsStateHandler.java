@@ -23,8 +23,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base converter class.
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class SmartThingsStateHandler {
-    private final Logger logger = LoggerFactory.getLogger(SmartThingsStateHandler.class);
     protected Map<String, State> stateCache = new Hashtable<String, State>();
 
     SmartThingsStateHandler() {
@@ -51,7 +48,6 @@ public abstract class SmartThingsStateHandler {
         } else if (state instanceof DecimalType dec) {
             return new PercentType(new BigDecimal(dec.doubleValue()));
         } else {
-            logger.info("");
             return new PercentType(0);
         }
     }

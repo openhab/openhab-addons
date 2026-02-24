@@ -217,12 +217,7 @@ public class SmartThingsApi {
 
     public SmartThingsApp[] getAllApps() throws SmartThingsException {
         try {
-            String uri = baseUrl + appEndPoint;
-
-            SmartThingsApp[] listApps = doRequest(SmartThingsApp[].class, uri);
-
-            logger.info("");
-            return listApps;
+            return doRequest(SmartThingsApp[].class, baseUrl + appEndPoint);
         } catch (final Exception e) {
             throw new SmartThingsException("SmartThingsApi : Unable to retrieve apps", e);
         }
@@ -240,23 +235,25 @@ public class SmartThingsApi {
         }
     }
 
-    public AppResponse createApp(String appName, String redirectUrl) throws SmartThingsException {
+    public AppResponse createApp(String appName, String callbackUri) throws SmartThingsException {
         try {
-            String uri = baseUrl + appEndPoint + "?signatureType=ST_PADLOCK&requireConfirmation=true";
-            String realRedirectUrl = redirectUrl + "/cb";
+            String uri = baseUrl + appEndPoint;
+            String fullCallbackUri = callbackUri + "/cb";
 
             AppRequest appRequest = new AppRequest();
             appRequest.appName = appName;
-            appRequest.displayName = appName;
+            appRequest.displayName = "OpenhHab";
             appRequest.description = "Desc " + appName;
-            appRequest.appType = "WEBHOOK_SMART_APP";
-            appRequest.webhookSmartApp = new AppRequest.webhookSmartApp(realRedirectUrl);
+            appRequest.appType = "API_ONLY";
+            appRequest.principalType = "LOCATION";
+            appRequest.apiOnly = new AppRequest.apiOnlyApp(fullCallbackUri);
             appRequest.classifications = new String[1];
-            appRequest.classifications[0] = "AUTOMATION";
+            appRequest.classifications[0] = "CONNECTED_SERVICE";
 
             OAuthConfigRequest oAuthConfig = new OAuthConfigRequest();
             oAuthConfig.clientName = "openHAB Integration";
             oAuthConfig.scope = SmartThingsBindingConstants.SMARTTHINGS_FULL_SCOPES;
+            oAuthConfig.redirectUris = new String[] { SmartThingsBindingConstants.REDIRECT_URI };
             appRequest.oauth = oAuthConfig;
 
             String body = gson.toJson(appRequest);
@@ -453,27 +450,24 @@ public class SmartThingsApi {
         try {
             final Event evt = gson.fromJson(data, Event.class);
 
-            if (evt != null) {
-                String deviceId = evt.deviceEvent.deviceId;
-                String componentId = evt.deviceEvent.componentId;
-                String capa = evt.deviceEvent.capability;
-                String attr = evt.deviceEvent.attribute;
-                String value = evt.deviceEvent.value;
+            String deviceId = evt.deviceEvent.deviceId;
+            String componentId = evt.deviceEvent.componentId;
+            String capa = evt.deviceEvent.capability;
+            String attr = evt.deviceEvent.attribute;
+            String value = evt.deviceEvent.value;
 
-                Bridge bridge = bridgeHandler.getThing();
-                List<Thing> things = bridge.getThings();
+            Bridge bridge = bridgeHandler.getThing();
+            List<Thing> things = bridge.getThings();
 
-                Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
-                        .findFirst();
-                if (theThingOpt.isPresent()) {
-                    Thing theThing = theThingOpt.get();
+            Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
+                    .findFirst();
+            if (theThingOpt.isPresent()) {
+                Thing theThing = theThingOpt.get();
 
-                    ThingHandler handler = theThing.getHandler();
-                    SmartThingsThingHandler smarthingsHandler = (SmartThingsThingHandler) handler;
-                    if (smarthingsHandler != null) {
-                        smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
-                                value);
-                    }
+                ThingHandler handler = theThing.getHandler();
+                SmartThingsThingHandler smarthingsHandler = (SmartThingsThingHandler) handler;
+                if (smarthingsHandler != null) {
+                    smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr, value);
                 }
             }
         } catch (Exception ex) {
