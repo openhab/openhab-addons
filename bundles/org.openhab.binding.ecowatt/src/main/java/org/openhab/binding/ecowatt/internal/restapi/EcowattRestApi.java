@@ -104,10 +104,12 @@ public class EcowattRestApi {
             if (response.getHeaders().contains(HttpHeader.RETRY_AFTER)) {
                 try {
                     retryAfter = Integer.parseInt(response.getHeaders().get(HttpHeader.RETRY_AFTER));
+                    throw new EcowattApiLimitException(retryAfter, "@text/exception.api-limit-reached-params",
+                            retryAfter);
                 } catch (NumberFormatException e) {
+                    throw new EcowattApiLimitException(retryAfter, "@text/exception.api-limit-reached");
                 }
             }
-            throw new EcowattApiLimitException(retryAfter, "@text/exception.api-limit-reached", retryAfter);
         } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR_500) {
             int retryAfter = 60;
             throw new EcowattApiLimitException(retryAfter, "@text/exception.server-error", retryAfter);
@@ -115,7 +117,6 @@ public class EcowattRestApi {
             throw new CommunicationException("@text/exception.api-request-failed-params", statusCode,
                     response.getContentAsString());
         }
-
         try {
             EcowattApiResponse deserializedResp = gson.fromJson(response.getContentAsString(),
                     EcowattApiResponse.class);
