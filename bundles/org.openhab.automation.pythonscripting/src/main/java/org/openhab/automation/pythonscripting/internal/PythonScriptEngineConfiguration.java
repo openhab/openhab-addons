@@ -62,14 +62,14 @@ public class PythonScriptEngineConfiguration {
     public static final Path PYTHON_WRAPPER_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
     public static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
 
-    public static final int HELPER_MODULES_DISABLED = 0;
-    public static final int HELPER_MODULES_ENABLED_INJECTION_DISABLED = 1;
-    public static final int HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS = 2;
-    public static final int HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
+    private static final int INJECTION_DISABLED = 1;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY = 2;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 3;
+    private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 4;
 
     // The variable names must match the configuration keys in config.xml
     public static class PythonScriptingConfiguration {
-        public int helperModules = HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_NON_FILE_BASED_SCRIPTS;
+        public int injectionEnabled = INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
@@ -151,7 +151,7 @@ public class PythonScriptEngineConfiguration {
      * @param initial
      */
     public void modified(Map<String, Object> config, PythonScriptEngineFactory factory) {
-        int oldHelperModules = configuration.helperModules;
+        int oldInjectionEnabled = configuration.injectionEnabled;
         boolean oldDependencyTrackingEnabled = isDependencyTrackingEnabled();
 
         String oldPipModules = configuration.pipModules;
@@ -160,12 +160,13 @@ public class PythonScriptEngineConfiguration {
             PythonScriptEngineHelper.initPipModules(this, factory);
         }
 
-        if (oldHelperModules != configuration.helperModules) {
+        if (oldInjectionEnabled != configuration.injectionEnabled) {
             logger.info(
-                    "Changed helper module setting for Python Scripting. Please resave your UI-based scripts to apply this change.");
+                    "Changed helper module setting for Python Scripting. Please resave your python scripts to apply this change.");
         }
         if (oldDependencyTrackingEnabled != isDependencyTrackingEnabled()) {
-            logger.info("{} dependency tracking for Python Scripting. Please resave your scripts to apply this change.",
+            logger.info(
+                    "{} dependency tracking for Python Scripting. Please resave your python scripts to apply this change.",
                     isDependencyTrackingEnabled() ? "Enabled" : "Disabled");
         }
     }
@@ -174,8 +175,20 @@ public class PythonScriptEngineConfiguration {
         installedHelperLibVersion = version;
     }
 
-    public boolean isHelperEnabled(int type) {
-        return configuration.helperModules == type;
+    public boolean isInjectionEnabledForAllScripts() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_ALL_SCRIPTS;
+    }
+
+    public boolean isInjectionEnabledForScriptModules() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
+    }
+
+    public boolean isInjectionEnabledForTransformations() {
+        return configuration.injectionEnabled == INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS;
+    }
+
+    public boolean isHelperEnabled() {
+        return configuration.injectionEnabled > 0;
     }
 
     public boolean isDependencyTrackingEnabled() {

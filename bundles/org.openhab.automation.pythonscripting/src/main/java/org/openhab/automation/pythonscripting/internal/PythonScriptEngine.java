@@ -59,6 +59,7 @@ import org.openhab.automation.pythonscripting.internal.provider.ScriptExtensionM
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
+import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -289,7 +290,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
             }
         }
 
-        if (!pythonScriptEngineConfiguration.isHelperEnabled(PythonScriptEngineConfiguration.HELPER_MODULES_DISABLED)) {
+        if (pythonScriptEngineConfiguration.isHelperEnabled()) {
             ScriptExtensionAccessor scriptExtensionAccessor = (ScriptExtensionAccessor) ctx
                     .getAttribute(CONTEXT_KEY_EXTENSION_ACCESSOR);
             if (scriptExtensionAccessor == null) {
@@ -305,6 +306,12 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 getBindings(ScriptContext.ENGINE_SCOPE).put(ScriptExtensionModuleProvider.IMPORT_PROXY_NAME,
                         wrapImportFn);
                 try {
+                    if (!isScriptFile() && !isScriptModule() && !isTransformation()) {
+                        logger.warn(
+                                "Unknown script environment detected for engine '{}': Neither script file, script module nor transformation.",
+                                engineIdentifier);
+                    }
+
                     String wrapperContent = new String(
                             Files.readAllBytes(PythonScriptEngineConfiguration.PYTHON_WRAPPER_FILE_PATH));
                     getPolyglotContext()
@@ -314,11 +321,11 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                                     .build());
 
                     // inject scope, Registry and logger
-                    if (!pythonScriptEngineConfiguration
-                            .isHelperEnabled(PythonScriptEngineConfiguration.HELPER_MODULES_ENABLED_INJECTION_DISABLED)
-                            && (ctx.getAttribute(CONTEXT_KEY_SCRIPT_FILENAME) == null
-                                    || pythonScriptEngineConfiguration.isHelperEnabled(
-                                            PythonScriptEngineConfiguration.HELPER_MODULES_ENABLED_INJECTION_ENABLED_FOR_ALL_SCRIPTS))) {
+                    if (pythonScriptEngineConfiguration.isInjectionEnabledForAllScripts()
+                            || (isScriptModule()
+                                    && pythonScriptEngineConfiguration.isInjectionEnabledForScriptModules())
+                            || (isTransformation()
+                                    && pythonScriptEngineConfiguration.isInjectionEnabledForTransformations())) {
                         String injectionContent = "import scope\nfrom openhab import Registry, logger";
                         getPolyglotContext().eval(
                                 Source.newBuilder(GraalPythonScriptEngine.LANGUAGE_ID, injectionContent, "<generated>")
@@ -406,8 +413,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 value = lifecycleTracker;
             }
             if (key != null && value != null) {
-                if (!pythonScriptEngineConfiguration
-                        .isHelperEnabled(PythonScriptEngineConfiguration.HELPER_MODULES_DISABLED)) {
+                if (pythonScriptEngineConfiguration.isHelperEnabled()) {
                     scriptExtensionModuleProvider.put(key, value);
                 } else {
                     super.put(key, value);
@@ -515,6 +521,64 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
                 + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
         return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
+    }
+
+    /**
+     * Tests if the script is a script file, i.e. it is loaded from a JavaScript file.
+     *
+     * @return true if the script is loaded from a JavaScript file, false otherwise
+     */
+    private boolean isScriptFile() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return ctx.getAttribute("javax.script.filename") != null;
+    }
+
+    /**
+     * Get the module type id (if any) of the module executing the script.
+     *
+     * @return the module type id (if any) of the module executing the script, or null if the script is not a module
+     */
+    private @Nullable String getModuleTypeId() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return null;
+        }
+
+        Object value = ctx.getAttribute(AbstractScriptModuleHandler.CONTEXT_KEY_MODULE_TYPE_ID);
+        if (value instanceof String str) {
+            return str;
+        }
+        return null;
+    }
+
+    /**
+     * Tests if the script is a script module, i.e. executed by an implementation of
+     * {@link AbstractScriptModuleHandler}.
+     *
+     * @return true if the script is a script module, false otherwise
+     */
+    private boolean isScriptModule() {
+        String moduleTypeId = getModuleTypeId();
+        return moduleTypeId != null && moduleTypeId.startsWith("script.");
+    }
+
+    /**
+     * Tests if the script is a transformation script, i.e. created from the script transformation service.
+     *
+     * @return true if it is a transformation script, false otherwise
+     */
+    private boolean isTransformation() {
+        ScriptContext ctx = getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return false;
+        }
+        return engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
     }
 
     private static Set<String> transformArrayToSet(Value value) {

@@ -71,16 +71,22 @@ If you use the marketplace version of this Add-on, it is necessary to use the co
 :::
 
 ```text
-# Inject scope and helper objects into rules (requires helper modules)
+# Activate openHAB Python helper module and inject scope and helper objects into rules
 #
-# This injects the scope and helper Registry and logger into rules.
+# Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer, etc.
+# and automatically injects `from openhab import rule, Registry, logger` into you Python code.
 #
-# 3 => Auto injection enabled for all scripts
-# 2 => Auto injection enabled only for UI and Transformation scripts (preferred)
-# 1 => Auto injection disabled and use manual 'import' statements instead
-# 0 => Disable helper module and use pure graalpy environment
+# If auto injection is disabled, the helper module can still be used by importing it manually.
 #
-#org.openhab.automation.pythonscripting:helperModules = 2
+# When completely disabled, you get a "pure" Graalpy context that has only been initialized with the default JSR223 presets.
+#
+# 4 => Auto injection everywhere, including script files and transformations
+# 3 => Auto injection for Script Actions, Script Conditions and transformations
+# 2 => Auto injection only for Script Actions &amp; Script Conditions (recommended)
+# 1 => Disable auto-injection and import manually instead
+# 0 => Disable completely
+#
+#org.openhab.automation.pythonscripting:injectionEnabled = 2
 
 # Python pip modules
 #
