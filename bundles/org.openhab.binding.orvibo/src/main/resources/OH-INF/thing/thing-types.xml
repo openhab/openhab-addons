@@ -13,6 +13,7 @@
 		</channels>
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
+				<context>mac-address</context>
 				<label>MAC Address</label>
 				<description>The MAC address identifies a specific S20 Socket.</description>
 			</parameter>
