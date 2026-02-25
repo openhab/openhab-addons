@@ -90,7 +90,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 category = null;
             }
 
-            if (ipAddress != null && uniqueId != null && category != null) {
+            if (uniqueId != null && category != null) {
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
                 builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), uniqueId)) //
                         .withProperty(CONFIG_HTTP_HOST_HEADER, getHostName(service)) //
