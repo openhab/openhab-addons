@@ -194,7 +194,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             addAuthHeaders(request);
 
             final BaseResponse<VehicleStatusData> response = sendRequest(request, new TypeToken<>() {
-            }, "get vehicle status");
+            }, "get vehicle status (force refresh)");
             data = response.result();
         } else {
             final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/status/latest";

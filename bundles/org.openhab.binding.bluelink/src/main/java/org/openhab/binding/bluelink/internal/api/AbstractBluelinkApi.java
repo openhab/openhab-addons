@@ -305,6 +305,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
             throws BluelinkApiException {
         try {
             final ContentResponse response = checkStatus(request.send(), op);
+            logger.debug("{} response: {}", op, response.getContentAsString());
             return gson.fromJson(response.getContentAsString(), responseType);
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
