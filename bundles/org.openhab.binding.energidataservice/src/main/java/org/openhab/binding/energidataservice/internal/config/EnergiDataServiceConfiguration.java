@@ -42,6 +42,11 @@ public class EnergiDataServiceConfiguration {
     public String gridCompanyGLN = "";
 
     /**
+     * Recalculate spot prices to hourly average based on quarter hourly
+     */
+    public boolean hourlySpotPrices = false;
+
+    /**
      * Global Location Number of Energinet.
      */
     public String energinetGLN = "5790000432752";
