@@ -305,7 +305,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
         boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
         if (ccuCcs2ProtocolSupport) {
-            throw new UnsupportedOperationException("not implemented");
+            throw new BluelinkApiException(
+                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
             return sendControlAction(vehicle, "door", "close");
         }
@@ -315,7 +316,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
         boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
         if (ccuCcs2ProtocolSupport) {
-            throw new UnsupportedOperationException("not implemented");
+            throw new BluelinkApiException(
+                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
             return sendControlAction(vehicle, "door", "open");
         }
@@ -331,7 +333,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
         boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
         if (ccuCcs2ProtocolSupport) {
-            throw new UnsupportedOperationException("not implemented");
+            throw new BluelinkApiException(
+                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
             final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/temperature";
             final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
@@ -345,7 +348,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
         boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
         if (ccuCcs2ProtocolSupport) {
-            throw new UnsupportedOperationException("not implemented");
+            throw new BluelinkApiException(
+                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
             return sendControlAction(vehicle, "temperature", "stop");
         }
@@ -355,7 +359,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
         boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
         if (ccuCcs2ProtocolSupport) {
-            throw new UnsupportedOperationException("not implemented");
+            throw new BluelinkApiException(
+                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
             return sendControlAction(vehicle, "charge", "start");
         }
@@ -365,7 +370,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
         boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
         if (ccuCcs2ProtocolSupport) {
-            throw new UnsupportedOperationException("not implemented");
+            throw new BluelinkApiException(
+                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
             return sendControlAction(vehicle, "charge", "stop");
         }
