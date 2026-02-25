@@ -191,21 +191,19 @@ public class BluelinkApiEUTest {
     }
 
     @Test
-    void testControlActionsThrow() throws Exception {
+    void testControlActionsThrowForCcuCcs2Protocol() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
                 MockApiData.TEST_REFRESH_TOKEN);
         assertTrue(api.login());
 
         final IVehicle vehicle = new Vehicle("test-vehicle-id", "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
-                "IONIQ 5", 0, false);
+                "IONIQ 5", 0, true);
 
         assertThrows(UnsupportedOperationException.class, () -> api.lockVehicle(vehicle));
         assertThrows(UnsupportedOperationException.class, () -> api.unlockVehicle(vehicle));
         assertThrows(UnsupportedOperationException.class, () -> api.startCharging(vehicle));
         assertThrows(UnsupportedOperationException.class, () -> api.stopCharging(vehicle));
         assertThrows(UnsupportedOperationException.class, () -> api.climateStop(vehicle));
-        assertThrows(UnsupportedOperationException.class, () -> api.setChargeLimitDC(vehicle, 80));
-        assertThrows(UnsupportedOperationException.class, () -> api.setChargeLimitAC(vehicle, 80));
     }
 }

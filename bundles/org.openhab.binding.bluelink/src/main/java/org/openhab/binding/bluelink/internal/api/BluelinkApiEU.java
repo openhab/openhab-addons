@@ -39,7 +39,10 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.bluelink.internal.dto.DrivingRange;
 import org.openhab.binding.bluelink.internal.dto.TokenResponse;
+import org.openhab.binding.bluelink.internal.dto.eu.AirTemperature;
 import org.openhab.binding.bluelink.internal.dto.eu.BaseResponse;
+import org.openhab.binding.bluelink.internal.dto.eu.ChargeLimitsRequest;
+import org.openhab.binding.bluelink.internal.dto.eu.ControlRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.RegistrationRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.RegistrationResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.Vehicle;
@@ -250,51 +253,183 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         return true;
     }
 
-    @Override
-    public boolean lockVehicle(final IVehicle vehicle) {
-        throw new UnsupportedOperationException("not implemented");
+    /**
+     * Send a control action request for legacy protocol vehicles.
+     * 
+     * @param url
+     * @param payload
+     * @return
+     * @throws BluelinkApiException
+     */
+    private boolean sendControlAction(final String url, final ControlRequest payload) throws BluelinkApiException {
+        ensureAuthenticated();
+
+        final String payloadJson = gson.toJson(payload);
+        logger.debug("send control action request: {}", payloadJson);
+        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
+                .content(new StringContentProvider(payloadJson), APPLICATION_JSON);
+        addStandardHeaders(request);
+        addAuthHeaders(request);
+
+        final BaseResponse<?> response = sendRequest(request, new TypeToken<>() {
+        }, "send control action");
+        if (!response.retCode().equals("S")) {
+            throw new BluelinkApiException("Failed to send control action: " + response);
+        }
+        return true;
+    }
+
+    /**
+     * Send a control action request for legacy protocol vehicles.
+     *
+     * @param vehicle
+     * @param actionType
+     * @param action
+     * @return
+     * @throws BluelinkApiException
+     */
+    private boolean sendControlAction(final IVehicle vehicle, final String actionType, final String action)
+            throws BluelinkApiException {
+        final String vehicleId = vehicle.id();
+        if (vehicleId == null) {
+            throw new BluelinkApiException("Vehicle ID is missing");
+        }
+
+        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/" + actionType;
+        final ControlRequest payload = new ControlRequest(this.deviceId, action, null, null, null, null);
+        return sendControlAction(url, payload);
     }
 
     @Override
-    public boolean unlockVehicle(final IVehicle vehicle) {
-        throw new UnsupportedOperationException("not implemented");
+    public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
+        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+        if (ccuCcs2ProtocolSupport) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            return sendControlAction(vehicle, "door", "close");
+        }
+    }
+
+    @Override
+    public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
+        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+        if (ccuCcs2ProtocolSupport) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            return sendControlAction(vehicle, "door", "open");
+        }
     }
 
     @Override
     public boolean climateStart(final IVehicle vehicle, final QuantityType<Temperature> temperature, final boolean heat,
-            final boolean defrost, final @Nullable Integer igniOnDuration) {
-        throw new UnsupportedOperationException("not implemented");
+            final boolean defrost, final @Nullable Integer igniOnDuration) throws BluelinkApiException {
+        final String vehicleId = vehicle.id();
+        if (vehicleId == null) {
+            throw new BluelinkApiException("Vehicle ID is missing");
+        }
+
+        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+        if (ccuCcs2ProtocolSupport) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/temperature";
+            final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
+            final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
+                    new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
+            return sendControlAction(url, payload);
+        }
     }
 
     @Override
-    public boolean climateStop(final IVehicle vehicle) {
-        throw new UnsupportedOperationException("not implemented");
+    public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
+        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+        if (ccuCcs2ProtocolSupport) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            return sendControlAction(vehicle, "temperature", "stop");
+        }
     }
 
     @Override
-    public boolean startCharging(final IVehicle vehicle) {
-        throw new UnsupportedOperationException("not implemented");
+    public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
+        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+        if (ccuCcs2ProtocolSupport) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            return sendControlAction(vehicle, "charge", "start");
+        }
     }
 
     @Override
-    public boolean stopCharging(final IVehicle vehicle) {
-        throw new UnsupportedOperationException("not implemented");
+    public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
+        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+        if (ccuCcs2ProtocolSupport) {
+            throw new UnsupportedOperationException("not implemented");
+        } else {
+            return sendControlAction(vehicle, "charge", "stop");
+        }
+    }
+
+    /**
+     * Send a charge limit request to the Bluelink EU API both for legacy and CCU/CCS2 protocol.
+     *
+     * @param vehicle
+     * @param plugType
+     * @param limit
+     * @return
+     * @throws BluelinkApiException
+     */
+    private boolean sendChargeLimitRequest(final IVehicle vehicle, int plugType, int limit)
+            throws BluelinkApiException {
+        ensureAuthenticated();
+
+        final String vehicleId = vehicle.id();
+        if (vehicleId == null) {
+            throw new BluelinkApiException("Vehicle ID is missing");
+        }
+        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+
+        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/charge/target";
+        final ChargeLimitsRequest payload = new ChargeLimitsRequest(
+                List.of(new ChargeLimitsRequest.ChargeLimit(plugType, limit)));
+        final String payloadJson = gson.toJson(payload);
+        logger.debug("send charge limit request: {}", payloadJson);
+        final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
+                .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
+                .content(new StringContentProvider(payloadJson), APPLICATION_JSON);
+        addStandardHeaders(request);
+        addAuthHeaders(request);
+        if (ccuCcs2ProtocolSupport) {
+            addCcuCcs2Headers(request);
+        }
+
+        final BaseResponse<?> response = sendRequest(request, new TypeToken<>() {
+        }, "send charge limit");
+        if (!response.retCode().equals("S")) {
+            throw new BluelinkApiException("Failed to set charge limit: " + response);
+        }
+        return true;
     }
 
     @Override
-    public boolean setChargeLimitDC(final IVehicle vehicle, final int limit) {
-        throw new UnsupportedOperationException("not implemented");
+    public boolean setChargeLimitDC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
+        return sendChargeLimitRequest(vehicle, 0, limit);
     }
 
     @Override
-    public boolean setChargeLimitAC(final IVehicle vehicle, final int limit) {
-        throw new UnsupportedOperationException("not implemented");
+    public boolean setChargeLimitAC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
+        return sendChargeLimitRequest(vehicle, 1, limit);
     }
 
     @Override
     public void addStandardHeaders(final Request request) {
         request.header("ccsp-service-id", brandConfig.ccspServiceId).header("ccsp-application-id", brandConfig.appId)
                 .header("Stamp", generateStamp()).header(HttpHeader.USER_AGENT, HTTP_USER_AGENT);
+    }
+
+    private void addCcuCcs2Headers(final Request request) {
+        request.header("Ccuccs2protocolsupport", "1");
     }
 
     private void addAuthHeaders(final Request request) {
@@ -337,7 +472,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean supportsControlActions() {
-        return false;
+        return true;
     }
 
     private static Vehicle toVehicle(final VehiclesResponse.VehicleInfo info) {
