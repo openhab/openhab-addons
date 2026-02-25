@@ -59,7 +59,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
     protected final @Nullable String pin;
 
     protected @Nullable String accessToken;
-    protected @Nullable Instant tokenExpiry;
+    protected @Nullable Instant accessTokenExpiry;
 
     protected AbstractBluelinkApi(final HttpClient httpClient, final TimeZoneProvider timeZoneProvider,
             final String username, final String password, final @Nullable String pin) {
@@ -195,7 +195,7 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
 
     protected boolean isAuthenticated() {
         final String token = accessToken;
-        final Instant expiry = tokenExpiry;
+        final Instant expiry = accessTokenExpiry;
         return token != null && expiry != null && Instant.now().isBefore(expiry);
     }
 
@@ -233,8 +233,8 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
                 throw new BluelinkApiException("Invalid token response");
             }
             accessToken = token.accessToken();
-            tokenExpiry = Instant.now().plusSeconds(Integer.parseInt(token.expiresIn()) - 60);
-            logger.debug("Login successful, token valid until {}", tokenExpiry);
+            accessTokenExpiry = Instant.now().plusSeconds(Integer.parseInt(token.expiresIn()) - 60);
+            logger.debug("Login successful, token valid until {}", accessTokenExpiry);
             return true;
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
