@@ -40,7 +40,7 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>33.5.0-jre</version>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>net.jpountz.lz4</groupId>
@@ -50,6 +50,11 @@
     <dependency>
       <groupId>org.eclipse.collections</groupId>
       <artifactId>eclipse-collections</artifactId>
+      <version>10.4.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections-api</artifactId>
       <version>10.4.0</version>
     </dependency>
     <dependency>
@@ -76,6 +81,9 @@
         <version>0.8.14</version>
         <configuration>
           <excludes>
+            <exclude>kotlin/**/*</exclude>
+            <exclude>net/jpountz/**/*</exclude>
+            <exclude>org/eclipse/collections/**/*</exclude>
             <exclude>org/mapdb/**/*</exclude>
           </excludes>
         </configuration>
