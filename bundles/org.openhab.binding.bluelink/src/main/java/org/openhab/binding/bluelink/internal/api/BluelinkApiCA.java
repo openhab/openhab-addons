@@ -299,11 +299,6 @@ public class BluelinkApiCA extends AbstractBluelinkApi<Vehicle> {
         }
     }
 
-    @Override
-    public boolean supportsControlActions() {
-        return true;
-    }
-
     private static Vehicle toVehicle(final VehicleInfo v) {
         int modelYear = 0;
         if (v.modelYear() != null) {

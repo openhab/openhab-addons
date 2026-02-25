@@ -81,11 +81,6 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         return api;
     }
 
-    public boolean supportsControlActions() {
-        final AbstractBluelinkApi<?> bluelinkApi = api;
-        return bluelinkApi != null && bluelinkApi.supportsControlActions();
-    }
-
     @Override
     public void initialize() {
         logger.debug("Initializing Bluelink account handler");

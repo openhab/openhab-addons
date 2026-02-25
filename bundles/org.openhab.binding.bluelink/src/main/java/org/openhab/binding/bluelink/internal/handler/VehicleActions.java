@@ -23,18 +23,38 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * Actions for the Bluelink binding, including control actions.
+ * Actions for the Bluelink binding.
  *
  * @author Marcus Better - Initial contribution
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = VehicleControlActions.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = VehicleActions.class)
 @ThingActionsScope(name = "bluelink")
 @NonNullByDefault
-public class VehicleControlActions extends BaseVehicleActions {
+public class VehicleActions implements ThingActions {
+    private @Nullable BluelinkVehicleHandler handler;
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        this.handler = (BluelinkVehicleHandler) handler;
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @RuleAction(label = "@text/action.force-refresh.label", description = "@text/action.force-refresh.desc")
+    public void forceRefresh() {
+        final BluelinkVehicleHandler hnd = handler;
+        if (hnd != null) {
+            hnd.refreshVehicleStatus(true);
+        }
+    }
 
     @RuleAction(label = "@text/action.lock.label")
     @ActionOutput(type = "boolean")
@@ -106,52 +126,60 @@ public class VehicleControlActions extends BaseVehicleActions {
         }
     }
 
+    public static void forceRefresh(final @Nullable ThingActions actions) {
+        if (actions instanceof VehicleActions va) {
+            va.forceRefresh();
+        } else {
+            throw new IllegalArgumentException("expected VehicleActions");
+        }
+    }
+
     public static void climateStart(final @Nullable ThingActions actions, final QuantityType<Temperature> temperature,
             final boolean heating, final boolean defrost, final @Nullable Integer igniOnDuration) {
-        if (actions instanceof VehicleControlActions va) {
+        if (actions instanceof VehicleActions va) {
             va.climateStart(temperature, heating, defrost, igniOnDuration);
         } else {
-            throw new IllegalArgumentException("expected VehicleControlActions");
+            throw new IllegalArgumentException("expected VehicleActions");
         }
     }
 
     public static void climateStop(final @Nullable ThingActions actions) {
-        if (actions instanceof VehicleControlActions va) {
+        if (actions instanceof VehicleActions va) {
             va.climateStop();
         } else {
-            throw new IllegalArgumentException("expected VehicleControlActions");
+            throw new IllegalArgumentException("expected VehicleActions");
         }
     }
 
     public static void lock(final @Nullable ThingActions actions) {
-        if (actions instanceof VehicleControlActions va) {
+        if (actions instanceof VehicleActions va) {
             va.lock();
         } else {
-            throw new IllegalArgumentException("expected VehicleControlActions");
+            throw new IllegalArgumentException("expected VehicleActions");
         }
     }
 
     public static void unlock(final @Nullable ThingActions actions) {
-        if (actions instanceof VehicleControlActions va) {
+        if (actions instanceof VehicleActions va) {
             va.unlock();
         } else {
-            throw new IllegalArgumentException("expected VehicleControlActions");
+            throw new IllegalArgumentException("expected VehicleActions");
         }
     }
 
     public static void startCharging(final @Nullable ThingActions actions) {
-        if (actions instanceof VehicleControlActions va) {
+        if (actions instanceof VehicleActions va) {
             va.startCharging();
         } else {
-            throw new IllegalArgumentException("expected VehicleControlActions");
+            throw new IllegalArgumentException("expected VehicleActions");
         }
     }
 
     public static void stopCharging(final @Nullable ThingActions actions) {
-        if (actions instanceof VehicleControlActions va) {
+        if (actions instanceof VehicleActions va) {
             va.stopCharging();
         } else {
-            throw new IllegalArgumentException("expected VehicleControlActions");
+            throw new IllegalArgumentException("expected VehicleActions");
         }
     }
 }

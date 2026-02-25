@@ -307,11 +307,6 @@ public class BluelinkApiUS extends AbstractBluelinkApi<Vehicle> {
     }
 
     @Override
-    public boolean supportsControlActions() {
-        return true;
-    }
-
-    @Override
     protected boolean isRetryable(final ContentResponse response) {
         if (response.getStatus() == 502) {
             final ErrorResponse err = gson.fromJson(response.getContentAsString(), ErrorResponse.class);

@@ -186,13 +186,6 @@ public abstract class AbstractBluelinkApi<V extends IVehicle> {
         return Map.of();
     }
 
-    /**
-     * Returns whether this API supports control actions (lock/unlock, climate, charging).
-     *
-     * @return true if control actions are supported
-     */
-    public abstract boolean supportsControlActions();
-
     protected boolean isAuthenticated() {
         final String token = accessToken;
         final Instant expiry = accessTokenExpiry;

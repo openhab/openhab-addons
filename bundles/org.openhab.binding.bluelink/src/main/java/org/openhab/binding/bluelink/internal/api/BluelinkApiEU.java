@@ -470,11 +470,6 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         return false;
     }
 
-    @Override
-    public boolean supportsControlActions() {
-        return true;
-    }
-
     private static Vehicle toVehicle(final VehiclesResponse.VehicleInfo info) {
         final IVehicle.EngineType engineType = switch (info.type() != null ? info.type() : "") {
             case "EV" -> IVehicle.EngineType.EV;
