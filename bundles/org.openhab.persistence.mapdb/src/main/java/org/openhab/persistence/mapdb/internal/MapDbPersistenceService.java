@@ -108,7 +108,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
         File dbFile = DB_DIR.resolve(DB_FILE_NAME).toFile();
         try {
-            db = DBMaker.fileDB(dbFile).closeOnJvmShutdown().make();
+            db = DBMaker.fileDB(dbFile).transactionEnable().closeOnJvmShutdown().make();
             map = db.treeMap("itemStore", org.mapdb.Serializer.STRING, org.mapdb.Serializer.STRING).createOrOpen();
         } catch (RuntimeException re) {
             Throwable cause = re.getCause();
@@ -140,7 +140,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
                     return;
                 }
 
-                db = DBMaker.fileDB(dbFile).closeOnJvmShutdown().make();
+                db = DBMaker.fileDB(dbFile).transactionEnable().closeOnJvmShutdown().make();
                 map = db.treeMap("itemStore", org.mapdb.Serializer.STRING, org.mapdb.Serializer.STRING).createOrOpen();
             } else {
                 logger.warn("Failed to create or open the MapDB: {}", re.getMessage());
