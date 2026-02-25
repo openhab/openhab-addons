@@ -524,9 +524,9 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     }
 
     /**
-     * Tests if the script is a script file, i.e. it is loaded from a JavaScript file.
+     * Tests if the script is a script file, i.e. it is loaded from a Python file.
      *
-     * @return true if the script is loaded from a JavaScript file, false otherwise
+     * @return true if the script is loaded from a Python file, false otherwise
      */
     private boolean isScriptFile() {
         ScriptContext ctx = getContext();

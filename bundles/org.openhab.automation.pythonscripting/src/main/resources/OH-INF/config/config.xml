@@ -16,7 +16,7 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
-		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="3" groupName="environment">
+		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="4" groupName="environment">
 			<label>Activate openHAB Python helper module and inject scope and helper objects into rules.</label>
 			<description><![CDATA[
 			Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer, etc. and automatically injects `from openhab import rule, Registry, logger` into you Python code.<br>
