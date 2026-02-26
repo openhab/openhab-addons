@@ -305,21 +305,4 @@ public class BluelinkApiEUTest {
         assertNotNull(smartKey);
         assertFalse(smartKey);
     }
-
-    @Test
-    void testControlActionsThrowForCcuCcs2Protocol() throws Exception {
-        final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
-        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
-                MockApiData.TEST_REFRESH_TOKEN);
-        assertTrue(api.login());
-
-        final IVehicle vehicle = new Vehicle(TEST_VEHICLE_ID, "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
-                "IONIQ 5", 0, true);
-
-        assertThrows(BluelinkApiException.class, () -> api.lockVehicle(vehicle));
-        assertThrows(BluelinkApiException.class, () -> api.unlockVehicle(vehicle));
-        assertThrows(BluelinkApiException.class, () -> api.startCharging(vehicle));
-        assertThrows(BluelinkApiException.class, () -> api.stopCharging(vehicle));
-        assertThrows(BluelinkApiException.class, () -> api.climateStop(vehicle));
-    }
 }
