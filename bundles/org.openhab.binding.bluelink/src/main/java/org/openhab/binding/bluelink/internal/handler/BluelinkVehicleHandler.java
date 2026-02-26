@@ -392,15 +392,15 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
         updateState(GROUP_WARNINGS, CHANNEL_BRAKE_FLUID_WARNING, OnOffType.from(data.brakeOilStatus()));
         final var tirePressureWarning = data.tirePressureWarning();
         if (tirePressureWarning != null) {
-            updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all() > 0));
+            updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_FR,
-                    OnOffType.from(tirePressureWarning.frontRight() > 0));
+                    OnOffType.from(tirePressureWarning.frontRight()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_FL,
-                    OnOffType.from(tirePressureWarning.frontLeft() > 0));
+                    OnOffType.from(tirePressureWarning.frontLeft()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RR,
-                    OnOffType.from(tirePressureWarning.rearRight() > 0));
+                    OnOffType.from(tirePressureWarning.rearRight()));
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RL,
-                    OnOffType.from(tirePressureWarning.rearLeft() > 0));
+                    OnOffType.from(tirePressureWarning.rearLeft()));
         }
     }
 
