@@ -228,10 +228,10 @@ public abstract class SmartThingsConverter {
                         if (val instanceof String st) {
                             result.append(st);
                             result.append(", ");
-                        } else {
-                            logger.error("@todo : handle this case: {} inputClass: {}", channelUid,
-                                    dataFromSmartThings.getClass());
-
+                        } else if (val instanceof Map<?, ?> map) {
+                            String resultSt = gson.toJson(map).toString();
+                            result.append(resultSt);
+                            result.append(", ");
                         }
                     }
 
