@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.bluelink.internal.api;
 
+import static org.openhab.core.library.unit.MetricPrefix.KILO;
+import static org.openhab.core.library.unit.SIUnits.METRE;
+
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -37,10 +40,14 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
 import org.openhab.binding.bluelink.internal.dto.DrivingRange;
 import org.openhab.binding.bluelink.internal.dto.TokenResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.AirTemperature;
 import org.openhab.binding.bluelink.internal.dto.eu.BaseResponse;
+import org.openhab.binding.bluelink.internal.dto.eu.Ccs2VehicleStatusResponse;
+import org.openhab.binding.bluelink.internal.dto.eu.CcuCcs2ControlTokenRequest;
+import org.openhab.binding.bluelink.internal.dto.eu.CcuCcs2ControlTokenResponse;
 import org.openhab.binding.bluelink.internal.dto.eu.ChargeLimitsRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.ControlRequest;
 import org.openhab.binding.bluelink.internal.dto.eu.RegistrationRequest;
@@ -175,7 +182,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     /**
      * Whether the vehicle supports the CCU/CCS2 protocol.
-     * 
+     *
      * @param vehicle the vehicle to check
      * @return true if the vehicle supports CCU/CCS2 protocol, false otherwise
      */
@@ -188,18 +195,15 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throws BluelinkApiException {
         ensureAuthenticated();
 
-        if (isCcsProtocol(vehicle)) {
-            throw new BluelinkApiException(
-                    "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
-        }
-
         final String vehicleId = vehicle.id();
         if (vehicleId == null) {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        final @Nullable VehicleStatusData data;
-        if (forceRefresh) {
+        boolean ccs2Protocol = isCcsProtocol(vehicle);
+
+        final @Nullable CommonVehicleStatus data;
+        if (forceRefresh && !ccs2Protocol) {
             final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/status";
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS);
@@ -210,55 +214,97 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             }, "get vehicle status (force refresh)");
             data = response.result();
         } else {
-            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/status/latest";
+            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId
+                    + (ccs2Protocol ? "/ccs2/carstatus/latest" : "/status/latest");
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS);
             addStandardHeaders(request);
             addAuthHeaders(request);
 
-            final BaseResponse<VehicleStatusResponse> response = sendRequest(request, new TypeToken<>() {
-            }, "get vehicle status");
-            final VehicleStatusResponse result = response.result();
-            if (result == null || result.vehicleStatusInfo() == null) {
-                return false;
-            }
-
-            final VehicleStatusInfo statusInfo = result.vehicleStatusInfo();
-            final var location = statusInfo.vehicleLocation();
-            if (location != null && location.coord() != null) {
-                final var coord = location.coord();
-                cb.acceptLocation(new PointType(new DecimalType(coord.lat()), new DecimalType(coord.lon()),
-                        new DecimalType(coord.alt())));
-            }
-
-            final DrivingRange odometer = statusInfo.odometer();
-            if (odometer != null) {
-                final var range = odometer.getRange();
-                if (range instanceof QuantityType<?> qt) {
-                    @SuppressWarnings("unchecked")
-                    final QuantityType<javax.measure.quantity.Length> length = (QuantityType<javax.measure.quantity.Length>) qt;
-                    cb.acceptOdometer(length);
+            if (ccs2Protocol) {
+                addCcuCcs2Headers(request);
+                final BaseResponse<Ccs2VehicleStatusResponse> response = sendRequest(request, new TypeToken<>() {
+                }, "get CCU/CCS2 vehicle status");
+                final var result = response.result();
+                if (result == null || result.state() == null || result.state().vehicle() == null) {
+                    return false;
                 }
-            }
+                final var state = result.state().vehicle();
 
-            data = statusInfo.vehicleStatus();
+                final var location = state.location();
+                if (location != null && location.coord() != null) {
+                    final var coord = location.coord();
+                    cb.acceptLocation(new PointType(new DecimalType(coord.lat()), new DecimalType(coord.lon()),
+                            new DecimalType(coord.alt())));
+                }
+
+                final var drivetrain = state.drivetrain();
+                if (drivetrain == null) {
+                    return false;
+                }
+                final var odometer = drivetrain.odometer();
+                cb.acceptOdometer(new QuantityType<>(odometer, KILO(METRE)));
+
+                cb.acceptSmartKeyBatteryWarning(state.electronics().smartKey().batteryWarning() > 0);
+
+                final var lastUpdateTime = result.lastUpdateTime();
+                if (lastUpdateTime != null) {
+                    try {
+                        final Instant instant = Instant.ofEpochMilli(Long.parseLong(lastUpdateTime));
+                        cb.acceptLastUpdateTimestamp(instant);
+                    } catch (final DateTimeParseException e) {
+                        logger.warn("unexpected time format: {}", lastUpdateTime);
+                    }
+                }
+
+                data = result.toCommonVehicleStatus(vehicle);
+            } else {
+                final BaseResponse<VehicleStatusResponse> response = sendRequest(request, new TypeToken<>() {
+                }, "get vehicle status");
+                final VehicleStatusResponse result = response.result();
+                if (result == null || result.vehicleStatusInfo() == null) {
+                    return false;
+                }
+
+                final VehicleStatusInfo statusInfo = result.vehicleStatusInfo();
+                final var location = statusInfo.vehicleLocation();
+                if (location != null && location.coord() != null) {
+                    final var coord = location.coord();
+                    cb.acceptLocation(new PointType(new DecimalType(coord.lat()), new DecimalType(coord.lon()),
+                            new DecimalType(coord.alt())));
+                }
+
+                final DrivingRange odometer = statusInfo.odometer();
+                if (odometer != null) {
+                    final var range = odometer.getRange();
+                    if (range instanceof QuantityType<?> qt) {
+                        @SuppressWarnings("unchecked")
+                        final QuantityType<javax.measure.quantity.Length> length = (QuantityType<javax.measure.quantity.Length>) qt;
+                        cb.acceptOdometer(length);
+                    }
+                }
+
+                data = statusInfo.vehicleStatus();
+            }
         }
+
         if (data == null) {
             return false;
         }
         cb.acceptStatus(data);
 
-        if (data.time() != null) {
-            try {
-                final ZoneId tz = timeZoneProvider.getTimeZone();
-                final LocalDateTime ldt = LocalDateTime.parse(data.time(), EU_DATETIME_FORMAT);
-                cb.acceptLastUpdateTimestamp(ldt.atZone(tz).toInstant());
-            } catch (final DateTimeParseException e) {
-                logger.warn("unexpected time format: {}", data.time());
+        if (data instanceof VehicleStatusData vsData) {
+            if (vsData.time() != null) {
+                try {
+                    final ZoneId tz = timeZoneProvider.getTimeZone();
+                    final LocalDateTime ldt = LocalDateTime.parse(vsData.time(), EU_DATETIME_FORMAT);
+                    cb.acceptLastUpdateTimestamp(ldt.atZone(tz).toInstant());
+                } catch (final DateTimeParseException e) {
+                    logger.warn("unexpected time format: {}", vsData.time());
+                }
             }
+            cb.acceptSmartKeyBatteryWarning(vsData.smartKeyBatteryWarning());
         }
-
-        cb.acceptSmartKeyBatteryWarning(data.smartKeyBatteryWarning());
 
         return true;
     }

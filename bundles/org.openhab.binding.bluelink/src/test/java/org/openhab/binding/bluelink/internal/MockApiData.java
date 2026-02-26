@@ -32,6 +32,7 @@ public final class MockApiData {
     public static final String VEHICLE_STATUS_RESPONSE_CA;
     public static final String VEHICLE_STATUS_RESPONSE_US;
     public static final String VEHICLE_STATUS_RESPONSE_EU;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
     public static final String TEST_REFRESH_TOKEN = "test-refresh-token";
@@ -47,6 +48,7 @@ public final class MockApiData {
             VEHICLE_STATUS_RESPONSE_US = loadResource("/vehicle-status-us.json");
             VEHICLE_STATUS_RESPONSE_CA = loadResource("/vehicle-status-ca.json");
             VEHICLE_STATUS_RESPONSE_EU = loadResource("/vehicle-status-eu.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2 = loadResource("/vehicle-status-eu-ccs2.json");
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
