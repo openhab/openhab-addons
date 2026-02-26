@@ -173,12 +173,22 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
                 .map(BluelinkApiEU::toVehicle).toList();
     }
 
+    /**
+     * Whether the vehicle supports the CCU/CCS2 protocol.
+     * 
+     * @param vehicle the vehicle to check
+     * @return true if the vehicle supports CCU/CCS2 protocol, false otherwise
+     */
+    private boolean isCcsProtocol(final IVehicle vehicle) {
+        return vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+    }
+
     @Override
     public boolean getVehicleStatus(final IVehicle vehicle, final boolean forceRefresh, final VehicleStatusCallback cb)
             throws BluelinkApiException {
         ensureAuthenticated();
 
-        if (vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport()) {
+        if (isCcsProtocol(vehicle)) {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         }
@@ -256,9 +266,9 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     /**
      * Send a control action request for legacy protocol vehicles.
      * 
-     * @param url
-     * @param payload
-     * @return
+     * @param url the URL to send the request to
+     * @param payload the payload to send
+     * @return true on success
      * @throws BluelinkApiException
      */
     private boolean sendControlAction(final String url, final ControlRequest payload) throws BluelinkApiException {
@@ -283,28 +293,27 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     /**
      * Send a control action request for legacy protocol vehicles.
      *
-     * @param vehicle
-     * @param actionType
-     * @param action
-     * @return
+     * @param vehicle the vehicle to send the request for
+     * @param endpoint the endpoint to send the request to
+     * @param action the action to send
+     * @return true on success
      * @throws BluelinkApiException
      */
-    private boolean sendControlAction(final IVehicle vehicle, final String actionType, final String action)
+    private boolean sendControlAction(final IVehicle vehicle, final String endpoint, final String action)
             throws BluelinkApiException {
         final String vehicleId = vehicle.id();
         if (vehicleId == null) {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/" + actionType;
+        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/" + endpoint;
         final ControlRequest payload = new ControlRequest(this.deviceId, action, null, null, null, null);
         return sendControlAction(url, payload);
     }
 
     @Override
     public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
-        if (ccuCcs2ProtocolSupport) {
+        if (isCcsProtocol(vehicle)) {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
@@ -314,8 +323,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
-        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
-        if (ccuCcs2ProtocolSupport) {
+        if (isCcsProtocol(vehicle)) {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
@@ -331,8 +339,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
-        if (ccuCcs2ProtocolSupport) {
+        if (isCcsProtocol(vehicle)) {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
@@ -346,8 +353,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
-        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
-        if (ccuCcs2ProtocolSupport) {
+        if (isCcsProtocol(vehicle)) {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
@@ -357,8 +363,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
-        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
-        if (ccuCcs2ProtocolSupport) {
+        if (isCcsProtocol(vehicle)) {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
@@ -368,8 +373,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
-        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
-        if (ccuCcs2ProtocolSupport) {
+        if (isCcsProtocol(vehicle)) {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
@@ -394,7 +398,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         if (vehicleId == null) {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
-        boolean ccuCcs2ProtocolSupport = vehicle instanceof Vehicle euVehicle && euVehicle.ccs2ProtocolSupport();
+        boolean ccuCcs2ProtocolSupport = isCcsProtocol(vehicle);
 
         final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/charge/target";
         final ChargeLimitsRequest payload = new ChargeLimitsRequest(

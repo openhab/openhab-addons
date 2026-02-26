@@ -40,25 +40,8 @@ public record AirTemperature(@Override String value, @Override int unit, int hva
     private static final double[] TEMP_RANGE_C = IntStream.range(28, 61).mapToDouble(x -> (double) x / 2).toArray();
 
     private static AirTemperature ofCelsius(final @NonNull IVehicle vehicle, final double value) {
-        // 1. Cast to long to handle the whole number part
         long intPart = Math.round(value);
-
-        // 2. Convert to Hex and Uppercase
-        String hex = Long.toHexString(intPart).toUpperCase();
-
-        // 3. Append 'H'
-        String formatted = hex + "H";
-
-        // 4. Manual zfill(3) equivalent
-        if (formatted.length() < 3) {
-            StringBuilder sb = new StringBuilder();
-            while (sb.length() + formatted.length() < 3) {
-                sb.append('0');
-            }
-            sb.append(formatted);
-            return new AirTemperature(sb.toString(), UNIT_CELSIUS, vehicle.isElectric() ? 1 : 0);
-        }
-
+        String formatted = "%03XH".formatted(intPart);
         return new AirTemperature(formatted, UNIT_CELSIUS, vehicle.isElectric() ? 1 : 0);
     }
 
