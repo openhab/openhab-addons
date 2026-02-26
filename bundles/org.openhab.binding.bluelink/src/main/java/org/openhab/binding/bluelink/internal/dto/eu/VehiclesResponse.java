@@ -22,6 +22,6 @@ import java.util.List;
 public record VehiclesResponse(List<VehicleInfo> vehicles) {
 
     public record VehicleInfo(String vin, String vehicleId, String vehicleName, String type, String nickname,
-            int ccuCCS2ProtocolSupport) {
+            String year, int ccuCCS2ProtocolSupport) {
     }
 }

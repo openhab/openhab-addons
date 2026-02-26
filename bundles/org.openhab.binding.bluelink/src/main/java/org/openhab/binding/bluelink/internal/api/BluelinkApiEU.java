@@ -487,7 +487,13 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             case "ICE" -> IVehicle.EngineType.ICE;
             default -> IVehicle.EngineType.UNKNOWN;
         };
-        return new Vehicle(info.vehicleId(), info.vin(), info.nickname(), engineType, info.vehicleName(), 0,
+        int modelYear = 0;
+        try {
+            modelYear = Integer.parseInt(info.year());
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+        return new Vehicle(info.vehicleId(), info.vin(), info.nickname(), engineType, info.vehicleName(), modelYear,
                 info.ccuCCS2ProtocolSupport() != 0);
     }
 

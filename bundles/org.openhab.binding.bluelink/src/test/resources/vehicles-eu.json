@@ -24,6 +24,29 @@
         },
         "protocolType": 0,
         "ccuCCS2ProtocolSupport": 0
+      },
+      {
+        "vin": "VIN5678",
+        "vehicleId": "60392c08-c747-40fe-9de9-7c36e7e24da5",
+        "vehicleName": "EV9",
+        "type": "EV",
+        "tmuNum": "-",
+        "nickname": "My Other Car",
+        "year": "2024",
+        "master": true,
+        "carShare": 0,
+        "regDate": "2025-05-13 07:21:43.126",
+        "personalFlag": "4",
+        "detailInfo": {
+          "inColor": "RBQ",
+          "outColor": "OBM",
+          "prodCarmdlCd": "DO",
+          "saleCarmdlCd": "DO",
+          "bodyType": "3",
+          "saleCarmdlEnNm": "EV9"
+        },
+        "protocolType": 1,
+        "ccuCCS2ProtocolSupport": 1
       }
     ]
   },

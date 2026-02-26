@@ -43,6 +43,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.Region;
+import org.openhab.binding.bluelink.internal.dto.eu.Vehicle;
 import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.config.core.Configuration;
@@ -172,15 +173,33 @@ class BluelinkAccountHandlerTest extends JavaTest {
         void testLoginAndGetVehicles() throws BluelinkApiException {
             final var vehicles = handler.getVehicles();
 
-            assertThat(vehicles, is(not(empty())));
-            final var vehicle = vehicles.getFirst();
-            assertNotNull(vehicle);
-            assertEquals("aa6c0ca6-48eb-430c-9eea-902bb6cd281c", vehicle.id());
-            assertEquals("VIN1234", vehicle.vin());
-            assertEquals("IONIQ 5", vehicle.model());
-            assertEquals(IVehicle.EngineType.EV, vehicle.engineType());
-            assertEquals("My Car", vehicle.getDisplayName());
-            assertTrue(vehicle.isElectric());
+            assertEquals(2, vehicles.size());
+            final var first = vehicles.getFirst();
+            assertNotNull(first);
+            assertInstanceOf(Vehicle.class, first);
+            assertEquals("aa6c0ca6-48eb-430c-9eea-902bb6cd281c", first.id());
+            assertEquals("VIN1234", first.vin());
+            assertEquals("IONIQ 5", first.model());
+            assertEquals(2022, first.modelYear());
+            assertEquals(IVehicle.EngineType.EV, first.engineType());
+            assertEquals("My Car", first.getDisplayName());
+            assertTrue(first.isElectric());
+            assertInstanceOf(Vehicle.class, first);
+            final var firstEu = (Vehicle) first;
+            assertFalse(firstEu.ccs2ProtocolSupport());
+
+            final var second = vehicles.getLast();
+            assertNotNull(second);
+            assertInstanceOf(Vehicle.class, second);
+            assertEquals("60392c08-c747-40fe-9de9-7c36e7e24da5", second.id());
+            assertEquals("VIN5678", second.vin());
+            assertEquals("EV9", second.model());
+            assertEquals(2024, second.modelYear());
+            assertEquals(IVehicle.EngineType.EV, second.engineType());
+            assertEquals("My Other Car", second.getDisplayName());
+            assertTrue(second.isElectric());
+            final var secondEu = (Vehicle) second;
+            assertTrue(secondEu.ccs2ProtocolSupport());
         }
     }
 }
