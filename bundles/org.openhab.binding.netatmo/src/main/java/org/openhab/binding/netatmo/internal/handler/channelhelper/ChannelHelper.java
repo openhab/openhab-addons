@@ -73,7 +73,7 @@ public abstract class ChannelHelper {
                     }
                 }
             }
-            if (localData instanceof NAObject) {
+            if (localData != null) {
                 result = internalGetObject(channelId, localData);
                 if (result != null) {
                     return result;
