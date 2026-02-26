@@ -10,14 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto.eu;
-
-import java.util.UUID;
+package org.openhab.binding.bluelink.internal.dto.eu.ccs2;
 
 /**
- * CCU/CCS2 control_token request.
+ * CCU/CCS2 control_token response.
  *
  * @author Florian Hotze - Initial contribution
  */
-public record CcuCcs2ControlTokenRequest(UUID deviceId, String pin) {
+public record Ccs2ControlTokenResponse(String controlToken, Integer expiresTime) {
 }
