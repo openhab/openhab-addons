@@ -79,6 +79,9 @@ import com.google.gson.reflect.TypeToken;
 public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private static final String HTTP_USER_AGENT = "okhttp/3.12.0";
     private static final DateTimeFormatter EU_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final String USER_API_URL = "/api/v1/user/";
+    private static final String SPA_API_URL_V1 = "/api/v1/spa/";
+    private static final String SPA_API_URL_V2 = "/api/v2/spa/";
 
     private final BrandConfig brandConfig;
     private final String refreshToken;
@@ -140,7 +143,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
      */
     private void registerDevice() throws BluelinkApiException {
         ensureAuthenticated();
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/notifications/register";
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "notifications/register";
         final RegistrationRequest payload = new RegistrationRequest(
                 // ThreadLocalRandom is good enough, we don't need cryptographically secure randomness
                 String.format("%064x", ThreadLocalRandom.current().nextLong()), brandConfig.pushType,
@@ -164,7 +167,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     @Override
     public List<Vehicle> getVehicles() throws BluelinkApiException {
         ensureAuthenticated();
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles";
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles";
         final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
                 TimeUnit.SECONDS);
         addStandardHeaders(request);
@@ -204,7 +207,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
         final @Nullable CommonVehicleStatus data;
         if (forceRefresh && !ccs2Protocol) {
-            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/status";
+            final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/status";
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS);
             addStandardHeaders(request);
@@ -214,7 +217,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             }, "get vehicle status (force refresh)");
             data = response.result();
         } else {
-            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId
+            final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
                     + (ccs2Protocol ? "/ccs2/carstatus/latest" : "/status/latest");
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(HTTP_TIMEOUT_SECONDS,
                     TimeUnit.SECONDS);
@@ -352,7 +355,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throw new BluelinkApiException("Vehicle ID is missing");
         }
 
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/" + endpoint;
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/control/" + endpoint;
         final ControlRequest payload = new ControlRequest(this.deviceId, action, null, null, null, null);
         return sendControlAction(url, payload);
     }
@@ -389,7 +392,8 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
             throw new BluelinkApiException(
                     "CCU/CCS2 protocol support hasn't been implemented yet. Report this on GitHub and provide debug logs.");
         } else {
-            final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/control/temperature";
+            final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId
+                    + "/control/temperature";
             final AirTemperature airTemperature = AirTemperature.of(vehicle, temperature);
             final ControlRequest payload = new ControlRequest(deviceId, "start", 0,
                     new ControlRequest.Options(defrost, heat ? 1 : 0), airTemperature.value(), "C");
@@ -446,7 +450,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         }
         boolean ccuCcs2ProtocolSupport = isCcsProtocol(vehicle);
 
-        final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/charge/target";
+        final String url = brandConfig.apiBaseUrl + SPA_API_URL_V1 + "vehicles/" + vehicleId + "/charge/target";
         final ChargeLimitsRequest payload = new ChargeLimitsRequest(
                 List.of(new ChargeLimitsRequest.ChargeLimit(plugType.ordinal(), limit)));
         final String payloadJson = gson.toJson(payload);
