@@ -1,7 +1,7 @@
 {
-  "retCode" : "S",
-  "resCode" : "0000",
-  "resMsg" : {
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": {
     "vehicleStatusInfo": {
       "vehicleLocation": {
         "coord": {
@@ -263,5 +263,5 @@
       }
     }
   },
-  "msgId" : "8ad9a977-a45e-447b-afc9-e4b9dc50786a"
+  "msgId": "8ad9a977-a45e-447b-afc9-e4b9dc50786a"
 }
