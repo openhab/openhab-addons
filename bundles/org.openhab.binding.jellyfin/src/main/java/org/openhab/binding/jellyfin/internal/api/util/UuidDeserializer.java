@@ -15,6 +15,8 @@ package org.openhab.binding.jellyfin.internal.api.util;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -28,14 +30,13 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
  *
  * @author Patrik Gfeller - Initial contribution
  */
+@NonNullByDefault
 public class UuidDeserializer extends JsonDeserializer<UUID> {
 
     @Override
+    @NonNullByDefault({})
     public UUID deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         String value = parser.getValueAsString();
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
 
         // If the UUID string is 32 characters long (without hyphens), format it properly
         if (value.length() == 32 && !value.contains("-")) {
