@@ -465,6 +465,7 @@
 /bundles/org.openhab.io.metrics/ @pravussum
 /bundles/org.openhab.io.neeo/ @morph166955
 /bundles/org.openhab.io.openhabcloud/ @kaikreuzer
+/bundles/org.openhab.io.yamlcomposer/ @jimtng
 /bundles/org.openhab.persistence.dynamodb/ @ssalonen
 /bundles/org.openhab.persistence.influxdb/ @lujop
 /bundles/org.openhab.persistence.inmemory/ @J-N-K
