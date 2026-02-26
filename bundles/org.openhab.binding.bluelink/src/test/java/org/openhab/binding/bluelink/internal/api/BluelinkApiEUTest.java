@@ -50,6 +50,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
  */
 @NonNullByDefault
 public class BluelinkApiEUTest {
+    private static final String TEST_VEHICLE_ID = "test-vehicle-id";
 
     private static final WireMockServer WIREMOCK_SERVER = new WireMockServer(
             WireMockConfiguration.options().dynamicPort());
@@ -68,6 +69,9 @@ public class BluelinkApiEUTest {
                 .withHeader("Content-Type", "application/json").withBody(DEVICE_REGISTRATION_RESPONSE_EU)));
         stubFor(get(urlPathEqualTo("/api/v1/spa/vehicles/test-vehicle-id/status/latest")).willReturn(aResponse()
                 .withStatus(200).withHeader("Content-Type", "application/json").withBody(VEHICLE_STATUS_RESPONSE_EU)));
+        stubFor(get(urlPathEqualTo("/api/v1/spa/vehicles/test-vehicle-id/ccs2/carstatus/latest"))
+                .willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json")
+                        .withBody(VEHICLE_STATUS_RESPONSE_EU_CCS2)));
 
         HTTP_CLIENT.start();
     }
@@ -89,8 +93,8 @@ public class BluelinkApiEUTest {
         assertFalse(api.getProperties().isEmpty());
         assertEquals("122c2e30-d642-4d34-ba07-7ce7d787349a", api.getProperties().get("deviceId"));
 
-        final IVehicle vehicle = new Vehicle("test-vehicle-id", "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
-                "IONIQ 5", 0, false);
+        final IVehicle vehicle = new Vehicle(TEST_VEHICLE_ID, "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
+                "IONIQ 5", 2022, false);
         final AtomicReference<@Nullable CommonVehicleStatus> aStatus = new AtomicReference<>();
         final AtomicReference<@Nullable Instant> aLastUpdate = new AtomicReference<>();
         final AtomicReference<@Nullable PointType> aLocation = new AtomicReference<>();
@@ -191,13 +195,125 @@ public class BluelinkApiEUTest {
     }
 
     @Test
+    void testLoginAndGetVehicleStatusForCcs2Protocol() throws BluelinkApiException {
+        final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
+        final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
+                MockApiData.TEST_REFRESH_TOKEN);
+        assertTrue(api.login());
+
+        // Verify device ID was obtained
+        assertFalse(api.getProperties().isEmpty());
+        assertEquals("122c2e30-d642-4d34-ba07-7ce7d787349a", api.getProperties().get("deviceId"));
+
+        final IVehicle vehicle = new Vehicle(TEST_VEHICLE_ID, "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
+                "EV9", 2024, true);
+        final AtomicReference<@Nullable CommonVehicleStatus> aStatus = new AtomicReference<>();
+        final AtomicReference<@Nullable Instant> aLastUpdate = new AtomicReference<>();
+        final AtomicReference<@Nullable PointType> aLocation = new AtomicReference<>();
+        final AtomicReference<@Nullable QuantityType<Length>> aOdometer = new AtomicReference<>();
+        final AtomicReference<@Nullable Boolean> aSmartKey = new AtomicReference<>();
+
+        final boolean res = api.getVehicleStatus(vehicle, false, new VehicleStatusCallback() {
+            @Override
+            public void acceptStatus(final CommonVehicleStatus data) {
+                aStatus.set(data);
+            }
+
+            @Override
+            public void acceptLastUpdateTimestamp(final Instant lastUpdated) {
+                aLastUpdate.set(lastUpdated);
+            }
+
+            @Override
+            public void acceptSmartKeyBatteryWarning(final boolean smartKeyBattery) {
+                aSmartKey.set(smartKeyBattery);
+            }
+
+            @Override
+            public void acceptLocation(final PointType location) {
+                aLocation.set(location);
+            }
+
+            @Override
+            public void acceptOdometer(final QuantityType<Length> odometer) {
+                aOdometer.set(odometer);
+            }
+        });
+
+        assertTrue(res);
+        final var status = aStatus.get();
+
+        assertNotNull(status);
+        assertFalse(status.doorLock());
+        assertFalse(status.engine());
+        assertFalse(status.trunkOpen());
+        assertTrue(status.hoodOpen());
+        assertEquals(88, status.battery().stateOfCharge());
+        assertFalse(status.airCtrlOn());
+        assertFalse(status.defrost());
+
+        final var evStatus = status.evStatus();
+        assertNotNull(evStatus);
+        assertEquals(53, evStatus.batteryStatus());
+        assertFalse(evStatus.batteryCharge());
+        assertEquals(0, evStatus.rawBatteryPlugin());
+        assertFalse(evStatus.batteryPlugin());
+
+        final var drvDistance = evStatus.drvDistance();
+        assertNotNull(drvDistance);
+        assertFalse(drvDistance.isEmpty());
+        final var rangeByFuel = drvDistance.getFirst().rangeByFuel();
+        assertNotNull(rangeByFuel);
+        assertNotNull(rangeByFuel.evModeRange());
+        assertEquals(new QuantityType<>(247, KILO(METRE)), rangeByFuel.evModeRange().getRange());
+        assertEquals(new QuantityType<>(247, KILO(METRE)), rangeByFuel.totalAvailableRange().getRange());
+
+        final var chargeInfos = evStatus.reservChargeInfos();
+        assertNotNull(chargeInfos);
+        final var targetSocList = chargeInfos.targetSocList();
+        assertNotNull(targetSocList);
+        assertEquals(2, targetSocList.size());
+        for (final var targetSoC : targetSocList) {
+            if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
+                assertEquals(95, targetSoC.targetSocLevel());
+            } else if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
+                assertEquals(90, targetSoC.targetSocLevel());
+            }
+        }
+
+        final var lastUpdate = aLastUpdate.get();
+        assertNotNull(lastUpdate);
+
+        final var doorOpen = status.doorOpen();
+        assertNotNull(doorOpen);
+        assertTrue(doorOpen.frontLeft());
+        assertFalse(doorOpen.frontRight());
+        assertFalse(doorOpen.backLeft());
+        assertFalse(doorOpen.backRight());
+
+        final var location = aLocation.get();
+        assertNotNull(location);
+        assertEquals(9.9, location.getLatitude().doubleValue(), 0.0001);
+        assertEquals(10.10, location.getLongitude().doubleValue(), 0.0001);
+        assertEquals(13.4, location.getAltitude().doubleValue(), 0.0001);
+
+        final var odometer = aOdometer.get();
+        assertNotNull(odometer);
+        assertEquals(new QuantityType<>(33628.9, KILO(METRE)), odometer);
+
+        final var smartKey = aSmartKey.get();
+        assertNotNull(smartKey);
+        assertFalse(smartKey);
+    }
+
+    @Test
     void testControlActionsThrowForCcuCcs2Protocol() throws Exception {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
                 MockApiData.TEST_REFRESH_TOKEN);
         assertTrue(api.login());
 
-        final IVehicle vehicle = new Vehicle("test-vehicle-id", "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
+        final IVehicle vehicle = new Vehicle(TEST_VEHICLE_ID, "KMHXX00XXXX000000", "My Car", IVehicle.EngineType.EV,
                 "IONIQ 5", 0, true);
 
         assertThrows(BluelinkApiException.class, () -> api.lockVehicle(vehicle));
