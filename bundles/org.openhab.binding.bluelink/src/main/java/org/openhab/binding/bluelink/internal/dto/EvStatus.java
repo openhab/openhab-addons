@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Marcus Better - Initial contribution
  */
-public record EvStatus(boolean batteryCharge, int batteryStatus, @SerializedName("batteryPlugin") int rawBatteryPlugin,
+public record EvStatus(boolean batteryCharge, double batteryStatus, @SerializedName("batteryPlugin") int rawBatteryPlugin,
         ReserveChargeInfo reservChargeInfos, List<DrivingDistance> drvDistance, ChargeRemainingTime remainTime2) {
 
     public boolean batteryPlugin() {
