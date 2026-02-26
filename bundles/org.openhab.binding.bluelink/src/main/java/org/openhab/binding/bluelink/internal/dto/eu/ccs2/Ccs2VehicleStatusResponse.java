@@ -25,6 +25,7 @@ import org.openhab.binding.bluelink.internal.dto.SeatHeaterState;
 import org.openhab.binding.bluelink.internal.dto.TemperatureValue;
 import org.openhab.binding.bluelink.internal.dto.TirePressureWarning;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
+import org.openhab.binding.bluelink.internal.model.PlugType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -171,10 +172,10 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
                 EvStatus.ReserveChargeInfo targetSoC = null;
                 if (ci.targetSoC() != null && ci.dte() != null) {
                     targetSoC = new EvStatus.ReserveChargeInfo(List.of(
-                            new EvStatus.ReserveChargeInfo.TargetSOC(EvStatus.ReserveChargeInfo.PlugType.AC.ordinal(),
-                                    ci.targetSoC().standard(), new DrivingRange(ci.dte().targetSoC().standard(), 1)),
-                            new EvStatus.ReserveChargeInfo.TargetSOC(EvStatus.ReserveChargeInfo.PlugType.DC.ordinal(),
-                                    ci.targetSoC().quick(), new DrivingRange(ci.dte().targetSoC().quick(), 1))));
+                            new EvStatus.ReserveChargeInfo.TargetSOC(PlugType.AC.ordinal(), ci.targetSoC().standard(),
+                                    new DrivingRange(ci.dte().targetSoC().standard(), 1)),
+                            new EvStatus.ReserveChargeInfo.TargetSOC(PlugType.DC.ordinal(), ci.targetSoC().quick(),
+                                    new DrivingRange(ci.dte().targetSoC().quick(), 1))));
                 }
 
                 List<EvStatus.DrivingDistance> drvDistance = null;
