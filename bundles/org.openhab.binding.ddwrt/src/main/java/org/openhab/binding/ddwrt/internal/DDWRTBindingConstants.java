@@ -87,6 +87,18 @@ public class DDWRTBindingConstants {
     // List of firewall rule channel ids
     public static final String CHANNEL_DESCRIPTION = "description";
 
+    // List of syslog event channel ids (modeled after logreader binding)
+    public static final String CHANNEL_LAST_WARNING_EVENT = "lastWarningEvent";
+    public static final String CHANNEL_LAST_ERROR_EVENT = "lastErrorEvent";
+    public static final String CHANNEL_WARNING_EVENTS = "warningEvents";
+    public static final String CHANNEL_ERROR_EVENTS = "errorEvents";
+    public static final String CHANNEL_LAST_DHCP_EVENT = "lastDhcpEvent";
+    public static final String CHANNEL_LAST_WIRELESS_EVENT = "lastWirelessEvent";
+    public static final String CHANNEL_NEW_WARNING_EVENT = "newWarningEvent";
+    public static final String CHANNEL_NEW_ERROR_EVENT = "newErrorEvent";
+    public static final String CHANNEL_NEW_DHCP_EVENT = "newDhcpEvent";
+    public static final String CHANNEL_NEW_WIRELESS_EVENT = "newWirelessEvent";
+
     // List of all configuration parameters
     public static final String HOSTNAME = "hostname";
     public static final String HOSTNAMES = "hostnames";

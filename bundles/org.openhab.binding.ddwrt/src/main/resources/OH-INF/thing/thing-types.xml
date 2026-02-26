@@ -23,17 +23,15 @@
 				<label>Hostnames</label>
 				<description>Optional comma separated list of hostnames or IP addresses of the devices for discovery</description>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535">
+			<parameter name="port" type="integer" min="0" max="65535">
 				<label>SSH Port</label>
-				<description>Default SSH port on devices</description>
-				<default>22</default>
+				<description>Default SSH port on devices. If omitted, uses SSH config or defaults to 22.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="user" type="text" required="true">
+			<parameter name="user" type="text" required="false">
 				<context>user</context>
 				<label>User</label>
-				<description>Default username to access the devices</description>
-				<default>root</default>
+				<description>Default username to access the devices. If omitted, uses SSH config or system username.</description>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<context>password</context>
@@ -41,10 +39,10 @@
 				<description>Optional default password to access the devices. To use keys instead of password place the keys in
 					$USER_DATA/ddwrt/keys</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="30">
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the devices are polled in seconds</description>
-				<default>60</default>
+				<default>3</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -72,6 +70,16 @@
 			<channel id="ifIn" typeId="ifIn"/>
 			<channel id="ifOut" typeId="ifOut"/>
 			<channel id="reboot" typeId="reboot"/>
+			<channel id="lastWarningEvent" typeId="lastWarningEvent"/>
+			<channel id="lastErrorEvent" typeId="lastErrorEvent"/>
+			<channel id="warningEvents" typeId="warningEvents"/>
+			<channel id="errorEvents" typeId="errorEvents"/>
+			<channel id="lastDhcpEvent" typeId="lastDhcpEvent"/>
+			<channel id="lastWirelessEvent" typeId="lastWirelessEvent"/>
+			<channel id="newWarningEvent" typeId="newWarningEvent"/>
+			<channel id="newErrorEvent" typeId="newErrorEvent"/>
+			<channel id="newDhcpEvent" typeId="newDhcpEvent"/>
+			<channel id="newWirelessEvent" typeId="newWirelessEvent"/>
 		</channels>
 
 		<properties>
@@ -97,28 +105,40 @@
 				<label>Hostname</label>
 				<description>Hostname or IP address of the device</description>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535" groupName="connection">
+			<parameter name="port" type="integer" min="0" max="65535" groupName="connection">
 				<label>SSH Port</label>
-				<description>SSH port</description>
-				<default>22</default>
+				<description>SSH port. If omitted, uses SSH config or defaults to 22.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="user" type="text" required="true" groupName="authentication">
+			<parameter name="user" type="text" required="false" groupName="authentication">
 				<context>user</context>
 				<label>User</label>
-				<description>Username to access the device</description>
-				<default>root</default>
+				<description>Username to access the device. If omitted, uses SSH config or system username.</description>
 			</parameter>
 			<parameter name="password" type="text" required="false" groupName="authentication">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password to access the device</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="30">
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the device is polled in seconds</description>
-				<default>60</default>
+				<default>3</default>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="syslogPriority" type="text">
+				<label>Syslog Priority</label>
+				<description>Minimum syslog priority level to capture (debug, info, notice, warning, error, critical)</description>
+				<default>warning</default>
+				<advanced>true</advanced>
+				<options>
+					<option value="debug">Debug</option>
+					<option value="info">Info</option>
+					<option value="notice">Notice</option>
+					<option value="warning">Warning</option>
+					<option value="error">Error</option>
+					<option value="critical">Critical</option>
+				</options>
 			</parameter>
 		</config-description>
 
@@ -224,9 +244,9 @@
 	</channel-type>
 
 	<channel-type id="uptime">
-		<item-type>String</item-type>
-		<label>Uptime</label>
-		<description>System up since, in yyyy-MM-dd HH:mm:ss format</description>
+		<item-type>DateTime</item-type>
+		<label>Uptime Since</label>
+		<description>System boot time (updates only on reboot)</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -411,6 +431,74 @@
 		<label>Description</label>
 		<description>Description of the firewall rule</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Syslog Events (modeled after logreader binding) -->
+
+	<channel-type id="lastWarningEvent">
+		<item-type>String</item-type>
+		<label>Last Warning Event</label>
+		<description>Last warning-level syslog line</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastErrorEvent">
+		<item-type>String</item-type>
+		<label>Last Error Event</label>
+		<description>Last error-level syslog line</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warningEvents">
+		<item-type>Number</item-type>
+		<label>Warning Events</label>
+		<description>Number of warning-level syslog events since startup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorEvents">
+		<item-type>Number</item-type>
+		<label>Error Events</label>
+		<description>Number of error-level syslog events since startup</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastDhcpEvent">
+		<item-type>String</item-type>
+		<label>Last DHCP Event</label>
+		<description>Last DHCP lease, renewal, or release event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastWirelessEvent">
+		<item-type>String</item-type>
+		<label>Last Wireless Event</label>
+		<description>Last wireless association or deassociation event</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="newWarningEvent">
+		<kind>trigger</kind>
+		<label>New Warning Event</label>
+		<description>Fires when a new warning-level syslog event is detected</description>
+	</channel-type>
+
+	<channel-type id="newErrorEvent">
+		<kind>trigger</kind>
+		<label>New Error Event</label>
+		<description>Fires when a new error-level syslog event is detected</description>
+	</channel-type>
+
+	<channel-type id="newDhcpEvent">
+		<kind>trigger</kind>
+		<label>New DHCP Event</label>
+		<description>Fires when a DHCP lease, renewal, or release is detected</description>
+	</channel-type>
+
+	<channel-type id="newWirelessEvent">
+		<kind>trigger</kind>
+		<label>New Wireless Event</label>
+		<description>Fires when a wireless association or deassociation is detected</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -42,4 +42,11 @@ public interface DDWRTThingUpdater {
     default void reportOnline() {
         // no-op
     }
+
+    /**
+     * Fire a trigger channel event (for syslog events like DHCP, wireless, warning, error).
+     */
+    default void fireTrigger(String channelId, String event) {
+        // no-op
+    }
 }

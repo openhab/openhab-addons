@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SshAuthSession implements AutoCloseable {
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(SshAuthSession.class));
+    private final Logger logger;
     private final ClientSession session;
     private final Duration defaultTimeout;
     private final @Nullable String welcomeBanner;
@@ -49,6 +49,8 @@ public class SshAuthSession implements AutoCloseable {
         this.session = session;
         this.defaultTimeout = defaultTimeout;
         this.welcomeBanner = welcomeBanner;
+        this.logger = Objects.requireNonNull(
+                LoggerFactory.getLogger(SshAuthSession.class.getName() + "." + session.getRemoteAddress()));
     }
 
     /** Exposes the underlying SSHD session for creating additional channels (e.g. log follow). */
