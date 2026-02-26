@@ -943,8 +943,8 @@ public class BridgeHandler extends BaseBridgeHandler {
      * @throws ExecutionException
      * @throws TimeoutException
      */
-    public <T extends BoschSHCServiceState> @Nullable Response putState(String deviceId, String serviceName, T state)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public <T extends BoschSHCServiceState> @Nullable ContentResponse putState(String deviceId, String serviceName,
+            T state) throws InterruptedException, TimeoutException, ExecutionException {
         return sendState(deviceId, serviceName, state, PUT);
     }
 
@@ -963,13 +963,13 @@ public class BridgeHandler extends BaseBridgeHandler {
      * @throws TimeoutException
      * @throws ExecutionException
      */
-    public <T extends BoschSHCServiceState> @Nullable Response postState(String deviceId, String serviceName, T state)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public <T extends BoschSHCServiceState> @Nullable ContentResponse postState(String deviceId, String serviceName,
+            T state) throws InterruptedException, TimeoutException, ExecutionException {
         return sendState(deviceId, serviceName, state, POST);
     }
 
-    private <T extends BoschSHCServiceState> @Nullable Response sendState(String deviceId, String serviceName, T state,
-            HttpMethod method) throws InterruptedException, TimeoutException, ExecutionException {
+    private <T extends BoschSHCServiceState> @Nullable ContentResponse sendState(String deviceId, String serviceName,
+            T state, HttpMethod method) throws InterruptedException, TimeoutException, ExecutionException {
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;
         if (localHttpClient == null) {

@@ -90,8 +90,10 @@ rules.when()
         // Short delay because persistence is asynchronous.
         setTimeout(() => {
             var timeSeries = new items.TimeSeries('REPLACE');
-            var start = time.LocalDate.now().atStartOfDay().atZone(time.ZoneId.systemDefault());
+            var nordPoolTimeZone = time.ZoneId.of('CET');
+            var start = time.LocalDate.now(nordPoolTimeZone).atStartOfDay().atZone(nordPoolTimeZone);
             var spotPrices = items.SpotPrice.persistence.getAllStatesBetween(start, start.plusDays(2));
+
             for (var spotPrice of spotPrices) {
                 var totalPrice = spotPrice.quantityState
                     .add(items.GridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)

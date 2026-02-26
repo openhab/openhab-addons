@@ -16,6 +16,7 @@ import static org.openhab.binding.astro.internal.util.MathUtils.mod;
 
 import java.time.Instant;
 import java.time.InstantSource;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
@@ -233,6 +234,13 @@ public class DateTimeUtils {
     }
 
     /**
+     * Returns true, if two Instant objects are on the same day for a given zone, ignoring time.
+     */
+    public static boolean isSameDay(Instant i1, @Nullable Instant i2, ZoneId zone) {
+        return i2 != null && i1.atZone(zone).toLocalDate().equals(i2.atZone(zone).toLocalDate());
+    }
+
+    /**
      * Evaluates whether the second date time is within the same date as the first date time in the time zone of
      * the latter.
      *
@@ -315,9 +323,8 @@ public class DateTimeUtils {
 
             nextYearSeason.add(Calendar.YEAR, 1);
             return nextYearSeason;
-        } else {
-            return next;
         }
+        return next;
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {
@@ -474,12 +481,11 @@ public class DateTimeUtils {
                 try {
                     if (!HHMM_PATTERN.matcher(time).matches()) {
                         throw new NumberFormatException();
-                    } else {
-                        String[] elements = time.split(":");
-                        int hour = Integer.parseInt(elements[0]);
-                        int minutes = Integer.parseInt(elements[1]);
-                        return (hour * 60) + minutes;
                     }
+                    String[] elements = time.split(":");
+                    int hour = Integer.parseInt(elements[0]);
+                    int minutes = Integer.parseInt(elements[1]);
+                    return (hour * 60) + minutes;
                 } catch (NumberFormatException ex) {
                     LOGGER.warn(
                             "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
@@ -531,5 +537,12 @@ public class DateTimeUtils {
         Calendar cal = (Calendar) calendar.clone();
         cal.add(Calendar.DAY_OF_MONTH, days);
         return cal;
+    }
+
+    public static double instantToJulianDay(Instant instant) {
+        double seconds = instant.getEpochSecond();
+        double nanos = instant.getNano() / 1_000_000_000.0;
+
+        return JD_UNIX_EPOCH + (seconds + nanos) / SECONDS_PER_DAY;
     }
 }

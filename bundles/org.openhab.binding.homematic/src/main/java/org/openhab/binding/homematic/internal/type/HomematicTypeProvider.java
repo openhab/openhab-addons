@@ -16,18 +16,26 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.ConfigDescription;
 import org.openhab.core.config.core.ConfigDescriptionProvider;
 import org.openhab.core.storage.StorageService;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.binding.ThingTypeProvider;
+import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeProvider;
+import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.ThingType;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,6 +50,9 @@ import org.osgi.service.component.annotations.Reference;
         ChannelGroupTypeProvider.class, ConfigDescriptionProvider.class })
 public class HomematicTypeProvider extends AbstractStorageBasedTypeProvider implements ConfigDescriptionProvider {
     private Map<URI, ConfigDescription> configDescriptionsByURI = new HashMap<>();
+    private Set<ThingTypeUID> thingTypesCreatedSinceStartup = new HashSet<>();
+    private Set<ChannelTypeUID> channelTypesCreatedSinceStartup = new HashSet<>();
+    private Set<ChannelGroupTypeUID> channelGroupTypesCreatedSinceStartup = new HashSet<>();
 
     @Activate
     public HomematicTypeProvider(@Reference StorageService storageService) {
@@ -49,17 +60,74 @@ public class HomematicTypeProvider extends AbstractStorageBasedTypeProvider impl
     }
 
     @Override
+    public void putThingType(ThingType thingType) {
+        synchronized (thingTypesCreatedSinceStartup) {
+            super.putThingType(thingType);
+            thingTypesCreatedSinceStartup.add(thingType.getUID());
+        }
+    }
+
+    @Override
+    public void putChannelType(ChannelType channelType) {
+        synchronized (channelTypesCreatedSinceStartup) {
+            super.putChannelType(channelType);
+            channelTypesCreatedSinceStartup.add(channelType.getUID());
+        }
+    }
+
+    @Override
+    public void putChannelGroupType(ChannelGroupType channelGroupType) {
+        synchronized (channelGroupTypesCreatedSinceStartup) {
+            super.putChannelGroupType(channelGroupType);
+            channelGroupTypesCreatedSinceStartup.add(channelGroupType.getUID());
+        }
+    }
+
+    @Override
     public Collection<ConfigDescription> getConfigDescriptions(@Nullable Locale locale) {
-        return new ArrayList<>(configDescriptionsByURI.values());
+        synchronized (configDescriptionsByURI) {
+            return new ArrayList<>(configDescriptionsByURI.values());
+        }
     }
 
     @Override
     @Nullable
     public ConfigDescription getConfigDescription(URI uri, @Nullable Locale locale) {
-        return configDescriptionsByURI.get(uri);
+        synchronized (configDescriptionsByURI) {
+            return configDescriptionsByURI.get(uri);
+        }
+    }
+
+    public @Nullable ThingType getThingTypeCreatedSinceStartup(ThingTypeUID thingTypeUID) {
+        synchronized (thingTypesCreatedSinceStartup) {
+            if (!thingTypesCreatedSinceStartup.contains(thingTypeUID)) {
+                return null;
+            }
+            return getThingType(thingTypeUID, null);
+        }
+    }
+
+    public @Nullable ChannelType getChannelTypeCreatedSinceStartup(ChannelTypeUID channelTypeUID) {
+        synchronized (channelTypesCreatedSinceStartup) {
+            if (!channelTypesCreatedSinceStartup.contains(channelTypeUID)) {
+                return null;
+            }
+            return getChannelType(channelTypeUID, null);
+        }
+    }
+
+    public @Nullable ChannelGroupType getChannelGroupTypeCreatedSinceStartup(ChannelGroupTypeUID channelGroupTypeUID) {
+        synchronized (channelGroupTypesCreatedSinceStartup) {
+            if (!channelGroupTypesCreatedSinceStartup.contains(channelGroupTypeUID)) {
+                return null;
+            }
+            return getChannelGroupType(channelGroupTypeUID, null);
+        }
     }
 
     public void putConfigDescription(ConfigDescription configDescription) {
-        configDescriptionsByURI.put(configDescription.getUID(), configDescription);
+        synchronized (configDescriptionsByURI) {
+            configDescriptionsByURI.put(configDescription.getUID(), configDescription);
+        }
     }
 }

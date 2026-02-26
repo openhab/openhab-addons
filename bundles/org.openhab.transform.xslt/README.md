@@ -1,11 +1,11 @@
 # XSLT Transformation Service
 
-Transform input using the XML Stylesheet Language for Transformations (XSLT).
+Transforms input using the XML Stylesheet Language for Transformations (XSLT).
 
 XSLT is a standard method to transform an XML structure from one document into a new document with a different structure.
 
-The transformation expects the rule to be read from a file which is stored under the `transform` folder.
-To organize the various transformations one should use subfolders.
+The transformation expects the rule to be read from a file stored under the `transform` folder.
+To organize the various transformations, use subfolders.
 
 General transformation rule summary:
 
@@ -13,16 +13,16 @@ General transformation rule summary:
 - The directive `xsl:template` specifies matching attributes for the XML node to find.
 - The `xsl:template` tag contains the rule which specifies what should be done.
 
-The Rule uses XPath to gather the XML node information.
-For more information have a look at the [XPath transformation](https://docs.openhab.org/addons/transformations/xpath/readme.html) .
+The rule uses XPath to gather the XML node information.
+For more information, see the [XPath transformation](https://www.openhab.org/addons/transformations/xpath/).
 
 ## Examples
 
 ### Basic Example
 
-A simple but complete XSLT transformation looks like in the following example, which was taken from [this Wikipedia article](https://en.wikipedia.org/wiki/Java_API_for_XML_Processing#Example).
+A simple but complete XSLT transformation looks like the following example, which was taken from [this Wikipedia article](https://en.wikipedia.org/wiki/Java_API_for_XML_Processing#Example).
 
-#### input XML
+#### Input XML
 
 ```xml
 <?xml version='1.0' encoding='UTF-8'?>
@@ -31,9 +31,9 @@ A simple but complete XSLT transformation looks like in the following example, w
 
 #### transform/helloworld.xsl
 
-- `xsl:output`: transform incoming document into another XML-like document, without indentation.
-- `xsl:template`: `match="/"` "any type of node", so the whole document.
-- The `xsl` rule does `select` the node `/root/node` and extracts the `value-of` attribute `val`.
+- `xsl:output`: Transforms the incoming document into another XML-like document, without indentation.
+- `xsl:template`: `match="/"` matches any type of node, so the whole document.
+- The `xsl` rule selects the node `/root/node` and extracts the `value-of` attribute `val`.
 
 ```xml
 <?xml version='1.0' encoding='UTF-8'?>
@@ -53,7 +53,7 @@ A simple but complete XSLT transformation looks like in the following example, w
 
 ### Advanced Example
 
-This example has a namespace defined, as you would find in real world applications, which has to be matched in the rule.
+This example has a namespace defined, as you would find in real-world applications, which has to be matched in the rule.
 
 #### Input XML
 
@@ -70,17 +70,17 @@ This example has a namespace defined, as you would find in real world applicatio
 </PTZStatus>
 ```
 
-#### transform/azimut.xsl
+#### transform/azimuth.xsl
 
 In the rule, the tag `<xsl:stylesheet>` has to have an attribute `xmlns:xsl="http://www.w3.org/1999/XSL/Transform"` and a second attribute `xmlns:`.
 This attribute has to be the same as the namespace for the input document.
-In the rule each step traversed along the path to the next tag has to be prepended with the `xmlns` namespace, here defined as `h`.
+In the rule, each step traversed along the path to the next tag has to be prepended with the `xmlns` namespace, here defined as `h`.
 
-- `xsl:output` transform incoming document into another XML-like document, no indentation, **without XML**.
-- `xsl:template`: `match="/"` whole document.
-- Full path to node `azimuth` reading out `date` attribute.
-- Add a linebreak by setting `&#10;` as text.
-- Search for node `azimuth` by prepending `//` and get the `text`.
+- `xsl:output`: Transforms the incoming document into another XML-like document, no indentation, **without XML declaration**.
+- `xsl:template`: `match="/"` matches the whole document.
+- Full path to node `azimuth` reading out the `date` attribute.
+- Adds a line break by setting `&#10;` as text.
+- Searches for node `azimuth` by prepending `//` and gets the text.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -113,14 +113,14 @@ String <itemName> { channel="<channelUID>"[profile="transform:XSLT", function="<
 ```
 
 The XSLT file (from within the `transform` folder) to be used has to be set in the `function` parameter.
-The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, i.e. `%.3f`.
-If omitted the default is `%s`, so the input value will be put into the transformation without any format changes.
+The parameter `sourceFormat` is optional and can be used to format the input value **before** the transformation, e.g., `%.3f`.
+If omitted, the default is `%s`, so the input value will be put into the transformation without any format changes.
 
-Please note: This profile is a one-way transformation, i.e. only values from a device towards the item are changed, the other direction is left untouched.
+Please note: This profile is a one-way transformation, i.e., only values from a device towards the Item are changed; the other direction is left untouched.
 
 ## Further Reading
 
 - Extended introduction and more [examples](https://en.wikipedia.org/wiki/XSLT#XSLT_examples) at Wikipedia.
-- A good [introduction](https://www.w3schools.com/xml/xsl_intro.asp) and [tutorial](https://www.w3schools.com/xml/xsl_transformation.asp) at W3School.
+- A good [introduction](https://www.w3schools.com/xml/xsl_intro.asp) and [tutorial](https://www.w3schools.com/xml/xsl_transformation.asp) at W3Schools.
 - An informative [tutorial](https://www.ibm.com/developerworks/library/x-xsltmistakes/) of common mistakes.
 - Online XSL transformer tools like [this](https://www.freeformatter.com/xsl-transformer.html) to check the syntax.

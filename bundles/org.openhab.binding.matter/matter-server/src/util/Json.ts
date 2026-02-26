@@ -57,7 +57,7 @@ export function toJSON(data: any) {
             return Bytes.toHex(value);
         }
         if (value === undefined) {
-            return "undefined";
+            return null;
         }
         return value;
     });

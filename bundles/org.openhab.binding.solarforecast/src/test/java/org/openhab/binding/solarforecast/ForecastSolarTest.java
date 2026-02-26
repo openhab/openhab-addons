@@ -23,31 +23,27 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
-import java.util.Optional;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
 import org.openhab.binding.solarforecast.internal.forecastsolar.ForecastSolarObject;
-import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarBridgeHandler;
-import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarBridgeMock;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarMockFactory;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneMock;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
-import org.openhab.core.library.types.PointType;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.internal.BridgeImpl;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -57,6 +53,7 @@ import org.openhab.core.types.TimeSeries;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
+@Execution(ExecutionMode.SAME_THREAD)
 class ForecastSolarTest {
     private static final double TOLERANCE = 0.001;
     public static final ZoneId TEST_ZONE = ZoneId.of("Europe/Berlin");
@@ -69,8 +66,8 @@ class ForecastSolarTest {
     public static final String NO_FORECAST_INDICATOR = "No forecast data";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
-    @BeforeAll
-    static void setFixedTime() {
+    @BeforeEach
+    void setFixedTime() {
         // Instant matching the date of test resources
         String fixedInstant = "2022-07-17T15:00:00Z";
         Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
@@ -376,72 +373,101 @@ class ForecastSolarTest {
 
     @Test
     void testPowerTimeSeries() {
-        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
-                Optional.of(PointType.valueOf("1,2")));
-        CallbackMock cm = new CallbackMock();
-        fsbh.setCallback(cm);
-        fsbh.initialize();
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        ForecastSolarPlaneMock fsPlaneHandler1 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json");
+        ForecastSolarPlaneMock fsPlaneHandler2 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
+                "src/test/resources/forecastsolar/result.json");
 
-        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
-        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
-        fsbh.addPlane(fsph1);
-        fsbh.forecastUpdate();
-        TimeSeries ts1 = cm.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
+        fsBridgeHandler.updateTimeseries();
 
-        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1);
-        fsbh.addPlane(fsph2);
-        fsbh.forecastUpdate();
-        TimeSeries ts2 = cm.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
-        Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
-        Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
-        while (iter1.hasNext()) {
-            TimeSeries.Entry e1 = iter1.next();
-            TimeSeries.Entry e2 = iter2.next();
-            assertEquals("kW", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
-            assertEquals("kW", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
-            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
+        CallbackMock cmSite = (CallbackMock) fsBridgeHandler.getCallback();
+        CallbackMock cmPlane1 = (CallbackMock) fsPlaneHandler1.getCallback();
+        CallbackMock cmPlane2 = (CallbackMock) fsPlaneHandler2.getCallback();
+        assertNotNull(cmSite);
+        assertNotNull(cmPlane1);
+        assertNotNull(cmPlane2);
+
+        TimeSeries tsSite = cmSite.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
+        TimeSeries tsPlaneOne = cmPlane1.getTimeSeries("test::plane1:power-estimate");
+        TimeSeries tsPlaneTwo = cmPlane2.getTimeSeries("test::plane2:power-estimate");
+
+        Iterator<TimeSeries.Entry> siteIter = tsSite.getStates().iterator();
+        Iterator<TimeSeries.Entry> plane1Iter = tsPlaneOne.getStates().iterator();
+        Iterator<TimeSeries.Entry> plane2Iter = tsPlaneTwo.getStates().iterator();
+        while (siteIter.hasNext()) {
+            TimeSeries.Entry siteEntry = siteIter.next();
+            TimeSeries.Entry plane1Entry = plane1Iter.next();
+            TimeSeries.Entry plane2Entry = plane2Iter.next();
+            assertEquals("kW", ((QuantityType<?>) siteEntry.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kW", ((QuantityType<?>) plane1Entry.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kW", ((QuantityType<?>) plane2Entry.state()).getUnit().toString(), "Power Unit");
+            assertEquals(((QuantityType<?>) siteEntry.state()).doubleValue(),
+                    ((QuantityType<?>) plane1Entry.state()).doubleValue()
+                            + ((QuantityType<?>) plane2Entry.state()).doubleValue(),
                     0.1, "Power Value");
         }
     }
 
     @Test
     void testCommonForecastStartEnd() {
-        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
-                Optional.of(PointType.valueOf("1,2")));
-        CallbackMock cmSite = new CallbackMock();
-        fsbh.setCallback(cmSite);
-        fsbh.initialize();
-        String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
-                Instant.now().plus(1, ChronoUnit.DAYS));
-        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1One);
-        fsbh.addPlane(fsph1);
-        fsbh.forecastUpdate();
+        String fixedInstant = "2022-07-18T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
 
-        String contentTwo = FileReader.readFileInString("src/test/resources/forecastsolar/resultNextDay.json");
-        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo,
-                Instant.now().plus(1, ChronoUnit.DAYS));
-        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1Two);
-        CallbackMock cmPlane = new CallbackMock();
-        fsph2.setCallback(cmPlane);
-        ((ForecastSolarPlaneMock) fsph2).updateForecast(fso1Two);
-        fsbh.addPlane(fsph2);
-        fsbh.forecastUpdate();
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        ForecastSolarPlaneMock fsPlaneHandler1 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json");
+        ForecastSolarPlaneMock fsPlaneHandler2 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
+                "src/test/resources/forecastsolar/resultNextDay.json");
 
-        TimeSeries tsPlaneOne = cmPlane.getTimeSeries("test::plane:power-estimate");
+        CallbackMock cmSite = (CallbackMock) fsBridgeHandler.getCallback();
+        CallbackMock cmPlane1 = (CallbackMock) fsPlaneHandler1.getCallback();
+        CallbackMock cmPlane2 = (CallbackMock) fsPlaneHandler2.getCallback();
+        assertNotNull(cmSite);
+        assertNotNull(cmPlane1);
+        assertNotNull(cmPlane2);
+
+        cmPlane1.waitForStatus(ThingStatus.ONLINE);
+        cmPlane2.waitForStatus(ThingStatus.ONLINE);
+        cmSite.waitForStatus(ThingStatus.ONLINE);
+        // force update of timeseries after both planes are online
+        fsBridgeHandler.updateTimeseries();
+
         TimeSeries tsSite = cmSite.getTimeSeries("solarforecast:fs-site:bridge:power-estimate");
-        Iterator<TimeSeries.Entry> planeIter = tsPlaneOne.getStates().iterator();
+        TimeSeries tsPlaneOne = cmPlane1.getTimeSeries("test::plane1:power-estimate");
+        TimeSeries tsPlaneTwo = cmPlane2.getTimeSeries("test::plane2:power-estimate");
+
         Iterator<TimeSeries.Entry> siteIter = tsSite.getStates().iterator();
         while (siteIter.hasNext()) {
-            TimeSeries.Entry planeEntry = planeIter.next();
             TimeSeries.Entry siteEntry = siteIter.next();
-            assertEquals("kW", ((QuantityType<?>) planeEntry.state()).getUnit().toString(), "Power Unit");
+            TimeSeries.Entry plane1Entry = null;
+            Iterator<TimeSeries.Entry> planeIter1 = tsPlaneOne.getStates().iterator();
+            while (planeIter1.hasNext()) {
+                TimeSeries.Entry e = planeIter1.next();
+                if (e.timestamp().equals(siteEntry.timestamp())) {
+                    plane1Entry = e;
+                    break;
+                }
+            }
+            TimeSeries.Entry plane2Entry = null;
+            Iterator<TimeSeries.Entry> planeIter2 = tsPlaneTwo.getStates().iterator();
+            while (planeIter2.hasNext()) {
+                TimeSeries.Entry e = planeIter2.next();
+                if (e.timestamp().equals(siteEntry.timestamp())) {
+                    plane2Entry = e;
+                    break;
+                }
+            }
+            assertNotNull(plane1Entry);
+            assertNotNull(plane2Entry);
+            assertEquals("kW", ((QuantityType<?>) plane1Entry.state()).getUnit().toString(), "Power Unit");
+            assertEquals("kW", ((QuantityType<?>) plane2Entry.state()).getUnit().toString(), "Power Unit");
             assertEquals("kW", ((QuantityType<?>) siteEntry.state()).getUnit().toString(), "Power Unit");
-            assertEquals(((QuantityType<?>) planeEntry.state()).doubleValue(),
-                    ((QuantityType<?>) siteEntry.state()).doubleValue() / 2, 0.1, "Power Value");
+            assertEquals(
+                    ((QuantityType<?>) plane1Entry.state()).doubleValue()
+                            + ((QuantityType<?>) plane2Entry.state()).doubleValue(),
+                    ((QuantityType<?>) siteEntry.state()).doubleValue(), 0.1, "Power Value");
         }
         // only one day shall be reported which is available in both planes
         LocalDate ld = LocalDate.of(2022, 7, 18);
@@ -453,32 +479,19 @@ class ForecastSolarTest {
 
     @Test
     void testActions() {
-        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
-                Optional.of(PointType.valueOf("1,2")));
-        CallbackMock cmSite = new CallbackMock();
-        fsbh.setCallback(cmSite);
-        fsbh.initialize();
+        String fixedInstant = "2022-07-18T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
 
-        String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
-                Instant.now().plus(1, ChronoUnit.DAYS));
-        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1One);
-        fsbh.addPlane(fsph1);
-        fsbh.forecastUpdate();
-
-        String contentTwo = FileReader.readFileInString("src/test/resources/forecastsolar/resultNextDay.json");
-        ForecastSolarObject fso1Two = new ForecastSolarObject("fs-plane", contentTwo,
-                Instant.now().plus(1, ChronoUnit.DAYS));
-        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1Two);
-        CallbackMock cmPlane = new CallbackMock();
-        fsph2.setCallback(cmPlane);
-        ((ForecastSolarPlaneMock) fsph2).updateForecast(fso1Two);
-        fsbh.addPlane(fsph2);
-        fsbh.forecastUpdate();
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json");
+        ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
+                "src/test/resources/forecastsolar/resultNextDay.json");
+        fsBridgeHandler.updateTimeseries();
 
         SolarForecastActions sfa = new SolarForecastActions();
-        sfa.setThingHandler(fsbh);
+        sfa.setThingHandler(fsBridgeHandler);
         // only one day shall be reported which is available in both planes
         LocalDate ld = LocalDate.of(2022, 7, 18);
         assertEquals(ld.atStartOfDay(ZoneId.of("UTC")).toInstant(), sfa.getForecastBegin().truncatedTo(ChronoUnit.DAYS),
@@ -489,76 +502,108 @@ class ForecastSolarTest {
 
     @Test
     void testEnergyTimeSeries() {
-        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
-                Optional.of(PointType.valueOf("1,2")));
-        CallbackMock cm = new CallbackMock();
-        fsbh.setCallback(cm);
-        fsbh.initialize();
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        ForecastSolarPlaneMock fsPlaneHandler1 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json");
+        ForecastSolarPlaneMock fsPlaneHandler2 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane2",
+                "src/test/resources/forecastsolar/result.json");
 
-        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
-        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
-        fsbh.addPlane(fsph1);
-        fsbh.forecastUpdate();
-        TimeSeries ts1 = cm.getTimeSeries("solarforecast:fs-site:bridge:energy-estimate");
+        fsBridgeHandler.updateTimeseries();
 
-        ForecastSolarPlaneHandler fsph2 = new ForecastSolarPlaneMock(fso1);
-        fsbh.addPlane(fsph2);
-        fsbh.forecastUpdate();
-        TimeSeries ts2 = cm.getTimeSeries("solarforecast:fs-site:bridge:energy-estimate");
-        Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
-        Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
-        while (iter1.hasNext()) {
-            TimeSeries.Entry e1 = iter1.next();
-            TimeSeries.Entry e2 = iter2.next();
-            assertEquals("kWh", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
-            assertEquals("kWh", ((QuantityType<?>) e2.state()).getUnit().toString(), "Power Unit");
-            assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
-                    0.1, "Power Value");
+        CallbackMock cmSite = (CallbackMock) fsBridgeHandler.getCallback();
+        CallbackMock cmPlane1 = (CallbackMock) fsPlaneHandler1.getCallback();
+        CallbackMock cmPlane2 = (CallbackMock) fsPlaneHandler2.getCallback();
+        assertNotNull(cmSite);
+        assertNotNull(cmPlane1);
+        assertNotNull(cmPlane2);
+
+        TimeSeries tsSite = cmSite.getTimeSeries("solarforecast:fs-site:bridge:energy-estimate");
+        TimeSeries tsPlaneOne = cmPlane1.getTimeSeries("test::plane1:energy-estimate");
+        TimeSeries tsPlaneTwo = cmPlane2.getTimeSeries("test::plane2:energy-estimate");
+
+        Iterator<TimeSeries.Entry> siteIter = tsSite.getStates().iterator();
+        Iterator<TimeSeries.Entry> plane1Iter = tsPlaneOne.getStates().iterator();
+        Iterator<TimeSeries.Entry> plane2Iter = tsPlaneTwo.getStates().iterator();
+        while (siteIter.hasNext()) {
+            TimeSeries.Entry siteEntry = siteIter.next();
+            TimeSeries.Entry plane1Entry = plane1Iter.next();
+            TimeSeries.Entry plane2Entry = plane2Iter.next();
+            assertEquals("kWh", ((QuantityType<?>) siteEntry.state()).getUnit().toString(), "Energy Unit");
+            assertEquals("kWh", ((QuantityType<?>) plane1Entry.state()).getUnit().toString(), "Energy Unit");
+            assertEquals("kWh", ((QuantityType<?>) plane2Entry.state()).getUnit().toString(), "Energy Unit");
+            assertEquals(((QuantityType<?>) siteEntry.state()).doubleValue(),
+                    ((QuantityType<?>) plane1Entry.state()).doubleValue()
+                            + ((QuantityType<?>) plane2Entry.state()).doubleValue(),
+                    0.1, "Energy Value");
         }
     }
 
     @Test
-    void testCalmDown() {
-        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
-                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
-                Optional.of(PointType.valueOf("1,2")));
-        CallbackMock cm = new CallbackMock();
-        fsbh.setCallback(cm);
-        fsbh.initialize();
+    void testBaseUrl() {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+        String url = fsBridgeHandler.getBaseUrl();
+        assertEquals("https://api.forecast.solar/estimate/1/2/", url, "Base URL");
+        assertEquals("https://api.forecast.solar/estimate/1/2/", Utils.redactUrlForLog(url), "Base URL");
 
-        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
-        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
-        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
-        fsbh.addPlane(fsph1);
-        // first update after add plane - 1 state shall be received
-        assertEquals(1, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "First update");
-        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
-        fsbh.handleCommand(
-                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
-                RefreshType.REFRESH);
-        // second update after refresh request - 2 states shall be received
-        assertEquals(2, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Second update");
-        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
+        Configuration config = new Configuration();
+        config.put("apiKey", "xyz");
+        newSiteConfig(fsBridgeHandler, config);
+        url = fsBridgeHandler.getBaseUrl();
+        assertEquals("https://api.forecast.solar/xyz/estimate/1/2/", fsBridgeHandler.getBaseUrl(), "Base URL");
+        assertEquals("https://api.forecast.solar/****/estimate/1/2/", Utils.redactUrlForLog(url), "Base URL");
 
-        fsbh.calmDown();
-        fsbh.handleCommand(
-                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
-                RefreshType.REFRESH);
-        // after calm down refresh shall have no effect . still 2 states
-        assertEquals(2, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Calm update");
-        assertEquals(ThingStatus.OFFLINE, cm.getStatus().getStatus(), "Offline");
-        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, cm.getStatus().getStatusDetail(), "Offline");
+        config.put("location", "1.234,9.876");
+        newSiteConfig(fsBridgeHandler, config);
+        url = fsBridgeHandler.getBaseUrl();
+        assertEquals("https://api.forecast.solar/xyz/estimate/1.234/9.876/", fsBridgeHandler.getBaseUrl(), "Base URL");
+        assertEquals("https://api.forecast.solar/****/estimate/1.234/9.876/", Utils.redactUrlForLog(url), "Base URL");
+    }
 
-        // forward Clock to get ONLINE again
-        String fixedInstant = "2022-07-17T16:15:00Z";
-        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), ZoneId.of("UTC"));
-        Utils.setClock(fixedClock);
-        fsbh.handleCommand(
-                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
-                RefreshType.REFRESH);
-        assertEquals(3, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Second update");
-        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
+    @Test
+    void testFullUrl() {
+        ForecastSolarBridgeMock fsBridgeHandler = ForecastSolarMockFactory.createBridgeHandler();
+
+        Configuration siteConfig = new Configuration();
+        siteConfig.put("location", "1.234,9.876");
+        siteConfig.put("apiKey", "xyz");
+        newSiteConfig(fsBridgeHandler, siteConfig);
+
+        ForecastSolarPlaneMock fsPlaneHandler1 = ForecastSolarMockFactory.createPlaneHandler(fsBridgeHandler, "plane1",
+                "src/test/resources/forecastsolar/result.json");
+        Configuration planeConfig = new Configuration();
+        planeConfig.put("declination", "45");
+        planeConfig.put("azimuth", "-10");
+        planeConfig.put("kwp", "5.5");
+        planeConfig.put("dampAM", "0.5");
+        planeConfig.put("dampPM", "0.3");
+        newPlaneConfig(fsPlaneHandler1, planeConfig);
+        assertEquals("https://api.forecast.solar/xyz/estimate/1.234/9.876/45/-10/5.5?damping=0.5,0.3&full=1",
+                fsPlaneHandler1.getURL(), "Full URL");
+
+        siteConfig.put("inverterKwp", "0.8");
+        newSiteConfig(fsBridgeHandler, siteConfig);
+        assertEquals(
+                "https://api.forecast.solar/xyz/estimate/1.234/9.876/45/-10/5.5?damping=0.5,0.3&inverter=0.8&full=1",
+                fsPlaneHandler1.getURL(), "Full URL");
+
+        planeConfig.put("horizon", "0,0,0,0,0,0,10,20,20,20,20,20");
+        newPlaneConfig(fsPlaneHandler1, planeConfig);
+        assertEquals(
+                "https://api.forecast.solar/xyz/estimate/1.234/9.876/45/-10/5.5?damping=0.5,0.3&horizon=0,0,0,0,0,0,10,20,20,20,20,20&inverter=0.8&full=1",
+                fsPlaneHandler1.getURL(), "Full URL");
+    }
+
+    private void newSiteConfig(ForecastSolarBridgeMock handler, Configuration config) {
+        handler.updateConfiguration(config);
+        handler.dispose();
+        handler.initialize();
+        // no need to wait for states as URL is built during initialize
+    }
+
+    private void newPlaneConfig(ForecastSolarPlaneMock handler, Configuration config) {
+        handler.updateConfiguration(config);
+        handler.dispose();
+        handler.initialize();
+        // no need to wait for states as URL is built during initialize
     }
 }

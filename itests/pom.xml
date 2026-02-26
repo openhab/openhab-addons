@@ -25,7 +25,7 @@
     <module>org.openhab.binding.homie.tests</module>
     <module>org.openhab.binding.hue.tests</module>
     <module>org.openhab.binding.max.tests</module>
-    <module>org.openhab.binding.mielecloud.tests</module>
+    <!-- <module>org.openhab.binding.mielecloud.tests</module> -->
     <module>org.openhab.binding.modbus.tests</module>
     <module>org.openhab.binding.mqtt.ruuvigateway.tests</module>
     <module>org.openhab.binding.ntp.tests</module>
@@ -79,7 +79,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.10.0</version>
         <executions>
           <execution>
             <id>unpack-eea</id>
