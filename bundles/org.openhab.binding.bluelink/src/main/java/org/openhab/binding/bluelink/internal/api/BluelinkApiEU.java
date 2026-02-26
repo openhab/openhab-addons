@@ -430,13 +430,13 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     /**
      * Send a charge limit request to the Bluelink EU API both for legacy and CCU/CCS2 protocol.
      *
-     * @param vehicle
-     * @param plugType
-     * @param limit
-     * @return
+     * @param vehicle the vehicle to send the request for
+     * @param plugType the EV charging type
+     * @param limit the charge limit
+     * @return true on success
      * @throws BluelinkApiException
      */
-    private boolean sendChargeLimitRequest(final IVehicle vehicle, int plugType, int limit)
+    private boolean sendChargeLimitRequest(final IVehicle vehicle, PlugType plugType, int limit)
             throws BluelinkApiException {
         ensureAuthenticated();
 
@@ -448,7 +448,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
         final String url = brandConfig.apiBaseUrl + "/api/v1/spa/vehicles/" + vehicleId + "/charge/target";
         final ChargeLimitsRequest payload = new ChargeLimitsRequest(
-                List.of(new ChargeLimitsRequest.ChargeLimit(plugType, limit)));
+                List.of(new ChargeLimitsRequest.ChargeLimit(plugType.ordinal(), limit)));
         final String payloadJson = gson.toJson(payload);
         logger.debug("send charge limit request: {}", payloadJson);
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
@@ -470,12 +470,12 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
 
     @Override
     public boolean setChargeLimitDC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
-        return sendChargeLimitRequest(vehicle, 0, limit);
+        return sendChargeLimitRequest(vehicle, PlugType.DC, limit);
     }
 
     @Override
     public boolean setChargeLimitAC(final IVehicle vehicle, final int limit) throws BluelinkApiException {
-        return sendChargeLimitRequest(vehicle, 1, limit);
+        return sendChargeLimitRequest(vehicle, PlugType.AC, limit);
     }
 
     @Override
