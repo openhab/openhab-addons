@@ -454,7 +454,7 @@ public class SmartThingsApi {
             String componentId = evt.deviceEvent.componentId;
             String capa = evt.deviceEvent.capability;
             String attr = evt.deviceEvent.attribute;
-            String value = evt.deviceEvent.value;
+            Object value = evt.deviceEvent.value;
 
             Bridge bridge = bridgeHandler.getThing();
             List<Thing> things = bridge.getThings();

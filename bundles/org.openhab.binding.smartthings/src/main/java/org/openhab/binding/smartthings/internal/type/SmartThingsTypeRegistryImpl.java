@@ -32,6 +32,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsSchema;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions.ChannelProperty;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
@@ -122,7 +123,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         this.bridgeHandler = bridgeHandler;
     }
 
-    public String getChannelType(String smartThingsType, SmartThingsCapability capa, String key,
+    public String getChannelType(String smartThingsType, SmartThingsCapability capa,
             @Nullable ChannelProperty channelProp) {
         String channelType = SmartThingsBridgeChannelDefinitions.getChannelType(smartThingsType);
         String unit = null;
@@ -179,12 +180,18 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                 SmartThingsProperty prop = attr.schema.properties.get("value");
 
                 if (prop != null) {
-                    if (prop.oneOf != null) {
-                        for (SmartThingsProperty ofOfProp : prop.oneOf) {
-                            generateChannelTypeForProp(capa, key, attr, ofOfProp);
+                    if (prop.type.equals("object")) {
+                        for (Map.Entry<String, SmartThingsProperty> subEntry : prop.properties.entrySet()) {
+                            generateChannelTypeForProp(capa, key, subEntry.getKey(), attr, subEntry.getValue());
                         }
                     } else {
-                        generateChannelTypeForProp(capa, key, attr, prop);
+                        if (prop.oneOf != null) {
+                            for (SmartThingsProperty subProp : prop.oneOf) {
+                                generateChannelTypeForProp(capa, key, "", attr, subProp);
+                            }
+                        } else {
+                            generateChannelTypeForProp(capa, key, "", attr, prop);
+                        }
                     }
                 }
             } catch (Exception ex) {
@@ -193,8 +200,21 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
     }
 
-    private void generateChannelTypeForProp(SmartThingsCapability capa, String attrKey, SmartThingsAttribute attr,
-            SmartThingsProperty prop) {
+    private String getChannelTypeName(SmartThingsCapability capa, String key, String subKey) {
+        if ("".equals(subKey)) {
+            return capa.id.replace(".", "_") + "_"
+                    + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')).toLowerCase(Locale.ROOT);
+
+        } else {
+            return capa.id.replace(".", "_") + "_"
+                    + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')).toLowerCase(Locale.ROOT)
+                    + "_" + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(subKey), '-'))
+                            .toLowerCase(Locale.ROOT);
+        }
+    }
+
+    private void generateChannelTypeForProp(SmartThingsCapability capa, String key, String subKey,
+            SmartThingsAttribute attr, SmartThingsProperty prop) {
         SmartThingsChannelTypeProvider lcChannelTypeProvider = channelTypeProvider;
         String smartThingsType = prop.type;
         String channelTypeId = "NA";
@@ -204,17 +224,16 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             unit = attr.schema.properties.get("unit");
         }
 
-        ChannelProperty channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(capa.id + "#" + attrKey);
+        ChannelProperty channelProp = SmartThingsBridgeChannelDefinitions.getChannelProperty(capa.id + "#" + key);
 
-        channelTypeId = getChannelType(smartThingsType, capa, attrKey, channelProp);
+        channelTypeId = getChannelType(smartThingsType, capa, channelProp);
 
         if ("".equals(channelTypeId)) {
             logger.info("need review");
         }
         String label = capa.name;
 
-        String channelTypeName = capa.id.replace(".", "_") + "_"
-                + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-')).toLowerCase(Locale.ROOT);
+        String channelTypeName = getChannelTypeName(capa, key, subKey);
 
         List<StateOption> options = new ArrayList<StateOption>();
 
@@ -411,6 +430,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
     }
 
+    public static String getChannelName(String propKey) {
+        return (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(propKey), '-')).toLowerCase(Locale.ROOT);
+    }
+
     private void addChannels(String deviceType, List<ChannelGroupType> groupTypes, SmartThingsComponent component,
             SmartThingsCapability capa) {
         List<ChannelDefinition> channelDefinitions = new ArrayList<>();
@@ -431,41 +454,102 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             if (attrKey.indexOf("Range") >= 0) {
                 continue;
             }
-            Map<String, String> props = new Hashtable<String, String>();
 
-            String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attrKey), '-'))
-                    .toLowerCase(Locale.ROOT);
-            String channelTypeName = capa.id.replace(".", "_") + "_" + channelName;
+            SmartThingsAttribute attr = capa.attributes.get(attrKey);
+            SmartThingsSchema schema = attr.schema;
+            Hashtable<String, SmartThingsProperty> propsMap = schema.properties;
+            SmartThingsProperty prop = propsMap.get("value");
+            String propType = prop.type;
 
-            final String fChannelName = channelName;
+            if (propType.equals("object")) {
+                logger.info("===================toto");
 
-            logger.trace("addChannels: channelTypeName: {}", channelTypeName);
-            ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelTypeName);
-
-            ChannelType channelType = null;
-            if (lcChannelTypeProvider != null) {
-                channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
             }
+            if (propType.equals("object")) {
+                Hashtable<String, SmartThingsProperty> subPropList = prop.properties;
 
-            if (channelType == null) {
-                logger.warn("Can't find channelType for {}", channelTypeUID);
-            }
+                for (String subPropKey : subPropList.keySet()) {
 
-            props.put(SmartThingsBindingConstants.COMPONENT, componentId);
-            props.put(SmartThingsBindingConstants.CAPABILITY, capa.id);
-            props.put(SmartThingsBindingConstants.ATTRIBUTE, attrKey);
+                    SmartThingsProperty subProp = subPropList.get(subPropKey);
+                    logger.info("");
 
-            ChannelDefinition channelDef = null;
+                    Map<String, String> props = new Hashtable<String, String>();
 
-            // capa.commands
-            if (channelType != null) {
-                channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
-                        .withLabel(StringUtils.capitalize(channelName)).withProperties(props).build();
+                    String channelName = getChannelName(subPropKey);
+                    String channelTypeName = getChannelTypeName(capa, attrKey, subPropKey);
 
-                Optional<ChannelDefinition> previous = channelDefinitions.stream()
-                        .filter(x -> x.getId().equals(fChannelName)).findFirst();
-                if (previous.isEmpty()) {
-                    channelDefinitions.add(channelDef);
+                    final String fChannelName = channelName;
+
+                    logger.trace("addChannels: channelTypeName: {}", channelTypeName);
+                    ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelTypeName);
+
+                    ChannelType channelType = null;
+                    if (lcChannelTypeProvider != null) {
+                        channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                    }
+
+                    if (channelType == null) {
+                        logger.warn("Can't find channelType for {}", channelTypeUID);
+                    }
+
+                    props.put(SmartThingsBindingConstants.COMPONENT, componentId);
+                    props.put(SmartThingsBindingConstants.CAPABILITY, capa.id);
+                    props.put(SmartThingsBindingConstants.ATTRIBUTE, attrKey);
+
+                    ChannelDefinition channelDef = null;
+
+                    // capa.commands
+                    if (channelType != null) {
+                        channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
+                                .withLabel(StringUtils.capitalize(channelName)).withProperties(props).build();
+
+                        Optional<ChannelDefinition> previous = channelDefinitions.stream()
+                                .filter(x -> x.getId().equals(fChannelName)).findFirst();
+                        if (previous.isEmpty()) {
+                            channelDefinitions.add(channelDef);
+                        }
+                    }
+
+                }
+
+                logger.info("");
+            } else {
+
+                Map<String, String> props = new Hashtable<String, String>();
+
+                String channelName = getChannelName(attrKey);
+                String channelTypeName = capa.id.replace(".", "_") + "_" + channelName;
+
+                final String fChannelName = channelName;
+
+                logger.trace("addChannels: channelTypeName: {}", channelTypeName);
+                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(channelTypeName);
+
+                ChannelType channelType = null;
+                if (lcChannelTypeProvider != null) {
+                    channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
+                }
+
+                if (channelType == null) {
+                    logger.warn("Can't find channelType for {}", channelTypeUID);
+                }
+
+                props.put(SmartThingsBindingConstants.COMPONENT, componentId);
+                props.put(SmartThingsBindingConstants.CAPABILITY, capa.id);
+                props.put(SmartThingsBindingConstants.ATTRIBUTE, attrKey);
+
+                ChannelDefinition channelDef = null;
+
+                // capa.commands
+                if (channelType != null) {
+                    channelDef = new ChannelDefinitionBuilder(channelName, channelType.getUID())
+                            .withLabel(StringUtils.capitalize(channelName)).withProperties(props).build();
+
+                    Optional<ChannelDefinition> previous = channelDefinitions.stream()
+                            .filter(x -> x.getId().equals(fChannelName)).findFirst();
+                    if (previous.isEmpty()) {
+                        channelDefinitions.add(channelDef);
+                    }
                 }
             }
         }

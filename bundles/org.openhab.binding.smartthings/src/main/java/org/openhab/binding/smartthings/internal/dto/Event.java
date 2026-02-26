@@ -30,7 +30,7 @@ public class Event {
         public String componentId;
         public String capability;
         public String attribute;
-        public String value;
+        public Object value;
         public String valueType;
         public Boolean stateChange;
         public String subscriptionName;
