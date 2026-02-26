@@ -33,8 +33,8 @@ import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
 import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkVehicleConfiguration;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
-import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
+import org.openhab.binding.bluelink.internal.model.PlugType;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -345,10 +345,10 @@ public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleS
             final var reservChargeInfos = evStatus.reservChargeInfos();
             if (reservChargeInfos != null && reservChargeInfos.targetSocList() != null) {
                 for (final var target : reservChargeInfos.targetSocList()) {
-                    if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
+                    if (target.plugType() == PlugType.DC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_DC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    } else if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
+                    } else if (target.plugType() == PlugType.AC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_AC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
                     }

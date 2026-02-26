@@ -33,10 +33,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluelink.internal.MockApiData;
 import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
-import org.openhab.binding.bluelink.internal.dto.EvStatus;
 import org.openhab.binding.bluelink.internal.dto.eu.Vehicle;
 import org.openhab.binding.bluelink.internal.model.Brand;
 import org.openhab.binding.bluelink.internal.model.IVehicle;
+import org.openhab.binding.bluelink.internal.model.PlugType;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -162,9 +162,9 @@ public class BluelinkApiEUTest {
         assertNotNull(targetSocList);
         assertEquals(2, targetSocList.size());
         for (final var targetSoC : targetSocList) {
-            if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
+            if (targetSoC.plugType() == PlugType.DC) {
                 assertEquals(90, targetSoC.targetSocLevel());
-            } else if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
+            } else if (targetSoC.plugType() == PlugType.AC) {
                 assertEquals(80, targetSoC.targetSocLevel());
             }
         }
@@ -274,9 +274,9 @@ public class BluelinkApiEUTest {
         assertNotNull(targetSocList);
         assertEquals(2, targetSocList.size());
         for (final var targetSoC : targetSocList) {
-            if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
+            if (targetSoC.plugType() == PlugType.DC) {
                 assertEquals(95, targetSoC.targetSocLevel());
-            } else if (targetSoC.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
+            } else if (targetSoC.plugType() == PlugType.AC) {
                 assertEquals(90, targetSoC.targetSocLevel());
             }
         }
