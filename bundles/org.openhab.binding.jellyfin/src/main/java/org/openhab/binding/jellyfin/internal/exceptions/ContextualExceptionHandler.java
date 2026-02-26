@@ -15,6 +15,8 @@ package org.openhab.binding.jellyfin.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contextual exception handler that categorizes exceptions and publishes events
@@ -23,6 +25,8 @@ import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
  */
 @NonNullByDefault
 public class ContextualExceptionHandler implements org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType {
+
+    private final Logger logger = LoggerFactory.getLogger(ContextualExceptionHandler.class);
 
     private final ErrorEventBus eventBus;
     private final String context;
@@ -34,8 +38,8 @@ public class ContextualExceptionHandler implements org.openhab.binding.jellyfin.
 
     @Override
     public void handle(Exception exception) {
-        // Still do the basic exception handling
-        exception.printStackTrace();
+        // Log exception via SLF4J
+        logger.warn("[{}] Exception handled: {}", context, exception.getMessage(), exception);
 
         // Determine error type and severity based on exception type
         ErrorEvent.ErrorType errorType = determineErrorType(exception);
