@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ParentUpdateCapability extends Capability {
     private final Logger logger = LoggerFactory.getLogger(ParentUpdateCapability.class);
+
     private @Nullable ScheduledFuture<?> job;
 
     public ParentUpdateCapability(CommonInterface handler) {
@@ -47,7 +48,7 @@ public class ParentUpdateCapability extends Capability {
             if (handler.getBridgeHandler() instanceof CommonInterface bridgeHandler) {
                 bridgeHandler.expireData();
             }
-            cancelJob();
+            job = null;
         }, RefreshCapability.ASAP);
     }
 
@@ -58,7 +59,7 @@ public class ParentUpdateCapability extends Capability {
     }
 
     private void cancelJob() {
-        if (job instanceof ScheduledFuture<?> local) {
+        if (job instanceof ScheduledFuture local) {
             local.cancel(true);
             this.job = null;
         }
