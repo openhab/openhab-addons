@@ -183,10 +183,6 @@ public class CameraCapability extends HomeSecurityThingCapability {
 
     public @Nullable String ping(String vpnUrl) {
         return getSecurityCapability().map(cap -> {
-            String pingResult = cap.ping(vpnUrl);
-            if (pingResult == null) {
-                return null;
-            }
             URI apiLocalUrl = null;
             try {
                 UriBuilder builder = UriBuilder.fromPath(cap.ping(vpnUrl));
