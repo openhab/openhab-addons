@@ -15,6 +15,8 @@ package org.openhab.binding.jellyfin.internal.events;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Event bus for error events using the Observer pattern
@@ -23,6 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ErrorEventBus {
+
+    private final Logger logger = LoggerFactory.getLogger(ErrorEventBus.class);
 
     private final CopyOnWriteArrayList<ErrorEventListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -55,8 +59,7 @@ public class ErrorEventBus {
                 listener.onErrorEvent(event);
             } catch (Exception e) {
                 // Log but don't let listener exceptions break the event bus
-                System.err.println("Error in event listener: " + e.getMessage());
-                e.printStackTrace();
+                logger.warn("Error in event listener: {}", e.getMessage(), e);
             }
         }
     }
