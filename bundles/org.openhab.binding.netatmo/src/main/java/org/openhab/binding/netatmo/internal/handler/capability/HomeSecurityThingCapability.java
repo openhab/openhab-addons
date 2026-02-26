@@ -32,7 +32,7 @@ import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
  *
  */
 @NonNullByDefault
-public class HomeSecurityThingCapability extends Capability {
+public abstract class HomeSecurityThingCapability extends Capability {
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final EventChannelHelper eventHelper;
 
