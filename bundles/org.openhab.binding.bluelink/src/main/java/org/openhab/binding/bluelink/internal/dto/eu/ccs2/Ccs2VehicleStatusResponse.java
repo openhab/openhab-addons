@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto.eu;
+package org.openhab.binding.bluelink.internal.dto.eu.ccs2;
 
 import java.util.List;
 
