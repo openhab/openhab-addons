@@ -38,6 +38,10 @@
     <Bug pattern="SLF4J_FORMAT_SHOULD_BE_CONST"/>
   </Match>
   <Match>
+    <Class name="org.openhab.io.yamlcomposer.internal.BufferedLogger"/>
+    <Bug pattern="SLF4J_FORMAT_SHOULD_BE_CONST"/>
+  </Match>
+  <Match>
     <Bug pattern="SLF4J_UNKNOWN_ARRAY"/>
   </Match>
   <Match>
