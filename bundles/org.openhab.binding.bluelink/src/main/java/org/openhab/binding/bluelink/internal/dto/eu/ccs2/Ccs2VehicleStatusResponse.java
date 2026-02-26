@@ -364,7 +364,7 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
             @SerializedName("Accessory") int accessory) {
     }
 
-    public record Battery(@SerializedName("Level") int level) {
+    public record Battery(@SerializedName("Level") float level) {
     }
 
     public record FOB(@SerializedName("LowBattery") int batteryWarning) {
@@ -378,7 +378,7 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
     public record BatteryManagement(@SerializedName("BatteryRemain") BatteryRemain batteryRemain) {
     }
 
-    public record BatteryRemain(@SerializedName("Ratio") int ratio) {
+    public record BatteryRemain(@SerializedName("Ratio") float ratio) {
     }
 
     public record ChargingInformation(@SerializedName("ConnectorFastening") ConnectorFastening connectorFastening,

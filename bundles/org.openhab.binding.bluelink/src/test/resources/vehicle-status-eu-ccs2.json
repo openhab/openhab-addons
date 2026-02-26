@@ -303,7 +303,7 @@
             "Auxiliary": {
               "FailWarning": 0
             },
-            "Level": 88,
+            "Level": 88.5,
             "Charging": {
               "WarningLevel": 65
             },
@@ -339,7 +339,7 @@
             },
             "BatteryRemain": {
               "Value": 173829.6,
-              "Ratio": 53
+              "Ratio": 53.5
             },
             "BatteryConditioning": 0,
             "BatteryPreCondition": {

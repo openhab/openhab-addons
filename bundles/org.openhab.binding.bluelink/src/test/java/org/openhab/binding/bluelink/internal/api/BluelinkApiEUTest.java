@@ -248,13 +248,13 @@ public class BluelinkApiEUTest {
         assertFalse(status.engine());
         assertFalse(status.trunkOpen());
         assertTrue(status.hoodOpen());
-        assertEquals(88, status.battery().stateOfCharge());
+        assertEquals(88.5, status.battery().stateOfCharge(), 0.0001);
         assertFalse(status.airCtrlOn());
         assertFalse(status.defrost());
 
         final var evStatus = status.evStatus();
         assertNotNull(evStatus);
-        assertEquals(53, evStatus.batteryStatus());
+        assertEquals(53.5, evStatus.batteryStatus(), 0.0001);
         assertFalse(evStatus.batteryCharge());
         assertEquals(0, evStatus.rawBatteryPlugin());
         assertFalse(evStatus.batteryPlugin());
