@@ -32,7 +32,39 @@ public class NotificationAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationAction.class);
 
-    public static @Nullable CloudService cloudService;
+    private static final Object CLOUD_SERVICE_LOCK = new Object();
+
+    // All access must be guarded by "CLOUD_SERVICE_LOCK"
+    private static @Nullable CloudService cloudService;
+
+    /**
+     * Set the specified {@link CloudService} as the instance to use for handling static notification actions.
+     *
+     * @param cloudService the {@link CloudService} to set.
+     */
+    public static void setCloudService(CloudService cloudService) {
+        synchronized (CLOUD_SERVICE_LOCK) {
+            NotificationAction.cloudService = cloudService;
+        }
+    }
+
+    /**
+     * Unset the specified {@link CloudService} as the instance to use for handling static notification actions. An
+     * action will only be taken if the specified instance is the currently set instance.
+     *
+     * @param cloudService the {@link CloudService} to unset.
+     * @return {@code true} if the {@link CloudService} instance was unset, {@code false} otherwise.
+     */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
+    public static boolean unsetCloudService(CloudService cloudService) {
+        synchronized (CLOUD_SERVICE_LOCK) {
+            if (NotificationAction.cloudService == cloudService) {
+                NotificationAction.cloudService = null;
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Sends a simple push notification to mobile devices of user
@@ -81,10 +113,16 @@ public class NotificationAction {
             @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
-        LOGGER.debug("sending notification '{}' to user {}", message, userId);
-        if (cloudService != null) {
-            cloudService.sendNotification(userId, message, icon, tag, title, referenceId, onClickAction,
-                    mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        CloudService cs;
+        synchronized (CLOUD_SERVICE_LOCK) {
+            cs = cloudService;
+        }
+        if (cs != null) {
+            LOGGER.debug("sending notification '{}' to user {}", message, userId);
+            cs.sendNotification(userId, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                    actionButton1, actionButton2, actionButton3);
+        } else {
+            LOGGER.warn("Unable to execute sendNotification() because the cloud connector is down");
         }
     }
 
@@ -111,9 +149,15 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
     public static void sendLogNotification(String message, @Nullable String icon, @Nullable String tag) {
-        LOGGER.debug("sending log notification '{}'", message);
-        if (cloudService != null) {
-            cloudService.sendLogNotification(message, icon, tag);
+        CloudService cs;
+        synchronized (CLOUD_SERVICE_LOCK) {
+            cs = cloudService;
+        }
+        if (cs != null) {
+            LOGGER.debug("sending log notification '{}'", message);
+            cs.sendLogNotification(message, icon, tag);
+        } else {
+            LOGGER.warn("Unable to execute sendLogNotification() because the cloud connector is down");
         }
     }
 
@@ -164,10 +208,16 @@ public class NotificationAction {
             @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
-        LOGGER.debug("sending broadcast notification '{}' to all users", message);
-        if (cloudService != null) {
-            cloudService.sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction,
-                    mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        CloudService cs;
+        synchronized (CLOUD_SERVICE_LOCK) {
+            cs = cloudService;
+        }
+        if (cs != null) {
+            LOGGER.debug("sending broadcast notification '{}' to all users", message);
+            cs.sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                    actionButton1, actionButton2, actionButton3);
+        } else {
+            LOGGER.warn("Unable to execute sendBroadcastNotification() because the cloud connector is down");
         }
     }
 
@@ -180,8 +230,14 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Hides notifications that contain the reference id on mobile devices of user with userId")
     public static void hideNotificationByReferenceId(String userId, String referenceId) {
-        if (cloudService != null) {
-            cloudService.hideNotificationByReferenceId(userId, referenceId);
+        CloudService cs;
+        synchronized (CLOUD_SERVICE_LOCK) {
+            cs = cloudService;
+        }
+        if (cs != null) {
+            cs.hideNotificationByReferenceId(userId, referenceId);
+        } else {
+            LOGGER.warn("Unable to execute hideNotificationByReferenceId() because the cloud connector is down");
         }
     }
 
@@ -193,8 +249,15 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Hides notifications that contain the reference id on all mobile devices of all account users")
     public static void hideBroadcastNotificationByReferenceId(String referenceId) {
-        if (cloudService != null) {
-            cloudService.hideBroadcastNotificationByReferenceId(referenceId);
+        CloudService cs;
+        synchronized (CLOUD_SERVICE_LOCK) {
+            cs = cloudService;
+        }
+        if (cs != null) {
+            cs.hideBroadcastNotificationByReferenceId(referenceId);
+        } else {
+            LOGGER.warn(
+                    "Unable to execute hideBroadcastNotificationByReferenceId() because the cloud connector is down");
         }
     }
 
@@ -207,8 +270,14 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Hides notifications that are associated with a tag on mobile devices of user with userId")
     public static void hideNotificationByTag(String userId, String tag) {
-        if (cloudService != null) {
-            cloudService.hideNotificationByTag(userId, tag);
+        CloudService cs;
+        synchronized (CLOUD_SERVICE_LOCK) {
+            cs = cloudService;
+        }
+        if (cs != null) {
+            cs.hideNotificationByTag(userId, tag);
+        } else {
+            LOGGER.warn("Unable to execute hideNotificationByTag() because the cloud connector is down");
         }
     }
 
@@ -220,8 +289,14 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Hides notifications that are associated with a tag on all mobile devices of all account users")
     public static void hideBroadcastNotificationByTag(String tag) {
-        if (cloudService != null) {
-            cloudService.hideBroadcastNotificationByTag(tag);
+        CloudService cs;
+        synchronized (CLOUD_SERVICE_LOCK) {
+            cs = cloudService;
+        }
+        if (cs != null) {
+            cs.hideBroadcastNotificationByTag(tag);
+        } else {
+            LOGGER.warn("Unable to execute hideBroadcastNotificationByTag() because the cloud connector is down");
         }
     }
 }
