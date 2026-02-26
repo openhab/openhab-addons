@@ -14,12 +14,10 @@ package org.openhab.binding.smartthings.internal.handler;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.api.SmartThingsApi;
@@ -33,6 +31,7 @@ import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHan
 import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
+import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistryImpl;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -111,6 +110,37 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         }
     }
 
+    public void refreshChannel(String deviceType, String componentId, String namespace, String capaKey, String attr,
+            Object value) throws SmartThingsException {
+        String channelName = SmartThingsTypeRegistryImpl.getChannelName(attr);
+
+        String groupId = deviceType + "_" + componentId + "_";
+
+        if (!"".equals(namespace)) {
+            groupId = groupId + namespace + "_";
+        }
+        groupId = groupId + capaKey;
+
+        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), groupId, channelName);
+
+        logger.trace("refreshDevice called: channelName:{}", channelName);
+
+        // channelUID
+        SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
+        SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory.getStateHandler(deviceType);
+
+        if (converter != null) {
+            State state = converter.convertToOpenHab(thing, channelUID, value);
+            updateState(channelUID, state);
+
+            if (stateHandler != null) {
+                logger.trace("refreshDevice called: stateHandler:{}", stateHandler);
+                stateHandler.handleStateChange(channelUID, deviceType, componentId, state, this);
+            }
+        }
+
+    }
+
     public void refreshDevice(String deviceType, String componentId, String capa, String attr, Object value) {
         try {
             logger.trace("refreshDevice called: deviceType:{} componentId: {} capa: {} attr :{} value: {}", deviceType,
@@ -127,32 +157,15 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 return;
             }
 
-            String channelName = (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(attr), '-'))
-                    .toLowerCase(Locale.ROOT);
-
-            String groupId = deviceType + "_" + componentId + "_";
-
-            if (!"".equals(namespace)) {
-                groupId = groupId + namespace + "_";
-            }
-            groupId = groupId + capaKey;
-
-            ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), groupId, channelName);
-
-            logger.trace("refreshDevice called: channelName:{}", channelName);
-
-            // channelUID
-            SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
-            SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory.getStateHandler(deviceType);
-
-            if (converter != null) {
-                State state = converter.convertToOpenHab(thing, channelUID, value);
-                updateState(channelUID, state);
-
-                if (stateHandler != null) {
-                    logger.trace("refreshDevice called: stateHandler:{}", stateHandler);
-                    stateHandler.handleStateChange(channelUID, deviceType, componentId, state, this);
+            if (value instanceof Map<?, ?> map) {
+                for (Map.Entry<?, ?> entry : map.entrySet()) {
+                    String subKey = entry.getKey().toString();
+                    Object subValue = entry.getValue();
+                    refreshChannel(deviceType, componentId, namespace, capaKey, subKey, subValue);
                 }
+
+            } else {
+                refreshChannel(deviceType, componentId, namespace, capaKey, attr, value);
             }
         } catch (Exception ex) {
             logger.error("Unable to refresh device: {} {}", this.getThing().getUID(), ex.toString(), ex);
