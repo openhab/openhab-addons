@@ -26,6 +26,7 @@ public class DDWRTDeviceConfiguration {
     public String hostname = "";
     public String user = "";
     public String password = "";
-    public int port = 22;
-    public int refreshInterval = 600;
+    public int port = 0;
+    public int refreshInterval = 3;
+    public String syslogPriority = "warning";
 }
