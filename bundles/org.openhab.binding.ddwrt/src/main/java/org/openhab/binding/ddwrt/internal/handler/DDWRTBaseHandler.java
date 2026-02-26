@@ -129,6 +129,11 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler implements
         }
     }
 
+    @Override
+    public void fireTrigger(String channelId, String event) {
+        triggerChannel(channelId, event);
+    }
+
     // ---- Refresh ----
 
     /**

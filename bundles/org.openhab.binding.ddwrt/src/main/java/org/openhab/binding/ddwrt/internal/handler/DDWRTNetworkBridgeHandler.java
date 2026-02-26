@@ -28,6 +28,7 @@ import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -96,10 +97,13 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
             synchronized (this) {
                 if (refreshJob == null) {
                     logger.debug("Scheduling refresh job every {}s", config.refreshInterval);
-                    refreshJob = scheduler.scheduleWithFixedDelay(() -> network.refresh(), 0, config.refreshInterval,
-                            TimeUnit.SECONDS);
+                    refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+                        network.refresh();
+                        updateBridgeStatus();
+                    }, 0, config.refreshInterval, TimeUnit.SECONDS);
                 } else {
                     network.refresh();
+                    updateBridgeStatus();
                 }
             }
 
@@ -108,6 +112,19 @@ public class DDWRTNetworkBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable DDWRTNetwork getNetwork() {
         return network;
+    }
+
+    private void updateBridgeStatus() {
+        if (network.hasOnlineDevices()) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else if (network.getDevices().isEmpty() && !network.hasPendingDevices()) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No devices have active SSH sessions");
+        }
     }
 
     private void cancelRefreshJob() {

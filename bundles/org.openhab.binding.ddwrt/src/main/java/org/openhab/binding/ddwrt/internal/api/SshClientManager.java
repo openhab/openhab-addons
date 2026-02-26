@@ -16,16 +16,15 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyPair;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.sshd.client.SshClient;
 import org.apache.sshd.client.auth.keyboard.UserInteraction;
+import org.apache.sshd.client.config.hosts.DefaultConfigFileHostEntryResolver;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.keyverifier.AcceptAllServerKeyVerifier;
 import org.apache.sshd.client.session.ClientSession;
@@ -66,9 +65,57 @@ public class SshClientManager {
         }
 
         client = Objects.requireNonNull(SshClient.setUpDefaultClient());
-        logger.debug("SSH Client Ket Verifier Accept All");
+        logger.debug("SSH Client Key Verifier Accept All");
         client.setServerKeyVerifier(AcceptAllServerKeyVerifier.INSTANCE); // MVP only; replace with pinning
+        client.setHostConfigEntryResolver(DefaultConfigFileHostEntryResolver.INSTANCE);
+
+        // Load keys from both directories and register on client so they are
+        // available for ProxyJump authentication and all sessions.
+        List<Path> keyPaths = collectKeyPaths(ohPrivateKeyDir);
+        if (!keyPaths.isEmpty()) {
+            logger.debug("Registering {} key files on SSH client", keyPaths.size());
+            FileKeyPairProvider keyProvider = new FileKeyPairProvider(keyPaths);
+            keyProvider.setPasswordFinder(FilePasswordProvider.EMPTY);
+            client.setKeyIdentityProvider(keyProvider);
+        }
+
         client.start();
+    }
+
+    private List<Path> collectKeyPaths(File ohPrivateKeyDir) {
+        List<Path> keyPaths = new ArrayList<>();
+
+        if (ohPrivateKeyDir.exists()) {
+            logger.debug("Scanning keys directory {}", ohPrivateKeyDir.getPath());
+            File @Nullable [] files = ohPrivateKeyDir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (isLikelyPrivateKey(f)) {
+                        keyPaths.add(f.toPath());
+                        logger.debug("Found key: {}", f.getPath());
+                    }
+                }
+            }
+        }
+
+        Path homeSshDir = getHomeSshDir();
+        if (homeSshDir != null) {
+            File homeDir = homeSshDir.toFile();
+            if (homeDir.exists()) {
+                logger.debug("Scanning keys directory {}", homeDir.getPath());
+                File @Nullable [] homeFiles = homeDir.listFiles();
+                if (homeFiles != null) {
+                    for (File f : homeFiles) {
+                        if (isLikelyPrivateKey(f)) {
+                            keyPaths.add(f.toPath());
+                            logger.debug("Found key: {}", f.getPath());
+                        }
+                    }
+                }
+            }
+        }
+
+        return keyPaths;
     }
 
     private static @Nullable Path getHomeSshDir() {
@@ -134,10 +181,14 @@ public class SshClientManager {
             @Nullable String privateKeyRef, @Nullable String pinnedFingerprint, Duration defaultTimeout)
             throws IOException {
 
-        File ohPrivateKeyDir = new File(ohPrivateKeyDirString);
-
-        ConnectFuture cf = client.connect(user, host, port);
-        cf.verify(Duration.ofMillis(1000), CancelOption.CANCEL_ON_TIMEOUT);
+        // Pass empty string when user is not configured so the HostConfigEntryResolver
+        // can fill it from ~/.ssh/config User directive. The resolver falls back to the
+        // system username if SSH config also has no User for the host.
+        String effectiveUser = (user == null || user.isBlank()) ? "" : user;
+        logger.debug("Connecting to {} port {} as {}", host, port, effectiveUser);
+        // Port 0 means "not set" — MINA SSHD resolves from ~/.ssh/config or defaults to 22
+        ConnectFuture cf = client.connect(effectiveUser, host, port);
+        cf.verify(Duration.ofMillis(10000), CancelOption.CANCEL_ON_TIMEOUT);
         ClientSession cs = cf.getSession();
 
         AtomicReference<@Nullable String> bannerRef = new AtomicReference<>(null);
@@ -147,57 +198,13 @@ public class SshClientManager {
         if (password != null && !password.isBlank()) {
             cs.addPasswordIdentity(password);
         }
-        List<File> keyFiles = new ArrayList<>();
 
-        if (ohPrivateKeyDir.exists()) {
-            logger.debug("opening keys directory {}", ohPrivateKeyDir.getPath());
-            File @Nullable [] files = ohPrivateKeyDir.listFiles();
-            if (files != null) {
-                Collections.addAll(keyFiles, files);
-            }
-        }
+        // Keys are registered at the client level (see constructor) so they are
+        // available for all sessions including ProxyJump hops.
 
-        Path homeSshDir = getHomeSshDir();
-        if (homeSshDir != null) {
-            File homePrivateKeyDir = homeSshDir.toFile();
-            if (homePrivateKeyDir.exists()) {
-                logger.debug("opening keys directory {}", homePrivateKeyDir.getPath());
-                File @Nullable [] homeFiles = homePrivateKeyDir.listFiles();
-                if (homeFiles != null) {
-                    Collections.addAll(keyFiles, homeFiles);
-                }
-            }
-        }
+        cs.auth().verify(Duration.ofMillis(10000), CancelOption.CANCEL_ON_TIMEOUT);
 
-        if (!keyFiles.isEmpty()) {
-            logger.debug("{} files found in key directories", keyFiles.size());
-            for (File privateKeyFile : keyFiles) {
-                if (!isLikelyPrivateKey(privateKeyFile)) {
-                    logger.trace("Skipping non-key file: {}", privateKeyFile.getName());
-                    continue;
-                }
-                logger.debug("Loading key from {}", privateKeyFile.getPath());
-                try {
-                    FileKeyPairProvider keyPairProvider = new FileKeyPairProvider(
-                            Collections.singletonList(privateKeyFile.toPath()));
-                    // :TODO: add passphrase support
-                    keyPairProvider.setPasswordFinder(FilePasswordProvider.EMPTY);
-                    Iterable<KeyPair> keyPairs = keyPairProvider.loadKeys(null);
-                    if (keyPairs.iterator().hasNext()) {
-                        // Add private key identity
-                        cs.addPublicKeyIdentity(keyPairs.iterator().next());
-                    } else {
-                        logger.debug("No valid key pairs found in {}", privateKeyFile.getName());
-                    }
-                } catch (Exception ex) {
-                    logger.debug("Skipping {}: {}", privateKeyFile.getName(), ex.getMessage());
-                }
-            }
-        }
-
-        cs.auth().verify(Duration.ofMillis(1000), CancelOption.CANCEL_ON_TIMEOUT);
-
-        logger.debug("Connected to the server {}:{} as {}", host, port, user);
+        logger.debug("Connected to the server {}:{} as {}", host, port, cs.getUsername());
         logger.debug("Server Ident {}", cs.getServerVersion());
 
         @Nullable

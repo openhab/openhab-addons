@@ -61,13 +61,15 @@ public class DDWRTNetwork {
             final List<String> hosts = Objects.requireNonNull(
                     Arrays.stream(netCfg.hostnames.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList());
 
-            hosts.forEach(host -> {
+            hosts.forEach(hostEntry -> {
                 try {
-                    logger.debug("Discovering device: {}", host);
+                    HostSpec spec = parseHostSpec(hostEntry, netCfg);
+                    logger.debug("Discovering device: {} (user={}, port={})", spec.hostname, spec.user, spec.port);
+
                     DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
-                    devCfg.hostname = host;
-                    devCfg.port = netCfg.port;
-                    devCfg.user = netCfg.user;
+                    devCfg.hostname = spec.hostname;
+                    devCfg.port = spec.port;
+                    devCfg.user = spec.user;
                     devCfg.password = netCfg.password;
                     devCfg.refreshInterval = netCfg.refreshInterval;
 
@@ -75,13 +77,54 @@ public class DDWRTNetwork {
                     if (device != null) {
                         device.startRefresh(netCfg.refreshInterval);
                     } else {
-                        addFailedDeviceConfig(host, devCfg);
+                        addFailedDeviceConfig(spec.hostname, devCfg);
                     }
                 } catch (Exception e) {
-                    logger.debug("SSH to host {} failed: {}", host, e.getMessage(), e);
+                    logger.debug("SSH to host {} failed: {}", hostEntry, e.getMessage(), e);
                 }
             });
         }
+    }
+
+    private static class HostSpec {
+        final String hostname;
+        final String user;
+        final int port;
+
+        HostSpec(String hostname, String user, int port) {
+            this.hostname = hostname;
+            this.user = user;
+            this.port = port;
+        }
+    }
+
+    private static HostSpec parseHostSpec(String entry, DDWRTNetworkConfiguration defaults) {
+        String trimmed = entry.trim();
+        String user = defaults.user;
+        String hostPort = trimmed;
+
+        int atIdx = trimmed.indexOf('@');
+        if (atIdx >= 0) {
+            String maybeUser = trimmed.substring(0, atIdx).trim();
+            if (!maybeUser.isEmpty()) {
+                user = maybeUser;
+            }
+            hostPort = trimmed.substring(atIdx + 1).trim();
+        }
+
+        int port = defaults.port;
+        int colonIdx = hostPort.lastIndexOf(':');
+        if (colonIdx > 0 && colonIdx < hostPort.length() - 1) {
+            String maybePort = hostPort.substring(colonIdx + 1);
+            try {
+                port = Integer.parseInt(maybePort);
+                hostPort = hostPort.substring(0, colonIdx);
+            } catch (NumberFormatException e) {
+                // ignore, keep default port
+            }
+        }
+
+        return new HostSpec(hostPort, user, port);
     }
 
     public void setBridgeUID(ThingUID thingUID) {
@@ -183,7 +226,7 @@ public class DDWRTNetwork {
      */
     private @Nullable DDWRTBaseDevice createDeviceLocked(DDWRTDeviceConfiguration cfg) {
         Object lock = hostLocks.computeIfAbsent(cfg.hostname, k -> new Object());
-        synchronized (lock) {
+        synchronized (Objects.requireNonNull(lock)) {
             // Check if device was already created by another thread while we waited
             DDWRTBaseDevice existing = getDeviceByHostname(cfg.hostname);
             if (existing != null) {
@@ -192,6 +235,16 @@ public class DDWRTNetwork {
             }
             return DDWRTBaseDevice.createDevice(cache, cfg);
         }
+    }
+
+    /** Returns true if at least one device has an active SSH session. */
+    public boolean hasOnlineDevices() {
+        return cache.getDevices().stream().anyMatch(DDWRTBaseDevice::isOnline);
+    }
+
+    /** Returns true if there are device configurations that have not yet connected. */
+    public boolean hasPendingDevices() {
+        return !failedDeviceConfigs.isEmpty();
     }
 
     /** Stop all device thread pools and clear the cache. Called on bridge dispose. */

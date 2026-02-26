@@ -129,7 +129,7 @@ public class DDWRTDeviceThingHandler extends DDWRTBaseHandler<DDWRTBaseDevice, D
     protected State getChannelState(DDWRTBaseDevice device, String channelId) {
         return switch (channelId) {
             case CHANNEL_ONLINE -> OnOffType.from(device.isOnline());
-            case CHANNEL_UPTIME -> StringType.valueOf(device.getUptime());
+            case CHANNEL_UPTIME -> device.getUptimeSince();
             case CHANNEL_CPU_LOAD -> new DecimalType(device.getCpuLoad());
             case CHANNEL_CPU_TEMP -> new QuantityType<Temperature>(device.getCpuTemp(), SIUnits.CELSIUS);
             case CHANNEL_WAN_IP -> device.isGateway() ? StringType.valueOf(device.getWanIp()) : UnDefType.UNDEF;

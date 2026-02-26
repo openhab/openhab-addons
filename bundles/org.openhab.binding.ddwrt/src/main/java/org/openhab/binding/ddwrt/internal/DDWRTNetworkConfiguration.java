@@ -28,6 +28,6 @@ public class DDWRTNetworkConfiguration {
     public String hostnames = "";
     public String user = "";
     public String password = "";
-    public int port = 22;
-    public int refreshInterval = 600;
+    public int port = 0;
+    public int refreshInterval = 3;
 }
