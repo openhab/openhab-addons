@@ -11,6 +11,6 @@ mkdocs.yml
 .vscode
 .directory
 .github
-.copilot
+.copilot/temp
 .editorconfig
 project-type.txt
