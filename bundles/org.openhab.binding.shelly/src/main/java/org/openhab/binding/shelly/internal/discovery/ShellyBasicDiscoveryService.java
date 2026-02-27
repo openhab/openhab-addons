@@ -17,7 +17,6 @@ import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,12 +25,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.api.ShellyDiscoveryInterface;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiClient;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
@@ -70,7 +69,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         this.thingTable = thingTable;
     }
 
-    public void registerDeviceDiscoveryService() {
+    public void registerDeviceDiscoveryService() throws IllegalStateException {
         if (discoveryService == null) {
             discoveryService = bundleContext.registerService(DiscoveryService.class.getName(), this, new Hashtable<>());
         }
@@ -111,12 +110,13 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     }
 
     public static @Nullable DiscoveryResult createResult(boolean gen2, String hostname, String ipAddress,
-            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages) {
+            ShellyBindingConfiguration bindingConfig, HttpClient httpClient, ShellyTranslationProvider messages,
+            ShellyThingTable thingTable) {
         Logger logger = LoggerFactory.getLogger(ShellyBasicDiscoveryService.class);
         ThingUID thingUID = null;
         ShellyDeviceProfile profile;
         ShellySettingsDevice devInfo;
-        ShellyApiInterface api = null;
+        ShellyDiscoveryInterface api = null;
         boolean auth = false;
         String mac = "";
         String model = "";
@@ -127,19 +127,23 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new TreeMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress);
-            api = gen2 ? new Shelly2ApiRpc(name, config, httpClient) : new Shelly1HttpApi(name, config, httpClient);
-            api.initialize();
+            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
+            if (gen2) {
+                api = new Shelly2ApiClient(name, config, httpClient);
+            } else {
+                api = new Shelly1HttpApi(name, config, httpClient);
+            }
+            api.initialize(name, config);
             devInfo = api.getDeviceInfo();
             mac = getString(devInfo.mac);
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
-                name = devInfo.hostname;
+                config.serviceName = name = devInfo.hostname;
             }
 
-            thingType = substringBeforeLast(name, "-");
-            mode = devInfo.mode;
+            thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;
+            mode = getString(devInfo.mode);
             profile = api.getDeviceProfile(ShellyThingCreator.getThingTypeUID(name, model, mode), devInfo);
             deviceName = profile.name;
             properties = ShellyBaseHandler.fillDeviceProperties(profile);
@@ -152,9 +156,13 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
                 // create shellyunknown thing - will be changed during thing initialization with valid credentials
                 thingUID = ShellyThingCreator.getThingUIDForUnknown(name, model, mode);
             } else {
-                logger.debug("{}: Unable to discover device: {}", name, e.getMessage());
+                if (e.getCause() instanceof IllegalArgumentException) {
+                    logger.debug("{}: Unable to discover device", name, e);
+                } else {
+                    logger.debug("{}: Unable to discover device: {}", name, e.getMessage());
+                }
             }
-        } catch (IllegalArgumentException | IOException e) { // maybe some format description was buggy
+        } catch (IllegalArgumentException e) { // maybe some format description was buggy
             logger.debug("Discovery: Unable to discover thing", e);
         } finally {
             if (api != null) {
@@ -183,12 +191,14 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         return null;
     }
 
-    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address)
-            throws IOException {
+    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String ipAddress,
+            String serviceName) {
         ShellyThingConfiguration config = new ShellyThingConfiguration();
-        config.deviceIp = address;
-        config.userId = bindingConfig.defaultUserId;
-        config.password = bindingConfig.defaultPassword;
+        config.serviceName = serviceName;
+        config.deviceIp = ipAddress;
+        config.userId = getString(bindingConfig.defaultUserId);
+        config.password = getString(bindingConfig.defaultPassword);
+        config.localIp = getString(bindingConfig.localIP);
         return config;
     }
 
