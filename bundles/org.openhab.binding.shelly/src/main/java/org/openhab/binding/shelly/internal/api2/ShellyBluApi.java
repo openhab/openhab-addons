@@ -76,16 +76,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     }
 
     @Override
-    public void initialize() throws ShellyApiException {
-        if (!initialized) {
-            initialized = true;
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        if (!isInitialized()) {
             connected = false;
         }
-    }
-
-    @Override
-    public boolean isInitialized() {
-        return initialized;
+        super.initialize(thingName, config);
     }
 
     @Override

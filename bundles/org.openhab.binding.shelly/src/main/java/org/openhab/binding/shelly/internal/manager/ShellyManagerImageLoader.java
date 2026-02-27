@@ -26,6 +26,7 @@ import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyCacheList;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +42,8 @@ public class ShellyManagerImageLoader extends ShellyManagerPage {
 
     public ShellyManagerImageLoader(ConfigurationAdmin configurationAdmin,
             ShellyTranslationProvider translationProvider, HttpClient httpClient, String localIp, int localPort,
-            ShellyHandlerFactory handlerFactory, ShellyManagerCache<String, FwRepoEntry> firmwareRepo,
-            ShellyManagerCache<String, FwArchList> firmwareArch) {
+            ShellyHandlerFactory handlerFactory, ShellyCacheList<String, FwRepoEntry> firmwareRepo,
+            ShellyCacheList<String, FwArchList> firmwareArch) {
         super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
                 firmwareArch);
     }

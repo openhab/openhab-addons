@@ -36,6 +36,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyCacheList;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
     public ShellyManagerActionPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
             HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
-            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
+            ShellyCacheList<String, FwRepoEntry> firmwareRepo, ShellyCacheList<String, FwArchList> firmwareArch) {
         super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
                 firmwareArch);
     }

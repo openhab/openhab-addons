@@ -51,6 +51,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyCacheList;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
@@ -86,8 +87,8 @@ public class ShellyManagerPage {
     protected final Map<String, String> htmlTemplates = new HashMap<>();
     protected final Gson gson = new Gson();
 
-    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
-    protected final ShellyManagerCache<String, FwArchList> firmwareArch;
+    protected final ShellyCacheList<String, FwRepoEntry> firmwareRepo;
+    protected final ShellyCacheList<String, FwArchList> firmwareArch;
 
     public static class ShellyMgrResponse {
         public @Nullable Object data = "";
@@ -146,7 +147,7 @@ public class ShellyManagerPage {
 
     public ShellyManagerPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
             HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
-            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
+            ShellyCacheList<String, FwRepoEntry> firmwareRepo, ShellyCacheList<String, FwArchList> firmwareArch) {
         this.configurationAdmin = configurationAdmin;
         this.resources = translationProvider;
         this.handlerFactory = handlerFactory;

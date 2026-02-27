@@ -28,6 +28,7 @@ import org.openhab.binding.shelly.internal.manager.ShellyManagerPage.FwArchList;
 import org.openhab.binding.shelly.internal.manager.ShellyManagerPage.FwRepoEntry;
 import org.openhab.binding.shelly.internal.manager.ShellyManagerPage.ShellyMgrResponse;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyCacheList;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.net.NetworkAddressService;
@@ -50,8 +51,8 @@ import org.slf4j.LoggerFactory;
 public class ShellyManager {
     private final Map<String, ShellyManagerPage> pages;
     private final Logger logger = LoggerFactory.getLogger(ShellyManager.class);
-    private final ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
-    private final ShellyManagerCache<String, FwArchList> firmwareArch;
+    private final ShellyCacheList<String, FwRepoEntry> firmwareRepo;
+    private final ShellyCacheList<String, FwArchList> firmwareArch;
 
     @Activate
     public ShellyManager(@Reference ConfigurationAdmin configurationAdmin,
@@ -62,8 +63,8 @@ public class ShellyManager {
         Integer localPort = HttpServiceUtil.getHttpServicePort(componentContext.getBundleContext());
         HttpClient httpClient = httpClientFactory.getCommonHttpClient();
         Map<String, ShellyManagerPage> pages = new LinkedHashMap<>();
-        firmwareRepo = new ShellyManagerCache<>();
-        firmwareArch = new ShellyManagerCache<>();
+        firmwareRepo = new ShellyCacheList<>();
+        firmwareArch = new ShellyCacheList<>();
 
         pages.put(SHELLY_MGR_OVERVIEW_URI, new ShellyManagerOverviewPage(configurationAdmin, translationProvider,
                 httpClient, localIp, localPort, handlerFactory, firmwareRepo, firmwareArch));

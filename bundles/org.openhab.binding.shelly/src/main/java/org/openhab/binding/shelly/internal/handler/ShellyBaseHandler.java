@@ -292,6 +292,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         cache.clear();
         resetStats();
 
+        if (getThingStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)) {
+            logger.debug("{}: Thing configuration error, cancel initialization", thingName);
+            return false;
+        }
+
         profile.initFromThingType(thing.getThingTypeUID());
         logger.debug(
                 "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
@@ -320,7 +325,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize();
+        api.initialize(thingName, config);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && config.password.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
@@ -328,9 +333,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(device.hostname).toLowerCase();
+            api.setConfig(thingName, config);
         }
 
-        api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
         String mode = getString(tmpPrf.device.mode);
@@ -609,8 +614,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
                 String secondaryIp = config.deviceIp + ":" + client.mport.toString();
                 String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
-                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
-                        bindingConfig, httpClient, messages);
+                DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp, config,
+                        httpClient, messages);
                 if (result != null) {
                     thingTable.discoveredResult(result);
                 }
@@ -1499,7 +1504,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
             }
         } catch (ShellyApiException | RuntimeException e) {
-            logger.debug("{}: Unable to initialize Device Profile", thingName, e);
+            logger.debug("{}: Unable to initialize Device Profile: {}", thingName, e.toString());
         } finally {
             refreshSettings = false;
         }

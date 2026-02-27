@@ -526,10 +526,7 @@ public class ShellyChannelDefinitions {
         addChannel(thing, newChannels, emeter.frequency != null, group, CHANNEL_EMETER_FREQUENCY);
         addChannel(thing, newChannels, emeter.pf != null, group, CHANNEL_EMETER_PFACTOR); // EM has no PF. but power
         addChannel(thing, newChannels, true, group, CHANNEL_LAST_UPDATE);
-        ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
-        if (handler != null) {
-            addChannel(thing, newChannels, handler.getProfile().isEM50, group, CHANNEL_DEVST_RESETTOTAL); // 3EM
-        }
+        addChannel(thing, newChannels, profile.isEM50, group, CHANNEL_DEVST_RESETTOTAL); // 3EM
         return newChannels;
     }
 
