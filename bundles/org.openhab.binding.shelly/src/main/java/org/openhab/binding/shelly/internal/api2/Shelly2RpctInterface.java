@@ -32,6 +32,8 @@ public interface Shelly2RpctInterface {
 
     void onNotifyEvent(String json) throws ShellyApiException;
 
+    void onPong();
+
     void onClose(int statusCode, String reason);
 
     void onError(Throwable cause);

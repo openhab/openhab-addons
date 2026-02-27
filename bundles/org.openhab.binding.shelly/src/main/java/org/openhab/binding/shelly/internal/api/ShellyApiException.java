@@ -28,6 +28,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.io.EofException;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -116,7 +117,8 @@ public class ShellyApiException extends Exception {
         Class<?> exType = getCauseClass();
         return isUnknownHost() || isMalformedURL() || exType == ConnectException.class
                 || exType == SocketException.class || exType == PortUnreachableException.class
-                || exType == NoRouteToHostException.class || exType == EOFException.class;
+                || exType == NoRouteToHostException.class || exType == EofException.class
+                || exType == EOFException.class;
     }
 
     public boolean isNoRouteToHost() {
