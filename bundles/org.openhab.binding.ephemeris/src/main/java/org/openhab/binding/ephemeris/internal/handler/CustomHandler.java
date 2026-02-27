@@ -34,7 +34,7 @@ import org.openhab.core.thing.ThingStatusDetail;
  */
 @NonNullByDefault
 public class CustomHandler extends JollydayHandler {
-    private @Nullable String path;
+    private @NonNullByDefault({}) String path;
 
     public CustomHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
         super(thing, ephemerisManager, zoneId, CHANNEL_EVENT_TODAY, CHANNEL_EVENT_TOMORROW);
@@ -63,18 +63,14 @@ public class CustomHandler extends JollydayHandler {
 
     @Override
     protected @Nullable String getEvent(ZonedDateTime day) {
-        if (path instanceof String filePath) {
-            try {
-                return ephemeris.getBankHolidayName(day, filePath);
-            } catch (IllegalStateException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Syntex error in %s".formatted(path));
-            } catch (FileNotFoundException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Missing file: %s".formatted(path));
-            }
-            return null;
-        } else {
-            throw new IllegalArgumentException("path should not be null");
+        try {
+            return ephemeris.getBankHolidayName(day, path);
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Syntex error in %s".formatted(path));
+        } catch (FileNotFoundException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Missing file: %s".formatted(path));
         }
+        return null;
     }
 }

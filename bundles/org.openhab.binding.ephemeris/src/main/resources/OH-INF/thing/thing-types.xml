@@ -78,7 +78,7 @@
 			</parameter>
 			<parameter name="days" type="integer" required="false" min="1">
 				<label>Days</label>
-				<description>Number of days, including today, in the status time series</description>
+				<description>Number of days to include after today in the time series</description>
 				<default>1</default>
 			</parameter>
 		</config-description>
@@ -103,7 +103,7 @@
 		<config-description>
 			<parameter name="days" type="integer" required="false" min="1">
 				<label>Days</label>
-				<description>Number of days, including today, in the status time series</description>
+				<description>Number of days to include after today in the time series</description>
 				<default>1</default>
 			</parameter>
 		</config-description>

@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class WeekendConfiguration {
-    public int days = 7;
+    public int days = 1;
 }

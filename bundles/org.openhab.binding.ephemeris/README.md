@@ -34,16 +34,16 @@ The file has to use the syntax described here: <https://www.openhab.org/docs/con
 
 ### `dayset` Thing Configuration
 
-| Name            | Type    | Description                                                | Default | Required | Advanced |
-|-----------------|---------|------------------------------------------------------------|---------|----------|----------|
-| days            | integer | Number of days, including today, in the status time series | 1       | no       | no       |
-| name            | text    | Name of the dayset used                                    | N/A     | yes      | no       |
+| Name            | Type    | Description                                              | Default | Required | Advanced |
+|-----------------|---------|----------------------------------------------------------|---------|----------|----------|
+| days            | integer | Number of days to include after today in the time series | 1       | no       | no       |
+| name            | text    | Name of the dayset used                                  | N/A     | yes      | no       |
 
 ### `weekend` Thing Configuration
 
-| Name            | Type    | Description                                                | Default | Required | Advanced |
-|-----------------|---------|------------------------------------------------------------|---------|----------|----------|
-| days            | integer | Number of days, including today, in the status time series | 1       | no       | no       |
+| Name            | Type    | Description                                              | Default | Required | Advanced |
+|-----------------|---------|----------------------------------------------------------|---------|----------|----------|
+| days            | integer | Number of days to include after today in the time series | 1       | no       | no       |
 
 ## Channels
 
