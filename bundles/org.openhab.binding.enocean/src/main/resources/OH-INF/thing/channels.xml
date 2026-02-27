@@ -78,6 +78,14 @@
 		</config-description>
 	</channel-type>
 
+	<!-- State Machine State Channel -->
+	<channel-type id="statemachine" advanced="true">
+		<item-type>String</item-type>
+		<label>State Machine State</label>
+		<description>Current state of the internal state machine</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<!-- Dimmer Channel -->
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
