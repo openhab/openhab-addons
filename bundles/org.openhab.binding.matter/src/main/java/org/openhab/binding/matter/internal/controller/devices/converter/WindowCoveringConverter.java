@@ -78,7 +78,7 @@ public class WindowCoveringConverter extends GenericConverter<WindowCoveringClus
                     break;
             }
         } else if (command instanceof PercentType percentType) {
-            moveCommand(WindowCoveringCluster.goToLiftPercentage(percentType.intValue()));
+            moveCommand(WindowCoveringCluster.goToLiftPercentage(percentType.intValue() * 100));
         }
         super.handleCommand(channelUID, command);
     }
