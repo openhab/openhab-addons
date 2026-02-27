@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
+import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class ContextualExceptionHandler implements org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType {
+public class ContextualExceptionHandler implements ExceptionHandlerType {
 
     private final Logger logger = LoggerFactory.getLogger(ContextualExceptionHandler.class);
 

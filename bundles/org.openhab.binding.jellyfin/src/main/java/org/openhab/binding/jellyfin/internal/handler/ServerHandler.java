@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal.handler;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -34,12 +36,16 @@ import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask;
+import org.openhab.binding.jellyfin.internal.server.SessionsMessageHandler;
+import org.openhab.binding.jellyfin.internal.server.WebSocketTask;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.ItemsApi;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.UserLibraryApi;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDtoQueryResult;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.MessageCommand;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayCommand;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlaystateCommand;
@@ -147,8 +153,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private void initializeWebSocketTask() {
         try {
             // Check if we already have a WebSocketTask
-            AbstractTask existingTask = this.tasks
-                    .get(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+            AbstractTask existingTask = this.tasks.get(WebSocketTask.TASK_ID);
 
             // If token is missing or empty, don't create WebSocketTask
             if (this.configuration.token.isEmpty()) {
@@ -158,12 +163,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
             // Only create if it doesn't exist
             if (existingTask == null) {
-                var wsHandler = new org.openhab.binding.jellyfin.internal.server.SessionsMessageHandler(apiClient,
-                        this.sessionManager);
+                var wsHandler = new SessionsMessageHandler(apiClient, this.sessionManager);
                 // Pass fallback callback that switches to polling when WebSocket exhausts retries
-                var wsTask = new org.openhab.binding.jellyfin.internal.server.WebSocketTask(apiClient,
-                        this.configuration.token, wsHandler, () -> this.handleWebSocketFallback());
-                this.tasks.put(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID, wsTask);
+                var wsTask = new WebSocketTask(apiClient, this.configuration.token, wsHandler,
+                        () -> this.handleWebSocketFallback());
+                this.tasks.put(WebSocketTask.TASK_ID, wsTask);
                 logger.info("[MODE] WebSocket mode initialized (real-time updates enabled with automatic fallback)");
             }
         } catch (Exception ex) {
@@ -181,27 +185,24 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         logger.info("[MODE] Real-time updates disabled, using periodic polling instead");
 
         // Stop WebSocket task
-        ScheduledFuture<?> wsSchedule = this.scheduledTasks
-                .get(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+        ScheduledFuture<?> wsSchedule = this.scheduledTasks.get(WebSocketTask.TASK_ID);
         if (wsSchedule != null) {
             wsSchedule.cancel(true);
-            this.scheduledTasks.remove(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+            this.scheduledTasks.remove(WebSocketTask.TASK_ID);
         }
 
         // Dispose WebSocket resources
-        AbstractTask wsTask = this.tasks.get(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
-        if (wsTask instanceof org.openhab.binding.jellyfin.internal.server.WebSocketTask) {
-            ((org.openhab.binding.jellyfin.internal.server.WebSocketTask) wsTask).dispose();
+        AbstractTask wsTask = this.tasks.get(WebSocketTask.TASK_ID);
+        if (wsTask instanceof WebSocketTask) {
+            ((WebSocketTask) wsTask).dispose();
         }
 
         // Start polling task as fallback
-        AbstractTask pollingTask = this.tasks
-                .get(org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask.TASK_ID);
+        AbstractTask pollingTask = this.tasks.get(ServerSyncTask.TASK_ID);
         if (pollingTask != null) {
             ScheduledFuture<?> scheduledTask = this.scheduler.scheduleWithFixedDelay(pollingTask,
                     pollingTask.getStartupDelay(), pollingTask.getInterval(), TimeUnit.SECONDS);
-            this.scheduledTasks.put(org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask.TASK_ID,
-                    scheduledTask);
+            this.scheduledTasks.put(ServerSyncTask.TASK_ID, scheduledTask);
             logger.info("[MODE] ✓ Fallback to POLLING mode successful: ServerSyncTask started (interval: {}s)",
                     pollingTask.getInterval());
         } else {
@@ -263,11 +264,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             return;
         }
         try {
-            org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi sessionApi = new org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi(
-                    apiClient);
-            if (generalCommand instanceof org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand) {
-                sessionApi.sendFullGeneralCommand(sessionId,
-                        (org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand) generalCommand);
+            SessionApi sessionApi = new SessionApi(apiClient);
+            if (generalCommand instanceof GeneralCommand) {
+                sessionApi.sendFullGeneralCommand(sessionId, (GeneralCommand) generalCommand);
             } else {
                 logger.warn("Invalid general command type: {}", generalCommand.getClass().getName());
             }
@@ -288,9 +287,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 logger.warn("Cannot play item - session ID is null");
                 return;
             }
-            java.util.List<java.util.UUID> items = new java.util.ArrayList<>();
+            List<UUID> items = new ArrayList<>();
             try {
-                items.add(java.util.UUID.fromString(itemId));
+                items.add(UUID.fromString(itemId));
             } catch (Exception ignore) {
                 logger.warn("Invalid UUID for playItem: {}", itemId);
             }
@@ -306,10 +305,10 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     public @Nullable BaseItemDto searchItem(@Nullable String userId, String searchTerm, BaseItemKind kind) {
         try {
             // Determine a user id to use, falling back to the first active user if not provided
-            java.util.UUID uid = null;
+            UUID uid = null;
             if (userId != null) {
                 try {
-                    uid = java.util.UUID.fromString(userId);
+                    uid = UUID.fromString(userId);
                 } catch (Exception e) {
                     // ignore and fall back
                     uid = null;
@@ -319,7 +318,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 synchronized (activeUserIds) {
                     if (!activeUserIds.isEmpty()) {
                         try {
-                            uid = java.util.UUID.fromString(activeUserIds.get(0));
+                            uid = UUID.fromString(activeUserIds.get(0));
                         } catch (Exception ex) {
                             uid = null;
                         }
@@ -377,12 +376,12 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     /**
      * Return an item by id using the given user id where applicable.
      */
-    public @Nullable BaseItemDto getItemById(@Nullable String userId, java.util.UUID itemId) {
+    public @Nullable BaseItemDto getItemById(@Nullable String userId, UUID itemId) {
         try {
-            java.util.UUID uid = null;
+            UUID uid = null;
             if (userId != null) {
                 try {
-                    uid = java.util.UUID.fromString(userId);
+                    uid = UUID.fromString(userId);
                 } catch (Exception e) {
                     uid = null;
                 }
@@ -392,7 +391,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 synchronized (activeUserIds) {
                     if (!activeUserIds.isEmpty()) {
                         try {
-                            uid = java.util.UUID.fromString(activeUserIds.get(0));
+                            uid = UUID.fromString(activeUserIds.get(0));
                         } catch (Exception ex) {
                             uid = null;
                         }
@@ -624,12 +623,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
             // If token changed, dispose existing WebSocketTask so it can be recreated with new token
             if (tokenChanged) {
-                AbstractTask wsTask = this.tasks
-                        .get(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
-                if (wsTask instanceof org.openhab.binding.jellyfin.internal.server.WebSocketTask) {
+                AbstractTask wsTask = this.tasks.get(WebSocketTask.TASK_ID);
+                if (wsTask instanceof WebSocketTask) {
                     logger.debug("[WEBSOCKET] Disposing existing WebSocketTask due to token change");
-                    ((org.openhab.binding.jellyfin.internal.server.WebSocketTask) wsTask).dispose();
-                    this.tasks.remove(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID);
+                    ((WebSocketTask) wsTask).dispose();
+                    this.tasks.remove(WebSocketTask.TASK_ID);
                 }
             }
 
@@ -803,7 +801,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
                 logger.info("Configuration changed from URI, updating Thing configuration");
 
-                org.openhab.core.config.core.Configuration config = editConfiguration();
+                var config = editConfiguration();
                 config.put("hostname", updatedConfig.hostname);
                 config.put("port", updatedConfig.port);
                 config.put("ssl", updatedConfig.ssl);
@@ -833,7 +831,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
                 logger.info("Configuration updated from SystemInfo");
 
-                org.openhab.core.config.core.Configuration config = editConfiguration();
+                var config = editConfiguration();
                 config.put("serverName", updatedConfig.serverName);
                 config.put("hostname", updatedConfig.hostname);
                 updateConfiguration(config);
@@ -887,7 +885,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         }
         try {
             return this.configuration.getServerURI();
-        } catch (java.net.URISyntaxException ex) {
+        } catch (URISyntaxException ex) {
             logger.error("Configuration contains invalid server URI", ex);
             throw new IllegalStateException("Configuration contains invalid server URI", ex);
         }
