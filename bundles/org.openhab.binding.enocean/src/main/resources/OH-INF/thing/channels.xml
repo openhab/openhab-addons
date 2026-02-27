@@ -75,7 +75,29 @@
 				<label>Shut Time</label>
 				<description>Time (in seconds) to completely close the rollershutter</description>
 			</parameter>
+			<parameter name="swapTime" type="integer">
+				<label>Swap Time</label>
+				<description>Time (in 100 ms units) to rotate slats from 0% to 100%</description>
+			</parameter>
+			<parameter name="configMode" type="text">
+				<label>Configuration Mode</label>
+				<description>Operating mode for FSB14 actuators</description>
+				<options>
+					<option value="legacy">Legacy</option>
+					<option value="rollershutter">Rollershutter</option>
+					<option value="blinds">Blinds</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
 		</config-description>
+	</channel-type>
+
+	<!-- State Machine State Channel -->
+	<channel-type id="statemachine" advanced="true">
+		<item-type>String</item-type>
+		<label>State Machine State</label>
+		<description>Current state of the internal state machine</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Dimmer Channel -->
