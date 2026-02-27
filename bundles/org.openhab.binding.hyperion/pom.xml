@@ -13,5 +13,17 @@
   <artifactId>org.openhab.binding.hyperion</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Hyperion Binding</name>
-
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.errorprone</groupId>
+      <artifactId>error_prone_annotations</artifactId>
+      <version>2.41.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 </project>
