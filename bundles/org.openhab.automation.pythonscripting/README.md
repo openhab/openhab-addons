@@ -70,7 +70,7 @@ Additionally, you can configure the Add-on via a config file `/openhab/services/
 If you use the marketplace version of this Add-on, it is necessary to use the config file. OpenHAB has a bug which prevents the web based config dialog to work correctly for `kar` file based Add-ons.
 :::
 
-```text
+```ini
 # Activate openHAB Python helper module and inject scope and helper objects into rules
 #
 # Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer, etc.
