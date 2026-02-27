@@ -24,7 +24,6 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
-import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardHandlerTest;
 import org.openhab.binding.homewizard.internal.dto.DataUtil;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -105,17 +104,17 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
                         HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_GAS_TOTAL),
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_COUNT), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_POWER), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_TARGET_POWER), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_CONSUMPTION), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_PRODUCTION));
 
         when(thing.getChannels()).thenReturn(channelList);
@@ -123,17 +122,21 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
     }
 
     private static HomeWizardP1MeterHandlerMock createAndInitHandler(final ThingHandlerCallback callback,
-            final Thing thing) {
+            final Thing thing, int apiVersion) {
         final TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
         doReturn(ZoneId.systemDefault()).when(timeZoneProvider).getTimeZone();
         final HomeWizardP1MeterHandlerMock handler = spy(new HomeWizardP1MeterHandlerMock(thing, timeZoneProvider));
-        handler.batteriesHandler = spy(new HomeWizardBatteriesSubHandler(handler));
 
         try {
             doReturn(DataUtil.fromFile("response-device-information-p1-meter.json")).when(handler)
                     .getDeviceInformationData();
-            doReturn(DataUtil.fromFile("response-measurement-p1-meter.json")).when(handler).getMeasurementData();
-            doReturn(DataUtil.fromFile("response-batteries.json")).when(handler.batteriesHandler).getBatteriesData();
+            if (apiVersion == 1) {
+                doReturn(DataUtil.fromFile("v1-response-measurement-p1-meter.json")).when(handler).getMeasurementData();
+            } else {
+                doReturn(DataUtil.fromFile("response-measurement-p1-meter.json")).when(handler).getMeasurementData();
+            }
+            doReturn(DataUtil.fromFile("response-batteries.json")).when(handler).getBatteriesData();
+            doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
         } catch (Exception e) {
             assertFalse(true);
         }
@@ -144,10 +147,10 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
     }
 
     @Test
-    public void testUpdateChannels() {
+    public void testUpdateChannelsForApiV1() {
         final Thing thing = mockThing(1, false);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing);
+        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing, 1);
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -199,6 +202,90 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
                     new DateTimeType(ZonedDateTime.of(2021, 6, 06, 14, 0, 10, 0, ZoneId.systemDefault())));
             verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_GAS_TOTAL),
                     getState(2569.646, SIUnits.CUBIC_METRE));
+
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                    getState("My Wi-Fi"));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI), getState(-58));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+                    getState(true));
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    @Test
+    public void testUpdateChannelsForApiV2() {
+        final Thing thing = mockThing(2, false);
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing, 2);
+
+        try {
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_CURRENT_L1),
+                    getState(-4.0, Units.AMPERE));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_CURRENT_L2),
+                    getState(2.0, Units.AMPERE));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_CURRENT_L3),
+                    getState(333.0, Units.AMPERE));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER),
+                    getState(-543, Units.WATT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_TARIFF),
+                    getState(2));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER_L1),
+                    getState(-676, Units.WATT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER_L2),
+                    getState(133, Units.WATT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER_L3),
+                    getState(18, Units.WATT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_VOLTAGE_L1),
+                    getState(221, Units.VOLT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_VOLTAGE_L2),
+                    getState(222, Units.VOLT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_VOLTAGE_L3),
+                    getState(223, Units.VOLT));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_ENERGY_EXPORT),
+                    getState(8877.0, Units.KILOWATT_HOUR));
+            verify(callback).stateUpdated(
+                    getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_ENERGY_EXPORT_T1),
+                    getState(8874, Units.KILOWATT_HOUR));
+            verify(callback).stateUpdated(
+                    getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_ENERGY_EXPORT_T2),
+                    getState(7788, Units.KILOWATT_HOUR));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_ENERGY_IMPORT),
+                    getState(13779.338, Units.KILOWATT_HOUR));
+            verify(callback).stateUpdated(
+                    getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_ENERGY_IMPORT_T1),
+                    getState(10830.511, Units.KILOWATT_HOUR));
+            verify(callback).stateUpdated(
+                    getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_ENERGY_IMPORT_T2),
+                    getState(2948.827, Units.KILOWATT_HOUR));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_POWER_FAILURES),
+                    getState(7));
+            verify(callback).stateUpdated(
+                    getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES), getState(2));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP),
+                    new DateTimeType(ZonedDateTime.of(2021, 6, 06, 14, 0, 10, 0, ZoneId.systemDefault())));
+            verify(callback).stateUpdated(getEnergyChannelUid(thing, HomeWizardBindingConstants.CHANNEL_GAS_TOTAL),
+                    getState(2569.646, SIUnits.CUBIC_METRE));
+
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_SSID),
+                    getState("My Wi-Fi"));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_WIFI_RSSI), getState(-77));
+            verify(callback).stateUpdated(getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_UPTIME),
+                    getState(356, Units.SECOND));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED),
+                    getState(true));
+            verify(callback).stateUpdated(
+                    getSystemChannelUid(thing, HomeWizardBindingConstants.CHANNEL_SYSTEM_STATUS_LED_BRIGHTNESS),
+                    getState(100));
         } finally {
             handler.dispose();
         }
@@ -208,7 +295,7 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
     public void testUpdateBatteriesChannels() {
         final Thing thing = mockThing(2, false);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing);
+        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing, 2);
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -241,7 +328,7 @@ public class HomeWizardP1MeterHandlerTest extends HomeWizardHandlerTest {
     public void testUpdateLegacyChannels() {
         final Thing thing = mockThing(1, true);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing);
+        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing, 1);
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));

@@ -12,9 +12,10 @@
 		<channel-groups>
 			<channel-group id="energy" typeId="kwh-energy-group"/>
 			<channel-group id="batteries" typeId="hw-batteries-group"/>
+			<channel-group id="system" typeId="hw-system-group"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:homewizard:device"/>

@@ -1,6 +1,6 @@
 {
    "wifi_ssid": "My Wi-Fi",
-   "wifi_strength": 100,
+   "wifi_strength": 85,
    "smr_version": 50,
    "meter_model": "ISKRA  2M550T-101",
    "unique_id": "00112233445566778899AABBCCDDEEFF",
