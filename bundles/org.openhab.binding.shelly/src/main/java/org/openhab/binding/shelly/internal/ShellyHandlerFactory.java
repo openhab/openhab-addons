@@ -88,7 +88,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         try {
             client.start();
         } catch (Exception e) {
-            logger.warn("Failed to start ShellyHandlerFactory WebSocketClient: {}", e.getMessage(), e);
+            logger.error("Failed to start ShellyHandlerFactory WebSocketClient: {}", e.getMessage(), e);
             throw new ComponentException("Failed to activate: Unable to start WebSocket client: " + e.getMessage(), e);
         }
 
