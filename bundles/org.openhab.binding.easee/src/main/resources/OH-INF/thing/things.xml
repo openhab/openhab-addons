@@ -49,4 +49,19 @@
 		</properties>
 		<config-description-ref uri="thing-type:easee:charger"/>
 	</thing-type>
+	<thing-type id="user">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="site"/>
+		</supported-bridge-type-refs>
+		<label>Easee User</label>
+		<description>A user with access to the Easee site.</description>
+
+		<channel-groups>
+			<channel-group typeId="user-consumption" id="consumption"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<config-description-ref uri="thing-type:easee:user"/>
+	</thing-type>
 </thing:thing-descriptions>
