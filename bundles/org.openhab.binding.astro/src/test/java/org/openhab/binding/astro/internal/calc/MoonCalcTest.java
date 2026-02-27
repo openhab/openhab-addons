@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.DistanceType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
+import org.openhab.core.types.UnDefType;
 
 /***
  * Specific unit tests to check if {@link MoonCalc} generates correct data for
@@ -73,7 +74,8 @@ public class MoonCalcTest {
         assertNotNull(moon.getPosition());
         assertNotNull(moon.getRise());
         assertNotNull(moon.getSet());
-        assertNotNull(moon.getZodiac());
+        // for an old date the phase should not be calculated
+        assertEquals(UnDefType.UNDEF, moon.getPhaseSet().getName());
     }
 
     @Test
