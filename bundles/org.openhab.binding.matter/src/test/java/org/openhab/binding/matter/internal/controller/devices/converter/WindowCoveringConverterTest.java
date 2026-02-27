@@ -95,7 +95,7 @@ class WindowCoveringConverterTest extends BaseMatterConverterTest {
         ChannelUID channelUID = new ChannelUID("matter:node:test:12345:1#windowcovering-lift");
         converter.handleCommand(channelUID, new PercentType(50));
         verify(mockHandler, times(1)).sendClusterCommand(eq(1), eq(WindowCoveringCluster.CLUSTER_NAME),
-                eq(WindowCoveringCluster.goToLiftPercentage(50)));
+                eq(WindowCoveringCluster.goToLiftPercentage(5000)));
     }
 
     @Test
