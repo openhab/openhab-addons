@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
+import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
@@ -54,9 +55,9 @@ public interface TaskManagerInterface {
      * @param discoveryService The discovery service for client discovery (may be null initially)
      * @return Map of initialized tasks by their IDs
      */
-    Map<String, org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask> initializeTasks(ApiClient apiClient,
-            ErrorEventBus errorEventBus, Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler,
-            ServerHandler serverHandler, @Nullable ClientDiscoveryService discoveryService);
+    Map<String, AbstractTask> initializeTasks(ApiClient apiClient, ErrorEventBus errorEventBus,
+            Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler, ServerHandler serverHandler,
+            @Nullable ClientDiscoveryService discoveryService);
 
     /**
      * Manages task transitions for a server state change.
@@ -67,8 +68,7 @@ public interface TaskManagerInterface {
      * @param scheduledTasks Map of currently scheduled tasks
      * @param scheduler The scheduler service to use for task scheduling
      */
-    void processStateChange(ServerState serverState,
-            Map<String, org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask> availableTasks,
+    void processStateChange(ServerState serverState, Map<String, AbstractTask> availableTasks,
             Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler);
 
     /**
@@ -91,7 +91,6 @@ public interface TaskManagerInterface {
      * @param usersHandler The handler to invoke when users have been retrieved
      * @return The created DiscoveryTask
      */
-    org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask createDiscoveryTask(ServerHandler serverHandler,
-            ClientDiscoveryService discoveryService, ErrorEventBus errorEventBus, ApiClient apiClient,
-            Consumer<List<UserDto>> usersHandler);
+    AbstractTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
+            ErrorEventBus errorEventBus, ApiClient apiClient, Consumer<List<UserDto>> usersHandler);
 }

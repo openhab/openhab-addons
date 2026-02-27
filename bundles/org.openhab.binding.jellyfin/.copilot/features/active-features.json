@@ -65,7 +65,8 @@
 				{
 					"phase": 3,
 					"name": "Remove FQCNs and Add Imports",
-					"status": "not-started"
+					"status": "complete",
+					"completedDate": "2026-02-27"
 				},
 				{
 					"phase": 4,

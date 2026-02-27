@@ -17,6 +17,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.config.core.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
@@ -49,7 +50,7 @@ public class BindingConfiguration {
             Dictionary<String, Object> properties = configuration.getProperties();
 
             if (properties != null) {
-                org.openhab.core.config.core.Configuration config = new org.openhab.core.config.core.Configuration();
+                Configuration config = new Configuration();
                 for (Enumeration<String> keys = properties.keys(); keys.hasMoreElements();) {
                     String key = keys.nextElement();
                     config.put(key, properties.get(key));

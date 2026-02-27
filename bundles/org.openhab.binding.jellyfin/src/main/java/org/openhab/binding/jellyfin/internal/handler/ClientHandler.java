@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,13 @@ import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayCo
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.NextPreviousType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.RewindFastforwardType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -236,29 +245,29 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Media control commands
             if (Constants.MEDIA_CONTROL_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.PlayPauseType) {
-                    var playPause = (org.openhab.core.library.types.PlayPauseType) command;
-                    if (playPause == org.openhab.core.library.types.PlayPauseType.PLAY) {
+                if (command instanceof PlayPauseType) {
+                    var playPause = (PlayPauseType) command;
+                    if (playPause == PlayPauseType.PLAY) {
                         sendPlayStateCommand(PlaystateCommand.UNPAUSE);
-                    } else if (playPause == org.openhab.core.library.types.PlayPauseType.PAUSE) {
+                    } else if (playPause == PlayPauseType.PAUSE) {
                         sendPlayStateCommand(PlaystateCommand.PAUSE);
                     }
                     return;
                 }
-                if (command instanceof org.openhab.core.library.types.NextPreviousType) {
-                    var np = (org.openhab.core.library.types.NextPreviousType) command;
-                    if (np == org.openhab.core.library.types.NextPreviousType.NEXT) {
+                if (command instanceof NextPreviousType) {
+                    var np = (NextPreviousType) command;
+                    if (np == NextPreviousType.NEXT) {
                         sendPlayStateCommand(PlaystateCommand.NEXT_TRACK);
-                    } else if (np == org.openhab.core.library.types.NextPreviousType.PREVIOUS) {
+                    } else if (np == NextPreviousType.PREVIOUS) {
                         sendPlayStateCommand(PlaystateCommand.PREVIOUS_TRACK);
                     }
                     return;
                 }
-                if (command instanceof org.openhab.core.library.types.RewindFastforwardType) {
-                    var rw = (org.openhab.core.library.types.RewindFastforwardType) command;
-                    if (rw == org.openhab.core.library.types.RewindFastforwardType.FASTFORWARD) {
+                if (command instanceof RewindFastforwardType) {
+                    var rw = (RewindFastforwardType) command;
+                    if (rw == RewindFastforwardType.FASTFORWARD) {
                         sendPlayStateCommand(PlaystateCommand.FAST_FORWARD);
-                    } else if (rw == org.openhab.core.library.types.RewindFastforwardType.REWIND) {
+                    } else if (rw == RewindFastforwardType.REWIND) {
                         sendPlayStateCommand(PlaystateCommand.REWIND);
                     }
                     return;
@@ -268,8 +277,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Seek by percentage
             if (Constants.PLAYING_ITEM_PERCENTAGE_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.PercentType) {
-                    var percent = (org.openhab.core.library.types.PercentType) command;
+                if (command instanceof PercentType) {
+                    var percent = (PercentType) command;
                     seekToPercent(percent.intValue());
                 }
                 return;
@@ -277,8 +286,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Seek by seconds (number type)
             if (Constants.PLAYING_ITEM_SECOND_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.DecimalType) {
-                    var secs = (org.openhab.core.library.types.DecimalType) command;
+                if (command instanceof DecimalType) {
+                    var secs = (DecimalType) command;
                     seekToSeconds(secs.intValue());
                 }
                 return;
@@ -288,8 +297,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             if (Constants.PLAY_BY_TERMS_CHANNEL.equals(channelId)
                     || Constants.PLAY_NEXT_BY_TERMS_CHANNEL.equals(channelId)
                     || Constants.PLAY_LAST_BY_TERMS_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.StringType) {
-                    final String terms = ((org.openhab.core.library.types.StringType) command).toString();
+                if (command instanceof StringType) {
+                    final String terms = ((StringType) command).toString();
                     PlayCommand playCommand = PlayCommand.PLAY_NOW;
                     if (Constants.PLAY_NEXT_BY_TERMS_CHANNEL.equals(channelId)) {
                         playCommand = PlayCommand.PLAY_NEXT;
@@ -304,9 +313,9 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             // Play by ID
             if (Constants.PLAY_BY_ID_CHANNEL.equals(channelId) || Constants.PLAY_NEXT_BY_ID_CHANNEL.equals(channelId)
                     || Constants.PLAY_LAST_BY_ID_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.StringType) {
-                    var uuidS = ((org.openhab.core.library.types.StringType) command).toString();
-                    java.util.UUID id = parseItemUUID(uuidS);
+                if (command instanceof StringType) {
+                    var uuidS = ((StringType) command).toString();
+                    UUID id = parseItemUUID(uuidS);
                     if (id == null) {
                         logger.warn("Cannot run item by id - invalid UUID: {}", uuidS);
                         return;
@@ -330,8 +339,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Browse by terms
             if (Constants.BROWSE_ITEM_BY_TERMS_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.StringType) {
-                    final String terms = ((org.openhab.core.library.types.StringType) command).toString();
+                if (command instanceof StringType) {
+                    final String terms = ((StringType) command).toString();
                     runItemSearchForBrowse(terms);
                 }
                 return;
@@ -339,9 +348,9 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Browse by ID
             if (Constants.BROWSE_ITEM_BY_ID_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.StringType) {
-                    var uuidS = ((org.openhab.core.library.types.StringType) command).toString();
-                    java.util.UUID id = parseItemUUID(uuidS);
+                if (command instanceof StringType) {
+                    var uuidS = ((StringType) command).toString();
+                    UUID id = parseItemUUID(uuidS);
                     if (id != null) {
                         runBrowseById(id);
                     }
@@ -351,9 +360,9 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Stop (Switch channel)
             if (Constants.MEDIA_STOP_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.OnOffType) {
-                    var onOff = (org.openhab.core.library.types.OnOffType) command;
-                    if (onOff == org.openhab.core.library.types.OnOffType.ON) {
+                if (command instanceof OnOffType) {
+                    var onOff = (OnOffType) command;
+                    if (onOff == OnOffType.ON) {
                         sendPlayStateCommand(PlaystateCommand.STOP);
                     }
                 }
@@ -362,18 +371,18 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Shuffle (toggle on/off)
             if (Constants.MEDIA_SHUFFLE_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.OnOffType) {
-                    var onOff = (org.openhab.core.library.types.OnOffType) command;
+                if (command instanceof OnOffType) {
+                    var onOff = (OnOffType) command;
                     sendGeneralCommand(GeneralCommandType.SET_SHUFFLE_QUEUE, "ShuffleMode",
-                            onOff == org.openhab.core.library.types.OnOffType.ON ? "true" : "false");
+                            onOff == OnOffType.ON ? "true" : "false");
                 }
                 return;
             }
 
             // Repeat mode (off/one/all)
             if (Constants.MEDIA_REPEAT_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.StringType) {
-                    var mode = ((org.openhab.core.library.types.StringType) command).toString();
+                if (command instanceof StringType) {
+                    var mode = ((StringType) command).toString();
                     sendGeneralCommand(GeneralCommandType.SET_REPEAT_MODE, "RepeatMode", mode);
                 }
                 return;
@@ -381,8 +390,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Streaming quality (bitrate)
             if (Constants.MEDIA_QUALITY_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.StringType) {
-                    var bitrate = ((org.openhab.core.library.types.StringType) command).toString();
+                if (command instanceof StringType) {
+                    var bitrate = ((StringType) command).toString();
                     sendGeneralCommand(GeneralCommandType.SET_MAX_STREAMING_BITRATE, "MaxBitrate", bitrate);
                 }
                 return;
@@ -390,8 +399,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Audio track selection
             if (Constants.MEDIA_AUDIO_TRACK_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.DecimalType) {
-                    var index = ((org.openhab.core.library.types.DecimalType) command).intValue();
+                if (command instanceof DecimalType) {
+                    var index = ((DecimalType) command).intValue();
                     sendGeneralCommand(GeneralCommandType.SET_AUDIO_STREAM_INDEX, "Index", String.valueOf(index));
                 }
                 return;
@@ -399,8 +408,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
             // Subtitle track selection
             if (Constants.MEDIA_SUBTITLE_CHANNEL.equals(channelId)) {
-                if (command instanceof org.openhab.core.library.types.DecimalType) {
-                    var index = ((org.openhab.core.library.types.DecimalType) command).intValue();
+                if (command instanceof DecimalType) {
+                    var index = ((DecimalType) command).intValue();
                     sendGeneralCommand(GeneralCommandType.SET_SUBTITLE_STREAM_INDEX, "Index", String.valueOf(index));
                 }
                 return;
@@ -437,7 +446,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         try {
             GeneralCommand command = new GeneralCommand();
             command.setName(commandType);
-            Map<String, String> arguments = new java.util.HashMap<>();
+            Map<String, String> arguments = new HashMap<>();
             arguments.put(argumentKey, argumentValue);
             command.setArguments(arguments);
             serverHandler.sendGeneralCommand(sessionId, command);
@@ -498,7 +507,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         }
     }
 
-    private void runItemById(java.util.UUID id, @Nullable PlayCommand playCommand) {
+    private void runItemById(UUID id, @Nullable PlayCommand playCommand) {
         ServerHandler serverHandler = getServerHandler();
         if (serverHandler == null) {
             logger.warn("Cannot run item by id - server handler not available");
@@ -530,12 +539,12 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         }
     }
 
-    private java.util.@Nullable UUID parseItemUUID(String id) {
+    private @Nullable UUID parseItemUUID(String id) {
         if (id == null || id.isBlank()) {
             return null;
         }
         try {
-            return java.util.UUID.fromString(id.trim());
+            return UUID.fromString(id.trim());
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid UUID string for item id: {}", id);
             return null;
@@ -798,7 +807,7 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
      *
      * @param id The item ID
      */
-    private void runBrowseById(java.util.UUID id) {
+    private void runBrowseById(UUID id) {
         ServerHandler serverHandler = getServerHandler();
         if (serverHandler == null) {
             logger.warn("Cannot browse by id - server handler not available");

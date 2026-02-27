@@ -32,6 +32,7 @@ import org.openhab.binding.jellyfin.internal.handler.tasks.DiscoveryTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactoryInterface;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
+import org.openhab.binding.jellyfin.internal.server.WebSocketTask;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
@@ -148,9 +149,8 @@ public class TaskManager implements TaskManagerInterface {
                 // When connected, run sync task to keep server state (users and sessions) synchronized
                 // Also run discovery task to discover Jellyfin clients in the background
                 // Note: Connection task stops automatically when successful
-                if (availableTasks.containsKey(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID)) {
-                    return List.of(org.openhab.binding.jellyfin.internal.server.WebSocketTask.TASK_ID,
-                            DiscoveryTask.TASK_ID);
+                if (availableTasks.containsKey(WebSocketTask.TASK_ID)) {
+                    return List.of(WebSocketTask.TASK_ID, DiscoveryTask.TASK_ID);
                 }
                 return List.of(ServerSyncTask.TASK_ID, DiscoveryTask.TASK_ID);
             case DISCOVERED:
@@ -220,9 +220,9 @@ public class TaskManager implements TaskManagerInterface {
             stopScheduledTask(scheduledTask);
             // Dispose resources for tasks that maintain connections
             AbstractTask task = availableTasks.get(taskId);
-            if (task instanceof org.openhab.binding.jellyfin.internal.server.WebSocketTask) {
+            if (task instanceof WebSocketTask) {
                 try {
-                    ((org.openhab.binding.jellyfin.internal.server.WebSocketTask) task).dispose();
+                    ((WebSocketTask) task).dispose();
                 } catch (Exception ex) {
                     logger.debug("Error disposing WebSocketTask: {}", ex.getMessage());
                 }
