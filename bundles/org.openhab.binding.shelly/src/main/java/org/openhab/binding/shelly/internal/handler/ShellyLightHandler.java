@@ -22,6 +22,7 @@ import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
@@ -60,8 +61,8 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
     public ShellyLightHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient);
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
         channelColors = new TreeMap<>();
     }
 
