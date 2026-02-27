@@ -350,7 +350,7 @@ class ForecastSolarTest {
         ZonedDateTime queryDateTime = LocalDateTime.of(2022, 7, 17, 16, 23).atZone(TEST_ZONE);
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
-        TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
+        TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.AVERAGE);
         Instant now = Utils.now().minus(1, ChronoUnit.HOURS);
         // 24 hours of data plus current hour = 25
         assertEquals(25, powerSeries.size());
@@ -361,7 +361,7 @@ class ForecastSolarTest {
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
         });
 
-        TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Average);
+        TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.AVERAGE);
         assertEquals(25, energySeries.size());
         energySeries.getStates().forEachOrdered(entry -> {
             assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
