@@ -12,17 +12,15 @@
  */
 package org.openhab.binding.ephemeris.internal.handler;
 
-import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.binding.ephemeris.internal.configuration.DaysetConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 /**
  * The {@link DaysetHandler} delivers system default dayset data.
@@ -30,7 +28,7 @@ import org.openhab.core.thing.Thing;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class DaysetHandler extends BaseEphemerisHandler {
+public class DaysetHandler extends WeekendHandler {
     private String dayset = "";
 
     public DaysetHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
@@ -39,14 +37,13 @@ public class DaysetHandler extends BaseEphemerisHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         DaysetConfiguration config = getConfigAs(DaysetConfiguration.class);
         dayset = config.name;
-        super.initialize();
     }
 
     @Override
-    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
-        updateState(CHANNEL_TODAY, OnOffType.from(ephemeris.isInDayset(dayset, today)));
-        updateState(CHANNEL_TOMORROW, OnOffType.from(ephemeris.isInDayset(dayset, today.plusDays(1))));
+    protected State getDayStatus(ZonedDateTime day) {
+        return OnOffType.from(ephemeris.isInDayset(dayset, day));
     }
 }

@@ -15,12 +15,11 @@ package org.openhab.binding.ephemeris.internal.handler;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ephemeris.internal.EphemerisException;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -44,7 +43,7 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(BaseEphemerisHandler.class);
     private final ZoneId zoneId;
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     protected final EphemerisManager ephemeris;
 
@@ -57,35 +56,33 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        refreshJob = Optional.of(scheduler.schedule(this::updateData, 1, TimeUnit.SECONDS));
+        refreshJob = scheduler.schedule(this::updateData, 1, TimeUnit.SECONDS);
     }
 
     @Override
     public void dispose() {
-        refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.empty();
+        if (refreshJob instanceof ScheduledFuture job) {
+            job.cancel(true);
+            refreshJob = null;
+        }
         super.dispose();
     }
 
     private void updateData() {
-        ZonedDateTime now = ZonedDateTime.now().withZoneSameLocal(zoneId);
+        ZonedDateTime now = ZonedDateTime.now(zoneId);
 
         logger.debug("Updating {} channels", getThing().getUID());
-        try {
-            internalUpdate(now.truncatedTo(ChronoUnit.DAYS));
+        internalUpdate(now.truncatedTo(ChronoUnit.DAYS));
 
-            updateStatus(ThingStatus.ONLINE);
-            ZonedDateTime nextUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                    .withMinute(REFRESH_FIRST_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
-            long delay = ChronoUnit.MINUTES.between(now, nextUpdate);
-            logger.debug("Scheduling next {} update in {} minutes", getThing().getUID(), delay);
-            refreshJob = Optional.of(scheduler.schedule(this::updateData, delay, TimeUnit.MINUTES));
-        } catch (EphemerisException e) {
-            updateStatus(ThingStatus.OFFLINE, e.getStatusDetail(), e.getMessage());
-        }
+        updateStatus(ThingStatus.ONLINE);
+        ZonedDateTime nextUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                .withMinute(REFRESH_FIRST_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
+        long delay = ChronoUnit.MINUTES.between(now, nextUpdate);
+        logger.debug("Scheduling next {} update in {} minutes", getThing().getUID(), delay);
+        refreshJob = scheduler.schedule(this::updateData, delay, TimeUnit.MINUTES);
     }
 
-    protected abstract void internalUpdate(ZonedDateTime today) throws EphemerisException;
+    protected abstract void internalUpdate(ZonedDateTime today);
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {

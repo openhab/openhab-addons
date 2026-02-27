@@ -17,18 +17,20 @@ import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Entry;
 
 /**
  * The {@link JollydayHandler} handles common parts for Jollyday file based events
@@ -37,34 +39,50 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public abstract class JollydayHandler extends BaseEphemerisHandler {
+    private final String channelToday;
+    private final String channelTomorrow;
 
-    public JollydayHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
+    public JollydayHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId, String channelToday,
+            String channelTomorrow) {
         super(thing, ephemerisManager, zoneId);
+        this.channelToday = channelToday;
+        this.channelTomorrow = channelTomorrow;
     }
 
     @Override
-    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
-        String todayEvent = getEvent(today);
-        updateState(CHANNEL_CURRENT_EVENT, toStringType(todayEvent));
+    protected void internalUpdate(ZonedDateTime today) {
+        TimeSeries stringTypeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+        TimeSeries onOffSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
 
-        String nextEvent = null;
-        ZonedDateTime nextDay = today;
-
-        for (int offset = 1; offset < 366 && (nextEvent == null || nextEvent.isEmpty()); offset++) {
-            nextDay = today.plusDays(offset);
-            nextEvent = getEvent(nextDay);
+        boolean finished = false;
+        for (int dayOffset = 0; !finished; dayOffset++) {
+            ZonedDateTime day = today.plusDays(dayOffset);
+            String event = getEvent(day);
+            stringTypeSeries.add(day.toInstant(), toStringType(event));
+            onOffSeries.add(day.toInstant(), OnOffType.from(event != null));
+            finished = dayOffset > 365 || (dayOffset != 0 && event != null);
         }
 
-        updateState(CHANNEL_NEXT_EVENT, toStringType(nextEvent));
-        updateState(CHANNEL_NEXT_REMAINING,
-                nextEvent != null ? new QuantityType<>(Duration.between(today, nextDay).toDays(), Units.DAY)
-                        : UnDefType.UNDEF);
-        updateState(CHANNEL_NEXT_START, nextEvent != null ? new DateTimeType(nextDay) : UnDefType.UNDEF);
-    }
+        List<Entry> stringTypes = stringTypeSeries.getStates().toList();
+        List<Entry> onOffs = onOffSeries.getStates().toList();
+        updateState(channelToday, onOffs.getFirst().state());
+        updateState(CHANNEL_CURRENT_EVENT, stringTypes.getFirst().state());
 
-    protected abstract @Nullable String getEvent(ZonedDateTime day) throws EphemerisException;
+        updateState(channelTomorrow, onOffs.get(1).state());
+
+        updateState(CHANNEL_NEXT_EVENT, stringTypes.getLast().state());
+
+        ZonedDateTime nextEventTs = stringTypes.getLast().timestamp().atZone(today.getZone());
+        updateState(CHANNEL_NEXT_START, new DateTimeType(nextEventTs));
+        updateState(CHANNEL_NEXT_REMAINING,
+                new QuantityType<>(Duration.between(today, nextEventTs).toDays(), Units.DAY));
+        sendTimeSeries(CHANNEL_CURRENT_EVENT, stringTypeSeries);
+        sendTimeSeries(channelToday, onOffSeries);
+    }
 
     protected State toStringType(@Nullable String event) {
-        return event == null || event.isEmpty() ? UnDefType.NULL : new StringType(event);
+        return event == null || event.isEmpty() ? StringType.EMPTY : new StringType(event);
     }
+
+    protected abstract @Nullable String getEvent(ZonedDateTime day);
 }

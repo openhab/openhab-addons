@@ -15,11 +15,11 @@ package org.openhab.binding.ephemeris.internal.configuration;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link DaysetConfiguration} class contains fields mapping Dayset Thing configuration parameters.
+ * The {@link WeekendConfiguration} class contains fields mapping Weekend Thing configuration parameters.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class DaysetConfiguration extends WeekendConfiguration {
-    public String name = "";
+public class WeekendConfiguration {
+    public int days = 7;
 }

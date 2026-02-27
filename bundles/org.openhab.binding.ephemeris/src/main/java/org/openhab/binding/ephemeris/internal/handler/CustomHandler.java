@@ -18,14 +18,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ephemeris.internal.EphemerisException;
 import org.openhab.binding.ephemeris.internal.configuration.FileConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -37,14 +34,15 @@ import org.openhab.core.thing.ThingStatusDetail;
  */
 @NonNullByDefault
 public class CustomHandler extends JollydayHandler {
-    private Optional<File> definitionFile = Optional.empty();
+    private @Nullable String path;
 
     public CustomHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
-        super(thing, ephemerisManager, zoneId);
+        super(thing, ephemerisManager, zoneId, CHANNEL_EVENT_TODAY, CHANNEL_EVENT_TOMORROW);
     }
 
     @Override
     public void initialize() {
+        super.initialize();
         String fileName = getConfigAs(FileConfiguration.class).fileName;
 
         if (fileName.isBlank()) {
@@ -60,30 +58,23 @@ public class CustomHandler extends JollydayHandler {
             return;
         }
 
-        definitionFile = Optional.of(file);
-        super.initialize();
+        path = file.getAbsolutePath();
     }
 
     @Override
-    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
-        String event = getEvent(today);
-        updateState(CHANNEL_EVENT_TODAY, OnOffType.from(event != null));
-
-        event = getEvent(today.plusDays(1));
-        updateState(CHANNEL_EVENT_TOMORROW, OnOffType.from(event != null));
-
-        super.internalUpdate(today);
-    }
-
-    @Override
-    protected @Nullable String getEvent(ZonedDateTime day) throws EphemerisException {
-        String path = definitionFile.get().getAbsolutePath();
-        try {
-            return ephemeris.getBankHolidayName(day, path);
-        } catch (IllegalStateException e) {
-            throw new EphemerisException("Incorrect syntax", ThingStatusDetail.NONE);
-        } catch (FileNotFoundException e) {
-            throw new EphemerisException("File is absent: " + path, ThingStatusDetail.CONFIGURATION_ERROR);
+    protected @Nullable String getEvent(ZonedDateTime day) {
+        if (path instanceof String filePath) {
+            try {
+                return ephemeris.getBankHolidayName(day, filePath);
+            } catch (IllegalStateException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Syntex error in %s".formatted(path));
+            } catch (FileNotFoundException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Missing file: %s".formatted(path));
+            }
+            return null;
+        } else {
+            throw new IllegalArgumentException("path should not be null");
         }
     }
 }

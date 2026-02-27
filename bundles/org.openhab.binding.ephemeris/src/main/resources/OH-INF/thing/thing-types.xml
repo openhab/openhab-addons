@@ -74,7 +74,12 @@
 		<config-description>
 			<parameter name="name" type="text" required="true">
 				<label>Name</label>
-				<description>Name of the dayset.</description>
+				<description>Name of the dayset</description>
+			</parameter>
+			<parameter name="days" type="integer" required="false" min="1">
+				<label>Days</label>
+				<description>Number of days, including today, in the status time series</description>
+				<default>1</default>
 			</parameter>
 		</config-description>
 
@@ -94,6 +99,14 @@
 				<description>Set to ON if tomorrow is a weekend day, OFF in the other case</description>
 			</channel>
 		</channels>
+
+		<config-description>
+			<parameter name="days" type="integer" required="false" min="1">
+				<label>Days</label>
+				<description>Number of days, including today, in the status time series</description>
+				<default>1</default>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="in-dayset">
@@ -128,7 +141,7 @@
 	</channel-type>
 
 	<channel-type id="days-remaining">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 		<label>Remaining Days</label>
 		<description>Remaining days until next event</description>
 		<tags>

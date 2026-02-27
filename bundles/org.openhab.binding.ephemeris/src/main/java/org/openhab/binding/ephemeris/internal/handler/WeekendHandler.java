@@ -16,12 +16,16 @@ import static org.openhab.binding.ephemeris.internal.EphemerisBindingConstants.*
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ephemeris.internal.EphemerisException;
+import org.openhab.binding.ephemeris.internal.configuration.WeekendConfiguration;
 import org.openhab.core.ephemeris.EphemerisManager;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Entry;
 
 /**
  * The {@link WeekendHandler} delivers system default Weekend data.
@@ -30,14 +34,34 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class WeekendHandler extends BaseEphemerisHandler {
+    private int days;
 
     public WeekendHandler(Thing thing, EphemerisManager ephemerisManager, ZoneId zoneId) {
         super(thing, ephemerisManager, zoneId);
     }
 
     @Override
-    protected void internalUpdate(ZonedDateTime today) throws EphemerisException {
-        updateState(CHANNEL_TODAY, OnOffType.from(ephemeris.isWeekend(today)));
-        updateState(CHANNEL_TOMORROW, OnOffType.from(ephemeris.isWeekend(today.plusDays(1))));
+    public void initialize() {
+        super.initialize();
+        WeekendConfiguration config = getConfigAs(WeekendConfiguration.class);
+        days = Math.max(1, config.days);
+    }
+
+    @Override
+    protected void internalUpdate(ZonedDateTime today) {
+        TimeSeries weekendSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+        for (int dayOffset = 0; dayOffset < days; dayOffset++) {
+            ZonedDateTime day = today.plusDays(dayOffset);
+            weekendSeries.add(day.toInstant(), getDayStatus(day));
+        }
+        sendTimeSeries(CHANNEL_TODAY, weekendSeries);
+
+        List<Entry> statuses = weekendSeries.getStates().toList();
+        updateState(CHANNEL_TODAY, statuses.getFirst().state());
+        updateState(CHANNEL_TOMORROW, statuses.get(1).state());
+    }
+
+    protected State getDayStatus(ZonedDateTime day) {
+        return OnOffType.from(ephemeris.isWeekend(day));
     }
 }
