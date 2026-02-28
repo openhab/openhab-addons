@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
-import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +31,7 @@ public class Utils {
 
     /**
      * This method removes specific local characters (like ä, ö, ü), so we get a sanitized string
-     * 
+     *
      * @param name that will be sanitized
      * @return a sanitized name that has replaced any invalid char
      */
@@ -49,10 +48,10 @@ public class Utils {
      * This method creates a stable ID string based on the provided list of values (cut down to first 10 hex chars of
      * SHA-256)
      *
-     * @param values list of strings to create the ID from
+     * @param values strings to create the ID from
      * @return a stable ID string
      */
-    public static String createIdString(List<String> values) {
+    public static String createIdString(String... values) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] digest = md.digest(String.join("", values).getBytes(StandardCharsets.UTF_8));

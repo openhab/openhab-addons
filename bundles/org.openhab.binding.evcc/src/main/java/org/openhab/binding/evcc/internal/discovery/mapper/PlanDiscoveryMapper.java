@@ -83,7 +83,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
             String localizedLabel = tp.getText(ctx.getBundle(), "discovery.evcc.plan.one-time.label",
                     "One-time charging plan for {0}", lp.getLocale(), title);
             String label = localizedLabel == null ? "One-time charging plan for " + title : localizedLabel;
-            results.add(createPlanDiscoveryResult(label, Utils.createIdString(List.of(id, "Plan", String.valueOf(0))),
+            results.add(createPlanDiscoveryResult(label, Utils.createIdString(id, "Plan", String.valueOf(0)),
                     0, id, bridgeHandler));
         }
         if (vehicle.has(JSON_KEY_REPEATING_PLANS) && vehicle.get(JSON_KEY_REPEATING_PLANS).isJsonArray()) {
@@ -92,7 +92,7 @@ public class PlanDiscoveryMapper implements EvccDiscoveryMapper {
                         "Repeating plan {0} for {1}", lp.getLocale(), index, title);
                 String label = localizedLabel == null ? "Repeating plan " + index + " for " + title : localizedLabel;
                 results.add(createPlanDiscoveryResult(label,
-                        Utils.createIdString(List.of(id, "Plan", String.valueOf(index))), index, id, bridgeHandler));
+                        Utils.createIdString(id, "Plan", String.valueOf(index)), index, id, bridgeHandler));
             }
         }
         return results;

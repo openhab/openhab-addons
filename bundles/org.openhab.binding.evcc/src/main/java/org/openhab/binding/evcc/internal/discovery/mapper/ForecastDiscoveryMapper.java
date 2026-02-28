@@ -55,7 +55,7 @@ public class ForecastDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(THING_TYPE_FORECAST, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(forecastType));
             String label = "Forecast " + capitalizeFirstLetter(forecastType);
-            String id = Utils.createIdString(List.of(label));
+            String id = Utils.createIdString(label);
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(label)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_FORECAST)
                     .withProperty(PROPERTY_SUBTYPE, forecastType).withProperty(PROPERTY_ID, id)
