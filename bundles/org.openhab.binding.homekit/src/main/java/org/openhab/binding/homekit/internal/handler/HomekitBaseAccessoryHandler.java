@@ -44,6 +44,7 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
+import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
@@ -94,6 +95,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private final Map<Long, Accessory> accessories = new ConcurrentHashMap<>();
     private final HomekitKeyStore keyStore;
     private final AtomicBoolean sessionUpgradeInProgress = new AtomicBoolean(false);
+
+    protected final HomekitMdnsDiscoveryParticipant discoveryParticipant;
 
     private boolean isConfigured = false;
     private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
@@ -171,12 +174,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
-            TranslationProvider translationProvider, Bundle bundle) {
+            TranslationProvider translationProvider, Bundle bundle,
+            HomekitMdnsDiscoveryParticipant discoveryParticipant) {
         super(thing);
         this.typeProvider = typeProvider;
         this.keyStore = keyStore;
         this.i18nProvider = translationProvider;
         this.bundle = bundle;
+        this.discoveryParticipant = discoveryParticipant;
     }
 
     @Override
@@ -555,7 +560,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @return OK or ERROR with reason
      */
-    private String unpairInner() {
+    protected String unpairInner() {
         if (isBridgedAccessory) {
             logger.warn("{} forbidden to unpair a bridged accessory", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("bridged accessory");
