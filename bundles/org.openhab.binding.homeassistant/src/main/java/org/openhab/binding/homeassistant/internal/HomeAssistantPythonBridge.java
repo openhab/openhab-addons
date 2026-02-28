@@ -29,6 +29,7 @@ import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Value;
 import org.graalvm.python.embedding.GraalPyResources;
 import org.graalvm.python.embedding.VirtualFileSystem;
+import org.openhab.binding.homeassistant.internal.config.dto.MqttComponentConfig;
 import org.openhab.binding.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.OpenHAB;
 import org.osgi.service.component.annotations.Activate;
@@ -139,23 +140,20 @@ public class HomeAssistantPythonBridge {
         return renderValueTemplateWithVariablesMeth.execute(template, payload, defaultValue, variables).asString();
     }
 
-    public Map<String, @Nullable Object> processDiscoveryConfig(String component, String payload) {
+    public List<MqttComponentConfig> processDiscoveryConfig(String topic, String payload) {
         try {
             @SuppressWarnings("unchecked")
-            Map<String, @Nullable Object> config = (Map<String, @Nullable Object>) toJava(
-                    processDiscoveryConfigMeth.execute(component, payload));
-            if (config == null) {
+            List<Value> configs = (List<Value>) toJava(processDiscoveryConfigMeth.execute(topic, payload));
+            if (configs == null || configs.isEmpty()) {
                 throw new ConfigurationException("Invalid configuration");
             }
-            return config;
-
+            return configs.stream().map(c -> new MqttComponentConfig(this, c)).toList();
         } catch (PolyglotException e) {
-            throw new ConfigurationException(
-                    "Failed to process discovery config for " + component + ": " + e.getMessage());
+            throw new ConfigurationException("Failed to process discovery config for " + topic + ": " + e.getMessage());
         }
     }
 
-    private @Nullable Object toJava(Value value) {
+    public @Nullable Object toJava(Value value) {
         if (value.isNull()) {
             return null;
         }

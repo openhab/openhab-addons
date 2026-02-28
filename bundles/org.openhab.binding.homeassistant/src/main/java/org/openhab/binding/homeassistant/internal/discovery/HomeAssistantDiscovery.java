@@ -33,6 +33,7 @@ import org.openhab.binding.homeassistant.internal.HomeAssistantBindingConstants;
 import org.openhab.binding.homeassistant.internal.HomeAssistantConfiguration;
 import org.openhab.binding.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.binding.homeassistant.internal.config.dto.AbstractComponentConfiguration;
+import org.openhab.binding.homeassistant.internal.config.dto.MqttComponentConfig;
 import org.openhab.binding.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.mqtt.discovery.AbstractMQTTDiscovery;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
@@ -147,10 +148,22 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         // Therefore the components are assembled into a list and given to the DiscoveryResult label for the user to
         // easily recognize object capabilities.
         HaID haID = new HaID(topic);
+        String payloadString = new String(payload, StandardCharsets.UTF_8);
 
         try {
-            AbstractComponentConfiguration config = AbstractComponentConfiguration.create(python, haID.component,
-                    new String(payload, StandardCharsets.UTF_8));
+            List<MqttComponentConfig> components = python.processDiscoveryConfig(haID.toShortTopic(), payloadString);
+            if (components.isEmpty()) {
+                logger.warn("Home Assistant discovery warning: device {} with no components found; this is a bug",
+                        haID.objectID);
+                return;
+            }
+            if (components.getFirst().isMigrateDiscovery()) {
+                // Treat it the same as the component vanishing
+                topicVanished(bridgeUID, connection, topic);
+                return;
+            }
+            AbstractComponentConfiguration config = AbstractComponentConfiguration
+                    .create(components.getFirst().getDiscoveryPayload());
 
             final String thingID = config.getThingId(haID.objectID);
             final ThingUID thingUID = new ThingUID(HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING, bridgeUID,
@@ -160,6 +173,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             Map<String, Object> properties = new HashMap<>();
             properties = config.appendToProperties(properties);
             properties.put("deviceId", thingID);
+            if ("device".equals(haID.component)) {
+                properties.put(HandlerConfiguration.PROPERTY_DEVICE_CONFIG, payloadString);
+            }
 
             DiscoveryResult result = buildResult(thingID, thingUID, config.getThingName(), haID, properties, bridgeUID);
 
@@ -169,10 +185,10 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                 applyResult(thingID, haID, result);
             }
         } catch (ConfigurationException e) {
-            logger.warn("HomeAssistant discover error: invalid configuration of thing {} component {}: {}",
-                    haID.objectID, haID.component, e.getMessage());
+            logger.warn("Home Assistant discovery error: invalid configuration of {}: {}", haID.toShortTopic(),
+                    e.getMessage());
         } catch (Exception e) {
-            logger.warn("HomeAssistant discover error: {}", e.getMessage());
+            logger.warn("Home Assistant discovery error for {}: {}", haID.toShortTopic(), e.getMessage());
         }
     }
 
@@ -250,7 +266,9 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         List<String> topics = componentsSet.stream().map(HaID::toShortTopic).toList();
 
         // Append handler configuration
-        HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
+        Object deviceConfig = properties.get(HandlerConfiguration.PROPERTY_DEVICE_CONFIG);
+        String deviceConfigPayload = deviceConfig instanceof String deviceConfigString ? deviceConfigString : "";
+        HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics, deviceConfigPayload);
         properties = handlerConfig.appendToProperties(properties);
 
         return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty("deviceId")
