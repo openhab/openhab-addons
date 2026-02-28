@@ -103,10 +103,6 @@ class MapDbItem implements PersistedItem, PersistenceItemInfo {
 
     @Override
     public @Nullable Date getLatest() {
-        return null;
-    }
-
-    boolean isValid() {
-        return name != null && state != null && timestamp != null;
+        return timestamp;
     }
 }

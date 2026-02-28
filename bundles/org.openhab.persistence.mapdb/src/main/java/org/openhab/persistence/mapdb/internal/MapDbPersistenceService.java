@@ -185,7 +185,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public Set<PersistenceItemInfo> getItemInfo() {
         return map.values().stream().map(this::deserialize).flatMap(MapDbPersistenceService::streamOptional)
-                .collect(Collectors.<PersistenceItemInfo> toUnmodifiableSet());
+                .collect(Collectors.<PersistenceItemInfo>toUnmodifiableSet());
     }
 
     @Override
@@ -263,10 +263,9 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         return mapper.toJson(item);
     }
 
-    @SuppressWarnings("null")
     private Optional<MapDbItem> deserialize(String json) {
         MapDbItem item = mapper.fromJson(json, MapDbItem.class);
-        if (item == null || !item.isValid()) {
+        if (item == null) {
             logger.warn("Deserialized invalid item: {}", item);
             return Optional.empty();
         } else if (logger.isDebugEnabled()) {

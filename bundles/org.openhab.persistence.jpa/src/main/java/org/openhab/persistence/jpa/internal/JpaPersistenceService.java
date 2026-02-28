@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +27,6 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
-import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
@@ -179,11 +177,6 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         }
 
         logger.debug("Storing item...done");
-    }
-
-    @Override
-    public Set<PersistenceItemInfo> getItemInfo() {
-        return Set.of();
     }
 
     @Override
