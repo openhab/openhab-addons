@@ -40,6 +40,7 @@
 			<channel id="fineDustConc02_5" typeId="pm2_5"/>
 			<channel id="fineDustConc10" typeId="pm10"/>
 			<channel id="pressure" typeId="pressure"/>
+			<channel id="radon" typeId="radon"/>
 			<channel id="so2" typeId="so2"/>
 			<channel id="sound" typeId="sound"/>
 			<channel id="temperature" typeId="temperature"/>
@@ -314,6 +315,16 @@
 		<item-type unitHint="hPa">Number:Pressure</item-type>
 		<label>Barometric Pressure</label>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="radon" advanced="false">
+		<item-type unitHint="Bq/m³">Number:RadiationSpecificActivity</item-type>
+		<label>Radon</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Radon</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="so2" advanced="false">

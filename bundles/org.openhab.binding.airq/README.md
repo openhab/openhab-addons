@@ -74,6 +74,7 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
 | fineDustConc10            | Number               |    | Fine Dust concentration >10 µm                                      |
 | pressure                  | Number:Pressure      |    | Barometric Pressure                                                 |
+| Radon                     | Number:RadiationSpecificActivity |    | Radon concentration                                                 |
 | so2                       | Number               |    | Sulfur dioxide (SO₂) concentration                                  |
 | sound                     | Number:Dimensionless |    | Noise                                                               |
 | temperature               | Number:Temperature   |    | Temperature                                                         |
@@ -164,6 +165,7 @@ Number                airQ_fineDustConc01         "Fine Dust Concentration >1µ"
 Number                airQ_fineDustConc02_5       "Fine Dust Concentration >2.5µ"         {channel="airq:airq:1:fineDustConc02_5"}
 Number                airQ_fineDustConc10         "Fine Dust Concentration >10µ"          {channel="airq:airq:1:fineDustConc10"}
 Number:Pressure       airQ_pressure               "Pressure"                              {channel="airq:airq:1:pressure"}
+Number:RadiationSpecificActivity airQ_radon                  "Radon Concentration"                   {channel="airq:airq:1:radon"}
 Number                airQ_so2                    "SO2 concentration"                     {channel="airq:airq:1:so2"}
 Number:Dimensionless  airQ_sound                  "Noise"                                 {channel="airq:airq:1:sound"}
 Number:Temperature    airQ_temperature            "Temperature"                           {channel="airq:airq:1:temperature"}
