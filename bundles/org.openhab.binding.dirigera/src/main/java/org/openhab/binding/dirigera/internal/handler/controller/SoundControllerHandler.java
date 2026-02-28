@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.core.thing.Thing;
 
@@ -35,14 +34,5 @@ public class SoundControllerHandler extends BaseHandler {
         super.setChildHandler(this);
         // links of types which can be established towards this device
         linkCandidateTypes = List.of(DEVICE_TYPE_SPEAKER);
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-        if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-        }
     }
 }

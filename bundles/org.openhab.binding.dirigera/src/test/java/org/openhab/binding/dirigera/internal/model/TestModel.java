@@ -15,6 +15,8 @@ package org.openhab.binding.dirigera.internal.model;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -147,30 +150,42 @@ class TestModel {
 
     @Test
     void testDiscoveryAfterHandlerRemoval() {
+        DirigeraHandler.detectionTimeSeonds = 0;
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/home-one-device.json",
                 true, List.of());
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
+        discovery.waitForDetection(1);
         assertEquals(1, discovery.discoveries.size(), "Initial discoveries");
 
+        String deviceId = "9af826ad-a8ad-40bf-8aed-125300bccd20_1";
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(THING_TYPE_WATER_SENSOR, hubBridge,
-                "9af826ad-a8ad-40bf-8aed-125300bccd20_1");
+                deviceId);
         assertTrue(factoryHandler instanceof WaterSensorHandler);
         WaterSensorHandler handler = (WaterSensorHandler) factoryHandler;
         ThingHandlerCallback proxyCallback = handler.getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         CallbackMock callback = (CallbackMock) proxyCallback;
-        callback.waitForOnline();
 
-        DirigeraHandler.detectionTimeSeonds = 0;
-        discovery.discoveries.clear();
-        assertEquals(0, discovery.discoveries.size(), "Cleanup after handler creation");
+        // wait until device is registered
+        Instant start = Instant.now();
+        Instant check = Instant.now();
+        while (!gateway.isKnownDevice(deviceId) && Duration.between(start, check).getSeconds() < 10) {
+            try {
+                Thread.sleep(100);
+                check = Instant.now();
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
+            }
+        }
+
         handler.dispose();
         handler.handleRemoval();
-        discovery.waitForDetection();
+        callback.waitForStatus(ThingStatus.REMOVED);
+        discovery.waitForDetection(1);
         assertEquals(1, discovery.discoveries.size(), "After removal new discovery result shall be present ");
     }
 

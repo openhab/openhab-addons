@@ -13,7 +13,6 @@
 package org.openhab.binding.dirigera.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LOCATION;
 
 import java.util.List;
@@ -40,34 +39,27 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 class TestGateway {
-    private static String deviceId = "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1";
+    private String deviceId = "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1";
 
-    private static DirigeraHandler handler = mock(DirigeraHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
-    private static String mockFile = "src/test/resources/gateway/home-with-coordinates.json";
-
-    @Test
-    void testBridgeCreation() {
+    DirigeraHandlerManipulator getBrdigeHandler(String mockFile) {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge(mockFile, false, List.of());
         ThingHandler bridgeHandler = hubBridge.getHandler();
         assertTrue(bridgeHandler instanceof DirigeraHandlerManipulator);
-        handler = (DirigeraHandlerManipulator) bridgeHandler;
-        thing = handler.getThing();
+        DirigeraHandler handler = (DirigeraHandlerManipulator) bridgeHandler;
         ThingHandlerCallback proxyCallback = ((DirigeraHandlerManipulator) handler).getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
-        callback = (CallbackMock) proxyCallback;
+        CallbackMock callback = (CallbackMock) proxyCallback;
         handler.initialize();
         callback.waitForOnline();
+        return (DirigeraHandlerManipulator) handler;
     }
 
     @Test
     void testWithCoordinates() {
-        mockFile = "src/test/resources/gateway/home-with-coordinates.json";
-        testBridgeCreation();
+        DirigeraHandlerManipulator handler = getBrdigeHandler("src/test/resources/gateway/home-with-coordinates.json");
         assertNotNull(handler);
-        assertNotNull(thing);
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(callback);
 
         State locationPoint = callback.getState("dirigera:gateway:9876:location");
@@ -78,10 +70,10 @@ class TestGateway {
 
     @Test
     void testWithoutCoordinates() {
-        mockFile = "src/test/resources/gateway/home-without-coordinates.json";
-        testBridgeCreation();
+        DirigeraHandlerManipulator handler = getBrdigeHandler(
+                "src/test/resources/gateway/home-without-coordinates.json");
         assertNotNull(handler);
-        assertNotNull(thing);
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(callback);
 
         State locationPoint = callback.getState("dirigera:gateway:9876:location");
@@ -91,7 +83,12 @@ class TestGateway {
 
     @Test
     void testCommands() {
-        testWithCoordinates();
+        DirigeraHandlerManipulator handler = getBrdigeHandler("src/test/resources/gateway/home-with-coordinates.json");
+        assertNotNull(handler);
+        Thing thing = handler.getThing();
+        assertNotNull(thing);
+        CallbackMock callback = (CallbackMock) handler.getCallback();
+        assertNotNull(callback);
 
         // remove location from gateway with empty string
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), StringType.EMPTY);

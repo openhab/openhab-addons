@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -42,21 +42,17 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void initializeDevice() {
         if (super.checkHandler()) {
-            JSONObject values = gateway().api().readDevice(config.id);
-            handleUpdate(values);
-            // assure deviceType is set from main device
-            if (values.has(PROPERTY_DEVICE_TYPE)) {
-                deviceType = values.getString(PROPERTY_DEVICE_TYPE);
-            }
-
+            updateProperties();
             // get all relations and register
             String relationId = gateway().model().getRelationId(config.id);
             relations = gateway().model().getRelations(relationId);
-            // register for updates of twin devices
             relations.forEach((key, value) -> {
+                // assure deviceType is set from main device
+                if (config.id.equals(key)) {
+                    deviceType = value;
+                }
                 gateway().registerDevice(this, key);
                 JSONObject relationValues = gateway().api().readDevice(key);
                 handleUpdate(relationValues);
