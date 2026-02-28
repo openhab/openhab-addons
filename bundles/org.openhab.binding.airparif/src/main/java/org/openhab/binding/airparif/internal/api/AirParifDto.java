@@ -130,16 +130,17 @@ public class AirParifDto {
     }
 
     public class PollensResponse {
-        private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy");
-        private static Pattern PATTERN = Pattern.compile("\\d{2}.\\d{2}.\\d{2}");
-        private static ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Paris");
+        private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy");
+        private final static Pattern PATTERN = Pattern.compile("\\d{2}.\\d{2}.\\d{2}");
+        private final static ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Paris");
 
-        public List<Pollens> data = List.of();
+        private @Nullable List<Pollens> data;
         private @Nullable Instant beginValidity;
         private @Nullable Instant endValidity;
 
         public Optional<Pollens> getData() {
-            return Optional.ofNullable(data.isEmpty() ? null : data.get(0));
+            List<Pollens> localData = data;
+            return Optional.ofNullable(localData == null || localData.isEmpty() ? null : localData.get(0));
         }
 
         private Set<Instant> getValidities() {
@@ -156,7 +157,7 @@ public class AirParifDto {
 
         public Optional<Instant> getBeginValidity() {
             if (beginValidity == null) {
-                beginValidity = getValidities().iterator().next();
+                beginValidity = getValidities().stream().reduce((prev, next) -> prev).orElse(null);
             }
             return Optional.ofNullable(beginValidity);
         }

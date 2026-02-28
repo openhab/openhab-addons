@@ -153,6 +153,9 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
                 return content;
             } else if (statusCode == Code.FORBIDDEN) {
                 throw new AirParifException("@text/offline.config-error-invalid-apikey");
+            } else if (statusCode == Code.SERVICE_UNAVAILABLE) {
+                logger.debug("{}, returning empty DTO", statusCode.getMessage());
+                return "{}";
             }
             throw new AirParifException("Error '%s' requesting: %s", statusCode.getMessage(), uri.toString());
         } catch (TimeoutException | ExecutionException e) {
@@ -196,7 +199,7 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
 
         thing.setProperty("api-version", version.version());
         thing.setProperty("key-expiration", keyInfo.expiration().toString());
-        thing.setProperty("scopes", keyInfo.scopes().stream().map(e -> e.name()).collect(Collectors.joining(",")));
+        thing.setProperty("scopes", keyInfo.scopes().stream().map(Enum::name).collect(Collectors.joining(",")));
         logger.debug("The api key is valid until {}", keyInfo.expiration().toString());
         updateStatus(ThingStatus.ONLINE);
 
@@ -288,8 +291,8 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     public @Nullable Route getConcentrations(String location) {
         String[] elements = location.split(",");
         if (elements.length >= 2) {
-            String req = "{\"itineraires\": [{\"date\": \"%s\",\"longlats\": [[%s,%s]]}],\"polluants\": [\"indice\",\"no2\",\"o3\",\"pm25\",\"pm10\"]}";
-            req = req.formatted(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS), elements[1], elements[0]);
+            String req = INTINERAIRES_REQUEST.formatted(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS), elements[1],
+                    elements[0]);
             try {
                 ItineraireResponse result = executeUri(HORAIR_URI, ItineraireResponse.class, req);
                 return result.routes()[0];

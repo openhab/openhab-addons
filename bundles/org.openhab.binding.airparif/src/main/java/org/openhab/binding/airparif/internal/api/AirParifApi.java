@@ -41,6 +41,8 @@ public class AirParifApi {
     private static final UriBuilder POLLENS_BUILDER = AIRPARIF_BUILDER.clone().path("pollens");
     public static final URI POLLENS_URI = POLLENS_BUILDER.clone().path("bulletin").build();
 
+    public static final String INTINERAIRES_REQUEST = "{\"itineraires\": [{\"date\": \"%s\",\"longlats\": [[%s,%s]]}],\"polluants\": [\"indice\",\"no2\",\"o3\",\"pm25\",\"pm10\"]}";
+
     public enum Scope {
         @SerializedName("Cartes et résultats Hor'Air")
         MAPS,
