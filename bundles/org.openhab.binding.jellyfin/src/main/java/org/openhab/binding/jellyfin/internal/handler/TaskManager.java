@@ -150,8 +150,11 @@ public class TaskManager implements TaskManagerInterface {
                 // Also run discovery task to discover Jellyfin clients in the background
                 // Note: Connection task stops automatically when successful
                 if (availableTasks.containsKey(WebSocketTask.TASK_ID)) {
+                    logger.info("[MODE] Active update mode: WEBSOCKET (real-time updates)");
                     return List.of(WebSocketTask.TASK_ID, DiscoveryTask.TASK_ID);
                 }
+                logger.warn("[MODE] Active update mode: POLLING (WebSocket not available, interval: {}s)",
+                        ServerSyncTask.DEFAULT_INTERVAL);
                 return List.of(ServerSyncTask.TASK_ID, DiscoveryTask.TASK_ID);
             case DISCOVERED:
                 // For discovered servers, potentially run registration task in the future
