@@ -15,6 +15,8 @@ package org.openhab.binding.evcc.internal.handler;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,12 +39,13 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EvccHeatingHandler.class);
 
-    private static final Map<String, String> JSON_KEYS = Map.ofEntries(
-            Map.entry("effectiveLimitTemperature", JSON_KEY_EFFECTIVE_LIMIT_SOC),
-            Map.entry("effectivePlanTemperature", JSON_KEY_EFFECTIVE_PLAN_SOC),
-            Map.entry("limitTemperature", JSON_KEY_LIMIT_SOC),
-            Map.entry("vehicleLimitTemperature", JSON_KEY_VEHICLE_LIMIT_SOC),
-            Map.entry("vehicleTemperature", JSON_KEY_VEHICLE_SOC));
+    // SortedMap to have a stable replacement result, the unit test is relying on it
+    private static final SortedMap<String, String> JSON_KEYS = new TreeMap<>(
+            Map.ofEntries(Map.entry("effectiveLimitTemperature", JSON_KEY_EFFECTIVE_LIMIT_SOC),
+                    Map.entry("effectivePlanTemperature", JSON_KEY_EFFECTIVE_PLAN_SOC),
+                    Map.entry("limitTemperature", JSON_KEY_LIMIT_SOC),
+                    Map.entry("vehicleLimitTemperature", JSON_KEY_VEHICLE_LIMIT_SOC),
+                    Map.entry("vehicleTemperature", JSON_KEY_VEHICLE_SOC)));
 
     public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
