@@ -7,9 +7,9 @@ This voice service allows you to use the open source library [Piper](https://git
 
 The add-on is compatible with the following platforms:
 
-- linux (armv7l, aarch64, x86_64, min GLIBC version 2.31)
-- macOS (x86_64 min version 11.0, aarch64 min version 13.0)
-- win64 (x86_64 min version Windows 10).
+- Linux (x86_64/aarch64, min GLIBC version 2.31)
+- macOS (x86_64/aarch64, min. version macOS 14 Sonoma)
+- Windows (x86_64, min. version Windows 10).
 
 ## Configuration
 

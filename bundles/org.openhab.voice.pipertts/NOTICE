@@ -14,27 +14,23 @@ https://github.com/openhab/openhab-addons
 
 == Third-party Content
 
-io.github.givimad: piper-jni
-* License: Apache 2.0 License
-* Project: https://github.com/GiviMAD/piper-jni
-* Source: https://github.com/GiviMAD/piper-jni
+io.github.jvoice-project: piper-jni
+* License: GPL v3.0 License as Combined Work & for JAR distributions
+* License: Apache 2.0 License for Java source and .class files
+* Project: https://github.com/jvoice-project/piper-jni
+* Source: https://github.com/jvoice-project/piper-jni
 
-io.github.rhasspy: piper
+piper
+* License: GPL v3.0 License
+* Project: https://github.com/OHF-Voice/piper1-gpl
+* Source: https://github.com/OHF-Voice/piper1-gpl
+
+espeak-ng
+* License: GPL v3.0 License
+* Project: https://github.com/espeak-ng/espeak-ng
+* Source: https://github.com/espeak-ng/espeak-ng
+
+onnxruntime
 * License: MIT License
-* Project: https://github.com/rhasspy/piper
-* Source: https://github.com/rhasspy/piper
-
-io.github.rhasspy: espeak-ng
-* License: GPL version 3, 2-clause BSD
-* Project: https://github.com/rhasspy/espeak-ng
-* Source: https://github.com/rhasspy/espeak-ng
-
-io.github.rhasspy: piper-phonemize
-* License: MIT License
-* Project: https://github.com/rhasspy/piper-phonemize
-* Source: https://github.com/rhasspy/piper-phonemize
-
-io.github.microsoft: onnxruntime
-* License: MIT License
-* Project: https://github.com/microsoft/onnxruntime
+* Project: https://onnxruntime.ai/
 * Source: https://github.com/microsoft/onnxruntime
