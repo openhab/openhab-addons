@@ -112,7 +112,7 @@ public class RefreshCapability extends Capability {
             stopJob();
         }
         logger.debug("'{}' next refresh in {}", thingUID, delay);
-        handler.schedule(this::proceedWithUpdate, delay).ifPresent(job -> this.refreshJob = job);
+        this.refreshJob = handler.schedule(this::proceedWithUpdate, delay);
     }
 
     private void stopJob() {
