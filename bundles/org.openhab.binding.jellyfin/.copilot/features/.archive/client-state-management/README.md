@@ -1,8 +1,9 @@
 # Client State Management Enhancement Feature
 
 **Feature ID:** `client-state-management`
-**Status:** Active - Phase 1 In Progress
+**Status:** ✅ Archived - All phases complete
 **Created:** 2026-02-09
+**Archived:** 2026-02-28
 **Issue:** [#17674](https://github.com/openhab/openhab-addons/issues/17674)
 **PR:** [#18628](https://github.com/openhab/openhab-addons/pull/18628)
 
@@ -42,8 +43,8 @@ This feature fixes the critical issue where ClientHandler incorrectly shows all 
 
 ## Implementation Phases
 
-### Phase 1: Core Session Timeout Logic ⏳ (Current)
-**Status:** Not Started
+### Phase 1: Core Session Timeout Logic
+**Status:** ✅ Complete (2026-02-09)
 **Files:** `ClientHandler.java`
 
 - Add session tracking (timestamp, timeout monitor)
@@ -51,10 +52,10 @@ This feature fixes the critical issue where ClientHandler incorrectly shows all 
 - Add `checkSessionTimeout()` monitor
 - Update initialize/dispose lifecycle
 
-**Prompt:** [phase1-session-timeout.prompt.md](prompts/2026-02-09-phase1-session-timeout.prompt.md)
+**Prompt:** [phase1-session-timeout.prompt.finished.md](prompts/2026-02-09-phase1-session-timeout.prompt.finished.md)
 
 ### Phase 2: WebSocket Exclusive Usage
-**Status:** Not Started
+**Status:** ✅ Complete (2026-02-09)
 **Files:** `ServerHandler.java`, `TaskManager.java`, `Configuration.java`
 
 - Remove `useWebSocket` configuration option
@@ -62,22 +63,24 @@ This feature fixes the critical issue where ClientHandler incorrectly shows all 
 - Verify SessionsMessage → SessionEventBus flow
 - Test WebSocket fallback to polling
 
-### Phase 3: Testing and Validation
-**Status:** Not Started
-**Files:** Test files, documentation
+**Prompt:** [phase2-websocket-realtime.prompt.finished.md](prompts/2026-02-09-phase2-websocket-realtime.prompt.finished.md)
+
+### Phase 3: Automated Testing
+**Status:** ✅ Complete (2026-02-11) — 204/204 tests passing, 84% avg coverage
+**Files:** Test files
 
 - Unit tests for timeout detection
-- Integration tests with real devices
-- Performance validation
-- Documentation updates
+- Integration tests for task coordination
+- Mock-based WebSocket fallback tests
 
-### Phase 4: PR Update and Cleanup
-**Status:** Not Started
-**Files:** PR description, cleanup
+**Prompt:** [phase3-automated-testing.prompt.finished.md](prompts/2026-02-09-phase3-automated-testing.prompt.finished.md)
 
-- Update PR #18628 description
-- Remove unused configuration code
-- Final validation
+### Phase 4: Integration Testing & Production Readiness
+**Status:** ✅ Superseded (2026-02-28) — tracked directly in PR #18628 Phases 5 & 6
+
+- Remaining items (manual testing, docs, coding guideline V3–V5, flaky test) tracked in PR checklist
+
+**Prompt:** [phase4-integration-testing.prompt.finished.md](prompts/2026-02-11-phase4-integration-testing.prompt.finished.md)
 
 ---
 
@@ -183,11 +186,14 @@ This feature fixes the critical issue where ClientHandler incorrectly shows all 
 
 ## Session History
 
-Sessions will be documented here as work progresses:
-
-- *(No sessions yet)*
+| Date | Session | Status |
+|------|---------|--------|
+| 2026-02-09 | [Phase 1: Session Timeout](sessions/2026-02-09-phase1-session-timeout-implementation.md) | ✅ Complete |
+| 2026-02-09 | [Phase 2: WebSocket Real-Time](sessions/2026-02-09-phase2-websocket-realtime.md) | ✅ Complete |
+| 2026-02-11 | [Phase 3: Automated Testing](sessions/2026-02-11-phase3-automated-testing-implementation.md) | ✅ Complete |
+| 2026-02-12 | [Add Comprehensive Logging](sessions/2026-02-12-add-comprehensive-logging.md) | ✅ Complete |
 
 ---
 
-**Last Updated:** 2026-02-09
-**Next Action:** Begin Phase 1 implementation
+**Last Updated:** 2026-02-28
+**Status:** Archived — all feature phases complete; remaining PR items tracked in [#18628](https://github.com/openhab/openhab-addons/pull/18628) Phases 5 & 6

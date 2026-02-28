@@ -1,44 +1,6 @@
 {
 	"features": [
 		{
-			"id": "client-state-management",
-			"name": "Client State Management Enhancement",
-			"description": "Fix client online/offline status detection using session presence and timeout monitoring",
-			"status": "active",
-			"startDate": "2026-02-09",
-			"priority": "high",
-			"relatedIssues": [
-				"#17674"
-			],
-			"relatedPRs": [
-				"#18628"
-			],
-			"phases": [
-				{
-					"phase": 1,
-					"name": "Core Session Timeout Logic",
-					"status": "complete",
-					"completedDate": "2026-02-09"
-				},
-				{
-					"phase": 2,
-					"name": "WebSocket Real-Time Updates",
-					"status": "complete",
-					"completedDate": "2026-02-09"
-				},
-				{
-					"phase": 3,
-					"name": "Testing and Validation",
-					"status": "not-started"
-				},
-				{
-					"phase": 4,
-					"name": "PR Description Update and Cleanup",
-					"status": "not-started"
-				}
-			]
-		},
-		{
 			"id": "coding-guidelines-compliance",
 			"name": "Coding Guidelines Compliance",
 			"description": "Fix confirmed violations of the official openHAB coding guidelines: SLF4J-only logging, @NonNullByDefault on all non-DTO classes, no FQCNs in method bodies, configuration read in initialize(), WebSocketClientFactory service injection",
@@ -91,14 +53,15 @@
 			"discovery-fix",
 			"jellyfin-api-generation",
 			"record-refactor",
-			"websocket-authentication"
+			"websocket-authentication",
+			"client-state-management"
 		],
-		"count": 9,
-		"lastArchived": "2026-02-13"
+		"count": 10,
+		"lastArchived": "2026-02-28"
 	},
 	"metadata": {
 		"version": "1.0",
-		"lastUpdated": "2026-02-26T18:30:00Z",
+		"lastUpdated": "2026-02-28T12:00:00Z",
 		"migrated": true,
 		"migrationDate": "2026-01-02",
 		"migrationNotes": "Migrated from date-based session-reports/ and prompts/ structure to feature-based structure as per updated copilot instructions. Feature audit completed 2026-01-13. All features archived 2026-02-09."
