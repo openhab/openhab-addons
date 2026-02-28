@@ -157,7 +157,7 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             // Publish discovery result
             thingDiscovered(resultBuilder.build());
 
-            logger.info("Discovered Jellyfin client: {} [deviceId={}, client={}]", label, deviceId, client);
+            logger.debug("Discovered Jellyfin client: {} [deviceId={}, client={}]", label, deviceId, client);
         }
     }
 

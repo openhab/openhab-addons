@@ -95,6 +95,7 @@ public class SessionsMessageHandler implements WebSocketMessageHandler {
             }
         }
 
+        logger.info("[WEBSOCKET] Real-time session update received: {} session(s)", newSessions.size());
         sessionManager.updateSessions(newSessions);
     }
 }
