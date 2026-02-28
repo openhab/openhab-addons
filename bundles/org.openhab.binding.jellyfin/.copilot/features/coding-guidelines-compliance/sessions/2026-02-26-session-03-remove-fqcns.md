@@ -48,16 +48,17 @@
 
 **Files Modified**:
 
-| File | Changes |
-|------|---------|
-| `internal/BindingConfiguration.java` | Added `Configuration` import; replaced 1 FQCN |
-| `internal/exceptions/ContextualExceptionHandler.java` | Added `ExceptionHandlerType` import; replaced 1 FQCN |
-| `internal/handler/TaskManagerInterface.java` | Added `AbstractTask` import; replaced 3 FQCNs |
-| `internal/handler/TaskManager.java` | Added `WebSocketTask` import; replaced 4 FQCNs |
-| `internal/handler/ClientHandler.java` | Added 9 imports (HashMap, UUID, 7 library types); replaced ~35 FQCNs |
-| `internal/handler/ServerHandler.java` | Added 6 imports (URISyntaxException, UUID, ServerSyncTask, SessionsMessageHandler, WebSocketTask, GeneralCommand); replaced ~30 FQCNs; used `var` for 2 editConfiguration() calls |
+| File                                                  | Changes                                                                                                                                                                           |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `internal/BindingConfiguration.java`                  | Added `Configuration` import; replaced 1 FQCN                                                                                                                                     |
+| `internal/exceptions/ContextualExceptionHandler.java` | Added `ExceptionHandlerType` import; replaced 1 FQCN                                                                                                                              |
+| `internal/handler/TaskManagerInterface.java`          | Added `AbstractTask` import; replaced 3 FQCNs                                                                                                                                     |
+| `internal/handler/TaskManager.java`                   | Added `WebSocketTask` import; replaced 4 FQCNs                                                                                                                                    |
+| `internal/handler/ClientHandler.java`                 | Added 9 imports (HashMap, UUID, 7 library types); replaced ~35 FQCNs                                                                                                              |
+| `internal/handler/ServerHandler.java`                 | Added 6 imports (URISyntaxException, UUID, ServerSyncTask, SessionsMessageHandler, WebSocketTask, GeneralCommand); replaced ~30 FQCNs; used `var` for 2 editConfiguration() calls |
 
-**Parallel Operations**: 
+**Parallel Operations**:
+
 - Read all 6 source files in parallel
 - Applied simple-file changes (BindingConfiguration, ContextualExceptionHandler, TaskManagerInterface) in one multi_replace_string_in_file batch
 - Applied TaskManager changes in one batch
@@ -75,10 +76,10 @@
 
 **⚠️ Problematic Areas Identified**:
 
-| Issue | Severity | Impact | Resolution | Status |
-|-------|----------|--------|------------|--------|
-| `org.openhab.core.config.core.Configuration` naming conflict in ServerHandler.java | Low | Cannot use short name — conflicts with binding's own `Configuration` | Used `var` for editConfiguration() return type | Resolved |
-| SAT (code analysis tool) reports 386 pre-existing errors | Low | Build fails with `mvn clean install` but not with `mvn test` | Pre-existing baseline issue; build.sh uses `mvn package -DskipTests` | Pre-existing, not introduced |
+| Issue                                                                              | Severity | Impact                                                               | Resolution                                                           | Status                       |
+| ---------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------- |
+| `org.openhab.core.config.core.Configuration` naming conflict in ServerHandler.java | Low      | Cannot use short name — conflicts with binding's own `Configuration` | Used `var` for editConfiguration() return type                       | Resolved                     |
+| SAT (code analysis tool) reports 386 pre-existing errors                           | Low      | Build fails with `mvn clean install` but not with `mvn test`         | Pre-existing baseline issue; build.sh uses `mvn package -DskipTests` | Pre-existing, not introduced |
 
 ## Changes Summary
 
@@ -98,11 +99,11 @@
 
 ### Build Results
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Tests | 204/204 PASS | 204/204 PASS |
-| Spotless | Clean | Clean |
-| Compilation | Clean | Clean |
+| Metric                 | Before           | After                   |
+| ---------------------- | ---------------- | ----------------------- |
+| Tests                  | 204/204 PASS     | 204/204 PASS            |
+| Spotless               | Clean            | Clean                   |
+| Compilation            | Clean            | Clean                   |
 | FQCN violations (grep) | ~70+ occurrences | 0 (baseline grep clean) |
 
 ## Next Steps
