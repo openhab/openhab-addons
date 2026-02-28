@@ -143,8 +143,8 @@ Import-Package: \
 	org.graalvm.truffle.truffle-nfi;version='[25.0.1,25.0.2)',\
 	org.graalvm.truffle.truffle-runtime;version='[25.0.1,25.0.2)',\
 	com.fasterxml.jackson.core.jackson-annotations;version='[2.21.0,2.21.1)',\
-	com.fasterxml.jackson.core.jackson-core;version='[2.21.0,2.21.1)',\
-	com.fasterxml.jackson.core.jackson-databind;version='[2.21.0,2.21.1)',\
+	com.fasterxml.jackson.core.jackson-core;version='[2.21.1,2.21.2)',\
+	com.fasterxml.jackson.core.jackson-databind;version='[2.21.1,2.21.2)',\
 	org.graalvm.python.python-language;version='[25.0.1,25.0.2)',\
 	org.graalvm.python.python-resources;version='[25.0.1,25.0.2)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
