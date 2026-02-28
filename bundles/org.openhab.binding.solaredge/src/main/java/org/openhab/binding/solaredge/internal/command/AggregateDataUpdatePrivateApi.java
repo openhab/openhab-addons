@@ -102,9 +102,9 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommand implements So
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
+                return;
             }
         } else {
             String json = getContentAsString(StandardCharsets.UTF_8);
@@ -116,5 +116,6 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommand implements So
                 }
             }
         }
+        updateListenerStatus();
     }
 }

@@ -160,15 +160,16 @@ public class SolarEdgeGenericHandler extends BaseThingHandler implements SolarEd
     }
 
     private void updateOnlineStatus(CommunicationStatus status) {
+        String detailMessage = status.getUserFacingMessage();
         switch (status.getHttpCode()) {
             case SERVICE_UNAVAILABLE:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, status.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, detailMessage);
                 break;
             case OK:
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, status.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, detailMessage);
         }
     }
 
