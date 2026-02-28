@@ -99,8 +99,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         vpnUrl = newVpnUrl;
         if (!SdCardStatus.SD_CARD_WORKING.equals(newData.getSdStatus())) {
             statusReason = newData.getSdStatus().toString();
-        }
-        if (!AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
+        } else if (!AlimentationStatus.ALIM_CORRECT_POWER.equals(newData.getAlimStatus())) {
             statusReason = newData.getAlimStatus().toString();
         }
     }
