@@ -17,12 +17,24 @@ import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link TerEntVigiCru} is the Java class used to map the JSON
+ * The {@link Serie} is the Java class used to map the JSON
  * response to a vigicrue api endpoint request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class TerEntVigiCru {
-    @SerializedName("ListEntVigiCru")
-    public List<ListEntVigiCru> listEntVigiCru;
+public class Serie {
+    @SerializedName("CdStationHydro")
+    public String cdStationHydro;
+
+    @SerializedName("LbStationHydro")
+    public String lbStationHydro;
+
+    @SerializedName("Link")
+    public String link;
+
+    @SerializedName("GrdSerie")
+    public String grdSerie;
+
+    @SerializedName("ObssHydro")
+    public List<ObssHydro> obssHydro;
 }
