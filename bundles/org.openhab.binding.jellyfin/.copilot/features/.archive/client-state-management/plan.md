@@ -4,7 +4,8 @@
 **Issue:** #17674 - SDK Version 1.4.x no longer supports recent Jellyfin Server Versions (>10.8)
 **PR:** #18628 - [jellyfin] Add support for server versions > 10.8
 **Created:** 2026-02-09
-**Status:** Planning
+**Archived:** 2026-02-28
+**Status:** ✅ Archived — all phases complete; remaining items tracked in PR #18628
 **Priority:** High - Critical for correct client online/offline detection
 
 ---
