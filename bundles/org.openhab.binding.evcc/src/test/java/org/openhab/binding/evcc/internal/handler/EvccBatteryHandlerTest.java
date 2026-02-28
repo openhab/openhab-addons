@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -93,7 +93,7 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
-        batteryState = exampleResponse.getAsJsonArray("battery").get(0).getAsJsonObject();
+        batteryState = exampleResponse.getAsJsonObject("battery").getAsJsonArray("devices").get(0).getAsJsonObject();
     }
 
     @SuppressWarnings("null")
