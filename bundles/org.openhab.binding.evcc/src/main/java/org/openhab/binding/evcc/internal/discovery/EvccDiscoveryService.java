@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.discovery;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.SUPPORTED_THING_TYPES;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,7 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link EvccDiscoveryService} is responsible for scanning the API response for things
- * 
+ *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
@@ -66,10 +66,15 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         JsonObject state = thingHandler.getCachedEvccState().deepCopy();
         if (!state.isEmpty()) {
             for (EvccDiscoveryMapper mapper : mappers) {
-                mapper.discover(state, thingHandler).forEach(thing -> {
-                    logger.debug("Thing discovered {}", thing);
-                    thingDiscovered(thing);
-                });
+                try {
+                    mapper.discover(state, thingHandler).forEach(thing -> {
+                        logger.debug("Thing discovered {}", thing);
+                        thingDiscovered(thing);
+                    });
+                } catch (RuntimeException e) {
+                    // isolate the mapper calls so that a single evcc API change does not affect stable parts
+                    logger.warn("discovery for things failed, possibly due to an API change", e);
+                }
             }
         }
     }
