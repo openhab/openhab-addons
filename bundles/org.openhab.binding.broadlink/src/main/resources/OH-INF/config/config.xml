@@ -13,23 +13,21 @@
 			<required>true</required>
 		</parameter>
 		<parameter name="staticIp" type="boolean">
-			<context>static-ip</context>
+			<context>network-address</context>
 			<label>Static IP</label>
 			<description>Will the device always be given this network address?</description>
 			<required>true</required>
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="port" type="integer">
+		<parameter name="port" type="integer" min="1" max="65535">
 			<default>80</default>
-			<context>network-port</context>
 			<label>Network Port</label>
 			<description>Network port of the device.</description>
 			<required>true</required>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="macAddress" type="text">
-			<context>mac-address</context>
 			<label>MAC Address</label>
 			<description>MAC address of the device.</description>
 			<required>true</required>

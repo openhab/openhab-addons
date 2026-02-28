@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -99,8 +98,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     @Modified
     public void configChanged(Map<String, @Nullable Object> config) {
-        BindingConfiguration newConf = ConfigParser.configurationAs(config, BindingConfiguration.class);
-        if (newConf != null) {
+        if (ConfigParser.configurationAs(config, BindingConfiguration.class) instanceof BindingConfiguration newConf) {
             configuration.update(newConf);
         }
     }
@@ -125,9 +123,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
         CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing, timeZoneProvider)
                 : new ModuleHandler(thing, timeZoneProvider);
 
-        List<ChannelHelper> helpers = new ArrayList<>();
-
-        helpers.addAll(moduleType.channelGroups.stream().map(ChannelGroup::getHelperInstance).toList());
+        List<ChannelHelper> helpers = moduleType.channelGroups.stream().map(ChannelGroup::getHelperInstance).toList();
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;

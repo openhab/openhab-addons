@@ -420,6 +420,8 @@ public class NetatmoConstants {
         DEVICE_NOT_FOUND,
         @SerializedName("10")
         MISSING_ARGUMENTS,
+        @SerializedName("11")
+        CONCURRENCY_LIMIT_TIMED_OUT,
         @SerializedName("13")
         OPERATION_FORBIDDEN,
         @SerializedName("19")

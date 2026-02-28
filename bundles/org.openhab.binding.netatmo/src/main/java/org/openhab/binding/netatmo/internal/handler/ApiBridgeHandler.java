@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
@@ -161,6 +162,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Connected to Netatmo API.");
+        freeConnectJob();
 
         ApiHandlerConfiguration configuration = getConfiguration();
         if (!configuration.webHookUrl.isBlank()
@@ -199,7 +201,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             startAuthorizationFlow();
             return false;
         } catch (IOException e) {
-            prepareReconnection(getConfiguration().reconnectInterval, e.getMessage(), code, redirectUri);
+            String message = e.getMessage();
+            if (message == null) {
+                message = e.getClass().getName();
+            }
+            prepareReconnection(message, code, redirectUri);
             return false;
         }
 
@@ -226,29 +232,32 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         return getConfigAs(ApiHandlerConfiguration.class);
     }
 
-    private void prepareReconnection(int delay, @Nullable String message, @Nullable String code,
+    private void prepareReconnection(String message, @Nullable String code, @Nullable String redirectUri) {
+        prepareReconnection(message, getConfiguration().getReconnectInterval(), code, redirectUri);
+    }
+
+    private void prepareReconnection(String message, Duration delay, @Nullable String code,
             @Nullable String redirectUri) {
         if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Reconnection in %s: %s".formatted(delay, message));
         }
         connectApi.dispose();
         freeConnectJob();
-        connectJob = scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS);
+        connectJob = scheduler.schedule(() -> openConnection(code, redirectUri), delay.toSeconds(), TimeUnit.SECONDS);
         logger.debug("Reconnection scheduled in {} seconds", delay);
     }
 
     private void freeConnectJob() {
-        ScheduledFuture<?> connectJob = this.connectJob;
-        if (connectJob != null) {
-            connectJob.cancel(true);
+        if (connectJob instanceof ScheduledFuture job) {
+            job.cancel(true);
         }
         this.connectJob = null;
     }
 
     private void freeGrantServlet() {
-        GrantServlet grantServlet = this.grantServlet;
-        if (grantServlet != null) {
-            grantServlet.dispose();
+        if (grantServlet instanceof GrantServlet servlet) {
+            servlet.dispose();
         }
         this.grantServlet = null;
     }
@@ -304,13 +313,17 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
+        if (connectJob != null) {
+            throw new NetatmoException("Connection pending, no other request accepted in the meantime.");
+        }
+
+        logger.debug("executeUri {}  {} ", method.toString(), uri);
+
+        Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
+
         try {
-            logger.debug("executeUri {}  {} ", method.toString(), uri);
-
-            Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_S, TimeUnit.SECONDS);
-
             if (!authenticate(null, null)) {
-                prepareReconnection(getConfiguration().reconnectInterval, "@text/status-bridge-offline", null, null);
+                prepareReconnection("@text/status-bridge-offline", null, null);
                 throw new NetatmoException("Not authenticated");
             }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
@@ -359,10 +372,18 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                             "Error deserializing error: %s".formatted(statusCode.getMessage()));
                 }
             }
-            if (statusCode == Code.TOO_MANY_REQUESTS
-                    || exception.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
-                prepareReconnection(API_LIMIT_INTERVAL_S,
-                        "@text/maximum-usage-reached [ \"%d\" ]".formatted(API_LIMIT_INTERVAL_S), null, null);
+            if (statusCode == Code.TOO_MANY_REQUESTS) {
+                String message = null;
+                String delayStr = response.getHeaders().get(HttpHeader.RETRY_AFTER);
+                int delay = delayStr != null ? Integer.valueOf(delayStr) : Integer.MAX_VALUE;
+                if (exception.getStatusCode() == ServiceError.CONCURRENCY_LIMIT_TIMED_OUT) {
+                    delay = Math.min(delay, TIMEOUT_S);
+                    message = "@text/concurrency-limit-timed-out [ \"%d\" ]";
+                } else { // ServiceError.MAXIMUM_USAGE_REACHED
+                    delay = Math.min(delay, API_LIMIT_INTERVAL_S);
+                    message = "@text/maximum-usage-reached [ \"%d\" ]";
+                }
+                prepareReconnection(message.formatted(delay), Duration.ofSeconds(delay), null, null);
             }
             throw exception;
         } catch (InterruptedException e) {
@@ -374,7 +395,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Request error, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
-            prepareReconnection(getConfiguration().reconnectInterval, "@text/request-time-out", null, e.getMessage());
+            prepareReconnection("@text/request-time-out", null, e.getMessage());
             throw new NetatmoException("%s: \"%s\"".formatted(e.getClass().getName(), e.getMessage()));
         }
     }
@@ -462,5 +483,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public Optional<WebhookServlet> getWebHookServlet() {
         return Optional.ofNullable(webHookServlet);
+    }
+
+    public @Nullable Duration getIdleTime() {
+        return connectJob instanceof ScheduledFuture job ? Duration.ofSeconds(job.getDelay(TimeUnit.SECONDS)) : null;
     }
 }

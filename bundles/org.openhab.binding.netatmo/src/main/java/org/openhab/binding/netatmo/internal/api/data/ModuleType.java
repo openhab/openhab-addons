@@ -73,8 +73,7 @@ public enum ModuleType {
             new ChannelGroup(ApiBridgeChannelHelper.class, GROUP_MONITORING)),
 
     HOME(FeatureArea.NONE, "NAHome", 1, "home", ACCOUNT,
-            Set.of(DeviceCapability.class, HomeCapability.class, ChannelHelperCapability.class,
-                    RefreshCapability.class),
+            Set.of(HomeCapability.class, ChannelHelperCapability.class, RefreshCapability.class),
             new ChannelGroup(SecurityChannelHelper.class, GROUP_SECURITY_EVENT, GROUP_SECURITY),
             new ChannelGroup(EnergyChannelHelper.class, GROUP_ENERGY)),
 
