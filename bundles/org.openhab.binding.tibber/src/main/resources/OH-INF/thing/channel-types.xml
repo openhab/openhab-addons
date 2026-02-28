@@ -9,6 +9,10 @@
 		<label>Current Total Price</label>
 		<description>Total price including taxes</description>
 		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="advanced-price" advanced="true">
@@ -16,6 +20,10 @@
 		<label>Current Total Price</label>
 		<description>Total price including taxes</description>
 		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"></state>
 	</channel-type>
 	<channel-type id="price-level">
