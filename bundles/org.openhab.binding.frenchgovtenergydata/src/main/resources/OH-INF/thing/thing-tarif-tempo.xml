@@ -6,7 +6,7 @@
 
 	<thing-type id="tempo">
 		<label>Tempo Tariff</label>
-		<description>Temmpo usage Tariff Subscription</description>
+		<description>Tempo usage Tariff Subscription</description>
 
 		<channels>
 			<channel id="tariff-start" typeId="timestamp"/>

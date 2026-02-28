@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -474,7 +474,6 @@ public class KermiXcenterThingHandler extends BaseBridgeHandler {
             updateState(electricPowerHeatingChannel, powerDTO.electricPowerHeating);
             updateState(electricPowerDrinkingWaterChannel, powerDTO.electricPowerDrinkingwater);
             updateState(electricPowerCoolingChannel, powerDTO.electricPowerCooling);
-
         } else {
             logger.debug("Unable to get {} from provider {}", Data.DataType.POWER, powerParser.toString());
         }

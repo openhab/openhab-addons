@@ -5,7 +5,7 @@ This binding integrates **BTicino / Legrand** **MyHOME &reg; - BUS/SCS** and **M
 The binding supports:
 
 - both wired MyHOME - BUS/SCS and wireless MyHOME Radio - Zigbee setups. The two networks can be configured simultaneously
-- auto discovery of MyHOME - BUS/SCS IP and  MyHOME Radio - Zigbee USB gateways; auto discovery of devices
+- auto-discovery of MyHOME - BUS/SCS IP and  MyHOME Radio - Zigbee USB gateways; auto-discovery of devices
 - commands from openHAB and feedback (events) from BUS/SCS and Radio network
 
 ![MyHOMEServer1 Gateway](doc/MyHOMEServer1_gateway.jpg)
@@ -30,7 +30,7 @@ These gateways have been tested with the binding:
 [MH200N](https://www.homesystems-legrandgroup.com/home/-/productsheets/2469209),
 [F453](https://www.homesystems-legrandgroup.com/home/-/productsheets/2703566),  etc.
 
-- **MyHOME Radio - Zigbee USB Gateways**, such as [BTicino 3578](https://www.legrand.be/fr/catalogue/zigbee-interface-openzigbee-3578), also known as *Legrand 088328*
+- **MyHOME Radio - Zigbee USB Gateways**, such as [BTicino 3578](https://www.legrand.be/fr/catalogue/zigbee-interface-openzigbee-3578), also known as _Legrand 088328_
 
 Some of these modules are not on the BTicino catalogue anymore.
 
@@ -110,7 +110,7 @@ Configuration parameters are:
   - if the BUS/SCS gateway is configured to accept connections from the openHAB computer IP address, no password should be required
   - in all other cases, a password must be configured. This includes gateways that have been discovered and added from Inbox: without a password configured they will remain OFFLINE
 - `discoveryByActivation`: discover BUS devices when they are activated also when a device scan hasn't been started from Inbox (`boolean`, _optional_, default: `false`). See [Discovery by Activation](#discovery-by-activation).
-- `dateTimeSynch`: synchronise date and time of slave elements on the BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronisation commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not syncronized with Internet time servers and with daylight saving time changes.
+- `dateTimeSynch`: synchronize date and time of slave elements on the BUS using openHAB timestamp (`boolean`, _optional_, default: `false`). Set this parameter to `true` to send time-date synchronization commands on the BUS when the timestamp received from the gateway differs by more than 1 minute from that of openHAB. Useful if the BUS gateway is not synchronized with Internet time servers and with daylight saving time changes.
 
 Alternatively the MyHOME - BUS/SCS Gateway Thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
@@ -121,7 +121,7 @@ Configuration parameters are:
 - `serialPort`: the serial port where the  MyHOME Radio - Zigbee USB Gateway is connected (`String`, _mandatory_)
   - Examples: `/dev/ttyUSB0` (Linux/RaPi), `COM3` (Windows)
 
-Alternatively the MyHOME Radio - Zigbee USB Gateway thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
+Alternatively the MyHOME Radio - Zigbee USB Gateway Thing can be configured using the `.things` file, see `openwebnet.things` example [below](#full-example).
 
 ### Configuring Devices
 
@@ -153,7 +153,7 @@ Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone 
 
 - the `where` configuration parameter (`OpenWebNet Address`):
   - example BUS/SCS zone `1` --> `where="1"`
-- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4- or 99-zones). `standAlone=true` means the zone is indipendent and no Central Unit is present in the system.
+- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4- or 99-zones). `standAlone=true` means the zone is independent and no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
 
@@ -296,7 +296,7 @@ A "stop time" parameter is usually set on the physical actuator (eg. F411U2) eit
 ##### Position estimation of the shutter
 
 - if `shutterRun` is not set, or is set to `AUTO` but calibration has not been performed yet, then position estimation will remain `UNDEF` (undefined)
-- if `shutterRun` is wrongly set *higher* than the actual runtime or the "stop time" of the actuator (see NOTE above), then position estimation will remain `UNDEF`: try to reduce `shutterRun` until you find the right value
+- if `shutterRun` is wrongly set _higher_ than the actual runtime or the "stop time" of the actuator (see NOTE above), then position estimation will remain `UNDEF`: try to reduce `shutterRun` until you find the right value
 - before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command will not work until the roller shutter is fully rolled up
 - if openHAB is restarted the binding does not know if a shutter position has changed in the meantime, so its position will be `UNDEF`. Move the shutter all `UP`/`DOWN` to synchronise again its position with the binding
 - the shutter position is estimated based on UP/DOWN timings: an error of ±2% is normal
@@ -306,10 +306,10 @@ A "stop time" parameter is usually set on the physical actuator (eg. F411U2) eit
 Basic Scenarios and CEN/CEN+ Scenarios channels are [TRIGGER channels](https://www.openhab.org/docs/configuration/rules-dsl.html#channel-based-triggers]): they handle events and do not have a state.
 
 A powerful feature is to detect scenario activations and CEN/CEN+ buttons press events to trigger rules in openHAB: this way openHAB becomes a very powerful scenario manager activated by BTicino scenario control modules or by CEN/CEN+ scenarios physical buttons.
-See [openwebnet.rules](#openwebnet-rules) for examples on how to define rules that trigger on scenarios and on CEN/CEN+ button press events.
+See [openwebnet.rules](#openwebnetrules) for examples on how to define rules that trigger on scenarios and on CEN/CEN+ button press events.
 
 It's also possible to send _virtual scenario activation_ and _virtual press_ events on the BUS, for example to enable the activation of MH202 or F420 scenarios from openHAB..
-See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-rules) sections for examples on how to use the `activateScenario` and `virtualPress` actions connected to a pushbutton on a sitemap.
+See [openwebnet.sitemap](#openwebnetsitemap) & [openwebnet.rules](#openwebnetrules) sections for examples on how to use the `activateScenario` and `virtualPress` actions connected to a pushbutton on a sitemap.
 
 - basic scenario channels are named `scenario` and possible events are: `SCENARIO_01` ... `SCENARIO_16` (or up to `SCENARIO_20` in case of module IR3456) when a scenario is activated
 - CEN/CEN+ channels are named `button#X` where `X` is the button number on the CEN/CEN+ Scenario Control device
@@ -317,14 +317,14 @@ See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-r
   - possible events are:
     - for CEN:
       - `START_PRESS` - sent when you start pressing the button
-      - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-      - `EXTENDED_PRESS` - sent if you keep the button pressed longer than 0,5sec; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
-      - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
+  - `SHORT_PRESS` - sent if you pressed the button shorter than 0.5 sec (sent at the moment when you release it)
+  - `EXTENDED_PRESS` - sent if you keep the button pressed longer than 0.5 sec; will be sent again every 0.5 sec as long as you hold pressed (good for dimming rules)
+  - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0.5 sec
     - for CEN+:
-      - `SHORT_PRESS` - sent if you pressed the button shorter than 0,5sec (sent at the moment when you release it)
-      - `START_EXTENDED_PRESS` - sent once as soon as you keep the button pressed longer than 0,5sec
-      - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for rules involving dimming/volume)
-      - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
+  - `SHORT_PRESS` - sent if you pressed the button shorter than 0.5 sec (sent at the moment when you release it)
+  - `START_EXTENDED_PRESS` - sent once as soon as you keep the button pressed longer than 0.5 sec
+  - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0.5 sec as long as you hold pressed (good for rules involving dimming/volume)
+  - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0.5 sec
 
 #### Thermo Central Unit `mode`: `WEEKLY` and `SCENARIO`
 

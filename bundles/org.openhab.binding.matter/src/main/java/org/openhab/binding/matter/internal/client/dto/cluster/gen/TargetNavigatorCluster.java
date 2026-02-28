@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -51,13 +50,13 @@ public class TargetNavigatorCluster extends BaseCluster {
      * objects in the TargetList attribute.
      */
     public Integer currentTarget; // 1 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when there is a change in either the active target or the list of available targets
      * or both.
      */
-    public class TargetUpdated {
+    public static class TargetUpdated {
         public List<TargetInfoStruct> targetList; // list
         public Integer currentTarget; // uint8
         public OctetString data; // octstr
@@ -72,7 +71,7 @@ public class TargetNavigatorCluster extends BaseCluster {
     /**
      * This indicates an object describing the navigable target.
      */
-    public class TargetInfoStruct {
+    public static class TargetInfoStruct {
         /**
          * This field shall contain an unique id within the TargetList.
          */
@@ -94,8 +93,8 @@ public class TargetNavigatorCluster extends BaseCluster {
         TARGET_NOT_FOUND(1, "Target Not Found"),
         NOT_ALLOWED(2, "Not Allowed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;

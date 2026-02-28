@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,7 +28,6 @@ import org.openhab.binding.heos.internal.json.payload.Group;
 import org.openhab.binding.heos.internal.json.payload.Media;
 import org.openhab.binding.heos.internal.json.payload.Player;
 import org.openhab.binding.heos.internal.resources.HeosCommands;
-import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.slf4j.Logger;
@@ -57,7 +55,13 @@ public class HeosFacade {
     }
 
     public synchronized List<BrowseResult> getFavorites() throws IOException, ReadException {
-        return getBrowseResults(FAVORITE_SID);
+        return getBrowseResults(FAVORITE_SID).stream().map(r -> {
+            String name = r.name;
+            if (name != null) {
+                r.name = decodeSpecialCharacters(name);
+            }
+            return r;
+        }).toList();
     }
 
     public List<BrowseResult> getInputs() throws IOException, ReadException {
@@ -73,7 +77,7 @@ public class HeosFacade {
         logger.debug("Response: {}", response);
 
         if (response.payload == null) {
-            return Collections.emptyList();
+            return List.of();
         }
         logger.debug("Received results: {}", Arrays.asList(response.payload));
 
@@ -84,13 +88,14 @@ public class HeosFacade {
         List<Media> media = new ArrayList<>();
         for (int page = 0; page < MAX_QUEUE_PAGES; page++) {
             HeosResponseObject<Media[]> response = fetchQueue(pid, page);
-            if (!response.result || response.payload == null) {
+            Media[] payload = response.payload;
+            if (!response.result || payload == null) {
                 break;
             }
 
-            media.addAll(Arrays.asList(response.payload));
+            media.addAll(Arrays.asList(payload));
 
-            if (response.payload.length < 100) {
+            if (payload.length < 100) {
                 break;
             }
 
@@ -457,8 +462,10 @@ public class HeosFacade {
 
     /**
      * Asks for the actual state of the player. The result has
-     * to be handled by the event controller. The system returns {@link HeosConstants#PLAY},
-     * {@link HeosConstants#PAUSE} or {@link HeosConstants#STOP}.
+     * to be handled by the event controller. The system returns
+     * {@link org.openhab.binding.heos.internal.resources.HeosConstants#PLAY},
+     * {@link org.openhab.binding.heos.internal.resources.HeosConstants#PAUSE} or
+     * {@link org.openhab.binding.heos.internal.resources.HeosConstants#STOP}.
      *
      * @param id The player ID the state shall get for
      * @return
@@ -550,5 +557,9 @@ public class HeosFacade {
 
     public void closeConnection() {
         heosSystem.closeConnection();
+    }
+
+    private static String decodeSpecialCharacters(String str) {
+        return str.replace("%26", "&").replace("%3D", "=").replace("%25", "%");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ public class CommandTypeNotSupportedException extends Exception {
     private static final long serialVersionUID = -7970958467980752003L;
 
     public CommandTypeNotSupportedException() {
-        super();
     }
 
     public CommandTypeNotSupportedException(String message) {

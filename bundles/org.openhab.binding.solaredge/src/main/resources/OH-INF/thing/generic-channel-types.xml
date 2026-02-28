@@ -6,12 +6,20 @@
 	<channel-type id="type-power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="type-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,6 +84,7 @@ public class IpCameraBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_POLL_IMAGE = "pollImage";
+    public static final String CHANNEL_CREATE_SNAPSHOTS = "createSnapshots";
     public static final String CHANNEL_RECORDING_GIF = "recordingGif";
     public static final String CHANNEL_GIF_HISTORY = "gifHistory";
     public static final String CHANNEL_GIF_HISTORY_LENGTH = "gifHistoryLength";

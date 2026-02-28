@@ -29,7 +29,7 @@
 				<description>The IP or host name of the Music Player Daemon.</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65335">
+			<parameter name="port" type="integer" required="true" min="1" max="65535">
 				<label>Port</label>
 				<description>Port for the Music Player Daemon</description>
 				<default>6600</default>
@@ -92,8 +92,8 @@
 
 	<channel-type id="currentsongid" advanced="true">
 		<item-type>Number</item-type>
-		<label>Current Song Id</label>
-		<description>The current song id.</description>
+		<label>Current Song ID</label>
+		<description>The current song ID.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>

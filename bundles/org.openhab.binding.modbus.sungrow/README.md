@@ -1,7 +1,7 @@
 # Modbus Sungrow Binding
 
 This binding integrates the sungrow inverters into openHAB.
-It is based on the Sungrow specification "Communication Protocol of Residential Hybrid Inverter V1.0.23", which can be found here: https://github.com/bohdan-s/SunGather/issues/36.
+It is based on the Sungrow specification "Communication Protocol of Residential Hybrid Inverter V1.0.23", which can be found here: <https://github.com/bohdan-s/SunGather/issues/36>.
 
 ## Supported Inverters
 
@@ -26,7 +26,7 @@ As defined within the spec mentioned above the following inverters are supported
 
 ## Supported Things
 
-The binding supports only one thing:
+The binding supports only one Thing:
 
 - `sungrow-inverter`: The sungrow inverter
 
@@ -45,18 +45,19 @@ Enabling modbus and whitelist setting can be done in WiNet-S Web-UI as shown bel
 
 ## Thing Configuration
 
-Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter thing.
+Once you've configured the Modbus TCP Slave or Modbus Serial Slave as Bridge you can configure the Sungrow inverter Thing.
 You just have to select the configured bridge and optional configure the polling interval.
 
 ### Sungrow Inverter (`sungrow-inverter`)
 
-| Name         | Type    | Description                          | Default | Required | Advanced |
-|--------------|---------|--------------------------------------|---------|----------|----------|
-| pollInterval | integer | Interval the device is polled in ms. | 5000    | yes      | no       |
+| Name          | Type    | Description                                                                                                                                          | Default | Required | Advanced |
+|---------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
+| pollInterval  | integer | Interval the device is polled in ms.                                                                                                                 | 5000    | yes      | no       |
+| maxTries      | integer | Specifies how many times the binding should retry reading data if a read attempt fails. <br/>Set to `1` to disable retries and use a single attempt. | 3       | yes      | no       |
 
 ## Channels
 
-The `sungrow-inverter` thing has channels that serve the current state of the sungrow inverter, as you are used to from the iSolareCloud Website and App.
+The `sungrow-inverter` Thing has channels that serve the current state of the sungrow inverter, as you are used to from the iSolareCloud Website and App.
 
 | Channel Type ID                    | Item Type                | Description                           | Advanced  | Channel Group       |
 |------------------------------------|--------------------------|---------------------------------------|-----------|---------------------|
@@ -107,7 +108,7 @@ The `sungrow-inverter` thing has channels that serve the current state of the su
 
 This example shows how to configure a sungrow inverter connected via modbus and uses the most common channels.
 
-_sungrow.things_
+### sungrow.things
 
 ```java
 Bridge modbus:tcp:sungrowBridge [ host="10.0.0.2", port=502, id=1, enableDiscovery=false ] {
@@ -115,7 +116,7 @@ Bridge modbus:tcp:sungrowBridge [ host="10.0.0.2", port=502, id=1, enableDiscove
 }
 ```
 
-_sungrow.items_
+### sungrow.items
 
 ```java
 // Groups
@@ -147,7 +148,7 @@ Number:Power load_power "Load Power" (loadInformation) ["Measurement", "Power"] 
 Number:Energy daily_direct_energy_consumption "Daily Direct Energy Consumption" (loadInformation) ["Measurement", "Energy"] {channel="modbus:sungrow-inverter:sungrowBridge:sungrowInverter:sg-load-information#sg-daily-direct-energy-consumption"}
 ```
 
-_sungrow.sitemap_
+### sungrow.sitemap
 
 ```perl
 sitemap sungrow label="Sungrow Binding"

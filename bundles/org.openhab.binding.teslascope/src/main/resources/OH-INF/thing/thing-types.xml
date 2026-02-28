@@ -4,8 +4,29 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="account">
+		<label>Teslascope Account</label>
+		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>apiKey</label>
+				<description>apiKey provided by Teslascope</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval at which the account is polled (in seconds).</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="vehicle">
-		<label>Teslascope</label>
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Vehicle</label>
 		<description>Access to Tesla Vehicle data via the Teslascope developer API</description>
 		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 		<channels>
@@ -97,18 +118,16 @@
 			<property name="thingTypeVersion">2</property>
 		</properties>
 
+		<representation-property>publicID</representation-property>
+
 		<config-description>
-			<parameter name="apiKey" type="text" required="true">
-				<label>apiKey</label>
-				<description>apiKey provided by Teslascope</description>
-			</parameter>
 			<parameter name="publicID" type="text" required="true">
 				<label>Vehicle Public ID</label>
 				<description>Vehicle public ID listed in Teslascope</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10">
 				<label>Refresh Interval</label>
-				<description>Interval the API is polled in sec.</description>
+				<description>Interval at which the API is polled (in seconds).</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -253,7 +272,7 @@
 	<channel-type id="charge-port-latch">
 		<item-type>Switch</item-type>
 		<label>Charge Port Latch</label>
-		<description>Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)</description>
+		<description>Indicates the Charge Port Latch status (ON/OFF if latched/unlatched)</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>
@@ -325,7 +344,7 @@
 		<description>Lock or unlock the car</description>
 		<tags>
 			<tag>Switch</tag>
-			<tag>Mode</tag>
+			<tag>LockState</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="driver-rear-door" advanced="true">
@@ -655,8 +674,8 @@
 	</channel-type>
 	<channel-type id="wiper-blade-heater" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Wiperblade Heater</label>
-		<description>Indicates if the wiperblade heater is switched on</description>
+		<label>Wiper Blade Heater</label>
+		<description>Indicates if the wiper blade heater is switched on</description>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,7 +122,10 @@ public class RotelAsciiV1ProtocolHandler extends RotelAbstractAsciiProtocolHandl
     public void handleIncomingData(byte[] inDataBuffer, int length) {
         for (int i = 0; i < length; i++) {
             boolean end = false;
-            if (searchKey && inDataBuffer[i] == '=') {
+            if (searchKey && inDataBuffer[i] == CHAR_END_RESPONSE) {
+                // If end character is found while searching the key, we ignore everything read until that point
+                resetDataBuffer();
+            } else if (searchKey && inDataBuffer[i] == '=') {
                 // End of key reading, check if the value is a fixed or variable length
                 searchKey = false;
                 byte[] dataKey = getDataBuffer();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -438,7 +438,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 
     @Override
     public void close() {
-        context.getMdnsClient().unregisterAllServices();
+        context.getMdnsClient().removeServiceListener(NeeoConstants.NEEO_MDNS_TYPE, mdnsListener);
         systemsLock.lock();
         try {
             save();

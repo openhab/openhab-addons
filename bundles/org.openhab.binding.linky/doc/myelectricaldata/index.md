@@ -1,29 +1,32 @@
-  2. Step 2
+# MyElectricalData Setup Steps
 
-      ![connectlinky-myelectricaldata-step1](connectlinky-myelectricaldata-step1.png)<br/>
-      ![connectlinky-myelectricaldata-step2](connectlinky-myelectricaldata-step2.png)<br/>
+1. Step 1
 
-  3. Step 3
+    ![connectlinky-myelectricaldata-step1](connectlinky-myelectricaldata-step1.png)
 
-      ![connectlinky-myelectricaldata-step2b](connectlinky-myelectricaldata-step2b.png)<br/>
+1. Step 2
 
-  4. Step 4
+   ![connectlinky-myelectricaldata-step2](connectlinky-myelectricaldata-step2.png)
 
-     If you have multiple linky on your account like me, you will have to repeat the procedure for each linky.
-     Don't select the two linky in the same procedure, it will not work !
+1. Step 3
 
-     ![connectlinky-myelectricaldata-step2c](connectlinky-myelectricaldata-step2c.png)<br/>
+   ![connectlinky-myelectricaldata-step2b](connectlinky-myelectricaldata-step2b.png)
 
-  5. Step 5
+1. Step 4
 
-     ![connectlinky-myelectricaldata-step2d](connectlinky-myelectricaldata-step2d.png)<br/>
+   If you have multiple linky on your account like me, you will have to repeat the procedure for each linky.
+   Don't select the two linky in the same procedure, it will not work !
 
-  6. Step 6
+   ![connectlinky-myelectricaldata-step2c](connectlinky-myelectricaldata-step2c.png)
 
-     ![connectlinky-myelectricaldata-step3](connectlinky-myelectricaldata-step3.png)<br/>
+1. Step 5
 
-  7. Step 7
+   ![connectlinky-myelectricaldata-step2d](connectlinky-myelectricaldata-step2d.png)
 
-     ![connectlinky-myelectricaldata-step3b](connectlinky-myelectricaldata-step3b.png)<br/>
+1. Step 6
 
+   ![connectlinky-myelectricaldata-step3](connectlinky-myelectricaldata-step3.png)
 
+1. Step 7
+
+   ![connectlinky-myelectricaldata-step3b](connectlinky-myelectricaldata-step3b.png)

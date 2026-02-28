@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,12 +29,14 @@ import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControl2H
 import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.plug.PlugHandler;
+import org.openhab.binding.boschshc.internal.devices.presence.PresenceSimulationHandler;
 import org.openhab.binding.boschshc.internal.devices.relay.RelayHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControl2Handler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
 import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetector2Handler;
 import org.openhab.binding.boschshc.internal.devices.smokedetector.SmokeDetectorHandler;
+import org.openhab.binding.boschshc.internal.devices.thermostat.Thermostat2Handler;
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.TwinguardHandler;
 import org.openhab.binding.boschshc.internal.devices.universalswitch.UniversalSwitch2Handler;
@@ -85,10 +87,13 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT, WindowContactHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2, WindowContact2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2_PLUS, WindowContact2PlusHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_WINDOW_CONTACT_2_MATTER, WindowContact2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_MOTION_DETECTOR, MotionDetectorHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL, ShutterControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_SHUTTER_CONTROL_2, ShutterControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT, ThermostatHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT_2, Thermostat2Handler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_THERMOSTAT_2_MATTER, Thermostat2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CLIMATE_CONTROL, ClimateControlHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WALL_THERMOSTAT, WallThermostatHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_CAMERA_360, CameraHandler::new),
@@ -104,7 +109,8 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
             new ThingTypeHandlerMapping(THING_TYPE_LIGHT_CONTROL_2, LightControl2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_DIMMER, DimmerHandler::new),
             new ThingTypeHandlerMapping(THING_TYPE_WATER_DETECTOR, WaterLeakageSensorHandler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_RELAY, RelayHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_RELAY, RelayHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_PRESENCE_SIMULATION, PresenceSimulationHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     protected RS232MessageParser parser = new RS232MessageParser();
 
     public RS232Connection(SerialPortManager serialPortManager) {
-        super();
         this.serialPortManager = serialPortManager;
     }
 

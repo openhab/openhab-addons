@@ -7,12 +7,20 @@
 	<channel-type id="ac-total-current-type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Total Current Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-phase-current-type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase Current Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -20,6 +28,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
 		<description>This phase's AC voltage relative to the next phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -27,18 +39,30 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage Phase To N Value</label>
 		<description>This phase's AC voltage relative to N line</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-power-type">
 		<item-type>Number:Power</item-type>
 		<label>AC Power Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-frequency-type">
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -57,54 +81,90 @@
 	<channel-type id="ac-power-factor-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>AC Power Factor</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="ac-lifetime-energy-type">
 		<item-type>Number:Energy</item-type>
 		<label>AC Lifetime Energy Production</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="dc-current-type">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>DC Current Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="dc-voltage-type">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>DC Voltage Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="dc-power-type">
 		<item-type>Number:Power</item-type>
 		<label>DC Power Value</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="cabinet-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Cabinet Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heatsink-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Sink Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="transformer-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Transformer Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="other-temperature-type">
 		<item-type>Number:Temperature</item-type>
 		<label>Other Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -112,6 +172,10 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Device status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OFF">Off</option>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -346,13 +345,13 @@ public class DoorLockCluster extends BaseCluster {
      * server.
      */
     public Integer numberOfAliroEndpointKeysSupported; // 136 uint16 R V
-    // Structs
 
+    // Structs
     /**
      * The door lock server provides several alarms which can be sent when there is a critical state on the door lock.
      * The alarms available for the door lock server are listed in AlarmCodeEnum.
      */
-    public class DoorLockAlarm {
+    public static class DoorLockAlarm {
         /**
          * This field shall indicate the alarm code of the event that has happened.
          */
@@ -366,7 +365,7 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * The door lock server sends out a DoorStateChange event when the door lock door state changes.
      */
-    public class DoorStateChange {
+    public static class DoorStateChange {
         /**
          * This field shall indicate the new door state for this door event.
          */
@@ -395,7 +394,7 @@ public class DoorLockCluster extends BaseCluster {
      * ◦ shall generate a LockOperation event of LockOperationType Unlatch when it is actuated from the outside.
      * ◦ may generate a LockOperation event of LockOperationType Unlatch when it is actuated from the inside.
      */
-    public class LockOperation {
+    public static class LockOperation {
         /**
          * This field shall indicate the type of the lock operation that was performed.
          */
@@ -442,7 +441,7 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * The door lock server sends out a LockOperationError event when a lock operation fails for various reasons.
      */
-    public class LockOperationError {
+    public static class LockOperationError {
         /**
          * This field shall indicate the type of the lock operation that was performed.
          */
@@ -495,7 +494,7 @@ public class DoorLockCluster extends BaseCluster {
      * The door lock server sends out a LockUserChange event when a lock user, schedule, or credential change has
      * occurred.
      */
-    public class LockUserChange {
+    public static class LockUserChange {
         /**
          * This field shall indicate the lock data type that was changed.
          */
@@ -551,7 +550,7 @@ public class DoorLockCluster extends BaseCluster {
      * This struct shall indicate the credential types and their corresponding indices (if any) for the event or user
      * record.
      */
-    public class CredentialStruct {
+    public static class CredentialStruct {
         /**
          * This field shall indicate the credential field used to authorize the lock operation.
          */
@@ -583,8 +582,8 @@ public class DoorLockCluster extends BaseCluster {
         DOOR_AJAR(7, "Door Ajar"),
         FORCED_USER(8, "Forced User");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AlarmCodeEnum(Integer value, String label) {
             this.value = value;
@@ -610,8 +609,8 @@ public class DoorLockCluster extends BaseCluster {
         DUAL(1, "Dual"),
         TRI(2, "Tri");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CredentialRuleEnum(Integer value, String label) {
             this.value = value;
@@ -643,8 +642,8 @@ public class DoorLockCluster extends BaseCluster {
         ALIRO_EVICTABLE_ENDPOINT_KEY(7, "Aliro Evictable Endpoint Key"),
         ALIRO_NON_EVICTABLE_ENDPOINT_KEY(8, "Aliro Non Evictable Endpoint Key");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CredentialTypeEnum(Integer value, String label) {
             this.value = value;
@@ -670,8 +669,8 @@ public class DoorLockCluster extends BaseCluster {
         CLEAR(1, "Clear"),
         MODIFY(2, "Modify");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DataOperationTypeEnum(Integer value, String label) {
             this.value = value;
@@ -700,8 +699,8 @@ public class DoorLockCluster extends BaseCluster {
         DOOR_UNSPECIFIED_ERROR(4, "Door Unspecified Error"),
         DOOR_AJAR(5, "Door Ajar");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DoorStateEnum(Integer value, String label) {
             this.value = value;
@@ -738,8 +737,8 @@ public class DoorLockCluster extends BaseCluster {
         ALIRO_EVICTABLE_ENDPOINT_KEY(12, "Aliro Evictable Endpoint Key"),
         ALIRO_NON_EVICTABLE_ENDPOINT_KEY(13, "Aliro Non Evictable Endpoint Key");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockDataTypeEnum(Integer value, String label) {
             this.value = value;
@@ -767,8 +766,8 @@ public class DoorLockCluster extends BaseCluster {
         FORCED_USER_EVENT(3, "Forced User Event"),
         UNLATCH(4, "Unlatch");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockOperationTypeEnum(Integer value, String label) {
             this.value = value;
@@ -796,8 +795,8 @@ public class DoorLockCluster extends BaseCluster {
         RESTRICTED(3, "Restricted"),
         INSUFFICIENT_BATTERY(4, "Insufficient Battery");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationErrorEnum(Integer value, String label) {
             this.value = value;
@@ -832,8 +831,8 @@ public class DoorLockCluster extends BaseCluster {
         NO_REMOTE_LOCK_UNLOCK(3, "No Remote Lock Unlock"),
         PASSAGE(4, "Passage");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperatingModeEnum(Integer value, String label) {
             this.value = value;
@@ -867,8 +866,8 @@ public class DoorLockCluster extends BaseCluster {
         BIOMETRIC(9, "Biometric"),
         ALIRO(10, "Aliro");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationSourceEnum(Integer value, String label) {
             this.value = value;
@@ -894,8 +893,8 @@ public class DoorLockCluster extends BaseCluster {
         OCCUPIED_ENABLED(1, "Occupied Enabled"),
         OCCUPIED_DISABLED(3, "Occupied Disabled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private UserStatusEnum(Integer value, String label) {
             this.value = value;
@@ -928,8 +927,8 @@ public class DoorLockCluster extends BaseCluster {
         SCHEDULE_RESTRICTED_USER(8, "Schedule Restricted User"),
         REMOTE_ONLY_USER(9, "Remote Only User");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private UserTypeEnum(Integer value, String label) {
             this.value = value;
@@ -953,8 +952,8 @@ public class DoorLockCluster extends BaseCluster {
         UNLOCKED(2, "Unlocked"),
         UNLATCHED(3, "Unlatched");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockStateEnum(Integer value, String label) {
             this.value = value;
@@ -986,8 +985,8 @@ public class DoorLockCluster extends BaseCluster {
         DOOR_FURNITURE(10, "Door Furniture"),
         EUROCYLINDER(11, "Eurocylinder");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockTypeEnum(Integer value, String label) {
             this.value = value;
@@ -1010,8 +1009,8 @@ public class DoorLockCluster extends BaseCluster {
         NO_LED_SIGNAL_ACCESS_ALLOWED(1, "No Led Signal Access Allowed"),
         LED_SIGNAL_ALL(2, "Led Signal All");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LEDSettingEnum(Integer value, String label) {
             this.value = value;
@@ -1035,8 +1034,8 @@ public class DoorLockCluster extends BaseCluster {
         HIGH(2, "High"),
         MEDIUM(3, "Medium");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SoundVolumeEnum(Integer value, String label) {
             this.value = value;
@@ -1059,8 +1058,8 @@ public class DoorLockCluster extends BaseCluster {
         PROGRAMMING(1, "Programming"),
         ALARM(2, "Alarm");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EventTypeEnum(Integer value, String label) {
             this.value = value;
@@ -1082,8 +1081,8 @@ public class DoorLockCluster extends BaseCluster {
         DUPLICATE(2, "Duplicate"),
         OCCUPIED(3, "Occupied");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,4 +31,22 @@ public interface RingAccount {
 
     @Nullable
     RingDevice getDevice(String id);
+
+    /**
+     * Get the timestamp of the last camera snapshot
+     *
+     * @param id the device id of the Ring cameras
+     * @return a long of the timestamp of the last snapsnot
+     * @throws AuthenticationException when request is invalid.
+     */
+    long getSnapshotTimestamp(String id);
+
+    /**
+     * Get the image from the camera
+     *
+     * @param id the device id of the Ring cameras
+     * @return a byte array of the camera image
+     * @throws AuthenticationException when request is invalid.
+     */
+    byte[] getSnapshot(String id);
 }

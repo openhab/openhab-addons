@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,6 @@ public class D5_00_01 extends _1BSMessage {
     protected static final byte CLOSED = 1 | TEACHIN_BIT;
 
     public D5_00_01() {
-        super();
     }
 
     public D5_00_01(ERP1Message packet) {

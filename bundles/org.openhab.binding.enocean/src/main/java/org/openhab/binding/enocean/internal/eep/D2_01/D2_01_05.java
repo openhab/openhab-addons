@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public class D2_01_05 extends D2_01 {
 
     public D2_01_05() {
-        super();
     }
 
     public D2_01_05(ERP1Message packet) {

@@ -1,6 +1,6 @@
 # DIRIGERA Binding
 
-Binding supporting the DIRIGERA Gateway from IKEA. 
+Binding supporting the DIRIGERA Gateway from IKEA.
 
 ## Supported Things
 
@@ -41,9 +41,9 @@ If it cannot be found check your router for IP address.
 Manual scan isn't supported.
 
 After successful creation of DIRIGERA Gateway and pairing process connected devices are automatically added to your INBOX.
-You can switch off the automatic detection in [Bridge configuration](#bridge-configuration).   
+You can switch off the automatic detection in [Bridge configuration](#bridge-configuration).
 
-**Before adding the bridge** read [Pairing section](#gateway-pairing).   
+**Before adding the bridge** read [Pairing section](#gateway-pairing).
 
 Devices connected to this bridge will be detected automatically unless you don't switch it off in [Bridge Configuration](#bridge-configuration)
 
@@ -64,10 +64,10 @@ You need physical access to the gateway to finish pairing so ensure you can reac
 
 Let's start pairing
 
-1. Add the bridge found in discovery 
-2. Pairing started automatically after creation!
-3. Press the button on the DIRIGERA rear side
-4. Your bridge shall switch to ONLINE 
+1. Add the bridge found in discovery
+1. Pairing started automatically after creation!
+1. Press the button on the DIRIGERA rear side
+1. Your bridge shall switch to ONLINE
 
 ### Gateway Channels
 
@@ -84,7 +84,7 @@ See [Gateway Limitations](#gateway-limitations) for further information.
 
 ### Follow Sun
 
-<img align="right" height="150" src="doc/follow-sun.png">
+![Follow Sun](doc/follow-sun.png)
 
 [Motion Sensors](#motion-sensor) can be active all the time or follow a schedule.
 One schedule is follow the sun which needs to be activated in the IKEA Home smart app in _Hub Settings_.
@@ -92,7 +92,7 @@ One schedule is follow the sun which needs to be activated in the IKEA Home smar
 ## Things
 
 With [DIRIGERA Gateway Bridge](#gateway-bridge) in place things can be connected as mentioned in the [supported things section](#supported-things).
-Things contain generic [configuration](), [properties]() and [channels]() according to their capabilities.
+Things contain generic configuration, properties and channels according to their capabilities.
 
 ### Generic Thing Configuration
 
@@ -107,15 +107,15 @@ Discovery will automatically identify the id.
 
 Each thing has properties attached for product information.
 It contains information of hardware and firmware version, device model and manufacturer.
-Device capabilities are listed in `canReceive` and `canSend`. 
+Device capabilities are listed in `canReceive` and `canSend`.
 
-<img align="center" width="500" src="doc/thing-properties.png">
+![Thing Properties](doc/thing-properties.png)
 
 ### Generic Thing Channels
 
 #### OTA Channels
 
-Over-the-Air (OTA) updates are common for many devices. 
+Over-the-Air (OTA) updates are common for many devices.
 If device is providing these channels is detected during runtime.
 
 | Channel         | Type      | Read/Write | Description                                  | Advanced |
@@ -127,7 +127,7 @@ If device is providing these channels is detected during runtime.
 `ota-status` shows the _overall status_ if your device is _up to date_ or an _update is available_.
 `ota-state` and `ota-progress` shows more detailed information which you may want to follow, that's why they are declared as advanced channels.
 
-**OTA Mappings**
+#### OTA Mappings
 
 Mappings for `ota-status`
 
@@ -159,7 +159,7 @@ The channels are declared advanced and can be used for setup procedure.
 | `links`               | String                | RW         | Linked controllers and sensors                   |    X     |
 | `link-candidates`     | String                | RW         | Candidates which can be linked                   |    X     |
 
-<img align="right" width="300" src="doc/link-candidates.png">
+![Link Candidates](doc/link-candidates.png)
 
 Several devices can be linked together like
 
@@ -199,14 +199,13 @@ With this the light shall stay online.
 I wasn't able to reproduce this behavior.
 Maybe somebody has more success.
 
-
 `custom-name` is declared e.g. in your IKEA Home smart app.
 This name is reflected in the discovery and if thing is created this name will be the thing label.
 If `custom-name` is changed via openHAB API or a rule the label will not change.
 
 ### Unknown Devices
 
-Filter your traces regarding 'DIRIGERA MODEL Unsupported Device'. 
+Filter your traces regarding 'DIRIGERA MODEL Unsupported Device'.
 The trace contains a JSON object at the end which is needed to implement a corresponding handler.
 
 ## Air Purifier
@@ -251,7 +250,7 @@ Window or door blind.
 | `blind-level`         | Dimmer                | RW         | Current blind level                              |
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent                  |
 
-#### Blind Channel Mappings
+### Blind Channel Mappings
 
 Mappings for `blind-state`
 
@@ -273,10 +272,10 @@ Configuration contains
 
 `fadeTime` adjust fading time according to your device.
 Current behavior shows commands are acknowledged while device is fading  but not executed correctly.
-So they need to be executed one after another. 
+So they need to be executed one after another.
 Maybe an update of the DIRIGERA gateway will change the current behavior and you can reduce them afterwards.
 
-`fadeSequence` is only for [Color Lights](#color-lights). 
+`fadeSequence` is only for [Color Lights](#color-lights).
 Through `hsb` channel it's possible to adapt color brightness at once.
 Again due to fading times they need to be executed in a sequence.
 You can choose between options
@@ -320,7 +319,7 @@ Light with brightness support.
 
 Channel `brightness` can receive
 
-- ON / OFF 
+- ON / OFF
 - numbers from 0 to 100 as percent where 0 will switch the light OFF, any other > 0 switches light ON
 
 ## Temperature Lights
@@ -348,7 +347,7 @@ Light with color support.
 
 Channel `color` can receive
 
-- ON / OFF 
+- ON / OFF
 - numbers from 0 to 100 as brightness in percent where 0 will switch the light OFF, any other > 0 switches light ON
 - triple values for hue, saturation, brightness
 
@@ -384,7 +383,7 @@ Smart plug like [Power Plug](#power-plug) plus measuring capability.
 | `energy-total`        | Number:Energy             | R          | Total energy consumption                     |
 | `energy-reset`        | Number:Energy             | R          | Energy consumption since last reset          |
 | `reset-date`          | DateTime                  | RW         | Date and time of last reset                  |
-| `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            | 
+| `electric-current`    | Number:ElectricCurrent    | R          | Electric current measured by plug            |
 | `electric-voltage`    | Number:ElectricPotential  | R          | Electric potential of plug                   |
 
 Smart plug provides `energy-total` measuring energy consumption over lifetime and `energy-reset` measuring energy consumption from `reset-date` till now.
@@ -410,13 +409,13 @@ Sensor detecting motion events.
 | `light-preset`        | String                | RW         | Light presets for different times of the day     |
 
 When motion is detected via `motion` channel all connected devices from `links` channel will be active for the time configured in `active-duration`.
-Standard duration is seconds if raw number is sent as command. 
+Standard duration is seconds if raw number is sent as command.
 See [Motion Sensor Rules](#motion-sensor-rules) for further examples.
   
 Mappings for `schedule`
 
 - 0 : Always, sensor is always active
-- 1 : Follow sun, sensor gets active at sunset and deactivates at sunrise 
+- 1 : Follow sun, sensor gets active at sunset and deactivates at sunrise
 - 2 : Schedule, custom schedule with manual start and end time
 
 If option 1, follow sun is selected ensure you gave the permission in the IKEA Home smart app to use your GPS position to calculate times for sunrise and sunset.
@@ -461,7 +460,7 @@ Air measure for temperature, humidity and particles.
 | `particulate-matter`  | Number:Density        | R          | Category 2.5 particulate matter                      |
 | `voc-index`           | Number                | R          | Relative VOC intensity compared to recent history    |
 
-The VOC Index mimics the human nose’s perception of odors with a relative intensity compared to recent history. 
+The VOC Index mimics the human nose’s perception of odors with a relative intensity compared to recent history.
 The VOC Index is also sensitive to odorless VOCs, but it cannot discriminate between them.
 See more information in the [sensor description](https://sensirion.com/media/documents/02232963/6294E043/Info_Note_VOC_Index.pdf).
 
@@ -505,7 +504,7 @@ Controller to handle light attributes.
 | `battery-level`       | Number:Dimensionless  | R          | Battery charge level in percent              |
 | `light-preset`        | String                | RW         | Light presets for different times of the day |
 
-<img align="right" width="150" src="doc/light-presets.png">
+![Light Presets](doc/light-presets.png)
 
 Channel `light-preset` provides a JSON array with time an light settings for different times.
 If light is switched on by the controller the light attributes for the configured time section is used.
@@ -540,7 +539,7 @@ Controller for speakers.
 ## Speaker
 
 Speaker with player activities.
- 
+
 | Channel               | Type                  | Read/Write | Description                                  |
 |-----------------------|-----------------------|------------|----------------------------------------------|
 | `media-control`       | Player                | RW         | Media control  play, pause, next, previous   |
@@ -553,17 +552,17 @@ Speaker with player activities.
 | `image`               | RawType               | R          | Current playing track image                  |
 
 Channel `mute` should be writable but this isnn't the case now.
-See [Known Limitations](#speaker-limitations). 
+See [Known Limitations](#speaker-limitations).
 
 ## Repeater
 
 Repeater to strengthen signal.
-Sadly there's no further information like _signal strength_ available so only [OTA channels](#ota-channels) and [custom name](#other-channels) is available. 
- 
+Sadly there's no further information like _signal strength_ available so only [OTA channels](#ota-channels) and [custom name](#other-channels) is available.
+
 ## Scenes
 
 Scene from IKEA home smart app which can be triggered.
- 
+
 | Channel               | Type                  | Read/Write | Description                                  |
 |-----------------------|-----------------------|------------|----------------------------------------------|
 | `trigger`             | Number                | RW         | Trigger / undo scene execution               |
@@ -576,7 +575,7 @@ Two commands are defined:
 - 1 : Undo
 
 If command 0 (Trigger) is sent scene will be executed.
-There's a 30 seconds time slot to send command 1 (Undo). 
+There's a 30 seconds time slot to send command 1 (Undo).
 The countdown is updating `trigger` channel state which can be evaluated if an undo operation is still possible.
 State will switch to `Undef` after countdown.
 
@@ -601,7 +600,7 @@ Debugging is essential for such a binding which supports many available products
 General debug messages will overflow traces and it's hard to find relevant information.
 To deal with these challenges commands for [openHAB console](https://www.openhab.org/docs/administration/console.html) are provided.
 
-```
+```shell
 Usage: openhab:dirigera token - Get token from DIRIGERA hub
 Usage: openhab:dirigera json [<deviceId> | all] - Print JSON data
 Usage: openhab:dirigera debug [<deviceId> | all] [true | false]  - Enable / disable detailed debugging for specific / all devices
@@ -611,14 +610,14 @@ Usage: openhab:dirigera debug [<deviceId> | all] [true | false]  - Enable / disa
 
 Prints the access token to communicate with DIRIGERA gateway as console output.
 
-```
+```shell
 console> openhab:dirigera token
 DIRIGERA Hub token: abcdef12345.......
 ```
 
 With token available you can test your devices e.g. via curl commands.
 
-```java
+```shell
 curl -X PATCH https://$YOUR_IP:8443/v1/devices/$DEVICE -H 'Authorization: Bearer $TOKEN' -H 'Content-Type: application/json' -d '[{"attributes":{"colorHue":280,"colorSaturation":1}}]' --insecure
 ```
 
@@ -633,7 +632,7 @@ Replace content in curl command with following variables:
 Get capabilities and current status for one `deviceId` or all devices.
 Output is shown on console as JSON String.
 
-```
+```shell
 console> openhab:dirigera json 3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1
 {"deviceType":"light","isReachable":true,"capabilities":{"canReceive":["customName","isOn","lightLevel","colorTemperature", ...}
 ```
@@ -643,9 +642,9 @@ console> openhab:dirigera json 3c8b0049-eb5c-4ea1-9da3-cdedc50366ef_1
 Enables or disables detailed logging for one `deviceId` or all devices.
 Answer is `Done` if command is successfully executed.
 If you operate with the device you can see requests and responses in openHAB Log Viewer.
-If device cannot be found answer is `Device Id xyz not found `.
- 
-```
+If device cannot be found answer is `Device Id xyz not found`.
+
+```shell
 console> openhab:dirigera debug all true
 Done
 ```
@@ -712,7 +711,7 @@ end
 
 #### Motion Sensor Rules
 
-Change the active duration time 
+Change the active duration time
 
 ```java
 rule "Sensor configuration"
@@ -726,7 +725,6 @@ then
     Bedroom_Motion_Active_Duration.sendCommand("3 min")
 end
 ```
-
 
 ## Credits
 

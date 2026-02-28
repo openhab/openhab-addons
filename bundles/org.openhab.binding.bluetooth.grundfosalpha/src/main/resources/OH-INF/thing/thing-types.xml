@@ -17,6 +17,10 @@
 		<label>Current Head</label>
 		<description>Current head</description>
 		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -37,6 +41,10 @@
 		<label>Motor Speed</label>
 		<description>Current rotation of the pump motor</description>
 		<category>Fan</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f rpm"/>
 	</channel-type>
 

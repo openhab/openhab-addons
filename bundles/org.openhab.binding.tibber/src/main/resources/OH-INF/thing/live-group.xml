@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="live">
+		<label>Live</label>
+		<description>Live values from Tibber Pulse</description>
+		<channels>
+			<channel id="consumption" typeId="power">
+				<label>Live Consumption</label>
+				<description>Consumption at the moment in watts</description>
+			</channel>
+			<channel id="minimum-consumption" typeId="power">
+				<label>Minimum Consumption</label>
+				<description>Minimum power consumption since midnight in watts</description>
+			</channel>
+			<channel id="peak-consumption" typeId="power">
+				<label>Peak Consumption</label>
+				<description>Peak power consumption since midnight in watts</description>
+			</channel>
+			<channel id="average-consumption" typeId="power">
+				<label>Average Consumption</label>
+				<description>Average power consumption since midnight in watts</description>
+			</channel>
+			<channel id="production" typeId="power">
+				<label>Live Production</label>
+				<description>Net power production at the moment in watts</description>
+			</channel>
+			<channel id="minimum-production" typeId="power">
+				<label>Minimum Production</label>
+				<description>Minimum net power production since midnight in watts</description>
+			</channel>
+			<channel id="peak-production" typeId="power">
+				<label>Peak Production</label>
+				<description>Maximum net power production since midnight in watts</description>
+			</channel>
+			<channel id="power-balance" typeId="power">
+				<label>Power Balance</label>
+				<description>Current power consumption (as positive value) and production (as negative value)</description>
+			</channel>
+			<channel id="voltage1" typeId="voltage">
+				<label>Voltage 1</label>
+				<description>Electric potential on phase 1</description>
+			</channel>
+			<channel id="voltage2" typeId="voltage">
+				<label>Voltage 2</label>
+				<description>Electric potential on phase 2</description>
+			</channel>
+			<channel id="voltage3" typeId="voltage">
+				<label>Voltage 3</label>
+				<description>Electric potential on phase 3</description>
+			</channel>
+			<channel id="current1" typeId="current">
+				<label>Current 1</label>
+				<description>Electric current on phase 1</description>
+			</channel>
+			<channel id="current2" typeId="current">
+				<label>Current 2</label>
+				<description>Electric current on phase 2</description>
+			</channel>
+			<channel id="current3" typeId="current">
+				<label>Current 3</label>
+				<description>Electric current on phase 3</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

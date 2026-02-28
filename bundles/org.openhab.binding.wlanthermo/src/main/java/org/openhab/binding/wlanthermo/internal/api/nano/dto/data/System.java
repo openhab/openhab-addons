@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,6 @@ public class System {
      * @param time
      */
     public System(String time, String unit, Integer soc, Boolean charge, Integer rssi, Integer online) {
-        super();
         this.time = time;
         this.unit = unit;
         this.soc = soc;

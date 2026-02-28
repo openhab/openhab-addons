@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
         property = Constants.SERVICE_PID + "=org.openhab.automation.jrubyscripting")
 @ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = JRubyScriptEngineFactory.CONFIG_DESCRIPTION_URI)
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
-    public final static String CONFIG_DESCRIPTION_URI = "automation:jrubyscripting";
+    public static final String CONFIG_DESCRIPTION_URI = "automation:jrubyscripting";
 
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
 

@@ -1,8 +1,7 @@
 # Bluetooth Binding
 
-This binding provides support for generic Bluetooth devices.
-
-It has the following extensions:
+This binding supports generic Bluetooth devices.
+And has specialist extensions for the following manufacturers products:
 
 <!--list-subs-->
 

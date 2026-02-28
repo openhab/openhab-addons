@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,10 +35,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.energidataservice.internal.ApiController;
 import org.openhab.binding.energidataservice.internal.api.ChargeType;
+import org.openhab.binding.energidataservice.internal.api.Dataset;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameter;
 import org.openhab.binding.energidataservice.internal.api.DateQueryParameterType;
 import org.openhab.binding.energidataservice.internal.api.GlobalLocationNumber;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
 import org.openhab.binding.energidataservice.internal.provider.cache.DatahubPriceSubscriptionCache;
@@ -302,9 +304,15 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         Map<String, String> properties = new HashMap<>();
         boolean isUpdated = false;
         try {
-            ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(subscription.getPriceArea(),
-                    subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
-            isUpdated = cache.put(spotPriceRecords);
+            if (getDayAheadDataset() == Dataset.SpotPrices) {
+                ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(subscription.getPriceArea(),
+                        subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
+                isUpdated = cache.put(spotPriceRecords);
+            } else {
+                DayAheadPriceRecord[] dayAheadRecords = apiController.getDayAheadPrices(subscription.getPriceArea(),
+                        subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
+                isUpdated = cache.put(dayAheadRecords);
+            }
         } finally {
             listenerToSubscriptions.keySet().forEach(listener -> listener.onPropertiesUpdated(properties));
         }
@@ -389,6 +397,17 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
         return dataCache;
     }
 
+    private Duration getDayAheadResolution() {
+        return getDayAheadDataset() == Dataset.SpotPrices ? Duration.ofHours(1) : Duration.ofMinutes(15);
+    }
+
+    private Dataset getDayAheadDataset() {
+        return Instant.now().isBefore(
+                DAY_AHEAD_TRANSITION_DATE.atTime(DAILY_REFRESH_TIME_CET).atZone(NORD_POOL_TIMEZONE).toInstant())
+                        ? Dataset.SpotPrices
+                        : Dataset.DayAheadPrices;
+    }
+
     private void publishPricesFromCache(Subscription subscription, Set<ElectricityPriceListener> listeners) {
         if (subscription instanceof SpotPriceSubscription spotPriceSubscription) {
             SpotPriceSubscriptionCache cache = getSpotPriceSubscriptionDataCache(subscription);
@@ -434,7 +453,13 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
             this.priceUpdateFuture = null;
         }
 
-        Instant nextUpdate = Instant.now().plus(1, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS);
+        // Calculate time until the next multiple of the resolution
+        Instant now = Instant.now();
+        long resolutionMillis = getDayAheadResolution().toMillis();
+        long elapsedMillis = Duration.between(Instant.EPOCH, now).toMillis();
+        long nextMillis = ((elapsedMillis / resolutionMillis) + 1) * resolutionMillis;
+        Instant nextUpdate = Instant.EPOCH.plusMillis(nextMillis);
+
         this.priceUpdateFuture = scheduler.at(this::updatePricesForAllSubscriptions, nextUpdate);
         logger.debug("Price update job rescheduled at {}", nextUpdate);
     }

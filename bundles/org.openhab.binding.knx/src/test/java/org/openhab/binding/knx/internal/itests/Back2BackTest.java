@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,14 +45,14 @@ import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tuwien.auto.calimero.DataUnitBuilder;
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.datapoint.CommandDP;
-import tuwien.auto.calimero.datapoint.Datapoint;
-import tuwien.auto.calimero.dptxlator.TranslatorTypes;
-import tuwien.auto.calimero.process.ProcessCommunicator;
-import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
+import io.calimero.DataUnitBuilder;
+import io.calimero.GroupAddress;
+import io.calimero.KNXException;
+import io.calimero.datapoint.CommandDP;
+import io.calimero.datapoint.Datapoint;
+import io.calimero.dptxlator.TranslatorTypes;
+import io.calimero.process.ProcessCommunicator;
+import io.calimero.process.ProcessCommunicatorImpl;
 
 /**
  * Integration test to check conversion from raw KNX frame data to OH data types and back.
@@ -935,7 +935,6 @@ public class Back2BackTest {
                 new StringType("R increase 7 steps G increase 6 steps B increase 5 steps"));
     }
 
-    @Test
     @AfterAll
     static void checkForMissingMainTypes() {
         // checks if we have itests for all main DPT types supported by Calimero library,

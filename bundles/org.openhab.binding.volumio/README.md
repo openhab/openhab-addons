@@ -39,10 +39,10 @@ The devices support the following channels:
 | albumArt          | Image  | R          | Cover Art for the currently played track.                                                                            |
 | track-type        | String | R          | Track type of the currently played track.                                                                            |
 | play-radiostream  | String | RW         | Play the given radio stream.                                                                                         |
-| play-playlist     | String | RW         | Play a playlist identified  by its name.                                                                             |
+| play-playlist     | String | RW         | Play a playlist identified by its name.                                                                              |
 | clear-queue       | Switch | RW         | Clear the current queue.                                                                                             |
 | play-uri          | String | RW         | Play the stream at given uri.                                                                                        |
-| play-file         | String | RW         | Play a file, located on your Volumio device at the given absolute path, e.g."mnt/INTERNAL/song.mp3"                  |
+| play-file         | String | RW         | Play a file, located on your Volumio device at the given absolute path, e.g. "mnt/INTERNAL/song.mp3"                 |
 | random            | Switch | RW         | Activate random mode.                                                                                                |
 | repeat            | Switch | RW         | Activate repeat mode.                                                                                                |
 | system-command    | String | RW         | Sends a system command to shutdown or reboot the Volumio device. Use "shutdown" or "reboot" as string command.       |
@@ -59,12 +59,12 @@ Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volu
 demo.items:
 
 ```java
-String	Volumio_CurrentTitle	    "Current Title [%s]"	    <musicnote>      {channel="volumio:player:VolumioLivingRoom:title"}
-String	Volumio_CurrentArtist	    "Current Artist [%s]"	                     {channel="volumio:player:VolumioLivingRoom:artist"}
-String	Volumio_CurrentAlbum	    "Current Album [%s]"	                     {channel="volumio:player:VolumioLivingRoom:album"}
-Dimmer	Volumio_CurrentVolume	    "Current Volume [%.1f %%]"  <soundvolume>	 {channel="volumio:player:VolumioLivingRoom:volume"}
-Player	Volumio	                    "Current Status [%s]"	    <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
-String	Volumio_CurrentTrackType	"Current Track Type [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:track-type"}
+String  Volumio_CurrentTitle        "Current Title [%s]"        <musicnote>      {channel="volumio:player:VolumioLivingRoom:title"}
+String  Volumio_CurrentArtist       "Current Artist [%s]"                        {channel="volumio:player:VolumioLivingRoom:artist"}
+String  Volumio_CurrentAlbum        "Current Album [%s]"                         {channel="volumio:player:VolumioLivingRoom:album"}
+Dimmer  Volumio_CurrentVolume       "Current Volume [%.1f %%]"  <soundvolume>    {channel="volumio:player:VolumioLivingRoom:volume"}
+Player  Volumio                     "Current Status [%s]"       <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
+String  Volumio_CurrentTrackType    "Current Track Type [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:track-type"}
 ```
 
 demo.sitemap:
@@ -75,7 +75,7 @@ sitemap demo label="Main Menu"
     Frame label="Volumio" {
         Slider item=Volumio_CurrentVolume
         Text item=Volumio
-		Text item=Volumio_CurrentTitle
+        Text item=Volumio_CurrentTitle
     }
 }
 ```

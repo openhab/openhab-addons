@@ -22,7 +22,7 @@ Discovery uses zeroconf, which may not work if you host a Minecraft server in a 
 
 ## Channels
 
-Depending on the thing type, different channels are provided:
+Depending on the Thing type, different channels are provided:
 
 ### Server
 
@@ -47,7 +47,7 @@ Depending on the thing type, different channels are provided:
 | playerHealth               | Number    | The health of the player                                   |
 | playerWalkSpeed            | Number    | The speed of the player                                    |
 | playerLocation             | Location  | The player location                                        |
-| playerGameMode             | Number    | The players game mode                                      |
+| playerGameMode             | Number    | The player's game mode                                     |
 
 ### Sign
 
@@ -57,17 +57,17 @@ Depending on the thing type, different channels are provided:
 
 #### Active switch (Controllable from openHAB)
 
-<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
+<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hMkNZSjJidGk4b28" alt="Active switch configuration example" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
 
 #### Passive sensor
 
-<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
+<a href="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ"><img src="https://drive.google.com/uc?export=view&id=0B3UO0c11-Q6hUG1wd3h0MDUzUzQ" alt="Passive sensor configuration example" style="width: 500px; max-width: 100%; height: auto" title="Click for the larger version." /></a>
 
 ### Example Thing Definition
 
-The easiest method to add Minecraft servers, players, and signs is use the automatic discovery.
-You can also manually define the objects using thing configuration files.
-Players and signs are connected through Minecraft server [bridges](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files).
+The easiest method to add Minecraft servers, players, and signs is to use automatic discovery.
+You can also manually define the objects using Thing configuration files.
+Players and signs are connected through Minecraft server bridges ([see documentation](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files)).
 
 ```java
 Bridge minecraft:server:myminecraftserver "Minecraft server for Friends" @ "Minecraft" [ hostname="192.168.1.100", port=10692 ] {

@@ -16,7 +16,7 @@ This binding support 6 different things types
 | ecoswitch      | Thing  | MAX! Ecoswitch.                                                                                                    |
 | shuttercontact | Thing  | MAX! Shuttercontact / Window Contact.                                                                              |
 
-Generally one does not have to worry about the thing types as they are automatically defined.
+Generally one does not have to worry about the Thing types as they are automatically defined.
 If for any reason you need to manually define the Things and you are not exactly sure what type of thermostat you have, you can choose `thermostat` for both the thermostat and thermostat+, this will not affect their working.
 
 ## Discovery
@@ -33,7 +33,7 @@ There are no binding wide settings as all configuration settings are now per MAX
 ## Thing Configuration
 
 All the things are identified by their serial number, hence this is mandatory.
-The Cube (`bridge` thing) also requires the IP address to be defined.
+The Cube (`bridge` Thing) also requires the IP address to be defined.
 All other configuration is optional.
 
 Note that several configuration options are automatically populated.
@@ -42,9 +42,9 @@ These properties can be found in the `Device Settings` section of parameters.
 
 ## Channels
 
-Depending on the thing it supports different Channels
+Depending on the Thing it supports different Channels
 
-| Channel Type ID | Item Type          | Description                                                                                                                                                                                                                                               | Available on thing                                                    |
+| Channel Type ID | Item Type          | Description                                                                                                                                                                                                                                               | Available on Thing                                                    |
 |-----------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 | mode            | String             | This channel indicates the mode of a thermostat (AUTOMATIC/MANUAL/BOOST/VACATION).                                                                                                                                                                        | thermostat, thermostatplus, wallthermostat                            |
 | battery_low     | Switch             | This channel indicates if the device battery is low (ON/OFF).                                                                                                                                                                                             | thermostat, thermostatplus, wallthermostat, ecoswitch, shuttercontact |

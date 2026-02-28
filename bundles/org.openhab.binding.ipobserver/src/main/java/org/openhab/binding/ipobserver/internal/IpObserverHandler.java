@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,7 +95,6 @@ public class IpObserverHandler extends BaseThingHandler {
         private final ArrayList<Class<? extends State>> acceptedDataTypes = new ArrayList<>();
 
         ChannelHandler(IpObserverHandler handler, Channel channel, Class<? extends State> acceptable, Unit<?> unit) {
-            super();
             this.handler = handler;
             this.channel = channel;
             this.unit = unit;

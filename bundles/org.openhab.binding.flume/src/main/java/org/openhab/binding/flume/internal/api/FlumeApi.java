@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -385,7 +385,7 @@ public class FlumeApi {
      * @throws ExecutionException
      * @throws IOException
      */
-    private JsonObject sendAndValidate(Request request, boolean verifyToken)
+    private synchronized JsonObject sendAndValidate(Request request, boolean verifyToken)
             throws FlumeApiException, InterruptedException, TimeoutException, ExecutionException, IOException {
         ContentResponse response;
 

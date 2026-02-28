@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,6 @@ public class Data {
     }
 
     public Data(System system, List<Channel> channel, Pitmaster pitmaster) {
-        super();
         this.system = system;
         this.channel = channel;
         this.pitmaster = pitmaster;

@@ -61,6 +61,10 @@
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>
 		<label>@text/icloud.device-thing.channel.battery-status.label</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NotCharging">@text/icloud.device-thing.channel.battery-status.state.not-charging</option>
@@ -77,6 +81,10 @@
 	<channel-type id="Location">
 		<item-type>Location</item-type>
 		<label>@text/icloud.device-thing.channel.location.label</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="LocationAccuracy" advanced="true">

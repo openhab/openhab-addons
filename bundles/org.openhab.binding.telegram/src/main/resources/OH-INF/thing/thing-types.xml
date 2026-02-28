@@ -6,7 +6,7 @@
 
 	<thing-type id="telegramBot">
 		<label>Telegram Bot</label>
-		<description>Thing to receive the latest message send to a Telegram Bot.</description>
+		<description>Thing to receive the latest message sent to a Telegram Bot.</description>
 
 		<channels>
 			<channel id="lastMessageText" typeId="lastMessageText"/>
@@ -38,9 +38,10 @@
 					<option value="">No Formatting</option>
 					<option value="HTML">HTML</option>
 					<option value="Markdown">Markdown</option>
+					<option value="MarkdownV2">MarkdownV2</option>
 				</options>
 				<default></default>
-				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
+				<description>Support for formatted messages, values: Markdown, MarkdownV2 or HTML. Default: no formatting is used.</description>
 			</parameter>
 			<parameter name="proxyHost" type="text">
 				<context>network-address</context>
@@ -62,7 +63,7 @@
 			</parameter>
 			<parameter name="longPollingTime" type="integer" min="0" max="50" unit="s">
 				<label>Long Polling Time</label>
-				<description>Enter the long polling time in seconds.</description>
+				<description>Enter the long polling time in seconds. Set 0 to disable.</description>
 				<default>25</default>
 			</parameter>
 		</config-description>
@@ -92,14 +93,14 @@
 	<channel-type id="lastMessageName">
 		<item-type>String</item-type>
 		<label>Last Message Name</label>
-		<description>Contains the latest message senders name as a string</description>
+		<description>Contains the latest message sender's name as a string</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastMessageUsername">
 		<item-type>String</item-type>
 		<label>Last Message Username</label>
-		<description>Contains the latest message senders username as a string</description>
+		<description>Contains the latest message sender's username as a string</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -164,7 +165,7 @@
 				<li>Long `chat_id` - Unique chat ID</li>
 				<li>String `callback_id` - Unique callback ID to send receipt confirmation to</li>
 				<li>String `reply_id` - Plain text name of original Query</li>
-				<li>String `text` - Selected response text from options give in original Query</li>
+				<li>String `text` - Selected response text from options given in original Query</li>
 			</ul>
 			]]>
 		</description>

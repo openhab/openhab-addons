@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.homewizard.internal.devices.plug_in_battery;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link HomeWizardPlugInBatteryHandler} implements functionality to handle a HomeWizard P1 Meter.
@@ -38,13 +38,7 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
     public HomeWizardPlugInBatteryHandler(Thing thing) {
         super(thing);
         supportedTypes.add(HomeWizardBindingConstants.HWE_BAT);
-    }
-
-    /**
-     * Not listening to any commands.
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+        supportedApiVersions = Arrays.asList(API_V2);
     }
 
     /**
@@ -53,8 +47,8 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
      * @param payload The data obtained form the API call
      */
     @Override
-    protected void handleDataPayload(String data) {
-        super.handleDataPayload(data);
+    protected void handleMeasurementData(String data) {
+        super.handleMeasurementData(data);
 
         var payload = gson.fromJson(data, HomeWizardPlugInBatteryMeasurementPayload.class);
         if (payload != null) {

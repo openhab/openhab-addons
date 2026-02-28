@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,8 @@ public abstract class AWS4SignerBase extends SignerBase {
     public static final String TERMINATOR = "aws4_request";
     public static final String ISO8601_BASIC_FORMAT = "yyyyMMdd'T'HHmmss'Z'";
     public static final String DATESTRING_FORMAT = "yyyyMMdd";
-    protected static String PAIR_SEPARATOR = "&";
-    protected static String VALEU_SEPARATOR = "=";
+    protected static final String PAIR_SEPARATOR = "&";
+    protected static final String VALEU_SEPARATOR = "=";
     protected URL endpointUrl;
     protected String httpMethod;
     protected String serviceName;

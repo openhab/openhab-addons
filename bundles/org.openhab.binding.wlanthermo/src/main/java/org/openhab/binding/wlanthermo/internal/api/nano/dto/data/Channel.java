@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,6 @@ public class Channel {
      */
     public Channel(Integer number, String name, Integer typ, Double temp, Double min, Double max, Integer alarm,
             String color) {
-        super();
         this.number = number;
         this.name = name;
         this.typ = typ;

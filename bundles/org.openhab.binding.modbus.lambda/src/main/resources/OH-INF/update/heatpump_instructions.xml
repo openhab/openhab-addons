@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="modbus:heat-pump">
+		<instruction-set targetVersion="1">
+			<add-channel id="heat-pump-vdae-swap">
+				<type>modbus:heat-pump-vdae-swap</type>
+				<label>Heatpump VdA E since last reset (DWord swapped)</label>
+			</add-channel>
+			<add-channel id="heat-pump-vdaq-swap">
+				<type>modbus:heat-pump-vdaq-swap</type>
+				<label>Heatpump VdA Q since last reset (DWord swapped)</label>
+			</add-channel>
+			<remove-channel id="heatpump-request-password"/>
+			<add-channel id="heat-pump-request-password">
+				<type>modbus:heat-pump-request-password</type>
+				<label>Requested Password</label>
+			</add-channel>
+			<remove-channel id="heatpump-request-type"/>
+			<add-channel id="heat-pump-request-type">
+				<type>modbus:heat-pump-request-type</type>
+				<label>Requested Type</label>
+			</add-channel>
+			<remove-channel id="heatpump-request-relais-state"/>
+			<add-channel id="heat-pump-relais-state">
+				<type>modbus:heat-pump-relais-state</type>
+				<label>Relais State</label>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

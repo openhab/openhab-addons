@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,6 @@ import org.openhab.core.types.UnDefType;
 public class D2_06_50 extends _VLDMessage {
 
     public D2_06_50() {
-        super();
     }
 
     public D2_06_50(ERP1Message packet) {

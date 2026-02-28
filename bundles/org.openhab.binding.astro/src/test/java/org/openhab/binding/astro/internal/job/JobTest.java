@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +36,9 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
 @NonNullByDefault
 public class JobTest {
 
+    private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("Asia/Tbilisi");
+    private static final InstantSource INSTANT_SOURCE = InstantSource.fixed(Instant.ofEpochMilli(1645671600000L));
+
     @BeforeEach
     public void init() {
     }
@@ -43,35 +50,107 @@ public class JobTest {
         config.earliest = "08:00";
         config.latest = "22:00";
         config.forceEvent = true;
-        Calendar pointInTime = DateTimeUtils.createCalendarForToday(12, 0);
+        Calendar pointInTime = DateTimeUtils.createCalendarForToday(12, 0, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
         Range startNull = new Range(null, pointInTime);
         Range endNull = new Range(pointInTime, null);
         Range bothNull = new Range(null, null);
-        Range bothNNShouldCorrect = new Range(DateTimeUtils.createCalendarForToday(6, 0),
-                DateTimeUtils.createCalendarForToday(22, 0));
+        Range bothNNShouldCorrect = new Range(
+                DateTimeUtils.createCalendarForToday(6, 0, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE),
+                DateTimeUtils.createCalendarForToday(23, 10, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE));
         Range bothNNShouldNotCorrect = new Range(pointInTime, pointInTime);
 
         // act
-        Range startNullResult = Job.adjustRangeToConfig(startNull, config);
-        Range endNullResult = Job.adjustRangeToConfig(endNull, config);
-        Range bothNullResult = Job.adjustRangeToConfig(bothNull, config);
-        Range bothNNShouldCorrectResult = Job.adjustRangeToConfig(bothNNShouldCorrect, config);
-        Range bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config);
+        Range startNullResult = Job.adjustRangeToConfig(startNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        Range endNullResult = Job.adjustRangeToConfig(endNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        Range bothNullResult = Job.adjustRangeToConfig(bothNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        Range bothNNShouldCorrectResult = Job.adjustRangeToConfig(bothNNShouldCorrect, config, TIME_ZONE, Locale.ROOT,
+                INSTANT_SOURCE);
+        Range bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config, TIME_ZONE,
+                Locale.ROOT, INSTANT_SOURCE);
 
         Calendar fixedStart = DateTimeUtils.getAdjustedEarliest(pointInTime, config);
-        Calendar fixdedEnd = DateTimeUtils.getAdjustedLatest(pointInTime, config);
+        Calendar fixedEnd = DateTimeUtils.getAdjustedLatest(pointInTime, config);
 
         // assert
-        assertEquals(fixedStart.getTime(), startNullResult.getStart().getTime());
-        assertEquals(pointInTime.getTime(), startNullResult.getEnd().getTime());
+        Calendar startNullResultStart = startNullResult.getStart();
+        Calendar startNullResultEnd = startNullResult.getEnd();
+        assertNotNull(startNullResultStart);
+        assertNotNull(startNullResultEnd);
+        assertEquals(fixedStart.getTime(), startNullResultStart.getTime());
+        assertEquals(pointInTime.getTime(), startNullResultEnd.getTime());
         assertEquals(pointInTime, endNullResult.getStart());
-        assertEquals(fixdedEnd, endNullResult.getEnd());
+        assertEquals(fixedEnd, endNullResult.getEnd());
         assertEquals(fixedStart, bothNullResult.getStart());
-        assertEquals(fixdedEnd, bothNullResult.getEnd());
+        assertEquals(fixedEnd, bothNullResult.getEnd());
         assertEquals(fixedStart, bothNNShouldCorrectResult.getStart());
-        assertEquals(fixdedEnd, bothNNShouldCorrectResult.getEnd());
+        assertEquals(fixedEnd, bothNNShouldCorrectResult.getEnd());
         assertEquals(pointInTime, bothNNSouldNotCorrectResult.getStart());
         assertEquals(pointInTime, bothNNSouldNotCorrectResult.getEnd());
+
+        // arrange more (add negative offset)
+        config.offset = -49;
+        Calendar newPointInTime = (Calendar) pointInTime.clone();
+        newPointInTime.add(Calendar.MINUTE, -49);
+        Calendar outerFixedPoint = (Calendar) fixedEnd.clone();
+        fixedEnd.add(Calendar.MINUTE, -49);
+
+        // act again
+        startNullResult = Job.adjustRangeToConfig(startNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        endNullResult = Job.adjustRangeToConfig(endNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        bothNullResult = Job.adjustRangeToConfig(bothNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        bothNNShouldCorrectResult = Job.adjustRangeToConfig(bothNNShouldCorrect, config, TIME_ZONE, Locale.ROOT,
+                INSTANT_SOURCE);
+        bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config, TIME_ZONE, Locale.ROOT,
+                INSTANT_SOURCE);
+
+        // assert again
+        startNullResultStart = startNullResult.getStart();
+        startNullResultEnd = startNullResult.getEnd();
+        assertNotNull(startNullResultStart);
+        assertNotNull(startNullResultEnd);
+        assertEquals(fixedStart.getTime(), startNullResultStart.getTime());
+        assertEquals(newPointInTime.getTime(), startNullResultEnd.getTime());
+        assertEquals(newPointInTime, endNullResult.getStart());
+        assertEquals(fixedEnd, endNullResult.getEnd());
+        assertEquals(fixedStart, bothNullResult.getStart());
+        assertEquals(fixedEnd, bothNullResult.getEnd());
+        assertEquals(fixedStart, bothNNShouldCorrectResult.getStart());
+        assertEquals(outerFixedPoint, bothNNShouldCorrectResult.getEnd());
+        assertEquals(newPointInTime, bothNNSouldNotCorrectResult.getStart());
+        assertEquals(newPointInTime, bothNNSouldNotCorrectResult.getEnd());
+
+        // arrange even more (add negative offset)
+        config.offset = 93;
+        newPointInTime = (Calendar) pointInTime.clone();
+        newPointInTime.add(Calendar.MINUTE, 93);
+        fixedEnd.add(Calendar.MINUTE, 49);
+        outerFixedPoint = (Calendar) fixedStart.clone();
+        fixedStart.add(Calendar.MINUTE, 93);
+
+        // act yet again
+        startNullResult = Job.adjustRangeToConfig(startNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        endNullResult = Job.adjustRangeToConfig(endNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        bothNullResult = Job.adjustRangeToConfig(bothNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        bothNNShouldCorrectResult = Job.adjustRangeToConfig(bothNNShouldCorrect, config, TIME_ZONE, Locale.ROOT,
+                INSTANT_SOURCE);
+        bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config, TIME_ZONE, Locale.ROOT,
+                INSTANT_SOURCE);
+
+        // assert yet again
+        startNullResultStart = startNullResult.getStart();
+        startNullResultEnd = startNullResult.getEnd();
+        assertNotNull(startNullResultStart);
+        assertNotNull(startNullResultEnd);
+        assertEquals(fixedStart.getTime(), startNullResultStart.getTime());
+        assertEquals(newPointInTime.getTime(), startNullResultEnd.getTime());
+        assertEquals(newPointInTime, endNullResult.getStart());
+        assertEquals(fixedEnd, endNullResult.getEnd());
+        assertEquals(fixedStart, bothNullResult.getStart());
+        assertEquals(fixedEnd, bothNullResult.getEnd());
+        assertEquals(outerFixedPoint, bothNNShouldCorrectResult.getStart());
+        assertEquals(fixedEnd, bothNNShouldCorrectResult.getEnd());
+        assertEquals(newPointInTime, bothNNSouldNotCorrectResult.getStart());
+        assertEquals(newPointInTime, bothNNSouldNotCorrectResult.getEnd());
     }
 
     @Test
@@ -81,20 +160,23 @@ public class JobTest {
         config.earliest = "08:00";
         config.latest = "22:00";
         config.forceEvent = false;
-        Calendar pointInTime = DateTimeUtils.createCalendarForToday(12, 0);
+        Calendar pointInTime = DateTimeUtils.createCalendarForToday(12, 0, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
         Range startNull = new Range(null, pointInTime);
         Range endNull = new Range(pointInTime, null);
         Range bothNull = new Range(null, null);
-        Range bothNNShouldCorrect = new Range(DateTimeUtils.createCalendarForToday(6, 0),
-                DateTimeUtils.createCalendarForToday(22, 0));
+        Range bothNNShouldCorrect = new Range(
+                DateTimeUtils.createCalendarForToday(6, 0, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE),
+                DateTimeUtils.createCalendarForToday(23, 10, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE));
         Range bothNNShouldNotCorrect = new Range(pointInTime, pointInTime);
 
         // act
-        Range startNullResult = Job.adjustRangeToConfig(startNull, config);
-        Range endNullResult = Job.adjustRangeToConfig(endNull, config);
-        Range bothNullResult = Job.adjustRangeToConfig(bothNull, config);
-        Range bothNNShouldCorrectResult = Job.adjustRangeToConfig(bothNNShouldCorrect, config);
-        Range bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config);
+        Range startNullResult = Job.adjustRangeToConfig(startNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        Range endNullResult = Job.adjustRangeToConfig(endNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        Range bothNullResult = Job.adjustRangeToConfig(bothNull, config, TIME_ZONE, Locale.ROOT, INSTANT_SOURCE);
+        Range bothNNShouldCorrectResult = Job.adjustRangeToConfig(bothNNShouldCorrect, config, TIME_ZONE, Locale.ROOT,
+                INSTANT_SOURCE);
+        Range bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config, TIME_ZONE,
+                Locale.ROOT, INSTANT_SOURCE);
 
         Calendar fixedStart = DateTimeUtils.getAdjustedEarliest(pointInTime, config);
         Calendar fixdedEnd = DateTimeUtils.getAdjustedLatest(pointInTime, config);

@@ -1,0 +1,24 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+Parts of this code (src/main/python/) have been forked.
+* License: Apache License 2.0
+* Project: https://www.home-assistant.io/
+* Source:  https://github.com/home-assistant/core
+
+Parts of this code (src/main/python/voluptuous/) have been forked:
+* License: BSD 3-Clause
+* Source: https://github.com/alecthomas/voluptuous

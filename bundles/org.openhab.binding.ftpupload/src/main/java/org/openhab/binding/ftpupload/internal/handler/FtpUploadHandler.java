@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,6 +67,11 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
         configuration = getConfigAs(FtpUploadConfig.class);
         logger.debug("Using configuration: {}", configuration.toString());
 
+        if (configuration.userName.isBlank() || configuration.password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/configuration-user-password-error");
+            return;
+        }
         ftpServer.addEventListener(this);
         try {
             ftpServer.addAuthenticationCredentials(configuration.userName, configuration.password);

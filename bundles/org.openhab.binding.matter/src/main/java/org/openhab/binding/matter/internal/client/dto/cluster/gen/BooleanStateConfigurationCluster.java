@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -100,8 +99,8 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      * Indicates any faults registered by the device.
      */
     public SensorFaultBitmap sensorFault; // 7 SensorFaultBitmap R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated after any bits in the AlarmsActive and/or AlarmsSuppressed attributes change. This
      * may occur in situations such as when internal processing by the server determines that an alarm mode becomes
@@ -110,7 +109,7 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
      * If several alarm modes change state at the same time, a single event combining multiple changes may be emitted
      * instead of multiple events each representing a single change.
      */
-    public class AlarmsStateChanged {
+    public static class AlarmsStateChanged {
         /**
          * This field shall indicate the state of active alarm modes, as indicated by the AlarmsActive attribute, at the
          * time the event was generated.
@@ -131,7 +130,7 @@ public class BooleanStateConfigurationCluster extends BaseCluster {
     /**
      * This event shall be generated when the device registers or clears a fault.
      */
-    public class SensorFault {
+    public static class SensorFault {
         /**
          * This field shall indicate the value of the SensorFault attribute, at the time this event is generated.
          */

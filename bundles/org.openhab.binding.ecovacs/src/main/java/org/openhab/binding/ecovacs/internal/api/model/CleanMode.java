@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,25 +33,29 @@ public enum CleanMode {
     CUSTOM_AREA,
     @SerializedName("singleRoom")
     SINGLE_ROOM,
+    @SerializedName(value = "sceneClean", alternate = { "qcClean" })
+    SCENE_CLEAN,
     @SerializedName("pause")
     PAUSE,
     @SerializedName("stop")
     STOP,
     @SerializedName(value = "going", alternate = { "goCharging" })
     RETURNING,
+    @SerializedName(value = "autoEmpty", alternate = { "emptying" })
+    EMPTYING,
     @SerializedName("washing")
     WASHING,
-    @SerializedName("drying")
+    @SerializedName(value = "drying", alternate = { "spin-dry" })
     DRYING,
     @SerializedName("idle")
     IDLE;
 
     public boolean isActive() {
         return this == AUTO || this == EDGE || this == SPOT || this == SPOT_AREA || this == CUSTOM_AREA
-                || this == SINGLE_ROOM;
+                || this == SINGLE_ROOM || this == SCENE_CLEAN;
     }
 
     public boolean isIdle() {
-        return this == IDLE || this == DRYING || this == WASHING;
+        return this == IDLE || this == DRYING || this == WASHING || this == EMPTYING;
     }
 }

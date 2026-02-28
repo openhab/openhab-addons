@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -447,7 +448,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         try {
-            url = new URL(longUrl);
+            url = URI.create(longUrl).toURL();
             int port = url.getPort();
             if (port == -1) {
                 if (url.getQuery() == null) {
@@ -702,12 +703,9 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void startStreamServer() {
         servlet = new CameraServlet(this, httpService);
-        updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                + getThing().getUID().getId() + "/ipcamera.m3u8"));
-        updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                + getThing().getUID().getId() + "/ipcamera.jpg"));
-        updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                + getThing().getUID().getId() + "/ipcamera.mjpeg"));
+        updateState(CHANNEL_HLS_URL, new StringType("/ipcamera/" + getThing().getUID().getId() + "/ipcamera.m3u8"));
+        updateState(CHANNEL_IMAGE_URL, new StringType("/ipcamera/" + getThing().getUID().getId() + "/ipcamera.jpg"));
+        updateState(CHANNEL_MJPEG_URL, new StringType("/ipcamera/" + getThing().getUID().getId() + "/ipcamera.mjpeg"));
     }
 
     public void openCamerasStream() {
@@ -1100,16 +1098,16 @@ public class IpCameraHandler extends BaseThingHandler {
     public void channelLinked(ChannelUID channelUID) {
         switch (channelUID.getId()) {
             case CHANNEL_MJPEG_URL:
-                updateState(CHANNEL_MJPEG_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                        + getThing().getUID().getId() + "/ipcamera.mjpeg"));
+                updateState(CHANNEL_MJPEG_URL,
+                        new StringType("ipcamera/" + getThing().getUID().getId() + "/ipcamera.mjpeg"));
                 break;
             case CHANNEL_HLS_URL:
-                updateState(CHANNEL_HLS_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                        + getThing().getUID().getId() + "/ipcamera.m3u8"));
+                updateState(CHANNEL_HLS_URL,
+                        new StringType("ipcamera/" + getThing().getUID().getId() + "/ipcamera.m3u8"));
                 break;
             case CHANNEL_IMAGE_URL:
-                updateState(CHANNEL_IMAGE_URL, new StringType("http://" + hostIp + ":" + SERVLET_PORT + "/ipcamera/"
-                        + getThing().getUID().getId() + "/ipcamera.jpg"));
+                updateState(CHANNEL_IMAGE_URL,
+                        new StringType("ipcamera/" + getThing().getUID().getId() + "/ipcamera.jpg"));
                 break;
         }
     }
@@ -1208,22 +1206,26 @@ public class IpCameraHandler extends BaseThingHandler {
                         onvifCamera.gotoPreset(Integer.valueOf(command.toString()));
                     }
                     return;
-                case CHANNEL_POLL_IMAGE:
+                case CHANNEL_CREATE_SNAPSHOTS:
                     if (OnOffType.ON.equals(command)) {
                         if (snapshotUri.isEmpty()) {
                             ffmpegSnapshotGeneration = true;
                             setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
-                            updateImageChannel = false;
-                        } else {
-                            updateImageChannel = true;
-                            updateSnapshot();// Allows this to change Image FPS on demand
                         }
                     } else {
                         Ffmpeg localSnaps = ffmpegSnapshot;
                         if (localSnaps != null) {
                             localSnaps.stopConverting();
                             ffmpegSnapshotGeneration = false;
+                            updateState(CHANNEL_CREATE_SNAPSHOTS, OnOffType.OFF);
                         }
+                    }
+                    return;
+                case CHANNEL_POLL_IMAGE:
+                    if (OnOffType.ON.equals(command)) {
+                        updateImageChannel = true;
+                        updateSnapshot();// Allows this to change Image FPS on demand
+                    } else {
                         updateImageChannel = false;
                     }
                     return;
@@ -1424,7 +1426,7 @@ public class IpCameraHandler extends BaseThingHandler {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
             setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
-            updateState(CHANNEL_POLL_IMAGE, OnOffType.ON);
+            updateState(CHANNEL_CREATE_SNAPSHOTS, OnOffType.ON);
         } else {
             cameraConfigError("Binding can not find a RTSP url for this camera, please provide a FFmpeg Input URL.");
         }

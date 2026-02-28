@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * LeapRequest object
  *
- * @author Peter J Wojciechowski - initial
+ * @author Peter J Wojciechowski - Initial contribution
  */
 public class LeapRequest {
     @SerializedName("CommuniqueType")

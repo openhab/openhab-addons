@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,8 +30,10 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzPowerMeterDeviceHandler;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaGetEnergyStatsCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback.BlindCommand;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorCallback;
@@ -299,6 +301,11 @@ public class FritzAhaWebInterface {
 
     public FritzAhaContentExchange applyTemplate(String ain) {
         FritzAhaApplyTemplateCallback callback = new FritzAhaApplyTemplateCallback(this, ain);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange getEnergyStats(AVMFritzPowerMeterDeviceHandler handler, long deviceId) {
+        FritzAhaGetEnergyStatsCallback callback = new FritzAhaGetEnergyStatsCallback(this, handler, deviceId);
         return asyncGet(callback);
     }
 

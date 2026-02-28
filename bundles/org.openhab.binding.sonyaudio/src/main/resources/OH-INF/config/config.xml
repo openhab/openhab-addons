@@ -25,8 +25,8 @@
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0">
 			<label>Refresh Interval</label>
-			<description>The refresh interval in seconds for polling the receiver (0=disable). Binding receive automatically
-				updates from
+			<description>The refresh interval in seconds for polling the receiver (0 = disable). The binding also receives
+				asynchronous updates from the device.
 			</description>
 			<default>300</default>
 			<advanced>true</advanced>

@@ -13,6 +13,10 @@
 		<label>DC Power</label>
 		<description>Current DC power of the inverter</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-battery">
@@ -20,6 +24,10 @@
 		<label>Home Consumption Battery</label>
 		<description>Current home consumption obtained from the battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-grid">
@@ -27,6 +35,10 @@
 		<label>Home Consumption Grid</label>
 		<description>Current home consumption obtained from the grid</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ownconsumption">
@@ -34,6 +46,10 @@
 		<label>Own Consumption</label>
 		<description>Current own consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-from-pv">
@@ -41,6 +57,10 @@
 		<label>Home Consumption PV</label>
 		<description>Current home consumption obtained from photovoltaic</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-homeconsumption-total">
@@ -48,6 +68,10 @@
 		<label>Home Consumption</label>
 		<description>Current total home consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-limit-evu-absolute">
@@ -55,6 +79,10 @@
 		<label>Feed-in Limit</label>
 		<description>Permitted feed-in quantity as absolute value as specified by the energy supplier </description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-limit-evu-relativ">
@@ -68,6 +96,10 @@
 		<label>Uptime</label>
 		<description>Uptime of the inverter</description>
 		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-cos-phi">
@@ -80,6 +112,10 @@
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
 		<description>AC Frequency</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-amperage">
@@ -87,6 +123,10 @@
 		<label>P1 Amperage</label>
 		<description>Amperage of phase 1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-power">
@@ -94,6 +134,10 @@
 		<label>P1 Power</label>
 		<description>Power of phase 1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-voltage">
@@ -101,6 +145,10 @@
 		<label>P1 Voltage</label>
 		<description>Voltage of phase 1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-amperage">
@@ -108,6 +156,10 @@
 		<label>P2 Amperage</label>
 		<description>Amperage of phase 2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-power">
@@ -115,6 +167,10 @@
 		<label>P2 Power</label>
 		<description>Power of phase 2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-2-current-voltage">
@@ -122,6 +178,10 @@
 		<label>P2 Voltage</label>
 		<description>Voltage of phase 2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-amperage">
@@ -129,6 +189,10 @@
 		<label>P3 Amperage</label>
 		<description>Amperage of phase 3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-power">
@@ -136,6 +200,10 @@
 		<label>P3 Power</label>
 		<description>Power of phase 3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-phase-3-current-voltage">
@@ -143,6 +211,10 @@
 		<label>P3 Voltage</label>
 		<description>Voltage of phase 3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-ac-current-power">
@@ -150,12 +222,20 @@
 		<label>AC Power</label>
 		<description>Current AC power of the inverter</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-loading-cycles">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Loading Cycles</label>
 		<description>Amount of loading cycles done by the battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="device-local-battery-full-charge-capacity">
@@ -163,6 +243,10 @@
 		<label>Battery Capacity</label>
 		<description>Capacity of the battery if charged fully</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-amperage">
@@ -170,6 +254,10 @@
 		<label>Battery Amperage</label>
 		<description>Current amperage of the battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-power">
@@ -177,6 +265,10 @@
 		<label>Battery Power</label>
 		<description>Current battery charge</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-state-of-charge">
@@ -184,6 +276,10 @@
 		<label>Battery Charge</label>
 		<description>Current battery charge status</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-voltage">
@@ -191,6 +287,10 @@
 		<label>Battery Voltage</label>
 		<description>Current voltage of the battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-amperage">
@@ -198,6 +298,10 @@
 		<label>PV Str1 Amperage</label>
 		<description>Current amperage of photovoltaic string 1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-power">
@@ -205,6 +309,10 @@
 		<label>PV Str1 Power</label>
 		<description>Current power of photovoltaic string 1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-1-voltage">
@@ -212,6 +320,10 @@
 		<label>PV Str1 Voltage</label>
 		<description>Current voltage of photovoltaic string 1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-amperage">
@@ -219,6 +331,10 @@
 		<label>PV Str2 Amperage</label>
 		<description>Current amperage of photovoltaic string 2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-power">
@@ -226,6 +342,10 @@
 		<label>PV Str2 Power</label>
 		<description>Current power of photovoltaic string 2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-2-voltage">
@@ -233,6 +353,10 @@
 		<label>PV Str2 Voltage</label>
 		<description>Current voltage of photovoltaic string 2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-amperage">
@@ -240,6 +364,10 @@
 		<label>PV Str3 Amperage</label>
 		<description>Current amperage of photovoltaic string 3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-power">
@@ -247,6 +375,10 @@
 		<label>PV Str3 Power</label>
 		<description>Current power of photovoltaic string 3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-pvstring-3-voltage">
@@ -254,6 +386,10 @@
 		<label>PV Str3 Voltage</label>
 		<description>Current voltage of photovoltaic string 3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="scb-event-error-count-mc">
@@ -309,6 +445,10 @@
 		<label>CO2 Savings Day</label>
 		<description>Savings in Co2 emissions today</description>
 		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-month">
@@ -316,6 +456,10 @@
 		<label>CO2 Savings Month</label>
 		<description>Savings in Co2 emissions this month</description>
 		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-total">
@@ -323,6 +467,10 @@
 		<label>CO2 Savings Total</label>
 		<description>Savings in Co2 emissions overall</description>
 		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-co2saving-year">
@@ -330,6 +478,10 @@
 		<label>CO2 Savings Year</label>
 		<description>Savings in Co2 emissions this year</description>
 		<category>CarbonDioxide</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-day">
@@ -337,6 +489,10 @@
 		<label>Home Consumption Day</label>
 		<description>Home consumption today</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-month">
@@ -344,6 +500,10 @@
 		<label>Home Consumption Month</label>
 		<description>Home consumption this month</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-total">
@@ -351,6 +511,10 @@
 		<label>Home Consumption Total</label>
 		<description>Home consumption overall</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-year">
@@ -358,6 +522,10 @@
 		<label>Home Consumption Year</label>
 		<description>Home consumption this year</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-day">
@@ -365,6 +533,10 @@
 		<label>Home Consumption Battery Day</label>
 		<description>Home consumption obtained from the battery today</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-month">
@@ -372,6 +544,10 @@
 		<label>Home Consumption Battery Month</label>
 		<description>Home consumption obtained from the battery this month</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-total">
@@ -379,6 +555,10 @@
 		<label>Home Consumption Battery Total</label>
 		<description>Home consumption obtained from the battery overall</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-battery-year">
@@ -386,6 +566,10 @@
 		<label>Home Consumption Battery Year</label>
 		<description>Home consumption obtained from the battery this year</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-day">
@@ -393,6 +577,10 @@
 		<label>Home Consumption Grid Day</label>
 		<description>Home consumption obtained from the grid today</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-month">
@@ -400,6 +588,10 @@
 		<label>Home Consumption Grid Month</label>
 		<description>Home consumption obtained from the grid this month</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-total">
@@ -407,6 +599,10 @@
 		<label>Home Consumption Grid Total</label>
 		<description>Home consumption obtained from the grid overall</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-grid-year">
@@ -414,6 +610,10 @@
 		<label>Home Consumption Grid Year</label>
 		<description>Home consumption obtained from the grid this year</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-day">
@@ -421,6 +621,10 @@
 		<label>Home Consumption PV Day</label>
 		<description>Home consumption obtained from the photovoltaic plant today</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-month">
@@ -428,6 +632,10 @@
 		<label>Home Consumption PV Month</label>
 		<description>Home consumption obtained from the photovoltaic plant this month</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-total">
@@ -435,6 +643,10 @@
 		<label>Home Consumption PV Total</label>
 		<description>Home consumption obtained from the photovoltaic plant overall</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-homeconsumption-from-pv-year">
@@ -442,6 +654,10 @@
 		<label>Home Consumption PV Year</label>
 		<description>Home consumption obtained from the photovoltaic plant this year</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-ownconsumption-rate-day">
@@ -473,6 +689,10 @@
 		<label>Yield Day</label>
 		<description>Yield of the photovoltaic plant today</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-month">
@@ -480,6 +700,10 @@
 		<label>Yield Month</label>
 		<description>Yield of the photovoltaic plant this month</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-total">
@@ -487,6 +711,10 @@
 		<label>Yield Total</label>
 		<description>Yield of the photovoltaic plant overall</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-year">
@@ -494,6 +722,10 @@
 		<label>Yield Year</label>
 		<description>Yield of the photovoltaic plant this year</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-output-power">
@@ -501,6 +733,10 @@
 		<label>Grid Output Power</label>
 		<description>Current output power to the grid</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-day-second-gen">
@@ -508,6 +744,10 @@
 		<label>Yield Day</label>
 		<description>Total produced power day</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-yield-total-second-gen">
@@ -515,6 +755,10 @@
 		<label>Yield Total</label>
 		<description>Total produced power</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-operating-status">
@@ -529,6 +773,10 @@
 		<label>Grid Voltage L1</label>
 		<description>Current output voltage to the grid, L1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-current-l1">
@@ -536,6 +784,10 @@
 		<label>Grid Amperage L1</label>
 		<description>Current output amperage to the grid, L1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f  %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-power-l1">
@@ -543,6 +795,10 @@
 		<label>Grid Power L1</label>
 		<description>Current output power to the grid, L1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-voltage-l2">
@@ -550,6 +806,10 @@
 		<label>Grid Voltage L2</label>
 		<description>Current output voltage to the grid, L2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-current-l2">
@@ -557,6 +817,10 @@
 		<label>Grid Amperage L2</label>
 		<description>Current output amperage to the grid, L2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-power-l2">
@@ -564,6 +828,10 @@
 		<label>Grid Power L2</label>
 		<description>Current output power to the grid, L2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-voltage-l3">
@@ -571,6 +839,10 @@
 		<label>Grid Voltage L3</label>
 		<description>Current output voltage to the grid, L3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-current-l3">
@@ -578,6 +850,10 @@
 		<label>Grid Amperage L3</label>
 		<description>Current output amperage to the grid, L3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-power-l3">
@@ -585,6 +861,10 @@
 		<label>Grid Power L3</label>
 		<description>Current output power to the grid, L3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc-power-pv">
@@ -592,6 +872,10 @@
 		<label>DC Power PV</label>
 		<description>Current power from solar panels</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-voltage">
@@ -599,6 +883,10 @@
 		<label>DC1 Voltage</label>
 		<description>Current voltage from solar panels, DC1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-current">
@@ -606,6 +894,10 @@
 		<label>DC1 Amperage</label>
 		<description>Current amperage from solar panels, DC1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc1-power">
@@ -613,6 +905,10 @@
 		<label>DC1 Power</label>
 		<description>Current power from solar panels, DC1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-voltage">
@@ -620,6 +916,10 @@
 		<label>DC2 Voltage</label>
 		<description>Current voltage from solar panels, DC2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-current">
@@ -627,6 +927,10 @@
 		<label>DC2 Amperage</label>
 		<description>Current amperage from solar panels, DC2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc2-power">
@@ -634,6 +938,10 @@
 		<label>DC2 Power</label>
 		<description>Current power from solar panels, DC2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-voltage">
@@ -641,6 +949,10 @@
 		<label>DC3 Voltage</label>
 		<description>Current voltage from solar panels, DC3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-current">
@@ -648,6 +960,10 @@
 		<label>DC3 Amperage</label>
 		<description>Current amperage from solar panels, DC3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-dc3-power">
@@ -655,6 +971,10 @@
 		<label>DC3 Power</label>
 		<description>Current power from solar panels, DC3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-solar">
@@ -662,6 +982,10 @@
 		<label>Home Consumption PV</label>
 		<description>Current consumption from solar panels</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-bat">
@@ -669,6 +993,10 @@
 		<label>Home Consumption Bat</label>
 		<description>Current consumption from battery</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-akt-home-consumption-grid">
@@ -676,6 +1004,10 @@
 		<label>Home Consumption Grid</label>
 		<description>Current consumption from grid</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l1">
@@ -683,6 +1015,10 @@
 		<label>Home Consumption L1</label>
 		<description>Current home consumption, L1</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l2">
@@ -690,6 +1026,10 @@
 		<label>Home Consumption L2</label>
 		<description>Current home consumption, L2</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-phase-sel-home-consump-l3">
@@ -697,6 +1037,10 @@
 		<label>Home Consumption L3</label>
 		<description>Current home consumption, L3</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-freq">
@@ -704,6 +1048,10 @@
 		<label>Grid Freq</label>
 		<description>Current frequency on grid</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-grid-cos-phi">
@@ -718,6 +1066,10 @@
 		<label>Home Consumption Day</label>
 		<description>Total home consumption day</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-consumption-day">
@@ -725,6 +1077,10 @@
 		<label>Own Consumption Day</label>
 		<description>Total own consumption day</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-cons-rate-day">
@@ -732,6 +1088,10 @@
 		<label>Own Cons Rate Day</label>
 		<description>Total own consumption rate day</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-autonomy-degree-day">
@@ -739,6 +1099,10 @@
 		<label>Autonomy Degree Day</label>
 		<description>Total autonomy degree day</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-home-consumption-total">
@@ -746,6 +1110,10 @@
 		<label>Home Consumption Total</label>
 		<description>Total home consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-own-consumption-total">
@@ -753,6 +1121,10 @@
 		<label>Own Consumption Total</label>
 		<description>Total own consumptionl</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="statistic-operating-time-total">
@@ -760,6 +1132,10 @@
 		<label>Operating Time Total</label>
 		<description>Total operating time</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-current">
@@ -767,6 +1143,10 @@
 		<label>Current</label>
 		<description>Current</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-current-dir">
@@ -774,6 +1154,10 @@
 		<label>Current Dir</label>
 		<description>Current direction</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 	<channel-type id="device-local-charge-cycles">
@@ -788,6 +1172,10 @@
 		<label>Battery Temperature</label>
 		<description>Current battery temperature</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-loginterval">
@@ -823,6 +1211,10 @@
 		<label>Battery Voltage</label>
 		<description>Current battery voltage</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-bat-state-of-charge">
@@ -830,6 +1222,10 @@
 		<label>Bat State of Charge</label>
 		<description>Current battery charge state</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-self-consumption">
@@ -837,6 +1233,10 @@
 		<label>Self Consumption</label>
 		<description>Current self consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-battery-usage-consumption">
@@ -844,6 +1244,10 @@
 		<label>Battery Usage Consumption</label>
 		<description>Battery usage consumption</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="device-local-smart-battery-control">
@@ -851,6 +1255,10 @@
 		<label>Smart Battery Control</label>
 		<description>Smart battery control</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="device-local-max-depth-of-discharge">

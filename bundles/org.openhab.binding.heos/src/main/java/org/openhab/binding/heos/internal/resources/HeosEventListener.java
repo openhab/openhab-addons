@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,16 +13,16 @@
 package org.openhab.binding.heos.internal.resources;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.heos.internal.api.HeosEventController;
 import org.openhab.binding.heos.internal.exception.HeosFunctionalException;
 import org.openhab.binding.heos.internal.json.dto.HeosEventObject;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
 
 /**
- * The {@link HeosEventListener } is an Event Listener
- * for the HEOS network. Handler which wants the get informed
- * by an HEOS event via the {@link HeosEventController} has to
- * implement this class and register itself at the {@link HeosEventController}
+ * The {@link HeosEventListener } is an Event Listener for the HEOS network.
+ * Handler which wants the get informed by an HEOS event via the
+ * {@link org.openhab.binding.heos.internal.api.HeosEventController}
+ * has to implement this class and register itself at the
+ * {@link org.openhab.binding.heos.internal.api.HeosEventController}
  *
  * @author Johannes Einig - Initial contribution
  * @author Martin van Wingerden - change handling of stop/pause depending on playing item type

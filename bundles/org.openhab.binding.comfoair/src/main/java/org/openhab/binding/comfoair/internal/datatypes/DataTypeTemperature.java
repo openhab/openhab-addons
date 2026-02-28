@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -84,7 +84,7 @@ public class DataTypeTemperature implements ComfoAirDataType {
         if (commandType.getReadCommand() == ComfoAirCommandType.Constants.REQUEST_GET_GHX) {
             template[commandType.getChangeDataPos()] = (int) celsius;
         } else {
-            template[commandType.getChangeDataPos()] = (int) (celsius + 20) * 2;
+            template[commandType.getChangeDataPos()] = (int) ((celsius + 20) * 2);
         }
         return template;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class S3Actions {
             String awsSecretKey) throws APIException {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         try {
-            this.bucketUri = new URL("http://" + bucketName + ".s3." + region + ".amazonaws.com");
+            this.bucketUri = URI.create("http://" + bucketName + ".s3." + region + ".amazonaws.com").toURL();
         } catch (MalformedURLException e) {
             throw new APIException("Unable to parse service endpoint: " + e.getMessage());
         }

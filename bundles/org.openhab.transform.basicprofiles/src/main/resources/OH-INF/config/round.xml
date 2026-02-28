@@ -11,8 +11,7 @@
 		</parameter>
 		<parameter name="mode" type="text">
 			<label>Rounding Mode</label>
-			<description>Rounding mode to be used (e.g. "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP" or "HALF_DOWN").
-			</description>
+			<description>Rounding mode to be used (e.g., "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP", or "HALF_DOWN").</description>
 			<default>HALF_UP</default>
 			<options>
 				<option value="UP">UP</option>

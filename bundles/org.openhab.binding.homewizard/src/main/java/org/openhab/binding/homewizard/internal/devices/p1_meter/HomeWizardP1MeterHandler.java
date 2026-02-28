@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,11 @@ package org.openhab.binding.homewizard.internal.devices.p1_meter;
 
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
+import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -25,7 +27,10 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link HomeWizardP1MeterHandler} implements functionality to handle a HomeWizard P1 Meter.
@@ -35,6 +40,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
+    protected HomeWizardBatteriesSubHandler batteriesHandler;
 
     private String meterModel = "";
     private int meterVersion = 0;
@@ -50,23 +56,47 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         supportedTypes.add(HomeWizardBindingConstants.HWE_P1);
+        supportedApiVersions = Arrays.asList(API_V1, API_V2);
+
+        batteriesHandler = new HomeWizardBatteriesSubHandler(this);
     }
 
-    /**
-     * Not listening to any commands.
-     */
+    @Override
+    protected void retrieveData() {
+        super.retrieveData();
+        if (config.isUsingApiVersion2()) {
+            try {
+                batteriesHandler.retrieveBatteriesData();
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-device-offline");
+                return;
+            }
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            retrieveData();
+            return;
+        }
+
+        if (channelUID.getIdWithoutGroup().equals(HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE)) {
+            batteriesHandler.handleCommand(command);
+        } else {
+            logger.warn("Unhandled command for channel: {} command: {}", channelUID.getIdWithoutGroup(), command);
+        }
     }
 
     /**
-     * Device specific handling of the returned data.
+     * Device specific handling of the returned measurement data.
      *
-     * @param payload The data obtained form the API call
+     * @param data The data obtained form the API call
      */
     @Override
-    protected void handleDataPayload(String data) {
-        super.handleDataPayload(data);
+    protected void handleMeasurementData(String data) {
+        super.handleMeasurementData(data);
 
         var payload = gson.fromJson(data, HomeWizardP1MeterMeasurementPayload.class);
         if (payload != null) {
@@ -81,6 +111,9 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
                     updateProperty(HomeWizardBindingConstants.PROPERTY_METER_VERSION,
                             String.format("%d", meterVersion));
                 }
+
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_TARIFF,
+                        new DecimalType(payload.getTariff()));
 
                 updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_POWER_FAILURES,

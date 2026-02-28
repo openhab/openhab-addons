@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -137,12 +136,12 @@ public class ContentControlCluster extends BaseCluster {
      * attribute list for the same day of week.
      */
     public List<TimeWindowStruct> blockContentTimeWindow; // 10 list R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when the RemainingScreenTime equals 0.
      */
-    public class RemainingScreenTimeExpired {
+    public static class RemainingScreenTimeExpired {
         public RemainingScreenTimeExpired() {
         }
     }
@@ -151,12 +150,12 @@ public class ContentControlCluster extends BaseCluster {
      * This event shall be generated when entering a period of blocked content as configured in the
      * BlockContentTimeWindow attribute.
      */
-    public class EnteringBlockContentTimeWindow {
+    public static class EnteringBlockContentTimeWindow {
         public EnteringBlockContentTimeWindow() {
         }
     }
 
-    public class RatingNameStruct {
+    public static class RatingNameStruct {
         /**
          * This field shall indicate the name of the rating level of the applied rating system. The applied rating
          * system is dependent upon the region or country where the Node has been provisioned, and may vary from one
@@ -174,7 +173,7 @@ public class ContentControlCluster extends BaseCluster {
         }
     }
 
-    public class BlockChannelStruct {
+    public static class BlockChannelStruct {
         /**
          * This field shall indicate a unique index value for a blocked channel. This value may be used to indicate one
          * selected channel which will be removed from BlockChannelList attribute.
@@ -209,7 +208,7 @@ public class ContentControlCluster extends BaseCluster {
         }
     }
 
-    public class AppInfoStruct {
+    public static class AppInfoStruct {
         /**
          * This field shall indicate the CSA-issued vendor ID for the catalog. The DIAL registry shall use value 0x0000.
          * Content App Platform providers will have their own catalog vendor ID (set to their own Vendor ID) and will
@@ -228,7 +227,7 @@ public class ContentControlCluster extends BaseCluster {
         }
     }
 
-    public class TimeWindowStruct {
+    public static class TimeWindowStruct {
         /**
          * This field shall indicate a unique index of a specific time window. This value may be used to indicate a
          * selected time window which will be removed from the BlockContentTimeWindow attribute.
@@ -250,7 +249,7 @@ public class ContentControlCluster extends BaseCluster {
         }
     }
 
-    public class TimePeriodStruct {
+    public static class TimePeriodStruct {
         /**
          * This field shall indicate the starting hour.
          */
@@ -291,8 +290,8 @@ public class ContentControlCluster extends BaseCluster {
         TIME_WINDOW_ALREADY_EXIST(10, "Time Window Already Exist"),
         TIME_WINDOW_NOT_EXIST(11, "Time Window Not Exist");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;

@@ -1,37 +1,36 @@
 # Linky Binding
 
-This binding enables the exploitation of electricity consumption data, mainly for the French market. 
+This binding enables the exploitation of electricity consumption data, mainly for the French market.
 It supports different functionalities:
 
 - Connection to Enedis to retrieve consumption data online.
 - Connection to the RTE API to get Tempo Red/White/Blue calendar information.
 
-
 ## Migration
 
-The new binding will need some tweak to you configuration to work.
+The new binding (as of openHAB 5.0.0) will need some tweaks to your configuration to work.
 Mainly the new binding uses Bridge to access Enedis data, so you will have to add this bridge to your configuration.
 Step are:
 
-1. before updating to openHAB 5.0, in case you defined your thing with Main UI, backup username, password & internalAuthId configuration parameters as you will need to fill them again.
+1. before updating to openHAB 5.0, in case you defined your Thing with Main UI, backup username, password & internalAuthId configuration parameters as you will need to fill them again.
+1. add a bridge definition
 
-2. add a bridge definition
-	
-	Bridge linky:enedis:local "EnedisWebBridge" [ 
-		username="laurent@clae.net", 
-		password="Mnbo32tyu123!", 
-		internalAuthId="eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.u_mxXO7_d4I5bLvJzGtc2MARvpkYv0iM0EsO6a24k-tW9493_Myxwg.LVlfephhGTiCBxii8bRIkA.GOf9Ea8PTGshvkfjl62b6w.hSH97IkmBcEAz2udU-FqQg" 
-		]  
-	{ 
-	}  
+    ``` java
+    Bridge linky:enedis:local "EnedisWebBridge" [
+        username="myUserName@myDomain.com",
+        password="MyPassword",
+        internalAuthId="zeJhbGciOiJBMTIdaqzerZiLCJlbmMiOiJBMTIcwxdsq..."] {
+       }
+    ```
 
-3. Move username, password & internalAuthId configuration parameter from the old linky thing to the bridge thing.
+1. Move username, password and internalAuthId configuration parameters from the old linky Thing to the bridge Thing.
+1. Link your old Thing to the new created bridge Thing:
 
-4. Link your old thing to the new created bridge thing
+     ```java
+     Thing linky:linky:linkremotexxxx "Linky xxxx" (linky:enedis:local)
+     ```
 
-	Thing linky:linky:linkremotemelody "Linky Melody" (linky:enedis:local)
-
-5. Start using the new channels added by the enhanced binding..
+1. Start using the new channels added by the enhanced binding..
    Old items will work out of the box without the need to relink items to channels.
 
 ## Getting Consumption Data Online
@@ -41,9 +40,9 @@ You can use :
 
 - The enedis bridge: Uses the old Enedis API, based on the Enedis website, to gather data.
 - The myelectricaldata bridge: Uses the new REST Enedis API via the MyElectricalData proxy site to access the data.
-- TThe enedis-api bridge: Also uses the new REST Enedis API, but gathers data directly from the Enedis site.
+- The enedis-api bridge: Also uses the new REST Enedis API, but gathers data directly from the Enedis site.
 
-You first need to create an Enedis account [here](https://mon-compte-client.enedis.fr/)  if you don't already have one. 
+You first need to create an account at [the Enedis website](https://mon-compte-client.enedis.fr/) if you don't already have one.
 Ensure that you have accepted their conditions and check that you can see graphs on the website, especially the hourly view.
  Enedis may require your permission the first time to start collecting hourly data.
 
@@ -54,7 +53,7 @@ Advantage and Disadvantage of Each Method.
 - Enedis bridge is the older method.
 - MyelectricalData and enedis bridges both use the new API format, making them less prone to changes in website architecture.
 - MyelectricalData bridge is managed by a third-party provider but is stable.
-- Enedis-api bridge directly connects to Enedis but currently requires a complex registration process with Enedis. 
+- Enedis-api bridge directly connects to Enedis but currently requires a complex registration process with Enedis.
   This limitation will likely be resolved in the near future, making Enedis-api Bridge the preferred method.
   
 Be warned that MyElectricalData bridge collect data using MyElectricalData service.
@@ -67,33 +66,33 @@ To retrieve data, the Linky device needs to be linked to a LinkyBridge. The avai
 
 #### Enedis Web Bridge
 
-If you select enedis web bridge, you will need :
+If you select enedis web bridge, you will need:
 
-- To create an Enedis account : https://mon-compte-client.enedis.fr/
+- To create an Enedis account: <https://mon-compte-client.enedis.fr/>
 - To provide your credentials: username, password, and InternalAuthId.
 
-      | Parameter      | Description                                |
-      |----------------|--------------------------------------------|
-      | username       | Your Enedis platform username.             |
-      | password       | Your Enedis platform password.             |
-      | internalAuthId | The internal authentication ID.            |
+    | Parameter      | Description                     |
+    |----------------|---------------------------------|
+    | username       | Your Enedis platform username.  |
+    | password       | Your Enedis platform password.  |
+    | internalAuthId | The internal authentication ID. |
 
     This version is compatible with the latest Enedis Web API (deployed from June 2020). To bypass the captcha login, log in via a standard browser (e.g., Chrome, Firefox) and retrieve the user cookies (internalAuthId).
 
     Instructions for Firefox :
 
     1. Go to <https://mon-compte-client.enedis.fr/>.
-    2. Select "Particulier" from the drop down and click "Connexion".
-    3. Enter your Enedis account email and check "Je ne suis pas un robot".
-    4. Click "Suivant".
-    5. Enter your Enedis password and click "Connexion à Espace Client Enedis".
-    6. Navigate to your Enedis account environment, then return to the previous page in your browser.
-    7. Log out from your Enedis account.
-    8. Repeat steps 1-2. This time, open the developer tools window (F12) and select the "Storage" tab.
-    9. Under "Cookies", select "https://mon-compte-client.enedis.fr/". Locate the "internalAuthId" entry and copy its value into your OpenHAB configuration.
-	
-	A new timezone parameter has been introduced. If you don't put a value, it will default to the timezone of your openHAB installation. 
-	This parameter can be useful if you read data from a Linky in a different timezone.
+    1. Select "Particulier" from the drop down and click "Connexion".
+    1. Enter your Enedis account email and check "Je ne suis pas un robot".
+    1. Click "Suivant".
+    1. Enter your Enedis password and click "Connexion à Espace Client Enedis".
+    1. Navigate to your Enedis account environment, then return to the previous page in your browser.
+    1. Log out from your Enedis account.
+    1. Repeat steps 1-2. This time, open the developer tools window (F12) and select the "Storage" tab.
+    1. Under "Cookies", select `https://mon-compte-client.enedis.fr/`. Locate the "internalAuthId" entry and copy its value into your OpenHAB configuration.
+
+    A new timezone parameter has been introduced. If you don't put a value, it will default to the timezone of your openHAB installation.
+    This parameter can be useful if you read data from a Linky in a different timezone.
 
     ```java
     Bridge linky:enedis:local "EnedisWebBridge" [ username="example@domaine.fr", password="******", internalAuthId="******" ]
@@ -103,25 +102,22 @@ If you select enedis web bridge, you will need :
 
 If you select MyElectricalData bridge, you will need :
 
-- To create an Enedis account : https://mon-compte-client.enedis.fr/
-
+- To create an Enedis account: <https://mon-compte-client.enedis.fr/>
 - To follow these steps to initialize the token:
   
-  You can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
+  You can access the procedure from the connectlinky page available from your openHAB: <https://home.myopenhab.org/connectlinky/index>.
 
-  You will find screenshoot of the procedure in the following directory
+  You will find screenshot of the procedure in the following directory
   [doc/myelectricaldata/](doc/myelectricaldata/index.md)
 
   1. Go to the connectlinky page on OpenHAB.
-  2. Follow the first two steps of the wizard and click "Access Enedis".
-  3. Log into your Enedis account.
-  4. Authorize data collection for your PRM ID.<br/>
+  1. Follow the first two steps of the wizard and click "Access Enedis".
+  1. Log into your Enedis account.
+  1. Authorize data collection for your PRM ID.
      If you have multiple Linky meters, repeat the procedure for each one separately; selecting multiple meters at once will not work.
-
-
-  5. You will then be redirect to a confirmation page on MyElectricalData web site
-  6. Return to OpenHAB, go to "connectlinky/myelectricaldata-step3", select your PRM ID from the dropdown, and click "Retrieve Token".
-  7. A confirmation page will appear if everything is correctly set up.
+  1. You will then be redirect to a confirmation page on MyElectricalData web site
+  1. Return to OpenHAB, go to "connectlinky/myelectricaldata-step3", select your PRM ID from the dropdown, and click "Retrieve Token".
+  1. A confirmation page will appear if everything is correctly set up.
 
     ```java
     Bridge linky:my-electrical-data:local "MyElectricalBridge" [  ]
@@ -129,51 +125,44 @@ If you select MyElectricalData bridge, you will need :
 
 #### Enedis Bridge
 
-If you select enedis bridge, you will need :
+If you select enedis bridge, you will need:
 
-- To create an Enedis account : https://mon-compte-client.enedis.fr/
+- To create an Enedis account: <https://mon-compte-client.enedis.fr/>
+- Follow these steps to initialize the token.
+  You can access the procedure from the connectlinky page available from your openHAB: <https://home.myopenhab.org/connectlinky/index>.
 
-- Follow these steps to initialize the token. 
-
-  You can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
-
-    You will find screenshoot of the procedure in the following directory
+    You will find a screenshot of the procedure in the following directory
     [doc/enedis/](doc/enedis/index.md)
 
-
     1. Go to the connectlinky page on OpenHAB.
-    2. Follow the first two steps of the wizard and click "Access Enedis".
-    3. Log into your Enedis account.
-    4. Authorize data collection for your PRM ID.
-    5. A confirmation page will appear if everything is correctly set up.
-
+    1. Follow the first two steps of the wizard and click "Access Enedis".
+    1. Log into your Enedis account.
+    1. Authorize data collection for your PRM ID.
+    1. A confirmation page will appear if everything is correctly set up.
 
     ```java
-    Bridge linky:enedis-api:localSB "EnedisBridgeSandbox" [  clientId="myClientId...", clientSecret="myClientSecret..."	]  
+    Bridge linky:enedis-api:localSB "EnedisBridgeSandbox" [  clientId="myClientId...", clientSecret="myClientSecret..."]  
     ```
 
 ### Thing Configuration  
 
 The remote bridge works with Linky devices to retrieve consumption data from a remote API or website.
 
-You can have multiple Linky devices in your setup if you have different houses or multiple Linky meters linked to your account. 
-To do this, simply create multiple Linky devices and set the prmId to match your meter ID. 
+You can have multiple Linky devices in your setup if you have different houses or multiple Linky meters linked to your account.
+To do this, simply create multiple Linky devices and set the prmId to match your meter ID.
 You can find the meter ID on the Enedis website or directly on your Linky meter.
 
-You can switch the Linky device from one bridge to another if you experience issues with a particular bridge. 
-The data retrieved will be almost identical regardless of the bridge you use. 
+You can switch the Linky device from one bridge to another if you experience issues with a particular bridge.
+The data retrieved will be almost identical regardless of the bridge you use.
 Only a few contract-related items may differ between the web bridge and the API bridge.
 
 The device has the following configuration parameters:
 
-  | Parameter      | Description                                                                                          |
-  |----------------|------------------------------------------------------------------------------------------------------|
-  | prmId          | The prmId linked to the Linky Handler (optional: if blank first registered meter will be used        |
-  | timezone       | The timezone associated with your Point of delivery													|
-  | token          | Optional: Required if a token is necessary to access this Linky device (used for MyElectricalData).  |
-
-
-
+  | Parameter | Description                                                                                         |
+  |-----------|-----------------------------------------------------------------------------------------------------|
+  | prmId     | The prmId linked to the Linky Handler (optional: if blank first registered meter will be used       |
+  | timezone  | The timezone associated with your Point of delivery                                                 |
+  | token     | Optional: Required if a token is necessary to access this Linky device (used for MyElectricalData). |
 
 ```java
 Thing linky:linky:linkyremote "Linky Remote" (linky:enedis:local) [ ]
@@ -186,85 +175,112 @@ Thing linky:linky:linkyremotexxxx "Linky Remote xxxx" (linky:myelectricaldata:lo
 
 The retrieved information is available in multiple groups.
 
-
-
 - The daily group will give consumtion information with day granularity
 
-  | Channel ID                                        | Item Type         | Description                                                                   |
-  |---------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | daily#yesterday                                   | consumption       | Yesterday energy usage                                                        |
-  | daily#day-2                                       | consumption       | Day-2 energy usage                                                            |
-  | daily#day-3                                       | consumption       | Day-3 energy usage                                                            |
-  | daily#consumption                                 | consumption       | timeseries for energy usage  (up to three years will be store if available)   |
-  | daily#maw-power                                   | power             | timeseries for max-power usage                                                |
-  | daily#power                                       | power             | Yesterday's peak power usage                                                  |
-  | daily#timestamp                                   | timestamp         | Timestamp of the power peak                                                   |
-  | daily#power-2                                     | power             | Day-2's peak power usage                                                      |
-  | daily#timestamp-2                                 | timestamp         | Timestamp Day-2's of the power peak                                           |
-  | daily#power-3                                     | power             | Day-3's peak power usage                                                      |
-  | daily#timestamp-3                                 | timestamp         | Timestamp Day-3's  of the power peak                                          |
+  | Channel ID        | Item Type   | Description                                                                 |
+  |-------------------|-------------|-----------------------------------------------------------------------------|
+  | daily#yesterday   | consumption | Yesterday energy usage                                                      |
+  | daily#day-2       | consumption | Day-2 energy usage                                                          |
+  | daily#day-3       | consumption | Day-3 energy usage                                                          |
+  | daily#consumption | consumption | timeseries for energy usage  (up to three years will be store if available) |
+  | daily#maw-power   | power       | timeseries for max-power usage                                              |
+  | daily#power       | power       | Yesterday's peak power usage                                                |
+  | daily#timestamp   | timestamp   | Timestamp of the power peak                                                 |
+  | daily#power-2     | power       | Day-2's peak power usage                                                    |
+  | daily#timestamp-2 | timestamp   | Timestamp Day-2's of the power peak                                         |
+  | daily#power-3     | power       | Day-3's peak power usage                                                    |
+  | daily#timestamp-3 | timestamp   | Timestamp Day-3's  of the power peak                                        |
 
 - The weekly group will give consumtion information with week granularity
 
-  | Channel ID                                        | Item Type         | Description                                                                   |
-  |---------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | weekly#thisWeek                                   | consumption       | Current week energy usage                                                     |
-  | weekly#lastWeek                                   | consumption       | Last week energy usage                                                        |
-  | weekly#week-2                                     | consumption       | Week -2 energy usage                                                          |
-  | weekly#consumption                                | consumption       | timeseries for weeks energy usage                                             |
-  | weekly#max-power                                  | power             | timeseries for max-power weekly usage                                         |
+  | Channel ID         | Item Type   | Description                           |
+  |--------------------|-------------|---------------------------------------|
+  | weekly#thisWeek    | consumption | Current week energy usage             |
+  | weekly#lastWeek    | consumption | Last week energy usage                |
+  | weekly#week-2      | consumption | Week -2 energy usage                  |
+  | weekly#consumption | consumption | timeseries for weeks energy usage     |
+  | weekly#max-power   | power       | timeseries for max-power weekly usage |
 
 - The monthly group will give consumtion information with month granularity
 
-  | Channel ID                                        | Item Type         | Description                                                                   |
-  |---------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | monthly#thisMonth                                 | consumption       | Current month energy usage                                                    |
-  | monthly#lastMonth                                 | consumption       | Last month energy usage                                                       |
-  | monthly#month-2                                   | consumption       | Month-2 energy usage                                                          |
-  | monthly#consumption                               | consumption       | timeseries for months energy usage                                            |
-  | monthly#max-power                                 | power             | timeseries for max-power monthly usage                                        |
+  | Channel ID          | Item Type   | Description                            |
+  |---------------------|-------------|----------------------------------------|
+  | monthly#thisMonth   | consumption | Current month energy usage             |
+  | monthly#lastMonth   | consumption | Last month energy usage                |
+  | monthly#month-2     | consumption | Month-2 energy usage                   |
+  | monthly#consumption | consumption | timeseries for months energy usage     |
+  | monthly#max-power   | power       | timeseries for max-power monthly usage |
 
 - The yearly group will give consumtion information with year granularity
 
-  | Channel ID                                        | Item Type         | Description                                                                   |
-  |---------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | yearly#thisYear                                   | consumption       | Current year energy usage                                                     |
-  | yearly#lastYear                                   | consumption       | Last year energy usage                                                        |
-  | yearly#year-2                                     | consumption       | year-2 energy usage                                                           |
-  | yearly#consumption                                | consumption       | timeseries for years energy usage                                             |
-  | yearly#max-power                                  | power             | timeseries for max-power yearly usage                                         |
- 
+  | Channel ID         | Item Type   | Description                           |
+  |--------------------|-------------|---------------------------------------|
+  | yearly#thisYear    | consumption | Current year energy usage             |
+  | yearly#lastYear    | consumption | Last year energy usage                |
+  | yearly#year-2      | consumption | year-2 energy usage                   |
+  | yearly#consumption | consumption | timeseries for years energy usage     |
+  | yearly#max-power   | power       | timeseries for max-power yearly usage |
+
 - The load-curve group will give you access to load curve data with granularity as low as 30mn
 
-  | Channel ID                                        | Item Type         | Description                                                                   |
-  |---------------------------------------------------|-------------------|-------------------------------------------------------------------------------|
-  | load-curve#power                                  | power             | The load curve data                                                           |
-
+  | Channel ID       | Item Type | Description         |
+  |------------------|-----------|---------------------|
+  | load-curve#power | power     | The load curve data |
 
 - You will also find some Information as properties on the linky things
 
-  | Channel ID                                        | Description                                                                   |
-  |---------------------------------------------------|-------------------------------------------------------------------------------|
-  | identitiy                                         | The full name of the contract older                                           |
-  | customerId										  | The internal Enedis customer ID												  |
-  | contractSubscribedPower                           | The subscribed max Power                                                      |
-  | contractLastActivationdate                        | The contract activation date                                                  |
-  | contractDistributionTariff                        | The current applied tarif                                                     |
-  | contractOffpeakHours                              | The OffPeakHour link to your contract                                         |
-  | contractStatus                                    | The current contract status                                                   |
-  | contractType                                      | The contract type                                                             |
-  | contractLastdistributionTariffChangedate          | The date of the last tariff change                                            |
-  | contractSegment                                   | The customer segment for this contract                                        |
-  | usagePointId                                      | The distribution / usage point uniq indentifier                               |
-  | usagePointStatus                                  | The usage point current state                                                 |
-  | usagePointMeterType                               | The usage point meter type                                                    |
-  | usagePointCity                                    | The usage point City                                                          |
-  | usagePointCountry                                 | The usage point Country                                                       |
-  | usagePointPostalCode                              | The usage point Postal Code                                                   |
-  | usagePointStreet                                  | The usage point Address Street                                                |
-  | contactMail                                       | The usage point Contact Mail                                                  |
-  | contactPhone                                      | The usage point Contact Phone                                                 |
+  | Channel ID                               | Description                                     |
+  |------------------------------------------|-------------------------------------------------|
+  | identitiy                                | The full name of the contract older             |
+  | customerId                               | The internal Enedis customer ID                 |
+  | contractSubscribedPower                  | The subscribed max Power                        |
+  | contractLastActivationdate               | The contract activation date                    |
+  | contractDistributionTariff               | The current applied tarif                       |
+  | contractOffpeakHours                     | The OffPeakHour link to your contract           |
+  | contractStatus                           | The current contract status                     |
+  | contractType                             | The contract type                               |
+  | contractLastdistributionTariffChangedate | The date of the last tariff change              |
+  | contractSegment                          | The customer segment for this contract          |
+  | usagePointId                             | The distribution / usage point uniq indentifier |
+  | usagePointStatus                         | The usage point current state                   |
+  | usagePointMeterType                      | The usage point meter type                      |
+  | usagePointCity                           | The usage point City                            |
+  | usagePointCountry                        | The usage point Country                         |
+  | usagePointPostalCode                     | The usage point Postal Code                     |
+  | usagePointStreet                         | The usage point Address Street                  |
+  | contactMail                              | The usage point Contact Mail                    |
+  | contactPhone                             | The usage point Contact Phone                   |
   
+#### Dynamic Thing Channels  
+
+The binding (as of openHAB 5.1.0) supports reading consumption indexes from the Enedis website.  
+This makes it possible to view consumption for different tariffs such as _heures pleines / heures creuses_ or _tempo_.  
+
+To handle this, binding will create a new set of channels for daily, weekly, monthly, and yearly groups.  
+
+You will have two different sets of indexes:  
+
+- **Raw consumption indexes:**  
+  These are the default indexes returned by Enedis. The naming uses base indexes, so there is no direct way to know which tariff each index corresponds to.  
+  Channels will be named as follows:  
+
+  consumptionSupplierIdx0, consumptionSupplierIdx1, ..., consumptionSupplierIdx9
+  consumptionDistributorIdx0, consumptionDistributorIdx1, ..., consumptionDistributorIdx3
+
+  In France, the distributor is most often Enedis — they are responsible for distributing electricity on your network.  
+  The supplier is the commercial company with which you have a contract (EDF, TotalEnergies, etc.). This is where your specific supplier tariff is defined.  
+
+- **Named consumption indexes:**  
+To make things simpler, the binding also exposes tariff-named channels.  
+For example:  
+
+   daily#heuresPleines, daily#heuresCreuses, daily#bleuHeuresCreuses,
+  daily#bleuHeuresPleines, daily#redHeuresCreuses, ...
+
+⚠️ **Warning:**
+Dynamic channels and indexes are currently only supported with the **EnedisWebBridge**.  
+Support for other bridges will be introduced later, once Enedis provides an API to access this data.  
+
 ### Full Example
 
 #### Remote Enedis Web Connection
@@ -283,22 +299,38 @@ Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel=
 Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#lastMonth" }
 Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#thisYear" }
 Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#lastYear" }
+
+Number:Energy ConsoDay "Linky Conso Day -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:daily#consumption" }
+Number:Energy ConsoMonth "Linky Conso Month -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#consumption" }
+
+Number:Energy ConsoMonthHeuresPleines "Linky Conso Month Heures Pleines -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#heuresPleines" }
+Number:Energy ConsoMonthHeuresCreuses "Linky Conso Month Heures Creuses -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#heuresCreuses" }
+
+Number:Energy ConsoMonthHeuresCreusesBlanc "Linky Conso Month Heures Creuses Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresCreuses" }
+Number:Energy ConsoMonthHeuresCreusesBleue "Linky Conso Month Heures Creuses Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresCreuses" }
+Number:Energy ConsoMonthHeuresCreusesRouge "Linky Conso Month Heures Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresCreuses" }
+
+Number:Energy ConsoMonthHeuresPleinesBlanc "Linky Conso Month Heures Pleines Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresPleines" }
+Number:Energy ConsoMonthHeuresPleinesBleue "Linky Conso Month Heures Pleines Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresPleines" }
+Number:Energy ConsoMonthHeuresPleinesRouge "Linky Conso Month Heures Pleines Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresPleines" }
+
+Number Linky_Tempo "Linky Tempo Day [%s]" channel="linky:tempo-calendar:local:tempo-calendar#tempo-info-timeseries" }
 ```
 
 ### Displaying Information Graph
 
-Using the timeseries channel, you will be able to easily create a calendar graph to display the Tempo calendar.
+Using the timeseries channel and the binding version in openHAB 5.1.0, you will be able to easily create a chart to show the consumption graph.
 To do this, you need to enable a timeseries persistence framework.
 Graph definitions will look like this:
 
 ![TempoGraph](doc/GraphConso.png)
 
-Sample code : 
+Sample code:
 
 ```java
 config:
   future: false
-  label: Linky Melody Conso Journalière
+  label: Conso Day
   order: "110"
   period: 2W
   sidebar: true
@@ -324,7 +356,7 @@ slots:
         areaStyle:
           opacity: 0.2
         gridIndex: 0
-        item: Linky_Melody_Daily_Conso_Day
+        item: ConsoDay
         label:
           formatter: =v=>Number.parseFloat(v.data[1]).toFixed(2) + " Kwh"
           position: inside
@@ -368,9 +400,242 @@ slots:
         nameLocation: center
 ```
 
-## Getting Tempo Calendar Information	
+### Displaying Information Graph / New version with tariff
 
-### Thing Channels 
+Using the timeseries channel and new version of the addons, you will be able to easily create a chart to show the consumption graph with tariff differentiation.
+
+To do this, you need to enable a timeseries persistence framework.
+Graph definitions will look like this:
+
+![TempoGraph](doc/GraphConsoWithTarif.png)
+
+Sample code:
+
+```java
+config:
+  future: false
+  label: ConsoMonth
+  order: "9999999"
+  period: Y
+  sidebar: true
+slots:
+  dataZoom:
+    - component: oh-chart-datazoom
+      config:
+        type: inside
+  grid:
+    - component: oh-chart-grid
+      config:
+        containLabel: true
+        includeLabels: true
+        show: true
+  legend:
+    - component: oh-chart-legend
+      config:
+        bottom: 3
+        orient: horizontal
+        show: true
+        type: scroll
+  series:
+    - component: oh-time-series
+      config:
+        barGap: -100%
+        gridIndex: 0
+        item: ConsoMonth
+        label:
+          formatter: =v=>Number.parseFloat(v.data[1]).toFixed(2) + " Kwh"
+          position: top
+          show: true
+        name: Consumption
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#1010ff"
+        gridIndex: 0
+        item: ConsoMonthHeuresPleinesBleue
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Bleue HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#f0f0f0"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresPleinesBlanc
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Blanc HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#ff7070"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreusesRouge
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Rouge HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#d0d0d0"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreusesBlanc
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Blanc HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#7070ff"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreusesBleue
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Bleue HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#ff1010"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresPleinesRouge
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Rouge HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#00ff00"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresPleines
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#80ff80"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreuses
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+  tooltip:
+    - component: oh-chart-tooltip
+      config:
+        confine: true
+        orient: vertical
+        show: true
+        smartFormatter: true
+  visualMap: []
+  xAxis:
+    - component: oh-time-axis
+      config:
+        gridIndex: 0
+        nameLocation: center
+        splitNumber: 10
+  yAxis:
+    - component: oh-value-axis
+      config:
+        gridIndex: 0
+        name: kWh
+        nameLocation: center
+```
+
+## Getting Tempo Calendar Information
+
+### Tempo Thing Channels
 
 - The tempo group will give information about the tempo day color link to a tempo contract
 
@@ -389,7 +654,6 @@ Graph definitions will look like this
 The resulting graph will look like this:
 
 ![TempoGraph](doc/TempoGraph.png)
-
 
 Sample code:
 
@@ -437,7 +701,7 @@ slots:
         aggregationFunction: average
         calendarIndex: 0
         coordinateSystem: calendar
-        item: Linky_Melody_Tempo
+        item: Linky_Tempo
         label:
           formatter: =v=> JSON.stringify(v.data[0]).substring(1,11)
           show: true
@@ -487,7 +751,6 @@ slots:
 
 ```
 
-
 ## Console Commands
 
 The binding provides one specific command you can use in the console.
@@ -503,7 +766,6 @@ Start and end day are formatted yyyy-mm-dd.
 
 Here is an example of command you can run: `openhab:linky linky:linky:local report 2020-11-15 2020-12-15`.
 
-## Docker Specificities
+## Docker Specifics
 
-In case you are running openHAB inside Docker, the binding will work only if you set the environment variable `CRYPTO_POLICY` to the value "unlimited" as documented [here](https://github.com/openhab/openhab-docker#java-cryptographic-strength-policy).
-
+In case you are running openHAB inside Docker, the binding will work only if you set the environment variable `CRYPTO_POLICY` to the value "unlimited", read [the documentation](https://github.com/openhab/openhab-docker#java-cryptographic-strength-policy) for details.

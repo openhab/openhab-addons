@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,6 @@ import org.openhab.binding.heos.internal.handler.HeosThingBaseHandler;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioSinkAsync;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FileAudioStream;
@@ -38,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes HEOS to serve as an {@link AudioSink}.
+ * This makes HEOS to serve as an {@link org.openhab.core.audio.AudioSink}.
  *
  * @author Johannes Einig - Initial contribution
  * @author Laurent Garnier - Extend AudioSinkAsync

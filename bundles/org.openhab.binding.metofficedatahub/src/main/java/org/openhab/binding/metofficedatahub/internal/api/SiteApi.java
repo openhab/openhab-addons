@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,9 +113,9 @@ public class SiteApi {
         requestLimiter.updateLimit(maxDailyCallLimit);
     }
 
-    public void setApiKey(final String apiKey) {
+    public void setApiKey(final String apiKey, final boolean validate) {
         try {
-            apiAuth.setApiKey(apiKey);
+            apiAuth.setApiKey(apiKey, validate);
         } catch (AuthTokenException ate) {
             notifyAuthenticationListeners(false);
         }

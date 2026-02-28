@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -47,8 +46,8 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         NOT_AVAILABLE(2, "Not Available"),
         DOWNLOAD_PROTOCOL_NOT_SUPPORTED(3, "Download Protocol Not Supported");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -75,8 +74,8 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         AWAIT_NEXT_ACTION(1, "Await Next Action"),
         DISCONTINUE(2, "Discontinue");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ApplyUpdateActionEnum(Integer value, String label) {
             this.value = value;
@@ -104,8 +103,8 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
         HTTPS(2, "Https"),
         VENDOR_SPECIFIC(3, "Vendor Specific");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DownloadProtocolEnum(Integer value, String label) {
             this.value = value;

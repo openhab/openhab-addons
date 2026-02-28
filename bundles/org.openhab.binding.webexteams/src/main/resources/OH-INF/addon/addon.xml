@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>WebexTeams Binding</name>
-	<description>This is the binding for WebexTeams. Send messages with actions.</description>
+	<name>Webex Teams Binding</name>
+	<description>Binding for Webex Teams. Send messages via rule actions.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

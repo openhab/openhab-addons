@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +38,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.util.SameThreadExecutorService;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -67,7 +69,7 @@ public class TradfriDiscoveryServiceTest {
         }
 
         @Override
-        public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+        public Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                 Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
             return null;
         }
@@ -81,7 +83,7 @@ public class TradfriDiscoveryServiceTest {
     public void setUp() {
         when(handler.getThing()).thenReturn(BridgeBuilder.create(GATEWAY_TYPE_UID, "1").build());
 
-        discovery = new TradfriDiscoveryService();
+        discovery = new TradfriDiscoveryService(new SameThreadExecutorService());
         discovery.setThingHandler(handler);
         discovery.addDiscoveryListener(listener);
     }

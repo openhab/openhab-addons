@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -107,13 +106,13 @@ public class WaterHeaterManagementCluster extends BaseCluster {
      * See Boost and CancelBoost commands for more details.
      */
     public BoostStateEnum boostState; // 5 BoostStateEnum R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated whenever a Boost command is accepted.
      * The corresponding structure fields within the WaterHeaterBoostInfoStruct are copied from the Boost command.
      */
-    public class BoostStarted {
+    public static class BoostStarted {
         public WaterHeaterBoostInfoStruct boostInfo; // WaterHeaterBoostInfoStruct
 
         public BoostStarted(WaterHeaterBoostInfoStruct boostInfo) {
@@ -124,12 +123,12 @@ public class WaterHeaterManagementCluster extends BaseCluster {
     /**
      * This event shall be generated whenever the BoostState transitions from Active to Inactive.
      */
-    public class BoostEnded {
+    public static class BoostEnded {
         public BoostEnded() {
         }
     }
 
-    public class WaterHeaterBoostInfoStruct {
+    public static class WaterHeaterBoostInfoStruct {
         /**
          * This field shall indicate the time period, in seconds, for which the boost state is activated.
          */
@@ -188,8 +187,8 @@ public class WaterHeaterManagementCluster extends BaseCluster {
         INACTIVE(0, "Inactive"),
         ACTIVE(1, "Active");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BoostStateEnum(Integer value, String label) {
             this.value = value;

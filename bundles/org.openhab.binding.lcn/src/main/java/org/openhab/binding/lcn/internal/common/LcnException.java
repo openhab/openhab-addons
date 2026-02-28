@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,6 @@ public class LcnException extends Exception {
     private static final long serialVersionUID = -4341882774124288028L;
 
     public LcnException() {
-        super();
     }
 
     public LcnException(String message) {

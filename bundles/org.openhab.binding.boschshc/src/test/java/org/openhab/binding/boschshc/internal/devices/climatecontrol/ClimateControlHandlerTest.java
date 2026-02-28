@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,10 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
@@ -44,6 +46,7 @@ import com.google.gson.JsonParser;
  *
  */
 @NonNullByDefault
+@ExtendWith(MockitoExtension.class)
 class ClimateControlHandlerTest extends AbstractBoschSHCDeviceHandlerTest<ClimateControlHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<RoomClimateControlServiceState> roomClimateControlServiceStateCaptor;

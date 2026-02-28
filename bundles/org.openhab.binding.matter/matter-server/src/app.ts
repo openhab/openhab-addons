@@ -133,63 +133,73 @@ wss.on("connection", (ws: WebSocketSession, req: IncomingMessage) => {
         logger.error(`WebSocket error: ${error} ${error.stack}`);
     });
 
-    if (!req.url) {
-        logger.error("No URL in the request");
-        ws.close(1002, "No URL in the request");
-        return;
-    }
+    // Support async init in a non async function
+    void (async () => {
+        if (!req.url) {
+            logger.error("No URL in the request");
+            ws.close(1002, "No URL in the request");
+            return;
+        }
 
-    const params = new URLSearchParams(req.url.slice(req.url.indexOf("?")));
-    const service = params.get("service") === "bridge" ? "bridge" : "client";
+        const params = new URLSearchParams(req.url.slice(req.url.indexOf("?")));
+        const service = params.get("service") === "bridge" ? "bridge" : "client";
 
-    if (service === "client") {
-        const controllerName = params.get("controllerName");
-        try {
-            if (controllerName == null) {
-                throw new Error("No controllerName parameter in the request");
-            }
-            wss.clients.forEach((client: WebSocket) => {
-                const session = client as WebSocketSession;
-                if (session.controller && session.controller.id() === `client-${controllerName}`) {
-                    throw new Error(`Controller with name ${controllerName} already exists!`);
+        if (service === "client") {
+            const controllerName = params.get("controllerName");
+            try {
+                if (controllerName == null) {
+                    throw new Error("No controllerName parameter in the request");
                 }
-            });
-            ws.controller = new ClientController(ws, params);
-            void ws.controller.init().catch(error => {
+                wss.clients.forEach((client: WebSocket) => {
+                    const session = client as WebSocketSession;
+                    if (session.controller && session.controller.id() === `client-${controllerName}`) {
+                        throw new Error(`Controller with name ${controllerName} already exists!`);
+                    }
+                });
+                ws.controller = new ClientController(ws, params);
+                try {
+                    await ws.controller.init();
+                    ws.sendEvent("ready", "Controller initialized");
+                } catch (error: any) {
+                    printError(logger, error, "ClientController.init()");
+                    logger.error("returning error", error.message);
+                    ws.close(1002, error.message);
+                    return;
+                }
+            } catch (error: any) {
                 printError(logger, error, "ClientController.init()");
                 logger.error("returning error", error.message);
                 ws.close(1002, error.message);
-            });
-        } catch (error: any) {
-            printError(logger, error, "ClientController.init()");
-            logger.error("returning error", error.message);
-            ws.close(1002, error.message);
-            return;
-        }
-    } else {
-        // For now we only support one bridge
-        const uniqueId = "0";
-        try {
-            wss.clients.forEach((client: WebSocket) => {
-                const session = client as WebSocketSession;
-                if (session.controller && session.controller.id() === `bridge-${uniqueId}`) {
-                    throw new Error(`Bridge with uniqueId ${uniqueId} already exists!`);
+                return;
+            }
+        } else {
+            // For now we only support one bridge
+            const uniqueId = "0";
+            try {
+                wss.clients.forEach((client: WebSocket) => {
+                    const session = client as WebSocketSession;
+                    if (session.controller && session.controller.id() === `bridge-${uniqueId}`) {
+                        throw new Error(`Bridge with uniqueId ${uniqueId} already exists!`);
+                    }
+                });
+                ws.controller = new BridgeController(ws, params);
+                try {
+                    await ws.controller.init();
+                    ws.sendEvent("ready", "Controller initialized");
+                } catch (error: any) {
+                    printError(logger, error, "BridgeController.init()");
+                    logger.error("returning error", error.message);
+                    ws.close(1002, error.message);
+                    return;
                 }
-            });
-            ws.controller = new BridgeController(ws, params);
-            void ws.controller.init().catch(error => {
+            } catch (error: any) {
                 printError(logger, error, "BridgeController.init()");
                 logger.error("returning error", error.message);
                 ws.close(1002, error.message);
-            });
-        } catch (error: any) {
-            printError(logger, error, "BridgeController.init()");
-            logger.error("returning error", error.message);
-            ws.close(1002, error.message);
-            return;
+                return;
+            }
         }
-    }
-    ws.sendEvent("ready", "Controller initialized");
+    })();
 });
 
 logger.info(`CHIP Controller Server listening on port ${socketPort}`);

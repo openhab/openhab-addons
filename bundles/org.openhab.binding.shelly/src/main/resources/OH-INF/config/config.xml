@@ -6,46 +6,46 @@
 
 	<config-description uri="thing-type:shelly:relay">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
+			<label>User ID</label>
+			<description>User ID for API access</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsButton.label</label>
-			<description>@text/thing-type.config.shelly.eventsButton.description</description>
+			<label>Button Events</label>
+			<description>Activates the Button Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
+			<label>Output Events</label>
+			<description>Activates the Output Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsPush.label</label>
-			<description>@text/thing-type.config.shelly.eventsPush.description</description>
+			<label>Push Events</label>
+			<description>Activates the Push Button Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
+			<label>Activate CoIoT</label>
+			<description>Activates the CoIoT-Protocol (CoAP based)</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -54,44 +54,46 @@
 
 	<config-description uri="thing-type:shelly:roller">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
+			<label>User ID</label>
+			<description>User ID for API access</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="favoriteUP" type="integer" min="0" max="4" required="false">
-			<label>@text/thing-type.config.shelly.roller.favoriteUP.label</label>
-			<description>@text/thing-type.config.shelly.roller.favoriteUP.description</description>
+			<label>Favorite ID for UP</label>
+			<description>Specifies the favorite ID that is used during the command UP on the roller#control channel (use the
+				Shelly App to configure favorites)</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="favoriteDOWN" type="integer" min="0" max="4" required="false">
-			<label>@text/thing-type.config.shelly.roller.favoriteDOWN.label</label>
-			<description>@text/thing-type.config.shelly.roller.favoriteDOWN.description</description>
+			<label>Favorite ID for DOWN</label>
+			<description>Specifies the favorite ID that is used during the command DOWN on the roller#control channel (use the
+				Shelly App to configure favorites)</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="eventsRoller" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.roller.eventsRoller.label</label>
-			<description>@text/thing-type.config.shelly.roller.eventsRoller.description</description>
+			<label>Roller Events</label>
+			<description>Activates the Roller Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
+			<label>Activate CoIoT</label>
+			<description>Activates the CoIoT-Protocol (CoAP based)</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -100,39 +102,40 @@
 
 	<config-description uri="thing-type:shelly:dimmer">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
+			<label>User ID</label>
+			<description>User ID for API access</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.light.brightnessAutoOn.label</label>
-			<description>@text/thing-type.config.shelly.light.brightnessAutoOn.description</description>
+			<label>Brightness Auto-ON</label>
+			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
+				device is not switched on</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="eventsButton" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsButton.label</label>
-			<description>@text/thing-type.config.shelly.eventsButton.description</description>
+			<label>Button Events</label>
+			<description>Activates the Button Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
+			<label>Output Events</label>
+			<description>Activates the Output Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsPush" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsPush.label</label>
-			<description>@text/thing-type.config.shelly.eventsPush.description</description>
+			<label>Push Events</label>
+			<description>Activates the Push Button Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
@@ -143,8 +146,8 @@
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -153,39 +156,40 @@
 
 	<config-description uri="thing-type:shelly:light">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
+			<label>User ID</label>
+			<description>User ID for API access</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.light.brightnessAutoOn.label</label>
-			<description>@text/thing-type.config.shelly.light.brightnessAutoOn.description</description>
+			<label>Brightness Auto-ON</label>
+			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
+				device is not switched on</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="eventsSwitch" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsSwitch.label</label>
-			<description>@text/thing-type.config.shelly.eventsSwitch.description</description>
+			<label>Output Events</label>
+			<description>Activates the Output Action URLS</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
+			<label>Activate CoIoT</label>
+			<description>Activates the CoIoT-Protocol (CoAP based)</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -194,33 +198,34 @@
 
 	<config-description uri="thing-type:shelly:rgbw2">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
+			<label>User ID</label>
+			<description>User ID for API access</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="brightnessAutoOn" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.light.brightnessAutoOn.label</label>
-			<description>@text/thing-type.config.shelly.light.brightnessAutoOn.description</description>
+			<label>Brightness Auto-ON</label>
+			<description>ON: Light is switched on when a brightness value greater than 0 is set; OFF: Brightness is set, but the
+				device is not switched on</description>
 			<default>true</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
+			<label>Activate CoIoT</label>
+			<description>Activates the CoIoT-Protocol (CoAP based)</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -230,40 +235,40 @@
 
 	<config-description uri="thing-type:shelly:battery">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
+			<label>User ID</label>
+			<description>User ID for API access</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
-			<label>@text/thing-type.config.shelly.battery.lowBattery.label</label>
-			<description>@text/thing-type.config.shelly.battery.lowBattery.description</description>
+			<label>Low Battery Threshold (%)</label>
+			<description>An alarm is triggered when the device reports a battery charge lower than this threshold. Default: 20%</description>
 			<default>20</default>
 			<unitLabel>%</unitLabel>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsSensorReport.label</label>
-			<description>@text/thing-type.config.shelly.eventsSensorReport.description</description>
+			<label>Enable Sensor Events</label>
+			<description>True: Register event URL for sensor updates.</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
+			<label>Activate CoIoT</label>
+			<description>Activates the CoIoT-Protocol (CoAP based)</description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="60" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>900</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
@@ -272,34 +277,34 @@
 
 	<config-description uri="thing-type:shelly:basic">
 		<parameter name="deviceIp" type="text" required="true">
-			<label>@text/thing-type.config.shelly.deviceIp.label</label>
-			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="userId" type="text" required="false">
-			<label>@text/thing-type.config.shelly.userId.label</label>
-			<description>@text/thing-type.config.shelly.userId.description</description>
+			<label>User ID</label>
+			<description>User ID for API access</description>
 		</parameter>
 		<parameter name="password" type="text" required="false">
-			<label>@text/thing-type.config.shelly.password.label</label>
-			<description>@text/thing-type.config.shelly.password.description</description>
+			<label>Password</label>
+			<description>Password for API access</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="eventsSensorReport" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsSensorReport.label</label>
-			<description>@text/thing-type.config.shelly.eventsSensorReport.description</description>
+			<label>Enable Sensor Events</label>
+			<description>True: Register event URL for sensor updates.</description>
 			<advanced>true</advanced>
 			<default>false</default>
 		</parameter>
 		<parameter name="eventsCoIoT" type="boolean" required="false">
-			<label>@text/thing-type.config.shelly.eventsCoIoT.label</label>
-			<description>@text/thing-type.config.shelly.eventsCoIoT.description</description>
+			<label>Activate CoIoT</label>
+			<description>Activates the CoIoT-Protocol (CoAP based)</description>
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
 		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
-			<label>@text/thing-type.config.shelly.updateInterval.label</label>
-			<description>@text/thing-type.config.shelly.updateInterval.description</description>
+			<label>Status Interval</label>
+			<description>Interval for the device status update</description>
 			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>

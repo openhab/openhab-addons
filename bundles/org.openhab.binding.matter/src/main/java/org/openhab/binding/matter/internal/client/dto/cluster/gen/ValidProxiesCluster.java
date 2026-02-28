@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -39,12 +38,12 @@ public class ValidProxiesCluster extends BaseCluster {
      * List of valid proxies that can proxy this Node. Each entry in this list is fabric-scoped.
      */
     public List<ValidProxyStruct> validProxyList; // 0 list RW
-    // Structs
 
+    // Structs
     /**
      * Encapsulates the Node ID of a Valid Proxy.
      */
-    public class ValidProxyStruct {
+    public static class ValidProxyStruct {
         public BigInteger nodeId; // node-id
 
         public ValidProxyStruct(BigInteger nodeId) {

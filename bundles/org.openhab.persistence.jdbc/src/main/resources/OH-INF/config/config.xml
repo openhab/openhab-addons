@@ -14,7 +14,7 @@
 			jdbc:oracle
 			#
 			# derby, h2, hsqldb, sqlite can be embedded,
-			# If no database is available it will be created, for example the url 'jdbc:h2:./testH2' creates a new DB in OpenHab Folder.
+			# If no database is available it will be created, for example the url 'jdbc:h2:./testH2' creates a new DB in openHAB folder.
 			#
 			# Create new database, for example on a MySQL-Server use:
 			# CREATE DATABASE 'yourDB' CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -163,17 +163,17 @@
 		-->
 		<parameter name="itemsManageTable" type="text">
 			<label>Items Manage Table</label>
-			<description><![CDATA[Items Manage Table <br>(optional, default: "items"). <br>
-			For migration from MYSQL-Bundle set to 'Items'.]]></description>
+			<description><![CDATA[Items manage table <br>(optional, default: "items"). <br>
+			For migration from MySQL bundle set to 'Items'.]]></description>
 		</parameter>
 		<parameter name="tableNamePrefix" type="text">
 			<label>Tablename Prefix String</label>
 			<description><![CDATA[Tablename prefix string <br>(optional, default: "item"). <br>
-			For migration from MYSQL-Bundle set to 'Item'.]]></description>
+			For migration from MySQL bundle set to 'Item'.]]></description>
 		</parameter>
 		<parameter name="tableUseRealItemNames" type="text">
 			<label>Tablename Realname Generation</label>
-			<description><![CDATA[Enables Tablename prefix generation per Items realname <br>(optional, default: disabled -> "Tablename Prefix String" is used). <br>
+			<description><![CDATA[Enables tablename prefix generation per items realname <br>(optional, default: disabled -> "Tablename Prefix String" is used). <br>
 			If true, 'Tablename Prefix String' is ignored.]]></description>
 			<options>
 				<option value="true">Enable</option>
@@ -182,8 +182,8 @@
 		</parameter>
 		<parameter name="tableCaseSensitiveItemNames" type="text">
 			<label>Tablename Case Sensitive</label>
-			<description><![CDATA[Enables Tablename generation with case sensitive item names case when "Tablename Realname Generation" is enabled <br>
-			If true, no suffix is used. (optional, default: disabled -> table names are lower cased with numeric suffix appended).]]></description>
+			<description><![CDATA[Enables tablename generation with case-sensitive item names when "Tablename Realname Generation" is enabled <br>
+			If true, no suffix is used. (optional, default: disabled -> table names are lowercased with numeric suffix appended).]]></description>
 			<options>
 				<option value="true">Enable</option>
 				<option value="false">Disable</option>
@@ -191,8 +191,8 @@
 		</parameter>
 		<parameter name="tableIdDigitCount" type="text">
 			<label>Tablename Suffix ID Count</label>
-			<description><![CDATA[Tablename Suffix ID Count <br>(optional, default: 4 -> 0001-9999). <br>
-			For migration from MYSQL-Bundle set to 0.]]></description>
+			<description><![CDATA[Tablename suffix ID count <br>(optional, default: 4 -> 0001-9999). <br>
+			For migration from MySQL bundle set to 0.]]></description>
 		</parameter>
 		<parameter name="rebuildTableNames" type="text">
 			<label>Tablename Rebuild</label>
@@ -207,7 +207,7 @@
 
 		<!--
 			# D A T A B A S E C O N N E C T I O N S
-			# Some embeded Databases can handle only one Connection (optional, default: configured per database in packet org.openhab.persistence.jdbc.db.*
+			# Some embedded databases can handle only one connection (optional, default: configured per database in packet org.openhab.persistence.jdbc.db.*
 			)
 			# see: https://github.com/brettwooldridge/HikariCP/issues/256
 			# maximumPoolSize = 1
@@ -231,7 +231,7 @@
 		-->
 		<parameter name="enableLogTime" type="text">
 			<label>Timekeeping Enable</label>
-			<description><![CDATA[Enables a time, performance measurement. <br>(optional, default: disabled)]]></description>
+			<description><![CDATA[Enables a time/performance measurement. <br>(optional, default: disabled)]]></description>
 			<options>
 				<option value="true">Enable</option>
 				<option value="false">Disable</option>

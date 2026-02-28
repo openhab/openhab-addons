@@ -1,24 +1,20 @@
 import { Endpoint } from "@matter/node";
 import { OnOffLightDevice } from "@matter/node/devices/on-off-light";
-import { GenericDeviceType } from "./GenericDeviceType";
+import { CustomOnOffServer } from "../behaviors";
+import { BaseDeviceType } from "./BaseDeviceType";
 
-export class OnOffLightDeviceType extends GenericDeviceType {
+export class OnOffLightDeviceType extends BaseDeviceType {
     override createEndpoint(clusterValues: Record<string, any>) {
-        const endpoint = new Endpoint(
-            OnOffLightDevice.with(...this.defaultClusterServers(), this.createOnOffServer()),
-            {
-                ...this.endPointDefaults(),
-                ...clusterValues,
-            },
-        );
+        const endpoint = new Endpoint(OnOffLightDevice.with(...this.baseClusterServers, CustomOnOffServer), {
+            ...this.endPointDefaults(),
+            ...clusterValues,
+        });
         return endpoint;
     }
 
     override defaultClusterValues() {
         return {
-            onOff: {
-                onOff: false,
-            },
+            onOff: CustomOnOffServer.DEFAULTS,
         };
     }
 }

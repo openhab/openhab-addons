@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ public class Tariff {
         this.values = line.replace(',', '.').split(";", -1);
         try {
             if (values.length == lenControl) {
-
                 this.dateDebut = LocalDate.parse(values[0], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC);
                 this.dateFin = !values[1].isEmpty()
                         ? LocalDate.parse(values[1], TARIFF_DATE_FORMAT).atStartOfDay(ZoneOffset.UTC)

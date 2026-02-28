@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.goecharger.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * <a href="https://github.com/goecharger/go-eCharger-API-v2/blob/main/apikeys-en.md">go-e Charger API keys</a>
  *
  * @author Stefan Fussenegger - Initial contribution
  */
+@NonNullByDefault
 public final class GoEStatusV2ApiKeys {
 
     /**

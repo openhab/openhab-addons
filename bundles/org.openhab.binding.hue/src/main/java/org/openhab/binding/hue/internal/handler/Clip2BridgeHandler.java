@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,7 @@ import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.connection.HueTlsTrustManagerProvider;
 import org.openhab.binding.hue.internal.discovery.Clip2ThingDiscoveryService;
+import org.openhab.binding.hue.internal.discovery.HueBridgeMDNSDiscoveryParticipant;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
@@ -102,6 +103,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference SMART_SCENE = new ResourceReference().setType(ResourceType.SMART_SCENE);
     private static final ResourceReference SCRIPT = new ResourceReference().setType(ResourceType.BEHAVIOR_SCRIPT);
     private static final ResourceReference BEHAVIOR = new ResourceReference().setType(ResourceType.BEHAVIOR_INSTANCE);
+    private static final ResourceReference AREA = new ResourceReference()
+            .setType(ResourceType.MOTION_AREA_CONFIGURATION);
 
     private static final String AUTOMATION_CHANNEL_LABEL_KEY = "dynamic-channel.automation-enable.label";
     private static final String AUTOMATION_CHANNEL_DESCRIPTION_KEY = "dynamic-channel.automation-enable.description";
@@ -110,7 +113,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * List of resource references that need to be mass down loaded.
      * NOTE: the SCENE resources must be mass down loaded first!
      */
-    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE);
+    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE,
+            AREA);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -494,8 +498,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            boolean useSignifyCaCertificateVersion2 = HueBridgeMDNSDiscoveryParticipant
+                    .modelIsOrAboveBSB003(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
             HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
-                    config.useSelfSignedCertificate);
+                    config.useSelfSignedCertificate, useSignifyCaCertificateVersion2);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -786,8 +792,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 }
                 getThing().getThings().forEach(thing -> {
                     ThingHandler handler = thing.getHandler();
-                    if (handler instanceof Clip2ThingHandler) {
-                        ((Clip2ThingHandler) handler).onResourcesList(resourceType, resourceList);
+                    if (handler instanceof Clip2ThingHandler clip2ThingHandler) {
+                        clip2ThingHandler.onResourcesList(resourceType, resourceList);
                     }
                 });
             }

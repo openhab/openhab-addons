@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,15 +62,15 @@ public class A5_09_05 extends A5_09 {
 
     protected String getVOCID() {
         int vocId = getDB1Value();
-        String[] VOCIdentifications = getVOCIdentifications();
+        String[] vocIdentifications = getVOCIdentifications();
         if (vocId == 255) {
-            return VOCIdentifications[VOCIdentifications.length - 1];
-        } else if (vocId < 0 || vocId >= VOCIdentifications.length - 1) {
+            return vocIdentifications[vocIdentifications.length - 1];
+        } else if (vocId < 0 || vocId >= vocIdentifications.length - 1) {
             logger.debug("Invalid value according to enocean specification for A5_09 VOC Identification {}", vocId);
             return "";
         }
 
-        return VOCIdentifications[vocId];
+        return vocIdentifications[vocId];
     }
 
     @Override

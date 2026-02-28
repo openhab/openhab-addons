@@ -8,13 +8,13 @@ For more information, see <https://www.voicerss.org>.
 
 ## Obtaining Credentials
 
-Before you can integrate this service, you need to register to https://www.voicerss.org with at least a free account to get an API key.
+Before you can integrate this service, you need to register to <https://www.voicerss.org> with at least a free account to get an API key.
 
 ## Samples
 
 Replace API_KEY with your personal API key for simple testing of different API calls:
 
-```
+```text
 # EN
 https://api.voicerss.org/?key=API_KEY&hl=en-us&src=Hello%20World
 https://api.voicerss.org/?key=API_KEY&hl=en-us&c=WAV&src=Hello%20World
@@ -29,7 +29,7 @@ https://api.voicerss.org/?key=API_KEY&hl=de-de&f=44khz_16bit_mono&src=Hallo%20We
 
 The following settings can be edited in UI (**Settings / Other Services - VoiceRSS Text-to-Speech**):
 
-- **VoiceRSS API Key** - The API Key to get access to https://www.voicerss.org.
+- **VoiceRSS API Key** - The API Key to get access to <https://www.voicerss.org>.
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `voicerss.cfg`
 
@@ -155,7 +155,7 @@ You can setup your preferred default Text-to-Speech and default voice in the UI:
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```
+```ini
 org.openhab.voice:defaultTTS=voicerss
 org.openhab.voice:defaultVoice=voicerss:frFR_Zola
 ```
@@ -174,7 +174,7 @@ You have to copy the generated data to your userdata/voicerss/cache folder.
 
 Synopsis of this tool:
 
-```
+```shell
 Usage: java org.openhab.voice.voicerss.tool.CreateTTSCache <args>
 Arguments: --api-key <key> <cache-dir> <locale> <voice> { <text> | @inputfile } [ <codec> <format> ]
   key       the VoiceRSS API Key, e.g. "123456789"

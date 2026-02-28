@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,6 @@ public abstract class _SIGMessage extends EEP {
     public static final byte MID_ENERGY_STATUS = 0x06;
 
     public _SIGMessage() {
-        super();
     }
 
     public _SIGMessage(ERP1Message packet) {

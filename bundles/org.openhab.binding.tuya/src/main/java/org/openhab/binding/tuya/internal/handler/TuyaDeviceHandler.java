@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,25 @@
  */
 package org.openhab.binding.tuya.internal.handler;
 
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_COLOR;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_DIMMER;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.BINDING_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_IR_CODE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_NUMBER;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_STRING;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_SWITCH;
-import static org.openhab.binding.tuya.internal.TuyaBindingConstants.SCHEMAS;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DP;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DP2;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_IP;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MAX;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MIN;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROTOCOL;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RANGE;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.DIMMER_CHANNEL_CODES;
+import static org.openhab.core.library.CoreItemFactory.COLOR;
+import static org.openhab.core.library.CoreItemFactory.DIMMER;
+import static org.openhab.core.library.CoreItemFactory.NUMBER;
+import static org.openhab.core.library.CoreItemFactory.STRING;
+import static org.openhab.core.library.CoreItemFactory.SWITCH;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -32,10 +43,14 @@ import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.tuya.internal.TuyaDynamicCommandDescriptionProvider;
+import org.openhab.binding.tuya.internal.TuyaDynamicStateDescriptionProvider;
+import org.openhab.binding.tuya.internal.TuyaSchemaDB;
 import org.openhab.binding.tuya.internal.config.ChannelConfiguration;
 import org.openhab.binding.tuya.internal.config.DeviceConfiguration;
 import org.openhab.binding.tuya.internal.local.DeviceInfoSubscriber;
@@ -54,6 +69,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -61,10 +77,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
@@ -88,25 +102,21 @@ import io.netty.channel.EventLoopGroup;
  */
 @NonNullByDefault
 public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSubscriber, DeviceStatusListener {
-    private static final List<String> COLOUR_CHANNEL_CODES = List.of("colour_data");
-    private static final List<String> DIMMER_CHANNEL_CODES = List.of("bright_value", "bright_value_1", "bright_value_2",
-            "temp_value");
-
     private final Logger logger = LoggerFactory.getLogger(TuyaDeviceHandler.class);
 
     private final Gson gson;
     private final UdpDiscoveryListener udpDiscoveryListener;
-    private final BaseDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
+    private final TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider;
+    private final TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider;
     private final EventLoopGroup eventLoopGroup;
     private DeviceConfiguration configuration = new DeviceConfiguration();
     private @Nullable TuyaDevice tuyaDevice;
-    private final List<SchemaDp> schemaDps;
+    private final Map<String, SchemaDp> schemaDps;
+    private int pollBurst = 0;
     private boolean oldColorMode = false;
 
-    private @Nullable ScheduledFuture<?> reconnectFuture;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> irLearnJob;
-    private boolean disposing = false;
 
     private final Map<Integer, String> dpToChannelId = new HashMap<>();
     private final Map<Integer, List<String>> dp2ToChannelId = new HashMap<>();
@@ -117,36 +127,96 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             Duration.ofSeconds(10));
     private final Map<String, State> channelStateCache = new HashMap<>();
 
-    public TuyaDeviceHandler(Thing thing, @Nullable List<SchemaDp> schemaDps, Gson gson,
-            BaseDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider, EventLoopGroup eventLoopGroup,
+    public TuyaDeviceHandler(Thing thing, Gson gson,
+            TuyaDynamicCommandDescriptionProvider dynamicCommandDescriptionProvider,
+            TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, EventLoopGroup eventLoopGroup,
             UdpDiscoveryListener udpDiscoveryListener) {
         super(thing);
+        this.schemaDps = Objects.requireNonNullElse(TuyaSchemaDB.getOrConvert(
+                (String) thing.getConfiguration().get(CONFIG_PRODUCT_ID), thing.getUID().getId()), Map.of());
         this.gson = gson;
         this.udpDiscoveryListener = udpDiscoveryListener;
         this.eventLoopGroup = eventLoopGroup;
         this.dynamicCommandDescriptionProvider = dynamicCommandDescriptionProvider;
-        this.schemaDps = Objects.requireNonNullElse(schemaDps, List.of());
+        this.dynamicStateDescriptionProvider = dynamicStateDescriptionProvider;
+    }
+
+    public @Nullable SchemaDp getSchemaForChannelId(String channelId) {
+        return schemaDps.get(channelId);
     }
 
     @Override
     public void processDeviceStatus(Map<Integer, Object> deviceStatus) {
-        logger.trace("'{}' received status message '{}'", thing.getUID(), deviceStatus);
-
+        // Older devices may need to use the control method to request device status.
         if (deviceStatus.isEmpty()) {
-            // if status is empty -> need to use control method to request device status
-            Map<Integer, @Nullable Object> commandRequest = new HashMap<>();
-            dpToChannelId.keySet().forEach(dp -> commandRequest.put(dp, null));
-            dp2ToChannelId.keySet().forEach(dp -> commandRequest.put(dp, null));
-
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
-                tuyaDevice.set(commandRequest);
+                logger.debug("'{}' switching to control instead of query", thing.getUID());
+                tuyaDevice.setQueryUsesControl();
+                tuyaDevice.requestStatus(List.of());
             }
             return;
         }
 
-        deviceStatus.forEach(this::addSingleExpiringCache);
+        // Changes to function DPs might lead to changes in status DPs. For instance, if a
+        // power switch is turned on the measured current and power can be expected to change
+        // within a few seconds.
+        boolean needRefresh = false;
+        boolean missingStatus = false;
+        for (var e : schemaDps.values()) {
+            Object value = deviceStatus.get(e.id);
+
+            if (value != null) {
+                addSingleExpiringCache(e.id, value);
+
+                if (!e.readOnly) {
+                    needRefresh = true;
+                }
+            } else if (e.readOnly) {
+                missingStatus = true;
+            }
+        }
+
+        if (needRefresh && configuration.pollingInterval > 0) {
+            TuyaDevice tuyaDevice = this.tuyaDevice;
+            if (tuyaDevice != null) {
+                ScheduledFuture<?> pollingJob = this.pollingJob;
+                if (pollingJob != null) {
+                    pollingJob.cancel(true);
+                }
+
+                pollBurst = 3;
+                this.pollingJob = scheduler.scheduleWithFixedDelay(this::burstPoller, 1, 1, TimeUnit.SECONDS);
+            }
+        } else if (!missingStatus) {
+            // If we have updates for everything we can stand down the burst polling.
+            pollBurst = 0;
+        }
+
         deviceStatus.forEach(this::processChannelStatus);
+    }
+
+    private void burstPoller() {
+        TuyaDevice tuyaDevice = this.tuyaDevice;
+        if (tuyaDevice != null) {
+            if (pollBurst > 0) {
+                tuyaDevice.refreshStatus(List.of());
+                pollBurst = pollBurst - 1;
+            } else {
+                ScheduledFuture<?> pollingJob = this.pollingJob;
+                if (pollingJob != null) {
+                    this.pollingJob = null;
+                    pollingJob.cancel(true);
+                }
+
+                int pollingInterval = configuration.pollingInterval;
+                if (pollingInterval > 0) {
+                    this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                        tuyaDevice.refreshStatus(List.of());
+                    }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+                }
+            }
+        }
     }
 
     private void processChannelStatus(Integer dp, Object value) {
@@ -166,27 +236,60 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 return;
             }
 
+            Channel channel = thing.getChannel(channelId);
+            String acceptedItemType = (channel != null ? channel.getAcceptedItemType() : "");
+
             try {
-                if (value instanceof String stringValue && CHANNEL_TYPE_UID_COLOR.equals(channelTypeUID)) {
+                if (value instanceof String stringValue && COLOR.equals(acceptedItemType)) {
                     oldColorMode = stringValue.length() == 14;
                     updateState(channelId, ConversionUtil.hexColorDecode(stringValue));
                     return;
-                } else if (value instanceof String stringValue && CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
+                } else if (value instanceof String stringValue && STRING.equals(acceptedItemType)) {
+                    if (!channelConfiguration.range.isEmpty() && channel != null) {
+                        // The device schemas only seem to specify the commands that can be sent to
+                        // a device. We have to learn the states sent by a device as they are seen.
+                        dynamicStateDescriptionProvider.addStateOption(channel.getUID(), stringValue);
+                    }
                     updateState(channelId, new StringType(stringValue));
                     return;
-                } else if (Double.class.isAssignableFrom(value.getClass())
-                        && CHANNEL_TYPE_UID_DIMMER.equals(channelTypeUID)) {
+                } else if (Double.class.isAssignableFrom(value.getClass()) && DIMMER.equals(acceptedItemType)) {
                     updateState(channelId,
                             ConversionUtil.brightnessDecode((double) value, 0, channelConfiguration.max));
                     return;
-                } else if (Double.class.isAssignableFrom(value.getClass())
-                        && CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
-                    updateState(channelId, new DecimalType((double) value));
+                } else if (CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
+                    // Deprecated: retained for compatibility with old Things that have not been re-added.
+                    // This MUST come before the startsWith("Number") case that follows!
+                    if (Double.class.isAssignableFrom(value.getClass())) {
+                        updateState(channelId, new DecimalType((double) value));
+                        return;
+                    } else if (value instanceof String string) {
+                        updateState(channelId, new DecimalType(string));
+                        return;
+                    }
+                } else if ((Double.class.isAssignableFrom(value.getClass()) || value instanceof String)
+                        && acceptedItemType != null && acceptedItemType.startsWith(NUMBER)) {
+                    BigDecimal d;
+                    if (value instanceof String stringValue) {
+                        d = new BigDecimal(stringValue);
+                    } else {
+                        d = new BigDecimal((double) value);
+                    }
+
+                    SchemaDp schemaDp = schemaDps.get(channelId);
+
+                    if (schemaDp != null) {
+                        d = d.movePointLeft(schemaDp.scale);
+
+                        Unit<?> unit = schemaDp.parsedUnit;
+                        if (unit != null) {
+                            updateState(channelId, new QuantityType<>(d, unit));
+                            return;
+                        }
+                    }
+
+                    updateState(channelId, new DecimalType(d));
                     return;
-                } else if (value instanceof String string && CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
-                    updateState(channelId, new DecimalType(string));
-                } else if (Boolean.class.isAssignableFrom(value.getClass())
-                        && CHANNEL_TYPE_UID_SWITCH.equals(channelTypeUID)) {
+                } else if (Boolean.class.isAssignableFrom(value.getClass()) && SWITCH.equals(acceptedItemType)) {
                     updateState(channelId, OnOffType.from((boolean) value));
                     return;
                 } else if (value instanceof String && CHANNEL_TYPE_UID_IR_CODE.equals(channelTypeUID)) {
@@ -223,14 +326,29 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     @Override
     public void connectionStatus(boolean status) {
         if (status) {
+            logger.debug("{}: connected", thing.getUID().getId());
+
+            // Tuya devices are never offline (if they are battery devices they are expected
+            // to be unreachable practically all the time) so really we're just clearing the
+            // status message here rather than actually setting the Thing online.
             updateStatus(ThingStatus.ONLINE);
-            int pollingInterval = configuration.pollingInterval;
+
             TuyaDevice tuyaDevice = this.tuyaDevice;
-            if (tuyaDevice != null && pollingInterval > 0) {
-                pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                    tuyaDevice.refreshStatus(
-                            Stream.concat(dpToChannelId.keySet().stream(), dp2ToChannelId.keySet().stream()).toList());
-                }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+            if (tuyaDevice != null) {
+                // When we first connect the device state is unknown so we want to know everything
+                // it is willing to tell us.
+                tuyaDevice.requestStatus(List.of());
+
+                if (pollingJob == null) {
+                    int pollingInterval = configuration.pollingInterval;
+                    if (pollingInterval > 0) {
+                        pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                            tuyaDevice.refreshStatus(List.of());
+                        }, pollingInterval, pollingInterval, TimeUnit.SECONDS);
+                    }
+                } else {
+                    logger.debug("{}: polling job already exists?!?", thing.getUID().getId());
+                }
             }
 
             // start learning code if thing is online and presents 'ir-code' channel
@@ -238,19 +356,16 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     .map(Map.Entry::getKey).findAny().map(channelIdToConfiguration::get)
                     .ifPresent(irCodeChannelConfig -> irStartLearning(irCodeChannelConfig.activeListen));
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            logger.debug("{}: disconnected", thing.getUID().getId());
+
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+
             ScheduledFuture<?> pollingJob = this.pollingJob;
             if (pollingJob != null) {
                 pollingJob.cancel(true);
                 this.pollingJob = null;
             }
-            TuyaDevice tuyaDevice = this.tuyaDevice;
-            ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
-            // only re-connect if a device is present, we are not disposing the thing and either the reconnectFuture is
-            // empty or already done
-            if (tuyaDevice != null && !disposing && (reconnectFuture == null || reconnectFuture.isDone())) {
-                this.reconnectFuture = scheduler.schedule(this::connectDevice, 5000, TimeUnit.MILLISECONDS);
-            }
+
             if (channelIdToChannelTypeUID.containsValue(CHANNEL_TYPE_UID_IR_CODE)) {
                 irStopLearning();
             }
@@ -259,16 +374,16 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            logger.warn("Channel '{}' received a command but device is not ONLINE. Discarding command.", channelUID);
-            return;
-        }
-
         if (command instanceof RefreshType) {
             State state = channelStateCache.get(channelUID.getId());
             if (state != null) {
                 updateState(channelUID, state);
             }
+            return;
+        }
+
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.warn("Channel '{}' received a command but device is not ONLINE. Discarding command.", channelUID);
             return;
         }
 
@@ -282,7 +397,10 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             return;
         }
 
-        if (CHANNEL_TYPE_UID_COLOR.equals(channelTypeUID)) {
+        Channel channel = thing.getChannel(channelUID.getId());
+        String acceptedItemType = (channel != null ? channel.getAcceptedItemType() : "");
+
+        if (COLOR.equals(acceptedItemType)) {
             if (command instanceof HSBType) {
                 commandRequest.put(configuration.dp, ConversionUtil.hexColorEncode((HSBType) command, oldColorMode));
                 ChannelConfiguration workModeConfig = channelIdToConfiguration.get("work_mode");
@@ -314,7 +432,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     commandRequest.put(configuration.dp2, OnOffType.ON.equals(command));
                 }
             }
-        } else if (CHANNEL_TYPE_UID_DIMMER.equals(channelTypeUID)) {
+        } else if (DIMMER.equals(acceptedItemType)) {
             if (command instanceof PercentType percentCommand) {
                 int value = ConversionUtil.brightnessEncode(percentCommand, 0, configuration.max);
                 if (configuration.reversed) {
@@ -335,15 +453,35 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                     commandRequest.put(configuration.dp2, OnOffType.ON.equals(command));
                 }
             }
-        } else if (CHANNEL_TYPE_UID_STRING.equals(channelTypeUID)) {
+        } else if (STRING.equals(acceptedItemType)) {
             commandRequest.put(configuration.dp, command.toString());
-        } else if (CHANNEL_TYPE_UID_NUMBER.equals(channelTypeUID)) {
+        } else if (acceptedItemType != null && acceptedItemType.startsWith(NUMBER)) {
+            if (command instanceof QuantityType quantityType) {
+                SchemaDp schemaDp = schemaDps.get(channelUID.getId());
+
+                if (schemaDp != null && !schemaDp.unit.isEmpty()) {
+                    // If the item type for the channel is not dimensioned the unit is not usable and we
+                    // assume whoever sent a quantity instead of a bare number knows what they are doing.
+                    if (!NUMBER.equals(acceptedItemType)) {
+                        quantityType = quantityType.toUnit(schemaDp.unit);
+                    }
+                }
+
+                if (quantityType != null) {
+                    BigDecimal d = quantityType.toBigDecimal();
+                    if (schemaDp != null) {
+                        d = d.movePointRight(schemaDp.scale);
+                    }
+                    command = new DecimalType(d);
+                }
+            }
+
             if (command instanceof DecimalType decimalType) {
                 commandRequest.put(configuration.dp,
                         configuration.sendAsString ? String.format("%d", decimalType.intValue())
                                 : decimalType.intValue());
             }
-        } else if (CHANNEL_TYPE_UID_SWITCH.equals(channelTypeUID)) {
+        } else if (SWITCH.equals(acceptedItemType)) {
             if (command instanceof OnOffType) {
                 commandRequest.put(configuration.dp, OnOffType.ON.equals(command));
             }
@@ -396,24 +534,22 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
 
     @Override
     public void dispose() {
-        disposing = true;
-        ScheduledFuture<?> future = reconnectFuture;
+        logger.debug("{}: dispose", thing.getUID().getId());
+
+        ScheduledFuture<?> future = this.pollingJob;
         if (future != null) {
+            this.pollingJob = null;
             future.cancel(true);
         }
-        future = this.pollingJob;
-        if (future != null) {
-            future.cancel(true);
-        }
-        if (configuration.ip.isEmpty()) {
-            // unregister listener only if IP is not fixed
-            udpDiscoveryListener.unregisterListener(this);
-        }
+
+        udpDiscoveryListener.unregisterListener(this);
+
         TuyaDevice tuyaDevice = this.tuyaDevice;
         if (tuyaDevice != null) {
-            tuyaDevice.dispose();
             this.tuyaDevice = null;
+            tuyaDevice.dispose();
         }
+
         irStopLearning();
 
         dpToChannelId.clear();
@@ -426,52 +562,70 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
     public void initialize() {
         configuration = getConfigAs(DeviceConfiguration.class);
 
+        boolean hasStatusDps = false;
+        for (var e : schemaDps.values()) {
+            if (e.readOnly) {
+                hasStatusDps = true;
+                break;
+            }
+        }
+        if (!hasStatusDps) {
+            logger.debug("{}: no status DPs - polling disabled", thing.getUID().getId());
+            configuration.pollingInterval = 0;
+        }
+
         // check if we have channels and add them if available
         if (thing.getChannels().isEmpty()) {
-            // stored schemas are usually more complete
-            Map<String, SchemaDp> schema = SCHEMAS.get(configuration.productId);
-            if (schema == null) {
-                if (!schemaDps.isEmpty()) {
-                    // fallback to retrieved schema
-                    schema = schemaDps.stream()
-                            .collect(Collectors.toMap(s -> s.code, s -> s, (e1, e2) -> e1, LinkedHashMap::new));
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "No channels added and schema not found.");
-                    return;
-                }
-            }
-
-            addChannels(schema);
+            addChannels();
         }
 
         thing.getChannels().forEach(this::configureChannel);
 
         if (!configuration.ip.isBlank()) {
-            deviceInfoChanged(new DeviceInfo(configuration.ip, configuration.protocol));
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+
+            this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
+                    configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.protocol);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for IP address");
-            udpDiscoveryListener.registerListener(configuration.deviceId, this);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.wait-for-ip");
         }
 
-        disposing = false;
+        udpDiscoveryListener.registerListener(configuration.deviceId, this);
     }
 
     @Override
     public void deviceInfoChanged(DeviceInfo deviceInfo) {
-        logger.info("Configuring IP address '{}' for thing '{}'.", deviceInfo, thing.getUID());
+        if (!configuration.ip.equals(deviceInfo.ip) || !configuration.protocol.equals(deviceInfo.protocolVersion)) {
+            logger.info("Configuring IP address '{}' for thing '{}'.", deviceInfo, thing.getUID());
 
-        TuyaDevice tuyaDevice = this.tuyaDevice;
-        if (tuyaDevice != null) {
-            tuyaDevice.dispose();
+            TuyaDevice tuyaDevice = this.tuyaDevice;
+            if (tuyaDevice != null) {
+                this.tuyaDevice = null;
+                tuyaDevice.dispose();
+            }
+
+            try {
+                Configuration newConfig = editConfiguration();
+                newConfig.put(CONFIG_IP, deviceInfo.ip);
+                newConfig.put(CONFIG_PROTOCOL, deviceInfo.protocolVersion);
+                updateConfiguration(newConfig);
+
+                configuration.ip = deviceInfo.ip;
+                configuration.protocol = deviceInfo.protocolVersion;
+
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+
+                this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
+                        configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip,
+                        configuration.protocol);
+            } catch (IllegalArgumentException e) {
+                logger.warn("{}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
-        updateStatus(ThingStatus.UNKNOWN);
-
-        this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
-                configuration.localKey.getBytes(StandardCharsets.UTF_8), deviceInfo.ip, deviceInfo.protocolVersion);
     }
 
-    private void addChannels(Map<String, SchemaDp> schema) {
+    private void addChannels() {
         ThingBuilder thingBuilder = editThing();
         ThingUID thingUID = thing.getUID();
         ThingHandlerCallback callback = getCallback();
@@ -481,53 +635,44 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             return;
         }
 
-        Map<String, Channel> channels = new LinkedHashMap<>(schema.entrySet().stream().map(e -> {
+        Map<String, Channel> channels = new LinkedHashMap<>(schemaDps.entrySet().stream().map(e -> {
             String channelId = e.getKey();
             SchemaDp schemaDp = e.getValue();
 
+            ChannelTypeUID channeltypeUID = new ChannelTypeUID(BINDING_ID, configuration.productId + "_" + channelId);
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
-            Map<String, @Nullable Object> configuration = new HashMap<>();
-            configuration.put("dp", schemaDp.id);
 
-            ChannelTypeUID channeltypeUID;
-            if (COLOUR_CHANNEL_CODES.contains(channelId)) {
-                channeltypeUID = CHANNEL_TYPE_UID_COLOR;
-            } else if (DIMMER_CHANNEL_CODES.contains(channelId)) {
-                channeltypeUID = CHANNEL_TYPE_UID_DIMMER;
-                configuration.put("min", schemaDp.min);
-                configuration.put("max", schemaDp.max);
-            } else if ("bool".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_SWITCH;
+            Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
+            configuration.put(CONFIG_DP, schemaDp.id);
+
+            if (DIMMER_CHANNEL_CODES.contains(channelId)) {
+                configuration.put(CONFIG_MIN, schemaDp.min);
+                configuration.put(CONFIG_MAX, schemaDp.max);
             } else if ("enum".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_STRING;
                 List<String> range = Objects.requireNonNullElse(schemaDp.range, List.of());
-                configuration.put("range", String.join(",", range));
-            } else if ("string".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_STRING;
+                configuration.put(CONFIG_RANGE, String.join(",", range));
             } else if ("value".equals(schemaDp.type)) {
-                channeltypeUID = CHANNEL_TYPE_UID_NUMBER;
-                configuration.put("min", schemaDp.min);
-                configuration.put("max", schemaDp.max);
-            } else {
-                // e.g. type "raw", add empty channel
-                return Map.entry("", ChannelBuilder.create(channelUID).build());
-            }
-
-            if (schemaDp.label.isEmpty()) {
-                schemaDp.label = schemaDp.code;
-
-                String label = StringUtils.capitalizeByWhitespace(schemaDp.code.replaceAll("_", " "));
-                if (label != null) {
-                    label = label.trim();
-                    if (!label.isEmpty()) {
-                        schemaDp.label = label;
+                if (schemaDp.scale > 0) {
+                    Double d = schemaDp.min;
+                    if (d != null) {
+                        configuration.put(CONFIG_MIN, new BigDecimal(d).movePointLeft(schemaDp.scale));
                     }
+
+                    d = schemaDp.max;
+                    if (d != null) {
+                        configuration.put(CONFIG_MAX, new BigDecimal(d).movePointLeft(schemaDp.scale));
+                    }
+                } else {
+                    configuration.put(CONFIG_MIN, schemaDp.min);
+                    configuration.put(CONFIG_MAX, schemaDp.max);
                 }
             }
 
-            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID)
-                    .withLabel(schemaDp.label).withConfiguration(new Configuration(configuration)).build());
-        }).filter(c -> !c.getKey().isEmpty()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+            return Map.entry(channelId, callback.createChannelBuilder(channelUID, channeltypeUID) //
+                    .withConfiguration(new Configuration(configuration)) //
+                    .build());
+        }).filter(c -> !c.getKey().isEmpty())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new)));
 
         List<String> channelSuffixes = List.of("", "_1", "_2");
         List<String> switchChannels = List.of("switch_led", "led_switch");
@@ -541,11 +686,11 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 boolean remove = false;
 
                 if (colourChannel != null) {
-                    colourChannel.getConfiguration().put("dp2", config.dp);
+                    colourChannel.getConfiguration().put(CONFIG_DP2, config.dp);
                     remove = true;
                 }
                 if (brightChannel != null) {
-                    brightChannel.getConfiguration().put("dp2", config.dp);
+                    brightChannel.getConfiguration().put(CONFIG_DP2, config.dp);
                     remove = true;
                 }
 
@@ -590,17 +735,6 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         if (CHANNEL_TYPE_UID_IR_CODE.equals(channelTypeUID)) {
             irStartLearning(configuration.activeListen);
         }
-    }
-
-    private void connectDevice() {
-        TuyaDevice tuyaDevice = this.tuyaDevice;
-        if (tuyaDevice == null) {
-            logger.warn("Cannot connect {} because the device is not set.", thing.getUID());
-            return;
-        }
-        // clear the future here because timing issues can prevent the next attempt if we fail again
-        reconnectFuture = null;
-        tuyaDevice.connect();
     }
 
     private List<CommandOption> toCommandOptionList(List<String> options) {

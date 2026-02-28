@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,9 +20,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.foobot.internal.FoobotApiException;
 import org.openhab.binding.foobot.internal.FoobotBindingConstants;
 import org.openhab.binding.foobot.internal.FoobotHandlerFactory;
+import org.openhab.binding.foobot.internal.dto.FoobotDevice;
 import org.openhab.binding.foobot.internal.handler.FoobotAccountHandler;
 import org.openhab.binding.foobot.internal.handler.FoobotDeviceHandler;
-import org.openhab.binding.foobot.internal.json.FoobotDevice;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;

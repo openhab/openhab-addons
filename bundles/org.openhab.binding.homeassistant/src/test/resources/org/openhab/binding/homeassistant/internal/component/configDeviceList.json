@@ -1,0 +1,10 @@
+{
+	"device": {
+		"ids": [
+			"A",
+			"B",
+			"C"
+		]
+	},
+	"command_topic": "command"
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,8 @@ import org.slf4j.LoggerFactory;
 public class ControllerHandler extends BaseBridgeHandler implements MatterClientListener, MatterDiscoveryHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ControllerHandler.class);
-    private static final int CONNECTION_TIMEOUT_MS = 180000; // 3 minutes
+    private static final int CONNECTION_TIMEOUT_MS = 300000; // 5 minutes to allow for slow devices to connect (like
+                                                             // thread powered devices)
     private final MatterWebsocketService websocketService;
     // Set of nodes we are waiting to connect to
     private Set<BigInteger> outstandingNodeRequests = Collections.synchronizedSet(new HashSet<>());

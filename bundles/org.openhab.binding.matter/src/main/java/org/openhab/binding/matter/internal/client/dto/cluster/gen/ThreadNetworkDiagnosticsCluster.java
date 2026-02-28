@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -455,12 +454,12 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public List<NetworkFaultEnum> activeNetworkFaultsList; // 62 list R V
     public BigInteger extAddress; // 63 uint64 R V
     public Integer rloc16; // 64 uint16 R V
-    // Structs
 
+    // Structs
     /**
      * The ConnectionStatus Event shall indicate that a Node’s connection status to a Thread network has changed.
      */
-    public class ConnectionStatus {
+    public static class ConnectionStatus {
         public ConnectionStatusEnum connectionStatus; // ConnectionStatusEnum
 
         public ConnectionStatus(ConnectionStatusEnum connectionStatus) {
@@ -471,7 +470,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     /**
      * The NetworkFaultChange Event shall indicate a change in the set of network faults currently detected by the Node.
      */
-    public class NetworkFaultChange {
+    public static class NetworkFaultChange {
         /**
          * This field shall represent the set of faults currently detected, as per Section 11.14.5.1, “NetworkFaultEnum
          * Type”.
@@ -489,7 +488,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class NeighborTableStruct {
+    public static class NeighborTableStruct {
         /**
          * This field shall specify the IEEE 802.15.4 extended address for the neighboring Node.
          */
@@ -581,7 +580,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class RouteTableStruct {
+    public static class RouteTableStruct {
         /**
          * This field shall specify the IEEE 802.15.4 extended address for the Node for which this route table entry
          * corresponds.
@@ -645,7 +644,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class SecurityPolicy {
+    public static class SecurityPolicy {
         /**
          * This field shall specify the interval of time, in hours, that Thread security keys are rotated. Null when
          * there is no dataset configured.
@@ -663,7 +662,7 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         }
     }
 
-    public class OperationalDatasetComponents {
+    public static class OperationalDatasetComponents {
         /**
          * This field shall be True if the Node has an active timestamp present, else False.
          */
@@ -741,8 +740,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         HARDWARE_FAILURE(2, "Hardware Failure"),
         NETWORK_JAMMED(3, "Network Jammed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NetworkFaultEnum(Integer value, String label) {
             this.value = value;
@@ -764,8 +763,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         CONNECTED(0, "Connected"),
         NOT_CONNECTED(1, "Not Connected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ConnectionStatusEnum(Integer value, String label) {
             this.value = value;
@@ -792,8 +791,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         ROUTER(5, "Router"),
         LEADER(6, "Leader");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RoutingRoleEnum(Integer value, String label) {
             this.value = value;

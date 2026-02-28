@@ -40,24 +40,40 @@
 	<channel-type id="blukii_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="blukii_humidity">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blukii_pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="blukii_luminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Luminance</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

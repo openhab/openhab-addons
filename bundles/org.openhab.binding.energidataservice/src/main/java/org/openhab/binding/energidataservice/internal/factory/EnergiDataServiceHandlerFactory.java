@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.energidataservice.internal.factory;
 
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,18 +51,17 @@ public class EnergiDataServiceHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
     private final ElectricityPriceProvider electricityPriceProvider;
     private final Co2EmissionProvider co2EmissionProvider;
-    private final DatahubTariffFilterFactory datahubTariffFilterFactory;
+    private final DatahubTariffFilterFactory datahubTariffFilterFactory = new DatahubTariffFilterFactory();
 
     @Activate
     public EnergiDataServiceHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference TimeZoneProvider timeZoneProvider,
             final @Reference ElectricityPriceProvider electricityPriceProvider,
-            final @Reference Co2EmissionProvider co2EmissionProvider) {
+            final @Reference Co2EmissionProvider co2EmissionProvider, Map<String, Object> config) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
         this.electricityPriceProvider = electricityPriceProvider;
         this.co2EmissionProvider = co2EmissionProvider;
-        this.datahubTariffFilterFactory = new DatahubTariffFilterFactory();
     }
 
     @Override

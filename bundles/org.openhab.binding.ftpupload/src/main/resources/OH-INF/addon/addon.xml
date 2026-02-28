@@ -22,7 +22,7 @@
 		</parameter>
 		<parameter name="passivePorts" type="text">
 			<label>Passive Port Range</label>
-			<description>A string of passive ports, can contain a single port (as an integer), multiple ports seperated by
+			<description>A string of passive ports, can contain a single port (as an integer), multiple ports separated by
 				commas
 				(e.g. 123,124,125) or ranges of ports, including open ended ranges (e.g. 123-125, 30000-, -1023).
 				Combinations for

@@ -31,7 +31,7 @@ UPnP will be used to discover receivers on the local network and discover the ne
 The receiver needs to be powered on to get discovered.
 
 Once the receiver is discovered it can be added from the Inbox.
-Make sure to set `userId` in the Thing configuration after adding the new thing, see section Thing Configuration.
+Make sure to set `userId` in the Thing configuration after adding the new Thing, see section Thing Configuration.
 
 Note:
 The binding uses the network settings in openHAB's system configuration to determine the local IP address.
@@ -93,7 +93,7 @@ Password: topsecret
 
 Attempting login...
 Login successful, returned User ID is 1903AAAAAAAAC7E9718BBBCBCBCBCBC
-Edit thing configuration and copy this value to the field userId
+Edit Thing configuration and copy this value to the field userId
 ```
 
 On successful login the console will show the User ID value. Copy&amp;Paste this value to the Thing configuration (parameter `userId`) of the receiver.
@@ -107,7 +107,7 @@ If you do not want to use the openHAB console, you can also setup the credential
 - Account Password (`accountPassword`) is the corresponding password.
 
 The binding uses these credentials to login to your account, retrieves the `userId` parameter and sets it in the Thing configuration.
-For security reasons the credentials are automatically deleted from the thing configuration after the initial process.
+For security reasons the credentials are automatically deleted from the Thing configuration after the initial process.
 
 ## Channels
 

@@ -1,10 +1,10 @@
-import { ColorControlServer } from "@matter/main/behaviors";
-import { ColorControl, LevelControl, OnOff } from "@matter/main/clusters";
+import { ColorControl, LevelControl } from "@matter/main/clusters";
 import { Endpoint } from "@matter/node";
 import { ExtendedColorLightDevice } from "@matter/node/devices/extended-color-light";
-import { GenericDeviceType } from "./GenericDeviceType"; // Adjust the path as needed
+import { CustomColorControlServer, CustomLevelControlServer, CustomOnOffLocalServer } from "../behaviors";
+import { BaseDeviceType } from "./BaseDeviceType";
 
-export class ColorDeviceType extends GenericDeviceType {
+export class ColorDeviceType extends BaseDeviceType {
     private normalizeValue(value: number, min: number, max: number): number {
         return Math.min(Math.max(value, min), max);
     }
@@ -39,14 +39,15 @@ export class ColorDeviceType extends GenericDeviceType {
 
         const endpoint = new Endpoint(
             ExtendedColorLightDevice.with(
-                //setLocally=true for createOnOffServer otherwise moveToHueAndSaturationLogic will not be called b/c matter.js thinks the device is OFF.
-                this.createOnOffServer(true).with(OnOff.Feature.Lighting),
-                this.createLevelControlServer().with(LevelControl.Feature.Lighting),
-                this.createColorControlServer().with(
+                // set OnOff Locally to ensure moveToHueAndSaturationLogic gets triggered when the
+                // device is switched on from openHAB.
+                CustomOnOffLocalServer,
+                CustomLevelControlServer.with(LevelControl.Feature.Lighting),
+                CustomColorControlServer.with(
                     ColorControl.Feature.HueSaturation,
                     ColorControl.Feature.ColorTemperature,
                 ),
-                ...this.defaultClusterServers(),
+                ...this.baseClusterServers,
             ),
             {
                 ...this.endPointDefaults(),
@@ -59,42 +60,9 @@ export class ColorDeviceType extends GenericDeviceType {
 
     override defaultClusterValues() {
         return {
-            levelControl: {
-                currentLevel: 0,
-            },
-            onOff: {
-                onOff: false,
-            },
-            colorControl: {
-                colorMode: 0,
-                currentHue: 0,
-                currentSaturation: 0,
-                colorTemperatureMireds: 154,
-                startUpColorTemperatureMireds: 154,
-                colorTempPhysicalMinMireds: 154,
-                colorTempPhysicalMaxMireds: 667,
-                coupleColorTempToLevelMinMireds: 154,
-                coupleColorTempToLevelMaxMireds: 667,
-            },
-        };
-    }
-
-    protected createColorControlServer(): typeof ColorControlServer {
-        const parent = this;
-        return class extends ColorControlServer {
-            override async moveToColorTemperatureLogic(targetMireds: number, transitionTime: number) {
-                parent.sendBridgeEvent("colorControl", "colorTemperatureMireds", targetMireds);
-                return super.moveToColorTemperatureLogic(targetMireds, transitionTime);
-            }
-
-            override async moveToHueAndSaturationLogic(
-                targetHue: number,
-                targetSaturation: number,
-                transitionTime: number,
-            ) {
-                parent.sendBridgeEvent("colorControl", "currentHue", targetHue);
-                parent.sendBridgeEvent("colorControl", "currentSaturation", targetSaturation);
-            }
+            levelControl: { ...CustomLevelControlServer.DEFAULTS },
+            onOff: { ...CustomOnOffLocalServer.DEFAULTS },
+            colorControl: { ...CustomColorControlServer.DEFAULTS },
         };
     }
 }

@@ -1,0 +1,24 @@
+{
+  viewer {
+    home(id: \"%s\") {
+      currentSubscription {
+        priceInfo(resolution: QUARTER_HOURLY) {
+          tomorrow {
+            startsAt
+            total
+            energy
+            tax
+            level
+          }
+          today {
+            startsAt
+            total
+            energy
+            tax
+            level
+          }
+        }
+      }
+    }
+  }
+}

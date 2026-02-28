@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -183,12 +182,12 @@ public class ServiceAreaCluster extends BaseCluster {
      * have been successfully serviced (marked as completed).
      */
     public List<ProgressStruct> progress; // 5 list R V
-    // Structs
 
+    // Structs
     /**
      * The data from this structure indicates a landmark and position relative to the landmark.
      */
-    public class LandmarkInfoStruct {
+    public static class LandmarkInfoStruct {
         /**
          * This field shall indicate that the area is associated with a landmark.
          * This field shall be the ID of a landmark semantic tag, located within the Common Landmark Namespace. For
@@ -234,7 +233,7 @@ public class ServiceAreaCluster extends BaseCluster {
      * • LocationInfo’s AreaType field
      * • LandmarkInfo field
      */
-    public class AreaInfoStruct {
+    public static class AreaInfoStruct {
         /**
          * This field shall indicate the name of the area, floor number and/or area type. A few examples are provided
          * below.
@@ -246,7 +245,7 @@ public class ServiceAreaCluster extends BaseCluster {
          * &quot;Under&quot; position semantic tag. With such an area indication, the client can request the device to
          * operate in (or service) the area located under the table.
          */
-        public String locationInfo; // locationdesc
+        public Locationdesc locationInfo; // locationdesc
         /**
          * This field shall indicate an association with a landmark. A value of null indicates that the information is
          * not available or known. For example, this may indicate that the area refers to a zone next to a table.
@@ -256,7 +255,7 @@ public class ServiceAreaCluster extends BaseCluster {
          */
         public LandmarkInfoStruct landmarkInfo; // LandmarkInfoStruct
 
-        public AreaInfoStruct(String locationInfo, LandmarkInfoStruct landmarkInfo) {
+        public AreaInfoStruct(Locationdesc locationInfo, LandmarkInfoStruct landmarkInfo) {
             this.locationInfo = locationInfo;
             this.landmarkInfo = landmarkInfo;
         }
@@ -265,7 +264,7 @@ public class ServiceAreaCluster extends BaseCluster {
     /**
      * This is a struct representing a map.
      */
-    public class MapStruct {
+    public static class MapStruct {
         /**
          * This field shall represent the map’s identifier.
          */
@@ -285,7 +284,7 @@ public class ServiceAreaCluster extends BaseCluster {
     /**
      * This is a struct representing an area known to the server.
      */
-    public class AreaStruct {
+    public static class AreaStruct {
         /**
          * This field shall represent the identifier of the area.
          */
@@ -317,7 +316,7 @@ public class ServiceAreaCluster extends BaseCluster {
     /**
      * This is a struct indicating the progress.
      */
-    public class ProgressStruct {
+    public static class ProgressStruct {
         /**
          * This field shall indicate the identifier of the area, and the identifier shall be an entry in the
          * SupportedAreas attribute’s list.
@@ -368,8 +367,8 @@ public class ServiceAreaCluster extends BaseCluster {
         SKIPPED(2, "Skipped"),
         COMPLETED(3, "Completed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationalStatusEnum(Integer value, String label) {
             this.value = value;
@@ -393,8 +392,8 @@ public class ServiceAreaCluster extends BaseCluster {
         INVALID_IN_MODE(2, "Invalid In Mode"),
         INVALID_SET(3, "Invalid Set");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SelectAreasStatus(Integer value, String label) {
             this.value = value;
@@ -418,8 +417,8 @@ public class ServiceAreaCluster extends BaseCluster {
         INVALID_IN_MODE(2, "Invalid In Mode"),
         INVALID_SKIPPED_AREA(3, "Invalid Skipped Area");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SkipAreaStatus(Integer value, String label) {
             this.value = value;

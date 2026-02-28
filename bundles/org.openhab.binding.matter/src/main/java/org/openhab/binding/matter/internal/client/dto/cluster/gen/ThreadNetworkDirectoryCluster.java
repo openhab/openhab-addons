@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -70,12 +69,12 @@ public class ThreadNetworkDirectoryCluster extends BaseCluster {
      * endpoint of this node.
      */
     public Integer threadNetworkTableSize; // 2 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * Represents the data associated with a Thread Network.
      */
-    public class ThreadNetworkStruct {
+    public static class ThreadNetworkStruct {
         /**
          * This field shall indicate the Extended PAN ID from the OperationalDataset for the given Thread network.
          */

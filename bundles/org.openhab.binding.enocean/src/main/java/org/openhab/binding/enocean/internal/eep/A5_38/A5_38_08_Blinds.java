@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,6 @@ public class A5_38_08_Blinds extends _4BSMessage {
     static final byte FUNCTION_SET_POSITION_LOGIC = 0x0B;
 
     public A5_38_08_Blinds() {
-        super();
     }
 
     public A5_38_08_Blinds(ERP1Message packet) {

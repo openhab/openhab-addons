@@ -30,7 +30,7 @@ The MCD Bridge (`mcdBridge`) needs to be configured with your valid C&S MCD / sy
 
 ### MCD Sensor Thing
 
-Each sensor thing (`mcdSensor`) needs to be configured with the identical serial number, that is assigned to this sensor in MCD.
+Each sensor Thing (`mcdSensor`) needs to be configured with the identical serial number, that is assigned to this sensor in MCD.
 
 | parameter      | description                        |
 |----------------|------------------------------------|
@@ -38,7 +38,7 @@ Each sensor thing (`mcdSensor`) needs to be configured with the identical serial
 
 ## Channels
 
-The `mcdSensor` thing supports the following channels.  To see the sensors' events, please visit [Managing Care Digital](https://cundsdokumentation.de/) and navigate to the dashboard.
+The `mcdSensor` Thing supports the following channels.  To see the sensors' events, please visit [Managing Care Digital](https://cundsdokumentation.de/) and navigate to the dashboard.
 
 | channel     | type   | description                                   |
 |-------------|--------|-----------------------------------------------|

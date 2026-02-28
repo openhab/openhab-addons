@@ -21,7 +21,7 @@
 
 	<channel-type id="tsv" advanced="true">
 		<item-type>String</item-type>
-		<label>Tab Separated Time Table</label>
+		<label>Tab-separated Timetable</label>
 	</channel-type>
 
 	<channel-type id="departure">

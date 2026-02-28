@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,8 @@ public class SurePetcareDevice extends SurePetcareBaseObject {
         HUB(1, "Hub"),
         PET_FLAP(3, "Pet Flap"),
         PET_FEEDER(4, "Pet Feeder"),
-        CAT_FLAP(6, "Cat Flap");
+        CAT_FLAP(6, "Cat Flap"),
+        PET_WATER(8, "Waterstation");
 
         public final Integer id;
         public final String name;

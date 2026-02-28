@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,7 +52,6 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
     private final BroadlinkSocketModel3Handler model3;
 
     public BroadlinkSocketModel3HandlerTest() {
-        super();
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_SP3, "sp3-test");
         model3 = new BroadlinkSocketModel3Handler(thing);
     }

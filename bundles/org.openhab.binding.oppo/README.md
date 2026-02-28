@@ -17,7 +17,7 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents the player.
+There is exactly one supported Thing type, which represents the player.
 It has the `player` id.
 
 ## Discovery
@@ -28,11 +28,11 @@ In the Inbox, select Search For Things and then choose the Oppo Blu-ray Player B
 ## Binding Configuration
 
 There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
+All settings are through Thing configuration parameters.
 
 ## Thing Configuration
 
-The thing has the following configuration parameters:
+The Thing has the following configuration parameters:
 
 | Parameter Label  | Parameter ID | Description                                                                                                                      | Accepted values           |
 |------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------|
@@ -58,7 +58,7 @@ Some notes:
 - For the older models, some of the features in the control API were added after the players were shipped.
 - Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
 - Available HDMI modes for BDP-10x: AUTO, SRC, 4K2K, 1080P, 1080I, 720P, SDP, SDI
-- Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 567P, 567I, 480P, 480I
+- Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 576P, 576I, 480P, 480I
 
 - On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
 - You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
@@ -99,7 +99,7 @@ The following channels are available:
 | time_display      | Number:Time | The playback time elapsed/remaining in seconds (ReadOnly)                                                                             |
 | current_title     | Number      | The current title or track number playing (ReadOnly)                                                                                  |
 | total_title       | Number      | The total number of titles or tracks on the disc (ReadOnly)                                                                           |
-| current_chapter   | Number      | The current chapter number player (ReadOnly)                                                                                          |
+| current_chapter   | Number      | The current chapter number (ReadOnly)                                                                                                  |
 | total_chapter     | Number      | The total number of chapters in the current title (ReadOnly)                                                                          |
 | repeat_mode       | String      | Sets the current repeat mode (00-06)                                                                                                  |
 | zoom_mode         | String      | Sets the current zoom mode (00-12)                                                                                                    |

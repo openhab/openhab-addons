@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
@@ -116,7 +115,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
             return new Measurement();
         }
         List<Measurement> measurementList = applianceData.getData().getMeasurement();
-        Collections.sort(measurementList, Comparator.comparing(e -> ZonedDateTime.parse(e.timestamp)));
+        Collections.sort(measurementList, Comparator.comparing(e -> e.date));
         return measurementList.isEmpty() ? new Measurement() : measurementList.get(measurementList.size() - 1);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -676,8 +677,8 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
     }
 
     @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService discoveryService, long l,
-            @Nullable Collection<ThingTypeUID> collection, @Nullable ThingUID thingUID) {
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
+            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return Collections.emptyList();
     }
 

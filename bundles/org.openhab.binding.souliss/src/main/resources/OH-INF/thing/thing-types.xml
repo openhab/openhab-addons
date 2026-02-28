@@ -13,22 +13,21 @@
 
 		<config-description>
 			<parameter name="gatewayLanAddress" type="text" required="true" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
-				<label>IPV4 Address</label>
-				<description>LAN Ip address (mandatory)
+				<label>IPv4 Address</label>
+				<description>LAN IP address (mandatory)
 				</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="gatewayWanAddress" type="text" required="false"
 				pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
-				<label>IPV4 WAN Address</label>
-				<description>WAN Hostname or Ip in case of external network access
+				<label>IPv4 WAN Address</label>
+				<description>WAN hostname or IP in case of external network access
 				</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="gatewayPortNumber" type="integer" required="true">
 				<label>Gateway Port</label>
-				<description>Default is 230 UDP.
-				</description>
+				<description>UDP port of the gateway.</description>
 				<advanced>true</advanced>
 				<default>230</default>
 				<required>true</required>
@@ -49,24 +48,24 @@
 				<advanced>true</advanced>
 				<required>true</required>
 			</parameter>
-			<parameter name="subscriptionInterval" type="integer" min="2" max="240">
+			<parameter name="subscriptionInterval" type="integer" min="2" max="240" unit="s">
 				<label>Subscription Interval</label>
-				<description>Interval in seconds to subscribe Souliss Gateway.
+				<description>Interval in seconds to subscribe to the Souliss gateway.
 				</description>
 				<default>30</default>
 				<advanced>true</advanced>
 				<required>true</required>
 			</parameter>
-			<parameter name="healthyInterval" type="integer" min="1" max="240">
+			<parameter name="healthyInterval" type="integer" min="1" max="240" unit="s">
 				<label>Healthy Interval</label>
-				<description>Interval in seconds to send nodes healthy.
+				<description>Interval in seconds to send node health.
 				</description>
 				<default>60</default>
 				<advanced>true</advanced>
 				<required>true</required>
 			</parameter>
 
-			<parameter name="sendInterval" type="integer" min="5" max="5000">
+			<parameter name="sendInterval" type="integer" min="5" max="5000" unit="ms">
 				<label>Send Interval</label>
 				<description>Interval in milliseconds to get packet from binding queue and send it to Souliss. First packet is sent
 					immediately.
@@ -76,7 +75,7 @@
 				<required>true</required>
 			</parameter>
 
-			<parameter name="timeoutToRequeue" type="integer" min="0" max="10000">
+			<parameter name="timeoutToRequeue" type="integer" min="0" max="10000" unit="ms">
 				<label>Timeout to Requeue</label>
 				<description>Interval in milliseconds to requeue packet in queue if not yet executed</description>
 				<required>true</required>
@@ -84,7 +83,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="timeoutToRemovePacket" type="integer" min="0" max="60000">
+			<parameter name="timeoutToRemovePacket" type="integer" min="0" max="60000" unit="ms">
 				<label>Timeout to Remove Packet</label>
 				<description>Interval in milliseconds to remove packet from queue if not yet executed </description>
 				<required>true</required>
@@ -287,7 +286,7 @@
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 		<label>T18</label>
-		<description>Simple Light with feedback </description>
+		<description>Simple Light with feedback</description>
 
 		<channels>
 			<channel id="onOff" typeId="onoff"/>
@@ -495,6 +494,9 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -527,8 +529,10 @@
 			</channel>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
-
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -568,6 +572,9 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -773,10 +780,13 @@
 		<label>T58</label>
 		<description>Pressure measure (0, 1500) hPa</description>
 		<channels>
-			<channel id="value" typeId="power"/>
+			<channel id="value" typeId="pressure"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -1019,6 +1029,10 @@
 	<channel-type id="fan-channel">
 		<item-type>String</item-type>
 		<label>Fan</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">Auto</option>
@@ -1033,6 +1047,10 @@
 	<channel-type id="mode-channel">
 		<item-type>String</item-type>
 		<label>Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="COOLING_MODE">Cool</option>
@@ -1050,11 +1068,11 @@
 
 	<channel-type id="buttonReadOnly">
 		<item-type>Switch</item-type>
-		<label>Button</label>
-		<description>Button to trigger something</description>
+		<label>Status</label>
+		<description>Read-only status indicator</description>
 		<category>Switch</category>
+		<state readOnly="true"/>
 	</channel-type>
-
 
 	<channel-type id="pulse">
 		<item-type>Switch</item-type>
@@ -1067,24 +1085,36 @@
 		<item-type>Switch</item-type>
 		<label>On/Off</label>
 		<description>Switch on/off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sleep">
 		<item-type>Switch</item-type>
 		<label>Set Timer</label>
-		<description>The output will be timed for nCYCLES of the Node associated timer</description>
+		<description>The output will be timed for n cycles of the node-associated timer</description>
 	</channel-type>
 
 	<channel-type id="autoMode">
 		<item-type>Switch</item-type>
 		<label>On/Off Auto Mode</label>
 		<description>Switch on/off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="stateOnOff">
 		<item-type>Contact</item-type>
 		<label>State On/Off</label>
 		<description>Light on/off</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1093,6 +1123,10 @@
 		<item-type>Contact</item-type>
 		<label>State Open/Closed</label>
 		<description>Contact Open/Closed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1101,6 +1135,10 @@
 		<label>Rollershutter</label>
 		<description>Rollershutter Up/Down</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1108,6 +1146,10 @@
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>State of rollershutter/windows</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="opening">Opening</option>
@@ -1133,7 +1175,7 @@
 	<channel-type id="lastStatusStored" advanced="false">
 		<item-type>DateTime</item-type>
 		<label>Last Status Stored</label>
-		<description>Last Status Store</description>
+		<description>Last status stored</description>
 		<category>QualityOfService</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1141,7 +1183,7 @@
 	<channel-type id="healthy">
 		<item-type>Number</item-type>
 		<label>Healthy</label>
-		<description>Souliss Healthy</description>
+		<description>Souliss health</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
@@ -1149,7 +1191,7 @@
 		<item-type>Number</item-type>
 		<label>Value</label>
 		<description>Floating Point Input</description>
-		<state readOnly="true" pattern="%.1f "/>
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
 	<channel-type id="float6n">
@@ -1203,7 +1245,7 @@
 		<description>Lux</description>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f kLux"/>
 	</channel-type>
@@ -1236,6 +1278,10 @@
 		<label>Power</label>
 		<description>Current Power</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d W"/>
 	</channel-type>
 
@@ -1256,6 +1302,10 @@
 		<description>Color of the LED. Bound to a Dimmer to just set the brightness, bind to a Color chooser for the full
 			control and bind to a Switch for turning the led on or off.</description>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dimmerBrightness">
@@ -1263,7 +1313,11 @@
 		<label>Dimmer Brightness</label>
 		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
 		<category>Light</category>
-		<state min="0" max="100" step="1" pattern="%d"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="whiteMode">
@@ -1271,6 +1325,10 @@
 		<label>White Mode</label>
 		<description>Switch lamp to white mode</description>
 		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollerBrightness">
@@ -1278,6 +1336,10 @@
 		<label>Roller Brightness</label>
 		<description>Brightness Up/Down</description>
 		<category>Light</category>
-		<state readOnly="false"/>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<state min="0" max="100" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

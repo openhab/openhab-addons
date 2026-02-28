@@ -1,6 +1,7 @@
 # WlanThermo Binding
 
 This binding add support for the WlanThermo BBQ Thermometer.
+
 | Nano                                 | Mini                                |
 |--------------------------------------|-------------------------------------|
 | ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg) |
@@ -26,7 +27,7 @@ Things must be created manually.
 
 WlanThermo things require you to specify the IP-address of your WlanThermo device (the one you enter into your browser to access the WebUI)
 The configuration of username/password is optional.
-If ommitted, the binding data will be read-only for all channels.
+If omitted, the binding data will be read-only for all channels.
 WlanThermo Mini things do not require a username/password and will always be read-only!
 
 ## Channels
@@ -35,7 +36,7 @@ Depending on the WlanThermo you're using, the following channels are available.
 
 ### WlanThermo Nano
 
-If username/password is given in the thing, most channels are writeable.
+If username/password is given in the Thing, most channels are writeable.
 
 #### The device itself provides the following channels
 
@@ -78,10 +79,10 @@ All channels are read only!
 
 #### The device itself provides the following channels
 
-| channel  | type                 | description                   |
-|----------|----------------------|-------------------------------|
-| cpu_load | Number:Dimensionless | CPU Load in %                 |
-| cpu_temp | Number:Temperature   | CPU Temperature               |
+| channel  | type                 | description     |
+|----------|----------------------|-----------------|
+| cpu_load | Number:Dimensionless | CPU Load in %   |
+| cpu_temp | Number:Temperature   | CPU Temperature |
 
 #### The following channels apply for all 10 probes of the WlanThermo Mini
 
@@ -122,7 +123,7 @@ The following trigger apply for all channels of Nano and Mini:
 ### Items
 
 Example .items file for WlanThermo Nano and Mini.
-Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual thing id!
+Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual Thing id!
 
 ```java
 Group                   gWlanThermoNano         "WlanThermo Nano"

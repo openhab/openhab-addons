@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,10 @@ public class TempoTariff extends Tariff {
     public final double redHpHT;
     public final double redHpTTC;
 
+    public static final int LEN_CONTROL = 17;
+
     public TempoTariff(String line) {
-        super(line, 17);
+        super(line, LEN_CONTROL);
         try {
             this.blueHcHT = parseDouble(values[5]);
             this.blueHcTTC = parseDouble(values[6]);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -103,7 +103,7 @@ public class FreeAtHomeDiscoveryService extends AbstractThingHandlerDiscoverySer
     @Override
     protected void startScan() {
         if (backgroundDiscoveryJob == null) {
-            this.removeOlderResults(Instant.now().toEpochMilli());
+            this.removeOlderResults(Instant.now());
 
             isScanTerminated = false;
             backgroundDiscoveryJob = scheduler.schedule(runnable, BACKGROUND_DISCOVERY_DELAY, TimeUnit.SECONDS);
@@ -124,11 +124,11 @@ public class FreeAtHomeDiscoveryService extends AbstractThingHandlerDiscoverySer
 
         backgroundDiscoveryJob = null;
 
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     @Override
     public void deactivate() {
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 }

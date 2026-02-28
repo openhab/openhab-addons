@@ -155,6 +155,28 @@
 
 	</thing-type>
 
+	<thing-type id="window-contact-2-matter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Door/Window Contact II [+M]</label>
+		<description>Detects open windows and doors and features an additional button. This version of the sensor supports the
+			Matter standard.</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
+
+		<channels>
+			<channel id="contact" typeId="contact"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="bypass-state" typeId="bypass-state"/>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
 	<thing-type id="motion-detector">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="shc"/>
@@ -247,18 +269,79 @@
 			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
-		<label>Thermostat</label>
-		<description>Radiator thermostat</description>
+		<label>Radiator Thermostat</label>
+		<description>First generation radiator thermostat.</description>
 		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-offset" typeId="temperature-offset"/>
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 			<channel id="child-lock" typeId="child-lock"/>
 			<channel id="silent-mode" typeId="silent-mode"/>
 			<channel id="battery-level" typeId="system.battery-level"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="thermostat-2">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Radiator Thermostat II</label>
+		<description>Second generation radiator thermostat.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-offset" typeId="temperature-offset"/>
+			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="display-direction" typeId="display-direction"/>
+			<channel id="displayed-temperature" typeId="displayed-temperature"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+
+	</thing-type>
+
+	<thing-type id="thermostat-2-matter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Radiator Thermostat II [+M]</label>
+		<description>Second generation radiator thermostat with Matter support.</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-offset" typeId="temperature-offset"/>
+			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
+			<channel id="child-lock" typeId="child-lock"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="display-direction" typeId="display-direction"/>
+			<channel id="displayed-temperature" typeId="displayed-temperature"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description-ref uri="thing-type:boschshc:device"/>
 
@@ -542,6 +625,22 @@
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
+
+	<thing-type id="presence-simulation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Presence Simulation</label>
+		<description>Simulates that someone is home.</description>
+		<semantic-equipment-tag>Application</semantic-equipment-tag>
+
+		<channels>
+			<channel id="presence-simulation-enabled" typeId="presence-simulation-enabled"/>
+		</channels>
+
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="system-availability">
@@ -571,6 +670,10 @@
 		<label>Alarm State</label>
 		<description>The alarm state of the intrusion detection system. Possible values are ALARM_OFF, PRE_ALARM, ALARM_ON,
 			ALARM_MUTED and UNKNOWN.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ALARM_OFF">No alarm</option>
@@ -635,7 +738,21 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current measured temperature.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="0" max="40" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature-offset">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Offset</label>
+		<description>Temperature offset to be added or subtracted from the measured temperature.</description>
+		<tags>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="-9" max="9" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="temperature-rating">
@@ -655,6 +772,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current measured humidity.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -675,6 +796,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy consumption (Wh)</label>
 		<description>Energy consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -682,6 +807,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power consumption (W)</label>
 		<description>Current power consumption of the device.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -689,6 +818,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Purity</label>
 		<description>Purity of the air. A higher value indicates a higher pollution.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state min="500" max="5500" pattern="%.1f ppm" readOnly="true"/>
 	</channel-type>
 
@@ -696,6 +829,10 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Overall description of the air quality.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -703,6 +840,10 @@
 		<item-type>String</item-type>
 		<label>Purity Rating</label>
 		<description>Rating of the air purity.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -710,6 +851,10 @@
 		<item-type>String</item-type>
 		<label>Combined Rating</label>
 		<description>Combined rating of the air quality.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="GOOD">Good Quality</option>
@@ -737,6 +882,10 @@
 		<item-type>Contact</item-type>
 		<label>Window/Door contact</label>
 		<description>A window and door contact.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -751,6 +900,10 @@
 		<item-type>Number</item-type>
 		<label>Illuminance</label>
 		<description>The illuminance level measured by the sensor (0 to 1000).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state min="0" max="1000" step="1" readOnly="true"/>
 	</channel-type>
 
@@ -758,6 +911,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Level</label>
 		<description>Current open ratio (0 to 100).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" step="0.5" readOnly="false"/>
 	</channel-type>
 
@@ -772,6 +929,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature.</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -876,6 +1037,10 @@
 		<item-type>Switch</item-type>
 		<label>Water Leakage</label>
 		<description>Indicates whether a water leakage was detected.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Leakage detected</option>
@@ -922,7 +1087,7 @@
 		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
-			<tag>Tilt</tag>
+			<tag>Motion</tag>
 		</tags>
 	</channel-type>
 
@@ -953,6 +1118,10 @@
 		<label>Alarm</label>
 		<description>Alarm state of the smoke detector.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="IDLE_OFF">Alarm off</option>
@@ -997,11 +1166,61 @@
 		<label>Vibration Sensor State</label>
 		<description>Indicates whether vibrations were detected by the sensor.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Vibration</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NO_VIBRATION">No vibration</option>
 				<option value="VIBRATION_DETECTED">Vibration detected</option>
 				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="presence-simulation-enabled">
+		<item-type>Switch</item-type>
+		<label>Presence Simulation State</label>
+		<description>Channel to enable or disable the presence simulation.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="display-direction">
+		<item-type>Switch</item-type>
+		<label>Display Direction</label>
+		<description>Configures the display direction (NORMAL or REVERSED).</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Reversed</option>
+				<option value="OFF">Normal</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="displayed-temperature">
+		<item-type>Switch</item-type>
+		<label>Displayed Temperature</label>
+		<description>Configures whether the measured temperature or the setpoint temperature is displayed.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Setpoint</option>
+				<option value="OFF">Measured</option>
 			</options>
 		</state>
 	</channel-type>

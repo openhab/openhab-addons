@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -488,7 +488,10 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                         ConsolFun consolFun = getConsolidationFunction(db);
                         FetchRequest request = db.createFetchRequest(consolFun, end, end, 1);
                         Archive archive = db.findMatchingArchive(request);
-                        start = archive.getStartTime() - archive.getArcStep();
+                        long arcStep = archive.getArcStep();
+                        start = archive.getStartTime() - arcStep;
+                        end = end % arcStep == 0 ? end : (end / arcStep + 1) * arcStep; // Make sure end is aligned with
+                                                                                        // matching archive
                     }
                 } else {
                     throw new UnsupportedOperationException(

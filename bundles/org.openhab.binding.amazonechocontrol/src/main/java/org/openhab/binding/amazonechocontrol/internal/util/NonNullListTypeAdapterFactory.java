@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,6 @@ public class NonNullListTypeAdapterFactory implements TypeAdapterFactory {
     @SuppressWarnings("unchecked")
     public <T> @Nullable TypeAdapter<T> create(@NonNullByDefault({}) Gson gson,
             @NonNullByDefault({}) TypeToken<T> type) {
-
         Class<T> rawType = (Class<T>) type.getRawType();
         if (rawType != List.class) {
             return null;

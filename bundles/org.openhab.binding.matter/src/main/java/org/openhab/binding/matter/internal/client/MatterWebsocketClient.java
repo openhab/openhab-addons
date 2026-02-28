@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,9 +94,11 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     private final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool("matter.MatterWebsocketClient");
 
-    protected final Gson gson = new GsonBuilder().registerTypeAdapter(Node.class, new NodeDeserializer())
+    protected final Gson gson = new GsonBuilder().serializeNulls()
+            .registerTypeAdapter(Node.class, new NodeDeserializer())
             .registerTypeAdapter(BigInteger.class, new BigIntegerSerializer())
             .registerTypeHierarchyAdapter(BaseCluster.MatterEnum.class, new MatterEnumDeserializer())
+            .registerTypeHierarchyAdapter(BaseCluster.MatterEnum.class, new MatterEnumSerializer())
             .registerTypeAdapter(AttributeChangedMessage.class, new AttributeChangedMessageDeserializer())
             .registerTypeAdapter(EventTriggeredMessage.class, new EventTriggeredMessageDeserializer())
             .registerTypeAdapter(OctetString.class, new OctetStringDeserializer())
@@ -646,6 +648,14 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     }
 
     @NonNullByDefault({})
+    class MatterEnumSerializer implements JsonSerializer<BaseCluster.MatterEnum> {
+        @Override
+        public JsonElement serialize(BaseCluster.MatterEnum src, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(src.getValue());
+        }
+    }
+
+    @NonNullByDefault({})
     class EventTriggeredMessageDeserializer implements JsonDeserializer<EventTriggeredMessage> {
         @Override
         public EventTriggeredMessage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -696,7 +706,7 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
     /**
      * Get the Gson instance for use in tests
      */
-    Gson getGson() {
+    public Gson getGson() {
         return gson;
     }
 }

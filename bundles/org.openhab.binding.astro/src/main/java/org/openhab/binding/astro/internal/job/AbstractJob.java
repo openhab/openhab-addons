@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.job;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 
 /**
  * This class contains the default methods required for different jobs
@@ -22,15 +23,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public abstract class AbstractJob implements Job {
 
-    private final String thingUID;
+    protected final AstroThingHandler handler;
 
-    public AbstractJob(String thingUID) {
-        this.thingUID = thingUID;
+    public AbstractJob(AstroThingHandler handler) {
+        this.handler = handler;
     }
 
     @Override
-    public String getThingUID() {
-        return thingUID;
+    public AstroThingHandler getHandler() {
+        return handler;
     }
 
     /**

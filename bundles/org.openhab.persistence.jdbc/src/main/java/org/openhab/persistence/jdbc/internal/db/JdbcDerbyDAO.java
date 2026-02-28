@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -186,7 +186,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
             String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
-                StringUtilsExt.filterToString(filter), numberDecimalcount, table, simpleName);
+                filter, numberDecimalcount, table, simpleName);
 
         String filterString = "";
         ZonedDateTime beginDate = filter.getBeginDate();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,6 +136,30 @@ public class WakeOnLanUtility {
 
         } catch (IOException e) {
             LOGGER.warn("Problem with interface while sending WOL packet to {}", macAddress);
+        }
+    }
+
+    /**
+     * Send single WOL (Wake On Lan) package on specific interface
+     *
+     * @param macAddress MAC address to send WOL package to
+     * @param broadcastAddress Broadcast address to send WOL package to
+     */
+    public static void sendWOLPacket(String macAddress, String broadcastAddress) {
+        byte[] bytes = getWOLPackage(macAddress);
+
+        try {
+            InetAddress broadcast = InetAddress.getByName(broadcastAddress);
+
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, 9);
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.send(packet);
+                LOGGER.trace("Sent WOL packet to {} {}", broadcast, macAddress);
+            } catch (IOException e) {
+                LOGGER.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
+            }
+        } catch (IOException e) {
+            LOGGER.warn("Problem with interface while sending WOL packet to {} / {}", macAddress, broadcastAddress);
         }
     }
 

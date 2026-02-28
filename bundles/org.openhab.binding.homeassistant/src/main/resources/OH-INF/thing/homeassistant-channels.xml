@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homeassistant"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="image">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="gps-accuracy">
+		<item-type>Number:Length</item-type>
+		<label>GPS Accuracy</label>
+		<description>The accuracy of the GPS fix, in meters.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="rollershutter">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="trigger">
+		<kind>trigger</kind>
+		<label>Trigger</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="color-advanced" advanced="true">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="dimmer-advanced" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="gps-accuracy-advanced" advanced="true">
+		<item-type>Number:Length</item-type>
+		<label>GPS Accuracy</label>
+		<description>The accuracy of the GPS fix, in meters.</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="image-advanced" advanced="true">
+		<item-type>Image</item-type>
+		<label>Image</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="number-advanced" advanced="true">
+		<item-type>Number</item-type>
+		<label>Number</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="rollershutter-advanced" advanced="true">
+		<item-type>Rollershutter</item-type>
+		<label>Rollershutter</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="string-advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>String</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="switch-advanced" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+
+	<channel-type id="trigger-advanced" advanced="true">
+		<kind>trigger</kind>
+		<label>Trigger</label>
+		<config-description-ref uri="channel-type:homeassistant:channel"/>
+	</channel-type>
+</thing:thing-descriptions>

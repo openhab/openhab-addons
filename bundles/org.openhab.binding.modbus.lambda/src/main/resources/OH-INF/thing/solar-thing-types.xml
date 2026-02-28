@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="solar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Solar</label>
+		<description>Solar thermic component data</description>
+
+		<channel-groups>
+			<channel-group id="solar-group" typeId="solar"/>
+			<channel-group id="solar-reg50-group" typeId="solar-reg50"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="1" max="3600">
+				<label>Refresh Interval</label>
+				<description>Poll interval in seconds. Increase this if you encounter connection errors.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="maxTries" type="integer" min="1" max="10">
+				<label>Maximum Tries</label>
+				<description>Number of retries before giving up reading from this thing.</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="subindex" type="integer" min="0" max="1" required="true">
+				<label>Subindex</label>
+				<description>Subindex for multiple solar components</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="solar">
+		<label>Solar</label>
+		<channels>
+			<channel id="solar-error-number" typeId="solar-error-number-channel"/>
+			<channel id="solar-operating-state" typeId="solar-operating-state-channel"/>
+			<channel id="solar-collector-temperature" typeId="solar-collector-temperature-channel"/>
+			<channel id="solar-buffer1-temperature" typeId="solar-buffer1-temperature-channel"/>
+			<channel id="solar-buffer2-temperature" typeId="solar-buffer2-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="solar-reg50">
+		<label>Solar Reg50 Group</label>
+		<channels>
+			<channel id="solar-maximum-buffer-temperature" typeId="solar-maximum-buffer-temperature-channel"/>
+			<channel id="solar-buffer-changeover-temperature" typeId="solar-buffer-changeover-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="solar-error-number-channel">
+		<item-type>Number</item-type>
+		<label>Solar Error Number</label>
+		<description>Error number (0 = No error)</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">NO ERROR</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="solar-operating-state-channel">
+		<item-type>Number</item-type>
+		<label>Solar Operating State</label>
+		<description>Operating state of the solar component</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">HEATING</option>
+				<option value="2">ERROR</option>
+				<option value="3">OFF</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="solar-collector-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Collector Temperature</label>
+		<description>Temperature of the solar collector</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="solar-buffer1-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Buffer1 Temperature</label>
+		<description>Temperature of the solar Buffer 1</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="solar-buffer2-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Buffer2 Temperature</label>
+		<description>Temperature of the solar Buffer 2</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="solar-maximum-buffer-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Maximum Buffer Temperature</label>
+		<description>Maximum Buffer Temperature</description>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="solar-buffer-changeover-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Buffer Changeover Temperature</label>
+		<description>Solar Buffer Changeover Temperature</description>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

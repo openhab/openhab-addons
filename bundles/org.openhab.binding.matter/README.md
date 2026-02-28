@@ -30,10 +30,18 @@ Matter **requires** IPv6 to be enabled and be routable between openHAB and the M
 This means IPv6 needs to be enabled on the host openHAB is running, and the network must be able route IPv6 unicast and multicast messages.
 Docker, VLANs, subnets and other configurations can prohibit Matter from working if not configured correctly.
 
-
 # Matter Client
 
 This describes the Matter controller functionality for discovering and controlling Matter devices.
+
+## Quick Start
+
+1. Install the Matter binding from the openHAB add-on store.
+1. Add a Matter "Controller" Thing to the inbox using the default settings.
+1. Use the "Pair Matter Device" action on the controller Thing to pair a device with the controller.
+1. Add the discovered device from the inbox as a new "Node" Thing.
+
+Note: It is never necessary to remove or delete the "Controller" Thing when troubleshooting issues.
 
 ## Supported Things
 
@@ -46,19 +54,19 @@ It requires the configuration parameter `nodeId` which sets the local Matter nod
 The only configuration parameter is `nodeId`.
 A standard Node will map Matter endpoints to openHAB channel groups.
 **This will be discovered automatically** when a pairing code is used to scan for a device and should not be added manually.
-- `endpoint`: Represents an standalone endpoint as a child of a `node` thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` thing as channel groups. An `endpoint` thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
+- `endpoint`: Represents an standalone endpoint as a child of a `node` Thing. Only Endpoints exposed by Matter bridges will be added as `endpoint` things, otherwise Matter Endpoints are mapped on a `node` Thing as channel groups. An `endpoint` Thing **will be discovered automatically** when a node is added that has multiple bridged endpoints and should not be added manually.
 
 ## Discovery
 
 Matter controllers must be added manually.
 Nodes (devices) will be discovered when a `pairCode` is used to search for a device to add.
-Bridged endpoints will be added to the inbox once the parent Node is added as a thing.
+Bridged endpoints will be added to the inbox once the parent Node is added as a Thing.
 
 ### Device Pairing: General
 
-The pairing action can be found in the settings of the "Controller" thing under the "Actions" -> "Pair Matter Device" 
+The pairing action can be found in the settings of the "Controller" Thing under the "Actions" -> "Pair Matter Device"
 
-<img src="doc/pairing.png" alt="Matter Pairing" width="600"/>
+<img src="./doc/pairing.png" alt="Matter Pairing" width="600"/>
 
 This action will give feedback on the pairing process, if successful a device will be added to the Inbox.
 
@@ -66,7 +74,7 @@ See [Device Pairing: Code Types](#device-pairing-code-types) for more informatio
 
 The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.  
 
-<img src="doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
+<img src="./doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
 
 ### Device Pairing: Code Types
 
@@ -88,7 +96,7 @@ Thread devices require a Thread Border Router and a bluetooth enabled device to 
 Until there is a supported thread border router integration in openHAB and the openHAB mobile apps, it's strongly recommended to pair the device to a commercial router with thread support first (Apple TV 4k, Google Nest Hub 2, Amazon Gen 4 Echo, etc... ), then generate a matter pairing code using that ecosystem and add the device normally.
 This will still allow openHAB to have direct access to the device using only the embedded thread border router and does not interact with the underlying providers home automation stack.
 
-Support for using a OpenThread Border Router has been verified to work and will be coming soon to openHAB, but in some cases requires strong expertise in IPv6 routing as well as support in our mobile clients. 
+Support for using a OpenThread Border Router has been verified to work and will be coming soon to openHAB, but in some cases requires strong expertise in IPv6 routing as well as support in our mobile clients.
 
 ### Enabling IPv6 Thread Connectivity on Linux Hosts
 
@@ -137,14 +145,14 @@ noipv6
 noipv6rs
 ```
 
-***NOTE:  Please ensure you use the right interface name for your network interface.*** The above examples use `wlan0` and `eth0` as examples.
+**NOTE:**  Please ensure you use the right interface name for your network interface. The above examples use `wlan0` and `eth0` as examples.
 You can find the correct interface name by running `ip a` and looking for the interface that has an IPv6 address assigned to it.
 
 ## Thing Configuration
 
 ### Controller Thing Configuration
 
-The controller thing must be created manually before devices can be discovered.
+The controller Thing must be created manually before devices can be discovered.
 
 | Name   | Type   | Description                            | Default | Required | Advanced |
 |--------|--------|----------------------------------------|---------|----------|----------|
@@ -154,7 +162,7 @@ Note: The controller nodeId must not be changed after a controller is created.
 
 ### Node Thing Configuration
 
-Nodes are discovered automatically (see [Discovery](#Discovery) for more information) and should not be added manually.
+Nodes are discovered automatically (see [Discovery](#discovery) for more information) and should not be added manually.
 
 | Name       | Type   | Description                        | Default | Required | Advanced |
 |------------|--------|------------------------------------|---------|----------|----------|
@@ -162,7 +170,7 @@ Nodes are discovered automatically (see [Discovery](#Discovery) for more informa
 
 ### Endpoint Thing Configuration
 
- Endpoints are discovered automatically once their parent Node has been added (see [Discovery](#Discovery) for more information) and should not be added manually.
+ Endpoints are discovered automatically once their parent Node has been added (see [Discovery](#discovery) for more information) and should not be added manually.
 
 | Name       | Type   | Description                        | Default | Required | Advanced |
 |------------|--------|------------------------------------|---------|----------|----------|
@@ -178,7 +186,6 @@ Nodes are discovered automatically (see [Discovery](#Discovery) for more informa
 | Generate a new pairing code for a Matter device | Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller                                                                                                                                                        |
 | List Connected Matter Fabrics                   | This will list all the Matter fabrics this node belongs to                                                                                                                                                                                                                |
 | Remove Connected Matter Fabric                  | This removes a connected Matter fabric from a device. Use the 'List connected Matter fabrics' action to retrieve the fabric index number                                                                                                                                  |
-
 
 For nodes that contain a Thread Border Router Management Cluster, the following additional actions will be present
 
@@ -207,67 +214,202 @@ Possible channels include:
 
 ## Endpoint Channels
 
-| Channel ID                                                  | Type                     | Label                        | Description                                                                                                                                                                                                                                                          | Category         | ReadOnly | Pattern     |
-|-------------------------------------------------------------|--------------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|----------|-------------|
-| battery-voltage                                             | Number:ElectricPotential | Battery Voltage              | The current battery voltage                                                                                                                                                                                                                                          | Energy           | true     | %.1f %unit% |
-| battery-alarm                                               | String                   | Battery Alarm                | The battery alarm state                                                                                                                                                                                                                                              | Energy           | true     |             |
-| powersource-batpercentremaining                             | Number:Dimensionless     | Battery Percent Remaining    | Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to provide power to the Node                                                                                                                                 | Energy           | true     | %d %%       |
-| powersource-batchargelevel                                  | Number                   | Battery Charge Level         | Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is required                                                                                                                                                        | Energy           | true     |             |
-| booleanstate-statevalue                                     | Switch                   | Boolean State                | Indicates a boolean state value                                                                                                                                                                                                                                      | Status           | true     |             |
-| colorcontrol-color                                          | Color                    | Color                        | The color channel allows to control the color of a light. It is also possible to dim values and switch the light on and off.                                                                                                                                         | ColorLight       |          |             |
-| colorcontrol-temperature                                    | Dimmer                   | Color Temperature            | Sets the color temperature of the light                                                                                                                                                                                                                              | ColorLight       |          |             |
-| colorcontrol-temperature-abs                                | Number:Temperature       | Color Temperature            | Sets the color temperature of the light in mirek                                                                                                                                                                                                                     | ColorLight       |          | %.0f %unit% |
-| doorlock-lockstate                                          | Switch                   | Door Lock State              | Locks and unlocks the door and maintains the lock state                                                                                                                                                                                                              | Door             |          |             |
-| fancontrol-fanmode                                          | Number                   | Fan Mode                     | Set the fan mode                                                                                                                                                                                                                                                     | HVAC             |          |             |
-| onoffcontrol-onoff                                          | Switch                   | Switch                       | Switches the power on and off                                                                                                                                                                                                                                        | Light            |          |             |
-| levelcontrol-level                                          | Dimmer                   | Dimmer                       | Sets the level of the light                                                                                                                                                                                                                                          | Light            |          |             |
-| modeselect-mode                                             | Number                   | Mode Select                  | Selection of 1 or more states                                                                                                                                                                                                                                        |                  |          | %d          |
-| switch-switch                                               | Number                   | Switch                       | Indication of a switch or remote being activated                                                                                                                                                                                                                     |                  | true     | %d          |
-| switch-switchlatched                                        | Trigger                  | Switched Latched Trigger     | This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. after the move.                                                                                                                                                    |                  |          |             |
-| switch-initialpress                                         | Trigger                  | Initial Press Trigger        | This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while pressed.                                                                                                                                                     |                  |          |             |
-| switch-longpress                                            | Trigger                  | Long Press Trigger           | This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while pressed.                                                                                                                                                     |                  |          |             |
-| switch-shortrelease                                         | Trigger                  | Short Release Trigger        | This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e. just prior to release.                                                                                                                                        |                  |          |             |
-| switch-longrelease                                          | Trigger                  | Long Release Trigger         | This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e. just prior to release.                                                                                                                                        |                  |          |             |
-| switch-multipressongoing                                    | Trigger                  | Multi-Press Ongoing Trigger  | This trigger shall indicate 2 numeric fields as a JSON object. The first is the new value of the CurrentPosition attribute, i.e. while pressed. The second is the multi press code with a value of N when the Nth press of a multi-press sequence has been detected. |                  |          |             |
-| switch-multipresscomplete                                   | Trigger                  | Multi-Press Complete Trigger | This trigger shall indicate 2 numeric fields as a JSON object. The first is the new value of the CurrentPosition attribute, i.e. while pressed. The second is how many times the momentary switch has been pressed in a multi-press sequence.                        |                  |          |             |
-| thermostat-localtemperature                                 | Number:Temperature       | Local Temperature            | Indicates the local temperature provided by the thermostat                                                                                                                                                                                                           | HVAC             | true     | %.1f %unit% |
-| thermostat-outdoortemperature                               | Number:Temperature       | Outdoor Temperature          | Indicates the outdoor temperature provided by the thermostat                                                                                                                                                                                                         | HVAC             | true     | %.1f %unit% |
-| thermostat-occupiedheating                                  | Number:Temperature       | Occupied Heating Setpoint    | Set the heating temperature when the room is occupied                                                                                                                                                                                                                | HVAC             |          | %.1f %unit% |
-| thermostat-occupiedcooling                                  | Number:Temperature       | Occupied Cooling Setpoint    | Set the cooling temperature when the room is occupied                                                                                                                                                                                                                | HVAC             |          | %.1f %unit% |
-| thermostat-unoccupiedheating                                | Number:Temperature       | Unoccupied Heating Setpoint  | Set the heating temperature when the room is unoccupied                                                                                                                                                                                                              | HVAC             |          | %.1f %unit% |
-| thermostat-unoccupiedcooling                                | Number:Temperature       | Unoccupied Cooling Setpoint  | Set the cooling temperature when the room is unoccupied                                                                                                                                                                                                              | HVAC             |          | %.1f %unit% |
-| thermostat-systemmode                                       | Number                   | System Mode                  | Set the system mode of the thermostat                                                                                                                                                                                                                                | HVAC             |          |             |
-| thermostat-runningmode                                      | Number                   | Running Mode                 | The running mode of the thermostat                                                                                                                                                                                                                                   | HVAC             | true     |             |
-| windowcovering-lift                                         | Rollershutter            | Window Covering Lift         | Sets the window covering level - supporting open/close and up/down type commands                                                                                                                                                                                     | Blinds           |          | %.0f %%     |
-| fancontrol-percent                                          | Dimmer                   | Fan Control Percent          | The current fan speed percentage level                                                                                                                                                                                                                               | HVAC             | true     | %.0f %%     |
-| fancontrol-mode                                             | Number                   | Fan Control Mode             | The current mode of the fan                                                                                                                                                                                                                                          | HVAC             |          |             |
-| temperaturemeasurement-measuredvalue                        | Number:Temperature       | Temperature                  | The measured temperature                                                                                                                                                                                                                                             | Temperature      | true     | %.1f %unit% |
-| occupancysensing-occupied                                   | Switch                   | Occupancy                    | Indicates if an occupancy sensor is triggered                                                                                                                                                                                                                        | Presence         | true     |             |
-| relativehumiditymeasurement-measuredvalue                   | Number:Dimensionless     | Humidity                     | The measured humidity                                                                                                                                                                                                                                                | Humidity         | true     | %.0f %%     |
-| illuminancemeasurement-measuredvalue                        | Number:Illuminance       | Illuminance                  | The measured illuminance in Lux                                                                                                                                                                                                                                      | Illuminance      | true     | %d %unit%   |
-| wifinetworkdiagnostics-rssi                                 | Number:Power             | Signal                       | Wi-Fi signal strength indicator.                                                                                                                                                                                                                                     | QualityOfService | true     | %d %unit%   |
-| electricalpowermeasurement-activepower                      | Number:Power             | Active Power                 | The active power measurement in watts                                                                                                                                                                                                                                | Energy           | true     | %.1f %unit% |
-| electricalpowermeasurement-activecurrent                    | Number:ElectricCurrent   | Active Current               | The active current measurement in amperes                                                                                                                                                                                                                            | Energy           | true     | %.1f %unit% |
-| electricalpowermeasurement-voltage                          | Number:ElectricPotential | Voltage                      | The voltage measurement in volts                                                                                                                                                                                                                                     | Energy           | true     | %.2f %unit% |
-| electricalenergymeasurement-energymeasurmement-energy       | Number:Energy            | Energy                       | The measured energy                                                                                                                                                                                                                                                  | Energy           | true     | %.1f %unit% |
-| electricalenergymeasurement-cumulativeenergyimported-energy | Number:Energy            | Cumulative Energy Imported   | The cumulative energy imported measurement                                                                                                                                                                                                                           | Energy           | true     | %.1f %unit% |
-| electricalenergymeasurement-cumulativeenergyexported-energy | Number:Energy            | Cumulative Energy Exported   | The cumulative energy exported measurement                                                                                                                                                                                                                           | Energy           | true     | %.1f %unit% |
-| electricalenergymeasurement-periodicenergyimported-energy   | Number:Energy            | Periodic Energy Imported     | The periodic energy imported measurement                                                                                                                                                                                                                             | Energy           | true     | %.1f %unit% |
-| electricalenergymeasurement-periodicenergyexported-energy   | Number:Energy            | Periodic Energy Exported     | The periodic energy exported measurement                                                                                                                                                                                                                             | Energy           | true     | %.1f %unit% |
-| threadnetworkdiagnostics-channel                            | Number                   | Channel                      | The Thread network channel                                                                                                                                                                                                                                           | Network          | true     | %d          |
-| threadnetworkdiagnostics-routingrole                        | Number                   | Routing Role                 | The Thread routing role (0=Unspecified, 1=Unassigned, 2=Sleepy End Device, 3=End Device, 4=Reed, 5=Router, 6=Leader)                                                                                                                                                 | Network          | true     | %d          |
-| threadnetworkdiagnostics-networkname                        | String                   | Network Name                 | The Thread network name                                                                                                                                                                                                                                              | Network          | true     |             |
-| threadnetworkdiagnostics-panid                              | Number                   | PAN ID                       | The Thread network PAN ID                                                                                                                                                                                                                                            | Network          | true     | %d          |
-| threadnetworkdiagnostics-extendedpanid                      | Number                   | Extended PAN ID              | The Thread network extended PAN ID                                                                                                                                                                                                                                   | Network          | true     | %d          |
-| threadnetworkdiagnostics-rloc16                             | Number                   | RLOC16                       | The Thread network RLOC16 address                                                                                                                                                                                                                                    | Network          | true     | %d          |
-| threadborderroutermanagement-borderroutername               | String                   | Border Router Name           | The name of the Thread border router                                                                                                                                                                                                                                 | Network          | true     |             |
-| threadborderroutermanagement-borderagentid                  | String                   | Border Agent ID              | The unique identifier of the Thread border agent                                                                                                                                                                                                                     | Network          | true     |             |
-| threadborderroutermanagement-threadversion                  | Number                   | Thread Version               | The version of Thread protocol being used                                                                                                                                                                                                                            | Network          | true     | %d          |
-| threadborderroutermanagement-interfaceenabled               | Switch                   | Interface Enabled            | Whether the Thread border router interface is enabled                                                                                                                                                                                                                | Network          |          |             |
-| threadborderroutermanagement-activedatasettimestamp         | Number                   | Active Dataset Timestamp     | Timestamp of the active Thread network dataset                                                                                                                                                                                                                       | Network          | true     | %d          |
-| threadborderroutermanagement-activedataset                  | String                   | Active Dataset               | The active Thread network dataset configuration                                                                                                                                                                                                                      | Network          |          |             |
-| threadborderroutermanagement-pendingdatasettimestamp        | Number                   | Pending Dataset Timestamp    | Timestamp of the pending Thread network dataset (only available if PAN change feature is supported)                                                                                                                                                                  | Network          | true     | %d          |
-| threadborderroutermanagement-pendingdataset                 | String                   | Pending Dataset              | The pending Thread network dataset configuration (only available if PAN change feature is supported)                                                                                                                                                                 | Network          |          |             |
+| Channel ID                                                          | Type                     | Label                        | Description                                                                                                                                                                                                                                                          | Category         | ReadOnly | Pattern     | State Options                                                                                                                                                        |
+|---------------------------------------------------------------------|--------------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|----------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| airquality-airquality                                               | Number                   | Air Quality                  | Indicates the currently measured air quality                                                                                                                                                                                                                         |                  | true     |             | 0=Unknown, 1=Good, 2=Fair, 3=Moderate, 4=Poor, 5=Very Poor, 6=Extremely Poor                                                                                         |
+| booleanstate-statevalue                                             | Switch                   | Boolean State                | Indicates a boolean state value                                                                                                                                                                                                                                      | Status           | true     |             |                                                                                                                                                                      |
+| carbondioxideconcentrationmeasurement-measuredvalue                 | Number:Dimensionless     | CO2 Concentration            | Indicates the measured carbon dioxide concentration                                                                                                                                                                                                                  | CarbonDioxide    | true     | %.2f ppm    |                                                                                                                                                                      |
+| carbonmonoxideconcentrationmeasurement-measuredvalue                | Number:Dimensionless     | CO Concentration             | Indicates the measured carbon monoxide concentration                                                                                                                                                                                                                 | Alarm            | true     | %.2f ppm    |                                                                                                                                                                      |
+| concentrationmeasurement-averagemeasuredvalue                       | Number:Dimensionless     | Average Concentration        | Indicates the average concentration measured during the measurement window                                                                                                                                                                                           | Chart            | true     | %.2f        |                                                                                                                                                                      |
+| concentrationmeasurement-levelvalue                                 | Number                   | Concentration Level          | Indicates the concentration level as an enumeration                                                                                                                                                                                                                  | QualityOfService | true     |             | 0=Unknown, 1=Low, 2=Medium, 3=High, 4=Critical                                                                                                                       |
+| concentrationmeasurement-peakmeasuredvalue                          | Number:Dimensionless     | Peak Concentration           | Indicates the peak (maximum) concentration measured during the measurement window                                                                                                                                                                                    | Chart            | true     | %.2f        |                                                                                                                                                                      |
+| colorcontrol-color                                                  | Color                    | Color                        | The color channel allows to control the color of a light. It is also possible to dim values and switch the light on and off.                                                                                                                                         | ColorLight       |          |             |                                                                                                                                                                      |
+| colorcontrol-temperature                                            | Dimmer                   | Color Temperature            | Sets the color temperature of the light                                                                                                                                                                                                                              | ColorLight       |          |             |                                                                                                                                                                      |
+| colorcontrol-temperature-abs                                        | Number:Temperature       | Color Temperature            | Sets the color temperature of the light in mirek                                                                                                                                                                                                                     | ColorLight       |          | %.0f %unit% |                                                                                                                                                                      |
+| doorlock-alarm                                                      | Trigger                  | Door Lock Alarm              | Event that fires when a lock alarm occurs                                                                                                                                                                                                                            |                  |          |             | 0=Lock Jammed, 1=Lock Factory Reset, 3=Lock Radio Power Cycled, 4=Wrong Code Entry Limit, 5=Front Escutcheon Removed, 6=Door Forced Open, 7=Door Ajar, 8=Forced User |
+| doorlock-boltstate                                                  | Switch                   | Door Bolt State              | Bolts and unbolts the door and maintains the bolt state                                                                                                                                                                                                              | Door             |          |             |                                                                                                                                                                      |
+| doorlock-doorstate                                                  | Contact                  | Door Sensor State            | Door Sensor State                                                                                                                                                                                                                                                    | Door             | true     |             |                                                                                                                                                                      |
+| doorlock-lockoperationerror                                         | Trigger                  | Lock Operation Error         | Event that fires when a lock operation error occurs                                                                                                                                                                                                                  |                  |          |             | 0=Lock, 1=Unlock, 2=Non Access User Event, 3=Forced User Event, 4=Unlatch                                                                                            |
+| doorlock-lockstate                                                  | Switch                   | Door Lock State              | Locks and unlocks the door and maintains the lock state. If the door lock supports unbolting, this will reflect the latched state.                                                                                                                                   | Door             |          |             |                                                                                                                                                                      |
+| electricalenergymeasurement-cumulativeenergyexported-energy         | Number:Energy            | Cumulative Energy Exported   | The cumulative energy exported measurement                                                                                                                                                                                                                           | Energy           | true     | %.1f %unit% |                                                                                                                                                                      |
+| electricalenergymeasurement-cumulativeenergyimported-energy         | Number:Energy            | Cumulative Energy Imported   | The cumulative energy imported measurement                                                                                                                                                                                                                           | Energy           | true     | %.1f %unit% |                                                                                                                                                                      |
+| electricalenergymeasurement-energymeasurmement-energy               | Number:Energy            | Energy                       | The measured energy                                                                                                                                                                                                                                                  | Energy           | true     | %.1f %unit% |                                                                                                                                                                      |
+| electricalenergymeasurement-periodicenergyexported-energy           | Number:Energy            | Periodic Energy Exported     | The periodic energy exported measurement                                                                                                                                                                                                                             | Energy           | true     | %.1f %unit% |                                                                                                                                                                      |
+| electricalenergymeasurement-periodicenergyimported-energy           | Number:Energy            | Periodic Energy Imported     | The periodic energy imported measurement                                                                                                                                                                                                                             | Energy           | true     | %.1f %unit% |                                                                                                                                                                      |
+| electricalpowermeasurement-activecurrent                            | Number:ElectricCurrent   | Active Current               | The active current measurement in amperes                                                                                                                                                                                                                            | Energy           | true     | %.1f %unit% |                                                                                                                                                                      |
+| electricalpowermeasurement-activepower                              | Number:Power             | Active Power                 | The active power measurement in watts                                                                                                                                                                                                                                | Energy           | true     | %.1f %unit% |                                                                                                                                                                      |
+| electricalpowermeasurement-voltage                                  | Number:ElectricPotential | Voltage                      | The voltage measurement in volts                                                                                                                                                                                                                                     | Energy           | true     | %.2f %unit% |                                                                                                                                                                      |
+| fancontrol-fanmode                                                  | Number                   | Fan Mode                     | Set the fan mode                                                                                                                                                                                                                                                     | HVAC             |          |             | 0=Off, 1=Low, 2=Medium, 3=High, 4=On, 5=Auto                                                                                                                         |
+| fancontrol-mode                                                     | Number                   | Fan Control Mode             | The current mode of the fan                                                                                                                                                                                                                                          | HVAC             |          |             |                                                                                                                                                                      |
+| fancontrol-percent                                                  | Dimmer                   | Fan Control Percent          | The current fan speed percentage level                                                                                                                                                                                                                               | HVAC             | true     | %.0f %%     |                                                                                                                                                                      |
+| formaldehydeconcentrationmeasurement-measuredvalue                  | Number:Dimensionless     | Formaldehyde Concentration   | Indicates the measured formaldehyde (HCHO) concentration                                                                                                                                                                                                             | Gas              | true     | %.2f ppm    |                                                                                                                                                                      |
+| illuminancemeasurement-measuredvalue                                | Number:Illuminance       | Illuminance                  | The measured illuminance in Lux                                                                                                                                                                                                                                      | Illuminance      | true     | %d %unit%   |                                                                                                                                                                      |
+| levelcontrol-level                                                  | Dimmer                   | Dimmer                       | Sets the level of the light                                                                                                                                                                                                                                          | Light            |          |             |                                                                                                                                                                      |
+| modeselect-mode                                                     | Number                   | Mode Select                  | Selection of 1 or more states                                                                                                                                                                                                                                        |                  |          | %d          |                                                                                                                                                                      |
+| nitrogendioxideconcentrationmeasurement-measuredvalue               | Number:Dimensionless     | NO2 Concentration            | Indicates the measured nitrogen dioxide concentration                                                                                                                                                                                                                | Gas              | true     | %.2f ppm    |                                                                                                                                                                      |
+| occupancysensing-occupied                                           | Switch                   | Occupancy                    | Indicates if an occupancy sensor is triggered                                                                                                                                                                                                                        | Presence         | true     |             |                                                                                                                                                                      |
+| onoffcontrol-onoff                                                  | Switch                   | Switch                       | Switches the power on and off                                                                                                                                                                                                                                        | Light            |          |             |                                                                                                                                                                      |
+| ozoneconcentrationmeasurement-measuredvalue                         | Number:Dimensionless     | Ozone Concentration          | Indicates the measured ozone (O₃) concentration                                                                                                                                                                                                                      | Gas              | true     | %.2f ppm    |                                                                                                                                                                      |
+| pm1concentrationmeasurement-measuredvalue                           | Number:Dimensionless     | PM1 Concentration            | Indicates the measured PM1 particulate matter concentration                                                                                                                                                                                                          | QualityOfService | true     | %.1f µg/m³  |                                                                                                                                                                      |
+| pm10concentrationmeasurement-measuredvalue                          | Number:Dimensionless     | PM10 Concentration           | Indicates the measured PM10 particulate matter concentration                                                                                                                                                                                                         | QualityOfService | true     | %.1f µg/m³  |                                                                                                                                                                      |
+| pm25concentrationmeasurement-measuredvalue                          | Number:Dimensionless     | PM2.5 Concentration          | Indicates the measured PM2.5 particulate matter concentration                                                                                                                                                                                                        | QualityOfService | true     | %.1f µg/m³  |                                                                                                                                                                      |
+| powersource-batchargelevel                                          | Number                   | Battery Charge Level         | Indicates a coarse ranking of the charge level of the battery, used to indicate when intervention is required                                                                                                                                                        | Energy           | true     |             | 0=Ok, 1=Warning, 2=Critical                                                                                                                                          |
+| powersource-batpercentremaining                                     | Number:Dimensionless     | Battery Percent Remaining    | Indicates the estimated percentage of battery charge remaining until the battery will no longer be able to provide power to the Node                                                                                                                                 | Energy           | true     | %d %%       |                                                                                                                                                                      |
+| radonconcentrationmeasurement-measuredvalue                         | Number:Dimensionless     | Radon Concentration          | Indicates the measured radon concentration                                                                                                                                                                                                                           | Gas              | true     | %.2f        |                                                                                                                                                                      |
+| relativehumiditymeasurement-measuredvalue                           | Number:Dimensionless     | Humidity                     | The measured humidity                                                                                                                                                                                                                                                | Humidity         | true     | %.0f %%     |                                                                                                                                                                      |
+| rvccleanmode-mode                                                   | Number                   | Clean Mode                   | Selects the cleaning mode (vacuum, mop etc.) of the robotic vacuum cleaner                                                                                                                                                                                           |                  |          | %d          |                                                                                                                                                                      |
+| rvcoperationalstate-gohome                                          | Switch                   | Go Home                      | Sends the robotic vacuum cleaner back to the dock                                                                                                                                                                                                                    |                  |          |             |                                                                                                                                                                      |
+| rvcoperationalstate-state                                           | Number                   | Operational State            | Reports the operational state of the robotic vacuum cleaner                                                                                                                                                                                                          |                  | true     | %d          |                                                                                                                                                                      |
+| rvcrunmode-mode                                                     | Number                   | Run Mode                     | Selects the run mode (idle, cleaning, mapping) of the robotic vacuum cleaner                                                                                                                                                                                         |                  |          | %d          |                                                                                                                                                                      |
+| servicearea-selectedarea                                            | Switch                   | Area Selection               | Toggle to enable a mapped area for cleaning                                                                                                                                                                                                                          |                  |          |             |                                                                                                                                                                      |
+| smokecoalarm-batteryalert                                           | Number                   | Battery Alert                | Indicates whether the battery power resource fault detection is triggered                                                                                                                                                                                            | Alarm            | true     |             | 0=Normal, 1=Warning, 2=Critical                                                                                                                                      |
+| smokecoalarm-contaminationstate                                     | Number                   | Contamination State          | Indicates the contamination level of the smoke sensor                                                                                                                                                                                                                | Alarm            | true     |             | 0=Normal, 1=Low, 2=Warning, 3=Critical                                                                                                                               |
+| smokecoalarm-costate                                                | Number                   | CO Alarm                     | Indicates whether the CO sensor is currently triggering an alarm                                                                                                                                                                                                     | Alarm            | true     |             | 0=Normal, 1=Warning, 2=Critical                                                                                                                                      |
+| smokecoalarm-devicemuted                                            | Number                   | Device Muted                 | Indicates whether the audible expression of the device is currently muted                                                                                                                                                                                            | Alarm            | true     |             | 0=Not Muted, 1=Muted                                                                                                                                                 |
+| smokecoalarm-endofservice                                           | Number                   | End Of Service               | Indicates whether the end-of-service has been triggered at the device                                                                                                                                                                                                | Alarm            | true     |             | 0=Normal, 1=Expired                                                                                                                                                  |
+| smokecoalarm-expressedstate                                         | Number                   | Expressed State              | The visibly and audibly expressed alarm state with the highest priority                                                                                                                                                                                              | Alarm            | true     |             | 0=Normal, 1=Smoke Alarm, 2=CO Alarm, 3=Battery Alert, 4=Testing, 5=Hardware Fault, 6=End Of Service, 7=Interconnect Smoke, 8=Interconnect CO                         |
+| smokecoalarm-expirydate                                             | DateTime                 | Expiry Date                  | Indicates the date when the device reaches its stated expiry date                                                                                                                                                                                                    | Time             | true     |             |                                                                                                                                                                      |
+| smokecoalarm-hardwarefault                                          | Switch                   | Hardware Fault               | Indicates whether the hardware fault detection mechanism is triggered                                                                                                                                                                                                | Alarm            | true     |             |                                                                                                                                                                      |
+| smokecoalarm-interconnectco                                         | Number                   | Interconnect CO Alarm        | Indicates whether the interconnected CO alarm is currently triggering from another device                                                                                                                                                                            | Alarm            | true     |             | 0=Normal, 1=Warning, 2=Critical                                                                                                                                      |
+| smokecoalarm-interconnectsmoke                                      | Number                   | Interconnect Smoke Alarm     | Indicates whether the interconnected smoke alarm is currently triggering from another device                                                                                                                                                                         | Alarm            | true     |             | 0=Normal, 1=Warning, 2=Critical                                                                                                                                      |
+| smokecoalarm-smokesensitivity                                       | Number                   | Smoke Sensitivity            | Indicates the sensitivity level of the smoke sensor                                                                                                                                                                                                                  | Alarm            |          |             | 0=High, 1=Standard, 2=Low                                                                                                                                            |
+| smokecoalarm-smokestate                                             | Number                   | Smoke Alarm                  | Indicates whether the smoke sensor is currently triggering an alarm                                                                                                                                                                                                  | Alarm            | true     |             | 0=Normal, 1=Warning, 2=Critical                                                                                                                                      |
+| smokecoalarm-testinprogress                                         | Switch                   | Test In Progress             | Indicates whether the device self-test is currently activated                                                                                                                                                                                                        | Alarm            | true     |             |                                                                                                                                                                      |
+| totalvolatileorganiccompoundsconcentrationmeasurement-measuredvalue | Number:Dimensionless     | TVOC Concentration           | Indicates the measured total volatile organic compounds concentration                                                                                                                                                                                                | Gas              | true     | %.2f ppm    |                                                                                                                                                                      |
+| switch-initialpress                                                 | Trigger                  | Initial Press Trigger        | This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while pressed.                                                                                                                                                     |                  |          |             |                                                                                                                                                                      |
+| switch-longpress                                                    | Trigger                  | Long Press Trigger           | This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. while pressed.                                                                                                                                                     |                  |          |             |                                                                                                                                                                      |
+| switch-longrelease                                                  | Trigger                  | Long Release Trigger         | This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e. just prior to release.                                                                                                                                        |                  |          |             |                                                                                                                                                                      |
+| switch-multipresscomplete                                           | Trigger                  | Multi-Press Complete Trigger | This trigger shall indicate 2 numeric fields as a JSON object. The first is the new value of the CurrentPosition attribute, i.e. while pressed. The second is how many times the momentary switch has been pressed in a multi-press sequence.                        |                  |          |             |                                                                                                                                                                      |
+| switch-multipressongoing                                            | Trigger                  | Multi-Press Ongoing Trigger  | This trigger shall indicate 2 numeric fields as a JSON object. The first is the new value of the CurrentPosition attribute, i.e. while pressed. The second is the multi press code with a value of N when the Nth press of a multi-press sequence has been detected. |                  |          |             |                                                                                                                                                                      |
+| switch-shortrelease                                                 | Trigger                  | Short Release Trigger        | This trigger shall indicate the previous value of the CurrentPosition attribute as a JSON object, i.e. just prior to release.                                                                                                                                        |                  |          |             |                                                                                                                                                                      |
+| switch-switch                                                       | Number                   | Switch                       | Indication of a switch or remote being activated                                                                                                                                                                                                                     |                  | true     | %d          |                                                                                                                                                                      |
+| switch-switchlatched                                                | Trigger                  | Switched Latched Trigger     | This trigger shall indicate the new value of the CurrentPosition attribute as a JSON object, i.e. after the move.                                                                                                                                                    |                  |          |             |                                                                                                                                                                      |
+| temperaturemeasurement-measuredvalue                                | Number:Temperature       | Temperature                  | The measured temperature                                                                                                                                                                                                                                             | Temperature      | true     | %.1f %unit% |                                                                                                                                                                      |
+| thermostat-localtemperature                                         | Number:Temperature       | Local Temperature            | Indicates the local temperature provided by the thermostat                                                                                                                                                                                                           | HVAC             | true     | %.1f %unit% |                                                                                                                                                                      |
+| thermostat-occupiedcooling                                          | Number:Temperature       | Occupied Cooling Setpoint    | Set the cooling temperature when the room is occupied                                                                                                                                                                                                                | HVAC             |          | %.1f %unit% |                                                                                                                                                                      |
+| thermostat-occupiedheating                                          | Number:Temperature       | Occupied Heating Setpoint    | Set the heating temperature when the room is occupied                                                                                                                                                                                                                | HVAC             |          | %.1f %unit% |                                                                                                                                                                      |
+| thermostat-outdoortemperature                                       | Number:Temperature       | Outdoor Temperature          | Indicates the outdoor temperature provided by the thermostat                                                                                                                                                                                                         | HVAC             | true     | %.1f %unit% |                                                                                                                                                                      |
+| thermostat-runningmode                                              | Number                   | Running Mode                 | The running mode of the thermostat                                                                                                                                                                                                                                   | HVAC             | true     |             | 0=Off, 3=Cool, 4=Heat                                                                                                                                                |
+| thermostat-systemmode                                               | Number                   | System Mode                  | Set the system mode of the thermostat                                                                                                                                                                                                                                | HVAC             |          |             | 0=Off, 1=Auto, 3=Cool, 4=Heat, 5=Emergency Heating, 6=Precooling, 7=Fan Only, 8=Dry, 9=Sleep                                                                         |
+| thermostat-unoccupiedcooling                                        | Number:Temperature       | Unoccupied Cooling Setpoint  | Set the cooling temperature when the room is unoccupied                                                                                                                                                                                                              | HVAC             |          | %.1f %unit% |                                                                                                                                                                      |
+| thermostat-unoccupiedheating                                        | Number:Temperature       | Unoccupied Heating Setpoint  | Set the heating temperature when the room is unoccupied                                                                                                                                                                                                              | HVAC             |          | %.1f %unit% |                                                                                                                                                                      |
+| threadborderroutermanagement-activedataset                          | String                   | Active Dataset               | The active Thread network dataset configuration                                                                                                                                                                                                                      | Network          |          |             |                                                                                                                                                                      |
+| threadborderroutermanagement-activedatasettimestamp                 | Number                   | Active Dataset Timestamp     | Timestamp of the active Thread network dataset                                                                                                                                                                                                                       | Network          | true     | %d          |                                                                                                                                                                      |
+| threadborderroutermanagement-borderagentid                          | String                   | Border Agent ID              | The unique identifier of the Thread border agent                                                                                                                                                                                                                     | Network          | true     |             |                                                                                                                                                                      |
+| threadborderroutermanagement-borderroutername                       | String                   | Border Router Name           | The name of the Thread border router                                                                                                                                                                                                                                 | Network          | true     |             |                                                                                                                                                                      |
+| threadborderroutermanagement-interfaceenabled                       | Switch                   | Interface Enabled            | Whether the Thread border router interface is enabled                                                                                                                                                                                                                | Network          |          |             |                                                                                                                                                                      |
+| threadborderroutermanagement-pendingdataset                         | String                   | Pending Dataset              | The pending Thread network dataset configuration (only available if PAN change feature is supported)                                                                                                                                                                 | Network          |          |             |                                                                                                                                                                      |
+| threadborderroutermanagement-pendingdatasettimestamp                | Number                   | Pending Dataset Timestamp    | Timestamp of the pending Thread network dataset (only available if PAN change feature is supported)                                                                                                                                                                  | Network          | true     | %d          |                                                                                                                                                                      |
+| threadborderroutermanagement-threadversion                          | Number                   | Thread Version               | The version of Thread protocol being used                                                                                                                                                                                                                            | Network          | true     | %d          |                                                                                                                                                                      |
+| threadnetworkdiagnostics-channel                                    | Number                   | Channel                      | The Thread network channel                                                                                                                                                                                                                                           | Network          | true     | %d          |                                                                                                                                                                      |
+| threadnetworkdiagnostics-extendedpanid                              | Number                   | Extended PAN ID              | The Thread network extended PAN ID                                                                                                                                                                                                                                   | Network          | true     | %d          |                                                                                                                                                                      |
+| threadnetworkdiagnostics-networkname                                | String                   | Network Name                 | The Thread network name                                                                                                                                                                                                                                              | Network          | true     |             |                                                                                                                                                                      |
+| threadnetworkdiagnostics-panid                                      | Number                   | PAN ID                       | The Thread network PAN ID                                                                                                                                                                                                                                            | Network          | true     | %d          |                                                                                                                                                                      |
+| threadnetworkdiagnostics-rloc16                                     | Number                   | RLOC16                       | The Thread network RLOC16 address                                                                                                                                                                                                                                    | Network          | true     | %d          |                                                                                                                                                                      |
+| threadnetworkdiagnostics-routingrole                                | Number                   | Routing Role                 | The Thread routing role                                                                                                                                                                                                                                              | Network          | true     | %d          | 0=Unspecified, 1=Unassigned, 2=Sleepy End Device, 3=End Device, 4=Reed, 5=Router, 6=Leader                                                                           |
+| wifinetworkdiagnostics-rssi                                         | Number:Power             | Signal                       | Wi-Fi signal strength indicator.                                                                                                                                                                                                                                     | QualityOfService | true     | %d %unit%   |                                                                                                                                                                      |
+| windowcovering-lift                                                 | Rollershutter            | Window Covering Lift         | Sets the window covering level - supporting open/close and up/down type commands                                                                                                                                                                                     | Blinds           |          | %.0f %%     |                                                                                                                                                                      |
+
+## Supported Matter Device Types
+
+The following is a list of known Matter device types supported by openHAB as defined in the Matter Device Library Specification Version 1.4.1.
+Other device types may be supported, but with limited or missing functionality.
+
+| Device Type Name              | Matter Device ID | Supported Clusters                                                                                                                                    |
+|-------------------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Power Source                  | 0x0011           | Power Source (0x002F)                                                                                                                                 |
+| Bridged Node                  | 0x0013           | Bridged Device Basic Information (0x0039)                                                                                                             |
+| Electrical Sensor             | 0x0510           | Power Topology (0x009C), Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091)                                                |
+| On/Off Light                  | 0x0100           | On/Off (0x0006)                                                                                                                                       |
+| Dimmable Light                | 0x0101           | On/Off (0x0006), Level Control (0x0008)                                                                                                               |
+| Color Temperature Light       | 0x010C           | On/Off (0x0006), Level Control (0x0008), Color Control (0x0300)                                                                                       |
+| Extended Color Light          | 0x010D           | On/Off (0x0006), Level Control (0x0008), Color Control (0x0300)                                                                                       |
+| On/Off Plug-in Unit           | 0x010A           | On/Off (0x0006)                                                                                                                                       |
+| Dimmable Plug-In Unit         | 0x010B           | On/Off (0x0006), Level Control (0x0008)                                                                                                               |
+| Mounted On/Off Control        | 0x010F           | On/Off (0x0006)                                                                                                                                       |
+| Mounted Dimmable Load Control | 0x0110           | On/Off (0x0006), Level Control (0x0008)                                                                                                               |
+| On/Off Light Switch           | 0x0103           | On/Off (0x0006)                                                                                                                                       |
+| Dimmer Switch                 | 0x0104           | On/Off (0x0006), Level Control (0x0008)                                                                                                               |
+| Color Dimmer Switch           | 0x0105           | On/Off (0x0006), Level Control (0x0008), Color Control (0x0300)                                                                                       |
+| Generic Switch                | 0x000F           | Switch (0x003B)                                                                                                                                       |
+| Contact Sensor                | 0x0015           | Boolean State (0x0045)                                                                                                                                |
+| Light Sensor                  | 0x0106           | Illuminance Measurement (0x0400)                                                                                                                      |
+| Occupancy Sensor              | 0x0107           | Occupancy Sensing (0x0406)                                                                                                                            |
+| Temperature Sensor            | 0x0302           | Temperature Measurement (0x0402), Identify (0x0003)                                                                                                   |
+| Humidity Sensor               | 0x0307           | Relative Humidity Measurement (0x0405)                                                                                                                |
+| On/Off Sensor                 | 0x0850           | On/Off (0x0006)                                                                                                                                       |
+| Air Quality Sensor            | 0x002C           | Air Quality (0x005B)                                                                                                                                  |
+| Smoke CO Alarm                | 0x0076           | Smoke CO Alarm (0x005C), Relative Humidity Measurement (0x0405), Temperature Measurement (0x0402), Concentration Measurement Clusters                 |
+| Water Freeze Detector         | 0x0041           | Boolean State (0x0045)                                                                                                                                |
+| Water Leak Detector           | 0x0043           | Boolean State (0x0045)                                                                                                                                |
+| Rain Sensor                   | 0x0044           | Boolean State (0x0045)                                                                                                                                |
+| Door Lock                     | 0x000A           | Door Lock (0x0101)                                                                                                                                    |
+| Window Covering               | 0x0202           | Window Covering (0x0102)                                                                                                                              |
+| Thermostat                    | 0x0301           | Thermostat (0x0201)                                                                                                                                   |
+| Fan                           | 0x002B           | Fan Control (0x0202)                                                                                                                                  |
+| Air Purifier                  | 0x002D           | Fan Control (0x0202)                                                                                                                                  |
+| Robotic Vacuum Cleaner        | 0x0074           | RVC Run Mode (0x0054), RVC Operational State (0x0061), RVC Clean Mode (0x0055), Service Area (0x0150)                                                 |
+| Room Air Conditioner          | 0x0072           | On/Off (0x0006), Thermostat (0x0201)                                                                                                                  |
+| Solar Power                   | 0x0017           | Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091)                                                                         |
+| Battery Storage               | 0x0018           | Electrical Power Measurement (0x0090), Electrical Energy Measurement (0x0091), Power Source (0x002F)                                                  |
+| Thread Border Router          | 0x0091           | Thread Network Diagnostics (0x0035), Thread Border Router Management (0x0452)                                                                         |
+
+## Door Lock Management
+
+Matter door locks support user and credential management directly from openHAB.
+This allows you to create, modify, and delete users and their PIN codes without needing the lock manufacturer's app.
+
+### Lock Configuration
+
+Door locks expose several configuration options in the Thing configuration:
+
+| Setting              | Description                                                                                           |
+|----------------------|-------------------------------------------------------------------------------------------------------|
+| Operating Mode       | The lock's operating mode (Normal, Vacation, Privacy, No Remote Lock/Unlock, Passage)                 |
+| Auto Relock Time     | Number of seconds to wait after unlocking before automatically relocking (0 to disable)               |
+| One Touch Locking    | Enable or disable the ability to lock the door with a single touch                                    |
+| Default Lock PIN     | PIN code to use for remote lock/unlock operations when the lock requires a PIN for remote operations  |
+
+### User Management
+
+Door locks that support the "User" feature will display user configuration groups.
+The configuration shows all existing users plus up to 5 additional empty slots for adding new users.
+As you add more users, additional empty slots will automatically appear after saving to allow further expansion (up to the lock's maximum supported users).
+
+Each user slot allows you to:
+
+- **User Name**: Set a descriptive name for the user (max 10 characters)
+- **User Type**: Set the user type (Unrestricted, Schedule Restricted, etc.)
+- **PIN Code**: Set a PIN credential for the user. After saving, the PIN is sent to the lock and cleared from the configuration for security
+- **Enabled**: Enable or disable the user. A disabled user cannot unlock the door with their credentials.
+- **Delete User**: Enable this checkbox and save to delete the user from the lock
+
+#### Fabric Ownership
+
+Matter locks track which controller (fabric) created each user. Users created by other Matter controllers (e.g., Apple Home, Google Home, Amazon Alexa) will appear as "Managed by Other Fabric" in the configuration.
+These users can only be deleted, enabled, or disabled from openHAB - editing their name, type, or PIN requires using the controller that originally created them.
+
+### Lock Events
+
+Door locks can emit events through trigger channels:
+
+| Trigger Channel            | Description                                                                                       |
+|----------------------------|---------------------------------------------------------------------------------------------------|
+| doorlock-alarm             | Fires when a lock alarm occurs (jammed, factory reset, wrong code limit, door forced open, etc.)  |
+| doorlock-lockoperationerror| Fires when a lock operation error occurs (failed lock/unlock attempts)                            |
+
+Example rule to handle lock alarms:
+
+```java
+rule "Door Lock Alarm"
+when
+    Channel "matter:node:main:12345678901234567890:1#doorlock-alarm" triggered
+then
+    logInfo("DoorLock", "Lock alarm triggered with code: " + receivedEvent)
+    // Alarm codes: 0=Jammed, 1=Factory Reset, 3=Radio Power Cycled, 4=Wrong Code Limit, 
+    //              5=Escutcheon Removed, 6=Door Forced Open, 7=Door Ajar, 8=Forced User
+end
+```
 
 ## Full Example
 
@@ -311,17 +453,70 @@ openHAB can also expose Items and Item groups as Matter devices to 3rd party Mat
 
 ## Configuration
 
-The openHAB matter bridge uses Metadata tags with the key "matter", similar to the Alexa, Google Assistant and Apple Homekit integrations.
+Note: The openHAB Matter bridge is **unrelated** to the Matter Controller Thing.
+Adding, modifying or removing a Matter "Controller" Thing, or any Matter "Node" Thing **will have no affect on the bridge**.
+
+There are two ways in which to configure the Matter bridge:
+
+1. Using the "Matter Bridge Configuration" settings page (Main UI -> Settings -> Add-on Settings -> Matter Binding) for bridge status, general configuration and pairing 3rd party clients.
+1. Adding Matter metadata tags to Groups and Items either through the Main UI or through item files.
+
+<img src="./doc/bridge-settings.png" alt="Bridge Settings" width="500"/>
+
+The openHAB matter bridge uses metadata tags with the key "matter", similar to the Alexa, Google Assistant and Apple Homekit integrations.
 Matter Metadata tag values generally follow the Matter "Device Type" and "Cluster" specification as much as possible.
+
 Items and item groups are initially tagged with a Matter "Device Type", which are Matter designations for common device types like lights, thermostats, locks, window coverings, etc...
 For single items, like a light switch or dimmer, simply tagging the item with the Matter device type is enough.
+
+```java
+Dimmer MyDimmer "My Dimmer" { matter="DimmableLight" }
+```
+
 For more complicated devices, like thermostats, A group item is tagged with the device type, and its child members are tagged with the cluster attribute(s) that it will be associated with.
 Multiple attributes use a comma delimited format like `attribute1, attribute2, ... attributeN`.
+
+```java
+Group              ThermostatGroup "Thermostat" { matter="Thermostat" }
+Number:Temperature ThermostatGroup_Temperature "Temperature" (ThermostatGroup) { matter="thermostat.localTemperature" }
+Number:Temperature ThermostatGroup_HeatSetpoint "Heat Setpoint" (ThermostatGroup) { matter="thermostat.occupiedHeatingSetpoint" }
+Number:Temperature ThermostatGroup_CoolSetpoint "Cool Setpoint" (ThermostatGroup) { matter="thermostat.occupiedCoolingSetpoint" }
+Number             ThermostatGroup_Mode "Mode" (ThermostatGroup) { matter="thermostat.systemMode" [OFF=0, HEAT=1, COOL=2, AUTO=3]}
+```
+
 For devices like fans that support groups with multiple items, but you are only using one item to control (like On/Off or Speed), you can tag the regular item with both the device type and the cluster attribute(s) separated by a comma.
+
+```java
+Switch TestFanSingleItem "On/Off" { matter="Fan, fanControl.fanMode" }
+```
+
+If there are issues starting the bridge, check the status field in the bridge settings page to see if there are any errors.
+
+### Pairing 3rd Party Clients
 
 Pairing codes and other options can be found in the MainUI under "Settings -> Add-on Settings -> Matter Binding"
 
+When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window", meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
+
+<img src="./doc/bridge-settings-pair.png" alt="Commissioning Window" width="500"/>
+
+Once a client is paired, the bridge will default to having its "Commissioning Window" closed and can not be paired with until the window is opened again in the settings.
+
+To pair additional clients, you can open the commissioning window again in the settings by enabling "Allow Commissioning", clicking save, and then and pair a new client within the 15 minute window using the QR code or manual pair code.
+
+Once a new client is paired, or the 15 minute window expires, the bridge will default to having its "Commissioning Window" closed and can not be paired with until the window is opened again in the settings.
+
+### Resetting the Bridge
+
+If you need to reset the bridge, you can do so by enabling the "Reset Bridge" button in the bridge settings page (advanced options) and clicking save.
+
+Note that this will leave 3rd party clients paired to the bridge still in a "paired" state, and you will need to unpair the now orphaned openHAB Matter bridge in their respective apps.
+
+Resetting the bridge is almost never needed, and should only be used if advised to do so by a developer.
+
 ### Device Types
+
+The following is a list of supported Matter device types and their corresponding openHAB item types and tags.
 
 | Type                | Item Type                             | Tag               | Option                                                                          |
 |---------------------|---------------------------------------|-------------------|---------------------------------------------------------------------------------|
@@ -337,15 +532,16 @@ Pairing codes and other options can be found in the MainUI under "Settings -> Ad
 | Contact Sensor      | Switch, Contact                       | ContactSensor     |                                                                                 |
 | Door Lock           | Switch                                | DoorLock          |                                                                                 |
 | Fan                 | Group, Switch, String, Dimmer         | Fan               |                                                                                 |
+| Mode Select         | Number, String, Switch, Rollershutter | ModeSelect        | Requires `modes` option, see below                                              |
 
 ### Global Options
 
-* Endpoint Labels
-  *  By default, the Item label is used as the Matter label but can be overridden by adding a `label` key as a metadata option, either by itself or part of other options required for a device.
-  * Example: `[label="My Custom Label"]`
-* Fixed Labels
-  * Matter has a concept of "Fixed Labels" which allows devices to expose arbitrary label names and values which can be used by clients for tasks like grouping devices in rooms.
-  * Example: `[fixedLabels="room=Office, floor=1"]` 
+- Endpoint Labels
+  - By default, the Item label is used as the Matter label but can be overridden by adding a `label` key as a metadata option, either by itself or part of other options required for a device.
+  - Example: `[label="My Custom Label"]`
+- Fixed Labels
+  - Matter has a concept of "Fixed Labels" which allows devices to expose arbitrary label names and values which can be used by clients for tasks like grouping devices in rooms.
+  - Example: `[fixedLabels="room=Office, floor=1"]`
 
 ### Thermostat group member tags
 
@@ -355,10 +551,8 @@ Pairing codes and other options can be found in the MainUI under "Settings -> Ad
 | Outdoor Temperature | Number                 | thermostat.outdoorTemperature      |                                                                                          |
 | Heating Setpoint    | Number                 | thermostat.occupiedHeatingSetpoint |                                                                                          |
 | Cooling Setpoint    | Number                 | thermostat.occupiedCoolingSetpoint |                                                                                          |
-| System Mode         | Number, String, Switch | thermostat.systemMode              | [OFF=0,AUTO=1,ON=1,COOL=3,HEAT=4,EMERGENCY_HEAT=5,PRECOOLING=6,FAN_ONLY=7,DRY=8,SLEEP=9] |
+| System Mode         | Number, String, Switch | thermostat.systemMode              | [OFF=0,AUTO=1,COOL=3,HEAT=4,EMERGENCY_HEAT=5,PRECOOLING=6,FAN_ONLY=7,DRY=8,SLEEP=9] |
 | Running Mode        | Number, String         | thermostat.runningMode             |                                                                                          |
-
-For `systemMode` the `ON` option should map to the system mode custom value that would be appropriate if a 'ON' command was issued, defaults to the `AUTO` mapping.
 
 The following attributes can be set in the options of any thermostat member or on the Group item to set temperature options.
 
@@ -399,7 +593,46 @@ The following attributes can be set on the Fan Mode item or the Group item to se
 | 4     | OffHighAuto       |
 | 5     | OffHigh           |
 
-### Example
+### Mode Select options
+
+**`ModeSelect` is considered experimental and is not supported by Apple Home, Google Home and Amazon Alexa (yet).**
+
+<details>
+<summary>Mode Select Details</summary>
+
+A `ModeSelect` device exposes a device which responds to user defined selectable modes.
+This can be used to model items which may not conform to other devices types.
+
+`ModeSelect` items (or groups) must provide a mapping of Matter modes to openHAB state values via the metadata option `modes`.  The format is a comma-separated list where each entry follows:
+
+```text
+<stateValue>:<label>[:<semanticTag>[:<semanticTag>...]]
+```
+
+- `stateValue`  – the exact openHAB state string you will send/receive (e.g. `off`, `auto`, `heat`, '0').
+- `label`       – human-readable label presented to Matter clients.
+- `semanticTag` – optional semantic hint in `namespace.tag` form (see the [Semantic Tags](#semantic-tags) appendix for valid values).
+
+At least one mode must be supplied.
+
+Example (exposes four modes, 'off', 'next', 'previous' and 'play'):
+
+```java
+String  BlueRayPlayer  "BlueRay Player"  { matter="ModeSelect" [
+    modes="off:Off:switches.off,next:Next:switches.next,previous:Previous:switches.previous,play:Play:switches.on"
+] }
+```
+
+A note on semantic tags:
+
+- If used, you can not mix different semantic namespaces as seen in the example above where `switches` is the base namespace being used for all tags.
+- These are provided by the Matter spec, but its up to clients (like Apple, Alexa, Google....) to interpret these tags (or not).
+- Each ecosystem will likely differ in its use of these tags.
+- They are provided here for maximum flexibility but are not guarenteed to have any affect.  
+
+</details>
+
+### Bridged Device Examples
 
 ```java
 Dimmer                TestDimmer               "Test Dimmer [%d%%]"                                                      {matter="DimmableLight" [label="My Custom Dimmer", fixedLabels="room=Bedroom 1, floor=2, direction=up, customLabel=Custom Value"]}
@@ -428,13 +661,13 @@ Switch                TestFanSingleItem         "On/Off"                        
 
 ### Bridge FAQ
 
-* Alexa: When pairing, after a minute Alexa reports "Something went wrong" 
-  * Alexa can take 3-4 seconds per device to process which can take longer then the Alexa UI is willing to wait.
+- Alexa: When pairing, after a minute Alexa reports "Something went wrong"
+  - Alexa can take 3-4 seconds per device to process which can take longer then the Alexa UI is willing to wait.
   Eventually the pairing will complete, which for a large number of devices may be a few minutes.
-* Alexa: Suddenly stops working and says it could not connect to a device or device not responding.
-  * Check the Settings page in the Main UI to confirm the bridge is running
-  * Ensure the openHAB item has the proper matter tag, or that the item is being loaded at all (check item file errors)
-  * Rarely, you may need to reboot the Alexa device.
+- Alexa: Suddenly stops working and says it could not connect to a device or device not responding.
+  - Check the Settings page in the Main UI to confirm the bridge is running
+  - Ensure the openHAB item has the proper matter tag, or that the item is being loaded at all (check item file errors)
+  - Rarely, you may need to reboot the Alexa device.
   If you have multiple devices and not sure which is the primary matter connection, you may need to reboot all of them.
 
 # Matter Ecosystem Overview
@@ -472,17 +705,17 @@ They also handle the commissioning process when new devices are added to the net
 A **bridge** is a special type of node that connects non-Matter devices to a Matter network, effectively translating between protocols.
 Bridges allow legacy devices to be controlled via the Matter standard.
 
-openHAB fully supports connecting to Matter bridges. 
+openHAB fully supports connecting to Matter bridges.
 In addition, openHAB has support for running its own Matter bridge service, exposing openHAB items as Matter endpoints to 3rd party systems.
-See [Matter Bridge](#Matter-Bridge) for information on running a Bridge server.
+See [Matter Bridge](#matter-bridge) for information on running a Bridge server.
 
 **Example:**
 
-- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The Ikea Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
+- A bridge that connects Zigbee or Z-Wave devices, making them accessible within a Matter ecosystem. The IKEA Dirigera and Philips Hue Bridge both act as matter bridges and are supported in openHAB.
 
 ### Thread Border Routers
 
-A **Thread Border Router** is a device that allows devices connected via Thread (a low-power wireless protocol) to communicate with devices on other networks, such as Wi-Fi or Ethernet. 
+A **Thread Border Router** is a device that allows devices connected via Thread (a low-power wireless protocol) to communicate with devices on other networks, such as Wi-Fi or Ethernet.
 It facilitates IPv6-based communication between Thread networks and the local IP network.
 
 **Example:**
@@ -514,7 +747,7 @@ For Matter devices to function correctly, **IPv6 must be enabled** and supported
 Without IPv6, devices won't be able to communicate properly within the Matter ecosystem.
 Ensure that your router has IPv6 enabled and that any Matter controllers (like smart hubs, apps or openHAB) are configured to support IPv6 as well.
 
-**Note that environments like Docker require special configurations to enable IPv6**
+**Note:** environments like Docker require special configurations to enable IPv6.
 
 ## Matter Commissioning and Pairing Codes
 
@@ -523,7 +756,8 @@ This process ensures that only authorized devices can join the network.
 
 ### Pairing Code from the Device
 
-When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup. This pairing code allows the controller to establish a secure connection to the device and add it to the network.
+When commissioning a new Matter device, it typically has a printed QR code or numeric pairing code that you scan or enter during setup.
+This pairing code allows the controller to establish a secure connection to the device and add it to the network.
 Once a device pairing code is in use, it typically can not be used again to pair other controllers.
 
 ### Additional Pairing Code from a Controller
@@ -534,4 +768,240 @@ Apple Home, Google Home, Amazon Alexa and openHAB all support generating pairing
 
 ### Example:
 
-- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB. If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.
+- When setting up a smart lock, you may scan a QR code directly from the lock, or use the 11 digit pairing code printed on it to pair it with openHAB.
+- If you later want to control the lock from another app or hub, you would retrieve a new pairing code directly from openHAB.
+
+## Apendixes
+
+### Semantic Tags
+
+| Namespace             | Tag Name         | Key                             |
+|-----------------------|------------------|---------------------------------|
+| Area                  | Aisle            | area.aisle                      |
+| Area                  | Attic            | area.attic                      |
+| Area                  | Back Door        | area.back-door                  |
+| Area                  | Back Yard        | area.back-yard                  |
+| Area                  | Balcony          | area.balcony                    |
+| Area                  | Ballroom         | area.ballroom                   |
+| Area                  | Bathroom         | area.bathroom                   |
+| Area                  | Bedroom          | area.bedroom                    |
+| Area                  | Border           | area.border                     |
+| Area                  | Boxroom          | area.boxroom                    |
+| Area                  | Breakfast Room   | area.breakfast-room             |
+| Area                  | Carport          | area.carport                    |
+| Area                  | Cellar           | area.cellar                     |
+| Area                  | Cloakroom        | area.cloakroom                  |
+| Area                  | Closet           | area.closet                     |
+| Area                  | Conservatory     | area.conservatory               |
+| Area                  | Corridor         | area.corridor                   |
+| Area                  | Craft Room       | area.craft-room                 |
+| Area                  | Cupboard         | area.cupboard                   |
+| Area                  | Deck             | area.deck                       |
+| Area                  | Den              | area.den                        |
+| Area                  | Dining           | area.dining                     |
+| Area                  | Drawing Room     | area.drawing-room               |
+| Area                  | Dressing Room    | area.dressing-room              |
+| Area                  | Driveway         | area.driveway                   |
+| Area                  | Elevator         | area.elevator                   |
+| Area                  | Ensuite          | area.ensuite                    |
+| Area                  | Entrance         | area.entrance                   |
+| Area                  | Entryway         | area.entryway                   |
+| Area                  | Family Room      | area.family-room                |
+| Area                  | Foyer            | area.foyer                      |
+| Area                  | Front Door       | area.front-door                 |
+| Area                  | Front Yard       | area.front-yard                 |
+| Area                  | Game Room        | area.game-room                  |
+| Area                  | Garage           | area.garage                     |
+| Area                  | Garage Door      | area.garage-door                |
+| Area                  | Garden           | area.garden                     |
+| Area                  | Garden Door      | area.garden-door                |
+| Area                  | Guest Bathroom   | area.guest-bathroom             |
+| Area                  | Guest Bedroom    | area.guest-bedroom              |
+| Area                  | Guest Room       | area.guest-room                 |
+| Area                  | Gym              | area.gym                        |
+| Area                  | Hallway          | area.hallway                    |
+| Area                  | Hearth Room      | area.hearth-room                |
+| Area                  | Kids Room        | area.kids-room                  |
+| Area                  | Kids Bedroom     | area.kids-bedroom               |
+| Area                  | Kitchen          | area.kitchen                    |
+| Area                  | Laundry Room     | area.laundry-room               |
+| Area                  | Lawn             | area.lawn                       |
+| Area                  | Library          | area.library                    |
+| Area                  | Living Room      | area.living-room                |
+| Area                  | Lounge           | area.lounge                     |
+| Area                  | Media/TV Room    | area.media-tv-room              |
+| Area                  | Mud Room         | area.mud-room                   |
+| Area                  | Music Room       | area.music-room                 |
+| Area                  | Nursery          | area.nursery                    |
+| Area                  | Office           | area.office                     |
+| Area                  | Outdoor Kitchen  | area.outdoor-kitchen            |
+| Area                  | Outside          | area.outside                    |
+| Area                  | Pantry           | area.pantry                     |
+| Area                  | Parking Lot      | area.parking-lot                |
+| Area                  | Parlor           | area.parlor                     |
+| Area                  | Patio            | area.patio                      |
+| Area                  | Play Room        | area.play-room                  |
+| Area                  | Pool Room        | area.pool-room                  |
+| Area                  | Porch            | area.porch                      |
+| Area                  | Primary Bathroom | area.primary-bathroom           |
+| Area                  | Primary Bedroom  | area.primary-bedroom            |
+| Area                  | Ramp             | area.ramp                       |
+| Area                  | Reception Room   | area.reception-room             |
+| Area                  | Recreation Room  | area.recreation-room            |
+| Area                  | Roof             | area.roof                       |
+| Area                  | Sauna            | area.sauna                      |
+| Area                  | Scullery         | area.scullery                   |
+| Area                  | Sewing Room      | area.sewing-room                |
+| Area                  | Shed             | area.shed                       |
+| Area                  | Side Door        | area.side-door                  |
+| Area                  | Side Yard        | area.side-yard                  |
+| Area                  | Sitting Room     | area.sitting-room               |
+| Area                  | Snug             | area.snug                       |
+| Area                  | Spa              | area.spa                        |
+| Area                  | Staircase        | area.staircase                  |
+| Area                  | Steam Room       | area.steam-room                 |
+| Area                  | Storage Room     | area.storage-room               |
+| Area                  | Studio           | area.studio                     |
+| Area                  | Study            | area.study                      |
+| Area                  | Sun Room         | area.sun-room                   |
+| Area                  | Swimming Pool    | area.swimming-pool              |
+| Area                  | Terrace          | area.terrace                    |
+| Area                  | Toilet           | area.toilet                     |
+| Area                  | Utility Room     | area.utility-room               |
+| Area                  | Ward             | area.ward                       |
+| Area                  | Workshop         | area.workshop                   |
+| Closure               | Opening          | closure.opening                 |
+| Closure               | Closing          | closure.closing                 |
+| Closure               | Stop             | closure.stop                    |
+| CompassDirection      | Northward        | compassdirection.northward      |
+| CompassDirection      | North-Eastward   | compassdirection.north-eastward |
+| CompassDirection      | Eastward         | compassdirection.eastward       |
+| CompassDirection      | South-Eastward   | compassdirection.south-eastward |
+| CompassDirection      | Southward        | compassdirection.southward      |
+| CompassDirection      | South-Westward   | compassdirection.south-westward |
+| CompassDirection      | Westward         | compassdirection.westward       |
+| CompassDirection      | North-Westward   | compassdirection.north-westward |
+| CompassLocation       | North            | compasslocation.north           |
+| CompassLocation       | North-East       | compasslocation.north-east      |
+| CompassLocation       | East             | compasslocation.east            |
+| CompassLocation       | South-East       | compasslocation.south-east      |
+| CompassLocation       | South            | compasslocation.south           |
+| CompassLocation       | South-West       | compasslocation.south-west      |
+| CompassLocation       | West             | compasslocation.west            |
+| CompassLocation       | North-West       | compasslocation.north-west      |
+| Direction             | Upward           | direction.upward                |
+| Direction             | Downward         | direction.downward              |
+| Direction             | Leftward         | direction.leftward              |
+| Direction             | Rightward        | direction.rightward             |
+| Direction             | Forward          | direction.forward               |
+| Direction             | Backward         | direction.backward              |
+| ElectricalMeasurement | DC               | electricalmeasurement.dc        |
+| ElectricalMeasurement | AC               | electricalmeasurement.ac        |
+| ElectricalMeasurement | ACPhase1         | electricalmeasurement.acphase1  |
+| ElectricalMeasurement | ACPhase2         | electricalmeasurement.acphase2  |
+| ElectricalMeasurement | ACPhase3         | electricalmeasurement.acphase3  |
+| Landmark              | Air Conditioner  | landmark.air-conditioner        |
+| Landmark              | Air Purifier     | landmark.air-purifier           |
+| Landmark              | Back Door        | landmark.back-door              |
+| Landmark              | Bar Stool        | landmark.bar-stool              |
+| Landmark              | Bath Mat         | landmark.bath-mat               |
+| Landmark              | Bathtub          | landmark.bathtub                |
+| Landmark              | Bed              | landmark.bed                    |
+| Landmark              | Bookshelf        | landmark.bookshelf              |
+| Landmark              | Chair            | landmark.chair                  |
+| Landmark              | Christmas Tree   | landmark.christmas-tree         |
+| Landmark              | Coat Rack        | landmark.coat-rack              |
+| Landmark              | Coffee Table     | landmark.coffee-table           |
+| Landmark              | Cooking Range    | landmark.cooking-range          |
+| Landmark              | Couch            | landmark.couch                  |
+| Landmark              | Countertop       | landmark.countertop             |
+| Landmark              | Cradle           | landmark.cradle                 |
+| Landmark              | Crib             | landmark.crib                   |
+| Landmark              | Desk             | landmark.desk                   |
+| Landmark              | Dining Table     | landmark.dining-table           |
+| Landmark              | Dishwasher       | landmark.dishwasher             |
+| Landmark              | Door             | landmark.door                   |
+| Landmark              | Dresser          | landmark.dresser                |
+| Landmark              | Laundry Dryer    | landmark.laundry-dryer          |
+| Landmark              | Fan              | landmark.fan                    |
+| Landmark              | Fireplace        | landmark.fireplace              |
+| Landmark              | Freezer          | landmark.freezer                |
+| Landmark              | Front Door       | landmark.front-door             |
+| Landmark              | High Chair       | landmark.high-chair             |
+| Landmark              | Kitchen Island   | landmark.kitchen-island         |
+| Landmark              | Lamp             | landmark.lamp                   |
+| Landmark              | Litter Box       | landmark.litter-box             |
+| Landmark              | Mirror           | landmark.mirror                 |
+| Landmark              | Nightstand       | landmark.nightstand             |
+| Landmark              | Oven             | landmark.oven                   |
+| Landmark              | Pet Bed          | landmark.pet-bed                |
+| Landmark              | Pet Bowl         | landmark.pet-bowl               |
+| Landmark              | Pet Crate        | landmark.pet-crate              |
+| Landmark              | Refrigerator     | landmark.refrigerator           |
+| Landmark              | Scratching Post  | landmark.scratching-post        |
+| Landmark              | Shoe Rack        | landmark.shoe-rack              |
+| Landmark              | Shower           | landmark.shower                 |
+| Landmark              | Side Door        | landmark.side-door              |
+| Landmark              | Sink             | landmark.sink                   |
+| Landmark              | Sofa             | landmark.sofa                   |
+| Landmark              | Stove            | landmark.stove                  |
+| Landmark              | Table            | landmark.table                  |
+| Landmark              | Toilet           | landmark.toilet                 |
+| Landmark              | Trash Can        | landmark.trash-can              |
+| Landmark              | Laundry Washer   | landmark.laundry-washer         |
+| Landmark              | Window           | landmark.window                 |
+| Landmark              | Wine Cooler      | landmark.wine-cooler            |
+| Laundry               | Normal           | laundry.normal                  |
+| Laundry               | Light Dry        | laundry.light-dry               |
+| Laundry               | Extra Dry        | laundry.extra-dry               |
+| Laundry               | No Dry           | laundry.no-dry                  |
+| Level                 | Low              | level.low                       |
+| Level                 | Medium           | level.medium                    |
+| Level                 | High             | level.high                      |
+| Location              | Indoor           | location.indoor                 |
+| Location              | Outdoor          | location.outdoor                |
+| Location              | Inside           | location.inside                 |
+| Location              | Outside          | location.outside                |
+| Number                | Zero             | number.zero                     |
+| Number                | One              | number.one                      |
+| Number                | Two              | number.two                      |
+| Number                | Three            | number.three                    |
+| Number                | Four             | number.four                     |
+| Number                | Five             | number.five                     |
+| Number                | Six              | number.six                      |
+| Number                | Seven            | number.seven                    |
+| Number                | Eight            | number.eight                    |
+| Number                | Nine             | number.nine                     |
+| Number                | Ten              | number.ten                      |
+| Position              | Left             | position.left                   |
+| Position              | Right            | position.right                  |
+| Position              | Top              | position.top                    |
+| Position              | Bottom           | position.bottom                 |
+| Position              | Middle           | position.middle                 |
+| Position              | Row              | position.row                    |
+| Position              | Column           | position.column                 |
+| PowerSource           | Unknown          | powersource.unknown             |
+| PowerSource           | Grid             | powersource.grid                |
+| PowerSource           | Solar            | powersource.solar               |
+| PowerSource           | Battery          | powersource.battery             |
+| PowerSource           | Ev               | powersource.ev                  |
+| Refrigerator          | Refrigerator     | refrigerator.refrigerator       |
+| Refrigerator          | Freezer          | refrigerator.freezer            |
+| RelativePosition      | Under            | relativeposition.under          |
+| RelativePosition      | Next To          | relativeposition.next-to        |
+| RelativePosition      | Around           | relativeposition.around         |
+| RelativePosition      | On               | relativeposition.on             |
+| RelativePosition      | Above            | relativeposition.above          |
+| RelativePosition      | Front Of         | relativeposition.front-of       |
+| RelativePosition      | Behind           | relativeposition.behind         |
+| RoomAirConditioner    | Evaporator       | roomairconditioner.evaporator   |
+| RoomAirConditioner    | Condenser        | roomairconditioner.condenser    |
+| Switches              | On               | switches.on                     |
+| Switches              | Off              | switches.off                    |
+| Switches              | Toggle           | switches.toggle                 |
+| Switches              | Up               | switches.up                     |
+| Switches              | Down             | switches.down                   |
+| Switches              | Next             | switches.next                   |
+| Switches              | Previous         | switches.previous               |
+| Switches              | Enter/OK/Select  | switches.enter-ok-select        |
+| Switches              | Custom           | switches.custom                 |

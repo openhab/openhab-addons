@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -107,13 +106,13 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * upon a reboot of the Node.
      */
     public BigInteger overrunCount; // 12 uint64 R V
-    // Structs
 
+    // Structs
     /**
      * The Disconnection Event shall indicate that a Node’s Wi-Fi connection has been disconnected as a result of
      * de-authenticated or dis-association and indicates the reason.
      */
-    public class Disconnection {
+    public static class Disconnection {
         /**
          * This field shall contain the Reason Code field value for the Disassociation or Deauthentication event that
          * caused the disconnection and the value shall align with Table 9-49 &quot;Reason codes&quot; of IEEE
@@ -131,7 +130,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * point, but is unable to successfully associate or authenticate, after exhausting all internal retries of its
      * supplicant.
      */
-    public class AssociationFailure {
+    public static class AssociationFailure {
         /**
          * The Status field shall be set to a value from the AssociationFailureCauseEnum.
          */
@@ -158,7 +157,7 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
      * Connected, in this context, shall mean that a Node acting as a Wi-Fi station is successfully associated to a
      * Wi-Fi Access Point.
      */
-    public class ConnectionStatus {
+    public static class ConnectionStatus {
         public ConnectionStatusEnum connectionStatus; // ConnectionStatusEnum
 
         public ConnectionStatus(ConnectionStatusEnum connectionStatus) {
@@ -175,8 +174,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         WPA2(4, "Wpa 2"),
         WPA3(5, "Wpa 3");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SecurityTypeEnum(Integer value, String label) {
             this.value = value;
@@ -203,8 +202,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         AX(5, "Ax"),
         AH(6, "Ah");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private WiFiVersionEnum(Integer value, String label) {
             this.value = value;
@@ -228,8 +227,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         AUTHENTICATION_FAILED(2, "Authentication Failed"),
         SSID_NOT_FOUND(3, "Ssid Not Found");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AssociationFailureCauseEnum(Integer value, String label) {
             this.value = value;
@@ -251,8 +250,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         CONNECTED(0, "Connected"),
         NOT_CONNECTED(1, "Not Connected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ConnectionStatusEnum(Integer value, String label) {
             this.value = value;

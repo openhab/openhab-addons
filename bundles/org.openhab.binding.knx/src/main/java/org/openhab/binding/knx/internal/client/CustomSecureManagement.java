@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,12 @@ package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import tuwien.auto.calimero.SerialNumber;
-import tuwien.auto.calimero.link.KNXLinkClosedException;
-import tuwien.auto.calimero.mgmt.SecureManagement;
-import tuwien.auto.calimero.mgmt.TransportLayer;
-import tuwien.auto.calimero.mgmt.TransportLayerImpl;
-import tuwien.auto.calimero.secure.Security;
+import io.calimero.SerialNumber;
+import io.calimero.link.KNXLinkClosedException;
+import io.calimero.mgmt.SecureManagement;
+import io.calimero.mgmt.TransportLayer;
+import io.calimero.mgmt.TransportLayerImpl;
+import io.calimero.secure.Security;
 
 /**
  * This class is to provide access to protected constructors in the Calimero library.

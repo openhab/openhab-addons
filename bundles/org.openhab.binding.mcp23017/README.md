@@ -17,13 +17,13 @@ Without satisfying this dependency you will see strange `NoClassDefFoundError: C
 
 ## Supported Things
 
-This binding supports one thing type:
+This binding supports one Thing type:
 
 mcp23017 - which is a mcp23017 chip connected to an I2C bus on specified HEX address and bus number
 
 ## Thing Configuration
 
-- Required configuration for mcp23017 thing:
+- Required configuration for mcp23017 Thing:
 
 | Parameter  | Description                                                                                                                       | Default value |
 |------------|-----------------------------------------------------------------------------------------------------------------------------------|---------------|

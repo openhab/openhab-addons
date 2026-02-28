@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,6 @@ public class Pm {
      */
     public Pm(Integer id, Integer channel, Integer pid, Integer value, Double set, String typ, String setColor,
             String valueColor) {
-        super();
         this.id = id;
         this.channel = channel;
         this.pid = pid;

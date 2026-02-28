@@ -87,6 +87,7 @@
 		<category>oh:meteofrance:neige</category>
 		<tags>
 			<tag>Alarm</tag>
+			<tag>Precipitation</tag>
 		</tags>
 		<state readOnly="true">
 			<options>

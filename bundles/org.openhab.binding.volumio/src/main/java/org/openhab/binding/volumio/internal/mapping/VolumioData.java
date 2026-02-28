@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.volumio.internal.mapping;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Objects;
@@ -247,7 +248,7 @@ public class VolumioData {
                 }
 
                 try {
-                    URL url = new URL(coverArtUrl);
+                    URL url = URI.create(coverArtUrl).toURL();
                     URLConnection connection = url.openConnection();
                     InputStream inStream = null;
                     inStream = connection.getInputStream();

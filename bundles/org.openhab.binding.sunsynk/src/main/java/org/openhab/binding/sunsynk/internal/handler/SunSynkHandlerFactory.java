@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,12 +68,12 @@ public class SunSynkHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_INVERTER)) {
-            logger.debug("SunSynkHandlerFactory created Inverter Handler ");
+            logger.debug("SunSynkHandlerFactory created Inverter Handler");
             return new SunSynkInverterHandler(thing);
         } else if (thingTypeUID.equals(BRIDGE_TYPE_ACCOUNT)) {
             SunSynkAccountHandler handler = new SunSynkAccountHandler((Bridge) thing);
             registerAccountDiscoveryService(handler);
-            logger.debug("SunSynkHandlerFactory created Account Handler ");
+            logger.debug("SunSynkHandlerFactory created Account Handler");
             return handler;
         }
         return null;

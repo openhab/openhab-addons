@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,9 +31,8 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 @NonNullByDefault
 public abstract class BaseMatterConverterTest {
 
-    @Mock
     @NonNullByDefault({})
-    protected MatterBridgeClient mockBridgeClient;
+    protected MatterBridgeClient mockBridgeClient = new MatterBridgeClient();
     @Mock
     @NonNullByDefault({})
     protected BaseThingHandlerFactory mockThingHandlerFactory;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,18 +15,15 @@ package org.openhab.binding.froniuswattpilot.internal;
 import static org.openhab.binding.froniuswattpilot.internal.FroniusWattpilotBindingConstants.*;
 
 import java.io.IOException;
-import java.net.NoRouteToHostException;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.io.EofException;
-import org.eclipse.jetty.util.Utf8Appendable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -42,20 +39,23 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.florianhotze.wattpilot.WattpilotClient;
-import com.florianhotze.wattpilot.WattpilotClientListener;
-import com.florianhotze.wattpilot.WattpilotInfo;
-import com.florianhotze.wattpilot.WattpilotStatus;
-import com.florianhotze.wattpilot.commands.SetChargingCurrentCommand;
-import com.florianhotze.wattpilot.commands.SetChargingModeCommand;
-import com.florianhotze.wattpilot.commands.SetEnforcedChargingStateCommand;
-import com.florianhotze.wattpilot.commands.SetSurplusPowerThresholdCommand;
-import com.florianhotze.wattpilot.dto.ChargingMode;
-import com.florianhotze.wattpilot.dto.EnforcedChargingState;
+import dev.digiried.wattpilot.WattpilotClient;
+import dev.digiried.wattpilot.WattpilotClientListener;
+import dev.digiried.wattpilot.WattpilotInfo;
+import dev.digiried.wattpilot.WattpilotStatus;
+import dev.digiried.wattpilot.commands.SetBoostCommand;
+import dev.digiried.wattpilot.commands.SetBoostSoCLimitCommand;
+import dev.digiried.wattpilot.commands.SetChargingCurrentCommand;
+import dev.digiried.wattpilot.commands.SetChargingModeCommand;
+import dev.digiried.wattpilot.commands.SetEnforcedChargingStateCommand;
+import dev.digiried.wattpilot.commands.SetSurplusPowerThresholdCommand;
+import dev.digiried.wattpilot.commands.SetSurplusSoCThresholdCommand;
+import dev.digiried.wattpilot.dto.ChargingMode;
+import dev.digiried.wattpilot.dto.EnforcedChargingState;
 
 /**
  * The {@link FroniusWattpilotHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * sent to one of the channels, and updating the channels with the current states.
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -64,14 +64,33 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
     private final Logger logger = LoggerFactory.getLogger(FroniusWattpilotHandler.class);
     private final WattpilotClient client;
 
-    private @Nullable CompletableFuture<@Nullable Void> awaitDisconnect;
-
     private @Nullable FroniusWattpilotConfiguration config;
+    private @Nullable ScheduledFuture<?> reconnectJob;
 
     public FroniusWattpilotHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         client = new WattpilotClient(httpClient);
         client.addListener(this);
+    }
+
+    private @Nullable Integer getPercent(Command command) {
+        switch (command) {
+            case QuantityType<?> qt -> {
+                qt = qt.toUnit(Units.PERCENT);
+                if (qt == null) {
+                    logger.debug("Failed to convert QuantityType to PERCENT!");
+                    return null;
+                }
+                return qt.intValue();
+            }
+            case DecimalType dt -> {
+                return dt.intValue();
+            }
+            default -> {
+                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                return null;
+            }
+        }
     }
 
     @Override
@@ -136,6 +155,25 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                     }
                     client.sendCommand(new SetSurplusPowerThresholdCommand(watts));
                     break;
+                case CHANNEL_PV_SURPLUS_SOC:
+                    Integer surplusSoC = getPercent(command);
+                    if (surplusSoC != null) {
+                        client.sendCommand(new SetSurplusSoCThresholdCommand(surplusSoC));
+                    }
+                    break;
+                case CHANNEL_BOOST_ENABLED:
+                    if (command instanceof OnOffType oft) {
+                        client.sendCommand(new SetBoostCommand(oft == OnOffType.ON));
+                    } else {
+                        logger.debug("Command has wrong type, OnOffType required!");
+                    }
+                    break;
+                case CHANNEL_BOOST_SOC:
+                    Integer boostSoc = getPercent(command);
+                    if (boostSoc != null) {
+                        client.sendCommand(new SetBoostSoCLimitCommand(boostSoc));
+                    }
+                    break;
                 default:
                     logger.debug("Unknown channel id: {}", channelId);
             }
@@ -174,6 +212,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
         updateStatus(ThingStatus.UNKNOWN);
         try {
+            logger.debug("Connecting to Wattpilot at {} ...", config.hostname);
             client.connect(config.hostname, config.password);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -182,46 +221,39 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
 
     @Override
     public void dispose() {
-        if (client.isConnected()) {
-            CompletableFuture<@Nullable Void> awaitDisconnect = this.awaitDisconnect;
-            if (awaitDisconnect != null) {
-                awaitDisconnect.cancel(true);
-            }
-            awaitDisconnect = this.awaitDisconnect = new CompletableFuture<>();
-            client.disconnect();
-            try {
-                awaitDisconnect.get(3, TimeUnit.SECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                logger.error("Failed to wait for disconnect", e);
-            }
+        try {
+            client.disconnect().get(3, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.error("Failed to disconnect", e);
         }
+        client.removeListener(this);
     }
 
     @Override
-    public void connected() {
+    public void connected(WattpilotInfo info) {
+        logger.debug("Connected to Wattpilot.");
+        var reconnectJob = this.reconnectJob;
+        if (reconnectJob != null) {
+            reconnectJob.cancel(false);
+            this.reconnectJob = null;
+        }
         updateStatus(ThingStatus.ONLINE);
-        updateDeviceProperties(client.getDeviceInfo());
+        updateDeviceProperties(info);
     }
 
     @Override
-    public void disconnected(@Nullable String reason, @Nullable Throwable cause) {
-        CompletableFuture<@Nullable Void> awaitDisconnect = this.awaitDisconnect;
-        if (awaitDisconnect != null) {
-            awaitDisconnect.complete(null);
-        }
+    public void disconnected(String reason, @Nullable Throwable cause) {
+        logger.debug("Disconnected from Wattpilot: {}", reason, cause);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-        if (cause instanceof TimeoutException || cause instanceof NoRouteToHostException
-                || cause instanceof EofException || cause instanceof Utf8Appendable.NotUtf8Exception) {
-            this.logger.debug("Connection to Wattpilot lost, scheduling reconnection attempt.");
-            this.scheduler.schedule(this::initialize, 30L, TimeUnit.SECONDS);
+        var reconnectJob = this.reconnectJob;
+        if (cause != null && reconnectJob == null) {
+            logger.debug("Connection to Wattpilot lost, scheduling reconnection job ...", cause);
+            this.reconnectJob = scheduler.scheduleAtFixedRate(this::initialize, 30L, 60L, TimeUnit.SECONDS);
         }
     }
 
     @Override
-    public void statusChanged(@Nullable WattpilotStatus status) {
-        if (status == null) {
-            return;
-        }
+    public void statusChanged(WattpilotStatus status) {
         updateChannelsControl(status);
         updateChannelsStatus(status);
         updateChannelsMetrics(status);
@@ -238,6 +270,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         final ThingUID uid = getThing().getUID();
         ChannelUID channel;
 
+        // generic charging control
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_ALLOWED);
         updateState(channel,
                 status.getEnforcedChargingState() == EnforcedChargingState.OFF ? OnOffType.OFF : OnOffType.ON);
@@ -248,8 +281,19 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_CURRENT);
         updateState(channel, new QuantityType<>(status.getChargingCurrent(), Units.AMPERE));
 
+        // PV surplus charging
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_PV_SURPLUS_THRESHOLD);
         updateState(channel, new QuantityType<>(status.getSurplusPowerThreshold(), Units.WATT));
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_PV_SURPLUS_SOC);
+        updateState(channel, new DecimalType(status.getSurplusSoCThreshold()));
+
+        // boost charging
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_BOOST_ENABLED);
+        updateState(channel, status.isBoostEnabled() ? OnOffType.ON : OnOffType.OFF);
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_BOOST_SOC);
+        updateState(channel, new DecimalType(status.getBoostSoCLimit()));
     }
 
     private void updateChannelsStatus(WattpilotStatus status) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -93,12 +92,12 @@ public class EnergyPreferenceCluster extends BaseCluster {
      * value.
      */
     public Integer currentLowPowerModeSensitivity; // 4 uint8 RW VO
-    // Structs
 
+    // Structs
     /**
      * This represents a step along a scale of preferences.
      */
-    public class BalanceStruct {
+    public static class BalanceStruct {
         /**
          * This field shall indicate the relative value of this step.
          */
@@ -122,8 +121,8 @@ public class EnergyPreferenceCluster extends BaseCluster {
         EFFICIENCY(2, "Efficiency"),
         WATER_CONSUMPTION(3, "Water Consumption");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EnergyPriorityEnum(Integer value, String label) {
             this.value = value;

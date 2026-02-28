@@ -204,6 +204,7 @@
 					<option value="A">A Series</option>
 					<option value="P">P Series</option>
 					<option value="X">X Series</option>
+					<option value="H">H Series</option>
 				</options>
 			</parameter>
 			<parameter name="serial" type="text" required="true">

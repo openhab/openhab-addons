@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,6 @@ public class DeviceIdentifier {
 
     public DeviceIdentifier(String nameOrDescription, @Nullable String additionalFilters)
             throws PatternSyntaxException {
-        super();
         this.nameOrDescription = nameOrDescription;
         if (additionalFilters != null && !additionalFilters.isEmpty()) {
             Arrays.asList(additionalFilters.split("###")).stream()

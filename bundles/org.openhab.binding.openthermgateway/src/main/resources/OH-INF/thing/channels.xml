@@ -556,7 +556,7 @@
 	<channel-type id="tspnumber">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Transparent Slave Parameter Number</label>
-		<description>Number of transparant slave parameter entries</description>
+		<description>Number of transparent slave parameter entries</description>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -799,7 +799,7 @@
 		</tags>
 		<state readOnly="true">
 			<options>
-				<option value="0">central exaust</option>
+				<option value="0">central exhaust</option>
 				<option value="1">heat-recovery</option>
 			</options>
 		</state>

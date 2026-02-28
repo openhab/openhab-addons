@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,10 +43,15 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2_PLUS = new ThingTypeUID(BINDING_ID,
             "window-contact-2-plus");
+    public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2_MATTER = new ThingTypeUID(BINDING_ID,
+            "window-contact-2-matter");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT_2 = new ThingTypeUID(BINDING_ID, "thermostat-2");
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT_2_MATTER = new ThingTypeUID(BINDING_ID,
+            "thermostat-2-matter");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
     public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
     public static final ThingTypeUID THING_TYPE_CAMERA_360 = new ThingTypeUID(BINDING_ID, "security-camera-360");
@@ -63,6 +68,8 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_WATER_DETECTOR = new ThingTypeUID(BINDING_ID, "water-detector");
     public static final ThingTypeUID THING_TYPE_RELAY = new ThingTypeUID(BINDING_ID, "relay");
+    public static final ThingTypeUID THING_TYPE_PRESENCE_SIMULATION = new ThingTypeUID(BINDING_ID,
+            "presence-simulation");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
@@ -72,6 +79,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_TRIGGER_SCENARIO = "trigger-scenario";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_TEMPERATURE_OFFSET = "temperature-offset";
     public static final String CHANNEL_TEMPERATURE_RATING = "temperature-rating";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_HUMIDITY_RATING = "humidity-rating";
@@ -122,6 +130,10 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VIBRATION_SENSOR_ENABLED = "vibration-sensor-enabled";
     public static final String CHANNEL_VIBRATION_SENSOR_SENSITIVITY = "vibration-sensor-sensitivity";
     public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vibration-sensor-state";
+    public static final String CHANNEL_PRESENCE_SIMULATION_ENABLED = "presence-simulation-enabled";
+    public static final String CHANNEL_DISPLAY_DIRECTION = "display-direction";
+    public static final String CHANNEL_DISPLAYED_TEMPERATURE = "displayed-temperature";
+
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400
@@ -134,6 +146,7 @@ public class BoschSHCBindingConstants {
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";
+    public static final String SERVICE_PRESENCE_SIMULATION = "presenceSimulationService";
 
     // thing properties
     public static final String PROPERTY_LOCATION_LEGACY = "Location";

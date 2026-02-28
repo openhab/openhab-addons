@@ -430,6 +430,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Thermostat Mode Setting</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s" readOnly="false">
 			<options>
 				<option value="AUTOMATIC">AUTOMATIC</option>
@@ -477,6 +481,10 @@
 		<label>Contact State</label>
 		<description>Contact state information</description>
 		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 

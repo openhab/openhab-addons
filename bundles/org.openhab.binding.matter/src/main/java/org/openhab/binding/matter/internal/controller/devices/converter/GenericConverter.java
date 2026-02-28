@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.BaseCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -84,6 +85,16 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
         // add polling logic here in subclasses
     }
 
+    /**
+     * This method is designed to be optionally overridden in subclasses when a cluster needs to handle configuration
+     * updates from the Thing configuration.
+     * 
+     * @param config The updated configuration
+     */
+    public void handleConfigurationUpdate(Configuration config) {
+        // add configuration update handling logic here in subclasses
+    }
+
     @Override
     public void onEvent(AttributeChangedMessage message) {
     }
@@ -99,6 +110,10 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
     public final void updateState(String channelId, State state) {
         handler.updateState(endpointNumber, channelId, state);
         stateCache.put(channelId, state);
+    }
+
+    public final boolean isChannelLinked(String channelId) {
+        return handler.isLinked(endpointNumber, channelId);
     }
 
     public final void triggerChannel(String channelId, String event) {

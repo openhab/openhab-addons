@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public class LinkDBChange extends DatabaseChange<LinkDBRecord> {
 
     @Override
     public LinkDBRecord getRecord() {
-        return type == ChangeType.DELETE ? LinkDBRecord.asInactive(record) : record;
+        return type == ChangeType.DELETE ? record.asInactive() : record;
     }
 
     /**
@@ -59,7 +59,7 @@ public class LinkDBChange extends DatabaseChange<LinkDBRecord> {
      * @return the link db change
      */
     public static LinkDBChange forModify(LinkDBRecord record, byte[] data) {
-        return new LinkDBChange(LinkDBRecord.withNewData(data, record), ChangeType.MODIFY);
+        return new LinkDBChange(record.withNewData(data), ChangeType.MODIFY);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,9 @@ public class HomeWizardP1MeterMeasurementPayload extends HomeWizardEnergyMeterMe
     @SerializedName("meter_model")
     private String meterModel = "";
 
+    @SerializedName(value = "tariff", alternate = "active_tariff")
+    private int tariff = 0;
+
     @SerializedName("any_power_fail_count")
     private int anyPowerFailCount;
 
@@ -69,6 +72,15 @@ public class HomeWizardP1MeterMeasurementPayload extends HomeWizardEnergyMeterMe
      */
     public String getMeterModel() {
         return meterModel;
+    }
+
+    /**
+     * Getter for the tariff
+     *
+     * @return tariff
+     */
+    public int getTariff() {
+        return tariff;
     }
 
     /**

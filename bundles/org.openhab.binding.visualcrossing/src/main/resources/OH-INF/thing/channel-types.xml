@@ -1818,6 +1818,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precip-channel">
@@ -1827,12 +1831,20 @@
 			The amount of liquid precipitation that fell or is predicted to fall in the period. This includes the
 			liquid-equivalent amount of any frozen precipitation such as snow or ice.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="precip-prob-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precip Prob</label>
 		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Precipitation</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="precip-type-channel">
@@ -1888,6 +1900,10 @@
 			(https://www.visualcrossing.com/resources/documentation/weather-api/energy-elements-in-the-timeline-weather-api/)
 			pages.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-energy-channel">
@@ -1902,6 +1918,10 @@
 			(https://www.visualcrossing.com/resources/documentation/weather-api/energy-elements-in-the-timeline-weather-api/)
 			pages.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f MJ/m²"/>
 	</channel-type>
 	<channel-type id="conditions-channel">
@@ -1969,6 +1989,10 @@
 			potential energy (CAPE) and convective inhibition (CIN), predicted rain and wind. Typically, a severe risk value less
 			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
 		</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<!-- ❌ Channels ❌ -->

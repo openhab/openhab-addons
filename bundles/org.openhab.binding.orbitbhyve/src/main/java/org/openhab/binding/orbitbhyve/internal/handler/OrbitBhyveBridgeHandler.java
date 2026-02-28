@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -256,7 +256,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     public synchronized void processStatusResponse(String content) {
         updateStatus(ThingStatus.ONLINE);
-        logger.trace("Got message: {}", content);
+        logger.trace("Processing message: {}", content);
         OrbitBhyveSocketEvent event = gson.fromJson(content, OrbitBhyveSocketEvent.class);
         if (event != null) {
             processEvent(event);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.energidataservice.internal.provider.cache;
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -37,7 +36,7 @@ public class DatahubPriceSubscriptionCache
 
     public static final int MAX_CACHE_SIZE = 24 * 2 + NUMBER_OF_HISTORIC_HOURS;
 
-    private final PriceListParser priceListParser = new PriceListParser();
+    private final PriceListParser priceListParser;
 
     private Collection<DatahubPricelistRecord> datahubRecords = new CopyOnWriteArrayList<>();
 
@@ -46,13 +45,14 @@ public class DatahubPriceSubscriptionCache
     }
 
     public DatahubPriceSubscriptionCache(Clock clock) {
-        super(clock, Duration.ofHours(1));
+        super(clock);
+        this.priceListParser = new PriceListParser(clock);
     }
 
     /**
      * Replace current "raw"/unprocessed tariff records in cache.
      * Map of hourly tariffs will be updated automatically.
-     * 
+     *
      * @param records The records as received from Energi Data Service.
      */
     @Override
@@ -79,7 +79,7 @@ public class DatahubPriceSubscriptionCache
 
     /**
      * Check if we have "raw" tariff records cached which are valid tomorrow.
-     * 
+     *
      * @return true if tariff records for tomorrow are cached
      */
     public boolean areTariffsValidTomorrow() {

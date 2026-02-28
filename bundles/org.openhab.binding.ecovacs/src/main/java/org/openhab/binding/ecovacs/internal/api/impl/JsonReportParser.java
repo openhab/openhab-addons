@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.ErrorReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.StatsReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.WaterInfoReport;
+import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.WorkStateReport;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalIotCommandJsonResponse.JsonResponsePayloadWrapper;
 import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
 import org.openhab.binding.ecovacs.internal.api.util.DataParsingException;
@@ -59,7 +60,8 @@ class JsonReportParser implements ReportParser {
         } catch (JsonSyntaxException e) {
             // The onFwBuryPoint-bd_sysinfo sends a JSON array instead of the expected JsonResponsePayloadBody object.
             // Since we don't do anything with it anyway, just ignore it
-            logger.debug("{}: Got invalid JSON message payload, ignoring: {}", device.getSerialNumber(), payload, e);
+            logger.debug("{}: Got invalid JSON data ({}), ignoring payload: {}", device.getSerialNumber(),
+                    e.getMessage(), payload);
             response = null;
         }
         if (response == null) {
@@ -125,6 +127,15 @@ class JsonReportParser implements ReportParser {
             case "waterinfo": {
                 WaterInfoReport report = payloadAs(response, WaterInfoReport.class);
                 listener.onWaterSystemPresentUpdated(device, report.waterPlatePresent != 0);
+                break;
+            }
+            case "workstate": {
+                WorkStateReport report = payloadAs(response, WorkStateReport.class);
+                CleanMode mode = report.determineCleanMode(gson);
+                if (mode == null) {
+                    throw new DataParsingException("Could not get clean mode from response " + payload);
+                }
+                handleCleanModeChange(mode, null);
                 break;
             }
             // more possible events (unused for now):

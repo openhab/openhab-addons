@@ -12,7 +12,7 @@ IPX800 is a 8 relay webserver from gce-electronics with a lot of possibilities:
 Each IPX800 connected to openHAB must be configured with the setting 'Send data on status changed' on the website in M2M > TCP client.
 
 To make it simple, IPX800 is a simple device that drives output and retrieves input.
-On input we generally connect push buttons (for instance house switchs), on ouputs we can connect light bulbs for instance.
+On input we generally connect push buttons (for instance house switches), on outputs we can connect light bulbs for instance.
 
 Features of the binding:
 
@@ -36,8 +36,8 @@ The IPX800v3 (ID : 'ipx800v3') accepts the following configuration parameters :
 | portNumber          | 9870    | No       | TCP client connection port. |
 | pullInterval*       | 5000    | No       | Refresh interval (in ms)    |
 
-The binding will query periodically the 'globalstatus.xml' page of the IPX to get fresh informations.
-This is especially usefull for Analog inputs and Counter as modification of these values on PLC side does not trigger any M2M message.
+The binding will query periodically the 'globalstatus.xml' page of the IPX to get fresh information.
+This is especially useful for Analog inputs and Counter as modification of these values on PLC side does not trigger any M2M message.
 
 The thing provides four groups of channels.
 

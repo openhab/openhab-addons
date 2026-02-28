@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -67,13 +66,13 @@ public class SwitchCluster extends BaseCluster {
      * factory reset for which generating events towards the client is not appropriate).
      */
     public Integer multiPressMax; // 2 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated, when the latching switch is moved to a new position. It may have been delayed by
      * debouncing within the switch.
      */
-    public class SwitchLatched {
+    public static class SwitchLatched {
         /**
          * This field shall indicate the new value of the CurrentPosition attribute, i.e. after the move.
          */
@@ -87,7 +86,7 @@ public class SwitchCluster extends BaseCluster {
     /**
      * This event shall be generated, when the momentary switch starts to be pressed (after debouncing).
      */
-    public class InitialPress {
+    public static class InitialPress {
         /**
          * This field shall indicate the new value of the CurrentPosition attribute, i.e. while pressed.
          */
@@ -120,7 +119,7 @@ public class SwitchCluster extends BaseCluster {
      * The rationale for this constraint is the ambiguity of interpretation of events when mixing long presses and
      * multi-press events.
      */
-    public class LongPress {
+    public static class LongPress {
         /**
          * This field shall indicate the new value of the CurrentPosition attribute, i.e. while pressed.
          */
@@ -142,7 +141,7 @@ public class SwitchCluster extends BaseCluster {
      * generated when the switch is released - even when the switch was pressed for a long time.
      * • Also see Section 1.13.7, “Sequence of generated events”.
      */
-    public class ShortRelease {
+    public static class ShortRelease {
         /**
          * This field shall indicate the previous value of the CurrentPosition attribute, i.e. just prior to release.
          */
@@ -159,7 +158,7 @@ public class SwitchCluster extends BaseCluster {
      * has been generated since the previous InitialPress event. Also see Section 1.13.7, “Sequence of generated
      * events”.
      */
-    public class LongRelease {
+    public static class LongRelease {
         /**
          * This field shall indicate the previous value of the CurrentPosition attribute, i.e. just prior to release.
          */
@@ -176,7 +175,7 @@ public class SwitchCluster extends BaseCluster {
      * This event shall be generated to indicate how many times the momentary switch has been pressed in a multi-press
      * sequence, during that sequence. See Multi Press Details below.
      */
-    public class MultiPressOngoing {
+    public static class MultiPressOngoing {
         /**
          * This field shall indicate the new value of the CurrentPosition attribute, i.e. while pressed.
          */
@@ -214,7 +213,7 @@ public class SwitchCluster extends BaseCluster {
      * aborted sequence. Clients SHOULD always act using the TotalNumberOfPressesCounted field taken into account since
      * for values from 1 to MultiPressMax, the user action that led to the event was different depending on the count.
      */
-    public class MultiPressComplete {
+    public static class MultiPressComplete {
         public Integer previousPosition; // uint8
         public Integer totalNumberOfPressesCounted; // uint8
 

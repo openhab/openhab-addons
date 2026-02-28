@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -313,11 +313,11 @@ public class CryptoUtil {
 
     public static byte @Nullable [] hmac(byte[] data, byte[] key) {
         try {
-            Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(key, "HmacSHA256");
-            sha256_HMAC.init(secret_key);
+            Mac sha256HMAC = Mac.getInstance("HmacSHA256");
+            SecretKeySpec secretKey = new SecretKeySpec(key, "HmacSHA256");
+            sha256HMAC.init(secretKey);
 
-            return sha256_HMAC.doFinal(data);
+            return sha256HMAC.doFinal(data);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             LOGGER.warn("Creating HMAC hash failed: {}", e.getMessage());
         }

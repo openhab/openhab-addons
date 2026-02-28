@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,9 @@ import static org.openhab.binding.ipp.internal.IppBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -80,7 +82,7 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
             if (obj instanceof URL newUrl) {
                 url = newUrl;
             } else if (obj instanceof String urlString) {
-                url = new URL(urlString);
+                url = URI.create(urlString).toURL();
             }
             printer = new CupsPrinter(null, url, name);
         } catch (MalformedURLException e) {
@@ -177,7 +179,7 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
     }
 
     @Override
-    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
             @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
         return Set.of();
     }

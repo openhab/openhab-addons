@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardEnergySocketStateHa
                 break;
             }
             default:
-                logger.warn("Should handle {} {}", channelUID.getIdWithoutGroup(), command);
+                logger.warn("Unhandled command for channel: {} command: {}", channelUID.getIdWithoutGroup(), command);
                 break;
         }
     }
@@ -130,8 +130,8 @@ public class HomeWizardEnergySocketHandler extends HomeWizardEnergySocketStateHa
      * @param data The data obtained from the API call
      */
     @Override
-    protected void handleDataPayload(String data) {
-        super.handleDataPayload(data);
+    protected void handleMeasurementData(String data) {
+        super.handleMeasurementData(data);
 
         var payload = gson.fromJson(data, HomeWizardEnergySocketMeasurementPayload.class);
         if (payload != null) {

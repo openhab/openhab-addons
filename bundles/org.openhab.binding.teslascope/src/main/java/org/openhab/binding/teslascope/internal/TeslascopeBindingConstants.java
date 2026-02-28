@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.teslascope.internal;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -27,8 +29,11 @@ public class TeslascopeBindingConstants {
     private static final String BINDING_ID = "teslascope";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID TESLASCOPE_THING = new ThingTypeUID(BINDING_ID, "vehicle");
+    public static final ThingTypeUID TESLASCOPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
+    public static final ThingTypeUID TESLASCOPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
+    // List of Config ids
+    public static final String CONFIG_PUBLICID = "publicID";
     // List of all Channel ids
     public static final String CHANNEL_VIN = "vin";
     public static final String CHANNEL_VEHICLE_NAME = "vehicle-name";
@@ -112,4 +117,7 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_USABLE_BATTERY_LEVEL = "usable-battery-level";
     public static final String CHANNEL_VALET_MODE = "valet-mode";
     public static final String CHANNEL_WIPER_BLADE_HEATER = "wiper-blade-heater";
+
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLASCOPE_ACCOUNT, TESLASCOPE_VEHICLE);
 }

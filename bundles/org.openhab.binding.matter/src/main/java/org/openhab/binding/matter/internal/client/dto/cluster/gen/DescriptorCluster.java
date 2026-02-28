@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -77,13 +76,13 @@ public class DescriptorCluster extends BaseCluster {
      * characteristics of an endpoint, or to augment what is provided in the TagID field of the same structure.
      */
     public List<Semtag> tagList; // 4 list R V
-    // Structs
 
+    // Structs
     /**
      * The device type and revision define endpoint conformance to a release of a device type definition. See the Data
      * Model specification for more information.
      */
-    public class DeviceTypeStruct {
+    public static class DeviceTypeStruct {
         /**
          * This shall indicate the device type definition. The endpoint shall conform to the device type definition and
          * cluster specifications required by the device type.

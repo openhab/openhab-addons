@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,9 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
 public class SolarForecastException extends RuntimeException {
+
+    private static final long serialVersionUID = -574726706964225181L;
 
     public SolarForecastException(SolarForecast ref, String message) {
         super(ref.getIdentifier() + " # " + message);

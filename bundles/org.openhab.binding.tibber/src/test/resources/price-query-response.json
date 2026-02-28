@@ -1,0 +1,352 @@
+{
+	"data": {
+		"viewer": {
+			"home": {
+				"currentSubscription": {
+					"priceInfo": {
+						"tomorrow": [
+							{
+								"startsAt": "2025-05-19T00:00:00.000+02:00",
+								"total": 0.3005,
+								"energy": 0.0957,
+								"tax": 0.2048,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T01:00:00.000+02:00",
+								"total": 0.2937,
+								"energy": 0.09,
+								"tax": 0.2037,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T02:00:00.000+02:00",
+								"total": 0.29,
+								"energy": 0.0869,
+								"tax": 0.2031,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T03:00:00.000+02:00",
+								"total": 0.2874,
+								"energy": 0.0847,
+								"tax": 0.2027,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T04:00:00.000+02:00",
+								"total": 0.2902,
+								"energy": 0.0871,
+								"tax": 0.2031,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T05:00:00.000+02:00",
+								"total": 0.2976,
+								"energy": 0.0933,
+								"tax": 0.2043,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T06:00:00.000+02:00",
+								"total": 0.3161,
+								"energy": 0.1089,
+								"tax": 0.2072,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T07:00:00.000+02:00",
+								"total": 0.3145,
+								"energy": 0.1075,
+								"tax": 0.207,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T08:00:00.000+02:00",
+								"total": 0.3126,
+								"energy": 0.1059,
+								"tax": 0.2067,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T09:00:00.000+02:00",
+								"total": 0.298,
+								"energy": 0.0936,
+								"tax": 0.2044,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T10:00:00.000+02:00",
+								"total": 0.2928,
+								"energy": 0.0893,
+								"tax": 0.2035,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T11:00:00.000+02:00",
+								"total": 0.2677,
+								"energy": 0.0682,
+								"tax": 0.1995,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T12:00:00.000+02:00",
+								"total": 0.2393,
+								"energy": 0.0443,
+								"tax": 0.195,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T13:00:00.000+02:00",
+								"total": 0.2198,
+								"energy": 0.0279,
+								"tax": 0.1919,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T14:00:00.000+02:00",
+								"total": 0.2361,
+								"energy": 0.0417,
+								"tax": 0.1944,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-19T15:00:00.000+02:00",
+								"total": 0.2709,
+								"energy": 0.0709,
+								"tax": 0.2,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T16:00:00.000+02:00",
+								"total": 0.2869,
+								"energy": 0.0843,
+								"tax": 0.2026,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T17:00:00.000+02:00",
+								"total": 0.3016,
+								"energy": 0.0966,
+								"tax": 0.205,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T18:00:00.000+02:00",
+								"total": 0.3238,
+								"energy": 0.1153,
+								"tax": 0.2085,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T19:00:00.000+02:00",
+								"total": 0.4166,
+								"energy": 0.1933,
+								"tax": 0.2233,
+								"level": "VERY_EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T20:00:00.000+02:00",
+								"total": 0.4563,
+								"energy": 0.2266,
+								"tax": 0.2297,
+								"level": "VERY_EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T21:00:00.000+02:00",
+								"total": 0.3704,
+								"energy": 0.1545,
+								"tax": 0.2159,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-19T22:00:00.000+02:00",
+								"total": 0.3332,
+								"energy": 0.1232,
+								"tax": 0.21,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-19T23:00:00.000+02:00",
+								"total": 0.313,
+								"energy": 0.1063,
+								"tax": 0.2067,
+								"level": "NORMAL"
+							}
+						],
+						"today": [
+							{
+								"startsAt": "2025-05-18T00:00:00.000+02:00",
+								"total": 0.2972,
+								"energy": 0.093,
+								"tax": 0.2042,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T01:00:00.000+02:00",
+								"total": 0.2933,
+								"energy": 0.0897,
+								"tax": 0.2036,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T02:00:00.000+02:00",
+								"total": 0.2882,
+								"energy": 0.0854,
+								"tax": 0.2028,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T03:00:00.000+02:00",
+								"total": 0.2879,
+								"energy": 0.0851,
+								"tax": 0.2028,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T04:00:00.000+02:00",
+								"total": 0.2895,
+								"energy": 0.0865,
+								"tax": 0.203,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T05:00:00.000+02:00",
+								"total": 0.2984,
+								"energy": 0.094,
+								"tax": 0.2044,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T06:00:00.000+02:00",
+								"total": 0.3138,
+								"energy": 0.1069,
+								"tax": 0.2069,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T07:00:00.000+02:00",
+								"total": 0.3111,
+								"energy": 0.1046,
+								"tax": 0.2065,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T08:00:00.000+02:00",
+								"total": 0.304,
+								"energy": 0.0987,
+								"tax": 0.2053,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T09:00:00.000+02:00",
+								"total": 0.2966,
+								"energy": 0.0925,
+								"tax": 0.2041,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T10:00:00.000+02:00",
+								"total": 0.2812,
+								"energy": 0.0795,
+								"tax": 0.2017,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T11:00:00.000+02:00",
+								"total": 0.2347,
+								"energy": 0.0404,
+								"tax": 0.1943,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T12:00:00.000+02:00",
+								"total": 0.1965,
+								"energy": 0.0084,
+								"tax": 0.1881,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T13:00:00.000+02:00",
+								"total": 0.1901,
+								"energy": 0.003,
+								"tax": 0.1871,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T14:00:00.000+02:00",
+								"total": 0.1927,
+								"energy": 0.0052,
+								"tax": 0.1875,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T15:00:00.000+02:00",
+								"total": 0.2283,
+								"energy": 0.035,
+								"tax": 0.1933,
+								"level": "CHEAP"
+							},
+							{
+								"startsAt": "2025-05-18T16:00:00.000+02:00",
+								"total": 0.2736,
+								"energy": 0.0731,
+								"tax": 0.2005,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T17:00:00.000+02:00",
+								"total": 0.2985,
+								"energy": 0.0941,
+								"tax": 0.2044,
+								"level": "NORMAL"
+							},
+							{
+								"startsAt": "2025-05-18T18:00:00.000+02:00",
+								"total": 0.3128,
+								"energy": 0.1061,
+								"tax": 0.2067,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T19:00:00.000+02:00",
+								"total": 0.3642,
+								"energy": 0.1493,
+								"tax": 0.2149,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T20:00:00.000+02:00",
+								"total": 0.3724,
+								"energy": 0.1562,
+								"tax": 0.2162,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T21:00:00.000+02:00",
+								"total": 0.3536,
+								"energy": 0.1404,
+								"tax": 0.2132,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T22:00:00.000+02:00",
+								"total": 0.3223,
+								"energy": 0.1141,
+								"tax": 0.2082,
+								"level": "EXPENSIVE"
+							},
+							{
+								"startsAt": "2025-05-18T23:00:00.000+02:00",
+								"total": 0.3029,
+								"energy": 0.0977,
+								"tax": 0.2052,
+								"level": "NORMAL"
+							}
+						]
+					}
+				}
+			}
+		}
+	}
+}

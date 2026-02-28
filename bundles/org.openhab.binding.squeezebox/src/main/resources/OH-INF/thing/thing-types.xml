@@ -17,17 +17,17 @@
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP or Host Name</label>
-				<description>The IP or host name of the SqueezeServer
+				<description>The IP or host name of the Squeeze Server
 				</description>
 			</parameter>
 			<parameter name="webport" type="integer" required="true" min="1" max="65535">
-				<label>SqueezeServer Web Port</label>
-				<description>Webport interface of the SqueezeServer</description>
+				<label>Squeeze Server Web Port</label>
+				<description>Web interface port of the Squeeze Server</description>
 				<default>9000</default>
 			</parameter>
 			<parameter name="cliport" type="integer" required="true" min="1" max="65535">
-				<label>SqueezeServer CLI Port</label>
-				<description>Port of the CLI interface of the SqueezeServer</description>
+				<label>Squeeze Server CLI Port</label>
+				<description>Port of the CLI interface of the Squeeze Server</description>
 				<default>9090</default>
 			</parameter>
 			<parameter name="language" type="text" required="false">
@@ -36,12 +36,12 @@
 				<default>en</default>
 			</parameter>
 			<parameter name="userId" type="text" required="false">
-				<label>User Id</label>
-				<description>User ID used to login to Squeeze Server</description>
+				<label>User ID</label>
+				<description>User ID used to log in to Squeeze Server</description>
 			</parameter>
 			<parameter name="password" type="text" required="false">
 				<label>Password</label>
-				<description>Password used to login to Squeeze Server</description>
+				<description>Password used to log in to Squeeze Server</description>
 				<context>password</context>
 			</parameter>
 		</config-description>
@@ -53,7 +53,7 @@
 		</supported-bridge-type-refs>
 
 		<label>SqueezeBox Player</label>
-		<description>This is a SqueezeBox Player instance</description>
+		<description>This is a SqueezeBox Player instance.</description>
 		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
@@ -102,16 +102,16 @@
 		<config-description>
 			<parameter name="mac" type="text" required="true">
 				<label>MAC Address</label>
-				<description>SqueezeBox Players are identified by their MAC address</description>
+				<description>SqueezeBox Players are identified by their MAC address.</description>
 			</parameter>
 			<parameter name="notificationTimeout" type="integer" unit="s">
 				<label>Notification Timeout</label>
-				<description>Maximum amount of time in seconds for which the notification will be played</description>
+				<description>Maximum amount of time in seconds for which the notification will be played.</description>
 				<default>20</default>
 			</parameter>
 			<parameter name="notificationVolume" type="integer" min="0" max="100" step="1" unit="%">
 				<label>Notification Sound Volume</label>
-				<description>Volume used for notifications. Leaving blank uses current player volume.</description>
+				<description>Volume used for notifications. Leaving blank uses the current player volume.</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -187,7 +187,7 @@
 	<channel-type id="control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control the Zone Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<description>Control the Zone Player, e.g. play/pause/next/previous/fast-forward/rewind</description>
 		<category>Player</category>
 		<tags>
 			<tag>Control</tag>
@@ -197,7 +197,7 @@
 	<channel-type id="stream" advanced="true">
 		<item-type>String</item-type>
 		<label>Stream URL</label>
-		<description>Play the given HTTP or file stream (file:// or http://). </description>
+		<description>Play the given HTTP or file stream (file:// or http://).</description>
 	</channel-type>
 	<channel-type id="source" advanced="true">
 		<item-type>String</item-type>
@@ -208,11 +208,11 @@
 	<channel-type id="sync" advanced="true">
 		<item-type>String</item-type>
 		<label>Sync Player</label>
-		<description>Add another player to your device for synchronized playback (other player mac address)</description>
+		<description>Add another player to your device for synchronized playback (other player MAC address)</description>
 	</channel-type>
 	<channel-type id="unsync" advanced="true">
 		<item-type>Switch</item-type>
-		<label>UnSync Player</label>
+		<label>Unsync Player</label>
 		<description>Remove this device from synchronization</description>
 	</channel-type>
 	<channel-type id="playListIndex" advanced="true">
@@ -257,7 +257,7 @@
 	<channel-type id="currentPlaylistRepeat">
 		<item-type>Number</item-type>
 		<label>Repeat Mode</label>
-		<description>Current playlist repeat Mode</description>
+		<description>Current playlist repeat mode</description>
 		<state>
 			<options>
 				<option value="0">No Repeat</option>
@@ -363,7 +363,7 @@
 	<channel-type id="conductor" advanced="true">
 		<item-type>String</item-type>
 		<label>Conductor</label>
-		<description>Conductor</description>
+		<description>Person who conducted the performance</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -396,7 +396,7 @@
 	<channel-type id="sleep">
 		<item-type>Number</item-type>
 		<label>Sleep</label>
-		<description>Power off player in specified number of minutes</description>
+		<description>Power off the player after the specified number of minutes</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>MediaControl</tag>

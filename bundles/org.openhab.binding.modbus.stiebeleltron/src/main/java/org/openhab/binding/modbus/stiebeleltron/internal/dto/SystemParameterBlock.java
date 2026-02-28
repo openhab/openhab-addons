@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,4 +25,12 @@ public class SystemParameterBlock {
     public short ecoTemperatureHeating;
     public short comfortTemperatureWater;
     public short ecoTemperatureWater;
+
+    @Override
+    public String toString() {
+        return "SystemParameterBlock {" + "\n  operationMode=" + operationMode + ",\n  comfortTemperatureHeating="
+                + comfortTemperatureHeating + ",\n  ecoTemperatureHeating=" + ecoTemperatureHeating
+                + ",\n  comfortTemperatureWater=" + comfortTemperatureWater + ",\n  ecoTemperatureWater="
+                + ecoTemperatureWater + "\n}\n";
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,6 +66,7 @@ public class TeslaBindingConstants {
     public static final String COMMAND_SET_SENTRY_MODE = "set_sentry_mode";
     public static final String COMMAND_SET_TEMP = "set_temps";
     public static final String COMMAND_SET_VALET_MODE = "set_valet_mode";
+    public static final String COMMAND_SHARE = "share";
     public static final String COMMAND_STEERING_WHEEL_HEATER = "remote_steering_wheel_heater_request";
     public static final String COMMAND_SUN_ROOF = "sun_roof_control";
     public static final String COMMAND_THROTTLE = "commandthrottle";

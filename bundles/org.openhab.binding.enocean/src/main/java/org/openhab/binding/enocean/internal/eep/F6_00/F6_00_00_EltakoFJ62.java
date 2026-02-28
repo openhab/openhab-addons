@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ public class F6_00_00_EltakoFJ62 extends _RPSMessage {
     static final byte CLOSED = 0x50;
 
     public F6_00_00_EltakoFJ62() {
-        super();
     }
 
     public F6_00_00_EltakoFJ62(ERP1Message packet) {
@@ -57,7 +56,6 @@ public class F6_00_00_EltakoFJ62 extends _RPSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, @Nullable State> getCurrentStateFunc, Configuration config) {
-
         switch (channelId) {
             case CHANNEL_ROLLERSHUTTER:
                 switch (bytes[0]) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -436,7 +436,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param ownId the device OpenWebNet id
      * @return the registered device Thing handler or null if the id cannot be found
      */
-    public @Nullable OpenWebNetThingHandler getRegisteredDevice(@Nullable String ownId) {
+    public @Nullable OpenWebNetThingHandler getRegisteredDevice(String ownId) {
         return registeredDevices.get(ownId);
     }
 

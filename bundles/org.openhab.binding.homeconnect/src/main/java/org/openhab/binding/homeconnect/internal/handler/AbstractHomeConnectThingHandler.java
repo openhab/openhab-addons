@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1026,7 +1026,6 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();
             if (apiClient.isPresent()) {
-
                 // set read-only state description, if device has read-only power state option
                 Optional<Channel> powerStateChannel = getThingChannel(CHANNEL_POWER_STATE);
                 if (powerStateChannel.isPresent()) {

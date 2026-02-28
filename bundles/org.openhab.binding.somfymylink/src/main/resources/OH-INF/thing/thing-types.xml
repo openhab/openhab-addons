@@ -68,13 +68,17 @@
 		<item-type>String</item-type>
 		<label>Scene List</label>
 		<description>Comma-separated list of scenes of form sceneId=sceneName</description>
-		<state pattern="%s"></state>
+		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="shadeControl">
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="button">

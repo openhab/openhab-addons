@@ -39,6 +39,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `username`        | The username to authenticate with the inverter settings for battery control    | No       |
 | `password`        | The password to authenticate with the inverter settings for battery control    | No       |
 | `refreshInterval` | Refresh interval in seconds                                                    | No       |
+| `scheme`          | Set the protocol scheme that is used to connect to your device (default: http) | No       |
 
 ### Powerinverter Thing Configuration
 
@@ -77,8 +78,8 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `inverterdatachanneludc`             | Number:ElectricPotential | DC voltage                                                                                                        |
 | `inverterdatachanneludc2`            | Number:ElectricPotential | DC voltage of MPPT tracker 2                                                                                      |
 | `inverterdatachanneludc3`            | Number:ElectricPotential | DC voltage of MPPT tracker 3                                                                                      |
-| `inverterdatachanneldayenergy`       | Number:Energy            | Energy generated on current day                                                                                   |
-| `inverterdatachannelyear`            | Number:Energy            | Energy generated in current year                                                                                  |
+| `inverterdatachanneldayenergy`       | Number:Energy            | Energy generated on current day (GEN24/Tauro/Verto will always report null)                                       |
+| `inverterdatachannelyear`            | Number:Energy            | Energy generated in current year (GEN24/Tauro/Verto will always report null)                                      |
 | `inverterdatachanneltotal`           | Number:Energy            | Energy generated overall                                                                                          |
 | `inverterdatadevicestatuserrorcode`  | Number                   | Device error code                                                                                                 |
 | `inverterdatadevicestatusstatuscode` | Number                   | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
@@ -149,6 +150,7 @@ Please note that user-specified time of use plans cannot be used together with b
 :::
 
 The `powerinverter` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
+The inverter must have the battery time of use plan settings available in the web interface.
 
 You can retrieve the actions as follows:
 
@@ -185,8 +187,26 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `forceBatteryCharging(QuantityType<Power> power)`: Force the battery to charge with the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
+- `preventBatteryCharging()`: Prevent the battery from charging (removes all battery control schedules first and applies all the time).
+- `addPreventBatteryChargingSchedule(LocalTime from, LocalTime until)`: Add a schedule to prevent the battery from charging in the specified time range.
+- `addPreventBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until)`: Add a schedule to prevent the battery from charging in the specified time range.
+- `forceBatteryDischarging(QuantityType<Power> power)`: Force the battery to discharge with the specified power (removes all battery control schedules first and applies all the time).
+- `addForcedBatteryDischargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
+- `addForcedBatteryDischargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
+- `addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
+- `addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
 - `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
 - `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
+
+The `ScheduleType` enum has the following members:
+
+- `CHARGE_MIN`
+- `CHARGE_MAX`
+- `DISCHARGE_MIN`
+- `DISCHARGE_MAX`
+
+Its full class name is `org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType`.
+You can also provide the name of the enum member as string and the binding will parse the enum member from it.
 
 All methods return a boolean value indicating whether the action was successful.
 
@@ -203,6 +223,10 @@ froniusInverterActions.resetBatteryControl();
 froniusInverterActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
+froniusInverterActions.addForcedBatteryDischargingSchedule(time.toZDT('07:00'), time.toZDT('09:00'));
+froniusInverterActions.addPreventBatteryChargingSchedule(time.toZDT('09:00'), time.toZDT('12:00'));
+
+froniusInverterActions.addSchedule(time.toZDT('10:00'), time.toZDT('11:00'), 'DISCHARGE_MAX', Quantity('500 W'));
 
 froniusInverterActions.setBackupReservedBatteryCapacity(50);
 ```
@@ -212,7 +236,7 @@ froniusInverterActions.setBackupReservedBatteryCapacity(50);
 demo.things:
 
 ```java
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5, username="customer", password="someSecretPassword"] {
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5, username="customer", password="someSecretPassword", scheme="http"] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
     Thing ohmpilot myohmpilot [deviceId=0]

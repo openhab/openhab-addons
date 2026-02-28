@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -656,7 +656,6 @@ public class WhisperSTTService implements STTService {
                 throw new STTException("Failed to retrieve transcription: HTTP status code " + statusCode);
             }
             return response.getContentAsString();
-
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             throw new STTException("Exception during attempt to get speech recognition result from api", e);
         }

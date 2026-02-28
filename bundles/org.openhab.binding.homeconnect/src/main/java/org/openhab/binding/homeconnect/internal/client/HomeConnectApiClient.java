@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -337,7 +337,6 @@ public class HomeConnectApiClient {
      */
     public PowerStateAccess getPowerStateAccess(String haId)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-
         String powerStateSettings = getRaw(haId, BASE_PATH + haId + "/settings/" + SETTING_POWER_STATE);
 
         /***

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -48,12 +47,12 @@ public class AudioOutputCluster extends BaseCluster {
      * This attribute contains the value of the index field of the currently selected OutputInfoStruct.
      */
     public Integer currentOutput; // 1 uint8 R V
-    // Structs
 
+    // Structs
     /**
      * This contains information about an output.
      */
-    public class OutputInfoStruct {
+    public static class OutputInfoStruct {
         /**
          * This field shall indicate the unique index into the list of outputs.
          */
@@ -87,8 +86,8 @@ public class AudioOutputCluster extends BaseCluster {
         INTERNAL(4, "Internal"),
         OTHER(5, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OutputTypeEnum(Integer value, String label) {
             this.value = value;

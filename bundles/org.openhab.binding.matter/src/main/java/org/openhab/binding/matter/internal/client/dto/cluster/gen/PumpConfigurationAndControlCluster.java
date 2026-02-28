@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -238,89 +237,89 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * returned.
      */
     public ControlModeEnum controlMode; // 33 ControlModeEnum RW VM
-    // Structs
 
-    public class SupplyVoltageLow {
+    // Structs
+    public static class SupplyVoltageLow {
         public SupplyVoltageLow() {
         }
     }
 
-    public class SupplyVoltageHigh {
+    public static class SupplyVoltageHigh {
         public SupplyVoltageHigh() {
         }
     }
 
-    public class PowerMissingPhase {
+    public static class PowerMissingPhase {
         public PowerMissingPhase() {
         }
     }
 
-    public class SystemPressureLow {
+    public static class SystemPressureLow {
         public SystemPressureLow() {
         }
     }
 
-    public class SystemPressureHigh {
+    public static class SystemPressureHigh {
         public SystemPressureHigh() {
         }
     }
 
-    public class DryRunning {
+    public static class DryRunning {
         public DryRunning() {
         }
     }
 
-    public class MotorTemperatureHigh {
+    public static class MotorTemperatureHigh {
         public MotorTemperatureHigh() {
         }
     }
 
-    public class PumpMotorFatalFailure {
+    public static class PumpMotorFatalFailure {
         public PumpMotorFatalFailure() {
         }
     }
 
-    public class ElectronicTemperatureHigh {
+    public static class ElectronicTemperatureHigh {
         public ElectronicTemperatureHigh() {
         }
     }
 
-    public class PumpBlocked {
+    public static class PumpBlocked {
         public PumpBlocked() {
         }
     }
 
-    public class SensorFailure {
+    public static class SensorFailure {
         public SensorFailure() {
         }
     }
 
-    public class ElectronicNonFatalFailure {
+    public static class ElectronicNonFatalFailure {
         public ElectronicNonFatalFailure() {
         }
     }
 
-    public class ElectronicFatalFailure {
+    public static class ElectronicFatalFailure {
         public ElectronicFatalFailure() {
         }
     }
 
-    public class GeneralFault {
+    public static class GeneralFault {
         public GeneralFault() {
         }
     }
 
-    public class Leakage {
+    public static class Leakage {
         public Leakage() {
         }
     }
 
-    public class AirDetection {
+    public static class AirDetection {
         public AirDetection() {
         }
     }
 
-    public class TurbineOperation {
+    public static class TurbineOperation {
         public TurbineOperation() {
         }
     }
@@ -332,8 +331,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
         MAXIMUM(2, "Maximum"),
         LOCAL(3, "Local");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationModeEnum(Integer value, String label) {
             this.value = value;
@@ -359,8 +358,8 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
         CONSTANT_TEMPERATURE(5, "Constant Temperature"),
         AUTOMATIC(7, "Automatic");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ControlModeEnum(Integer value, String label) {
             this.value = value;

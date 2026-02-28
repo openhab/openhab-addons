@@ -8,10 +8,10 @@ This binding supports go-e Charger HOME+ with 7.4kW, 11kW or 22kW as well as go-
 
 ## Setup
 
-1) Install the binding
-2) Activate the local HTTP API in the go-e Charger app (Settings --> Connection --> API Settings --> "Allow access to local HTTP API vX").
+1. Install the binding
+1. Activate the local HTTP API in the go-e Charger app (Settings --> Connection --> API Settings --> "Allow access to local HTTP API vX").
 Please note that v1 is the default, but more functions (channels) are supported by the API v2. However, v2 has to be supported by your go-e Charger (details see below).
-3) Configure the thing (see below).
+1. Configure the thing (see below).
 
 ## Thing Configuration
 
@@ -56,7 +56,7 @@ Currently available channels are:
 | transaction              | Number                   | 0 if no card, otherwise card ID                               | 2 (r/w)          |
 | allowCharging            | Switch                   | If `ON` charging is allowed                                   | 1 (r/w), 2 (r)   |
 | cableCurrent             | Number:ElectricCurrent   | Specifies the max current that can be charged with that cable | 1 (r), 2 (r)     |
-| temperature              | Number:Temperature       | Temperature of the curciuit board of the go-e Charger         | 1 (r), 2 (r)     |
+| temperature              | Number:Temperature       | Temperature of the circuit board of the go-e Charger          | 1 (r), 2 (r)     |
 | temperatureType2Port     | Number:Temperature       | Temperature of the type 2 port of the go-e Charger            | 2 (r)            |
 | firmware                 | String                   | Firmware Version                                              | 1 (r), 2 (r)     |
 | accessConfiguration      | String                   | Access configuration, for example OPEN, RFID ...              | 1 (r/w)          |

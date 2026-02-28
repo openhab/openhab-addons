@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -38,9 +37,9 @@ public class ProxyConfigurationCluster extends BaseCluster {
      * List of proxy configurations. There shall NOT be multiple entries in this list for the same fabric.
      */
     public List<ConfigurationStruct> configurationList; // 0 list RW
-    // Structs
 
-    public class ConfigurationStruct {
+    // Structs
+    public static class ConfigurationStruct {
         /**
          * This field shall be set to true to indicate to the proxy that it shall proxy all nodes. When true, the
          * SourceList attribute is ignored.

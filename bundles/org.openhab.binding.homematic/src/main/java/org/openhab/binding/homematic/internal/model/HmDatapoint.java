@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.homematic.internal.model;
+
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
@@ -32,6 +34,7 @@ public class HmDatapoint implements Cloneable {
     private HmParamsetType paramsetType;
     private Number minValue;
     private Number maxValue;
+    private Map<String, Number> specialValues;
     private String[] options;
     private boolean readOnly;
     private boolean readable;
@@ -157,9 +160,19 @@ public class HmDatapoint implements Cloneable {
         return null;
     }
 
+    public @Nullable Number getNumericValue() {
+        if (isFloatType()) {
+            return getDoubleValue();
+        } else if (isIntegerType()) {
+            return getIntegerValue();
+        } else {
+            return null;
+        }
+    }
+
     public @Nullable Integer getIntegerValue() {
-        if (value instanceof Integer) {
-            return (int) value;
+        if (value instanceof Integer intValue) {
+            return intValue;
         } else if (value != null) {
             return Integer.parseInt(value.toString());
         } else {
@@ -168,8 +181,8 @@ public class HmDatapoint implements Cloneable {
     }
 
     public @Nullable Double getDoubleValue() {
-        if (value instanceof Double) {
-            return (double) value;
+        if (value instanceof Double doubleValue) {
+            return doubleValue;
         } else if (value != null) {
             return Double.parseDouble(value.toString());
         } else {
@@ -304,6 +317,17 @@ public class HmDatapoint implements Cloneable {
     }
 
     /**
+     * Sets map of values with special meaning
+     */
+    public void setSpecialValues(Map<String, Number> specialValues) {
+        this.specialValues = specialValues;
+    }
+
+    public Map<String, Number> getSpecialValues() {
+        return specialValues;
+    }
+
+    /**
      * Returns true, if the datapoint is a virtual datapoint.
      */
     public boolean isVirtual() {
@@ -421,15 +445,16 @@ public class HmDatapoint implements Cloneable {
         dp.setReadable(readable);
         dp.setTrigger(trigger);
         dp.setDefaultValue(defaultValue);
+        dp.setSpecialValues(specialValues);
         return dp;
     }
 
     @Override
     public String toString() {
         return String.format("""
-                %s[name=%s,value=%s,defaultValue=%s,type=%s,minValue=%s,maxValue=%s,options=%s,\
+                %s[name=%s,value=%s,defaultValue=%s,type=%s,minValue=%s,maxValue=%s,specialValues=%s,options=%s,\
                 readOnly=%b,readable=%b,unit=%s,description=%s,info=%s,paramsetType=%s,virtual=%b,trigger=%b]\
-                """, getClass().getSimpleName(), name, value, defaultValue, type, minValue, maxValue,
+                """, getClass().getSimpleName(), name, value, defaultValue, type, minValue, maxValue, specialValues,
                 (options == null ? null : String.join(";", options)), readOnly, readable, unit, description, info,
                 paramsetType, virtual, trigger);
     }

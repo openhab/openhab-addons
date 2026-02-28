@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
-import org.openhab.binding.homewizard.internal.devices.p1_meter.HomeWizardP1MeterHandler;
-import org.openhab.binding.homewizard.internal.devices.p1_meter.HomeWizardP1MeterHandlerMock;
 import org.openhab.core.thing.Thing;
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
-import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MatterDeviceOptions;
+import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MatterDeviceOptions;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;

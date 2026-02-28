@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,7 +51,6 @@ public class A5_38_08_Dimming extends _4BSMessage {
     static final byte SWITCH_100_PERCENT = 0x64;
 
     public A5_38_08_Dimming() {
-        super();
     }
 
     public A5_38_08_Dimming(ERP1Message packet) {

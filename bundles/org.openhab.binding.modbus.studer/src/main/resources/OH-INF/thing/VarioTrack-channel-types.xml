@@ -18,24 +18,40 @@
 	<channel-type id="Upv">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PV Generator Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Power of the PV generator Channel Type -->
 	<channel-type id="Psol">
 		<item-type>Number:Power</item-type>
 		<label>Power of the PV Generator</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Production in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed">
 		<item-type>Number:Energy</item-type>
 		<label>Current Day Production</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Operating state Channel Type -->
 	<channel-type id="Mode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NIGHT">Night</option>

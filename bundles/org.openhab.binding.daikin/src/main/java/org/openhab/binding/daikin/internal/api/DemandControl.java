@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public class DemandControl {
             .map(day -> Map.entry(day, day.substring(0, 2)))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    private static Gson GSON = new Gson();
+    private static final Gson GSON = new Gson();
 
     public String ret = "";
 

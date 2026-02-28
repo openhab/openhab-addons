@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -85,7 +86,7 @@ public class ZWayBridgeDiscoveryService extends AbstractDiscoveryService {
             }
 
             try {
-                URL url = new URL("http://" + ipAddress + ":8083/ZAutomation/api/v1/status");
+                URL url = URI.create("http://" + ipAddress + ":8083/ZAutomation/api/v1/status").toURL();
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 if (connection.getResponseCode() == 401) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -114,6 +114,7 @@ public class AmazonEchoControlBindingConstants {
     public static final String API_VERSION = "2.2.556530.0";
     public static final String DI_OS_VERSION = "16.6";
     public static final String DI_SDK_VERSION = "6.12.4";
+    public static final String DEFAULT_RETAIL_DOMAIN = "amazon.com";
 
     public static final Map<String, String> DEVICE_TYPES = ResourceUtil
             .readProperties(AmazonEchoControlBindingConstants.class, "device_type.properties");

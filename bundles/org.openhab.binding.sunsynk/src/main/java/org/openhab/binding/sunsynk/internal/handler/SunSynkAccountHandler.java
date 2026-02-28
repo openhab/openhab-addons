@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.sunsynk.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.api.AccountController;
 import org.openhab.binding.sunsynk.internal.api.dto.Inverter;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateException;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkClientAuthenticateException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkInverterDiscoveryException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkTokenException;
 import org.openhab.binding.sunsynk.internal.config.SunSynkAccountConfig;
@@ -61,7 +61,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         accountConfig = getConfigAs(SunSynkAccountConfig.class);
         updateStatus(ThingStatus.UNKNOWN);
-        logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
+        logger.debug("SunSynk Handler initialised attempting to retrieve configuration");
         discoverApiKeyJob = scheduler.schedule(this::configAccount, 0, TimeUnit.SECONDS); // calls account config
                                                                                           // asynchronously
     }
@@ -71,7 +71,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     public void setBridgeOffline() {
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Check credentials and re-enable account");
     }
 
     public List<Inverter> getInvertersFromSunSynk() {
@@ -108,17 +108,20 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             return;
         }
         try {
-            this.sunAccount.authenticate(accountConfig.getEmail(), accountConfig.getPassword());
-        } catch (SunSynkAuthenticateException | SunSynkTokenException e) {
+            this.sunAccount.clientAuthenticate(accountConfig.getEmail(), accountConfig.getPassword());
+        } catch (SunSynkClientAuthenticateException e) {
             if (logger.isDebugEnabled()) {
-                String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
-                Throwable cause = e.getCause();
-                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unkown cause")
-                        : "unkown cause";
-                logger.debug("Error attempting to authenticate account Msg = {} Cause = {}", message, causeMessage);
+                logger.debug("Error attempting to authenticate client: {}.", e.getMessage());
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to authenticate account");
+                    "Error attempting to authenticate binding with SunSynk");
+            return;
+        } catch (SunSynkAuthenticateException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Error attempting to authenticate user: {}.", e.getMessage());
+            }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error attempting to authenticate user credentials");
             return;
         }
         updateStatus(ThingStatus.ONLINE);
@@ -133,7 +136,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             this.sunAccount.refreshAccount(accountConfig.getEmail());
         } catch (SunSynkTokenException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to refresh token");
+                    "Error attempting to refresh token: " + e.getMessage());
             return false;
         }
         return true;

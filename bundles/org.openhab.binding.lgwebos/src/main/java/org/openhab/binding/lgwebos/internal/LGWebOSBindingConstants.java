@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,6 +43,7 @@ public class LGWebOSBindingConstants {
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_KEY = "key";
     public static final String CONFIG_MAC_ADDRESS = "macAddress";
+    public static final String CONFIG_BROADCAST_ADDRESS = "broadcastAddress";
 
     /*
      * Property names must match property names in

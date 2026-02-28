@@ -14,6 +14,20 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="surepetcare:pet">
+		<instruction-set targetVersion="1">
+			<add-channel id="waterDevice">
+				<type>surepetcare:waterDeviceType</type>
+			</add-channel>
+			<add-channel id="waterLastDrinking">
+				<type>surepetcare:waterLastDrinkingType</type>
+			</add-channel>
+			<add-channel id="waterLastChange">
+				<type>surepetcare:waterLastChangeType</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 	<thing-type uid="surepetcare:flapDevice">
 		<instruction-set targetVersion="1">
 			<update-channel id="deviceRSSI">

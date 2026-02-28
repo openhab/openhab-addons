@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mercedesme.internal.actions;
-
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +31,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 @ThingActionsScope(name = "mercedesme")
 @NonNullByDefault
 public class VehicleActions implements ThingActions {
-    private Optional<VehicleHandler> thingHandler = Optional.empty();
+    private @Nullable VehicleHandler thingHandler;
     private String[] argumentKey = new String[] { "city", "street", "postcode" };
 
     @RuleAction(label = "@text/actionPoiLabel", description = "@text/actionPoiDescription")
@@ -57,22 +55,24 @@ public class VehicleActions implements ThingActions {
             @ActionInput(name = "latitude", label = "@text/latitudeLabel", description = "@text/latitudeDescription") double latitude,
             @ActionInput(name = "longitude", label = "@text/longitudeLabel", description = "@text/longitudeDescription") double longitude,
             String... args) {
-        if (thingHandler.isPresent()) {
-            JSONObject poi = new JSONObject();
-            poi.put("routeTitle", title);
-            poi.put("routeType", "singlePOI");
-            JSONArray waypoints = new JSONArray();
-            JSONObject waypoint = new JSONObject();
-            waypoint.put("title", title);
-            waypoint.put("latitude", latitude);
-            waypoint.put("longitude", longitude);
-            for (int i = 0; i < args.length; i++) {
-                waypoint.put(argumentKey[i], args[i]);
-            }
-            waypoints.put(waypoint);
-            poi.put("waypoints", waypoints);
-            thingHandler.get().sendPoi(poi);
+        VehicleHandler localVehicleHandler = thingHandler;
+        if (localVehicleHandler == null) {
+            return;
         }
+        JSONObject poi = new JSONObject();
+        poi.put("routeTitle", title);
+        poi.put("routeType", "singlePOI");
+        JSONArray waypoints = new JSONArray();
+        JSONObject waypoint = new JSONObject();
+        waypoint.put("title", title);
+        waypoint.put("latitude", latitude);
+        waypoint.put("longitude", longitude);
+        for (int i = 0; i < args.length; i++) {
+            waypoint.put(argumentKey[i], args[i]);
+        }
+        waypoints.put(waypoint);
+        poi.put("waypoints", waypoints);
+        localVehicleHandler.sendPoi(poi);
     }
 
     public static void sendPoi(ThingActions actions, String title, double lat, double lon, String... args) {
@@ -81,14 +81,13 @@ public class VehicleActions implements ThingActions {
 
     @Override
     public void setThingHandler(ThingHandler handler) {
-        thingHandler = Optional.of((VehicleHandler) handler);
+        if (handler instanceof VehicleHandler vehicleHandler) {
+            thingHandler = vehicleHandler;
+        }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        if (thingHandler.isPresent()) {
-            return thingHandler.get();
-        }
-        return null;
+        return thingHandler;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -390,8 +390,6 @@ public class DebugCommand extends InsteonCommand implements PortListener {
                 console.println(msg.toString());
             } catch (FieldException | InvalidMessageTypeException | NumberFormatException e) {
                 console.println("Error while trying to create message.");
-            } catch (IOException e) {
-                console.println("Failed to send message.");
             }
         }
     }
@@ -425,8 +423,6 @@ public class DebugCommand extends InsteonCommand implements PortListener {
                 console.println(msg.toString());
             } catch (FieldException | InvalidMessageTypeException | NumberFormatException e) {
                 console.println("Error while trying to create message.");
-            } catch (IOException e) {
-                console.println("Failed to send message.");
             }
         }
     }
@@ -451,8 +447,6 @@ public class DebugCommand extends InsteonCommand implements PortListener {
                 console.println(mcmd.toString());
             } catch (FieldException | InvalidMessageTypeException | NumberFormatException e) {
                 console.println("Error while trying to create message.");
-            } catch (IOException e) {
-                console.println("Failed to send message.");
             }
         }
     }
@@ -477,8 +471,6 @@ public class DebugCommand extends InsteonCommand implements PortListener {
                 console.println("Too many data bytes provided.");
             } catch (InvalidMessageTypeException e) {
                 console.println("Error while trying to create message.");
-            } catch (IOException e) {
-                console.println("Failed to send message.");
             }
         }
     }

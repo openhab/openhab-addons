@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,7 +148,7 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
         ZonedDateTime lastStateChange = ZonedDateTime.now().minusHours(2);
 
         GenericItem item = new DimmerItem(name);
-        item.setState(state, lastState, lastStateUpdate, lastStateChange);
+        item.setState(state, lastState, lastStateUpdate, lastStateChange, null);
 
         assertNull(persistenceService.persistedItem(name, null));
 

@@ -101,7 +101,7 @@
 			</parameter>
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>
-				<description> URL of the thermostat in the format 'proto://host' (example: https://192.168.1.100)</description>
+				<description>URL of the thermostat (HTTPS required), for example: https://192.168.1.100</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="1">
 				<label>Refresh interval</label>
@@ -140,6 +140,10 @@
 		<item-type>String</item-type>
 		<label>Away Mode</label>
 		<description>Current Away Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="home">Home</option>
@@ -200,6 +204,10 @@
 		<item-type>String</item-type>
 		<label>Schedule Mode</label>
 		<description>Current Schedule Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="disabled">Disabled</option>
@@ -240,7 +248,7 @@
 	<channel-type id="timestampRuntime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Runtime Record Timestamp</label>
-		<description>Time stamp of Runtime Update (Day 0 = TODAY, Day 6 = 6 days ago)</description>
+		<description>Timestamp of runtime update (Day 0 = TODAY, Day 6 = 6 days ago)</description>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 

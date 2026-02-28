@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.ModeSelectCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.ModeSelectCluster.ModeOptionStruct;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.DecimalType;
@@ -55,8 +56,8 @@ class ModeSelectConverterTest extends BaseMatterConverterTest {
         super.setUp();
         // Setup supported modes
         List<ModeSelectCluster.ModeOptionStruct> supportedModes = new ArrayList<>();
-        supportedModes.add(mockCluster.new ModeOptionStruct("Mode 1", 1, null));
-        supportedModes.add(mockCluster.new ModeOptionStruct("Mode 2", 2, null));
+        supportedModes.add(new ModeOptionStruct("Mode 1", 1, null));
+        supportedModes.add(new ModeOptionStruct("Mode 2", 2, null));
         mockCluster.supportedModes = supportedModes;
         mockCluster.description = "Test Mode Select";
 

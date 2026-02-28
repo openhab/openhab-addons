@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,206 +12,122 @@
  */
 package org.openhab.binding.evcc.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
+import java.util.List;
+import java.util.Set;
 
-/**
- * The {@link EvccBindingConstants} class defines common constants, which are
- * used across the whole binding.
- *
- * @author Florian Hotze - Initial contribution
- * @author Luca Arnecke - Update to evcc version 0.123.1
- */
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.thing.ThingTypeUID;
+
 @NonNullByDefault
 public class EvccBindingConstants {
 
-    private static final String BINDING_ID = "evcc";
+    public static final String BINDING_ID = "evcc";
 
-    public static final String CHANNEL_GROUP_ID_GENERAL = "general";
-    public static final String CHANNEL_GROUP_ID_LOADPOINT = "loadpoint";
-    public static final String CHANNEL_GROUP_ID_VEHICLE = "vehicle";
-    public static final String CHANNEL_GROUP_ID_HEATING = "heating";
-    public static final String CHANNEL_GROUP_ID_CURRENT = "current";
+    // Channels
+    public static final String CHANNEL_PLAN_PRECONDITION = "plan-precondition";
+    public static final String CHANNEL_PLAN_SOC = "plan-soc";
 
-    // List of all Channel ids
-    public static final String CHANNEL_BATTERY_CAPACITY = "batteryCapacity";
-    public static final String CHANNEL_BATTERY_POWER = "batteryPower";
-    public static final String CHANNEL_BATTERY_SOC = "batterySoC";
-    public static final String CHANNEL_BATTERY_DISCHARGE_CONTROL = "batteryDischargeControl";
-    public static final String CHANNEL_BATTERY_MODE = "batteryMode";
-    public static final String CHANNEL_PRIORITY_SOC = "prioritySoC";
-    public static final String CHANNEL_BUFFER_SOC = "bufferSoC";
-    public static final String CHANNEL_BUFFER_START_SOC = "bufferStartSoC";
-    public static final String CHANNEL_RESIDUAL_POWER = "residualPower";
-    public static final String CHANNEL_GRID_POWER = "gridPower";
-    public static final String CHANNEL_HOME_POWER = "homePower";
-    public static final String CHANNEL_PV_POWER = "pvPower";
-    public static final String CHANNEL_VERSION = "version";
-    public static final String CHANNEL_AVAILABLE_VERSION = "availableVersion";
+    // Thing Types
+    public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "battery");
+    public static final ThingTypeUID THING_TYPE_FORECAST = new ThingTypeUID(BINDING_ID, "forecast");
+    public static final ThingTypeUID THING_TYPE_HEATING = new ThingTypeUID(BINDING_ID, "heating");
+    public static final ThingTypeUID THING_TYPE_LOADPOINT = new ThingTypeUID(BINDING_ID, "loadpoint");
+    public static final ThingTypeUID THING_TYPE_PLAN = new ThingTypeUID(BINDING_ID, "plan");
+    public static final ThingTypeUID THING_TYPE_PV = new ThingTypeUID(BINDING_ID, "pv");
+    public static final ThingTypeUID THING_TYPE_SERVER = new ThingTypeUID(BINDING_ID, "server");
+    public static final ThingTypeUID THING_TYPE_SITE = new ThingTypeUID(BINDING_ID, "site");
+    public static final ThingTypeUID THING_TYPE_STATISTICS = new ThingTypeUID(BINDING_ID, "statistics");
+    public static final ThingTypeUID THING_TYPE_VEHICLE = new ThingTypeUID(BINDING_ID, "vehicle");
 
-    public static final String CHANNEL_LOADPOINT_ACTIVE_PHASES = "activePhases";
-    public static final String CHANNEL_LOADPOINT_CHARGE_CURRENT = "chargeCurrent";
-    public static final String CHANNEL_LOADPOINT_CHARGE_DURATION = "chargeDuration";
-    public static final String CHANNEL_LOADPOINT_CHARGE_POWER = "chargePower";
-    public static final String CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION = "chargeRemainingDuration";
-    public static final String CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY = "chargeRemainingEnergy";
-    public static final String CHANNEL_LOADPOINT_CHARGED_ENERGY = "chargedEnergy";
-    public static final String CHANNEL_LOADPOINT_CHARGING = "charging";
-    public static final String CHANNEL_LOADPOINT_CONNECTED = "vehicleConnected";
-    public static final String CHANNEL_LOADPOINT_CONNECTED_DURATION = "vehicleConnectedDuration";
-    public static final String CHANNEL_LOADPOINT_ENABLED = "enabled";
-    public static final String CHANNEL_LOADPOINT_MAX_CURRENT = "maxCurrent";
-    public static final String CHANNEL_LOADPOINT_MIN_CURRENT = "minCurrent";
-    public static final String CHANNEL_LOADPOINT_MODE = "mode";
-    public static final String CHANNEL_LOADPOINT_PHASES = "phases";
-    public static final String CHANNEL_LOADPOINT_LIMIT_ENERGY = "limitEnergy";
-    public static final String CHANNEL_LOADPOINT_LIMIT_SOC = "limitSoC";
-    public static final String CHANNEL_LOADPOINT_LIMIT_TEMPERATURE = "limitTemperature";
-    public static final String CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC = "effectiveLimitSoC";
-    public static final String CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE = "effectiveLimitTemperature";
-    public static final String CHANNEL_LOADPOINT_TITLE = "title";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_ODOMETER = "vehicleOdometer";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_PRESENT = "vehiclePresent";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_RANGE = "vehicleRange";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_SOC = "vehicleSoC";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE = "vehicleTemperature";
-    public static final String CHANNEL_LOADPOINT_VEHICLE_NAME = "vehicleName";
-    public static final String CHANNEL_LOADPOINT_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
-    public static final String CHANNEL_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE = "chargerFeatureIntegratedDevice";
+    // Supported Thing Types
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BATTERY, THING_TYPE_FORECAST,
+            THING_TYPE_HEATING, THING_TYPE_LOADPOINT, THING_TYPE_PLAN, THING_TYPE_PV, THING_TYPE_SITE,
+            THING_TYPE_STATISTICS, THING_TYPE_VEHICLE);
 
-    public static final String CHANNEL_VEHICLE_TITLE = "vehicleTitle";
-    public static final String CHANNEL_HEATING_TITLE = "heatingTitle";
-    public static final String CHANNEL_VEHICLE_MIN_SOC = "vehicleMinSoC";
-    public static final String CHANNEL_HEATING_MIN_TEMPERATURE = "heatingMinTemperature";
-    public static final String CHANNEL_VEHICLE_LIMIT_SOC = "vehicleLimitSoC";
-    public static final String CHANNEL_HEATING_LIMIT_TEMPERATURE = "heatingLimitTemperature";
-    public static final String CHANNEL_VEHICLE_CAPACITY = "vehicleCapacity";
-    public static final String CHANNEL_HEATING_CAPACITY = "heatingCapacity";
-    public static final String CHANNEL_VEHICLE_PLAN_ENABLED = "vehiclePlanEnabled";
-    public static final String CHANNEL_HEATING_PLAN_ENABLED = "heatingPlanEnabled";
-    public static final String CHANNEL_VEHICLE_PLAN_SOC = "vehiclePlanSoC";
-    public static final String CHANNEL_HEATING_PLAN_TEMPERATURE = "heatingPlanTemperature";
-    public static final String CHANNEL_VEHICLE_PLAN_TIME = "vehiclePlanTime";
-    public static final String CHANNEL_HEATING_PLAN_TIME = "heatingPlanTime";
+    public static final List<String> SUPPORTED_FORECAST_TYPES = List.of("co2", "feedin", "grid", "solar");
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    // Properties
+    public static final String PROPERTY_FORECAST = "forecast";
+    public static final String PROPERTY_ID = "id";
+    public static final String PROPERTY_INDEX = "index";
+    public static final String PROPERTY_SITE_TITLE = "siteTitle";
+    public static final String PROPERTY_SUBTYPE = "subType";
+    public static final String PROPERTY_TITLE = "title";
+    public static final String PROPERTY_TYPE = "type";
+    public static final String PROPERTY_VEHICLE_ID = "vehicleId";
 
-    // List of all Channel Type UIDs
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_CAPACITY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_BATTERY_CAPACITY);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_POWER = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_BATTERY_POWER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_BATTERY_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_DISCHARGE_CONTROL = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_BATTERY_DISCHARGE_CONTROL);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BATTERY_MODE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_BATTERY_MODE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_PRIORITY_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_PRIORITY_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BUFFER_SOC = new ChannelTypeUID(BINDING_ID, CHANNEL_BUFFER_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_BUFFER_START_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_BUFFER_START_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_RESIDUAL_POWER = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_RESIDUAL_POWER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_GRID_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_GRID_POWER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HOME_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_HOME_POWER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_PV_POWER = new ChannelTypeUID(BINDING_ID, CHANNEL_PV_POWER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VERSION = new ChannelTypeUID(BINDING_ID, CHANNEL_VERSION);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_AVAILABLE_VERSION = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_AVAILABLE_VERSION);
+    // Property Types
+    public static final String PROPERTY_TYPE_BATTERY = "battery";
+    public static final String PROPERTY_TYPE_HEATING = "heating";
+    public static final String PROPERTY_TYPE_LOADPOINT = "loadpoint";
+    public static final String PROPERTY_TYPE_PLAN = "plan";
+    public static final String PROPERTY_TYPE_PV = "pv";
+    public static final String PROPERTY_TYPE_SITE = "site";
+    public static final String PROPERTY_TYPE_STATISTICS = "statistics";
+    public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
 
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ACTIVE_PHASES = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_ACTIVE_PHASES);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_CURRENT = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_CHARGE_CURRENT);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_DURATION = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_CHARGE_DURATION);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_POWER = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_CHARGE_POWER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_DURATION = new ChannelTypeUID(
-            BINDING_ID, CHANNEL_LOADPOINT_CHARGE_REMAINING_DURATION);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGE_REMAINING_ENERGY = new ChannelTypeUID(
-            BINDING_ID, CHANNEL_LOADPOINT_CHARGE_REMAINING_ENERGY);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGED_ENERGY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_CHARGED_ENERGY);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGING = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_CHARGING);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_CONNECTED);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CONNECTED_DURATION = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_CONNECTED_DURATION);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_ENABLED = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_ENABLED);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MAX_CURRENT = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_MAX_CURRENT);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MIN_CURRENT = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_MIN_CURRENT);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_MODE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_MODE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_PHASES = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_PHASES);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_LIMIT_ENERGY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_LIMIT_ENERGY);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_LIMIT_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_LIMIT_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_LIMIT_TEMPERATURE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE = new ChannelTypeUID(
-            BINDING_ID, CHANNEL_LOADPOINT_EFFECTIVE_LIMIT_TEMPERATURE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_TITLE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_TITLE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_ODOMETER = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_VEHICLE_ODOMETER);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_PRESENT = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_VEHICLE_PRESENT);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_RANGE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_VEHICLE_RANGE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_VEHICLE_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_VEHICLE_TEMPERATURE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_VEHICLE_NAME = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_LOADPOINT_VEHICLE_NAME);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGER_FEATURE_HEATING = new ChannelTypeUID(
-            BINDING_ID, CHANNEL_LOADPOINT_CHARGER_FEATURE_HEATING);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE = new ChannelTypeUID(
-            BINDING_ID, CHANNEL_LOADPOINT_CHARGER_FEATURE_INTEGRATED_DEVICE);
+    // API Paths
+    public static final String API_PATH_LOADPOINTS = "loadpoints";
+    public static final String API_PATH_PLAN_REPEATING = "plan/repeating";
+    public static final String API_PATH_PLAN_SOC = "plan/soc";
+    public static final String API_PATH_VEHICLES = "vehicles";
 
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_TITLE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VEHICLE_TITLE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_TITLE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_HEATING_TITLE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_MIN_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VEHICLE_MIN_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_MIN_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_HEATING_MIN_TEMPERATURE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VEHICLE_LIMIT_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_LIMIT_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_HEATING_LIMIT_TEMPERATURE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_CAPACITY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VEHICLE_CAPACITY);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_CAPACITY = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_HEATING_CAPACITY);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_ENABLED = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VEHICLE_PLAN_ENABLED);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_PLAN_ENABLED = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_HEATING_PLAN_ENABLED);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_SOC = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VEHICLE_PLAN_SOC);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_PLAN_TEMPERATURE = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_HEATING_PLAN_TEMPERATURE);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_VEHICLE_PLAN_TIME = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_VEHICLE_PLAN_TIME);
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_HEATING_PLAN_TIME = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_HEATING_PLAN_TIME);
+    // JSON Keys
+    public static final String JSON_KEY_ACTIVE = "active";
+    public static final String JSON_KEY_BATTERY = "battery";
+    public static final String JSON_KEY_CHARGE_CURRENT = "chargeCurrent";
+    public static final String JSON_KEY_CHARGE_CURRENTS = "chargeCurrents";
+    public static final String JSON_KEY_CHARGE_VOLTAGES = "chargeVoltages";
+    public static final String JSON_KEY_CHARGER_FEATURE_HEATING = "chargerFeatureHeating";
+    public static final String JSON_KEY_CO2 = "co2";
+    public static final String JSON_KEY_CONNECTED = "connected";
+    public static final String JSON_KEY_DAY_AFTER_TOMORROW = "dayAfterTomorrow";
+    public static final String JSON_KEY_EFFECTIVE_LIMIT_SOC = "effectiveLimitSoc";
+    public static final String JSON_KEY_EFFECTIVE_PLAN_SOC = "effectivePlanSoc";
+    public static final String JSON_KEY_ENERGY = "energy";
+    public static final String JSON_KEY_FEED_IN = "feedin";
+    public static final String JSON_KEY_FORECAST = "forecast";
+    public static final String JSON_KEY_GRID = "grid";
+    public static final String JSON_KEY_GRID_CONFIGURED = "gridConfigured";
+    public static final String JSON_KEY_LIMIT_SOC = "limitSoc";
+    public static final String JSON_KEY_LOADPOINTS = "loadpoints";
+    public static final String JSON_KEY_OFFERED_CURRENT = "offeredCurrent";
+    public static final String JSON_KEY_PHASES = "phases";
+    public static final String JSON_KEY_PHASES_CONFIGURED = "phasesConfigured";
+    public static final String JSON_KEY_PLAN = "plan";
+    public static final String JSON_KEY_PRECONDITION = "precondition";
+    public static final String JSON_KEY_PV = "pv";
+    public static final String JSON_KEY_REPEATING_PLANS = "repeatingPlans";
+    public static final String JSON_KEY_SCALE = "scale";
+    public static final String JSON_KEY_SMART_COST_TYPE = "smartCostType";
+    public static final String JSON_KEY_SOC = "soc";
+    public static final String JSON_KEY_SOLAR = "solar";
+    public static final String JSON_KEY_STATISTICS = "statistics";
+    public static final String JSON_KEY_TIME = "time";
+    public static final String JSON_KEY_TITLE = "title";
+    public static final String JSON_KEY_TODAY = "today";
+    public static final String JSON_KEY_TOMORROW = "tomorrow";
+    public static final String JSON_KEY_TZ = "tz";
+    public static final String JSON_KEY_VEHICLE_LIMIT_SOC = "vehicleLimitSoc";
+    public static final String JSON_KEY_VEHICLE_PRESENT = "vehiclePresent";
+    public static final String JSON_KEY_VEHICLE_SOC = "vehicleSoc";
+    public static final String JSON_KEY_VEHICLES = "vehicles";
+    public static final String JSON_KEY_WEEKDAYS = "weekdays";
 
-    public static final int CONNECTION_TIMEOUT_MILLISEC = 5000;
-    public static final int LONG_CONNECTION_TIMEOUT_MILLISEC = 60000;
-    public static final String EVCC_REST_API = "/api/";
+    // Item Types
+    public static final String NUMBER_CURRENCY = CoreItemFactory.NUMBER + ":Currency";
+    public static final String NUMBER_DIMENSIONLESS = CoreItemFactory.NUMBER + ":Dimensionless";
+    public static final String NUMBER_ELECTRIC_CURRENT = CoreItemFactory.NUMBER + ":ElectricCurrent";
+    public static final String NUMBER_EMISSION_INTENSITY = CoreItemFactory.NUMBER + ":EmissionIntensity";
+    public static final String NUMBER_ENERGY = CoreItemFactory.NUMBER + ":Energy";
+    public static final String NUMBER_ENERGY_PRICE = CoreItemFactory.NUMBER + ":EnergyPrice";
+    public static final String NUMBER_LENGTH = CoreItemFactory.NUMBER + ":Length";
+    public static final String NUMBER_POWER = CoreItemFactory.NUMBER + ":Power";
+    public static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
+    public static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
+
+    // HTTP Methods
+    public static final String DELETE = "DELETE";
+    public static final String POST = "POST";
 }

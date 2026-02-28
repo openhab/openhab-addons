@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,5 +92,6 @@ public class EnergiDataServiceBindingConstants {
     // Other
     public static final LocalTime DAILY_REFRESH_TIME_CET = LocalTime.of(13, 0);
     public static final LocalDate ENERGINET_CUTOFF_DATE = LocalDate.of(2023, 1, 1);
+    public static final LocalDate DAY_AHEAD_TRANSITION_DATE = LocalDate.of(2025, 9, 30);
     public static final String PROPERTY_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }

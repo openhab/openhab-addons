@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,6 @@ public class Channel {
      * @param _9
      */
     public Channel(Data _0, Data _1, Data _2, Data _3, Data _4, Data _5, Data _6, Data _7, Data _8, Data _9) {
-        super();
         this._0 = _0;
         this._1 = _1;
         this._2 = _2;

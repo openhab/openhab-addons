@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Christoph Weitkamp - Added channels 'voltage' and 'battery_level'
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
  * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
+ * @author Andrew Fiddian-Green - Added support for FRITZ!Smart Energy 250
  */
 @NonNullByDefault
 public class AVMFritzBindingConstants {
@@ -62,8 +63,10 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_HAN_FUN_DIMMABLE_BULB = "HAN_FUN_DIMMABLE_BULB";
     public static final String DEVICE_HAN_FUN_SENSOR = "HAN_FUN_SENSOR";
     public static final String DEVICE_HAN_FUN_HOST = "HAN_FUN_HOST";
+    public static final String DEVICE_SMART_ENERGY_250 = "FRITZ_Smart_Energy_250";
 
     // List of main group types
+    public static final String GROUP_BLINDS = "FRITZ_GROUP_BLINDS";
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
     public static final String GROUP_SWITCH = "FRITZ_GROUP_SWITCH";
 
@@ -90,10 +93,13 @@ public class AVMFritzBindingConstants {
             DEVICE_HAN_FUN_COLOR_BULB);
     public static final ThingTypeUID HAN_FUN_DIMMABLE_BULB_THING_TYPE = new ThingTypeUID(BINDING_ID,
             DEVICE_HAN_FUN_DIMMABLE_BULB);
+    public static final ThingTypeUID GROUP_BLINDS_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_BLINDS);
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
     public static final ThingTypeUID HAN_FUN_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SENSOR);
     public static final ThingTypeUID HAN_FUN_HOST_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_HOST);
+    public static final ThingTypeUID SMART_ENERGY_250_THING_TYPE = new ThingTypeUID(BINDING_ID,
+            DEVICE_SMART_ENERGY_250);
 
     // List of all Thing config ids
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
@@ -105,9 +111,10 @@ public class AVMFritzBindingConstants {
     public static final String CONFIG_AIN = "ain";
 
     // List of all Properties
+    public static final String PROPERTY_DEVICE_ID = "deviceId";
     public static final String PROPERTY_MASTER = "master";
     public static final String PROPERTY_MEMBERS = "members";
-    public static final String PRODUCT_NAME = "productName";
+    public static final String PROPERTY_PRODUCT_NAME = "productName";
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_DEVICE = "device";
@@ -177,13 +184,15 @@ public class AVMFritzBindingConstants {
     public static final String MODE_AUTO = "AUTOMATIC";
     public static final String MODE_MANUAL = "MANUAL";
     public static final String MODE_VACATION = "VACATION";
-    public static final String MODE_ON = "ON";
-    public static final String MODE_OFF = "OFF";
-    public static final String MODE_COMFORT = "COMFORT";
-    public static final String MODE_ECO = "ECO";
-    public static final String MODE_BOOST = "BOOST";
-    public static final String MODE_WINDOW_OPEN = "WINDOW_OPEN";
-    public static final String MODE_UNKNOWN = "UNKNOWN";
+    public static final String HEATING_MODE_ON = "ON";
+    public static final String HEATING_MODE_OFF = "OFF";
+    public static final String HEATING_MODE_COMFORT = "COMFORT";
+    public static final String HEATING_MODE_ECO = "ECO";
+    public static final String HEATING_MODE_BOOST = "BOOST";
+    public static final String HEATING_MODE_WINDOW_OPEN = "WINDOW_OPEN";
+    public static final String HEATING_MODE_UNKNOWN = "UNKNOWN";
+
+    public static final String GET_ENERGY_STATS = "GET_ENERGY_STATS";
 
     public static final Set<ThingTypeUID> SUPPORTED_LIGHTING_THING_TYPES = Set.of(DECT500_THING_TYPE,
             HAN_FUN_COLOR_BULB_THING_TYPE, HAN_FUN_DIMMABLE_BULB_THING_TYPE);
@@ -194,20 +203,24 @@ public class AVMFritzBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Set.of(DECT300_THING_TYPE, DECT302_THING_TYPE,
             DECT301_THING_TYPE, COMETDECT_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
-            DECT200_THING_TYPE, DECT210_THING_TYPE, POWERLINE546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE,
-            HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE, HAN_FUN_SENSOR_THING_TYPE, HAN_FUN_HOST_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_POWER_METER_THING_TYPES = Set.of(DECT200_THING_TYPE,
+            DECT210_THING_TYPE, SMART_ENERGY_250_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
-            GROUP_SWITCH_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
+            POWERLINE546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE,
+            HAN_FUN_SENSOR_THING_TYPE, HAN_FUN_HOST_THING_TYPE);
+
+    public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_BLINDS_THING_TYPE,
+            GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE,
             POWERLINE546E_STANDALONE_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(SUPPORTED_LIGHTING_THING_TYPES,
-            SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
-            SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS).flatMap(Set::stream)
-            .collect(Collectors.toUnmodifiableSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(SUPPORTED_LIGHTING_THING_TYPES, SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES,
+                    SUPPORTED_POWER_METER_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
+                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet());
 
     // Lookup of new (alias) to old product names
     public static final Map<String, String> ALIAS_PRODUCT_NAME_MAP = Map.of( //

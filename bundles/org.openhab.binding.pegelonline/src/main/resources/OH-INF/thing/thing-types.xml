@@ -64,11 +64,19 @@
 	<channel-type id="level">
 		<item-type>Number:Length</item-type>
 		<label>Water Level</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="trend">
 		<item-type>Number</item-type>
 		<label>Water Level Trend</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="-1">Lowering</option>
@@ -80,6 +88,10 @@
 	<channel-type id="warning">
 		<item-type>Number</item-type>
 		<label>Warning Level</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No warning</option>

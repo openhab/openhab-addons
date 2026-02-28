@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -288,7 +288,8 @@ public class GuntamaticHandler extends BaseThingHandler {
         // add dynamic channels, based on data provided by Guntamatic Heating System
         for (int i = 0; i < daqdesc.length; i++) {
             String[] param = daqdesc[i].split(";");
-            String label = param[0].replace("C02", "CO2");
+            String label = param[0].replace("C02", "CO2").replace("Boiler`s", "Boiler's").replace("Interuption",
+                    "Interruption");
 
             if (!"reserved".equals(label)) {
                 String channel = toLowerCaseHyphen(replaceUmlaut(label));

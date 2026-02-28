@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,12 +23,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public abstract class InsteonBridgeConfiguration {
 
     private int devicePollIntervalInSeconds = 300;
+    private int deviceResponseTimeoutInMinutes = 30;
     private boolean deviceDiscoveryEnabled = true;
     private boolean sceneDiscoveryEnabled = false;
     private boolean deviceSyncEnabled = false;
 
     public int getDevicePollInterval() {
         return devicePollIntervalInSeconds * 1000; // in milliseconds
+    }
+
+    public int getDeviceResponseTimeout() {
+        return deviceResponseTimeoutInMinutes;
     }
 
     public boolean isDeviceDiscoveryEnabled() {
@@ -49,6 +54,7 @@ public abstract class InsteonBridgeConfiguration {
     public String toString() {
         String s = "";
         s += " devicePollIntervalInSeconds=" + devicePollIntervalInSeconds;
+        s += " deviceResponseTimeoutInMinutes=" + deviceResponseTimeoutInMinutes;
         s += " deviceDiscoveryEnabled=" + deviceDiscoveryEnabled;
         s += " sceneDiscoveryEnabled=" + sceneDiscoveryEnabled;
         s += " deviceSyncEnabled=" + deviceSyncEnabled;

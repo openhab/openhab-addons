@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -39,12 +38,12 @@ public class BooleanStateCluster extends BaseCluster {
      * For example, in a Contact Sensor device type, FALSE&#x3D;open or no contact, TRUE&#x3D;closed or contact.
      */
     public Boolean stateValue; // 0 bool R V
-    // Structs
 
+    // Structs
     /**
      * If this event is supported, it shall be generated when the StateValue attribute changes.
      */
-    public class StateChange {
+    public static class StateChange {
         /**
          * This field shall indicate the new value of the StateValue attribute.
          */

@@ -10,6 +10,13 @@
 			<description>Time between polling the data in ms.</description>
 			<default>5000</default>
 		</parameter>
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries When Reading</label>
+			<default>3</default>
+			<description>Specifies how many times the binding should retry reading data if a read attempt fails.
+				Set to `1` to
+				disable retries and use a single attempt.</description>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

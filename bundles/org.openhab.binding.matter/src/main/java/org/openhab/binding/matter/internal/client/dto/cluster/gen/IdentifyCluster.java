@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -63,8 +62,8 @@ public class IdentifyCluster extends BaseCluster {
         DISPLAY(4, "Display"),
         ACTUATOR(5, "Actuator");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private IdentifyTypeEnum(Integer value, String label) {
             this.value = value;
@@ -90,8 +89,8 @@ public class IdentifyCluster extends BaseCluster {
         FINISH_EFFECT(254, "Finish Effect"),
         STOP_EFFECT(255, "Stop Effect");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EffectIdentifierEnum(Integer value, String label) {
             this.value = value;
@@ -112,8 +111,8 @@ public class IdentifyCluster extends BaseCluster {
     public enum EffectVariantEnum implements MatterEnum {
         DEFAULT(0, "Default");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EffectVariantEnum(Integer value, String label) {
             this.value = value;

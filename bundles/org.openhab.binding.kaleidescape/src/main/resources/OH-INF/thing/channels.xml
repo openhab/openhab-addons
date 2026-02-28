@@ -334,7 +334,7 @@
 	<channel-type id="movie_control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control movie playback e.g. Play/Pause/Next/Previous/Fast Forward/Rewind</description>
+		<description>Control movie playback, e.g., Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
 		<tags>
 			<tag>Control</tag>
@@ -352,7 +352,7 @@
 	<channel-type id="movie_play_mode">
 		<item-type>String</item-type>
 		<label>Play Mode</label>
-		<description>The Current playback mode of the movie</description>
+		<description>The current playback mode of the movie</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -455,7 +455,7 @@
 	<channel-type id="movie_location">
 		<item-type>String</item-type>
 		<label>Movie Location</label>
-		<description>Identifies the location in the movie, ie: Main Content, Intermission, or End Credits</description>
+		<description>Identifies the location in the movie, i.e., Main content, Intermission, or End credits</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -513,7 +513,7 @@
 	<channel-type id="video_color" advanced="true">
 		<item-type>String</item-type>
 		<label>Video Color</label>
-		<description>Provides Color Information About the Current Video Output</description>
+		<description>Provides color information about the current video output</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -637,7 +637,7 @@
 	<channel-type id="music_control">
 		<item-type>Player</item-type>
 		<label>Control</label>
-		<description>Control music playback e.g. Play/Pause/Next/Previous/Fforward/Rewind</description>
+		<description>Control music playback, e.g., Play/Pause/Next/Previous/Fast Forward/Rewind</description>
 		<category>Player</category>
 		<tags>
 			<tag>Control</tag>
@@ -701,7 +701,7 @@
 	<channel-type id="music_title" advanced="true">
 		<item-type>String</item-type>
 		<label>Music Title</label>
-		<description>The raw output from the MUSIC_TITLE api response</description>
+		<description>The raw output from the MUSIC_TITLE API response</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
@@ -790,7 +790,7 @@
 	<channel-type id="type">
 		<item-type>String</item-type>
 		<label>Detail Type</label>
-		<description>Indicates If the currently selected item is a Movie or Album</description>
+		<description>Indicates whether the currently selected item is a movie or an album</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -917,7 +917,7 @@
 	<channel-type id="rating_reason">
 		<item-type>String</item-type>
 		<label>Rating Reason</label>
-		<description>An explaination of why the selected movie received its rating</description>
+		<description>An explanation of why the selected movie received its rating</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -963,7 +963,8 @@
 	<channel-type id="disc_location">
 		<item-type>String</item-type>
 		<label>Disc Location</label>
-		<description>Indicates where the disc for the selected item is currently residing in the system (ie Vault, Tray, etc.)</description>
+		<description>Indicates where the disc for the selected item is currently residing in the system (i.e., Vault, Tray,
+			etc.)</description>
 		<state readOnly="true"/>
 	</channel-type>
 

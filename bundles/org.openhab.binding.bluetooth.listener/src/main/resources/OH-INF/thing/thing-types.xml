@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="listener" extensible="manufacturer-number,manufacturer-raw,service-number,service-raw">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>Listener</label>
+		<description>Bluetooth Listener</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="interval" typeId="advertise-interval"/>
+		</channels>
+		<properties>
+			<property name="advertisingInterval">-</property>
+		</properties>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="changeByteOrder" type="boolean">
+				<label>Big Endian</label>
+				<description>Multibyte item byte order for number channels. For items with length 2, 4 or 8 bytes byte order could
+					be changed. Default (false) order is little endian. For big endian order set this to true.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="autoChannelCreation" type="boolean">
+				<label>Automatic Channel Creation</label>
+				<description>Enable automatic channel creation from received service and manufacturer data</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="dataTimeout" min="1" type="integer">
+				<label>Data Timeout</label>
+				<description>Maximum time in minutes before a communication error is raised</description>
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="advertise-interval">
+		<item-type>Number</item-type>
+		<label>Advertising Interval</label>
+		<description>Advertising interval</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="manufacturer-number">
+		<item-type>Number</item-type>
+		<label>Manufacturer Numeric Data</label>
+		<description>Manufacturer numeric data</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="dataBegin" type="integer" min="0">
+				<label>Data Begin</label>
+				<description>Data begin in the raw data byte array.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="dataLength" type="integer" min="1" pattern="^[1,2,4,8]$">
+				<label>Data Length</label>
+				<description>Data length. Only values 1, 2, 4, 8 are allowed (for datatypes byte, short, integer and long
+					respectively).</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="multiplyer" type="decimal">
+				<label>Multiplyer</label>
+				<description>Simple data conversion by value multiplication.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="payloadLength" type="decimal">
+				<label>Payload Length</label>
+				<description>Expected payload length. Default is 0 that means no payload length check is provided. Otherwise only
+					payload with specified length will be accepted.</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="manufacturer-raw">
+		<item-type>String</item-type>
+		<label>Manufacturer Raw Data</label>
+		<description>Manufacturer raw data</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="dataBegin" type="integer" min="0">
+				<label>Data begin</label>
+				<description>Data begin in the raw data byte array.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="dataLength" type="integer" min="0">
+				<label>Data Length</label>
+				<description>Data length. If set to 0 the data will be loaded till the end.</description>
+				<default>2</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="service-number">
+		<item-type>Number</item-type>
+		<label>Service Numeric Data</label>
+		<description>Service numeric data</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="uuid" type="text" required="true">
+				<label>Service UUID</label>
+				<description>Service UUID</description>
+			</parameter>
+			<parameter name="dataBegin" type="integer" min="0">
+				<label>Data Begin</label>
+				<description>Data begin in the raw data byte array.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="dataLength" type="integer" min="1" pattern="^[1,2,4,8]$">
+				<label>Data Length</label>
+				<description>Data length. Only values 1, 2, 4, 8 are allowed (for datatypes byte, short, integer and long
+					respectively).</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="multiplyer" type="decimal">
+				<label>Multiplyer</label>
+				<description>Simple data conversion by value multiplication.</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="payloadLength" type="decimal">
+				<label>Payload Length</label>
+				<description>Expected payload length. Default is 0 that means no payload length check is provided. Otherwise only
+					payload with specified length will be accepted.</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="service-raw">
+		<item-type>String</item-type>
+		<label>Service Raw Data</label>
+		<description>Service raw data</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="uuid" type="text" required="true">
+				<label>Service UUID</label>
+				<description>Service UUID</description>
+			</parameter>
+			<parameter name="dataBegin" type="integer" min="0">
+				<label>Data Begin</label>
+				<description>Data begin index in the raw data byte array.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="dataLength" type="integer" min="0">
+				<label>Data Length</label>
+				<description>Data length. If set to 0 the data will be loaded till the end.</description>
+				<default>2</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

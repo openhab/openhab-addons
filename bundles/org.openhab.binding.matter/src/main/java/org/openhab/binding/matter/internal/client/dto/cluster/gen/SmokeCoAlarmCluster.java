@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 // AUTO-GENERATED, DO NOT EDIT!
 
 package org.openhab.binding.matter.internal.client.dto.cluster.gen;
@@ -122,12 +121,12 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * based on the ExpiryDate by up to 24 hours to best align with the local time zone.
      */
     public Integer expiryDate; // 12 epoch-s R V
-    // Structs
 
+    // Structs
     /**
      * This event shall be generated when SmokeState attribute changes to either Warning or Critical state.
      */
-    public class SmokeAlarm {
+    public static class SmokeAlarm {
         /**
          * This field shall indicate the current value of the SmokeState attribute.
          */
@@ -141,7 +140,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * This event shall be generated when COState attribute changes to either Warning or Critical state.
      */
-    public class CoAlarm {
+    public static class CoAlarm {
         /**
          * This field shall indicate the current value of the COState attribute.
          */
@@ -155,7 +154,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * This event shall be generated when BatteryAlert attribute changes to either Warning or Critical state.
      */
-    public class LowBattery {
+    public static class LowBattery {
         /**
          * This field shall indicate the current value of the BatteryAlert attribute.
          */
@@ -170,7 +169,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * This event shall be generated when the device detects a hardware fault that leads to setting HardwareFaultAlert
      * to True.
      */
-    public class HardwareFault {
+    public static class HardwareFault {
         public HardwareFault() {
         }
     }
@@ -178,7 +177,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * This event shall be generated when the EndOfServiceAlert is set to Expired.
      */
-    public class EndOfService {
+    public static class EndOfService {
         public EndOfService() {
         }
     }
@@ -186,7 +185,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * This event shall be generated when the SelfTest completes, and the attribute TestInProgress changes to False.
      */
-    public class SelfTestComplete {
+    public static class SelfTestComplete {
         public SelfTestComplete() {
         }
     }
@@ -194,7 +193,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * This event shall be generated when the DeviceMuted attribute changes to Muted.
      */
-    public class AlarmMuted {
+    public static class AlarmMuted {
         public AlarmMuted() {
         }
     }
@@ -202,7 +201,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * This event shall be generated when DeviceMuted attribute changes to NotMuted.
      */
-    public class MuteEnded {
+    public static class MuteEnded {
         public MuteEnded() {
         }
     }
@@ -211,7 +210,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * This event shall be generated when the device hosting the server receives a smoke alarm from an interconnected
      * sensor.
      */
-    public class InterconnectSmokeAlarm {
+    public static class InterconnectSmokeAlarm {
         /**
          * This field shall indicate the current value of the InterconnectSmokeAlarm attribute.
          */
@@ -226,7 +225,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
      * This event shall be generated when the device hosting the server receives a CO alarm from an interconnected
      * sensor.
      */
-    public class InterconnectCoAlarm {
+    public static class InterconnectCoAlarm {
         /**
          * This field shall indicate the current value of the InterconnectCOAlarm attribute.
          */
@@ -240,7 +239,7 @@ public class SmokeCoAlarmCluster extends BaseCluster {
     /**
      * This event shall be generated when ExpressedState attribute returns to Normal state.
      */
-    public class AllClear {
+    public static class AllClear {
         public AllClear() {
         }
     }
@@ -251,8 +250,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AlarmStateEnum(Integer value, String label) {
             this.value = value;
@@ -275,8 +274,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         STANDARD(1, "Standard"),
         LOW(2, "Low");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SensitivityEnum(Integer value, String label) {
             this.value = value;
@@ -305,8 +304,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         INTERCONNECT_SMOKE(7, "Interconnect Smoke"),
         INTERCONNECT_CO(8, "Interconnect Co");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ExpressedStateEnum(Integer value, String label) {
             this.value = value;
@@ -328,8 +327,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         NOT_MUTED(0, "Not Muted"),
         MUTED(1, "Muted");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MuteStateEnum(Integer value, String label) {
             this.value = value;
@@ -351,8 +350,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         NORMAL(0, "Normal"),
         EXPIRED(1, "Expired");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EndOfServiceEnum(Integer value, String label) {
             this.value = value;
@@ -376,8 +375,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         WARNING(2, "Warning"),
         CRITICAL(3, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ContaminationStateEnum(Integer value, String label) {
             this.value = value;

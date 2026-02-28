@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,6 @@ public class ChatGPTHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (command instanceof StringType stringCommand) {
             lastPrompt = stringCommand.toFullString();
 
@@ -92,7 +91,6 @@ public class ChatGPTHandler extends BaseThingHandler {
 
     private void processChatResponse(ChannelUID channelUID, @Nullable String response) {
         if (response != null) {
-
             ObjectMapper objectMapper = new ObjectMapper();
             ChatResponse chatResponse;
             try {
@@ -103,7 +101,6 @@ public class ChatGPTHandler extends BaseThingHandler {
             }
 
             if (chatResponse != null) {
-
                 String finishReason = chatResponse.getChoices().get(0).getFinishReason();
 
                 if ("length".equals(finishReason)) {
@@ -124,7 +121,6 @@ public class ChatGPTHandler extends BaseThingHandler {
                 if (msg != null) {
                     updateState(channelUID, new StringType(msg));
                 }
-
             } else {
                 logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
             }

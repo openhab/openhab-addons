@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mspa"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="bubble-level">
+		<item-type>Number</item-type>
+		<label>Bubble Level</label>
+		<description>Intensity of bubbles</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="1">Low</option>
+				<option value="2">Medium</option>
+				<option value="3">High</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Active</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>LockState</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="set-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+</thing:thing-descriptions>

@@ -12,7 +12,7 @@ But it also sends a (decoded) copy to openHAB as well.
 The binding supports two types of things:
 
 - `bridge`: The bridge is the interface to the Grott application; it receives the data from all inverters.
-- `inverter`: The inverter thing contains channels which are updated with solor production and consumption data.
+- `inverter`: The inverter thing contains channels which are updated with solar production and consumption data.
 
 ## Discovery
 
@@ -28,7 +28,7 @@ The `bridge` thing allows configuration of the user credentials, which are only 
 | userName  | text    | User name for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)  | yes      | no      |
 | password  | text    | Password for the Growatt Shine app. Only needed if using [Rule Actions](#rule-actions)   | yes      | no      |
 
-The `inverter` thing requires configuration of its serial number resp. `deviceId`:
+The `inverter` thing requires configuration of its serial number, i.e., `deviceId`:
 
 | Name      | Type    | Description                                                                              | Required |
 |-----------|---------|------------------------------------------------------------------------------------------|----------|
@@ -192,11 +192,11 @@ The meaning of the method parameters is as follows:
 
 Notes:
 
--<sup>1)</sup> ***WARNING*** inverters have different program `time segment`'s for each `programMode`.
+-<sup>1)</sup> **WARNING** inverters have different program `time segment`'s for each `programMode`.
 To prevent unexpected results do not overlap the `time segment`'s.
 
 -<sup>2)</sup> Depending on inverter type and `programMode` certain parameters may accept 'null' values.
-The 'mix', 'sph' and 'spa' types set the battery program in a single command, so all parameters - except `enableAcCharging` - <u>**must**</u> be ***non-*** 'null'.
+The 'mix', 'sph' and 'spa' types set the battery program in a single command, so all parameters - except `enableAcCharging` - <u>**must**</u> be _**non-**_ 'null'.
 By contrast 'tlx' types set the battery program in up to four partial commands, and you may pass 'null' parameters in order to omit a partial command.
 The permission for passing 'null' parameters, and the effect of such 'null' parameters, is shown in detail in the table below:
 
@@ -375,8 +375,8 @@ end
 ### Example `.things` file
 
 ```java
-Bridge growatt:bridge:home "Growattt Bridge" [userName="USERNAME", password="PASSWORD"] {
-    Thing inverter sph "Growatt SPH Inverter" [deviceId="INVERTERTID"]
+Bridge growatt:bridge:home "Growatt Bridge" [userName="USERNAME", password="PASSWORD"] {
+    Thing inverter sph "Growatt SPH Inverter" [deviceId="INVERTERID"]
 }
 ```
 
@@ -395,16 +395,21 @@ Example using a transform profile to invert an item value:
 // charge item with positive value
 Number:Power Charge_Power "Charge Power [%.0f W]" <energy> {channel="growatt:inverter:home:sph:charge-power"}
 
-// discarge item with negative value
+// discharge item with negative value
 Number:Power Discharge_Power "Discharge Power [%.0f W]" <energy> {channel="growatt:inverter:home:sph:discharge-power" [ profile="transform:JS", toItemScript="| Quantity(input).multiply(-1).toString();" ] }
 ```
 
 ## Grott Application Installation and Setup
 
-You can install the Grott application either on the same computer as openHAB or on another.
-The following assumes you will be running it on the same computer.
 The Grott application acts as a proxy server between your Growatt inverter and the Growatt cloud server.
-It intercepts data packets between the inverter and the cloud server, and it sends a copy of the intercepted data also to openHAB.
+It intercepts data packets between the inverter data logger and the cloud server, and it passes a copy of the intercepted data also to openHAB.
+
+If you have an openHABian system then you can install it automatically via the openHABian configuration UI.
+See [openHABian Installation of Grott](#openhabian-installation-of-grott) below.
+Otherwise see [Manual Installation of Grott](#manual-installation-of-grott) below.
+
+After installing Grott you **MUST** change your Growatt data logger configuration to send its data to the Grott proxy server instead of to the Growatt server.
+See [Route Growatt Inverter Logging via Grott Proxy](#route-growatt-inverter-logging-via-grott-proxy) below.
 
 **NOTE**: make sure that the Grott application is **FULLY OPERATIONAL** for your inverter **BEFORE** you create any things in openHAB!
 Otherwise the binding might create a wrong (or even empty) list of channels for the inverter thing.
@@ -413,9 +418,19 @@ Otherwise the binding might create a wrong (or even empty) list of channels for 
 You should configure the Grott application via its `grott.ini` file.
 Configure Grott to match your inverter according to the [instructions](https://github.com/johanmeijer/grott#the-growatt-inverter-monitor).
 
-### Install Python
+### openHABian Installation of Grott
 
-If Python is not already installed on you computer, then install it first.
+On an openHABian system, you can install and upgrade the Grott proxy server application via the `sudo openhabian-config` command.
+Select the menu option `2F`.
+
+### Manual Installation of Grott
+
+You can install the Grott application either on the same computer as openHAB or on another.
+The following assumes you will be running the Grott application on the same computer as openHAB is running on.
+
+#### Install Python
+
+If Python is not already installed on your computer, then install it first.
 And install the following additional necessary python packages:
 
 ```bash
@@ -423,7 +438,7 @@ sudo pip3 install paho-mqtt
 sudo pip3 install requests
 ```
 
-### Install Grott
+#### Install Grott
 
 First install the Grott application and the Grott application extension files in a Grott specific home folder.
 Note that Grott requires the `grottext.py` application extension in addition to the standard application files.
@@ -455,11 +470,11 @@ extname = grottext
 extvar = {"url": "http://127.0.0.1:8080/growatt"} // or ip address of openHAB (if remote)
 ```
 
-### Start Grott as a Service
+#### Start Grott as a Service
 
 Finally you should set your computer to starts the Grott application automatically as a service when your computer starts.
-For Windows see wiki: https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Windows)
-For Linux see wiki: https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Linux)
+For Windows see wiki: <https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Windows)>
+For Linux see wiki: <https://github.com/johanmeijer/grott/wiki/Grott-as-a-service-(Linux)>
 The service configuration for Linux is summarised below:
 
 - Copy the `grott.service` file to the `/etc/systemd/system/` folder
@@ -482,7 +497,7 @@ sudo systemctl enable grott
 ### Route Growatt Inverter Logging via Grott Proxy
 
 Normally the Growatt inverter sends its logging data directly to port `5279` on the Growatt server at `server.growatt.com` (ip=47.91.67.66) on the cloud.
-Grott is a proxy server that interposes itself beween the inverter and the cloud server.
+Grott is a proxy server that interposes itself between the inverter and the cloud server.
 i.e. it receives the inverter logging data and forwards it unchanged to the cloud server.
 
 **WARNING**: make sure that Grott is running on a computer with a **STATIC IP ADDRESS** (and note this safely)!
@@ -490,4 +505,4 @@ Otherwise if the computer changes its ip address dynamically, it can no longer i
 This means **YOU WILL NO LONGER BE ABLE TO RESET THE INVERTER** to its original settings!
 
 You need to use the Growatt App to tell the inverter to send its logging data to the Grott proxy instead of to the cloud.
-See wiki: https://github.com/johanmeijer/grott/wiki/Rerouting-Growatt-Wifi-TCPIP-data-via-your-Grott-Server for more information.
+See wiki: <https://github.com/johanmeijer/grott/wiki/Rerouting-Growatt-Wifi-TCPIP-data-via-your-Grott-Server> for more information.

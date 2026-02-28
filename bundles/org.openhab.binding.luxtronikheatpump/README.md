@@ -23,7 +23,7 @@ Note: The whole functionality is based on data that was reverse engineered, so u
 
 ## Supported Things
 
-This binding only supports one thing type "Luxtronik Heatpump" (heatpump).
+This binding only supports one Thing type "Luxtronik Heatpump" (heatpump).
 
 ## Discovery
 
@@ -44,8 +44,8 @@ Each heatpump requires the following configuration parameters:
 
 As the Luxtronik 2 control is able to handle multiple heat pumps with different features (like heating, hot water, cooling, solar, photovoltaics, swimming pool,...), the binding has a lot channels.
 Depending on the heatpump it is used with, various channels might not hold any (useful) values.
-If `showAllChannels` is not activated for the thing, this binding will automatically try to hide channels that are not available for your heat pump. As this is done using reverse engineered parameters it might not be correct in all cases.
-If you miss a channel that should be available for your heat pump, you can enable `showAllChannels` for your thing, so all channels become available. Feel free to report such a case on the forum, so we can try to improve / fix that behavior.
+If `showAllChannels` is not activated for the Thing, this binding will automatically try to hide channels that are not available for your heat pump. As this is done using reverse engineered parameters it might not be correct in all cases.
+If you miss a channel that should be available for your heat pump, you can enable `showAllChannels` for your Thing, so all channels become available. Feel free to report such a case on the forum, so we can try to improve / fix that behavior.
 
 The following channels are holding read only values:
 
@@ -294,6 +294,7 @@ The following channels are holding read only values:
 The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.
 
 The following channels are also writable:
+
 | channel                                  | type               | advanced | description                                                                         |
 |------------------------------------------|--------------------|----------|-------------------------------------------------------------------------------------|
 | temperatureHeatingParallelShift          | Number:Temperature |          | Heating temperature (parallel shift)                                                |

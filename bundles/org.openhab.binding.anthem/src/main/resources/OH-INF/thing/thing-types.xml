@@ -21,6 +21,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Network Address</label>

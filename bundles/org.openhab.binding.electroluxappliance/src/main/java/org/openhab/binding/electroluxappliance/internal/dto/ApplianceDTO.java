@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.electroluxappliance.internal.dto;
+
+import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -25,8 +27,10 @@ public class ApplianceDTO {
     private String applianceName = "";
     private String applianceType = "";
     private String created = "";
+
     private ApplianceInfoDTO applianceInfo = new ApplianceInfoDTO();
     private ApplianceStateDTO applianceState = new ApplianceStateDTO();
+    private Instant applianceStateTs = Instant.now();
 
     public void setApplianceInfo(ApplianceInfoDTO applianceInfo) {
         this.applianceInfo = applianceInfo;
@@ -36,12 +40,21 @@ public class ApplianceDTO {
         this.applianceState = applianceState;
     }
 
+    public void setApplianceState(final ApplianceStateDTO applianceState, final Instant timeRetrieved) {
+        this.applianceState = applianceState;
+        this.applianceStateTs = timeRetrieved;
+    }
+
     public ApplianceInfoDTO getApplianceInfo() {
         return applianceInfo;
     }
 
     public ApplianceStateDTO getApplianceState() {
         return applianceState;
+    }
+
+    public Instant getApplianceStateTimestamp() {
+        return applianceStateTs;
     }
 
     // Getters for each field

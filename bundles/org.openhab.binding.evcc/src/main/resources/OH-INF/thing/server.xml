@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evcc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="server">
+		<label>Server</label>
+		<description>Connection to evcc instance</description>
+		<config-description>
+			<parameter name="scheme" type="text">
+				<label>Protocol Scheme</label>
+				<description>The protocol scheme that should be used to connect to your instance</description>
+				<default>http</default>
+				<options>
+					<option value="http">HTTP</option>
+					<option value="https">HTTPS</option>
+				</options>
+			</parameter>
+			<parameter name="host" type="text" required="true">
+				<label>Hostname or IP</label>
+				<description>Address of your evcc instance, for example evcc.local or 192.168.1.2</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<advanced>true</advanced>
+				<label>Port</label>
+				<default>7070</default>
+				<description>HTTP-Port of your instance (Default: 7070)</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" required="false">
+				<advanced>true</advanced>
+				<label>Polling Interval</label>
+				<default>30</default>
+				<description>How often should the state be polled? (in seconds, default is 30s)</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

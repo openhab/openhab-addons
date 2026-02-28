@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,40 +23,43 @@ import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
  * smart plugs and bulbs
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Refactored for extra parameters
  */
 @NonNullByDefault
 public class TogglexCommand {
+
+    abstract static class Base implements MerossCommand {
+        protected final int onOffValue;
+        protected int deviceChannel;
+
+        protected Base(int deviceChannel, int onOffValue) {
+            this.deviceChannel = deviceChannel;
+            this.onOffValue = onOffValue;
+        }
+
+        @Override
+        public byte[] command(String deviceUUID) {
+            Map<String, Object> payload = Map.of("togglex", Map.of("onoff", onOffValue, "channel", deviceChannel));
+            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), deviceUUID,
+                    payload);
+        }
+    }
+
     /**
      * defines command turn on
      */
-    public static class TurnOn implements Command {
-        /**
-         * build a togglex command on mode
-         * 
-         * @param type The command type
-         * @return togglex command type, on mode
-         */
-        @Override
-        public byte[] commandType(String type) {
-            Map<String, Object> payload = Map.of("togglex", Map.of("onoff", 1, "channel", 0));
-            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), payload);
+    public static class TurnOn extends Base {
+        public TurnOn(int deviceChannel) {
+            super(deviceChannel, 1);
         }
     }
 
     /**
      * defines command turn off
      */
-    public static class TurnOff implements Command {
-        /**
-         * build a togglex command off mode
-         * 
-         * @param type The command type
-         * @return togglex command type, off mode
-         */
-        @Override
-        public byte[] commandType(String type) {
-            Map<String, Object> payload = Map.of("togglex", Map.of("onoff", 0, "channel", 0));
-            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), payload);
+    public static class TurnOff extends Base {
+        public TurnOff(int deviceChannel) {
+            super(deviceChannel, 0);
         }
     }
 }

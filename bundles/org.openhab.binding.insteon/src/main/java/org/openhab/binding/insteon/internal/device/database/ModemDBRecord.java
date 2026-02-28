@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,16 @@ public class ModemDBRecord extends DatabaseRecord {
 
     public int getFirmwareVersion() {
         return getData3();
+    }
+
+    /**
+     * Creates a copy of this record with new data
+     *
+     * @param data the new data to use
+     * @return a new record instance with the new data
+     */
+    public ModemDBRecord withNewData(byte[] data) {
+        return new ModemDBRecord(getType(), getGroup(), getAddress(), data);
     }
 
     /**
@@ -130,16 +140,5 @@ public class ModemDBRecord extends DatabaseRecord {
         }
 
         return records;
-    }
-
-    /**
-     * Factory method for creating a new ModemDBRecord from another instance with new data
-     *
-     * @param data the new record data to use
-     * @param record the modem db record to use
-     * @return the modem db record with new type
-     */
-    public static ModemDBRecord withNewData(byte[] data, ModemDBRecord record) {
-        return new ModemDBRecord(record.getType(), record.getGroup(), record.getAddress(), data);
     }
 }

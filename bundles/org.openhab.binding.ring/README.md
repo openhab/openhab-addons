@@ -1,28 +1,29 @@
 # Ring Binding
 
-This is an experimental binding to the Ring.com API. 
-It currently supports a Ring account and is able to discover Ring Video Doorbells, Stick Up Cameras, Chimes, and other devices. 
+This is an experimental binding to the Ring.com API.
+It currently supports a Ring account and is able to discover Ring Video Doorbells, Stick Up Cameras, Chimes, and other devices.
 They need to be registered in the Ring account before they will be detected.
 
-It currently does *not* support live video streaming, but you can view recorded videos, if this service is enabled in the Ring account.
+It currently does _not_ support live video streaming, but you can view recorded videos, if this service is enabled in the Ring account.
 
 ## Supported Things
 
 The binding currently supports Ring Video Doorbell, Stick Up Cameras, Chimes, and others.
-*Other* is identified as any of the non-traditional types such as the intercom.
+_Other_ is identified as any of the non-traditional types such as the intercom.
 
 ## Discovery
 
-Auto-discovery is supported by this binding. 
+Auto-discovery is supported by this binding.
 After (manually) adding a Ring Account bridge, registered doorbells and chimes will be auto discovered.
 
 ## Account Configuration
 
-Account configuration is necessary. 
-The easiest way to do this is from the UI. 
-Just add a new thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password. 
-Optionally, you can also specify a unique hardware ID and refresh interval for how often to check ring.com for events. 
+Account configuration is necessary.
+The easiest way to do this is from the UI.
+Just add a new Thing, select the Ring binding, then Ring Account Binding Thing, and enter username and password.
+Optionally, you can also specify a unique hardware ID and refresh interval for how often to check ring.com for events.
 If hardware ID is not specified, the MAC address of the system running OpenHAB is used.
+
 | Parameter           | Description                                                         | Default     |
 |---------------------|---------------------------------------------------------------------|-------------|
 | username            | The user name you use to subscribe to the Ring services.            | N/A         |
@@ -33,6 +34,7 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 | videoStoragePath    | Video Download Path                                                 | N/A         |
 | videoRetentionCount | Number of videos to keep                                            | 10          |
 | limitToOwner        | Limit discovery to devices you own                                  | false       |
+
 ## Channels
 
 ### Control group (all things):
@@ -53,16 +55,20 @@ If hardware ID is not specified, the MAC address of the system running OpenHAB i
 
 ### Device Status (Video Doorbell Binding Thing, Stickup Cam Binding Thing, Other Binding Thing only):
 
-| Channel Type ID  | Item Type | Description         |
-|------------------|-----------|---------------------|
-| battery          | Number    | Battery level in %  |
+| Channel Type ID    | Item Type | Description             |
+|--------------------|-----------|-------------------------|
+| battery            | Number    | Battery level in %      |
+| snapshot           | Image     | Image Snapshot *        |
+| snapshot-timestamp | DateTime  | Timestamp of Snapshot * |
+
+*) Video Doorbell and Stickup Cam only
 
 ## Full Example
 
-NOTE 1: Replace <ring_device_id> with a valid ring device ID when manually configuring. 
+NOTE 1: Replace <ring_device_id> with a valid ring device ID when manually configuring.
 The easiest way to currently get that is to define the account bridge and pull the device ID from the last event channel.
 
-NOTE 2: Text configuration for the Things ONLY works if you DO NOT have 2 factor authentication enabled. 
+NOTE 2: Text configuration for the Things ONLY works if you DO NOT have 2 factor authentication enabled.
 If you are using 2 factor authentication, Things MUST be set up through Main UI.
 
 ring.things:
@@ -85,14 +91,18 @@ String     RingEventKind                  "Ring Event Kind"                 { ch
 String     RingEventDeviceID              "Ring Device ID"                  { channel="ring:account:ringAccount:event#doorbotId" }
 String     RingEventDeviceDescription     "Ring Device Description"         { channel="ring:account:ringAccount:event#doorbotDescription" }
 
-Switch     RingDoorbellEnabled            "Ring Doorbell Polling Enabled"   { channel="ring:doorbell:<ring_device_id>:control#enabled" }
-Number     RingDoorbellBattery            "Ring Doorbell Battery [%s]%"     { channel="ring:doorbell:<ring_device_id>:status#battery"}
+Switch     RingDoorbellEnabled            "Ring Doorbell Polling Enabled"    { channel="ring:doorbell:<ring_device_id>:control#enabled" }
+Number     RingDoorbellBattery            "Ring Doorbell Battery [%s]%"      { channel="ring:doorbell:<ring_device_id>:status#battery"}
+Image      RingDoorbellSnapshot           "Ring Doorbell Snapshot"           { channel="ring:doorbell:<ring_device_id>:status#snapshot"}
+DateTime   RingDoorbellSnapshotTimeStamp  "Ring Doorbell Snapshot Timestamp" { channel="ring:doorbell:<ring_device_id>:status#snapshot-timestamp"}
 
 Switch     RingChimeEnabled               "Ring Chime Polling Enabled"      { channel="ring:chime:<ring_device_id>:control#enabled" }
 
-Switch     RingStickupEnabled            "Ring Stickup Polling Enabled"   { channel="ring:stickupcam:<ring_device_id>:control#enabled" }
-Number     RingStickupBattery            "Ring Stickup Battery [%s]%"     { channel="ring:stickupcam:<ring_device_id>:status#battery"}
+Switch     RingStickupEnabled             "Ring Stickup Polling Enabled"    { channel="ring:stickupcam:<ring_device_id>:control#enabled" }
+Number     RingStickupBattery             "Ring Stickup Battery [%s]%"      { channel="ring:stickupcam:<ring_device_id>:status#battery"}
+Image      RingStickupSnapshot            "Ring Stickup Snapshot"           { channel="ring:stickupcam:<ring_device_id>:status#snapshot"}
+DateTime   RingStickupSnapshotTimeStamp   "Ring Stickup Snapshot Timestamp" { channel="ring:stickupcam:<ring_device_id>:status#snapshot-timestamp"}
 
-Switch     RingOtherEnabled            "Ring Other Polling Enabled"   { channel="ring:other:<ring_device_id>:control#enabled" }
-Number     RingOtherBattery            "Ring Other Battery [%s]%"     { channel="ring:other:<ring_device_id>:status#battery"}
+Switch     RingOtherEnabled               "Ring Other Polling Enabled"   { channel="ring:other:<ring_device_id>:control#enabled" }
+Number     RingOtherBattery               "Ring Other Battery [%s]%"     { channel="ring:other:<ring_device_id>:status#battery"}
 ```

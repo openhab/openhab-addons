@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -279,7 +279,7 @@ public class DenonMarantzState {
         StringType newVal = StringType.valueOf(zone3Input);
         if (!newVal.equals(this.zone3Input)) {
             this.zone3Input = newVal;
-            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE2_INPUT, newVal);
+            handler.stateChanged(DenonMarantzBindingConstants.CHANNEL_ZONE3_INPUT, newVal);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -88,6 +89,81 @@ public class RuuviGatewayDiscoveryTests {
     }
 
     @Test
+    public void testDiscoveryRuuviTagLabel() throws Exception {
+        var discoveryListener = new LatchDiscoveryListener();
+        var latch = discoveryListener.createWaitForThingsDiscoveredLatch(1);
+
+        discovery.addDiscoveryListener(discoveryListener);
+        // Format 5 (RuuviTag) payload
+        String payload = """
+                {"gw_mac": "DE:AD:BE:EF:00:00",\
+                  "rssi": -83,\
+                  "aoa": [],\
+                  "gwts": "1659365438",\
+                  "ts": "1659365438",\
+                  "data": "0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F",\
+                  "coords": ""\
+                }""";
+        discovery.receivedMessage(MQTT_BRIDGE_UID, mqttConnection, "ruuvi/foo/bar/aa:bb:cc:dd:ee:ff",
+                payload.getBytes());
+
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        var discoveryResults = discoveryListener.getDiscoveryResults();
+        assertThat(discoveryResults.size(), is(1));
+        assertThat(discoveryResults.get(0).getLabel(), is("MQTT Ruuvi Tag AA:BB:CC:DD:EE:FF"));
+    }
+
+    @Test
+    public void testDiscoveryRuuviAir06Label() throws Exception {
+        var discoveryListener = new LatchDiscoveryListener();
+        var latch = discoveryListener.createWaitForThingsDiscoveredLatch(1);
+
+        discovery.addDiscoveryListener(discoveryListener);
+        // Format 6 (Ruuvi Air) payload - note the "06" after "9904"
+        String payload = """
+                {"gw_mac": "DE:AD:BE:EF:00:00",\
+                  "rssi": -83,\
+                  "aoa": [],\
+                  "gwts": "1659365438",\
+                  "ts": "1659365438",\
+                  "data": "0201061BFF990406170C5668C79E007000C90501D900CD004C884F",\
+                  "coords": ""\
+                }""";
+        discovery.receivedMessage(MQTT_BRIDGE_UID, mqttConnection, "ruuvi/foo/bar/aa:bb:cc:dd:ee:ff",
+                payload.getBytes());
+
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        var discoveryResults = discoveryListener.getDiscoveryResults();
+        assertThat(discoveryResults.size(), is(1));
+        assertThat(discoveryResults.get(0).getLabel(), is("MQTT Ruuvi Air AA:BB:CC:DD:EE:FF"));
+    }
+
+    @Test
+    public void testDiscoveryRuuviAirE1Label() throws Exception {
+        var discoveryListener = new LatchDiscoveryListener();
+        var latch = discoveryListener.createWaitForThingsDiscoveredLatch(1);
+
+        discovery.addDiscoveryListener(discoveryListener);
+        // Format 6 (Ruuvi Air) payload - note the "06" after "9904"
+        String payload = """
+                {"gw_mac": "DE:AD:BE:EF:00:00",\
+                  "rssi": -83,\
+                  "aoa": [],\
+                  "gwts": "1659365438",\
+                  "ts": "1659365438",\
+                  "data": "0201061BFF9904E1170C5668C79E0065007004BD11CA00C90A0213E0AC000000DECDEE100000000000CBB8334C884F",\
+                  "coords": ""\
+                }""";
+        discovery.receivedMessage(MQTT_BRIDGE_UID, mqttConnection, "ruuvi/foo/bar/aa:bb:cc:dd:ee:ff",
+                payload.getBytes());
+
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
+        var discoveryResults = discoveryListener.getDiscoveryResults();
+        assertThat(discoveryResults.size(), is(1));
+        assertThat(discoveryResults.get(0).getLabel(), is("MQTT Ruuvi Air AA:BB:CC:DD:EE:FF"));
+    }
+
+    @Test
     public void testDiscoveryMultipleThings() throws Exception {
         var discoveryListener = new LatchDiscoveryListener();
         var latch = discoveryListener.createWaitForThingsDiscoveredLatch(2);
@@ -145,7 +221,7 @@ public class RuuviGatewayDiscoveryTests {
         }
 
         @Override
-        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                 @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
             return Collections.emptyList();
         }

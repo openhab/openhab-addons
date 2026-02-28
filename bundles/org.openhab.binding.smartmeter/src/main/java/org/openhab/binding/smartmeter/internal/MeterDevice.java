@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,6 @@ public abstract class MeterDevice<T> {
 
     public MeterDevice(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId, String serialPort,
             byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
-        super();
         this.deviceId = deviceId;
         this.valueCache = new HashMap<>();
         this.valueChangeListeners = new CopyOnWriteArrayList<>();

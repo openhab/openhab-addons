@@ -1,0 +1,20 @@
+{
+	"errors": [
+		{
+			"message": "invalid token",
+			"locations": [
+				{
+					"line": 1,
+					"column": 4
+				}
+			],
+			"path": [
+				"viewer"
+			],
+			"extensions": {
+				"code": "UNAUTHENTICATED"
+			}
+		}
+	],
+	"data": null
+}

@@ -7,7 +7,7 @@ All LIFX lights are directly connected to the WLAN and the binding communicates 
 
 ## Supported Things
 
-The following table lists the thing types of the supported LIFX devices:
+The following table lists the Thing types of the supported LIFX devices:
 
 | Device Type                  | Thing Type    |
 |------------------------------|---------------|
@@ -51,7 +51,7 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX Mini Day and Dusk       | whitelight    |
 | LIFX Mini White              | whitelight    |
 
-The thing type determines the capability of a device and with that the possible ways of interacting with it.
+The Thing type determines the capability of a device and with that the possible ways of interacting with it.
 The following matrix lists the capabilities (channels) for each type:
 
 | Thing Type    | On/Off | Brightness | Color | Color Zone | (Abs) Color Temperature | (Abs) Color Temperature Zone | HEV Cycle | Infrared | Tile Effects |
@@ -77,13 +77,13 @@ Each light needs a Device ID or Host as a configuration parameter.
 The device ID is printed as a serial number on the light and can also be found within the native LIFX Android or iOS application.
 But usually the discovery works quite reliably, so that a manual configuration is not needed.
 
-However, in the thing file, a manual configuration looks e.g. like
+However, in the Thing file, a manual configuration looks e.g. like
 
 ```java
 Thing lifx:colorlight:living [ deviceId="D073D5A1A1A1", fadetime=200 ]
 ```
 
-The _fadetime_ is an optional thing configuration parameter which configures the time to fade to a new color value (in ms).
+The _fadetime_ is an optional Thing configuration parameter which configures the time to fade to a new color value (in ms).
 When the _fadetime_ is not configured, the binding uses 300ms as default.
 
 You can optionally also configure a fixed Host or IP address when lights are in a different subnet and are not discovered.
@@ -132,15 +132,15 @@ Each effect has a separate speed configuration option.
 
 ## Full Example
 
-In this example **living** is a Color 1000 light that has a _colorlight_ thing type which supports _color_ and _temperature_ channels.
+In this example **living** is a Color 1000 light that has a _colorlight_ Thing type which supports _color_ and _temperature_ channels.
 
-The **desk** light is a LIFX Clean that has a _colorhevlight_ thing type which supports _color_, _temperature_ and _hevcycle_ channels.
+The **desk** light is a LIFX Clean that has a _colorhevlight_ Thing type which supports _color_, _temperature_ and _hevcycle_ channels.
 
-The **porch** light is a LIFX+ BR30 that has a _colorirlight_ thing type which supports _color_, _temperature_ and _infrared_ channels.
+The **porch** light is a LIFX+ BR30 that has a _colorirlight_ Thing type which supports _color_, _temperature_ and _infrared_ channels.
 
-The **ceiling** light is a LIFX Z with 2 strips (16 zones) that has a _colormzlight_ thing type which supports _color_, _colorzone_, _temperature_ and _temperaturezone_ channels.
+The **ceiling** light is a LIFX Z with 2 strips (16 zones) that has a _colormzlight_ Thing type which supports _color_, _colorzone_, _temperature_ and _temperaturezone_ channels.
 
-Finally, **kitchen** is a White 800 (Low Voltage) light that has a _whitelight_ thing type which supports _brightness_ and _temperature_ channels.
+Finally, **kitchen** is a White 800 (Low Voltage) light that has a _whitelight_ Thing type which supports _brightness_ and _temperature_ channels.
 
 Either create a single _Color_ item linked to the _color_ channel and define _Switch_, _Slider_ and _Colorpicker_ entries with this item in the sitemap.
 Or create items for each type (_Color_, _Switch_, _Dimmer_) and define the correspondent entries in the sitemap.

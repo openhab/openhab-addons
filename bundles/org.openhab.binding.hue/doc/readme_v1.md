@@ -120,7 +120,6 @@ The following device types also have an optional configuration value to specify 
 | lightId   | Number of the device provided by the Hue Bridge. **Mandatory**                |
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
 
-
 ### Groups
 
 The groups are identified by the number that the Hue Bridge assigns to them.
@@ -139,7 +138,6 @@ The group type also have an optional configuration value to specify the fade tim
 | groupId   | Number of the group provided by the Hue Bridge. **Mandatory**                 |
 | fadetime  | Fade time in Milliseconds to a new state (min="0", step="100", default="400") |
 
-
 ## Channels
 
 The devices support some of the following channels:
@@ -150,8 +148,7 @@ The devices support some of the following channels:
 | color                 | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210, group                        |
 | brightness            | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220, group                  |
 | color_temperature     | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220, group                        |
-| color_temperature_abs | Number:Temperature | This channel supports adjusting the color temperature in Kelvin. 
-**Advanced**                                                           | 0210, 0220, group                        |
+| color_temperature_abs | Number:Temperature | This channel supports adjusting the color temperature in Kelvin. **Advanced**                                                           | 0210, 0220, group                        |
 | alert                 | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220, group      |
 | effect                | Switch             | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                         |
 | dimmer_switch         | Number             | This channel shows which button was last pressed on the dimmer switch.                                                                  | 0820                                     |
@@ -211,7 +208,6 @@ The `tap_switch_event` can trigger one of the following events:
 | Button 3 | Button 3 | 17    |
 | Button 4 | Button 4 | 18    |
 
-
 ## Rule Actions
 
 This binding includes a rule action, which allows to change a light channel with a specific fading time from within rules.
@@ -241,7 +237,7 @@ Therefore it is a thing of type **0210**.
 **bulb2** is an OSRAM tunable white bulb (PAR16 50 TW) supporting `color_temperature` and so the type is **0220**.
 And there is one Hue Motion Sensor (represented by three devices) and a Hue Dimmer Switch **dimmer-switch** with a Rule to trigger an action when a key has been pressed.
 
-### demo.things:
+### demo.things
 
 ```java
 Bridge hue:bridge:1         "Hue Bridge"                    [ ipAddress="192.168.0.64" ] {
@@ -255,7 +251,7 @@ Bridge hue:bridge:1         "Hue Bridge"                    [ ipAddress="192.168
 }
 ```
 
-### demo.items:
+### demo.items
 
 ```java
 // Bulb1
@@ -296,7 +292,7 @@ String LightScene { channel="hue:bridge:1:scene"}
 Note: The bridge ID is in this example **1** but can be different in each system.
 Also, if you are doing all your configuration through files, you may add the full bridge id to the channel definitions (e.g. `channel="hue:0210:00178810d0dc:bulb1:color`) instead of the short version (e.g. `channel="hue:0210:1:bulb1:color`) to prevent frequent discovery messages in the log file.
 
-### demo.sitemap:
+### demo.sitemap
 
 ```perl
 sitemap demo label="Main Menu"

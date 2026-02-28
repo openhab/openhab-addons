@@ -26,7 +26,7 @@
 		<parameter name="updatePeriod" type="integer" min="0" max="1" unit="s" required="false">
 			<label>Update Period</label>
 			<description>Tells the component how often time status updates should be sent; Values greater than 1 are not yet
-				implmented by the protocol. Setting to 1 may impact openHAB system performance due
+				implemented by the protocol. Setting to 1 may impact openHAB system performance due
 				to constant updates while content
 				playing.</description>
 			<default>0</default>
@@ -40,7 +40,7 @@
 		</parameter>
 		<parameter name="initialVolume" type="integer" min="0" max="75" unit="%" required="false">
 			<label>Initial Volume Setting</label>
-			<description>When the binding starts up, set the Inital Volume level to this value (Default 25).</description>
+			<description>When the binding starts up, set the Initial Volume level to this value (Default 25).</description>
 			<default>25</default>
 		</parameter>
 		<parameter name="volumeBasicEnabled" type="boolean" required="false">

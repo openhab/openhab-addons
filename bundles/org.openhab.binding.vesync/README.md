@@ -1,6 +1,6 @@
 # VeSync Binding
 
-Its current support is for the Air Purifiers & Humidifer's branded as Levoit which utilise the VeSync app based on the V2 protocol.
+Its current support is for the Air Purifiers & Humidifiers branded as Levoit which utilise the VeSync app based on the V2 protocol.
 
 ## Verified Models
 
@@ -14,7 +14,7 @@ Air Humidifier Classic 200S (Same as 300S without the nightlight from initial ch
 
 ## Supported Things
 
-This binding supports the follow thing types:
+This binding supports the follow Thing types:
 
 | Thing          | Thing Type | Thing Type UID | Discovery | Description                                                           |
 |----------------|------------|----------------|-----------|-----------------------------------------------------------------------|
@@ -126,7 +126,6 @@ Channel names in **bold** are read/write, everything else is read-only
 | energyWeek      | Number:Energy          | Total energy of week in kWh                          | WHOGPLUG          |                     |
 | energyMonth     | Number:Energy          | Total energy of month in kWh                         | WHOGPLUG          |                     |
 | energyYear      | Number:Energy          | Total energy of year in kWh                          | WHOGPLUG          |                     |
-
 
 ## Full Example
 

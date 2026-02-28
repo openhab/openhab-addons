@@ -1,6 +1,6 @@
 # Orbit B-hyve Binding
 
-This is the binding for the [Orbit B-hyve](https://bhyve.orbitonline.com/) wi-fi sprinklers.
+This is the binding for the [Orbit B-hyve](https://bhyve.orbitonline.com/) Wi‑Fi sprinklers.
 
 ## Supported Things
 
@@ -9,13 +9,14 @@ So far only the [Orbit B-hyve 8-zone Indoor Timer](https://bhyve.orbitonline.com
 
 ## Discovery
 
-This binding supports the auto discovery of the sprinklers bound to your Orbit B-hyve account.
-To start the discovery you need to create a bridge thing and enter valid credentials to your Orbit B-hyve cloud account.
+This binding supports the auto-discovery of the sprinklers bound to your Orbit B-hyve account.
+To start the discovery you need to create a bridge Thing and enter valid credentials to your Orbit B-hyve cloud account.
 
 ## Thing Configuration
 
-The bridge thing requires a manual configuration. You have to enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.
-There is no user configuration related to sprinkler things. Sprinklers do need a configuration property _id_ identifying the device, but the only way how to retrieve it is to let the bridge to auto discover sprinklers.
+The bridge Thing requires manual configuration. You must enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.
+There is no user configuration for sprinkler things.
+Sprinklers have an _id_ configuration parameter identifying the device; it is populated when the bridge auto-discovers sprinklers.
 
 ## Channels
 
@@ -27,7 +28,7 @@ This binding automatically detects all zones and programs for each sprinkler and
 | program_%        | Switch | This channel controls the manual program watering (ON/OFF)       |
 | enable_program_% | Switch | This channel controls the automatic program scheduling (ON/OFF)  |
 
-Beside the dynamic channels each sprinkler thing provides these standard channels:
+Beside the dynamic channels each sprinkler Thing provides these standard channels:
 
 | channel        | type        | description                                                        |
 |----------------|-------------|--------------------------------------------------------------------|
@@ -60,8 +61,8 @@ Switch Irrigation4 "Zone 4" <water> (Out_Irrigation) { channel="orbitbhyve:sprin
 Switch IrrigationP1 "Run program A" <program> (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:program_a" }
 Switch IrrigationP1Enable "Schedule program A" <program>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:enable_program_a" }
 String IrrigationMode "Irrigation mode [%s]" <water>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:mode" }
-Number IrrigationTime "Irrigation time [%d min]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:watering_time" }
-Number IrrigationRainDelay "Rain delay [%d h]" <hourglass>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:rain_delay" }
+Number:Time IrrigationTime "Irrigation time [%d min]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:watering_time" }
+Number:Time IrrigationRainDelay "Rain delay [%d h]" <hourglass>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:rain_delay" }
 DateTime IrrigationNextStart "Next start A [%1$td.%1$tm.%1$tY %1$tR]" <clock>  (Out_Irrigation) { channel="orbitbhyve:sprinkler:mybridge:indoor_timer:next_start" }
 ```
 
@@ -79,6 +80,6 @@ Switch item=IrrigationP1
 Switch item=IrrigationP1Enable
 Text item=IrrigationMode
 Text item=IrrigationRainDelay
-Switch item=IrrigationRainDelay mappings=[0="OFF", 24="24", 48="48", 72="72"]
+Switch item=IrrigationRainDelay mappings=["0 h"="OFF", "24 h"="24h", "48 h"="48h", "72 h"="72h"]
 Text item=IrrigationNextStart visibility=[IrrigationP1Enable==ON]
 ```

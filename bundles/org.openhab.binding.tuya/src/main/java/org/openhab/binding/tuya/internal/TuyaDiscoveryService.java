@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,8 @@ import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROD
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.PROPERTY_CATEGORY;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.THING_TYPE_TUYA_DEVICE;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +39,6 @@ import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -63,7 +62,6 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
 
     private final Logger logger = LoggerFactory.getLogger(TuyaDiscoveryService.class);
     private final Gson gson = new Gson();
-    private @NonNullByDefault({}) Storage<String> storage;
     private @Nullable ScheduledFuture<?> discoveryJob;
     private @Nullable ScheduledFuture<?> broadcastJob;
 
@@ -112,17 +110,19 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
                     .withRepresentationProperty(CONFIG_DEVICE_ID).withProperties(properties).build();
 
             api.getDeviceSchema(device.id).thenAccept(schema -> {
-                List<SchemaDp> schemaDps = new ArrayList<>();
-                schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps));
-                schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps));
-                storage.put(device.id, gson.toJson(schemaDps));
+                if (!TuyaSchemaDB.contains(device.productId)) {
+                    List<SchemaDp> schemaDps = new ArrayList<>();
+                    schema.functions.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.FALSE));
+                    schema.status.forEach(description -> addUniqueSchemaDp(description, schemaDps, Boolean.TRUE));
+                    TuyaSchemaDB.put(device.productId, schemaDps);
+                }
             });
 
             thingDiscovered(discoveryResult);
         });
     }
 
-    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps) {
+    private void addUniqueSchemaDp(DeviceSchema.Description description, List<SchemaDp> schemaDps, Boolean readOnly) {
         if (description.dp_id == 0 || schemaDps.stream().anyMatch(schemaDp -> schemaDp.id == description.dp_id)) {
             // dp is missing or already present, skip it
             return;
@@ -135,7 +135,7 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
             description.code = originalCode + "_" + index;
         }
 
-        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description));
+        schemaDps.add(SchemaDp.fromRemoteSchema(gson, description, readOnly));
     }
 
     @Override
@@ -150,15 +150,9 @@ public class TuyaDiscoveryService extends AbstractThingHandlerDiscoveryService<P
     }
 
     @Override
-    public void initialize() {
-        this.storage = thingHandler.getStorage();
-        super.initialize();
-    }
-
-    @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now());
     }
 
     @Override

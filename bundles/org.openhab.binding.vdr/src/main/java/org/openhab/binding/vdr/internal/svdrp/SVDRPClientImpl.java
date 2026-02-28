@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,13 +48,11 @@ public class SVDRPClientImpl implements SVDRPClient {
     private @Nullable BufferedReader in = null;
 
     public SVDRPClientImpl(String host, int port) {
-        super();
         this.host = host;
         this.port = port;
     }
 
     public SVDRPClientImpl(String host, int port, String charset) {
-        super();
         this.host = host;
         this.port = port;
         this.charset = charset;

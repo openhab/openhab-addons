@@ -9,6 +9,10 @@
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

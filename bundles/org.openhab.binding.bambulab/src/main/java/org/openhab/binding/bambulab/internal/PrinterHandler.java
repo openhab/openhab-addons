@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,13 +13,19 @@
 package org.openhab.binding.bambulab.internal;
 
 import static java.lang.Integer.parseInt;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.Duration.between;
+import static java.time.LocalDateTime.now;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.stream;
 import static java.util.Collections.synchronizedList;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.function.Function.identity;
+import static org.openhab.binding.bambulab.internal.BambuApiException.findSerial;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.AmsChannel.*;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
+import static org.openhab.binding.bambulab.internal.PrinterConfiguration.CLOUD_MODE_HOSTNAME;
 import static org.openhab.binding.bambulab.internal.StateParserHelper.*;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
@@ -32,19 +38,27 @@ import static pl.grzeslowski.jbambuapi.mqtt.PrinterClient.Channel.PushingCommand
 import static pl.grzeslowski.jbambuapi.mqtt.PrinterClientConfig.requiredFields;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -55,11 +69,15 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import pl.grzeslowski.jbambuapi.mqtt.ConnectionCallback;
 import pl.grzeslowski.jbambuapi.mqtt.PrinterClient;
@@ -79,6 +97,10 @@ import pl.grzeslowski.jbambuapi.mqtt.Report;
 public class PrinterHandler extends BaseBridgeHandler
         implements PrinterWatcher.StateSubscriber, BambuHandler, ConnectionCallback {
     private static final String INTERNAL_COMMAND_PREFIX = ">";
+    private static final String LOGIN_URL = "https://api.bambulab.com/v1/user-service/user/login";
+    private static final String ACCESS_CODE_VALID_TILL_PROPERTY = "accessCodeValidTill";
+    private final HttpClient httpClient;
+    private final Gson jsonMapper;
     private Logger logger = LoggerFactory.getLogger(PrinterHandler.class);
 
     private @Nullable PrinterClient client;
@@ -89,9 +111,15 @@ public class PrinterHandler extends BaseBridgeHandler
     private @Nullable PrinterClientConfig config;
     private final Collection<AmsDeviceHandler> amses = synchronizedList(new ArrayList<>());
     private final AtomicReference<@Nullable Report> latestPrinterState = new AtomicReference<>();
+    private @Nullable ScheduledFuture<?> validateAccessCodeSchedule;
 
-    public PrinterHandler(Bridge bridge) {
+    public PrinterHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
+        this.httpClient = httpClient;
+        if (this.httpClient.isStopped()) {
+            throw new IllegalStateException("HttpClient is stopped");
+        }
+        this.jsonMapper = new Gson();
     }
 
     @Override
@@ -154,6 +182,8 @@ public class PrinterHandler extends BaseBridgeHandler
     }
 
     private void internalInitialize() throws InitializationException {
+        validateAccessCode();
+
         var config = getConfigAs(PrinterConfiguration.class);
 
         config.validateSerial();
@@ -180,6 +210,33 @@ public class PrinterHandler extends BaseBridgeHandler
         } catch (RejectedExecutionException ex) {
             logger.debug("Task was rejected", ex);
             throw new InitializationException(CONFIGURATION_ERROR, ex);
+        }
+    }
+
+    private void validateAccessCode() throws InitializationException {
+        var validTill = getThing().getProperties().getOrDefault(ACCESS_CODE_VALID_TILL_PROPERTY, "");
+        if (validTill.isEmpty()) {
+            return;
+        }
+        try {
+            var parse = LocalDateTime.parse(validTill);
+            var now = now();
+            if (parse.isBefore(now)) {
+                throw new InitializationException(CONFIGURATION_ERROR, "@text/printer.handler.init.accessCodeExpired");
+            }
+            var duration = between(now.toInstant(UTC), parse.toInstant(UTC));
+            try {
+                validateAccessCodeSchedule = scheduler
+                        .schedule(
+                                () -> updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                                        "@text/printer.handler.init.accessCodeExpired"),
+                                duration.getSeconds(), SECONDS);
+            } catch (RejectedExecutionException ex) {
+                logger.debug("Task was rejected", ex);
+                throw new InitializationException(CONFIGURATION_ERROR, ex);
+            }
+        } catch (DateTimeParseException e) {
+            logger.debug("Invalid access code till date: {}", validTill, e);
         }
     }
 
@@ -267,6 +324,7 @@ public class PrinterHandler extends BaseBridgeHandler
             closeReconnectSchedule();
             closeCamera();
             closeClient();
+            closeValidateAccessCodeSchedule();
         } finally {
             logger = LoggerFactory.getLogger(PrinterHandler.class);
         }
@@ -305,6 +363,14 @@ public class PrinterHandler extends BaseBridgeHandler
         reconnectSchedule.set(null);
         if (localReconnectSchedule != null) {
             localReconnectSchedule.cancel(true);
+        }
+    }
+
+    private void closeValidateAccessCodeSchedule() {
+        var validateAccessCodeSchedule = this.validateAccessCodeSchedule;
+        this.validateAccessCodeSchedule = null;
+        if (validateAccessCodeSchedule != null) {
+            validateAccessCodeSchedule.cancel(true);
         }
     }
 
@@ -374,72 +440,55 @@ public class PrinterHandler extends BaseBridgeHandler
             // vtray
             case CHANNEL_VTRAY_TRAY_TYPE -> //
                 vtray.map(Report.Print.VtTray::trayType)//
-                        .flatMap(StateParserHelper::parseTrayType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTrayType);
             case CHANNEL_VTRAY_TRAY_COLOR -> //
                 vtray.map(Report.Print.VtTray::trayColor)//
-                        .map(StateParserHelper::parseColor)//
-                        .or(StateParserHelper::undef);
+                        .map(StateParserHelper::parseColor);
             case CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MAX -> //
                 vtray.map(Report.Print.VtTray::nozzleTempMax)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             case CHANNEL_VTRAY_NOZZLE_TEMPERATURE_MIN -> //
                 vtray.map(Report.Print.VtTray::nozzleTempMin)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             case CHANNEL_VTRAY_REMAIN -> //
                 vtray.map(Report.Print.VtTray::remain)//
-                        .flatMap(StateParserHelper::parsePercentType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parsePercentType);
             case CHANNEL_VTRAY_K -> //
                 vtray.map(Report.Print.VtTray::k)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_N -> //
                 vtray.map(Report.Print.VtTray::n)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_TAG_UUID -> //
                 vtray.map(Report.Print.VtTray::trayUuid)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_ID_NAME -> //
                 vtray.map(Report.Print.VtTray::trayIdName)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_INFO_IDX -> //
                 vtray.map(Report.Print.VtTray::trayInfoIdx)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_SUB_BRANDS -> //
                 vtray.map(Report.Print.VtTray::traySubBrands)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_TRAY_WEIGHT -> //
                 vtray.map(Report.Print.VtTray::trayWeight)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_TRAY_DIAMETER -> //
                 vtray.map(Report.Print.VtTray::trayDiameter)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_TRAY_TEMPERATURE -> //
                 vtray.map(Report.Print.VtTray::trayTemp)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             case CHANNEL_VTRAY_TRAY_TIME -> //
                 vtray.map(Report.Print.VtTray::trayTime)//
-                        .flatMap(StateParserHelper::parseDecimalType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseDecimalType);
             case CHANNEL_VTRAY_BED_TEMPERATURE_TYPE -> //
                 vtray.map(Report.Print.VtTray::bedTempType)//
-                        .flatMap(StateParserHelper::parseStringType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseStringType);
             case CHANNEL_VTRAY_BED_TEMPERATURE -> //
                 vtray.map(Report.Print.VtTray::bedTemp)//
-                        .flatMap(StateParserHelper::parseTemperatureType)//
-                        .or(StateParserHelper::undef);
+                        .flatMap(StateParserHelper::parseTemperatureType);
             // ams
             case CHANNEL_AMS_TRAY_NOW -> //
                 Optional.of(print)//
@@ -562,5 +611,108 @@ public class PrinterHandler extends BaseBridgeHandler
 
     public String getSerialNumber() {
         return requireNonNull(config).serial();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(PrinterActions.class);
+    }
+
+    public void requestLoginCode(String username, String password) throws BambuApiException {
+        var request = httpClient.POST(LOGIN_URL);
+        request.timeout(3, SECONDS);
+        request.accept("application/json");
+        request.content(new StringContentProvider("application/json",
+                jsonMapper.toJson(new BambuPasswordRequest(username, password)), UTF_8));
+        try {
+            var response = request.send();
+            var status = response.getStatus();
+            var content = response.getContentAsString();
+            if (status != 200) {
+                // error
+                logger.debug("There was an error while trying to request login code, status={}", status);
+                var message = parseErrorMessage(content);
+                throw new BambuApiException(findSerial(config), message);
+            }
+            try {
+                var bambu = jsonMapper.fromJson(content, BambuResponse.class);
+                if (!"verifyCode".equalsIgnoreCase(bambu.loginType)) {
+                    throw new BambuApiException(findSerial(config),
+                            "Invalid login code (`%s`)".formatted(bambu.loginType));
+                }
+            } catch (JsonSyntaxException e) {
+                throw new BambuApiException(findSerial(config), "Cannot parse to BambuResponse: " + content, e);
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new BambuApiException(findSerial(config), "HTTP Exception", e);
+        }
+    }
+
+    public String requestAccessCode(String username, String code) throws BambuApiException {
+        var request = httpClient.POST(LOGIN_URL);
+        request.timeout(3, SECONDS);
+        request.accept("application/json");
+        request.content(new StringContentProvider("application/json",
+                jsonMapper.toJson(new BambuCodeRequest(username, code)), UTF_8));
+        try {
+            var response = request.send();
+            var status = response.getStatus();
+            var nullableContent = response.getContentAsString();
+            var content = nullableContent != null ? nullableContent : "<empty>";
+            if (status != 200) {
+                // error
+                logger.debug("There was an error while trying to request access code, status={}", status);
+                var message = parseErrorMessage(content);
+                throw new BambuApiException(findSerial(config), message);
+            }
+            try {
+                var bambu = jsonMapper.fromJson(content, BambuResponse.class);
+                if (bambu.accessToken == null || bambu.accessToken.isBlank()) {
+                    throw new BambuApiException(findSerial(config), "Access token not found in response: " + content);
+                }
+                {
+                    var configuration = editConfiguration();
+                    configuration.put("accessCode", bambu.accessToken);
+                    configuration.put("hostname", CLOUD_MODE_HOSTNAME);
+                    updateConfiguration(configuration);
+                }
+                {
+                    var now = now();
+                    var thing = editThing()
+                            .withProperty(ACCESS_CODE_VALID_TILL_PROPERTY, now.plusSeconds(bambu.expiresIn).toString())
+                            .build();
+                    updateThing(thing);
+                }
+                var message = "Access code was set. Please visit https://makerworld.com/api/v1/design-user-service/my/preference to get username (remember to add `u_` prefix).";
+                logger.info(message);
+                return message;
+            } catch (JsonSyntaxException e) {
+                throw new BambuApiException(findSerial(config), "Cannot parse to BambuResponse: " + content, e);
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new BambuApiException(findSerial(config), "HTTP Exception", e);
+        }
+    }
+
+    private String parseErrorMessage(String content) {
+        try {
+            var error = jsonMapper.fromJson(content, BambuError.class);
+            return Objects.requireNonNullElse(error.error, content);
+        } catch (JsonSyntaxException e) {
+            logger.debug("Cannot parse to BambuError: {}", content, e);
+            return content;
+        }
+    }
+
+    private record BambuResponse(@Nullable String accessToken, int expiresIn, @Nullable String loginType) {
+    }
+
+    private record BambuError(int code, @Nullable String error) {
+    }
+
+    private record BambuPasswordRequest(@Nullable String account, @Nullable String password) {
+    }
+
+    private record BambuCodeRequest(@Nullable String account, @Nullable String code) {
     }
 }
