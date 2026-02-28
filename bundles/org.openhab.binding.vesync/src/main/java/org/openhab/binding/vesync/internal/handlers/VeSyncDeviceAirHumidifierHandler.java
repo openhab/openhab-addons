@@ -15,12 +15,13 @@ package org.openhab.binding.vesync.internal.handlers;
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,7 +60,6 @@ import org.slf4j.LoggerFactory;
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
 public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
 
     public static final String DEV_TYPE_FAMILY_AIR_HUMIDIFIER = "LUH";
@@ -310,7 +310,7 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
                         break;
                 }
             } else if (command instanceof StringType) {
-                final String targetMode = command.toString().toLowerCase();
+                final String targetMode = command.toString().toLowerCase(Locale.ENGLISH);
                 switch (channelUID.getId()) {
                     case DEVICE_CHANNEL_HUMIDIFIER_MODE:
                         if (!devContraints.fanModes.contains(targetMode)) {
@@ -479,8 +479,8 @@ public class VeSyncDeviceAirHumidifierHandler extends VeSyncBaseDeviceHandler {
         updateState(DEVICE_CHANNEL_ERROR_CODE, new DecimalType(humidifierStatus.result.result.errorCode));
         updateState(DEVICE_CHANNEL_AF_SCHEDULES_COUNT, new DecimalType(humidifierStatus.result.result.scheduleCount));
         if (humidifierStatus.result.result.timerRemain > 0) {
-            updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeType(LocalDateTime.now()
-                    .plus(humidifierStatus.result.result.timerRemain, ChronoUnit.MINUTES).toString()));
+            updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeType(
+                    Instant.now().plus(humidifierStatus.result.result.timerRemain, ChronoUnit.MINUTES)));
         } else {
             updateState(DEVICE_CHANNEL_AF_AUTO_OFF_CALC_TIME, new DateTimeItem("nullEnforcements").getState());
         }

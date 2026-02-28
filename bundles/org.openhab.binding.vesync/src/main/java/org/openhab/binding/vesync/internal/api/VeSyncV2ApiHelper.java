@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.vesync.internal.api;
 
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V1_LOGIN_ENDPOINT;
-import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.V1_MANAGED_DEVICES_ENDPOINT;
+import static org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants.*;
 
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
@@ -35,10 +34,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.vesync.internal.VeSyncConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncLoginCredentials;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDevicesPage;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncLoginResponse;
@@ -60,7 +57,7 @@ public class VeSyncV2ApiHelper {
 
     private final Logger logger = LoggerFactory.getLogger(VeSyncV2ApiHelper.class);
 
-    private static final int RESPONSE_TIMEOUT_SEC = 5;
+    protected static final int RESPONSE_TIMEOUT_SEC = 5;
 
     private volatile @Nullable VeSyncUserSession loggedInSession;
 
@@ -79,7 +76,7 @@ public class VeSyncV2ApiHelper {
 
     public void dispose() {
         loggedInSession = null;
-        macLookup.clear();
+        macLookup = new HashMap<>();
     }
 
     public static @NotNull String calculateMd5(final @Nullable String password) {
@@ -139,11 +136,20 @@ public class VeSyncV2ApiHelper {
         }
     }
 
-    public String reqV2Authorized(final String url, final String macId, final VeSyncAuthenticatedRequest requestData)
+    public String reqV2Authorized(String url, final String macId, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException, DeviceUnknownException {
         if (loggedInSession == null) {
             throw new AuthenticationException("User is not logged in");
         }
+
+        @Nullable
+        VeSyncUserSession session = loggedInSession;
+        if (session != null && session.serverUrl != null) {
+            url = session.serverUrl + url;
+        } else {
+            url = US_SERVER + url; // Fallback
+        }
+
         // Apply current session authentication data
         requestData.applyAuthentication(loggedInSession);
 
@@ -166,13 +172,20 @@ public class VeSyncV2ApiHelper {
         return directReqV1Authorized(url, requestData);
     }
 
-    private String directReqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
+    private String directReqV1Authorized(String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
         try {
             final HttpClient client = httpClient;
             if (client == null) {
                 throw new AuthenticationException("No HTTP Client");
             }
+
+            @Nullable
+            VeSyncUserSession session = loggedInSession;
+            if (session != null && !url.startsWith(session.getServerUrl())) {
+                url = session.getServerUrl() + url;
+            }
+
             Request request = client.newRequest(url).method(requestData.httpMethod).timeout(RESPONSE_TIMEOUT_SEC,
                     TimeUnit.SECONDS);
 
@@ -214,7 +227,7 @@ public class VeSyncV2ApiHelper {
             return;
         }
         try {
-            loggedInSession = processLogin(username, password, timezone).getUserSession();
+            loggedInSession = processLoginAuthV2(username, password, timezone).getUserSession();
         } catch (final AuthenticationException ae) {
             loggedInSession = null;
             throw ae;
@@ -225,37 +238,26 @@ public class VeSyncV2ApiHelper {
         bridge.handleNewUserSession(loggedInSession);
     }
 
-    private VeSyncLoginResponse processLogin(String username, String password, String timezone)
+    private VeSyncLoginResponse processLoginAuthV2(String username, String password, String timezone)
             throws AuthenticationException {
         try {
             final HttpClient client = httpClient;
             if (client == null) {
                 throw new AuthenticationException("No HTTP Client");
             }
-            Request request = client.newRequest(V1_LOGIN_ENDPOINT).method(HttpMethod.POST).timeout(RESPONSE_TIMEOUT_SEC,
-                    TimeUnit.SECONDS);
 
-            // No headers for login
-            request.content(new StringContentProvider(
-                    VeSyncConstants.GSON.toJson(new VeSyncLoginCredentials(username, password))));
+            final LoginAuthV2Helper loginHelper = new LoginAuthV2Helper(client);
 
-            request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
-
-            ContentResponse response = request.send();
-            if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                VeSyncLoginResponse loginResponse = VeSyncConstants.GSON.fromJson(response.getContentAsString(),
-                        VeSyncLoginResponse.class);
-                if (loginResponse != null && loginResponse.isMsgSuccess()) {
-                    logger.debug("Login successful");
-                    return loginResponse;
-                } else {
-                    throw new AuthenticationException("Invalid / unexpected JSON response from login");
-                }
-            } else {
-                logger.warn("Login Failed - HTTP Response Code: {} - {}", response.getStatus(), response.getReason());
-                throw new AuthenticationException(
-                        "HTTP response " + response.getStatus() + " - " + response.getReason());
+            if (!loginHelper.requestAuthToken(username, password)) {
+                // We cant continue if we don't have the authorizeCode parameter
+                throw new AuthenticationException("Invalid username or password");
             }
+
+            if (!loginHelper.loginByAuthorizeCode()) {
+                throw new AuthenticationException("Invalid username or password");
+            }
+            return loginHelper.getVeSyncLoginResponse();
+
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AuthenticationException(e);
         }

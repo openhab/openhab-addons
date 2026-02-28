@@ -17,28 +17,24 @@ import org.eclipse.jetty.http.HttpMethod;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link VeSyncRequest} is a Java class used as a DTO to hold the Vesync's API's common request data.
+ * The {@link VeSyncBaseRequest} is a Java class used as a DTO to hold the lowest common aspects of a VeSync Request
  *
  * @author David Goodyear - Initial contribution
  */
-public class VeSyncRequest extends VeSyncBaseRequest {
+public class VeSyncBaseRequest {
 
-    @SerializedName("timeZone")
-    public String timeZone = "America/New_York";
+    public transient HttpMethod httpMethod;
 
-    @SerializedName("appVersion")
-    public String appVersion = "2.5.1";
+    @SerializedName("acceptLanguage")
+    public String acceptLanguage = "en";
 
-    @SerializedName("phoneBrand")
-    public String phoneBrand = "SM N9005";
+    @SerializedName("traceId")
+    public String traceId = "";
 
-    @SerializedName("phoneOS")
-    public String phoneOS = "Android";
+    @SerializedName("method")
+    public String method = "";
 
-    @SerializedName("deviceId")
-    public String deviceId;
-
-    public VeSyncRequest() {
+    public VeSyncBaseRequest() {
         traceId = String.valueOf(System.currentTimeMillis());
         httpMethod = HttpMethod.POST;
     }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +34,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.VeSyncBridgeConfiguration;
 import org.openhab.binding.vesync.internal.VeSyncDeviceConfiguration;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncAuthenticatedRequest;
-import org.openhab.binding.vesync.internal.dto.requests.VeSyncProtocolConstants;
 import org.openhab.binding.vesync.internal.dto.requests.VeSyncRequestManagedDeviceBypassV2;
 import org.openhab.binding.vesync.internal.dto.responses.VeSyncManagedDeviceBase;
 import org.openhab.binding.vesync.internal.exceptions.AuthenticationException;
@@ -297,7 +297,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
                 logger.debug("Searching for device mac id : {}", configMac);
                 @Nullable
                 VeSyncManagedDeviceBase metadata = vesyncBridgeHandler.api.getMacLookupMap()
-                        .get(configMac.toLowerCase());
+                        .get(configMac.toLowerCase(Locale.ENGLISH));
 
                 if (metadata != null && metadata.macId != null) {
                     return metadata.macId;
@@ -455,7 +455,7 @@ public abstract class VeSyncBaseDeviceHandler extends BaseThingHandler {
             }
             VeSyncClient client = getVeSyncClient();
             if (client != null) {
-                final String url = VeSyncProtocolConstants.SERVER_ENDPOINT + "/" + urlPath;
+                final String url = "/" + urlPath;
                 return client.reqV2Authorized(url, deviceLookupKey, request);
             } else {
                 throw new DeviceUnknownException("Missing client");
