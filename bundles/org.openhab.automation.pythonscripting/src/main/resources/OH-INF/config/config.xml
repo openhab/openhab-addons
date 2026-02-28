@@ -16,41 +16,29 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
-		<parameter name="scopeEnabled" type="boolean" required="true" groupName="environment">
-			<label>Use scope and import wrapper</label>
+		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="4" groupName="environment">
+			<label>Activate openHAB Python helper module and inject scope and helper objects into rules.</label>
 			<description><![CDATA[
-			This enables a scope module and import wrapper.<br>
-			A scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code><br>
-			Additionally, you can run an import like <code>from org.openhab.core import openHAB</code>
+			Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer, etc. and automatically injects `from openhab import rule, Registry, logger` into you Python code.<br>
+			If auto injection is disabled, the helper module can still be used by importing it manually.<br>
+			When completely disabled, you get a "pure" Graalpy context that has only been initialized with the default JSR223 presets. The openHAB Python helper module cannot be imported manually in this case.
 			]]></description>
-			<default>true</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="helperEnabled" type="boolean" required="true" groupName="environment">
-			<label>Install openHAB Python helper module (requires scope module)</label>
-			<description><![CDATA[
-			Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer, etc.<br>
-			If disabled, the openHAB python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
-			]]></description>
-			<default>true</default>
-		</parameter>
-		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="2" groupName="environment">
-			<label>Inject scope and helper objects into rules (requires helper modules)</label>
-			<description>This injects the scope and helper Registry and logger into rules.</description>
 			<options>
-				<option value="2">Auto injection enabled only for UI and Transformation scripts (preferred)</option>
-				<option value="1">Auto injection enabled for all scripts</option>
-				<option value="0">Disable auto injection and use 'import' statements instead</option>
+				<option value="4">Auto injection everywhere, including script files and transformations</option>
+				<option value="3">Auto injection for Script Actions, Script Conditions and transformations</option>
+				<option value="2">Auto injection only for Script Actions &amp; Script Conditions (recommended)</option>
+				<option value="1">Disable auto-injection and import manually instead</option>
+				<option value="0">Disable completely</option>
 			</options>
 			<default>2</default>
 		</parameter>
 		<parameter name="pipModules" type="text" required="false" groupName="system">
 			<label>Python pip modules (requires a manually configured venv)</label>
-			<description>
-				<![CDATA[A comma separated list of Python modules to install.
-				Versions may be constrained by separating with an <code>==</code> followed by standard
-				python pip version constraint, such as "<code>tzdata==2025.2</code>".]]>
-			</description>
+			<description><![CDATA[
+			A comma separated list of Python modules to install.
+			Versions may be constrained by separating with an <code>==</code> followed by standard
+			python pip version constraint, such as "<code>tzdata==2025.2</code>".
+			]]></description>
 			<default></default>
 			<advanced>true</advanced>
 		</parameter>
