@@ -147,7 +147,7 @@ public class EcovacsXmppDevice implements EcovacsDevice {
                     return command.convertResponse(responseObj, ProtocolVersion.XML, gson);
                 }
             }
-        } catch (DataParsingException | ParserConfigurationException | TransformerException e) {
+        } catch (Exception e) {
             throw new EcovacsApiException(e);
         }
 
