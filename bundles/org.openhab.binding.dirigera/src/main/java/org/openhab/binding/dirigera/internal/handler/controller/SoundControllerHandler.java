@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
-import static org.openhab.binding.dirigera.internal.Constants.DEVICE_TYPE_SPEAKER;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_SPEAKER;
 
 import java.util.List;
 import java.util.Map;

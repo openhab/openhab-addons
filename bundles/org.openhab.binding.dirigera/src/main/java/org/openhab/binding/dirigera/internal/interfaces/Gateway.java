@@ -17,10 +17,11 @@ import java.time.Instant;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dirigera.internal.DirigeraCommandProvider;
+import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.discovery.DirigeraDiscoveryService;
 import org.openhab.binding.dirigera.internal.exception.ApiException;
 import org.openhab.binding.dirigera.internal.exception.ModelException;
-import org.openhab.binding.dirigera.internal.handler.BaseHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.osgi.framework.BundleContext;
 
@@ -62,6 +63,20 @@ public interface Gateway {
     DirigeraCommandProvider getCommandProvider();
 
     /**
+     * Get StateDescriptionProvider associated to this binding
+     *
+     * @return DirigeraStateDescriptionProvider as DynamicStateDescriptionProvider
+     */
+    DirigeraStateDescriptionProvider getStateDescriptionProvider();
+
+    /**
+     * Get TimeZoneProvider to evaluate correct time zone information.
+     *
+     * @return TimeZoneProvider
+     */
+    TimeZoneProvider getTimeZoneProvider();
+
+    /**
      * Returns the configuration setting if discovery is enabled.
      *
      * @return boolean discovery flag
@@ -77,7 +92,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    void registerDevice(BaseHandler deviceHandler, String deviceId);
+    void registerDevice(BaseDevice deviceHandler, String deviceId);
 
     /**
      * Unregister a handler associated with the given deviceId reflecting a device or scene. Shall be called
@@ -88,7 +103,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    void unregisterDevice(BaseHandler deviceHandler, String deviceId);
+    void unregisterDevice(BaseDevice deviceHandler, String deviceId);
 
     /**
      * Deletes an openHAB handler associated with the given deviceId reflecting a device or scene. Shall be called
@@ -99,7 +114,7 @@ public interface Gateway {
      * @param deviceHandler handler of this binding
      * @param deviceId connected device id
      */
-    void deleteDevice(BaseHandler deviceHandler, String deviceId);
+    void deleteDevice(BaseDevice deviceHandler, String deviceId);
 
     /**
      * Deletes a device or scene detected by the model. A device can be deleted without openHAB interaction in IKEA Home
@@ -142,6 +157,14 @@ public interface Gateway {
      * @param String content of update
      */
     void updateLinks();
+
+    /**
+     * Resolve device name from device id.
+     *
+     * @param devieId connected device id
+     * @return device name as OH label if handler is present, IKEA name otherwise
+     */
+    String resolveDeviceName(String devieId);
 
     /**
      * Next sunrise ZonedDateTime. Value is presented if gateway allows access to GPS position. Handler needs to take

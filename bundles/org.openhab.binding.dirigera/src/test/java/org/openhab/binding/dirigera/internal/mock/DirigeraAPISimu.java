@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.mock;
 
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.openhab.binding.dirigera.internal.Constants.PROPERTY_DEVICE_ID;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,7 +69,7 @@ public class DirigeraAPISimu implements DirigeraAPI {
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                if (deviceId.equals(entry.get(PROPERTY_DEVICE_ID))) {
+                if (deviceId.equals(entry.get(JSON_KEY_DEVICE_ID))) {
                     return entry;
                 }
             }
@@ -84,7 +84,7 @@ public class DirigeraAPISimu implements DirigeraAPI {
     @Override
     public int sendAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
-        data.put(Model.ATTRIBUTES, attributes);
+        data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
         return sendPatch(id, data);
     }
 
@@ -117,7 +117,7 @@ public class DirigeraAPISimu implements DirigeraAPI {
             Iterator<Object> entries = devices.iterator();
             while (entries.hasNext()) {
                 JSONObject entry = (JSONObject) entries.next();
-                if (sceneId.equals(entry.get(PROPERTY_DEVICE_ID))) {
+                if (sceneId.equals(entry.get(JSON_KEY_DEVICE_ID))) {
                     return entry;
                 }
             }

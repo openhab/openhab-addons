@@ -64,8 +64,8 @@ public class AirQualityHandler extends BaseHandler {
         // handle reachable flag
         super.handleUpdate(update);
         // now device specific
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

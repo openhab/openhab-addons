@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler.sensor;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_ILLUMINANCE;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_TYPE;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -48,8 +49,8 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
             // assure deviceType is set from main device
-            if (values.has(PROPERTY_DEVICE_TYPE)) {
-                deviceType = values.getString(PROPERTY_DEVICE_TYPE);
+            if (values.has(JSON_KEY_DEVICE_TYPE)) {
+                deviceType = values.getString(JSON_KEY_DEVICE_TYPE);
             }
 
             // get all relations and register
@@ -83,8 +84,8 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

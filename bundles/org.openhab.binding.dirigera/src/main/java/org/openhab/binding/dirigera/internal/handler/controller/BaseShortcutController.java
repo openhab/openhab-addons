@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
-import static org.openhab.binding.dirigera.internal.Constants.PROPERTY_DEVICE_ID;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -124,9 +124,9 @@ public class BaseShortcutController extends BaseHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(PROPERTY_DEVICE_ID) && update.has("triggers")) {
+        if (update.has(JSON_KEY_DEVICE_ID) && update.has("triggers")) {
             // first check if trigger happened
-            String sceneId = update.getString(PROPERTY_DEVICE_ID);
+            String sceneId = update.getString(JSON_KEY_DEVICE_ID);
             JSONArray triggers = update.getJSONArray("triggers");
             boolean triggered = false;
             for (int i = 0; i < triggers.length(); i++) {

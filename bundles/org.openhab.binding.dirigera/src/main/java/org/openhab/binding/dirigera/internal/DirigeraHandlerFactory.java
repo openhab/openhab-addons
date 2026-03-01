@@ -32,6 +32,10 @@ import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.DimmableLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.SwitchLightHandler;
 import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandler;
+import org.openhab.binding.dirigera.internal.handler.matter.Matter2ButtonCotroller;
+import org.openhab.binding.dirigera.internal.handler.matter.Matter3ButtonCotroller;
+import org.openhab.binding.dirigera.internal.handler.matter.MatterLight;
+import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.handler.plug.PowerPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.plug.SimplePlugHandler;
 import org.openhab.binding.dirigera.internal.handler.plug.SmartPlugHandler;
@@ -44,6 +48,7 @@ import org.openhab.binding.dirigera.internal.handler.sensor.MotionSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.handler.speaker.SpeakerHandler;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -72,6 +77,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     private final DirigeraStateDescriptionProvider stateProvider;
     private final DirigeraDiscoveryService discoveryService;
     private final DirigeraCommandProvider commandProvider;
+    private final TimeZoneProvider timezoneProvider;
     private final LocationProvider locationProvider;
     private final Storage<String> bindingStorage;
     private final HttpClient insecureClient;
@@ -79,9 +85,11 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public DirigeraHandlerFactory(@Reference StorageService storageService,
             final @Reference DirigeraDiscoveryService discovery, final @Reference LocationProvider locationProvider,
+            final @Reference TimeZoneProvider timeZoneProvider,
             final @Reference DirigeraCommandProvider commandProvider,
             final @Reference DirigeraStateDescriptionProvider stateProvider) {
         this.locationProvider = locationProvider;
+        this.timezoneProvider = timeZoneProvider;
         this.commandProvider = commandProvider;
         this.discoveryService = discovery;
         this.stateProvider = stateProvider;
@@ -119,7 +127,7 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new DirigeraHandler((Bridge) thing, insecureClient, bindingStorage, discoveryService,
-                    locationProvider, commandProvider, bundleContext);
+                    locationProvider, commandProvider, stateProvider, bundleContext, timezoneProvider);
         } else if (THING_TYPE_COLOR_LIGHT.equals(thingTypeUID)) {
             return new ColorLightHandler(thing, COLOR_LIGHT_MAP, stateProvider);
         } else if (THING_TYPE_TEMPERATURE_LIGHT.equals(thingTypeUID)) {
@@ -166,6 +174,18 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
             return new BlindHandler(thing, BLINDS_MAP);
         } else if (THING_TYPE_AIR_PURIFIER.equals(thingTypeUID)) {
             return new AirPurifierHandler(thing, AIR_PURIFIER_MAP);
+        } else if (THING_TYPE_MATTER_OCCUPANCY_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_LIGHT_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_ENVIRONMENT_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_OPEN_CLOSE_SENSOR.equals(thingTypeUID)
+                || THING_TYPE_MATTER_WATER_LEAK_SENSOR.equals(thingTypeUID)) {
+            return new MatterSensor(thing);
+        } else if (THING_TYPE_MATTER_2_BUTTON_CONTROLLER.equals(thingTypeUID)) {
+            return new Matter2ButtonCotroller(thing);
+        } else if (THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(thingTypeUID)) {
+            return new Matter3ButtonCotroller(thing);
+        } else if (THING_TYPE_MATTER_LIGHT.equals(thingTypeUID)) {
+            return new MatterLight(thing, COLOR_LIGHT_MAP, stateProvider);
         } else {
             logger.debug("DIRIGERA FACTORY Request for {} doesn't match {}", thingTypeUID, THING_TYPE_GATEWAY);
             return null;

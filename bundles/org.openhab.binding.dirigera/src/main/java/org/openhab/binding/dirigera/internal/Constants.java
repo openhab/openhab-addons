@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal;
 
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,6 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_DIMMABLE_LIGHT = new ThingTypeUID(BINDING_ID, "dimmable-light");
     public static final ThingTypeUID THING_TYPE_SWITCH_LIGHT = new ThingTypeUID(BINDING_ID, "switch-light");
     public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
-    public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
     public static final ThingTypeUID THING_TYPE_MOTION_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID,
             "motion-light-sensor");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
@@ -58,9 +59,26 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_AIR_QUALITY = new ThingTypeUID(BINDING_ID, "air-quality");
     public static final ThingTypeUID THING_TYPE_WATER_SENSOR = new ThingTypeUID(BINDING_ID, "water-sensor");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
-    public static final ThingTypeUID THING_TYPE_UNKNNOWN = new ThingTypeUID(BINDING_ID, "unkown");
+    public static final ThingTypeUID THING_TYPE_UNKNOWN = new ThingTypeUID(BINDING_ID, "unkown");
     public static final ThingTypeUID THING_TYPE_NOT_FOUND = new ThingTypeUID(BINDING_ID, "not-found");
     public static final ThingTypeUID THING_TYPE_IGNORE = new ThingTypeUID(BINDING_ID, "ignore");
+
+    // Generic Thing Type UIDs which will be configured via devices.json
+    public static final ThingTypeUID THING_TYPE_MATTER_OCCUPANCY_SENSOR = new ThingTypeUID(BINDING_ID,
+            "occupancy-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_ENVIRONMENT_SENSOR = new ThingTypeUID(BINDING_ID,
+            "environment-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_OPEN_CLOSE_SENSOR = new ThingTypeUID(BINDING_ID,
+            "open-close-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_WATER_LEAK_SENSOR = new ThingTypeUID(BINDING_ID,
+            "water-leak-sensor");
+    public static final ThingTypeUID THING_TYPE_MATTER_2_BUTTON_CONTROLLER = new ThingTypeUID(BINDING_ID,
+            "two-button-switch");
+    public static final ThingTypeUID THING_TYPE_MATTER_3_BUTTON_CONTROLLER = new ThingTypeUID(BINDING_ID,
+            "three-button-switch");
+    public static final ThingTypeUID THING_TYPE_MATTER_LIGHT = new ThingTypeUID(BINDING_ID, "matter-light");
+    public static final ThingTypeUID THING_TYPE_MATTER_UNKNOWN = new ThingTypeUID(BINDING_ID, "matter-unknown");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GATEWAY,
             THING_TYPE_COLOR_LIGHT, THING_TYPE_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_MOTION_SENSOR,
@@ -68,9 +86,14 @@ public class Constants {
             THING_TYPE_SPEAKER, THING_TYPE_SCENE, THING_TYPE_REPEATER, THING_TYPE_LIGHT_CONTROLLER,
             THING_TYPE_BLIND_CONTROLLER, THING_TYPE_SOUND_CONTROLLER, THING_TYPE_SINGLE_SHORTCUT_CONTROLLER,
             THING_TYPE_DOUBLE_SHORTCUT_CONTROLLER, THING_TYPE_MOTION_LIGHT_SENSOR, THING_TYPE_AIR_QUALITY,
-            THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND, THING_TYPE_SWITCH_LIGHT);
+            THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND, THING_TYPE_SWITCH_LIGHT,
+            THING_TYPE_MATTER_OCCUPANCY_SENSOR, THING_TYPE_MATTER_LIGHT_SENSOR, THING_TYPE_MATTER_ENVIRONMENT_SENSOR,
+            THING_TYPE_MATTER_OPEN_CLOSE_SENSOR, THING_TYPE_MATTER_WATER_LEAK_SENSOR,
+            THING_TYPE_MATTER_2_BUTTON_CONTROLLER, THING_TYPE_MATTER_3_BUTTON_CONTROLLER, THING_TYPE_MATTER_LIGHT);
 
-    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_LIGHT_SENSOR, THING_TYPE_IGNORE);
+    // Thing types to be ignored for discovery
+    public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_IGNORE, THING_TYPE_MATTER_UNKNOWN,
+            THING_TYPE_GATEWAY, THING_TYPE_UNKNOWN);
 
     public static final List<String> THING_PROPERTIES = List.of("model", "manufacturer", "firmwareVersion",
             "hardwareVersion", "serialNumber", "productCode");
@@ -85,48 +108,7 @@ public class Constants {
     public static final String SCENES_URL = BASE_URL + "/scenes";
 
     public static final String PROPERTY_IP_ADDRESS = "ipAddress";
-    public static final String PROPERTY_DEVICES = "devices";
-    public static final String PROPERTY_SCENES = "scenes";
-    public static final String PROPERTY_DEVICE_ID = "id";
-    public static final String PROPERTY_DEVICE_TYPE = "deviceType";
-    public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_TOKEN = "token";
-    public static final String PROPERTY_ATTRIBUTES = "attributes";
-    public static final String PROPERTY_OTA_STATUS = "otaStatus";
-    public static final String PROPERTY_OTA_STATE = "otaState";
-    public static final String PROPERTY_OTA_PROGRESS = "otaProgress";
-    public static final String PROPERTY_BATTERY_PERCENTAGE = "batteryPercentage";
-    public static final String PROPERTY_PERMIT_JOIN = "permittingJoin";
-    public static final String PROPERTY_STARTUP_BEHAVIOR = "startupOnOff";
-    public static final String PROPERTY_POWER_STATE = "isOn";
-    public static final String PROPERTY_CUSTOM_NAME = "customName";
-    public static final String PROPERTY_REMOTE_LINKS = "remoteLinks";
-
-    public static final String PROPERTY_EMPTY = "";
-
-    public static final String ATTRIBUTE_COLOR_MODE = "colorMode";
-
-    public static final String DEVICE_TYPE_GATEWAY = "gateway";
-    public static final String DEVICE_TYPE_SPEAKER = "speaker";
-    public static final String DEVICE_TYPE_REPEATER = "repeater";
-    public static final String DEVICE_TYPE_AIR_PURIFIER = "airPurifier";
-    public static final String DEVICE_TYPE_BLINDS = "blinds";
-    public static final String TYPE_USER_SCENE = "userScene";
-    public static final String TYPE_CUSTOM_SCENE = "customScene";
-
-    public static final String DEVICE_TYPE_LIGHT = "light";
-
-    public static final String DEVICE_TYPE_MOTION_SENSOR = "motionSensor";
-    public static final String DEVICE_TYPE_LIGHT_SENSOR = "lightSensor";
-    public static final String DEVICE_TYPE_CONTACT_SENSOR = "openCloseSensor";
-    public static final String DEVICE_TYPE_ENVIRONMENT_SENSOR = "environmentSensor";
-    public static final String DEVICE_TYPE_WATER_SENSOR = "waterSensor";
-    public static final String DEVICE_TYPE_OUTLET = "outlet";
-
-    public static final String DEVICE_TYPE_LIGHT_CONTROLLER = "lightController";
-    public static final String DEVICE_TYPE_BLIND_CONTROLLER = "blindsController";
-    public static final String DEVICE_TYPE_SOUND_CONTROLLER = "soundController";
-    public static final String DEVICE_TYPE_SHORTCUT_CONTROLLER = "shortcutController";
 
     // Generic channels
     public static final String CHANNEL_CUSTOM_NAME = "custom-name";
@@ -213,15 +195,8 @@ public class Constants {
     public static final String CHANNEL_BUTTON_1 = "button1";
     public static final String CHANNEL_BUTTON_2 = "button2";
 
-    // Websocket update types
-    public static final String EVENT_TYPE_DEVICE_DISCOVERED = "deviceDiscovered";
-    public static final String EVENT_TYPE_DEVICE_ADDED = "deviceAdded";
-    public static final String EVENT_TYPE_DEVICE_CHANGE = "deviceStateChanged";
-    public static final String EVENT_TYPE_DEVICE_REMOVED = "deviceRemoved";
-
-    public static final String EVENT_TYPE_SCENE_CREATED = "sceneCreated";
-    public static final String EVENT_TYPE_SCENE_UPDATE = "sceneUpdated";
-    public static final String EVENT_TYPE_SCENE_DELETED = "sceneDeleted";
+    // matter controller channels
+    public static final String CHANNEL_CONTROL_MODE = "control-mode";
 
     /**
      * Maps connecting device attributes to channel ids
@@ -267,51 +242,51 @@ public class Constants {
             put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
             put("childLock", CHANNEL_CHILD_LOCK);
             put("currentPM25", CHANNEL_PARTICULATE_MATTER);
-            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
+            put(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
         }
     };
-    public static final Map<String, String> AIR_QUALITY_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+    public static final Map<String, String> AIR_QUALITY_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "currentTemperature", CHANNEL_TEMPERATURE, "currentRH", CHANNEL_HUMIDITY, "currentPM25",
             CHANNEL_PARTICULATE_MATTER, "vocIndex", CHANNEL_VOC_INDEX);
 
-    public static final Map<String, String> BLIND_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL);
+    public static final Map<String, String> BLIND_CONTROLLER_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME,
+            CHANNEL_CUSTOM_NAME, "batteryPercentage", CHANNEL_BATTERY_LEVEL);
 
-    public static final Map<String, String> BLINDS_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+    public static final Map<String, String> BLINDS_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "blindsState", CHANNEL_BLIND_STATE, "batteryPercentage", CHANNEL_BATTERY_LEVEL, "blindsCurrentLevel",
             CHANNEL_BLIND_LEVEL);
 
-    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            PROPERTY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorHue",
+    public static final Map<String, String> COLOR_LIGHT_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+            ATTRIBUTES_KEY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorHue",
             CHANNEL_LIGHT_COLOR, "colorSaturation", CHANNEL_LIGHT_COLOR, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE,
-            PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);;
+            ATTRIBUTES_KEY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);;
 
-    public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+    public static final Map<String, String> CONTACT_SENSOR_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isOpen", CHANNEL_CONTACT);
 
-    public static final Map<String, String> LIGHT_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "circadianPresets", CHANNEL_LIGHT_PRESET);
+    public static final Map<String, String> LIGHT_CONTROLLER_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME,
+            CHANNEL_CUSTOM_NAME, "batteryPercentage", CHANNEL_BATTERY_LEVEL, "circadianPresets", CHANNEL_LIGHT_PRESET);
 
-    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+    public static final Map<String, String> LIGHT_SENSOR_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "illuminance", CHANNEL_ILLUMINANCE);
 
-    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_MOTION_DETECTION, "illuminance",
-            CHANNEL_ILLUMINANCE, "sensorConfig", CHANNEL_ACTIVE_DURATION, "schedule", CHANNEL_SCHEDULE,
+    public static final Map<String, String> MOTION_LIGHT_SENSOR_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME,
+            CHANNEL_CUSTOM_NAME, "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_MOTION_DETECTION,
+            "illuminance", CHANNEL_ILLUMINANCE, "sensorConfig", CHANNEL_ACTIVE_DURATION, "schedule", CHANNEL_SCHEDULE,
             "schedule-start", CHANNEL_SCHEDULE_START, "schedule-end", CHANNEL_SCHEDULE_END, "circadianPresets",
             CHANNEL_LIGHT_PRESET);
 
-    public static final Map<String, String> MOTION_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+    public static final Map<String, String> MOTION_SENSOR_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, "isDetected", CHANNEL_MOTION_DETECTION, "sensorConfig",
             CHANNEL_ACTIVE_DURATION, "schedule", CHANNEL_SCHEDULE, "schedule-start", CHANNEL_SCHEDULE_START,
             "schedule-end", CHANNEL_SCHEDULE_END, "circadianPresets", CHANNEL_LIGHT_PRESET);
 
-    public static final Map<String, String> REPEATER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
+    public static final Map<String, String> REPEATER_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
 
     public static final Map<String, String> SCENE_MAP = Map.of("lastTriggered", CHANNEL_TRIGGER);
 
-    public static final Map<String, String> SHORTCUT_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL);
+    public static final Map<String, String> SHORTCUT_CONTROLLER_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME,
+            CHANNEL_CUSTOM_NAME, "batteryPercentage", CHANNEL_BATTERY_LEVEL);
 
     public static final Map<String, String> SMART_PLUG_MAP = new HashMap<String, String>() {
         private static final long serialVersionUID = 1L;
@@ -325,23 +300,24 @@ public class Constants {
             put("timeOfLastEnergyReset", CHANNEL_ENERGY_RESET_DATE);
             put("statusLight", CHANNEL_DISABLE_STATUS_LIGHT);
             put("childLock", CHANNEL_CHILD_LOCK);
-            put(PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
-            put(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
+            put(ATTRIBUTES_KEY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
+            put(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
         }
     };
 
-    public static final Map<String, String> SOUND_CONTROLLER_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            "batteryPercentage", CHANNEL_BATTERY_LEVEL);
+    public static final Map<String, String> SOUND_CONTROLLER_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME,
+            CHANNEL_CUSTOM_NAME, "batteryPercentage", CHANNEL_BATTERY_LEVEL);
 
     public static final Map<String, String> SPEAKER_MAP = Map.of("playback", CHANNEL_PLAYER, "volume", CHANNEL_VOLUME,
             "isMuted", CHANNEL_MUTE, "playbackAudio", CHANNEL_TRACK, "playbackModes", CHANNEL_PLAY_MODES,
-            PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
+            ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME);
 
-    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
-            PROPERTY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel", CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature",
-            CHANNEL_LIGHT_TEMPERATURE, PROPERTY_STARTUP_BEHAVIOR, CHANNEL_STARTUP_BEHAVIOR);
+    public static final Map<String, String> TEMPERATURE_LIGHT_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME,
+            CHANNEL_CUSTOM_NAME, ATTRIBUTES_KEY_POWER_STATE, CHANNEL_POWER_STATE, "lightLevel",
+            CHANNEL_LIGHT_BRIGHTNESS, "colorTemperature", CHANNEL_LIGHT_TEMPERATURE, ATTRIBUTES_KEY_STARTUP_BEHAVIOR,
+            CHANNEL_STARTUP_BEHAVIOR);
 
-    public static final Map<String, String> WATER_SENSOR_MAP = Map.of(PROPERTY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
+    public static final Map<String, String> WATER_SENSOR_MAP = Map.of(ATTRIBUTES_KEY_CUSTOM_NAME, CHANNEL_CUSTOM_NAME,
             "batteryPercentage", CHANNEL_BATTERY_LEVEL, "waterLeakDetected", CHANNEL_LEAK_DETECTION);
 
     public static Map<Integer, String> reverseStateMapping(Map<String, Integer> mapping) {

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.handler.controller;
 
-import static org.openhab.binding.dirigera.internal.Constants.*;
+import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LIGHT_PRESET;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.StringType;
@@ -66,20 +68,19 @@ public class LightControllerHandler extends BaseHandler {
                             // fine - array stays empty
                             break;
                         case "Warm":
-                            presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_WARM));
+                            presetValues = new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_WARM));
                             break;
                         case "Slowdown":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
                             break;
                         case "Smooth":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
                             break;
                         case "Bright":
                             presetValues = new JSONArray(
-                                    gateway().model().getTemplate(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
+                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
                             break;
                         default:
                             presetValues = new JSONArray(string.toFullString());
@@ -94,8 +95,8 @@ public class LightControllerHandler extends BaseHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();
