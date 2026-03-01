@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.bluelink.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Token response from the Bluelink authentication API.
- *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public interface ITirePressureWarning {
+    boolean all();
+
+    boolean frontLeft();
+
+    boolean frontRight();
+
+    boolean rearLeft();
+
+    boolean rearRight();
 }

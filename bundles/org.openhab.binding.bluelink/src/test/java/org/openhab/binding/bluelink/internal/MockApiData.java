@@ -23,24 +23,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public final class MockApiData {
-    public static final String TOKEN_RESPONSE = """
-            {
-                "access_token": "test-access-token",
-                "refresh_token": "test-refresh-token",
-                "expires_in": "3600",
-                "username": "test@example.com"
-            }
-            """;
-
-    public static final String ENROLLMENT_RESPONSE;
-    public static final String VEHICLE_STATUS_RESPONSE;
+    public static final String TOKEN_RESPONSE_CA;
+    public static final String TOKEN_RESPONSE_US;
+    public static final String TOKEN_RESPONSE_EU;
+    public static final String ENROLLMENT_RESPONSE_US;
+    public static final String VEHICLES_RESPONSE_EU;
+    public static final String DEVICE_REGISTRATION_RESPONSE_EU;
+    public static final String VEHICLE_STATUS_RESPONSE_CA;
+    public static final String VEHICLE_STATUS_RESPONSE_US;
+    public static final String VEHICLE_STATUS_RESPONSE_EU;
+    public static final String VEHICLE_STATUS_RESPONSE_EU_CCS2;
     public static final String TEST_USERNAME = "test@example.com";
     public static final String TEST_PASSWORD = "testpassword";
+    public static final String TEST_REFRESH_TOKEN = "test-refresh-token";
 
     static {
         try {
-            ENROLLMENT_RESPONSE = loadResource("/enrollment-details.json");
-            VEHICLE_STATUS_RESPONSE = loadResource("/vehicle-status.json");
+            TOKEN_RESPONSE_CA = loadResource("/login-response-ca.json");
+            TOKEN_RESPONSE_US = loadResource("/login-response-us.json");
+            TOKEN_RESPONSE_EU = loadResource("/login-response-eu.json");
+            ENROLLMENT_RESPONSE_US = loadResource("/enrollment-details-us.json");
+            VEHICLES_RESPONSE_EU = loadResource("/vehicles-eu.json");
+            DEVICE_REGISTRATION_RESPONSE_EU = loadResource("/device-registration-eu.json");
+            VEHICLE_STATUS_RESPONSE_US = loadResource("/vehicle-status-us.json");
+            VEHICLE_STATUS_RESPONSE_CA = loadResource("/vehicle-status-ca.json");
+            VEHICLE_STATUS_RESPONSE_EU = loadResource("/vehicle-status-eu.json");
+            VEHICLE_STATUS_RESPONSE_EU_CCS2 = loadResource("/vehicle-status-eu-ccs2.json");
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }

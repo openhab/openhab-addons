@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.bluelink.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.bluelink.internal.dto.ca.AirTemperature;
 
 /**
- * Token response from the Bluelink authentication API.
- *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public record HvacInfo(int airCtrl, AirTemperature airTemp, boolean defrost, int heating1, int igniOnDuration) {
 }

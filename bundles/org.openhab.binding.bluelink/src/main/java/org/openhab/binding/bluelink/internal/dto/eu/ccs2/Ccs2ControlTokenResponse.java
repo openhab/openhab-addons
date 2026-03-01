@@ -10,15 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.bluelink.internal.dto.eu.ccs2;
 
 /**
- * Token response from the Bluelink authentication API.
+ * CCU/CCS2 control_token response.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public record Ccs2ControlTokenResponse(String controlToken, Integer expiresTime) {
 }

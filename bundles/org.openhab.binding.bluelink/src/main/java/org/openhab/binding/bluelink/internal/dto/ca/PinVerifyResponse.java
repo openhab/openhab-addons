@@ -10,15 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
-
-import com.google.gson.annotations.SerializedName;
+package org.openhab.binding.bluelink.internal.dto.ca;
 
 /**
- * Token response from the Bluelink authentication API.
+ * PIN verification response for Canada API.
  *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public record PinVerifyResponse(Result result) {
+
+    public record Result(String pAuth) {
+    }
 }

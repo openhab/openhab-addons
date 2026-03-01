@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.bluelink.internal.dto;
 
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
+import org.openhab.core.types.State;
 
 /**
- * Token response from the Bluelink authentication API.
- *
  * @author Marcus Better - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public interface TemperatureValue {
+    String value();
+
+    int unit();
+
+    State getTemperature(@NonNull IVehicle vehicle);
 }

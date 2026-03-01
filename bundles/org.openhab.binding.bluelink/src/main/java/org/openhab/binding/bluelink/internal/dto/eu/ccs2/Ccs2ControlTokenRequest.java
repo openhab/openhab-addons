@@ -10,12 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.eu.ccs2;
+
+import java.util.UUID;
 
 /**
- * Door lock/unlock command request for the Bluelink API.
+ * CCU/CCS2 control_token request.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public record DoorCommandRequest(String userName, String vin) {
+public record Ccs2ControlTokenRequest(UUID deviceId, String pin) {
 }
