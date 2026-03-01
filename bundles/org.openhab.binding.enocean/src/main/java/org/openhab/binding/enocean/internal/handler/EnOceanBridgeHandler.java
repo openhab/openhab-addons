@@ -341,6 +341,10 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
         return smackClients.contains(sender.getConfiguration().as(EnOceanBaseConfig.class).enoceanId);
     }
 
+    public boolean isRS485Enabled() {
+        return getConfigAs(EnOceanBridgeConfig.class).rs485;
+    }
+
     public @Nullable Integer getNextSenderId(Thing sender) {
         return getNextSenderId(sender.getConfiguration().as(EnOceanBaseConfig.class).enoceanId);
     }

@@ -26,6 +26,7 @@ import org.openhab.binding.enocean.internal.handler.EnOceanBaseActuatorHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanBaseSensorHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanBridgeHandler;
 import org.openhab.binding.enocean.internal.handler.EnOceanClassicDeviceHandler;
+import org.openhab.binding.enocean.internal.handler.EnOceanDatagramInjectorHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -91,6 +92,8 @@ public class EnOceanHandlerFactory extends BaseThingHandlerFactory {
             return new EnOceanBaseSensorHandler(thing, itemChannelLinkRegistry);
         } else if (EnOceanClassicDeviceHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new EnOceanClassicDeviceHandler(thing, itemChannelLinkRegistry);
+        } else if (EnOceanDatagramInjectorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new EnOceanDatagramInjectorHandler(thing, itemChannelLinkRegistry);
         }
 
         return null;

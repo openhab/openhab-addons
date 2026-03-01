@@ -33,6 +33,9 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public abstract class A5_07 extends _4BSMessage {
 
+    public A5_07() {
+    }
+
     public A5_07(ERP1Message packet) {
         super(packet);
     }
