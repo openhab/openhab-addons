@@ -72,6 +72,7 @@ Once received, update the twofa field and hit save.
 | Number:Time          | cleaning#last-clean-duration      | Last Clean Time                            |
 | Number               | cleaning#last-clean-error         | Last Clean Error                           |
 | Switch               | cleaning#last-clean-finish        | Last Cleaning Completed                    |
+| Image                | cleaning#map                      | Rendered cleaning map image (PNG)          |
 
 Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
 
@@ -148,4 +149,5 @@ Number:Area          lastArea         "Last Cleaned Area [%1.0fm²]"   <zoom>   
 Number:Time          lastTime         "Last Clean Time [%1.0f']"      <clock>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-duration"}
 Number               lastError        "Error [%s]"                    <error>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-error" }
 Switch               lastCompleted    "Last Cleaning Completed"                      (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-finish" }
+Image                cleaningMap      "Cleaning Map"                                 (gVacStat)      {channel="roborock:vacuum:034F0E45:cleaning#map"}
 ```
