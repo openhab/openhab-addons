@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -49,9 +50,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-class SecurityCapability extends RestCapability<SecurityApi> {
-    private static final ZonedDateTime ZDT_REFERENCE = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0),
-            ZoneId.systemDefault());
+class SecurityCapability extends CacheCapability<SecurityApi> {
+    private static final ZonedDateTime ZDT_REFERENCE = Instant.ofEpochMilli(0).atZone(ZoneId.systemDefault());
 
     private final Logger logger = LoggerFactory.getLogger(SecurityCapability.class);
     private final Map<String, HomeEvent> eventBuffer = new HashMap<>();
@@ -62,7 +62,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     private String securityId = "";
 
     SecurityCapability(CommonInterface handler) {
-        super(handler, SecurityApi.class);
+        super(handler, Duration.ofSeconds(2), SecurityApi.class);
     }
 
     @Override
@@ -120,7 +120,7 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     }
 
     @Override
-    protected List<NAObject> updateReadings(SecurityApi api) {
+    protected List<NAObject> getFreshData(SecurityApi api) {
         List<NAObject> result = new ArrayList<>();
         try {
             api.getHomeEvents(securityId, freshestEventTime).stream().forEach(event -> {

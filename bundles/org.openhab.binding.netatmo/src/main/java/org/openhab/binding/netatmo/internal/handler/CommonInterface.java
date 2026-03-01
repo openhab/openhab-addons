@@ -33,6 +33,8 @@ import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.ParentUpdateCapability;
+import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -92,8 +94,8 @@ public interface CommonInterface {
                 : null;
     }
 
-    default Optional<ScheduledFuture<?>> schedule(Runnable arg0, Duration delay) {
-        return Optional.of(getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS));
+    default ScheduledFuture<?> schedule(Runnable arg0, Duration delay) {
+        return getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS);
     }
 
     default @Nullable ApiBridgeHandler getAccountHandler() {
@@ -230,13 +232,14 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-            getCapabilities().getParentUpdate().ifPresent(Capability::dispose);
-            getCapabilities().getRefresh().ifPresent(Capability::dispose);
+            getCapabilities().get(ParentUpdateCapability.class).ifPresent(Capability::dispose);
+            getCapabilities().getOrDescendant(RefreshCapability.class).ifPresent(Capability::dispose);
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
-            getCapabilities().getParentUpdate().ifPresentOrElse(Capability::initialize, () -> {
+            getCapabilities().get(ParentUpdateCapability.class).ifPresentOrElse(Capability::initialize, () -> {
                 int interval = getThingConfigAs(NAThingConfiguration.class).getRefreshInterval();
-                getCapabilities().getRefresh().ifPresent(cap -> cap.setInterval(Duration.ofSeconds(interval)));
+                getCapabilities().getOrDescendant(RefreshCapability.class)
+                        .ifPresent(cap -> cap.setInterval(Duration.ofSeconds(interval)));
             });
         }
     }
