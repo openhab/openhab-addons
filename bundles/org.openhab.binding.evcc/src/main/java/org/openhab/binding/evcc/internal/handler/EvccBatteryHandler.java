@@ -22,6 +22,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -65,6 +67,12 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.getAsJsonObject(JSON_KEY_BATTERY).getAsJsonArray(JSON_KEY_DEVICES).get(index).getAsJsonObject();
+        JsonElement battElement = state.get(JSON_KEY_BATTERY);
+        JsonArray battArray = battElement.isJsonArray()
+                // for up to version 0.300.0
+                ? (JsonArray) battElement
+                // for version 0.300.0+
+                : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES);
+        return battArray.get(index).getAsJsonObject();
     }
 }
