@@ -97,11 +97,10 @@ public class SonnenJSONCommunication {
      *
      * @return an empty string if no error occurred, the error message otherwise.
      */
-    public String startStopBatteryCharging(String putData) {
+    public String startStopBatteryCharging(String putData, int chargeRate) {
         String result = "";
         String urlStr = "http://" + config.hostIP + "/api/v2/configurations";
-        String urlStr2 = "http://" + config.hostIP + "/api/v2/setpoint/charge/"
-                + Integer.toString(config.chargingPower);
+        String urlStr2 = "http://" + config.hostIP + "/api/v2/setpoint/charge/" + Integer.toString(chargeRate);
         Properties header = createHeader(config.authToken);
         try {
             // in putData there is 1 or 2 inside to turn on or off the manual mode of the battery
@@ -115,13 +114,13 @@ public class SonnenJSONCommunication {
             }
             batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
             // if battery is put to manual mode
-            if (config.chargingPower > 10000) {
+            if (chargeRate > 10000) {
                 throw new IllegalArgumentException(
                         "Max battery charging power in watt needs to be in the range of greater 0 and smaller 10000.");
             }
             SonnenJsonDataDTO batteryData2 = getBatteryData();
             if (batteryData2.emgetOperationMode() != null && Integer.parseInt(batteryData2.emgetOperationMode()) == 1
-                    && config.chargingPower > 0 && config.chargingPower <= 10000) {
+                    && chargeRate > 0 && chargeRate <= 10000) {
                 // start charging
                 String response2 = HttpUtil.executeUrl("POST", urlStr2, header, null, "application/json", 10000);
                 logger.debug("ChargingOperationMode = {}", response2);
@@ -136,7 +135,7 @@ public class SonnenJSONCommunication {
                 result = "Given token: " + config.authToken + " is not valid.";
             } else if (e.getCause() instanceof IllegalArgumentException) {
                 result = "Max battery charging power needs to be in the range of greater 0 and smaller 10000. It cannot be: "
-                        + config.chargingPower;
+                        + chargeRate;
                 logger.debug("Error in value for battery capacity: {}", e.getMessage());
             } else {
                 result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
@@ -152,11 +151,10 @@ public class SonnenJSONCommunication {
      *
      * @return an empty string if no error occurred, the error message otherwise.
      */
-    public String startStopBatteryDischarging(String putData) {
+    public String startStopBatteryDischarging(String putData, int dischargeRate) {
         String result = "";
         String urlStr = "http://" + config.hostIP + "/api/v2/configurations";
-        String urlStr2 = "http://" + config.hostIP + "/api/v2/setpoint/discharge/"
-                + Integer.toString(config.chargingPower);
+        String urlStr2 = "http://" + config.hostIP + "/api/v2/setpoint/discharge/" + Integer.toString(dischargeRate);
         Properties header = createHeader(config.authToken);
         try {
             // in putData there is 1 or 2 inside to turn on or off the manual mode of the battery
@@ -170,13 +168,13 @@ public class SonnenJSONCommunication {
             }
             batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
             // if battery is put to manual mode
-            if (config.dischargingPower > 10000) {
+            if (dischargeRate > 10000) {
                 throw new IllegalArgumentException(
-                        "Max battery charging power in watt needs to be in the range of greater 0 and smaller 10000.");
+                        "Max battery discharging power in watt needs to be in the range of greater 0 and smaller 10000.");
             }
             SonnenJsonDataDTO batteryData2 = getBatteryData();
             if (batteryData2.emgetOperationMode() != null && Integer.parseInt(batteryData2.emgetOperationMode()) == 1
-                    && config.chargingPower > 0 && config.chargingPower <= 10000) {
+                    && dischargeRate > 0 && dischargeRate <= 10000) {
                 // start discharging
                 String response2 = HttpUtil.executeUrl("POST", urlStr2, header, null, "application/json", 10000);
                 logger.debug("ChargingOperationMode = {}", response2);
@@ -191,7 +189,7 @@ public class SonnenJSONCommunication {
                 result = "Given token: " + config.authToken + " is not valid.";
             } else if (e.getCause() instanceof IllegalArgumentException) {
                 result = "Max battery discharging power needs to be in the range of greater 0 and smaller 10000. It cannot be: "
-                        + config.chargingPower;
+                        + dischargeRate;
                 logger.debug("Error in value for battery capacity: {}", e.getMessage());
             } else {
                 result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";

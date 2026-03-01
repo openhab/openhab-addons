@@ -52,22 +52,6 @@
 				<description>Authentication Token which can be found under "Software Integration" if you connect locally to your
 					sonnen battery. If empty the old deprecated API will be used.</description>
 			</parameter>
-			<parameter name="chargingPower" type="integer" unit="W" min="1" max="10000">
-				<label>Maximum Charging Power</label>
-				<description>Maximum charging power in watt which is supported by sonnen battery type. Be cautious to not enter a
-					higher value then supported by the battery. Details can be found on the datasheet of your battery.
-				</description>
-				<advanced>true</advanced>
-				<default>0</default>
-			</parameter>
-			<parameter name="disChargingPower" type="integer" unit="W" min="1" max="10000">
-				<label>Maximum Disharging Power</label>
-				<description>Maximum discharging power in watt which is supported by sonnen battery type. Be cautious to not enter a
-					higher value then supported by the battery. Details can be found on the datasheet of your battery.
-				</description>
-				<advanced>true</advanced>
-				<default>0</default>
-			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0" max="1000">
 				<label>Refresh Interval</label>
 				<description>How often in seconds the sonnen battery should schedule a refresh after a channel is linked to an item.

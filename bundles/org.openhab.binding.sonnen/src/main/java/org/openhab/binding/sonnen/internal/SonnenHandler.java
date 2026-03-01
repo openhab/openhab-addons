@@ -64,6 +64,9 @@ public class SonnenHandler extends BaseThingHandler {
 
     private Map<String, Boolean> linkedChannels = new HashMap<>();
 
+    private int chargeRate = -1;
+    private int dischargeRate = -1;
+
     public SonnenHandler(Thing thing) {
         super(thing);
         serviceCommunication = new SonnenJSONCommunication();
@@ -279,7 +282,7 @@ public class SonnenHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_BATTERY_CHARGING_GRID:
                         if (putData != null) {
-                            serviceCommunication.startStopBatteryCharging(putData);
+                            serviceCommunication.startStopBatteryCharging(putData, chargeRate);
                             // put it to true as switch was turned on if it goes into manual mode
                             if (putData.contains("1")) {
                                 update(OnOffType.from(true), channelId);
@@ -293,7 +296,7 @@ public class SonnenHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_BATTERY_DISCHARGING_GRID:
                         if (putData != null) {
-                            serviceCommunication.startStopBatteryDischarging(putData);
+                            serviceCommunication.startStopBatteryDischarging(putData, dischargeRate);
                             // put it to true as switch was turned on if it goes into manual mode
                             if (putData.contains("1")) {
                                 update(OnOffType.from(true), channelId);
@@ -379,6 +382,16 @@ public class SonnenHandler extends BaseThingHandler {
             if (putData != null) {
                 logger.debug("Executing {} command", CHANNEL_BATTERY_DISCHARGING_GRID);
                 updateChannel(channelUID.getId(), putData);
+            }
+        }
+        if (channelUID.getId().equals(CHANNEL_BATTERY_CHARGE_RATE)) {
+            if (command instanceof QuantityType quantityCommand) {
+                chargeRate = quantityCommand.intValue();
+            }
+        }
+        if (channelUID.getId().equals(CHANNEL_BATTERY_DISCHARGE_RATE)) {
+            if (command instanceof QuantityType quantityCommand) {
+                dischargeRate = quantityCommand.intValue();
             }
         }
     }
