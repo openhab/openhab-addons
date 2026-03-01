@@ -42,9 +42,7 @@ public class CustomHandler extends JollydayHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
         String fileName = getConfigAs(FileConfiguration.class).fileName;
-
         if (fileName.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "'fileName' can not be blank or empty");
@@ -59,6 +57,7 @@ public class CustomHandler extends JollydayHandler {
         }
 
         path = file.getAbsolutePath();
+        super.initialize();
     }
 
     @Override
@@ -66,7 +65,7 @@ public class CustomHandler extends JollydayHandler {
         try {
             return ephemeris.getBankHolidayName(day, path);
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Syntex error in %s".formatted(path));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Syntax error in %s".formatted(path));
         } catch (FileNotFoundException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Missing file: %s".formatted(path));

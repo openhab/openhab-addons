@@ -63,14 +63,14 @@ The file has to use the syntax described here: <https://www.openhab.org/docs/con
 
 ### `holiday` Channels
 
-| Name                 | Type        | Description                                    |
-|----------------------|-------------|------------------------------------------------|
-| title-today      (*) | String      | Name of today's holiday if any, NULL otherwise |
-| holiday-today    (*) | Switch      | Set to ON if today is a holiday                |
-| holiday-tomorrow     | Switch      | Set to ON if tomorrow is a holiday             |
-| next-title           | String      | Name of the next coming holiday                |
-| next-start           | DateTime    | Start date of the next coming holiday          |
-| days-remaining       | Number:Time | Remaining days until next holiday              |
+| Name                 | Type        | Description                                            |
+|----------------------|-------------|--------------------------------------------------------|
+| title-today      (*) | String      | Name of today's holiday if any, empty string otherwise |
+| holiday-today    (*) | Switch      | Set to ON if today is a holiday                        |
+| holiday-tomorrow     | Switch      | Set to ON if tomorrow is a holiday                     |
+| next-title           | String      | Name of the next coming holiday                        |
+| next-start           | DateTime    | Start date of the next coming holiday                  |
+| days-remaining       | Number:Time | Remaining days until next holiday                      |
 
 ### `custom` Channels
 

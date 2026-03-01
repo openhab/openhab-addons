@@ -37,9 +37,9 @@ public class DaysetHandler extends WeekendHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
         DaysetConfiguration config = getConfigAs(DaysetConfiguration.class);
         dayset = config.name;
+        super.initialize();
     }
 
     @Override

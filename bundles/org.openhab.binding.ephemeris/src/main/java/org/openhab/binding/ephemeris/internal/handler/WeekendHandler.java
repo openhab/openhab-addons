@@ -42,15 +42,15 @@ public class WeekendHandler extends BaseEphemerisHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
         WeekendConfiguration config = getConfigAs(WeekendConfiguration.class);
         days = Math.max(1, config.days);
+        super.initialize();
     }
 
     @Override
     protected void internalUpdate(ZonedDateTime today) {
         TimeSeries weekendSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        for (int dayOffset = 0; dayOffset < days; dayOffset++) {
+        for (int dayOffset = 0; dayOffset <= days; dayOffset++) {
             ZonedDateTime day = today.plusDays(dayOffset);
             weekendSeries.add(day.toInstant(), getDayStatus(day));
         }

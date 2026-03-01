@@ -74,7 +74,10 @@ public abstract class BaseEphemerisHandler extends BaseThingHandler {
         logger.debug("Updating {} channels", getThing().getUID());
         internalUpdate(now.truncatedTo(ChronoUnit.DAYS));
 
-        updateStatus(ThingStatus.ONLINE);
+        ThingStatus currentStatus = getThing().getStatus();
+        if (currentStatus != ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         ZonedDateTime nextUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
                 .withMinute(REFRESH_FIRST_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
         long delay = ChronoUnit.MINUTES.between(now, nextUpdate);

@@ -31,6 +31,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Entry;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link JollydayHandler} handles common parts for Jollyday file based events
@@ -70,12 +71,15 @@ public abstract class JollydayHandler extends BaseEphemerisHandler {
 
         updateState(channelTomorrow, onOffs.get(1).state());
 
-        updateState(CHANNEL_NEXT_EVENT, stringTypes.getLast().state());
+        Entry last = stringTypes.getLast();
+        State lastState = last.state();
+        boolean lastIsEmpty = StringType.EMPTY.equals(lastState);
+        updateState(CHANNEL_NEXT_EVENT, lastIsEmpty ? UnDefType.UNDEF : lastState);
 
-        ZonedDateTime nextEventTs = stringTypes.getLast().timestamp().atZone(today.getZone());
-        updateState(CHANNEL_NEXT_START, new DateTimeType(nextEventTs));
-        updateState(CHANNEL_NEXT_REMAINING,
-                new QuantityType<>(Duration.between(today, nextEventTs).toDays(), Units.DAY));
+        ZonedDateTime nextEventTs = last.timestamp().atZone(today.getZone());
+        updateState(CHANNEL_NEXT_START, lastIsEmpty ? UnDefType.UNDEF : new DateTimeType(nextEventTs));
+        updateState(CHANNEL_NEXT_REMAINING, lastIsEmpty ? UnDefType.UNDEF
+                : new QuantityType<>(Duration.between(today, nextEventTs).toDays(), Units.DAY));
         sendTimeSeries(CHANNEL_CURRENT_EVENT, stringTypeSeries);
         sendTimeSeries(channelToday, onOffSeries);
     }
