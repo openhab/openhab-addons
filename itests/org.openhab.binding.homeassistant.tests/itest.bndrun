@@ -23,7 +23,8 @@ Import-Package: \
 
 -runvm.mqtt: \
 	-Dio.netty.noUnsafe=true,\
-	-Dmqttbroker.port=${mqttbroker.port}
+	-Dmqttbroker.port=${mqttbroker.port},\
+	-Dpolyglot.engine.userResourceCache=${.}/target/userdata/cache/org.graalvm.polyglot
 
 #
 # done
@@ -148,4 +149,4 @@ Import-Package: \
 	org.graalvm.python.python-language;version='[25.0.1,25.0.2)',\
 	org.graalvm.python.python-resources;version='[25.0.1,25.0.2)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
-	org.apache.commons.commons-codec;version='[1.16.0,1.16.1)'
+	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)'

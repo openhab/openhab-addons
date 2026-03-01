@@ -67,7 +67,8 @@
     <maven.compiler.release>${oh.java.version}</maven.compiler.release>
 
     <ohc.version>5.2.0-SNAPSHOT</ohc.version>
-    <bnd.version>7.1.0</bnd.version>
+    <bnd.version>7.2.1</bnd.version>
+    <commons.codec.version>1.17.1</commons.codec.version>
     <commons.net.version>3.9.0</commons.net.version>
     <eea.version>2.4.0</eea.version>
     <jackson.annotations.version>2.21</jackson.annotations.version>
@@ -97,27 +98,27 @@
 
     <oh.bndDefaults><![CDATA[Bundle-SymbolicName: ${project.artifactId}
 Automatic-Module-Name: ${def;bsn}
-Import-Package: \\
-  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
-  javax.annotation.security.*;resolution:=optional,\\
-  org.eclipse.jdt.annotation.*;resolution:=optional,\\
-  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
-  org.openhab.*;version=!,\\
-  com.google.common.*;version="14.0",\\
-  ${bnd.importpackage},\\
+Import-Package: \
+  io.swagger.v3.oas.annotations.*;resolution:=optional,\
+  javax.annotation.security.*;resolution:=optional,\
+  org.eclipse.jdt.annotation.*;resolution:=optional,\
+  org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\
+  org.openhab.*;version=!,\
+  com.google.common.*;version="14.0",\
+  ${bnd.importpackage},\
   *
--exportcontents: \\
-  !*.internal.*,\\
-  !*.impl.*, \\
-  org.openhab.*, \\
+-exportcontents: \
+  !*.internal.*,\
+  !*.impl.*, \
+  org.openhab.*, \
   ${bnd.exportpackage}
 -noimportjava: true
 -sources: false
 -contract: *
 -includeresource: ${bnd.includeresource}
--fixupmessages: \\
-  'Unused Import-Package instructions';is:=ignore,\\
-  'Unused Export-Package instructions';is:=ignore,\\
+-fixupmessages: \
+  'Unused Import-Package instructions';is:=ignore,\
+  'Unused Export-Package instructions';is:=ignore,\
   ${bnd.fixupmessages}]]></oh.bndDefaults>
   </properties>
 

@@ -116,4 +116,4 @@ Import-Package: \
 	jakarta.inject.jakarta.inject-api;version='[1.0.5,1.0.6)',\
 	org.openhab.core.semantics;version='[5.2.0,5.2.1)',\
 	org.osgi.service.cm;version='[1.6.1,1.6.2)',\
-	org.apache.commons.commons-codec;version='[1.16.0,1.16.1)'
+	org.apache.commons.commons-codec;version='[1.17.1,1.17.2)'

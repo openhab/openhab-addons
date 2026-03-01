@@ -79,6 +79,12 @@
       <artifactId>netty-transport</artifactId>
       <version>${netty.version}</version>
     </dependency>
+    <!-- added due to inconsistency of resolved versions -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>${commons.codec.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
