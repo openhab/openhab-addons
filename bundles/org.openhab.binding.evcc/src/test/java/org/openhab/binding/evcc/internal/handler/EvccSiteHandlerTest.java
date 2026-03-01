@@ -14,9 +14,7 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -98,10 +96,8 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
         modifiedVerifyObject.addProperty("gridVoltageL1", 230.0);
         modifiedVerifyObject.addProperty("gridVoltageL2", 231.0);
         modifiedVerifyObject.addProperty("gridVoltageL3", 229.0);
-        modifiedVerifyObject.addProperty("startupComplete", verifyObject.get("startup").getAsBoolean());
         modifiedVerifyObject.remove("gridConfigured");
         modifiedVerifyObject.remove("grid");
-        modifiedVerifyObject.remove("startup");
 
         gridConfigured.addProperty("power", 2000);
         gridConfigured.addProperty("energy", 10000);
