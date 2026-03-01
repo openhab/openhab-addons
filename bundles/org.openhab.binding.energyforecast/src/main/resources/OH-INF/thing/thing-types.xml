@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="energyforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="energyforecast">
+		<label>Energy Forecast</label>
+		<description>Energy forecast information for prices and renewable shares</description>
+
+		<channel-groups>
+			<channel-group id="price" typeId="price-group"/>
+			<channel-group id="metric" typeId="metric-group"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="zone" type="text" required="true">
+				<label>Bidding Zone</label>
+				<description>Bidding zone for price queries</description>
+				<options>
+					<option value="AT">Austria</option>
+					<option value="BE">Belgium</option>
+					<option value="CH">Switzerland</option>
+					<option value="CZ">Czech Republic</option>
+					<option value="DE-LU">Germany, Luxembourg</option>
+					<option value="DK1">Denmark 1</option>
+					<option value="DK2">Denmark 2</option>
+					<option value="FR">France</option>
+					<option value="HU">Hungary</option>
+					<option value="IT-North">Italy North</option>
+					<option value="NL">Netherlands</option>
+					<option value="NO2">Norway 2</option>
+					<option value="PL">Poland</option>
+					<option value="SE4">Sweden 4</option>
+					<option value="SI">Slovenia</option>
+				</options>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="token" type="text" required="true">
+				<label>Energy Forecast Token</label>
+				<description>Token for energy forecast service to provide forecast data</description>
+			</parameter>
+			<parameter name="fixCost" type="decimal" required="false">
+				<label>Energy Forecast Fix Cost</label>
+				<description>Fix costs in ct/kWh which will be added on top of the forecast price, e.g. 15,3</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="vat" type="decimal" required="false">
+				<label>Energy Forecast Value Added Tax</label>
+				<description>VAT in percent which will be added on top of the forecast price, e.g. 19,0</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="resolution" type="text" required="false">
+				<label>Time Resolution</label>
+				<description>Resolution in ISO 8601 Duration format</description>
+				<options>
+					<option value="PT15M">15 minutes</option>
+					<option value="PT60M">60 minutes</option>
+				</options>
+				<default>PT15M</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="15">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in minutes. Check with service throttling</description>
+				<default>180</default>
+			</parameter>
+			<parameter name="errorLimit" type="integer">
+				<label>Error Limit</label>
+				<description>Limit error percentage values for better visualization</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="price-group">
+		<label>Pricing</label>
+		<description>Price information including price and price origin</description>
+		<channels>
+			<channel id="series" typeId="price">
+				<label>Price Series</label>
+				<description>Actual and future price series</description>
+			</channel>
+			<channel id="origin" typeId="origin">
+				<label>Price Origin</label>
+				<description>Originator of the price (market or forecast)</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="metric-group">
+		<label>Metrics</label>
+		<description>Metric calculations for AI price forecasts</description>
+		<channels>
+			<channel id="forecast" typeId="price">
+				<label>AI Forecast Price</label>
+				<description>AI forecast price series without any market prices </description>
+			</channel>
+			<channel id="forecast-error" typeId="price">
+				<label>Forecast Error</label>
+				<description>Difference between market and forecast price</description>
+			</channel>
+			<channel id="percent-error" typeId="percent">
+				<label>Percentage Error</label>
+				<description>Percentage error between market and forecast price</description>
+			</channel>
+			<channel id="mean-abs" typeId="price">
+				<label>Mean Absolute</label>
+				<description>Mean absolute error showing the average of absolute forecast errors</description>
+			</channel>
+			<channel id="mean-abs-percent" typeId="percent">
+				<label>Mean Absolute Percent</label>
+				<description>Mean absolute percentage error showing the average of absolute percentage errors</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="price">
+		<item-type unitHint="EUR/kWh">Number:EnergyPrice</item-type>
+		<label>Energy Price</label>
+		<state pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="percent">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Delta</label>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="origin">
+		<item-type>Number</item-type>
+		<label>Price Origin</label>
+		<state>
+			<options>
+				<option value="0">Market</option>
+				<option value="1">AI Forecast</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>
