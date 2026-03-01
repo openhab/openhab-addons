@@ -28,6 +28,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -42,8 +43,7 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         AtomicInteger counter = new AtomicInteger(0);
-        return Optional.ofNullable(state.getAsJsonObject(JSON_KEY_BATTERY))
-                .map(batteryNode -> batteryNode.getAsJsonArray(JSON_KEY_DEVICES)).stream()
+        return getBatteryArray(state).stream()
                 .flatMap(deviceArray -> StreamSupport.stream(deviceArray.spliterator(), false))
                 .filter(JsonElement::isJsonObject).map(JsonElement::getAsJsonObject).map(battery -> {
                     int index = counter.getAndIncrement();
@@ -56,7 +56,14 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
                     return DiscoveryResultBuilder.create(uid).withLabel(title)
                             .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, index)
                             .withProperty(PROPERTY_TITLE, title).withRepresentationProperty(PROPERTY_TITLE).build();
-
                 }).toList();
+    }
+
+    private Optional<JsonArray> getBatteryArray(JsonObject state) {
+        return Optional.ofNullable(state.get(JSON_KEY_BATTERY)).map(battElement -> battElement.isJsonArray()
+                // for up to version 0.300.0
+                ? (JsonArray) battElement
+                // for version 0.300.0+
+                : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES));
     }
 }
