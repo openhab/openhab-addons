@@ -164,7 +164,7 @@ public class PriceInfo {
     private TimeSeries getPriceTimeSeries(SortedMap<Instant, Double> source, boolean priceCorrection) {
         TimeSeries series = new TimeSeries(TimeSeries.Policy.REPLACE);
         source.forEach((time, value) -> {
-            double price = priceCorrection ? (value + config.fixCost) * (1 + config.vat) : value;
+            double price = priceCorrection ? (value + (config.fixCost / 100)) * (1 + config.vat) : value;
             series.add(time, QuantityType.valueOf(price + " EUR/kWh"));
         });
         return series;

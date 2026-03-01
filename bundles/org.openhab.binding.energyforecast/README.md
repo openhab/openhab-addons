@@ -65,18 +65,18 @@ To compare market and forecast prices this time is needed until a market price i
 | mean-abs          | Number:EnergyPrice    | Mean absolute error showing the average of absolute forecast errors               |
 | mean-abs-percent  | Number:Dimensionless  | Mean absolute percentage error showing the average of absolute percentage errors  |
   
-'forecast` timeseries contains only forecast prices, market prices are excluded
+`forecast` timeseries contains only forecast prices, market prices are excluded
 
-'forecast-error` price difference between market and forecast price
+`forecast-error` price difference between market and forecast price
 
-'percent-error` is the `forecast-error` in percent. 
+`percent-error` is the `forecast-error` in percent. 
 It can show extraordinary high values if market prices are around zero cost.
 If market price is 0.001 and forecast was 0.006 the percentage error is *high* while `forecast-error` is quite low.
 For visualization you can limit these values with configuration `errorLimit`.
 
-'mean-abs` shows the average of all absolute `forecast-error` calculations as one value.
+`mean-abs` shows the average of all absolute `forecast-error` calculations as one value.
 
-'mean-percent` shows the average of all absolute `percent-error` calculations as one value.
+`mean-percent` shows the average of all absolute `percent-error` calculations as one value.
 
   
 ## Full Example
