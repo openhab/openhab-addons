@@ -12,29 +12,29 @@
  */
 package org.openhab.binding.bluelink.internal.handler;
 
-import static java.time.format.DateTimeFormatter.ISO_ZONED_DATE_TIME;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.openhab.binding.bluelink.internal.BluelinkBindingConstants.*;
 import static org.openhab.core.library.CoreItemFactory.SWITCH;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
+import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkVehicleConfiguration;
-import org.openhab.binding.bluelink.internal.dto.VehicleInfo;
-import org.openhab.binding.bluelink.internal.dto.VehicleStatus;
-import org.openhab.binding.bluelink.internal.dto.VehicleStatus.VehicleStatusData;
+import org.openhab.binding.bluelink.internal.dto.CommonVehicleStatus;
+import org.openhab.binding.bluelink.internal.dto.EvStatus;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Marcus Better - Initial contribution
  */
 @NonNullByDefault
-public class BluelinkVehicleHandler extends BaseThingHandler {
+public class BluelinkVehicleHandler extends BaseThingHandler implements VehicleStatusCallback {
 
     private static final Duration DEFAULT_REFRESH_INTERVAL = Duration.ofMinutes(30);
     private static final Duration DEFAULT_FORCE_REFRESH_INTERVAL = Duration.ofMinutes(240);
@@ -75,7 +75,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
     private volatile @Nullable ScheduledFuture<?> refreshJob;
     private volatile @Nullable ScheduledFuture<?> forceRefreshJob;
     private volatile @Nullable ScheduledFuture<?> initTask;
-    private volatile @Nullable VehicleInfo vehicle;
+    private volatile @Nullable IVehicle vehicle;
     private @Nullable Duration forceRefreshInterval;
 
     public BluelinkVehicleHandler(final Thing thing) {
@@ -124,8 +124,8 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         try {
             bridgeHnd.getVehicles().stream().filter(v -> vin.equals(v.vin())).findFirst().ifPresentOrElse(v -> {
                 this.vehicle = v;
-                updateProperty(PROPERTY_MODEL, v.modelCode());
-                updateProperty(PROPERTY_ENGINE_TYPE, v.evStatus());
+                updateProperty(PROPERTY_MODEL, v.model());
+                updateProperty(PROPERTY_ENGINE_TYPE, v.engineType().name());
                 createDynamicChannels();
                 updateStatus(ThingStatus.ONLINE);
             }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -222,20 +222,20 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         return res;
     }
 
-    public boolean climateStart(final QuantityType<Temperature> temperature, final boolean heat, final boolean defrost)
-            throws BluelinkApiException {
-        final VehicleInfo vehicle = this.vehicle;
+    public boolean climateStart(final QuantityType<Temperature> temperature, final boolean heat, final boolean defrost,
+            final @Nullable Integer igniOnDuration) throws BluelinkApiException {
         final var bridgeHnd = getBridgeHandler();
+        final IVehicle vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
             return false;
         }
 
-        return bridgeHnd.climateStart(vehicle, temperature, heat, defrost);
+        return bridgeHnd.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
     }
 
     public boolean climateStop() throws BluelinkApiException {
-        final VehicleInfo vehicle = this.vehicle;
         final var bridgeHnd = getBridgeHandler();
+        final IVehicle vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
             return false;
         }
@@ -244,18 +244,16 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
     }
 
     public void refreshVehicleStatus(boolean forceRefresh) {
-        final VehicleInfo vehicle = this.vehicle;
         final var bridgeHnd = getBridgeHandler();
+        final IVehicle vehicle = this.vehicle;
         if (vehicle == null || bridgeHnd == null) {
             return;
         }
 
         try {
             logger.debug("refreshing vehicle status");
-            final VehicleStatus status = bridgeHnd.getVehicleStatus(vehicle, forceRefresh);
-            if (status != null) {
+            if (bridgeHnd.getVehicleStatus(vehicle, forceRefresh, this)) {
                 updateStatus(ThingStatus.ONLINE);
-                updateChannels(status);
             }
         } catch (final BluelinkApiException e) {
             logger.debug("Failed to refresh vehicle status: {}", e.getMessage());
@@ -263,25 +261,16 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChannels(final VehicleStatus status) {
-        final VehicleStatusData data = status.vehicleStatus();
-        final VehicleInfo info = vehicle;
-        if (data == null || info == null) {
+    @Override
+    public void acceptStatus(final CommonVehicleStatus data) {
+        final var vehicle = this.vehicle;
+        if (vehicle == null) {
             return;
         }
 
         // Status group
         updateState(GROUP_STATUS, CHANNEL_LOCKED, OnOffType.from(data.doorLock()));
         updateState(GROUP_STATUS, CHANNEL_ENGINE_RUNNING, OnOffType.from(data.engine()));
-        updateState(GROUP_STATUS, CHANNEL_ODOMETER, new QuantityType<>(info.odometer(), ImperialUnits.MILE));
-        if (data.dateTime() != null) {
-            try {
-                final Instant lastUpdate = ISO_ZONED_DATE_TIME.parse(data.dateTime(), Instant::from);
-                updateState(GROUP_STATUS, CHANNEL_LAST_UPDATE, new DateTimeType(lastUpdate));
-            } catch (final DateTimeParseException e) {
-                logger.warn("unexpected dateTime format: {}", data.dateTime());
-            }
-        }
 
         // 12V Battery
         if (data.battery() != null) {
@@ -314,7 +303,7 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         updateState(GROUP_CLIMATE, CHANNEL_DEFROST, OnOffType.from(data.defrost()));
         final var airTemp = data.airTemp();
         if (airTemp != null) {
-            updateState(GROUP_CLIMATE, CHANNEL_TEMPERATURE, airTemp.getTemperature());
+            updateState(GROUP_CLIMATE, CHANNEL_TEMPERATURE, airTemp.getTemperature(vehicle));
         }
         updateState(GROUP_CLIMATE, CHANNEL_STEERING_HEATER, OnOffType.from(data.steerWheelHeat() > 0));
         updateState(GROUP_CLIMATE, CHANNEL_REAR_WINDOW_HEATER, OnOffType.from(data.sideBackWindowHeat() > 0));
@@ -330,11 +319,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
 
         // EV-specific
         final var evStatus = data.evStatus();
-        if (info.isElectric() && evStatus != null) {
+        if (vehicle.isElectric() && evStatus != null) {
             updateState(GROUP_CHARGING, CHANNEL_EV_BATTERY_SOC,
                     new QuantityType<>(evStatus.batteryStatus(), Units.PERCENT));
             updateState(GROUP_CHARGING, CHANNEL_EV_CHARGING, OnOffType.from(evStatus.batteryCharge()));
-            updateState(GROUP_CHARGING, CHANNEL_EV_PLUGGED_IN, OnOffType.from(evStatus.batteryPlugin() > 0));
+            updateState(GROUP_CHARGING, CHANNEL_EV_PLUGGED_IN, OnOffType.from(evStatus.batteryPlugin()));
 
             // Driving ranges
             if (evStatus.drvDistance() != null && !evStatus.drvDistance().isEmpty()) {
@@ -355,11 +344,11 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
             // Charge limits
             final var reservChargeInfos = evStatus.reservChargeInfos();
             if (reservChargeInfos != null && reservChargeInfos.targetSocList() != null) {
-                for (final VehicleStatus.TargetSOC target : reservChargeInfos.targetSocList()) {
-                    if (target.plugType() == 0) {
+                for (final var target : reservChargeInfos.targetSocList()) {
+                    if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.DC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_DC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
-                    } else if (target.plugType() == 1) {
+                    } else if (target.plugType() == EvStatus.ReserveChargeInfo.PlugType.AC) {
                         updateState(GROUP_CHARGING, CHANNEL_CHARGE_LIMIT_AC,
                                 new QuantityType<>(target.targetSocLevel(), Units.PERCENT));
                     }
@@ -369,27 +358,27 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
             // Charge times
             final var remainTime2 = evStatus.remainTime2();
             if (remainTime2 != null) {
-                if (remainTime2.atc() != null) {
+                if (remainTime2.current() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_CURRENT,
-                            new QuantityType<>(remainTime2.atc().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.current().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc1() != null) {
+                if (remainTime2.fast() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_FAST,
-                            new QuantityType<>(remainTime2.etc1().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.fast().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc2() != null) {
+                if (remainTime2.portable() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_PORTABLE,
-                            new QuantityType<>(remainTime2.etc2().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.portable().value(), Units.MINUTE));
                 }
-                if (remainTime2.etc3() != null) {
+                if (remainTime2.station() != null) {
                     updateState(GROUP_CHARGING, CHANNEL_TIME_TO_FULL_STATION,
-                            new QuantityType<>(remainTime2.etc3().value(), Units.MINUTE));
+                            new QuantityType<>(remainTime2.station().value(), Units.MINUTE));
                 }
             }
         }
 
         // Fuel (ICE only)
-        if (!info.isElectric()) {
+        if (!vehicle.isElectric()) {
             updateState(GROUP_FUEL, CHANNEL_FUEL_LEVEL, new QuantityType<>(data.fuelLevel(), Units.PERCENT));
             updateState(GROUP_FUEL, CHANNEL_FUEL_LOW_WARNING, OnOffType.from(data.lowFuelLight()));
             if (data.dte() != null) {
@@ -401,7 +390,6 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
         // Warnings
         updateState(GROUP_WARNINGS, CHANNEL_WASHER_FLUID_WARNING, OnOffType.from(data.washerFluidStatus()));
         updateState(GROUP_WARNINGS, CHANNEL_BRAKE_FLUID_WARNING, OnOffType.from(data.brakeOilStatus()));
-        updateState(GROUP_WARNINGS, CHANNEL_SMART_KEY_BATTERY_WARNING, OnOffType.from(data.smartKeyBatteryWarning()));
         final var tirePressureWarning = data.tirePressureWarning();
         if (tirePressureWarning != null) {
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING, OnOffType.from(tirePressureWarning.all() > 0));
@@ -414,21 +402,30 @@ public class BluelinkVehicleHandler extends BaseThingHandler {
             updateState(GROUP_WARNINGS, CHANNEL_TIRE_PRESSURE_WARNING_RL,
                     OnOffType.from(tirePressureWarning.rearLeft() > 0));
         }
+    }
 
-        // Location
-        final var location = data.vehicleLocation();
-        if (location != null && location.coord() != null) {
-            updateState(GROUP_STATUS, CHANNEL_LOCATION, new PointType(new DecimalType(location.coord().latitude()),
-                    new DecimalType(location.coord().longitude()), new DecimalType(location.coord().altitude())));
-        }
+    @Override
+    public void acceptLastUpdateTimestamp(final Instant lastUpdated) {
+        updateState(GROUP_STATUS, CHANNEL_LAST_UPDATE, new DateTimeType(lastUpdated));
+    }
+
+    @Override
+    public void acceptSmartKeyBatteryWarning(final boolean smartKeyBattery) {
+        updateState(GROUP_WARNINGS, CHANNEL_SMART_KEY_BATTERY_WARNING, OnOffType.from(smartKeyBattery));
+    }
+
+    @Override
+    public void acceptLocation(final PointType location) {
+        updateState(GROUP_STATUS, CHANNEL_LOCATION, location);
+    }
+
+    @Override
+    public void acceptOdometer(final QuantityType<Length> odometer) {
+        updateState(GROUP_STATUS, CHANNEL_ODOMETER, odometer);
     }
 
     private void updateState(final String group, final String channel, final State state) {
         updateState(new ChannelUID(getThing().getUID(), group, channel), state);
-    }
-
-    private OpenClosedType toOpenClosed(final int value) {
-        return value > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     private OpenClosedType toOpenClosed(final boolean value) {

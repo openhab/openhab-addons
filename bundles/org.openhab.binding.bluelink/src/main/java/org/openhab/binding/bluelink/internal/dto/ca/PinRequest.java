@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.ca;
 
 /**
- * Door lock/unlock command request for the Bluelink API.
+ * PIN verification request for Canada API.
  *
  * @author Marcus Better - Initial contribution
  */
-public record DoorCommandRequest(String userName, String vin) {
+public record PinRequest(String pin) {
 }

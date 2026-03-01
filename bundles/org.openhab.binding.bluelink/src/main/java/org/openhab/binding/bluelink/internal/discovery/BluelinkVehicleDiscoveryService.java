@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
-import org.openhab.binding.bluelink.internal.dto.VehicleInfo;
 import org.openhab.binding.bluelink.internal.handler.BluelinkAccountHandler;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -52,7 +52,7 @@ public class BluelinkVehicleDiscoveryService extends AbstractThingHandlerDiscove
     protected void startScan() {
         logger.debug("Starting Bluelink vehicle discovery");
         final BluelinkAccountHandler handler = thingHandler;
-        final List<VehicleInfo> vehicles;
+        final List<? extends IVehicle> vehicles;
         try {
             vehicles = handler.getVehicles();
             logger.debug("Found {} vehicles", vehicles.size());
@@ -62,24 +62,14 @@ public class BluelinkVehicleDiscoveryService extends AbstractThingHandlerDiscove
         }
     }
 
-    private void discoverVehicle(final VehicleInfo vehicle, final BluelinkAccountHandler handler) {
-        if (vehicle.vin() == null || vehicle.vin().isBlank()) {
-            logger.debug("Skipping vehicle with no VIN");
-            return;
-        }
-
+    private void discoverVehicle(final IVehicle vehicle, final BluelinkAccountHandler handler) {
         final ThingUID bridgeUID = handler.getThing().getUID();
         final ThingUID thingUID = new ThingUID(THING_TYPE_VEHICLE, bridgeUID, vehicle.vin());
 
-        String label = vehicle.getDisplayName();
-        if (label == null) {
-            label = "Bluelink Vehicle " + vehicle.vin();
-        }
-
-        final String modelCode = vehicle.modelCode();
-        final String evStatus = vehicle.evStatus();
+        final String label = vehicle.getDisplayName();
+        final String model = vehicle.model();
         final Map<String, Object> properties = Map.of(PROPERTY_VIN, vehicle.vin(), PROPERTY_MODEL,
-                modelCode != null ? modelCode : "", PROPERTY_ENGINE_TYPE, evStatus != null ? evStatus : "");
+                model != null ? model : "", PROPERTY_ENGINE_TYPE, vehicle.engineType().name());
 
         final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperties(properties).withRepresentationProperty(PROPERTY_VIN).build();
