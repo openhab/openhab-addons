@@ -389,4 +389,36 @@ public class RestClient {
             return "";
         }
     }
+
+    public void sendCommand(String endpoint, Tokens tokens) throws AuthenticationException {
+        try {
+            Request request = httpClient.newRequest(endpoint);
+            request.method(HttpMethod.PUT);
+            request.timeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+            request.agent(ApiConstants.API_USER_AGENT);
+            request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tokens.accessToken());
+
+            ContentResponse response = request.send();
+            int responseCode = response.getStatus();
+            switch (responseCode) {
+                case HttpStatus.OK_200, HttpStatus.CREATED_201:
+                    break;
+                case HttpStatus.BAD_REQUEST_400:
+                    throw new AuthenticationException("Bad request");
+                case HttpStatus.UNAUTHORIZED_401:
+                    throw new AuthenticationException("Invalid username or password");
+                case HttpStatus.TOO_MANY_REQUESTS_429:
+                    throw new AuthenticationException("Account rate-limited");
+                default:
+                    throw new AuthenticationException(
+                            "Unhandled HTTP error: " + responseCode + " - " + response.getReason());
+            }
+
+        } catch (ExecutionException | InterruptedException e) {
+            logger.warn("RestApi error in sendCommand!", e);
+            Thread.currentThread().interrupt();
+        } catch (TimeoutException e) {
+            logger.warn("RestApi error in sendCommand!", e);
+        }
+    }
 }
