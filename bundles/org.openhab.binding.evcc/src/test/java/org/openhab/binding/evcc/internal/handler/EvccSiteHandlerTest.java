@@ -98,7 +98,6 @@ public class EvccSiteHandlerTest extends AbstractThingHandlerTestClass<EvccSiteH
         modifiedVerifyObject.addProperty("gridVoltageL3", 229.0);
         modifiedVerifyObject.remove("gridConfigured");
         modifiedVerifyObject.remove("grid");
-        modifiedVerifyObject.remove("startup");
 
         gridConfigured.addProperty("power", 2000);
         gridConfigured.addProperty("energy", 10000);
