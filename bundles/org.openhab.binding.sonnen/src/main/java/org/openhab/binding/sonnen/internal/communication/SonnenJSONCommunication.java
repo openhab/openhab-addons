@@ -115,8 +115,7 @@ public class SonnenJSONCommunication {
             batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
             // if battery is put to manual mode
             if (chargeRate > 10000) {
-                throw new IllegalArgumentException(
-                        "Max battery charging power in watt needs to be in the range of greater 0 and smaller 10000.");
+                throw new IllegalArgumentException("Max battery charging power needs to be in the range of 0 - 10000.");
             }
             SonnenJsonDataDTO batteryData2 = getBatteryData();
             if (batteryData2.emgetOperationMode() != null && Integer.parseInt(batteryData2.emgetOperationMode()) == 1
@@ -134,7 +133,7 @@ public class SonnenJSONCommunication {
             if (message != null && message.contains("WWW-Authenticate header")) {
                 result = "Given token: " + config.authToken + " is not valid.";
             } else if (e.getCause() instanceof IllegalArgumentException) {
-                result = "Max battery charging power needs to be in the range of greater 0 and smaller 10000. It cannot be: "
+                result = "Max battery charging power needs to be in the range of 0 - 10000. It cannot be: "
                         + chargeRate;
                 logger.debug("Error in value for battery capacity: {}", e.getMessage());
             } else {
@@ -170,7 +169,7 @@ public class SonnenJSONCommunication {
             // if battery is put to manual mode
             if (dischargeRate > 10000) {
                 throw new IllegalArgumentException(
-                        "Max battery discharging power in watt needs to be in the range of greater 0 and smaller 10000.");
+                        "Max battery discharging power needs to be in the range of 0 - 10000");
             }
             SonnenJsonDataDTO batteryData2 = getBatteryData();
             if (batteryData2.emgetOperationMode() != null && Integer.parseInt(batteryData2.emgetOperationMode()) == 1
@@ -188,7 +187,7 @@ public class SonnenJSONCommunication {
             if (message != null && message.contains("WWW-Authenticate header")) {
                 result = "Given token: " + config.authToken + " is not valid.";
             } else if (e.getCause() instanceof IllegalArgumentException) {
-                result = "Max battery discharging power needs to be in the range of greater 0 and smaller 10000. It cannot be: "
+                result = "Max battery discharging power needs to be in the range of 0 - 10000. It cannot be: "
                         + dischargeRate;
                 logger.debug("Error in value for battery capacity: {}", e.getMessage());
             } else {

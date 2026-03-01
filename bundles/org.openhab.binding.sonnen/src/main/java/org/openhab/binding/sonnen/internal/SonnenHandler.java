@@ -323,7 +323,6 @@ public class SonnenHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean arePowerMeterChannelsLinked() {
         if (isLinked(CHANNEL_ENERGY_IMPORTED_STATE_PRODUCTION)) {
             return true;
