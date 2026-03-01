@@ -32,10 +32,12 @@
 			<channel id="energyExportedStateProduction" typeId="energyExportedStateProduction"/>
 			<channel id="energyImportedStateConsumption" typeId="energyImportedStateConsumption"/>
 			<channel id="energyExportedStateConsumption" typeId="energyExportedStateConsumption"/>
+			<channel id="batteryChargeRate" typeId="batteryChargeRate"/>
+			<channel id="batteryDischargeRate" typeId="batteryDischargeRate"/>
 		</channels>
 		<properties>
 			<property name="vendor">sonnen</property>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">5</property>
 		</properties>
 
 		<config-description>
@@ -255,5 +257,25 @@
 			<tag>Mode</tag>
 		</tags>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryChargeRate">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charge Rate</label>
+		<description>Indicates the desired charge rate for the battery. (1 - 10000W)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="batteryDischargeRate">
+		<item-type>Number:Power</item-type>
+		<label>Battery Discharge Rate</label>
+		<description>Indicates the desired discharge rate for the battery. (1 - 10000W)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.0f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>

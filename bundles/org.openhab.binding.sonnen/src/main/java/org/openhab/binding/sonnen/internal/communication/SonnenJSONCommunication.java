@@ -177,7 +177,7 @@ public class SonnenJSONCommunication {
             SonnenJsonDataDTO batteryData2 = getBatteryData();
             if (batteryData2.emgetOperationMode() != null && Integer.parseInt(batteryData2.emgetOperationMode()) == 1
                     && config.chargingPower > 0 && config.chargingPower <= 10000) {
-                // start charging
+                // start discharging
                 String response2 = HttpUtil.executeUrl("POST", urlStr2, header, null, "application/json", 10000);
                 logger.debug("ChargingOperationMode = {}", response2);
                 if (response2 == null) {

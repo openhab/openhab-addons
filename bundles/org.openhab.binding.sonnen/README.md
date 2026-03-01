@@ -18,7 +18,7 @@ If you want to use the V2 API, which supports more channels, you need to provide
 
 ## Channels
 
-The following channels are yet supported:
+The following channels are supported:
 
 | Channel                        | Type          | Access     | Description                                                                                                                                                                                                                                |
 |--------------------------------|---------------|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

@@ -201,19 +201,19 @@ public class SonnenHandler extends BaseThingHandler {
 
             if (dataPM != null && dataPM.length >= 2) {
                 switch (channelId) {
-                    case CHANNELENERGYIMPORTEDSTATEPRODUCTION:
+                    case CHANNEL_ENERGY_IMPORTED_STATE_PRODUCTION:
                         state = new QuantityType<>(dataPM[0].getKwhImported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
-                    case CHANNELENERGYEXPORTEDSTATEPRODUCTION:
+                    case CHANNEL_ENERGY_EXPORTED_STATE_PRODUCTION:
                         state = new QuantityType<>(dataPM[0].getKwhExported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
-                    case CHANNELENERGYIMPORTEDSTATECONSUMPTION:
+                    case CHANNEL_ENERGY_IMPORTED_STATE_CONSUMPTION:
                         state = new QuantityType<>(dataPM[1].getKwhImported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
-                    case CHANNELENERGYEXPORTEDSTATECONSUMPTION:
+                    case CHANNEL_ENERGY_EXPORTED_STATE_CONSUMPTION:
                         state = new QuantityType<>(dataPM[1].getKwhExported(), Units.KILOWATT_HOUR);
                         update(state, channelId);
                         break;
@@ -222,62 +222,62 @@ public class SonnenHandler extends BaseThingHandler {
 
             if (data != null) {
                 switch (channelId) {
-                    case CHANNELBATTERYDISCHARGINGSTATE:
+                    case CHANNEL_BATTERY_DISCHARGING_STATE:
                         update(OnOffType.from(data.isBatteryDischarging()), channelId);
                         break;
-                    case CHANNELBATTERYCHARGINGSTATE:
+                    case CHANNEL_BATTERY_CHARGING_STATE:
                         update(OnOffType.from(data.isBatteryCharging()), channelId);
                         break;
-                    case CHANNELCONSUMPTION:
+                    case CHANNEL_CONSUMPTION:
                         state = new QuantityType<>(data.getConsumptionHouse(), Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELBATTERYDISCHARGING:
+                    case CHANNEL_BATTERY_DISCHARGING:
                         state = new QuantityType<>(data.getbatteryCurrent() > 0 ? data.getbatteryCurrent() : 0,
                                 Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELBATTERYCHARGING:
+                    case CHANNEL_BATTERY_CHARGING:
                         state = new QuantityType<>(data.getbatteryCurrent() <= 0 ? (data.getbatteryCurrent() * -1) : 0,
                                 Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELGRIDFEEDIN:
+                    case CHANNEL_GRID_FEED_IN:
                         state = new QuantityType<>(data.getGridValue() > 0 ? data.getGridValue() : 0, Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELGRIDCONSUMPTION:
+                    case CHANNEL_GRID_CONSUMPTION:
                         state = new QuantityType<>(data.getGridValue() <= 0 ? (data.getGridValue() * -1) : 0,
                                 Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELSOLARPRODUCTION:
+                    case CHANNEL_SOLAR_PRODUCTION:
                         state = new QuantityType<>(data.getSolarProduction(), Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELBATTERYLEVEL:
+                    case CHANNEL_BATTERY_LEVEL:
                         state = new QuantityType<>(data.getBatteryChargingLevel(), Units.PERCENT);
                         update(state, channelId);
                         break;
-                    case CHANNELFLOWCONSUMPTIONBATTERYSTATE:
+                    case CHANNEL_FLOW_CONSUMPTION_BATTERY_STATE:
                         update(OnOffType.from(data.isFlowConsumptionBattery()), channelId);
                         break;
-                    case CHANNELFLOWCONSUMPTIONGRIDSTATE:
+                    case CHANNEL_FLOW_CONSUMPTION_GRID_STATE:
                         update(OnOffType.from(data.isFlowConsumptionGrid()), channelId);
                         break;
-                    case CHANNELFLOWCONSUMPTIONPRODUCTIONSTATE:
+                    case CHANNEL_FLOW_CONSUMPTION_PRODUCTION_STATE:
                         update(OnOffType.from(data.isFlowConsumptionProduction()), channelId);
                         break;
-                    case CHANNELFLOWGRIDBATTERYSTATE:
+                    case CHANNEL_FLOW_GRID_BATTERY_STATE:
                         update(OnOffType.from(data.isFlowGridBattery()), channelId);
                         break;
-                    case CHANNELFLOWPRODUCTIONBATTERYSTATE:
+                    case CHANNEL_FLOW_PRODUCTION_BATTERY_STATE:
                         update(OnOffType.from(data.isFlowProductionBattery()), channelId);
                         break;
-                    case CHANNELFLOWPRODUCTIONGRIDSTATE:
+                    case CHANNEL_FLOW_PRODUCTION_GRID_STATE:
                         update(OnOffType.from(data.isFlowProductionGrid()), channelId);
                         break;
-                    case CHANNELBATTERYCHARGINGGRID:
+                    case CHANNEL_BATTERY_CHARGING_GRID:
                         if (putData != null) {
                             serviceCommunication.startStopBatteryCharging(putData);
                             // put it to true as switch was turned on if it goes into manual mode
@@ -291,7 +291,7 @@ public class SonnenHandler extends BaseThingHandler {
                             update(OnOffType.from(!data.isInAutomaticMode()), channelId);
                         }
                         break;
-                    case CHANNELBATTERYDISCHARGINGGRID:
+                    case CHANNEL_BATTERY_DISCHARGING_GRID:
                         if (putData != null) {
                             serviceCommunication.startStopBatteryDischarging(putData);
                             // put it to true as switch was turned on if it goes into manual mode
@@ -305,7 +305,7 @@ public class SonnenHandler extends BaseThingHandler {
                             update(OnOffType.from(!data.isInAutomaticMode()), channelId);
                         }
                         break;
-                    case CHANNELBATTERYOPERATIONMODE:
+                    case CHANNEL_BATTERY_OPERATION_MODE:
                         if (!data.isInAutomaticMode()) {
                             state = new StringType("Manual");
                         } else if (data.isInAutomaticMode()) {
@@ -322,13 +322,13 @@ public class SonnenHandler extends BaseThingHandler {
 
     @SuppressWarnings("PMD.SimplifyBooleanReturns")
     private boolean arePowerMeterChannelsLinked() {
-        if (isLinked(CHANNELENERGYIMPORTEDSTATEPRODUCTION)) {
+        if (isLinked(CHANNEL_ENERGY_IMPORTED_STATE_PRODUCTION)) {
             return true;
-        } else if (isLinked(CHANNELENERGYEXPORTEDSTATEPRODUCTION)) {
+        } else if (isLinked(CHANNEL_ENERGY_EXPORTED_STATE_PRODUCTION)) {
             return true;
-        } else if (isLinked(CHANNELENERGYIMPORTEDSTATECONSUMPTION)) {
+        } else if (isLinked(CHANNEL_ENERGY_IMPORTED_STATE_CONSUMPTION)) {
             return true;
-        } else if (isLinked(CHANNELENERGYEXPORTEDSTATECONSUMPTION)) {
+        } else if (isLinked(CHANNEL_ENERGY_EXPORTED_STATE_CONSUMPTION)) {
             return true;
         } else {
             return false;
@@ -353,7 +353,7 @@ public class SonnenHandler extends BaseThingHandler {
                 updateChannel(channelUID.getId(), null);
             }
         }
-        if (channelUID.getId().equals(CHANNELBATTERYCHARGINGGRID)) {
+        if (channelUID.getId().equals(CHANNEL_BATTERY_CHARGING_GRID)) {
             String putData = null;
             if (command.equals(OnOffType.ON)) {
                 // Set battery to manual mode with 1
@@ -363,11 +363,11 @@ public class SonnenHandler extends BaseThingHandler {
                 putData = "EM_OperatingMode=2";
             }
             if (putData != null) {
-                logger.debug("Executing {} command", CHANNELBATTERYCHARGINGGRID);
+                logger.debug("Executing {} command", CHANNEL_BATTERY_CHARGING_GRID);
                 updateChannel(channelUID.getId(), putData);
             }
         }
-        if (channelUID.getId().equals(CHANNELBATTERYDISCHARGINGGRID)) {
+        if (channelUID.getId().equals(CHANNEL_BATTERY_DISCHARGING_GRID)) {
             String putData = null;
             if (command.equals(OnOffType.ON)) {
                 // Set battery to manual mode with 1
@@ -377,7 +377,7 @@ public class SonnenHandler extends BaseThingHandler {
                 putData = "EM_OperatingMode=2";
             }
             if (putData != null) {
-                logger.debug("Executing {} command", CHANNELBATTERYDISCHARGINGGRID);
+                logger.debug("Executing {} command", CHANNEL_BATTERY_DISCHARGING_GRID);
                 updateChannel(channelUID.getId(), putData);
             }
         }

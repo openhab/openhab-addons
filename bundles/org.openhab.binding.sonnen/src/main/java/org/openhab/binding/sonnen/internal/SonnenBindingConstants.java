@@ -30,32 +30,34 @@ public class SonnenBindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "sonnenbattery");
 
     // List of all Channel ids
-    public static final String CHANNELBATTERYCHARGINGSTATE = "batteryChargingState";
-    public static final String CHANNELBATTERYDISCHARGINGSTATE = "batteryDischargingState";
-    public static final String CHANNELBATTERYCHARGING = "batteryCharging";
-    public static final String CHANNELBATTERYDISCHARGING = "batteryDischarging";
-    public static final String CHANNELCONSUMPTION = "consumption";
-    public static final String CHANNELGRIDFEEDIN = "gridFeedIn";
-    public static final String CHANNELGRIDCONSUMPTION = "gridConsumption";
-    public static final String CHANNELSOLARPRODUCTION = "solarProduction";
-    public static final String CHANNELBATTERYLEVEL = "batteryLevel";
-    public static final String CHANNELFLOWCONSUMPTIONBATTERYSTATE = "flowConsumptionBatteryState";
-    public static final String CHANNELFLOWCONSUMPTIONGRIDSTATE = "flowConsumptionGridState";
-    public static final String CHANNELFLOWCONSUMPTIONPRODUCTIONSTATE = "flowConsumptionProductionState";
-    public static final String CHANNELFLOWGRIDBATTERYSTATE = "flowGridBatteryState";
-    public static final String CHANNELFLOWPRODUCTIONBATTERYSTATE = "flowProductionBatteryState";
-    public static final String CHANNELFLOWPRODUCTIONGRIDSTATE = "flowProductionGridState";
+    public static final String CHANNEL_BATTERY_CHARGING_STATE = "batteryChargingState";
+    public static final String CHANNEL_BATTERY_DISCHARGING_STATE = "batteryDischargingState";
+    public static final String CHANNEL_BATTERY_CHARGING = "batteryCharging";
+    public static final String CHANNEL_BATTERY_DISCHARGING = "batteryDischarging";
+    public static final String CHANNEL_CONSUMPTION = "consumption";
+    public static final String CHANNEL_GRID_FEED_IN = "gridFeedIn";
+    public static final String CHANNEL_GRID_CONSUMPTION = "gridConsumption";
+    public static final String CHANNEL_SOLAR_PRODUCTION = "solarProduction";
+    public static final String CHANNEL_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_FLOW_CONSUMPTION_BATTERY_STATE = "flowConsumptionBatteryState";
+    public static final String CHANNEL_FLOW_CONSUMPTION_GRID_STATE = "flowConsumptionGridState";
+    public static final String CHANNEL_FLOW_CONSUMPTION_PRODUCTION_STATE = "flowConsumptionProductionState";
+    public static final String CHANNEL_FLOW_GRID_BATTERY_STATE = "flowGridBatteryState";
+    public static final String CHANNEL_FLOW_PRODUCTION_BATTERY_STATE = "flowProductionBatteryState";
+    public static final String CHANNEL_FLOW_PRODUCTION_GRID_STATE = "flowProductionGridState";
 
     // List of new Channel ids for PowerMeter API
-    public static final String CHANNELENERGYIMPORTEDSTATEPRODUCTION = "energyImportedStateProduction";
-    public static final String CHANNELENERGYEXPORTEDSTATEPRODUCTION = "energyExportedStateProduction";
-    public static final String CHANNELENERGYIMPORTEDSTATECONSUMPTION = "energyImportedStateConsumption";
-    public static final String CHANNELENERGYEXPORTEDSTATECONSUMPTION = "energyExportedStateConsumption";
+    public static final String CHANNEL_ENERGY_IMPORTED_STATE_PRODUCTION = "energyImportedStateProduction";
+    public static final String CHANNEL_ENERGY_EXPORTED_STATE_PRODUCTION = "energyExportedStateProduction";
+    public static final String CHANNEL_ENERGY_IMPORTED_STATE_CONSUMPTION = "energyImportedStateConsumption";
+    public static final String CHANNEL_ENERGY_EXPORTED_STATE_CONSUMPTION = "energyExportedStateConsumption";
 
     // List of new Channel ids for battery charging from Grid
-    public static final String CHANNELBATTERYCHARGINGGRID = "batteryChargingFromGrid";
-    public static final String CHANNELBATTERYOPERATIONMODE = "batteryOperationMode";
+    public static final String CHANNEL_BATTERY_CHARGING_GRID = "batteryChargingFromGrid";
+    public static final String CHANNEL_BATTERY_OPERATION_MODE = "batteryOperationMode";
+    public static final String CHANNEL_BATTERY_DISCHARGE_RATE = "batteryChargeRate";
 
     // List of new Channel ids for battery discharging to Grid
-    public static final String CHANNELBATTERYDISCHARGINGGRID = "batteryDischargingToGrid";
+    public static final String CHANNEL_BATTERY_DISCHARGING_GRID = "batteryDischargingToGrid";
+    public static final String CHANNEL_BATTERY_CHARGE_RATE = "batteryDischargeRate";
 }
