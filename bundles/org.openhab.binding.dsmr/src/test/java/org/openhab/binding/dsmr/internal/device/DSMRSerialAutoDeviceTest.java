@@ -65,9 +65,9 @@ public class DSMRSerialAutoDeviceTest {
     private static final String DUMMY_PORTNAME = "/dev/dummy-serial";
     private static final String TELEGRAM_NAME = "dsmr_50";
 
-    private @NonNullByDefault({}) @Mock SerialPortIdentifier mockIdentifier;
-    private @NonNullByDefault({}) @Mock ScheduledExecutorService scheduler;
-    private @NonNullByDefault({}) @Mock SerialPort mockSerialPort;
+    private @Mock @NonNullByDefault({}) SerialPortIdentifier mockIdentifier;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private @Mock @NonNullByDefault({}) SerialPort mockSerialPort;
 
     private final SerialPortManager serialPortManager = new SerialPortManager() {
         @Override

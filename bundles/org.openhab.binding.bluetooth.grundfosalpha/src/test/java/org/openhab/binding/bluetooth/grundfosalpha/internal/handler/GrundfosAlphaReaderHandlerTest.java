@@ -44,8 +44,8 @@ import org.openhab.core.util.HexUtils;
 @ExtendWith(MockitoExtension.class)
 class GrundfosAlphaReaderHandlerTest {
 
-    private @NonNullByDefault({}) @Mock Thing thingMock;
-    private @NonNullByDefault({}) @Mock ThingHandlerCallback callback;
+    private @Mock @NonNullByDefault({}) Thing thingMock;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
 
     @Test
     public void testMessageType0xf1() {
