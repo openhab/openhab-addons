@@ -17,6 +17,7 @@ import static org.openhab.core.library.CoreItemFactory.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.net.URI;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -113,6 +114,8 @@ public class NetatmoConstants {
             }
         }
     }
+
+    public static final ZoneId NETATMO_TZ = ZoneId.of("UTC");
 
     // Content types
     public static final String CONTENT_APP_JSON = "application/json;charset=utf-8";

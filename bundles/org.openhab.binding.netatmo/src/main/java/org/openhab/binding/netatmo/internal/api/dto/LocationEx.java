@@ -18,6 +18,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants;
 
 /**
  * The {@link LocationEx} is the common interface for dto holding an extra location data
@@ -32,14 +33,13 @@ public interface LocationEx extends Location {
     @Nullable
     String getTimezone();
 
-    public default ZoneId getZoneId(ZoneId fallback) {
-        String local = getTimezone();
-        if (local != null) {
+    public default ZoneId getZoneId() {
+        if (getTimezone() instanceof String tz) {
             try {
-                return ZoneId.of(local);
+                return ZoneId.of(tz);
             } catch (DateTimeException ignore) {
             }
         }
-        return fallback;
+        return NetatmoConstants.NETATMO_TZ;
     }
 }
