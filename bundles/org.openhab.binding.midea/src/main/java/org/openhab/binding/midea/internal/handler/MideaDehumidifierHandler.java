@@ -161,6 +161,7 @@ public class MideaDehumidifierHandler extends AbstractMideaHandler implements Hu
         updateChannel(CHANNEL_MAXIMUM_HUMIDITY, new DecimalType(response.getMaximumHumidity()));
         updateChannel(CHANNEL_HUMIDITY, new DecimalType(response.getCurrentHumidity()));
         updateChannel(CHANNEL_ANION, OnOffType.from(response.getA1Anion()));
+        updateChannel(CHANNEL_FILTER_STATUS, OnOffType.from(response.getA1FilterStatus()));
         updateChannel(CHANNEL_CHILD_LOCK, OnOffType.from(response.getA1ChildLock()));
         updateChannel(CHANNEL_DEHUMIDIFIER_TANK, new DecimalType(response.getTank()));
         updateChannel(CHANNEL_DEHUMIDIFIER_TANK_SETPOINT, new DecimalType(response.getTankSetpoint()));
