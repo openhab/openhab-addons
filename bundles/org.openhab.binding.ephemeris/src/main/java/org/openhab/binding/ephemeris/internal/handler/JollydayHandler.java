@@ -28,6 +28,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Entry;
@@ -61,15 +62,16 @@ public abstract class JollydayHandler extends BaseEphemerisHandler {
             String event = getEvent(day);
             stringTypeSeries.add(day.toInstant(), toStringType(event));
             onOffSeries.add(day.toInstant(), OnOffType.from(event != null));
-            finished = dayOffset > 365 || (dayOffset != 0 && event != null);
+            finished = ThingStatus.OFFLINE.equals(getThing().getStatus()) || dayOffset > 365
+                    || (dayOffset != 0 && event != null);
         }
 
-        List<Entry> stringTypes = stringTypeSeries.getStates().toList();
         List<Entry> onOffs = onOffSeries.getStates().toList();
         updateState(channelToday, onOffs.getFirst().state());
-        updateState(CHANNEL_CURRENT_EVENT, stringTypes.getFirst().state());
-
         updateState(channelTomorrow, onOffs.get(1).state());
+
+        List<Entry> stringTypes = stringTypeSeries.getStates().toList();
+        updateState(CHANNEL_CURRENT_EVENT, stringTypes.getFirst().state());
 
         Entry last = stringTypes.getLast();
         State lastState = last.state();
