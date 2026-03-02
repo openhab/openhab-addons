@@ -24,6 +24,7 @@
 			<channel id="on-timer" typeId="on-timer"/>
 			<channel id="off-timer" typeId="off-timer"/>
 			<channel id="anion" typeId="anion"/>
+			<channel id="filter-status" typeId="filter-status"/>
 			<channel id="child-lock" typeId="child-lock"/>
 		</channels>
 

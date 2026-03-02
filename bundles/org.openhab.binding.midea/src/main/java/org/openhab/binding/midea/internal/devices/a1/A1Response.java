@@ -48,6 +48,7 @@ public class A1Response {
             logger.debug("Fan Speed: {}", getA1FanSpeed());
             logger.debug("Child Lock: {}", getA1ChildLock());
             logger.debug("Anion: {}", getA1Anion());
+            logger.debug("Filter Status: {}", getA1FilterStatus());
             logger.debug("Tank: {}", getTank());
             logger.debug("Water Level Set: {}", getTankSetpoint());
             logger.debug("Swing: {}", getA1SwingMode());
@@ -170,6 +171,15 @@ public class A1Response {
      */
     public boolean getA1Anion() {
         return (data[0x09] & 0x40) > 0;
+    }
+
+    /**
+     * Filter Status
+     *
+     * @return filter status true or false
+     */
+    public boolean getA1FilterStatus() {
+        return (data[0x09] & 0x80) > 0;
     }
 
     /**

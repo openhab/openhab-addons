@@ -80,7 +80,7 @@ Note:  After discovery, the thing properties dropdown on the Thing UI page will 
 | current-draw        | Number             | If device supports, instantaneous amperage usage                                                       | Yes       | Yes      |  X |    |
 | power-consumption   | Number             | If device supports, instantaneous wattage reading                                                      | Yes       | Yes      |  X |    |
 | appliance-error     | Switch             | If device supports, appliance error notification                                                       | Yes       | Yes      |  X |    |
-| filter-status       | Switch             | If device supports, notification that filter needs cleaning                                            | Yes       | Yes      |  X |    |
+| filter-status       | Switch             | If device supports, notification that filter needs cleaning                                            | Yes       | Yes      |  X |  X |
 | auxiliary-heat      | Switch             | If device supports, auxiliary heat (On or Off)                                                         | Yes       | Yes      |  X |    |
 | dh-child-lock       | Switch             | If device supports, Child Lock (On or Off)                                                             | Yes       | Yes      |    |  X |
 | dh-anion            | Switch             | If device supports, Anion (On or Off)                                                                  | Yes       | Yes      |    |  X |
