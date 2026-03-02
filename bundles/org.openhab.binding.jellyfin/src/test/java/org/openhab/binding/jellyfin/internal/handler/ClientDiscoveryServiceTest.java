@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.util.discovery.DeviceIdSanitizer;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
@@ -68,7 +70,6 @@ class ClientDiscoveryServiceTest {
 
     @Test
     void testDiscoverClientsWithValidSession() {
-        // Arrange
         String deviceId = "test-device-123";
         String deviceName = "Living Room TV";
         String clientName = "Jellyfin Web";
@@ -85,20 +86,15 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert - verify thingDiscovered was called with correct parameters
-        // Note: We can't easily verify the exact DiscoveryResult without a spy,
-        // but we can verify the method executed without errors
         verify(serverHandler, atLeastOnce()).getClients();
     }
 
     @Test
     void testDiscoverClientsSkipsMissingDeviceId() {
-        // Arrange
         SessionInfoDto session = new SessionInfoDto();
-        session.setDeviceId(null); // Missing device ID
+        session.setDeviceId(null);
         session.setDeviceName("Test Device");
 
         Map<String, SessionInfoDto> clients = new HashMap<>();
@@ -106,18 +102,15 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert - method completes without errors
         verify(serverHandler).getClients();
     }
 
     @Test
     void testDiscoverClientsSkipsEmptyDeviceId() {
-        // Arrange
         SessionInfoDto session = new SessionInfoDto();
-        session.setDeviceId("   "); // Empty/blank device ID
+        session.setDeviceId("   ");
         session.setDeviceName("Test Device");
 
         Map<String, SessionInfoDto> clients = new HashMap<>();
@@ -125,28 +118,22 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert - method completes without errors
         verify(serverHandler).getClients();
     }
 
     @Test
     void testDiscoverClientsHandlesEmptyClientMap() {
-        // Arrange
         when(serverHandler.getClients()).thenReturn(Collections.emptyMap());
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
         verify(serverHandler).getClients();
     }
 
     @Test
     void testDiscoverClientsUsesDeviceNameForLabel() {
-        // Arrange
         String deviceId = "device-abc";
         String deviceName = "My Phone";
         String clientName = "Jellyfin Android";
@@ -161,23 +148,19 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
         verify(serverHandler).getClients();
-        // Label should use deviceName, not clientName
     }
 
     @Test
     void testDiscoverClientsFallsBackToClientNameWhenNoDeviceName() {
-        // Arrange
         String deviceId = "device-xyz";
         String clientName = "Jellyfin iOS";
 
         SessionInfoDto session = new SessionInfoDto();
         session.setDeviceId(deviceId);
-        session.setDeviceName(null); // No device name
+        session.setDeviceName(null);
         session.setClient(clientName);
 
         Map<String, SessionInfoDto> clients = new HashMap<>();
@@ -185,17 +168,13 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
         verify(serverHandler).getClients();
-        // Label should fall back to clientName
     }
 
     @Test
     void testDiscoverClientsHandlesMultipleSessions() {
-        // Arrange
         SessionInfoDto session1 = new SessionInfoDto();
         session1.setDeviceId("device-1");
         session1.setDeviceName("Device 1");
@@ -210,17 +189,13 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
         verify(serverHandler).getClients();
-        // Should process both sessions
     }
 
     @Test
     void testDiscoverClientsWithValidFirmwareVersion() {
-        // Arrange
         String deviceId = "device-with-version";
         String appVersion = "10.9.5";
 
@@ -234,17 +209,13 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
         verify(serverHandler).getClients();
-        // Firmware version should be included in properties
     }
 
     @Test
     void testDiscoverClientsWithVendorInformation() {
-        // Arrange
         String deviceId = "device-with-client";
         String clientName = "Jellyfin Web";
 
@@ -258,29 +229,23 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
         verify(serverHandler).getClients();
-        // Client name should be included as vendor property
     }
 
     @Test
     void testSupportedThingTypesContainsClientType() {
-        // Assert
         assertTrue(Constants.DISCOVERABLE_CLIENT_THING_TYPES.contains(Constants.THING_TYPE_JELLYFIN_CLIENT));
     }
 
     @Test
     void testDiscoveryResultIncludesThingType() {
-        // Arrange
         String deviceId = "device-with-thing-type";
-        String deviceName = "Test Device";
 
         SessionInfoDto session = new SessionInfoDto();
         session.setDeviceId(deviceId);
-        session.setDeviceName(deviceName);
+        session.setDeviceName("Test Device");
         session.setClient("Jellyfin Web");
 
         Map<String, SessionInfoDto> clients = new HashMap<>();
@@ -288,17 +253,13 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Act - should not throw any exceptions
         discoveryService.discoverClients();
 
-        // Assert - verify that getClients was called to fetch the sessions
         verify(serverHandler, atLeastOnce()).getClients();
-        // Additional verification - if an exception was thrown during discovery, it would have failed above
     }
 
     @Test
     void testDiscoveryResultIncludesAllProperties() {
-        // Arrange
         String deviceId = "device-full-props";
         String deviceName = "Full Properties Device";
         String clientName = "Jellyfin iOS";
@@ -315,22 +276,20 @@ class ClientDiscoveryServiceTest {
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Create a mock DiscoveryListener to capture the discovery result
         DiscoveryListener listener = mock(DiscoveryListener.class);
         ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
 
         discoveryService.addDiscoveryListener(listener);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
-        verify(listener).thingDiscovered(any(), resultCaptor.capture());
+        // Discovery notifications are dispatched asynchronously by AbstractDiscoveryService's internal scheduler.
+        // Use timeout() to avoid flakiness when the JVM thread pool is loaded.
+        verify(listener, timeout(500)).thingDiscovered(any(), resultCaptor.capture());
         DiscoveryResult result = resultCaptor.getValue();
 
         assertNotNull(result, "Discovery result should not be null");
 
-        // Verify all properties are set
         Map<String, Object> properties = result.getProperties();
         assertEquals(deviceId, properties.get(Thing.PROPERTY_SERIAL_NUMBER),
                 "Serial number property should match device ID");
@@ -338,48 +297,53 @@ class ClientDiscoveryServiceTest {
                 "Firmware version property should be set");
         assertEquals(clientName, properties.get(Thing.PROPERTY_VENDOR), "Vendor property should be set");
 
-        // Verify representation property
         assertEquals(Thing.PROPERTY_SERIAL_NUMBER, result.getRepresentationProperty(),
                 "Representation property should be serial number");
 
-        // Verify label
         assertEquals(deviceName, result.getLabel(), "Label should match device name");
     }
 
+    /**
+     * Sanitization is now tested directly via {@link DeviceIdSanitizer} without discovery plumbing.
+     * The discovery service delegates to that class; here we verify the contract of the sanitizer itself.
+     */
     @Test
     void testSanitizeDeviceIdReplacesSpecialCharacters() {
-        // Arrange
         String deviceId = "device:with/special@chars!";
-        String expectedSanitized = "device-with-special-chars-";
+        String expected = "device-with-special-chars-";
 
-        SessionInfoDto session = new SessionInfoDto();
-        session.setDeviceId(deviceId);
-        session.setDeviceName("Test Device");
+        String actual = DeviceIdSanitizer.sanitize(deviceId);
 
-        Map<String, SessionInfoDto> clients = new HashMap<>();
-        clients.put("session-1", session);
+        assertEquals(expected, actual, "Sanitization should replace forbidden characters with hyphens");
+    }
+
+    @Test
+    void testDiscoverClientsDeduplicatesPrefixDeviceIds() {
+        Map<String, SessionInfoDto> clients = new LinkedHashMap<>();
+
+        SessionInfoDto shortId = new SessionInfoDto();
+        shortId.setDeviceId("dev");
+        shortId.setDeviceName("Short Device");
+
+        SessionInfoDto longId = new SessionInfoDto();
+        longId.setDeviceId("dev-ext");
+        longId.setDeviceName("Long Device");
+
+        clients.put("s1", shortId);
+        clients.put("s2", longId);
 
         when(serverHandler.getClients()).thenReturn(clients);
 
-        // Create a mock DiscoveryListener to capture the discovery result
         DiscoveryListener listener = mock(DiscoveryListener.class);
-        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-
+        ArgumentCaptor<DiscoveryResult> captor = ArgumentCaptor.forClass(DiscoveryResult.class);
         discoveryService.addDiscoveryListener(listener);
 
-        // Act
         discoveryService.discoverClients();
 
-        // Assert
-        verify(listener).thingDiscovered(any(), resultCaptor.capture());
-        DiscoveryResult result = resultCaptor.getValue();
-
-        String thingId = result.getThingUID().getId();
-        assertTrue(thingId.contains(expectedSanitized),
-                "ThingUID should contain sanitized device ID with special characters replaced");
-        assertFalse(thingId.contains(":"), "ThingUID should not contain colon");
-        assertFalse(thingId.contains("/"), "ThingUID should not contain slash");
-        assertFalse(thingId.contains("@"), "ThingUID should not contain at sign");
-        assertFalse(thingId.contains("!"), "ThingUID should not contain exclamation mark");
+        verify(listener, timeout(500)).thingDiscovered(any(), captor.capture());
+        DiscoveryResult result = captor.getValue();
+        assertNotNull(result);
+        Map<String, Object> props = result.getProperties();
+        assertEquals("dev-ext", props.get(Thing.PROPERTY_SERIAL_NUMBER));
     }
 }

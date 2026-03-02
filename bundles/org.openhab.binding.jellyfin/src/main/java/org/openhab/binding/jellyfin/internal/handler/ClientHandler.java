@@ -12,32 +12,17 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.events.SessionEventListener;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommandType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.NextPreviousType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PlayPauseType;
-import org.openhab.core.library.types.RewindFastforwardType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.binding.jellyfin.internal.util.command.ClientCommandRouter;
+import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
+import org.openhab.binding.jellyfin.internal.util.timeout.SessionTimeoutMonitor;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -60,10 +45,11 @@ import org.slf4j.LoggerFactory;
  * Key responsibilities:
  * <ul>
  * <li>Maintain bridge connection to ServerHandler</li>
- * <li>Subscribe to session events from event bus</li>
+ * <li>Subscribe to session events from the event bus</li>
  * <li>Update channels based on session state (synchronized)</li>
- * <li>Route commands to appropriate API endpoints</li>
- * <li>Handle position/seek conversions (percent/seconds to ticks)</li>
+ * <li>Delegate commands to {@link ClientCommandRouter}</li>
+ * <li>Delegate position extrapolation to {@link PlaybackExtrapolator}</li>
+ * <li>Monitor session timeouts via {@link SessionTimeoutMonitor}</li>
  * </ul>
  *
  * @author Patrik Gfeller - Initial contribution
@@ -73,50 +59,33 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
 
     private final Logger logger = LoggerFactory.getLogger(ClientHandler.class);
 
-    /**
-     * Lock object for synchronizing session updates.
-     * Prevents concurrent modifications when processing session state changes.
-     */
+    /** Lock object for synchronizing access to {@link #currentSession}. */
     private final Object sessionLock = new Object();
 
-    /**
-     * The device ID extracted from ThingUID, used to subscribe to event bus.
-     */
+    /** Session timeout threshold in milliseconds (60 seconds). */
+    private static final long SESSION_TIMEOUT_MS = 60_000;
+
+    /** Session timeout monitor – created once, started in {@link #initialize()}. */
+    private final SessionTimeoutMonitor timeoutMonitor = new SessionTimeoutMonitor(SESSION_TIMEOUT_MS);
+
+    /** The device ID extracted from the ThingUID, used to subscribe to the event bus. */
     @Nullable
     private String deviceId;
 
     /**
      * The current session information for this client.
-     * Updated via event bus notifications through onSessionUpdate().
+     * Access is guarded by {@link #sessionLock}.
      */
     @Nullable
     private SessionInfoDto currentSession;
 
-    /**
-     * Timestamp (in milliseconds) of the last session update received.
-     * Used to detect session timeouts when no updates arrive.
-     */
-    private long lastSessionUpdateTimestamp = 0;
-
-    /**
-     * Session timeout threshold in milliseconds.
-     * If no session update received within this time, client is considered offline.
-     */
-    private static final long SESSION_TIMEOUT_MS = 60_000; // 60 seconds
-
-    /**
-     * Scheduled future for session timeout monitoring.
-     * Checks every 30 seconds if session has timed out.
-     */
+    /** Per-second position extrapolation between server session updates. */
     @Nullable
-    private ScheduledFuture<?> sessionTimeoutMonitor;
+    private PlaybackExtrapolator extrapolator;
 
-    /**
-     * Scheduled future for delayed command execution.
-     * Used to delay play/browse commands after stopping current playback.
-     */
+    /** Command router – created (and disposed) alongside the handler lifecycle. */
     @Nullable
-    private ScheduledFuture<?> delayedCommand;
+    private ClientCommandRouter commandRouter;
 
     /**
      * Constructor for the client handler.
@@ -158,38 +127,43 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             return;
         }
 
-        // Subscribe to event bus for session updates
         String localDeviceId = deviceId;
         if (localDeviceId == null) {
             logger.warn("Device ID is null, cannot subscribe to event bus");
             return;
         }
+
+        // Subscribe to event bus for session updates
         SessionEventBus eventBus = serverHandler.getSessionEventBus();
         eventBus.subscribe(localDeviceId, this);
         logger.debug("ClientHandler subscribed to event bus for device ID: {}", localDeviceId);
 
-        // Start session timeout monitor (checks every 30s)
-        sessionTimeoutMonitor = scheduler.scheduleWithFixedDelay(this::checkSessionTimeout, SESSION_TIMEOUT_MS,
-                SESSION_TIMEOUT_MS / 2, // Check every 30s
-                TimeUnit.MILLISECONDS);
-        logger.debug("Session timeout monitor started for device ID: {}", localDeviceId);
+        // Create playback extrapolator (owns its own single-thread scheduler)
+        extrapolator = new PlaybackExtrapolator(localDeviceId, this::isLinked,
+                (channelId, state) -> updateState(channel(channelId), state), timeoutMonitor::recordActivity);
+
+        // Create command router using the framework scheduler for delayed browse
+        commandRouter = new ClientCommandRouter(serverHandler, this::getCurrentSession, scheduler);
+
+        // Start session timeout monitor
+        timeoutMonitor.start(scheduler, localDeviceId, () -> {
+            synchronized (sessionLock) {
+                return currentSession != null;
+            }
+        }, this::onSessionTimeout);
+        logger.debug("Session timeout monitor started for device: {}", localDeviceId);
 
         // Client status will be determined by session updates
         updateClientState();
-        logger.debug("ClientHandler initialized successfully for thing {}", thing.getUID());
+        logger.debug("ClientHandler initialized for thing {}", thing.getUID());
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing ClientHandler for thing {}", thing.getUID());
 
-        // Cancel session timeout monitor
-        ScheduledFuture<?> monitor = sessionTimeoutMonitor;
-        if (monitor != null && !monitor.isDone()) {
-            monitor.cancel(true);
-            logger.debug("Session timeout monitor cancelled");
-        }
-        sessionTimeoutMonitor = null;
+        // Stop timeout monitor
+        timeoutMonitor.stop();
 
         // Unsubscribe from event bus
         String localDeviceId = deviceId;
@@ -198,11 +172,23 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             if (serverHandler != null) {
                 SessionEventBus eventBus = serverHandler.getSessionEventBus();
                 eventBus.unsubscribe(localDeviceId, this);
-                logger.debug("ClientHandler unsubscribed from event bus for device ID: {}", localDeviceId);
+                logger.debug("ClientHandler unsubscribed from event bus for device: {}", localDeviceId);
             }
         }
 
-        cancelDelayedCommand();
+        // Dispose command router (cancels any delayed commands)
+        ClientCommandRouter router = commandRouter;
+        if (router != null) {
+            router.dispose();
+            commandRouter = null;
+        }
+
+        // Dispose extrapolator (stops task and shuts down scheduler)
+        PlaybackExtrapolator extrap = extrapolator;
+        if (extrap != null) {
+            extrap.dispose();
+            extrapolator = null;
+        }
 
         synchronized (sessionLock) {
             currentSession = null;
@@ -218,10 +204,8 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         logger.debug("Bridge status changed to {} for client {}", bridgeStatusInfo.getStatus(), thing.getUID());
 
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            // Bridge online - check session before marking client online
             updateClientState();
         } else {
-            // Bridge offline - all clients offline
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Server bridge is offline");
             clearChannelStates();
         }
@@ -231,395 +215,47 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
 
-        // Validate bridge connection before processing commands
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot handle command - no server bridge available");
+        ClientCommandRouter router = commandRouter;
+        if (router == null) {
+            logger.warn("Cannot handle command - handler not yet initialized");
             return;
         }
 
-        // Implement basic command routing. For complex search and browse operations
-        // we delegate to ServerHandler helper methods.
         try {
-            final String channelId = channelUID.getId();
-
-            // Media control commands
-            if (Constants.MEDIA_CONTROL_CHANNEL.equals(channelId)) {
-                if (command instanceof PlayPauseType) {
-                    var playPause = (PlayPauseType) command;
-                    if (playPause == PlayPauseType.PLAY) {
-                        sendPlayStateCommand(PlaystateCommand.UNPAUSE);
-                    } else if (playPause == PlayPauseType.PAUSE) {
-                        sendPlayStateCommand(PlaystateCommand.PAUSE);
-                    }
-                    return;
-                }
-                if (command instanceof NextPreviousType) {
-                    var np = (NextPreviousType) command;
-                    if (np == NextPreviousType.NEXT) {
-                        sendPlayStateCommand(PlaystateCommand.NEXT_TRACK);
-                    } else if (np == NextPreviousType.PREVIOUS) {
-                        sendPlayStateCommand(PlaystateCommand.PREVIOUS_TRACK);
-                    }
-                    return;
-                }
-                if (command instanceof RewindFastforwardType) {
-                    var rw = (RewindFastforwardType) command;
-                    if (rw == RewindFastforwardType.FASTFORWARD) {
-                        sendPlayStateCommand(PlaystateCommand.FAST_FORWARD);
-                    } else if (rw == RewindFastforwardType.REWIND) {
-                        sendPlayStateCommand(PlaystateCommand.REWIND);
-                    }
-                    return;
-                }
-                // No StopType in core library; stop is uncommon. Use pause/seek as needed.
-            }
-
-            // Seek by percentage
-            if (Constants.PLAYING_ITEM_PERCENTAGE_CHANNEL.equals(channelId)) {
-                if (command instanceof PercentType) {
-                    var percent = (PercentType) command;
-                    seekToPercent(percent.intValue());
-                }
-                return;
-            }
-
-            // Seek by seconds (number type)
-            if (Constants.PLAYING_ITEM_SECOND_CHANNEL.equals(channelId)) {
-                if (command instanceof DecimalType) {
-                    var secs = (DecimalType) command;
-                    seekToSeconds(secs.intValue());
-                }
-                return;
-            }
-
-            // Play/search commands via terms
-            if (Constants.PLAY_BY_TERMS_CHANNEL.equals(channelId)
-                    || Constants.PLAY_NEXT_BY_TERMS_CHANNEL.equals(channelId)
-                    || Constants.PLAY_LAST_BY_TERMS_CHANNEL.equals(channelId)) {
-                if (command instanceof StringType) {
-                    final String terms = ((StringType) command).toString();
-                    PlayCommand playCommand = PlayCommand.PLAY_NOW;
-                    if (Constants.PLAY_NEXT_BY_TERMS_CHANNEL.equals(channelId)) {
-                        playCommand = PlayCommand.PLAY_NEXT;
-                    } else if (Constants.PLAY_LAST_BY_TERMS_CHANNEL.equals(channelId)) {
-                        playCommand = PlayCommand.PLAY_LAST;
-                    }
-                    runItemSearch(terms, playCommand);
-                }
-                return;
-            }
-
-            // Play by ID
-            if (Constants.PLAY_BY_ID_CHANNEL.equals(channelId) || Constants.PLAY_NEXT_BY_ID_CHANNEL.equals(channelId)
-                    || Constants.PLAY_LAST_BY_ID_CHANNEL.equals(channelId)) {
-                if (command instanceof StringType) {
-                    var uuidS = ((StringType) command).toString();
-                    UUID id = parseItemUUID(uuidS);
-                    if (id == null) {
-                        logger.warn("Cannot run item by id - invalid UUID: {}", uuidS);
-                        return;
-                    }
-                    PlayCommand playCommand = PlayCommand.PLAY_NOW;
-                    if (Constants.PLAY_NEXT_BY_ID_CHANNEL.equals(channelId)) {
-                        playCommand = PlayCommand.PLAY_NEXT;
-                    } else if (Constants.PLAY_LAST_BY_ID_CHANNEL.equals(channelId)) {
-                        playCommand = PlayCommand.PLAY_LAST;
-                    }
-                    runItemById(id, playCommand);
-                }
-                return;
-            }
-
-            // Send notification
-            if (Constants.SEND_NOTIFICATION_CHANNEL.equals(channelId)) {
-                sendDeviceMessage(command);
-                return;
-            }
-
-            // Browse by terms
-            if (Constants.BROWSE_ITEM_BY_TERMS_CHANNEL.equals(channelId)) {
-                if (command instanceof StringType) {
-                    final String terms = ((StringType) command).toString();
-                    runItemSearchForBrowse(terms);
-                }
-                return;
-            }
-
-            // Browse by ID
-            if (Constants.BROWSE_ITEM_BY_ID_CHANNEL.equals(channelId)) {
-                if (command instanceof StringType) {
-                    var uuidS = ((StringType) command).toString();
-                    UUID id = parseItemUUID(uuidS);
-                    if (id != null) {
-                        runBrowseById(id);
-                    }
-                }
-                return;
-            }
-
-            // Stop (Switch channel)
-            if (Constants.MEDIA_STOP_CHANNEL.equals(channelId)) {
-                if (command instanceof OnOffType) {
-                    var onOff = (OnOffType) command;
-                    if (onOff == OnOffType.ON) {
-                        sendPlayStateCommand(PlaystateCommand.STOP);
-                    }
-                }
-                return;
-            }
-
-            // Shuffle (toggle on/off)
-            if (Constants.MEDIA_SHUFFLE_CHANNEL.equals(channelId)) {
-                if (command instanceof OnOffType) {
-                    var onOff = (OnOffType) command;
-                    sendGeneralCommand(GeneralCommandType.SET_SHUFFLE_QUEUE, "ShuffleMode",
-                            onOff == OnOffType.ON ? "true" : "false");
-                }
-                return;
-            }
-
-            // Repeat mode (off/one/all)
-            if (Constants.MEDIA_REPEAT_CHANNEL.equals(channelId)) {
-                if (command instanceof StringType) {
-                    var mode = ((StringType) command).toString();
-                    sendGeneralCommand(GeneralCommandType.SET_REPEAT_MODE, "RepeatMode", mode);
-                }
-                return;
-            }
-
-            // Streaming quality (bitrate)
-            if (Constants.MEDIA_QUALITY_CHANNEL.equals(channelId)) {
-                if (command instanceof StringType) {
-                    var bitrate = ((StringType) command).toString();
-                    sendGeneralCommand(GeneralCommandType.SET_MAX_STREAMING_BITRATE, "MaxBitrate", bitrate);
-                }
-                return;
-            }
-
-            // Audio track selection
-            if (Constants.MEDIA_AUDIO_TRACK_CHANNEL.equals(channelId)) {
-                if (command instanceof DecimalType) {
-                    var index = ((DecimalType) command).intValue();
-                    sendGeneralCommand(GeneralCommandType.SET_AUDIO_STREAM_INDEX, "Index", String.valueOf(index));
-                }
-                return;
-            }
-
-            // Subtitle track selection
-            if (Constants.MEDIA_SUBTITLE_CHANNEL.equals(channelId)) {
-                if (command instanceof DecimalType) {
-                    var index = ((DecimalType) command).intValue();
-                    sendGeneralCommand(GeneralCommandType.SET_SUBTITLE_STREAM_INDEX, "Index", String.valueOf(index));
-                }
-                return;
-            }
-
+            router.route(channelUID, command);
         } catch (Exception e) {
             logger.warn("Error handling command {} for channel {}: {}", command, channelUID, e.getMessage(), e);
         }
-
-        logger.debug("Command handling not yet implemented for channel {}", channelUID.getId());
-    }
-
-    private void sendPlayStateCommand(PlaystateCommand command) {
-        sendPlayStateCommand(command, null);
-    }
-
-    private void sendPlayStateCommand(PlaystateCommand command, @Nullable Long seekPositionTick) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot send play state command - server handler not available");
-            return;
-        }
-        String sessionId = currentSession == null ? null : currentSession.getId();
-        serverHandler.sendPlayStateCommand(sessionId, command, seekPositionTick);
-    }
-
-    private void sendGeneralCommand(GeneralCommandType commandType, String argumentKey, String argumentValue) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot send general command - server handler not available");
-            return;
-        }
-        String sessionId = currentSession == null ? null : currentSession.getId();
-        try {
-            GeneralCommand command = new GeneralCommand();
-            command.setName(commandType);
-            Map<String, String> arguments = new HashMap<>();
-            arguments.put(argumentKey, argumentValue);
-            command.setArguments(arguments);
-            serverHandler.sendGeneralCommand(sessionId, command);
-        } catch (Exception e) {
-            logger.warn("Failed to send general command {} for session {}: {}", commandType, sessionId, e.getMessage());
-        }
-    }
-
-    private void seekToPercent(int percent) {
-        synchronized (sessionLock) {
-            if (currentSession == null) {
-                logger.warn("No session active to seek");
-                return;
-            }
-            // runtime ticks are available in playing item under current session
-            var playingItem = currentSession.getNowPlayingItem();
-            if (playingItem == null || playingItem.getRunTimeTicks() == null) {
-                logger.warn("Cannot seek - no runtime available");
-                return;
-            }
-            long targetTicks = Math.round((playingItem.getRunTimeTicks() * percent) / 100.0);
-            sendPlayStateCommand(PlaystateCommand.SEEK, targetTicks);
-        }
-    }
-
-    private void seekToSeconds(int seconds) {
-        synchronized (sessionLock) {
-            if (currentSession == null) {
-                logger.warn("No session active to seek");
-                return;
-            }
-            long targetTicks = seconds * 10_000_000L; // Jellyfin uses 10M ticks per second
-            sendPlayStateCommand(PlaystateCommand.SEEK, targetTicks);
-        }
-    }
-
-    private void runItemSearch(String terms, @Nullable PlayCommand playCommand) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot run item search - server handler not available");
-            return;
-        }
-        try {
-            // Try movies and episodes
-            BaseItemDto movie = serverHandler.searchItem(terms, BaseItemKind.MOVIE, null);
-            if (movie != null && playCommand != null) {
-                serverHandler.playItem(currentSession == null ? null : currentSession.getId(), playCommand,
-                        movie.getId().toString(), null);
-                return;
-            }
-            BaseItemDto episode = serverHandler.searchItem(terms, BaseItemKind.EPISODE, null);
-            if (episode != null && playCommand != null) {
-                serverHandler.playItem(currentSession == null ? null : currentSession.getId(), playCommand,
-                        episode.getId().toString(), null);
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to run item search for {}: {}", terms, e.getMessage(), e);
-        }
-    }
-
-    private void runItemById(UUID id, @Nullable PlayCommand playCommand) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot run item by id - server handler not available");
-            return;
-        }
-        if (playCommand == null) {
-            logger.warn("Cannot run item by id - play command is null");
-            return;
-        }
-        try {
-            serverHandler.playItem(currentSession == null ? null : currentSession.getId(), playCommand, id.toString(),
-                    null);
-        } catch (Exception e) {
-            logger.warn("Failed to run item by id {}: {}", id, e.getMessage(), e);
-        }
-    }
-
-    private void sendDeviceMessage(Command command) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot send device message - server handler not available");
-            return;
-        }
-        try {
-            serverHandler.sendDeviceMessage(currentSession == null ? null : currentSession.getId(), "Jellyfin OpenHAB",
-                    command == null ? "" : command.toFullString(), 15000);
-        } catch (Exception e) {
-            logger.warn("Failed to send device message: {}", e.getMessage(), e);
-        }
-    }
-
-    private @Nullable UUID parseItemUUID(String id) {
-        if (id == null || id.isBlank()) {
-            return null;
-        }
-        try {
-            return UUID.fromString(id.trim());
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid UUID string for item id: {}", id);
-            return null;
-        }
-    }
-
-    /**
-     * Helper to build a ChannelUID for the local thing with a specific channel ID.
-     *
-     * @param channelId internal ID of the channel as defined in XML
-     * @return a ChannelUID instance
-     */
-    private ChannelUID channel(String channelId) {
-        return new ChannelUID(thing.getUID(), channelId);
-    }
-
-    /**
-     * Clear all channel states for this client by setting them to UnDefType.NULL.
-     *
-     * This is used when the session is lost or the client goes offline.
-     */
-    private void clearChannelStates() {
-        final String[] channels = new String[] { "playing-item-id", "playing-item-name", "playing-item-series-name",
-                "playing-item-season-name", "playing-item-season", "playing-item-episode", "playing-item-genres",
-                "playing-item-type", "playing-item-total-seconds", "media-control", "playing-item-percentage",
-                "playing-item-second",
-                // command channels are write-only, not cleared here typically
-        };
-
-        for (String ch : channels) {
-            updateState(new ChannelUID(thing.getUID(), ch), UnDefType.NULL);
-        }
-    }
-
-    /**
-     * Gets the parent ServerHandler bridge.
-     *
-     * @return The ServerHandler instance, or null if bridge is not available or not a ServerHandler
-     */
-    @Nullable
-    private ServerHandler getServerHandler() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            return null;
-        }
-
-        if (bridge.getHandler() instanceof ServerHandler serverHandler) {
-            return serverHandler;
-        }
-
-        return null;
     }
 
     /**
      * Receives session update notifications from the event bus.
-     * This method implements the SessionEventListener interface.
      *
      * <p>
-     * Catches and logs any exceptions to prevent disruption of the event bus.
-     * Delegates to updateStateFromSession() for actual state update logic.
+     * Updates the current session, refreshes the timeout monitor, re-evaluates client
+     * status, publishes channel states, and (re-)starts position extrapolation.
      *
-     * @param session The updated session information, or null if session ended/offline
+     * @param session the updated session, or {@code null} if the session ended
      */
     @Override
     public void onSessionUpdate(@Nullable SessionInfoDto session) {
         try {
-            logger.trace("Received session update event for device: {}", deviceId);
+            logger.trace("Received session update for device: {}", deviceId);
 
             synchronized (sessionLock) {
                 currentSession = session;
-                lastSessionUpdateTimestamp = System.currentTimeMillis();
             }
+            timeoutMonitor.recordActivity();
 
             updateClientState();
             updateStateFromSession(session);
+
+            // Stop the previous extrapolation tick and restart from the fresh server position.
+            PlaybackExtrapolator extrap = extrapolator;
+            if (extrap != null) {
+                extrap.stop();
+                extrap.start(session);
+            }
         } catch (Exception e) {
             logger.warn("Error processing session update for device {}: {}", deviceId, e.getMessage());
             logger.debug("Session update exception", e);
@@ -627,18 +263,17 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
     }
 
     /**
-     * Updates client status based on bridge status, session presence, and timeout.
+     * Updates the client status based on bridge availability, session presence, and timeout.
      *
      * <p>
-     * Priority checks:
+     * Priority:
      * <ol>
-     * <li>Bridge must be ONLINE</li>
-     * <li>Session must exist</li>
-     * <li>Session must not be timed out (&gt;60s)</li>
+     * <li>Bridge must be ONLINE.</li>
+     * <li>A session must exist.</li>
+     * <li>The session must not have timed out.</li>
      * </ol>
      */
     private void updateClientState() {
-        // Priority 1: Check bridge status
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -646,112 +281,75 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
             return;
         }
 
-        // Priority 2 & 3: Check session presence and timeout
         synchronized (sessionLock) {
             if (currentSession == null) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Device not connected to server");
+            } else if (timeoutMonitor.isTimedOut()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "No session update received (timeout)");
             } else {
-                long timeSinceLastUpdate = System.currentTimeMillis() - lastSessionUpdateTimestamp;
-                if (timeSinceLastUpdate > SESSION_TIMEOUT_MS) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "No session update received (timeout)");
-                } else {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+                updateStatus(ThingStatus.ONLINE);
             }
         }
     }
 
     /**
-     * Checks for session timeout and marks client offline if no update received.
-     * Called every 30 seconds by session timeout monitor.
+     * Called by the {@link SessionTimeoutMonitor} when no session update has arrived within
+     * the timeout period. Clears the session and brings the client offline.
      */
-    private void checkSessionTimeout() {
+    private void onSessionTimeout() {
+        logger.info("[SESSION] Clearing session for device {} due to timeout", deviceId);
         synchronized (sessionLock) {
-            if (currentSession != null) {
-                long timeSinceLastUpdate = System.currentTimeMillis() - lastSessionUpdateTimestamp;
+            currentSession = null;
+        }
+        timeoutMonitor.resetActivity();
+        updateClientState();
+        clearChannelStates();
 
-                // Log monitoring activity at TRACE level to track periodic checks
-                logger.trace("[SESSION] Timeout check for device {}: {}s since last update (threshold: {}s)", deviceId,
-                        timeSinceLastUpdate / 1000, SESSION_TIMEOUT_MS / 1000);
-
-                if (timeSinceLastUpdate > SESSION_TIMEOUT_MS) {
-                    logger.warn(
-                            "[SESSION] ⚠️ Session timeout detected for device {} ({}s without update, threshold: {}s)",
-                            deviceId, timeSinceLastUpdate / 1000, SESSION_TIMEOUT_MS / 1000);
-                    logger.info("[SESSION] Clearing session state for device {}", deviceId);
-                    currentSession = null;
-                    updateClientState();
-                    clearChannelStates();
-                } else if (timeSinceLastUpdate > (SESSION_TIMEOUT_MS / 2)) {
-                    // Warn when approaching timeout (halfway through timeout period)
-                    logger.debug("[SESSION] Device {} approaching timeout: {}s since last update", deviceId,
-                            timeSinceLastUpdate / 1000);
-                }
-            } else {
-                logger.trace("[SESSION] No active session for device {} (timeout check skipped)", deviceId);
-            }
+        PlaybackExtrapolator extrap = extrapolator;
+        if (extrap != null) {
+            extrap.stop();
         }
     }
 
     /**
-     * Updates the client state based on a new session information object.
-     * This method processes session updates received from the event bus.
+     * Publishes channel states derived from the given session snapshot.
      *
-     * <p>
-     * This method is synchronized to prevent concurrent modifications and ensure
-     * consistent channel updates. All channel state changes are performed within
-     * this synchronized block to maintain data integrity.
-     *
-     * @param session The session information to update from, or null to clear state
+     * @param session the session to derive states from, or {@code null} to clear all channels
      */
     public synchronized void updateStateFromSession(@Nullable SessionInfoDto session) {
-        Map<String, State> states;
-        synchronized (sessionLock) {
-            states = ClientStateUpdater.calculateChannelStates(session);
-
-            // Update session tracking
-            SessionInfoDto previousSession = currentSession;
-            currentSession = session;
-
-            if (session != null) {
-                lastSessionUpdateTimestamp = System.currentTimeMillis();
-
-                // Log session update with key details
-                if (previousSession == null) {
-                    logger.info("[SESSION] New session started for device {} (session: {})", deviceId, session.getId());
-                } else if (!session.getId().equals(previousSession.getId())) {
-                    logger.info("[SESSION] Session changed for device {} (old: {}, new: {})", deviceId,
-                            previousSession.getId(), session.getId());
-                } else {
-                    logger.debug("[SESSION] Session update for device {} (session: {}, playing: {})", deviceId,
-                            session.getId(),
-                            session.getNowPlayingItem() != null ? session.getNowPlayingItem().getName() : "nothing");
-                }
-            } else {
-                logger.debug("[SESSION] Clearing client state for device {} - session ended", deviceId);
-            }
-        }
-
         if (session == null) {
-            logger.debug("Clearing client state - session is null");
+            logger.debug("Clearing client state for device {} - session is null", deviceId);
         } else {
             logger.debug("Updating client state from session: {}", session.getId());
         }
 
+        Map<String, State> states = ClientStateUpdater.calculateChannelStates(session);
         states.forEach((channelId, state) -> {
             if (isLinked(channelId)) {
                 updateState(channel(channelId), state);
             }
         });
+
+        // If playback is paused or nothing is playing, stop extrapolation immediately.
+        if (session != null) {
+            var playState = session.getPlayState();
+            boolean isPaused = playState != null && Boolean.TRUE.equals(playState.getIsPaused());
+            boolean notPlaying = session.getNowPlayingItem() == null;
+            if (isPaused || notPlaying) {
+                PlaybackExtrapolator extrap = extrapolator;
+                if (extrap != null) {
+                    extrap.stop();
+                }
+            }
+        }
     }
 
     /**
-     * Gets the current session information for this client.
-     * Used for testing and internal state queries.
+     * Returns the current session information for this client.
      *
-     * @return The current session, or null if no session is active
+     * @return the current session, or {@code null} if no session is active
      */
     @Nullable
     public SessionInfoDto getCurrentSession() {
@@ -760,115 +358,33 @@ public class ClientHandler extends BaseThingHandler implements SessionEventListe
         }
     }
 
-    /**
-     * Cancels any pending delayed command.
-     */
-    private void cancelDelayedCommand() {
-        ScheduledFuture<?> future = delayedCommand;
-        if (future != null && !future.isDone()) {
-            future.cancel(false);
-            logger.debug("Cancelled pending delayed command");
-        }
-        delayedCommand = null;
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    private ChannelUID channel(String channelId) {
+        return new ChannelUID(thing.getUID(), channelId);
     }
 
-    /**
-     * Runs a search for items to browse to based on search terms.
-     *
-     * @param terms The search terms
-     */
-    private void runItemSearchForBrowse(String terms) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot run browse search - server handler not available");
-            return;
-        }
-        try {
-            // Try movies first
-            BaseItemDto movie = serverHandler.searchItem(terms, BaseItemKind.MOVIE, null);
-            if (movie != null) {
-                browseToItem(movie);
-                return;
-            }
-            // Then try episodes
-            BaseItemDto episode = serverHandler.searchItem(terms, BaseItemKind.EPISODE, null);
-            if (episode != null) {
-                browseToItem(episode);
-                return;
-            }
-            logger.debug("No items found for browse search: {}", terms);
-        } catch (Exception e) {
-            logger.warn("Failed to run browse search for {}: {}", terms, e.getMessage(), e);
+    private void clearChannelStates() {
+        final String[] channels = { "playing-item-id", "playing-item-name", "playing-item-series-name",
+                "playing-item-season-name", "playing-item-season", "playing-item-episode", "playing-item-genres",
+                "playing-item-type", "playing-item-total-seconds", "media-control", "playing-item-percentage",
+                "playing-item-second" };
+        for (String ch : channels) {
+            updateState(new ChannelUID(thing.getUID(), ch), UnDefType.NULL);
         }
     }
 
-    /**
-     * Runs a browse command for an item by ID.
-     *
-     * @param id The item ID
-     */
-    private void runBrowseById(UUID id) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot browse by id - server handler not available");
-            return;
+    @Nullable
+    private ServerHandler getServerHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return null;
         }
-        try {
-            BaseItemDto item = serverHandler.getItemById(null, id);
-            if (item != null) {
-                browseToItem(item);
-            } else {
-                logger.warn("Item not found for browse by id: {}", id);
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to browse by id {}: {}", id, e.getMessage(), e);
+        if (bridge.getHandler() instanceof ServerHandler serverHandler) {
+            return serverHandler;
         }
-    }
-
-    /**
-     * Browses to a specific item on the client.
-     * If the client is currently playing, stops playback before browsing.
-     *
-     * @param item The item to browse to
-     */
-    private void browseToItem(BaseItemDto item) {
-        ServerHandler serverHandler = getServerHandler();
-        if (serverHandler == null) {
-            logger.warn("Cannot browse to item - server handler not available");
-            return;
-        }
-
-        String sessionId = currentSession == null ? null : currentSession.getId();
-        boolean isPlaying = currentSession != null && currentSession.getNowPlayingItem() != null;
-
-        if (isPlaying) {
-            // Stop current playback first, then browse after delay
-            logger.debug("Stopping playback before browse");
-            sendPlayStateCommand(PlaystateCommand.STOP);
-
-            cancelDelayedCommand();
-            BaseItemKind itemType = item.getType();
-            if (itemType != null) {
-                delayedCommand = scheduler.schedule(() -> {
-                    try {
-                        serverHandler.browseToItem(sessionId, item.getId().toString(), itemType, item.getName());
-                        logger.debug("Browsed to item: {}", item.getName());
-                    } catch (Exception e) {
-                        logger.warn("Failed to browse to item after delay: {}", e.getMessage(), e);
-                    }
-                }, 3, TimeUnit.SECONDS);
-            }
-        } else {
-            // Browse immediately if not playing
-            BaseItemKind itemType = item.getType();
-            if (itemType != null) {
-                try {
-                    serverHandler.browseToItem(sessionId, item.getId().toString(), itemType, item.getName());
-                    logger.debug("Browsed to item: {}", item.getName());
-                } catch (Exception e) {
-                    logger.warn("Failed to browse to item: {}", e.getMessage(), e);
-                }
-            }
-        }
+        return null;
     }
 }
