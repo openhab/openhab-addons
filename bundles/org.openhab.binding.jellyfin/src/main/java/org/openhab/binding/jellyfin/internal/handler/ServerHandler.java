@@ -87,7 +87,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private final ErrorEventBus errorEventBus;
     private final SessionEventBus sessionEventBus;
     private final ApiClient apiClient;
-    private final Configuration configuration;
+    private Configuration configuration;
     private final TaskManagerInterface taskManager;
 
     // Utility classes for better separation of concerns
@@ -115,7 +115,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     public ServerHandler(Bridge bridge, ApiClient apiClient, TaskManagerInterface taskManager) {
         super(bridge);
 
-        this.configuration = this.getConfigAs(Configuration.class);
+        this.configuration = new Configuration();
         this.apiClient = apiClient;
         this.taskManager = taskManager;
 
@@ -570,6 +570,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     @Override
     public void initialize() {
         try {
+            this.configuration = this.getConfigAs(Configuration.class);
             setState(ServerState.INITIALIZING);
             scheduler.execute(initializeHandler());
         } catch (Exception e) {

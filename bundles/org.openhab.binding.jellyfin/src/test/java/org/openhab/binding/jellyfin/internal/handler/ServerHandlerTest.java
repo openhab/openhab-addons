@@ -57,14 +57,19 @@ class ServerHandlerTest {
             super(mock(org.openhab.core.thing.Bridge.class), apiClient, taskManager);
             this.testConfig = config;
             configForCtor = null;
-            // Set the 'thing' field in BaseBridgeHandler to the testThing mock
+            // Set the 'thing' and 'configuration' fields via reflection since initialize() is not
+            // called in unit tests and the configuration field is no longer set in the constructor
             try {
                 java.lang.reflect.Field thingField = org.openhab.core.thing.binding.BaseThingHandler.class
                         .getDeclaredField("thing");
                 thingField.setAccessible(true);
                 thingField.set(this, thing);
+
+                java.lang.reflect.Field configurationField = ServerHandler.class.getDeclaredField("configuration");
+                configurationField.setAccessible(true);
+                configurationField.set(this, config);
             } catch (Exception e) {
-                throw new RuntimeException("Failed to set thing field in test subclass", e);
+                throw new RuntimeException("Failed to set test fields in test subclass", e);
             }
         }
 
