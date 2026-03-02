@@ -31,7 +31,6 @@ public class ColorControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0300;
     public static final String CLUSTER_NAME = "ColorControl";
     public static final String CLUSTER_PREFIX = "colorControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CURRENT_HUE = "currentHue";
     public static final String ATTRIBUTE_CURRENT_SATURATION = "currentSaturation";
@@ -86,7 +85,6 @@ public class ColorControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_COUPLE_COLOR_TEMP_TO_LEVEL_MIN_MIREDS = "coupleColorTempToLevelMinMireds";
     public static final String ATTRIBUTE_START_UP_COLOR_TEMPERATURE_MIREDS = "startUpColorTemperatureMireds";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * The CurrentHue attribute contains the current hue value of the light. It is updated as fast as practical during
@@ -95,8 +93,8 @@ public class ColorControlCluster extends BaseCluster {
      * Hue &#x3D; &quot;CurrentHue&quot; * 360 / 254
      * where CurrentHue is in the range from 0 to 254 inclusive.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second or
-     * • At the end of the movement/transition.
+     * - At most once per second or
+     * - At the end of the movement/transition.
      */
     public Integer currentHue; // 0 uint8 R V
     /**
@@ -107,17 +105,17 @@ public class ColorControlCluster extends BaseCluster {
      * Saturation &#x3D; &quot;CurrentSaturation&quot; / 254
      * where CurrentSaturation is in the range from 0 to 254 inclusive.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second or
-     * • At the end of the movement/transition.
+     * - At most once per second or
+     * - At the end of the movement/transition.
      */
     public Integer currentSaturation; // 1 uint8 R V
     /**
      * Indicates the time remaining, in 1/10ths of a second, until transitions due to the currently active command will
      * be complete.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • When it changes from 0 to any value higher than 10, or
-     * • When it changes, with a delta larger than 10, caused by the invoke of a command, or
-     * • When it changes to 0.
+     * - When it changes from 0 to any value higher than 10, or
+     * - When it changes, with a delta larger than 10, caused by the invoke of a command, or
+     * - When it changes to 0.
      * For commands with a transition time or changes to the transition time less than 1 second, changes to this
      * attribute shall NOT be reported.
      * As this attribute is not being reported during a regular countdown, clients SHOULD NOT rely on the reporting of
@@ -131,8 +129,8 @@ public class ColorControlCluster extends BaseCluster {
      * x &#x3D; &quot;CurrentX&quot; / 65536
      * where CurrentX is in the range from 0 to 65279 inclusive.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second or
-     * • At the end of the movement/transition.
+     * - At most once per second or
+     * - At the end of the movement/transition.
      */
     public Integer currentX; // 3 uint16 R V
     /**
@@ -142,13 +140,12 @@ public class ColorControlCluster extends BaseCluster {
      * y &#x3D; &quot;CurrentY&quot; / 65536
      * where CurrentY is in the range from 0 to 65279 inclusive.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second or
-     * • At the end of the movement/transition.
+     * - At most once per second or
+     * - At the end of the movement/transition.
      */
     public Integer currentY; // 4 uint16 R V
     /**
-     * This attribute shall indicate what mechanism, if any, is in use for compensation for color/intensity drift over
-     * time.
+     * Indicates what mechanism, if any, is in use for compensation for color/intensity drift over time.
      */
     public DriftCompensationEnum driftCompensation; // 5 DriftCompensationEnum R V
     /**
@@ -161,8 +158,8 @@ public class ColorControlCluster extends BaseCluster {
      * the mired (micro reciprocal degree), a.k.a. mirek (micro reciprocal kelvin). It is updated as fast as practical
      * during commands that change the color.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second or
-     * • At the end of the movement/transition.
+     * - At most once per second or
+     * - At the end of the movement/transition.
      * The color temperature value in kelvins shall be related to the ColorTemperatureMireds attribute in mired by the
      * relationship
      * &quot;Color temperature [K]&quot; &#x3D; &quot;1,000,000&quot; / &quot;ColorTemperatureMireds&quot;
@@ -186,9 +183,9 @@ public class ColorControlCluster extends BaseCluster {
      * Below is the format and description of the Options attribute and temporary Options bitmap and the effect on
      * dependent commands.
      * Command execution shall NOT continue beyond the Options processing if all of these criteria are true:
-     * • The On/Off cluster exists on the same endpoint as this cluster.
-     * • The OnOff attribute of the On/Off cluster, on this endpoint, is FALSE.
-     * • The value of the ExecuteIfOff bit is 0.
+     * - The On/Off cluster exists on the same endpoint as this cluster.
+     * - The OnOff attribute of the On/Off cluster, on this endpoint, is FALSE.
+     * - The value of the ExecuteIfOff bit is 0.
      */
     public OptionsBitmap options; // 15 OptionsBitmap RW VO
     /**
@@ -201,20 +198,19 @@ public class ColorControlCluster extends BaseCluster {
     public Integer numberOfPrimaries; // 16 uint8 R V
     /**
      * Indicates the normalized chromaticity value x for this primary, as defined in the CIE xyY Color Space.
-     * The value of x shall be related to the Primary1X attribute by the relationship x &#x3D; Primary1X / 65536
-     * (Primary1X in the range 0 to 65279 inclusive)
+     * The value of x shall be related to the Primary1X attribute by the relationship
+     * x &#x3D; Primary1X / 65536 (Primary1X in the range 0 to 65279 inclusive)
      */
     public Integer primary1X; // 17 uint16 R V
     /**
      * Indicates the normalized chromaticity value y for this primary, as defined in the CIE xyY Color Space.
-     * The value of y shall be related to the Primary1Y attribute by the relationship y &#x3D; Primary1Y / 65536
-     * (Primary1Y in the range 0 to 65279 inclusive)
+     * The value of y shall be related to the Primary1Y attribute by the relationship
+     * y &#x3D; Primary1Y / 65536 (Primary1Y in the range 0 to 65279 inclusive)
      */
     public Integer primary1Y; // 18 uint16 R V
     /**
-     * Indicates a representation of the maximum intensity of this primary as defined in the Dimming Light Curve in the
-     * Ballast Configuration cluster (see Ballast Configuration Cluster), normalized such that the primary with the
-     * highest maximum intensity contains the value 254.
+     * Indicates a representation of the maximum intensity of this primary as defined in Section 3.1.3, “The Dimming
+     * Light Curve”, normalized such that the primary with the highest maximum intensity contains the value 254.
      * A value of null shall indicate that this primary is not available.
      */
     public Integer primary1Intensity; // 19 uint8 R V
@@ -236,35 +232,35 @@ public class ColorControlCluster extends BaseCluster {
     /**
      * Indicates the normalized chromaticity value x, as defined in the CIE xyY Color Space, of the current white point
      * of the device.
-     * The value of x shall be related to the WhitePointX attribute by the relationship x &#x3D; WhitePointX / 65536
-     * (WhitePointX in the range 0 to 65279 inclusive)
+     * The value of x shall be related to the WhitePointX attribute by the relationship
+     * x &#x3D; WhitePointX / 65536 (WhitePointX in the range 0 to 65279 inclusive)
      */
     public Integer whitePointX; // 48 uint16 RW VM
     /**
      * Indicates the normalized chromaticity value y, as defined in the CIE xyY Color Space, of the current white point
      * of the device.
-     * The value of y shall be related to the WhitePointY attribute by the relationship y &#x3D; WhitePointY / 65536
-     * (WhitePointY in the range 0 to 65279 inclusive)
+     * The value of y shall be related to the WhitePointY attribute by the relationship
+     * y &#x3D; WhitePointY / 65536 (WhitePointY in the range 0 to 65279 inclusive)
      */
     public Integer whitePointY; // 49 uint16 RW VM
     /**
      * Indicates the normalized chromaticity value x, as defined in the CIE xyY Color Space, of the red color point of
      * the device.
-     * The value of x shall be related to the ColorPointRX attribute by the relationship x &#x3D; ColorPointRX / 65536
-     * (ColorPointRX in the range 0 to 65279 inclusive)
+     * The value of x shall be related to the ColorPointRX attribute by the relationship
+     * x &#x3D; ColorPointRX / 65536 (ColorPointRX in the range 0 to 65279 inclusive)
      */
     public Integer colorPointRx; // 50 uint16 RW VM
     /**
      * Indicates the normalized chromaticity value y, as defined in the CIE xyY Color Space, of the red color point of
      * the device.
-     * The value of y shall be related to the ColorPointRY attribute by the relationship y &#x3D; ColorPointRY / 65536
-     * (ColorPointRY in the range 0 to 65279 inclusive)
+     * The value of y shall be related to the ColorPointRY attribute by the relationship
+     * y &#x3D; ColorPointRY / 65536 (ColorPointRY in the range 0 to 65279 inclusive)
      */
     public Integer colorPointRy; // 51 uint16 RW VM
     /**
-     * Indicates a representation of the relative intensity of the red color point as defined in the Dimming Light Curve
-     * in the Ballast Configuration cluster (see Ballast Configuration Cluster), normalized such that the color point
-     * with the highest relative intensity contains the value 254.
+     * Indicates a representation of the relative intensity of the red color point as defined in Section 3.1.3, “The
+     * Dimming Light Curve”, normalized such that the color point with the highest relative intensity contains the value
+     * 254.
      * A value of null shall indicate an invalid value.
      */
     public Integer colorPointRIntensity; // 52 uint8 RW VM
@@ -282,8 +278,8 @@ public class ColorControlCluster extends BaseCluster {
      * To provide compatibility with clients not supporting EHUE, the CurrentHue attribute shall contain a hue value in
      * the range 0 to 254, calculated from the EnhancedCurrentHue attribute.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second or
-     * • At the end of the movement/transition.
+     * - At most once per second or
+     * - At the end of the movement/transition.
      */
     public Integer enhancedCurrentHue; // 16384 uint16 R V
     /**
@@ -297,11 +293,11 @@ public class ColorControlCluster extends BaseCluster {
      * Indicates the current active status of the color loop. If this attribute has the value 0, the color loop shall
      * NOT be active. If this attribute has the value 1, the color loop shall be active.
      */
-    public ColorLoopActive colorLoopActive; // 16386 enum16 R V
+    public ColorLoopActive colorLoopActive; // 16386 enum8 R V
     /**
-     * Indicates the current direction of the color loop. If this attribute has the value 0, the EnhancedCurrentHue
-     * attribute shall be decremented. If this attribute has the value 1, the EnhancedCurrentHue attribute shall be
-     * incremented.
+     * Indicates the current direction of the color loop. If this attribute has the value Decrement, the
+     * EnhancedCurrentHue attribute shall be decremented. If this attribute has the value Increment, the
+     * EnhancedCurrentHue attribute shall be incremented.
      */
     public ColorLoopDirectionEnum colorLoopDirection; // 16387 ColorLoopDirectionEnum R V
     /**
@@ -325,15 +321,15 @@ public class ColorControlCluster extends BaseCluster {
      */
     public ColorCapabilities colorCapabilities; // 16394 map16 R V
     /**
-     * This attribute shall indicate the minimum mired value supported by the hardware. ColorTempPhysicalMinMireds
-     * corresponds to the maximum color temperature in kelvins supported by the hardware.
-     * ColorTempPhysicalMinMireds &lt;&#x3D; ColorTemperatureMireds.
+     * Indicates the minimum mired value supported by the hardware. ColorTempPhysicalMinMireds corresponds to the
+     * maximum color temperature in kelvins supported by the hardware. ColorTempPhysicalMinMireds &lt;&#x3D;
+     * ColorTemperatureMireds.
      */
     public Integer colorTempPhysicalMinMireds; // 16395 uint16 R V
     /**
-     * This attribute shall indicate the maximum mired value supported by the hardware. ColorTempPhysicalMaxMireds
-     * corresponds to the minimum color temperature in kelvins supported by the hardware.
-     * ColorTemperatureMireds &lt;&#x3D; ColorTempPhysicalMaxMireds.
+     * Indicates the maximum mired value supported by the hardware. ColorTempPhysicalMaxMireds corresponds to the
+     * minimum color temperature in kelvins supported by the hardware. ColorTemperatureMireds &lt;&#x3D;
+     * ColorTempPhysicalMaxMireds.
      */
     public Integer colorTempPhysicalMaxMireds; // 16396 uint16 R V
     /**
@@ -620,30 +616,30 @@ public class ColorControlCluster extends BaseCluster {
         /**
          * Device adheres to the associated action field.
          * This bit shall indicate whether the server adheres to the Action field in order to process the command.
-         * • 0 &#x3D; Device shall ignore the Action field.
-         * • 1 &#x3D; Device shall adhere to the Action field.
+         * - 0 &#x3D; Device shall ignore the Action field.
+         * - 1 &#x3D; Device shall adhere to the Action field.
          */
         public boolean updateAction;
         /**
          * Device updates the associated direction attribute.
          * This bit shall indicate whether the device updates the ColorLoopDirection attribute with the Direction field.
-         * • 0 &#x3D; Device shall ignore the Direction field.
-         * • 1 &#x3D; Device shall update the ColorLoopDirection attribute with the value of the Direction field.
+         * - 0 &#x3D; Device shall ignore the Direction field.
+         * - 1 &#x3D; Device shall update the ColorLoopDirection attribute with the value of the Direction field.
          */
         public boolean updateDirection;
         /**
          * Device updates the associated time attribute.
          * This bit shall indicate whether the device updates the ColorLoopTime attribute with the Time field.
-         * • 0 &#x3D; Device shall ignore the Time field.
-         * • 1 &#x3D; Device shall update the value of the ColorLoopTime attribute with the value of the Time field.
+         * - 0 &#x3D; Device shall ignore the Time field.
+         * - 1 &#x3D; Device shall update the value of the ColorLoopTime attribute with the value of the Time field.
          */
         public boolean updateTime;
         /**
          * Device updates the associated start hue attribute.
          * This bit shall indicate whether the device updates the ColorLoopStartEnhancedHue attribute with the value of
          * the StartHue field.
-         * • 0 &#x3D; Device shall ignore the StartHue field.
-         * • 1 &#x3D; Device shall update the value of the ColorLoopStartEnhancedHue attribute with the value of the
+         * - 0 &#x3D; Device shall ignore the StartHue field.
+         * - 1 &#x3D; Device shall update the value of the ColorLoopStartEnhancedHue attribute with the value of the
          * StartHue field.
          */
         public boolean updateStartHue;
@@ -1048,6 +1044,10 @@ public class ColorControlCluster extends BaseCluster {
 
     /**
      * This command is provided to allow MoveTo and Step commands to be stopped.
+     * &gt; [!NOTE]
+     * &gt; This automatically provides symmetry to the Level Control cluster.
+     * &gt; [!NOTE]
+     * &gt; The StopMoveStep command has no effect on an active color loop.
      */
     public static ClusterCommand stopMoveStep(OptionsBitmap optionsMask, OptionsBitmap optionsOverride) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -1122,7 +1122,6 @@ public class ColorControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "currentHue : " + currentHue + "\n";
         str += "currentSaturation : " + currentSaturation + "\n";

@@ -31,10 +31,8 @@ public class KeypadInputCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0509;
     public static final String CLUSTER_NAME = "KeypadInput";
     public static final String CLUSTER_PREFIX = "keypadInput";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
 
     // Enums
@@ -223,7 +221,6 @@ public class KeypadInputCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         return str;
     }

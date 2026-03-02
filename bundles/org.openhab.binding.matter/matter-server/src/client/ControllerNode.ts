@@ -1,11 +1,14 @@
 // Include this first to auto-register Crypto, Network and Time Node.js implementations
-import { Environment, Logger, StorageContext } from "@matter/general";
+import { Environment, Logger, ObserverGroup, SharedEnvironmentServices, StorageContext, StorageService } from "@matter/general";
 import { NodeId } from "@matter/types";
-import { CommissioningController, ControllerStore } from "@project-chip/matter.js";
+import { CommissioningController } from "@project-chip/matter.js";
 import { Endpoint, NodeStates, PairedNode } from "@project-chip/matter.js/device";
 import { WebSocketSession } from "../app";
 import { EventType, NodeState } from "../MessageTypes";
 import { printError } from "../util/error";
+import { SoftwareUpdateManager } from "@matter/node";
+import { DclOtaUpdateService } from "@matter/main/protocol";
+import { OtaSoftwareUpdateRequestorCluster } from "@matter/types/clusters/ota-software-update-requestor";
 const logger = Logger.get("ControllerNode");
 
 /**
@@ -16,12 +19,13 @@ export class ControllerNode {
     private storageContext?: StorageContext;
     private nodes: Map<NodeId, PairedNode> = new Map();
     commissioningController?: CommissioningController;
-
+    private observers?: ObserverGroup;
+    #services?: SharedEnvironmentServices;
     constructor(
         private readonly storageLocation: string,
         private readonly controllerName: string,
         private readonly nodeNum: number,
-        private readonly ws: WebSocketSession,
+        public readonly ws: WebSocketSession,
         private readonly netInterface?: string,
     ) {}
 
@@ -30,6 +34,20 @@ export class ControllerNode {
             throw new Error("Storage uninitialized");
         }
         return this.storageContext;
+    }
+
+    get otaService() {
+        if (!this.environment.has(DclOtaUpdateService)) {
+            new DclOtaUpdateService(this.environment); // Adds itself to the environment
+        }
+        return this.services.get(DclOtaUpdateService);
+    }
+
+    protected get services() {
+        if (!this.#services) {
+            this.#services = this.environment.asDependent();
+        }
+        return this.#services;
     }
 
     /**
@@ -63,15 +81,16 @@ export class ControllerNode {
             },
             autoConnect: false,
             adminFabricLabel: fabricLabel,
+            enableOtaProvider: true
         });
-        await this.commissioningController.initializeControllerStore();
-
-        const controllerStore = this.commissioningController.env.get(ControllerStore);
+        
+        const storageService = this.commissioningController.env.get(StorageService);
         // TODO: Implement resetStorage
         // if (resetStorage) {
-        //     await controllerStore.erase();
+        //     await this.commissioningController.node.erase();
         // }
-        this.storageContext = controllerStore.storage.createContext("Node");
+        this.storageContext = (await storageService.open(id)).createContext("Node");
+
 
         if (await this.Store.has("ControllerFabricLabel")) {
             await this.commissioningController.updateFabricLabel(
@@ -80,6 +99,39 @@ export class ControllerNode {
         }
 
         await this.commissioningController.start();
+
+        //Set up observers for OTA updates, matter.js checks every 24 hours by default.
+        this.observers = this.observers ?? new ObserverGroup(this.environment.runtime);
+        const updateManagerEvents = this.commissioningController.otaProvider.eventsOf(SoftwareUpdateManager);
+        this.observers.on(updateManagerEvents.updateAvailable, (peer, details) => {
+            logger.info(`Update available for peer `, peer, `:`, details);
+            const nodeId = peer?.nodeId;
+            if(!nodeId) {
+                logger.error(`Node ID not found for peer `, peer);
+                return;
+            }
+            this.ws.sendEvent(EventType.UpdateAvailable, {
+                nodeId: nodeId.valueOf(),
+                ...details,
+            });
+        });
+        this.observers.on(updateManagerEvents.updateDone, peer => {
+            logger.info(`Update done for peer `, peer);
+        });
+
+        // Query for updates now once
+        const updates = await this.commissioningController.otaProvider.act(agent =>
+            agent.get(SoftwareUpdateManager).queryUpdates()
+        );
+        if (updates && updates.length > 0) {
+            for (const update of updates) {
+                logger.info(`Update available for peer `, update.peerAddress, `:`, update.info);
+                this.ws.sendEvent(EventType.UpdateAvailable, {
+                    nodeId: update.peerAddress.nodeId.valueOf(),
+                    ...update.info,
+                });
+            }
+        }
     }
 
     /**
@@ -109,11 +161,11 @@ export class ControllerNode {
                     timeoutId = setTimeout(() => {
                         logger.info(`Node ${node?.nodeId} state: ${node?.state}`);
                         if (
-                            node?.state === NodeStates.Disconnected ||
-                            node?.state === NodeStates.WaitingForDeviceDiscovery ||
-                            node?.state === NodeStates.Reconnecting
+                            node?.connectionState === NodeStates.Disconnected ||
+                            node?.connectionState === NodeStates.WaitingForDeviceDiscovery ||
+                            node?.connectionState === NodeStates.Reconnecting
                         ) {
-                            reject(new Error(`Node ${node?.nodeId} reconnection failed: ${NodeStates[node?.state]}`));
+                            reject(new Error(`Node ${node?.nodeId} reconnection failed: ${NodeStates[node?.connectionState]}`));
                         } else {
                             reject(new Error(`Node ${node?.nodeId} reconnection timed out`));
                         }
@@ -191,10 +243,10 @@ export class ControllerNode {
                     });
 
                     if (
-                        node?.state === NodeStates.Disconnected ||
-                        node?.state === NodeStates.WaitingForDeviceDiscovery
+                        node?.connectionState === NodeStates.Disconnected ||
+                        node?.connectionState === NodeStates.WaitingForDeviceDiscovery
                     ) {
-                        reject(new Error(`Node ${node.nodeId} connection failed: ${NodeStates[node.state]}`));
+                        reject(new Error(`Node ${node.nodeId} connection failed: ${NodeStates[node.connectionState]}`));
                     } else {
                         reject(new Error(`Node ${node.nodeId} connection timed out`));
                     }
@@ -217,7 +269,6 @@ export class ControllerNode {
         if (this.commissioningController === undefined) {
             throw new Error("CommissioningController not initialized");
         }
-        //const node = await this.commissioningController.connectNode(NodeId(BigInt(nodeId)))
         const node = this.nodes.get(NodeId(BigInt(nodeId)));
         if (node === undefined) {
             throw new Error(`Node ${nodeId} not connected`);
@@ -311,7 +362,7 @@ export class ControllerNode {
      * @param endpointId Optional endpointId to serialize. If omitted, the root endpoint will be serialized.
      * @returns
      */
-    async serializePairedNode(node: PairedNode, endpointId?: number) {
+    async serializePairedNode(node: PairedNode, endpointId?: number, requestFromRemote: boolean = true) {
         if (!this.commissioningController) {
             throw new Error("CommissioningController not initialized");
         }
@@ -339,7 +390,7 @@ export class ControllerNode {
                     if (/^\d+$/.test(attributeName)) continue;
                     const attribute = cluster.attributes[attributeName];
                     if (!attribute) continue;
-                    const attributeValue = await attribute.get();
+                    const attributeValue = await attribute.get(requestFromRemote);
                     logger.debug(`Attribute ${attributeName} value: ${attributeValue}`);
                     if (attributeValue !== undefined) {
                         clusterData[attributeName] = attributeValue;

@@ -55,6 +55,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.EventTriggeredMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Message;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeDataMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.NodeStateMessage;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateAvailableMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.binding.matter.internal.client.dto.ws.Request;
 import org.openhab.binding.matter.internal.client.dto.ws.Response;
@@ -364,6 +365,22 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
                         for (MatterClientListener listener : clientListeners) {
                             try {
                                 listener.onEvent(bridgeEventMessage);
+                            } catch (Exception e) {
+                                logger.debug("Error notifying listener", e);
+                            }
+                        }
+                        break;
+                    case "updateAvailable":
+                        logger.debug("updateAvailable message {}", event.data);
+                        OtaUpdateAvailableMessage otaMessage = gson.fromJson(event.data,
+                                OtaUpdateAvailableMessage.class);
+                        if (otaMessage == null) {
+                            logger.debug("invalid OtaUpdateAvailableMessage");
+                            return;
+                        }
+                        for (MatterClientListener listener : clientListeners) {
+                            try {
+                                listener.onEvent(otaMessage);
                             } catch (Exception e) {
                                 logger.debug("Error notifying listener", e);
                             }
@@ -691,7 +708,24 @@ public class MatterWebsocketClient implements WebSocketListener, MatterWebsocket
         @Override
         public OctetString deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
-            return new OctetString(json.getAsString());
+            if (json.isJsonPrimitive()) {
+                // Handle hex string format: "AABBCCDD"
+                return new OctetString(json.getAsString());
+            } else if (json.isJsonObject()) {
+                // Handle Buffer object format: {"type": "Buffer", "data": [170, 187, 204, 221]}
+                JsonObject obj = json.getAsJsonObject();
+                if (obj.has("data")) {
+                    JsonArray dataArray = obj.getAsJsonArray("data");
+                    byte[] bytes = new byte[dataArray.size()];
+                    for (int i = 0; i < dataArray.size(); i++) {
+                        bytes[i] = dataArray.get(i).getAsByte();
+                    }
+                    return new OctetString(bytes);
+                }
+                throw new JsonParseException("OctetString object missing 'data' field: " + json);
+            } else {
+                throw new JsonParseException("Unexpected OctetString format: " + json);
+            }
         }
     }
 

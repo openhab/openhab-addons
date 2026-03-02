@@ -29,11 +29,9 @@ public class LaundryDryerControlsCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x004A;
     public static final String CLUSTER_NAME = "LaundryDryerControls";
     public static final String CLUSTER_PREFIX = "laundryDryerControls";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_SUPPORTED_DRYNESS_LEVELS = "supportedDrynessLevels";
     public static final String ATTRIBUTE_SELECTED_DRYNESS_LEVEL = "selectedDrynessLevel";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the list of supported dryness levels available to the appliance in the currently selected mode. The
      * dryness level values are determined by the manufacturer. At least one dryness level value shall be provided in
@@ -94,7 +92,6 @@ public class LaundryDryerControlsCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "supportedDrynessLevels : " + supportedDrynessLevels + "\n";
         str += "selectedDrynessLevel : " + selectedDrynessLevel + "\n";
         return str;

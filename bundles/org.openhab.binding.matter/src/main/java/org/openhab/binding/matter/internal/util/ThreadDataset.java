@@ -407,7 +407,7 @@ public class ThreadDataset {
     }
 
     public void setNetworkName(String name) {
-        codec.putBytes(TLV_NETWORK_NAME, name.getBytes());
+        codec.putBytes(TLV_NETWORK_NAME, name.getBytes(StandardCharsets.UTF_8));
     }
 
     public void setNetworkKey(byte[] key) {
@@ -640,7 +640,7 @@ public class ThreadDataset {
                     out.put(e.getKey().byteValue()).put((byte) val.length).put(val);
                 });
 
-        return TlvCodec.bytesToHex(Arrays.copyOf(out.array(), out.position())).toUpperCase();
+        return TlvCodec.bytesToHex(Arrays.copyOf(out.array(), out.position())).toUpperCase(Locale.ROOT);
     }
 
     public static ThreadDataset fromHex(String hex) {
@@ -693,7 +693,7 @@ public class ThreadDataset {
                     "ExtPANID must be 16 hex chars: current length is " + extPanIdHex.length());
         }
         byte[] saltPrefix = "Thread".getBytes(StandardCharsets.US_ASCII);
-        byte[] nameUpper = networkName.toUpperCase().getBytes(StandardCharsets.US_ASCII);
+        byte[] nameUpper = networkName.toUpperCase(Locale.ROOT).getBytes(StandardCharsets.US_ASCII);
         byte[] extPanId = HexFormat.of().parseHex(extPanIdHex);
         byte[] salt = new byte[saltPrefix.length + nameUpper.length + extPanId.length];
         System.arraycopy(saltPrefix, 0, salt, 0, saltPrefix.length);

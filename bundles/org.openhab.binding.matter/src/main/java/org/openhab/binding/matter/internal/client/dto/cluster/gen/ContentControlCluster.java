@@ -32,7 +32,6 @@ public class ContentControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x050F;
     public static final String CLUSTER_NAME = "ContentControl";
     public static final String CLUSTER_PREFIX = "contentControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ENABLED = "enabled";
     public static final String ATTRIBUTE_ON_DEMAND_RATINGS = "onDemandRatings";
@@ -46,7 +45,6 @@ public class ContentControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_BLOCK_APPLICATION_LIST = "blockApplicationList";
     public static final String ATTRIBUTE_BLOCK_CONTENT_TIME_WINDOW = "blockContentTimeWindow";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates whether the Content Control feature implemented on a media device is turned off (FALSE) or turned on
@@ -115,9 +113,9 @@ public class ContentControlCluster extends BaseCluster {
      * Indicates whether the playback of unrated content is allowed when the Content Control feature is activated. If
      * this attribute equals FALSE, then playback of unrated content shall be permitted. Otherwise, the media device
      * shall prevent the playback of unrated content.
-     * When this attribute changes, the device SHOULD make the user aware of any limits of this feature.
-     * For example, if the feature does not control content within apps, then the device should make this clear to the
-     * user when the attribute changes.
+     * When this attribute changes, the device SHOULD make the user aware of any limits of this feature. For example, if
+     * the feature does not control content within apps, then the device should make this clear to the user when the
+     * attribute changes.
      */
     public Boolean blockUnrated; // 7 bool R V
     /**
@@ -210,7 +208,8 @@ public class ContentControlCluster extends BaseCluster {
 
     public static class AppInfoStruct {
         /**
-         * This field shall indicate the CSA-issued vendor ID for the catalog. The DIAL registry shall use value 0x0000.
+         * This field shall indicate the Connectivity Standards Alliance-issued vendor ID for the catalog. The DIAL
+         * registry shall use value 0x0000.
          * Content App Platform providers will have their own catalog vendor ID (set to their own Vendor ID) and will
          * assign an ApplicationID to each Content App.
          */
@@ -457,8 +456,8 @@ public class ContentControlCluster extends BaseCluster {
      * field and directly increase the RemainingScreenTime attribute by the specified BonusTime value.
      * A server that does not support the PM feature shall respond with InvalidPINCode to clients that only have Operate
      * privilege unless:
-     * • It has been provided with the PIN value to expect via an out of band mechanism, and
-     * • The client has provided a PINCode that matches the expected PIN value.
+     * - It has been provided with the PIN value to expect via an out of band mechanism, and
+     * - The client has provided a PINCode that matches the expected PIN value.
      */
     public static ClusterCommand addBonusTime(String pinCode, Integer bonusTime) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -636,7 +635,6 @@ public class ContentControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "enabled : " + enabled + "\n";
         str += "onDemandRatings : " + onDemandRatings + "\n";

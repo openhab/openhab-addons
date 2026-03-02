@@ -30,7 +30,6 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0035;
     public static final String CLUSTER_NAME = "ThreadNetworkDiagnostics";
     public static final String CLUSTER_PREFIX = "threadNetworkDiagnostics";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CHANNEL = "channel";
     public static final String ATTRIBUTE_ROUTING_ROLE = "routingRole";
@@ -98,328 +97,298 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public static final String ATTRIBUTE_EXT_ADDRESS = "extAddress";
     public static final String ATTRIBUTE_RLOC16 = "rloc16";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * The Channel attribute shall indicate the 802.15.4 channel number configured on the Node’s Thread interface (that
-     * is, the Active Operational Dataset’s current Channel value). A value of null shall indicate that the Thread
-     * interface is not currently configured or operational.
+     * Indicates the 802.15.4 channel number configured on the Node’s Thread interface (that is, the Active Operational
+     * Dataset’s current Channel value). A value of null shall indicate that the Thread interface is not currently
+     * configured or operational.
      */
     public Integer channel; // 0 uint16 R V
     /**
-     * The RoutingRole attribute shall indicate the role that this Node has within the routing of messages through the
-     * Thread network, as defined by RoutingRoleEnum. The potential roles are defined in the following table. A value of
-     * null shall indicate that the Thread interface is not currently configured or operational.
+     * Indicates the role that this Node has within the routing of messages through the Thread network, as defined by
+     * RoutingRoleEnum. The potential roles are defined in the following table. A value of null shall indicate that the
+     * Thread interface is not currently configured or operational.
      */
     public RoutingRoleEnum routingRole; // 1 RoutingRoleEnum R V
     /**
-     * The NetworkName attribute shall indicate a human-readable (displayable) name for the Thread network that the Node
-     * has been configured to join to. A value of null shall indicate that the Thread interface is not currently
-     * configured or operational.
+     * Indicates a human-readable (displayable) name for the Thread network that the Node has been configured to join
+     * to. A value of null shall indicate that the Thread interface is not currently configured or operational.
      */
     public String networkName; // 2 string R V
     /**
-     * The PanId attribute shall indicate the 16-bit identifier of the Node on the Thread network. A value of null shall
-     * indicate that the Thread interface is not currently configured or operational.
+     * Indicates the 16-bit identifier of the Node on the Thread network. A value of null shall indicate that the Thread
+     * interface is not currently configured or operational.
      */
     public Integer panId; // 3 uint16 R V
     /**
-     * The ExtendedPanId attribute shall indicate the unique 64-bit identifier of the Node on the Thread network. A
-     * value of null shall indicate that the Thread interface is not currently configured or operational.
+     * Indicates the unique 64-bit identifier of the Node on the Thread network. A value of null shall indicate that the
+     * Thread interface is not currently configured or operational.
      */
     public BigInteger extendedPanId; // 4 uint64 R V
     /**
-     * The MeshLocalPrefix attribute shall indicate the mesh-local IPv6 prefix for the Thread network that the Node has
-     * been configured to join to. A value of null shall indicate that the Thread interface is not currently configured
-     * or operational.
+     * Indicates the mesh-local IPv6 prefix for the Thread network that the Node has been configured to join to. A value
+     * of null shall indicate that the Thread interface is not currently configured or operational.
      */
     public OctetString meshLocalPrefix; // 5 ipv6pre R V
     /**
-     * The OverrunCount attribute shall indicate the number of packets dropped either at ingress or egress, due to lack
-     * of buffer memory to retain all packets on the ethernet network interface. The OverrunCount attribute shall be
-     * reset to 0 upon a reboot of the Node.
+     * Indicates the number of packets dropped either at ingress or egress, due to lack of buffer memory to retain all
+     * packets on the ethernet network interface. The OverrunCount attribute shall be reset to 0 upon a reboot of the
+     * Node.
      */
     public BigInteger overrunCount; // 6 uint64 R V
     /**
-     * The NeighborTable attribute shall indicate the current list of Nodes that comprise the neighbor table on the
-     * Node.
+     * Indicates the current list of Nodes that comprise the neighbor table on the Node.
      */
     public List<NeighborTableStruct> neighborTable; // 7 list R V
     /**
-     * The RouteTable attribute shall indicate the current list of router capable Nodes for which routes have been
-     * established.
+     * Indicates the current list of router capable Nodes for which routes have been established.
      */
     public List<RouteTableStruct> routeTable; // 8 list R V
     /**
-     * The PartitionId attribute shall indicate the Thread Leader Partition Id for the Thread network to which the Node
-     * is joined. Null if not attached to a Thread network.
+     * Indicates the Thread Leader Partition Id for the Thread network to which the Node is joined. Null if not attached
+     * to a Thread network.
      */
     public Integer partitionId; // 9 uint32 R V
     /**
-     * The Weighting attribute shall indicate the Thread Leader Weight used when operating in the Leader role. Null if
-     * not attached to a Thread network.
+     * Indicates the Thread Leader Weight used when operating in the Leader role. Null if not attached to a Thread
+     * network.
      */
     public Integer weighting; // 10 uint16 R V
     /**
-     * The DataVersion attribute shall indicate the full Network Data Version the Node currently uses. Null if not
-     * attached to a Thread network.
+     * Indicates the full Network Data Version the Node currently uses. Null if not attached to a Thread network.
      */
     public Integer dataVersion; // 11 uint16 R V
     /**
-     * The StableDataVersion attribute shall indicate the Network Data Version for the stable subset of data the Node
-     * currently uses. Null if not attached to a Thread network.
+     * Indicates the Network Data Version for the stable subset of data the Node currently uses. Null if not attached to
+     * a Thread network.
      */
     public Integer stableDataVersion; // 12 uint16 R V
     /**
-     * The LeaderRouterId attribute shall indicate the 8-bit LeaderRouterId the Node shall attempt to utilize upon
-     * becoming a router or leader on the Thread network. Null if not attached to a Thread network.
+     * Indicates the 8-bit LeaderRouterId the Node shall attempt to utilize upon becoming a router or leader on the
+     * Thread network. Null if not attached to a Thread network.
      */
     public Integer leaderRouterId; // 13 uint8 R V
     /**
-     * The DetachedRoleCount attribute shall indicate the number of times the Node entered the OT_DEVICE_ROLE_DETACHED
-     * role as specified within the Thread specification. This value shall only be reset upon a Node reboot.
+     * Indicates the number of times the Node entered the OT_DEVICE_ROLE_DETACHED role as specified within the Thread
+     * specification. This value shall only be reset upon a Node reboot.
      */
     public Integer detachedRoleCount; // 14 uint16 R V
     /**
-     * The ChildRoleCount attribute shall indicate the number of times the Node entered the OT_DEVICE_ROLE_CHILD role as
-     * specified within the Thread specification. This value shall only be reset upon a Node reboot.
+     * Indicates the number of times the Node entered the OT_DEVICE_ROLE_CHILD role as specified within the Thread
+     * specification. This value shall only be reset upon a Node reboot.
      */
     public Integer childRoleCount; // 15 uint16 R V
     /**
-     * The RouterRoleCount attribute shall indicate the number of times the Node entered the OT_DEVICE_ROLE_ROUTER role
-     * as specified within the Thread specification. This value shall only be reset upon a Node reboot.
+     * Indicates the number of times the Node entered the OT_DEVICE_ROLE_ROUTER role as specified within the Thread
+     * specification. This value shall only be reset upon a Node reboot.
      */
     public Integer routerRoleCount; // 16 uint16 R V
     /**
-     * The LeaderRoleCount attribute shall indicate the number of times the Node entered the OT_DEVICE_ROLE_LEADER role
-     * as specified within the Thread specification. This value shall only be reset upon a Node reboot.
+     * Indicates the number of times the Node entered the OT_DEVICE_ROLE_LEADER role as specified within the Thread
+     * specification. This value shall only be reset upon a Node reboot.
      */
     public Integer leaderRoleCount; // 17 uint16 R V
     /**
-     * The AttachAttemptCount attribute shall indicate the number of attempts that have been made to attach to a Thread
-     * network while the Node was detached from all Thread networks. This value shall only be reset upon a Node reboot.
+     * Indicates the number of attempts that have been made to attach to a Thread network while the Node was detached
+     * from all Thread networks. This value shall only be reset upon a Node reboot.
      */
     public Integer attachAttemptCount; // 18 uint16 R V
     /**
-     * The PartitionIdChangeCount attribute shall indicate the number of times that the Thread network that the Node is
-     * connected to has changed its Partition ID. This value shall only be reset upon a Node reboot.
+     * Indicates the number of times that the Thread network that the Node is connected to has changed its Partition ID.
+     * This value shall only be reset upon a Node reboot.
      */
     public Integer partitionIdChangeCount; // 19 uint16 R V
     /**
-     * The BetterPartitionAttachAttemptCount attribute shall indicate the number of times a Node has attempted to attach
-     * to a different Thread partition that it has determined is better than the partition it is currently attached to.
-     * This value shall only be reset upon a Node reboot.
+     * Indicates the number of times a Node has attempted to attach to a different Thread partition that it has
+     * determined is better than the partition it is currently attached to. This value shall only be reset upon a Node
+     * reboot.
      */
     public Integer betterPartitionAttachAttemptCount; // 20 uint16 R V
     /**
-     * The ParentChangeCount attribute shall indicate the number of times a Node has changed its parent. This value
-     * shall only be reset upon a Node reboot.
+     * Indicates the number of times a Node has changed its parent. This value shall only be reset upon a Node reboot.
      */
     public Integer parentChangeCount; // 21 uint16 R V
     /**
-     * The TxTotalCount attribute shall indicate the total number of unique MAC frame transmission requests. The
-     * TxTotalCount attribute shall only be incremented by 1 for each MAC transmission request regardless of the amount
-     * of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of unique MAC frame transmission requests. The attribute shall only be incremented by
+     * 1 for each MAC transmission request regardless of the amount of CCA failures, CSMA-CA attempts, or
+     * retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txTotalCount; // 22 uint32 R V
     /**
-     * The TxUnicastCount attribute shall indicate the total number of unique unicast MAC frame transmission requests.
-     * The TxUnicastCount attribute shall only be incremented by 1 for each unicast MAC transmission request regardless
-     * of the amount of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node
-     * reboot.
+     * Indicates the total number of unique unicast MAC frame transmission requests. The attribute shall only be
+     * incremented by 1 for each unicast MAC transmission request regardless of the amount of CCA failures, CSMA-CA
+     * attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txUnicastCount; // 23 uint32 R V
     /**
-     * The TxBroadcastCount attribute shall indicate the total number of unique broadcast MAC frame transmission
-     * requests. The TxBroadcastCount attribute shall only be incremented by 1 for each broadcast MAC transmission
-     * request regardless of the amount of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be
-     * reset upon a Node reboot.
+     * Indicates the total number of unique broadcast MAC frame transmission requests. The attribute shall only be
+     * incremented by 1 for each broadcast MAC transmission request regardless of the amount of CCA failures, CSMA-CA
+     * attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txBroadcastCount; // 24 uint32 R V
     /**
-     * The TxAckRequestedCount attribute shall indicate the total number of unique MAC frame transmission requests with
-     * requested acknowledgment. The TxAckRequestedCount attribute shall only be incremented by 1 for each MAC
-     * transmission request with requested acknowledgment regardless of the amount of CCA failures, CSMA-CA attempts, or
-     * retransmissions. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of unique MAC frame transmission requests with requested acknowledgment. The attribute
+     * shall only be incremented by 1 for each MAC transmission request with requested acknowledgment regardless of the
+     * amount of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txAckRequestedCount; // 25 uint32 R V
     /**
-     * The TxAckedCount attribute shall indicate the total number of unique MAC frame transmission requests that were
-     * acked. The TxAckedCount attribute shall only be incremented by 1 for each MAC transmission request that is acked
-     * regardless of the amount of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset
-     * upon a Node reboot.
+     * Indicates the total number of unique MAC frame transmission requests that were acked. The attribute shall only be
+     * incremented by 1 for each MAC transmission request that is acked regardless of the amount of CCA failures,
+     * CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txAckedCount; // 26 uint32 R V
     /**
-     * The TxNoAckRequestedCount attribute shall indicate the total number of unique MAC frame transmission requests
-     * without requested acknowledgment. The TxNoAckRequestedCount attribute shall only be incremented by 1 for each MAC
-     * transmission request that is does not request acknowledgement regardless of the amount of CCA failures, CSMA-CA
-     * attempts, or retransmissions.
+     * Indicates the total number of unique MAC frame transmission requests without requested acknowledgment. The
+     * attribute shall only be incremented by 1 for each MAC transmission request that is does not request
+     * acknowledgement regardless of the amount of CCA failures, CSMA-CA attempts, or retransmissions.
      */
     public Integer txNoAckRequestedCount; // 27 uint32 R V
     /**
-     * The TxDataCount attribute shall indicate the total number of unique MAC Data frame transmission requests. The
-     * TxDataCount attribute shall only be incremented by 1 for each MAC Data frame transmission request regardless of
-     * the amount of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node
-     * reboot.
+     * Indicates the total number of unique MAC Data frame transmission requests. The attribute shall only be
+     * incremented by 1 for each MAC Data frame transmission request regardless of the amount of CCA failures, CSMA-CA
+     * attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txDataCount; // 28 uint32 R V
     /**
-     * The TxDataPollCount attribute shall indicate the total number of unique MAC Data Poll frame transmission
-     * requests. The TxDataPollCount attribute shall only be incremented by 1 for each MAC Data Poll frame transmission
-     * request regardless of the amount of CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be
-     * reset upon a Node reboot.
+     * Indicates the total number of unique MAC Data Poll frame transmission requests. The attribute shall only be
+     * incremented by 1 for each MAC Data Poll frame transmission request regardless of the amount of CCA failures,
+     * CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txDataPollCount; // 29 uint32 R V
     /**
-     * The TxBeaconCount attribute shall indicate the total number of unique MAC Beacon frame transmission requests. The
-     * TxBeaconCount attribute shall only be incremented by 1 for each MAC Beacon frame transmission request regardless
-     * of the amount of CCA failures, CSMA-CA attempts, or retransmissions.
+     * Indicates the total number of unique MAC Beacon frame transmission requests. The attribute shall only be
+     * incremented by 1 for each MAC Beacon frame transmission request regardless of the amount of CCA failures, CSMA-CA
+     * attempts, or retransmissions.
      */
     public Integer txBeaconCount; // 30 uint32 R V
     /**
-     * The TxBeaconRequestCount attribute shall indicate the total number of unique MAC Beacon Request frame
-     * transmission requests. The TxBeaconRequestCount attribute shall only be incremented by 1 for each MAC Beacon
-     * Request frame transmission request regardless of the amount of CCA failures, CSMA-CA attempts, or
-     * retransmissions. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of unique MAC Beacon Request frame transmission requests. The attribute shall only be
+     * incremented by 1 for each MAC Beacon Request frame transmission request regardless of the amount of CCA failures,
+     * CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txBeaconRequestCount; // 31 uint32 R V
     /**
-     * The TxOtherCount attribute shall indicate the total number of unique MAC frame transmission requests that are not
-     * counted by any other attribute. The TxOtherCount attribute shall only be incremented by 1 for each MAC frame
-     * transmission request regardless of the amount of CCA failures, CSMA-CA attempts, or retransmissions. This value
-     * shall only be reset upon a Node reboot.
+     * Indicates the total number of unique MAC frame transmission requests that are not counted by any other attribute.
+     * The attribute shall only be incremented by 1 for each MAC frame transmission request regardless of the amount of
+     * CCA failures, CSMA-CA attempts, or retransmissions. This value shall only be reset upon a Node reboot.
      */
     public Integer txOtherCount; // 32 uint32 R V
     /**
-     * The TxRetryCount attribute shall indicate the total number of MAC retransmission attempts. The TxRetryCount
-     * attribute shall only be incremented by 1 for each retransmission attempt that may be triggered by lack of
-     * acknowledgement, CSMA/CA failure, or other type of transmission error. This value shall only be reset upon a Node
-     * reboot.
+     * Indicates the total number of MAC retransmission attempts. The attribute shall only be incremented by 1 for each
+     * retransmission attempt that may be triggered by lack of acknowledgement, CSMA/CA failure, or other type of
+     * transmission error. This value shall only be reset upon a Node reboot.
      */
     public Integer txRetryCount; // 33 uint32 R V
     /**
-     * The TxDirectMaxRetryExpiryCount attribute shall indicate the total number of unique MAC transmission packets that
-     * meet maximal retry limit for direct packets. The TxDirectMaxRetryExpiryCount attribute shall only be incremented
-     * by 1 for each unique MAC transmission packets that meets the maximal retry limit for direct packets. This value
-     * shall only be reset upon a Node reboot.
+     * Indicates the total number of unique MAC transmission packets that meet maximal retry limit for direct packets.
+     * The attribute shall only be incremented by 1 for each unique MAC transmission packets that meets the maximal
+     * retry limit for direct packets. This value shall only be reset upon a Node reboot.
      */
     public Integer txDirectMaxRetryExpiryCount; // 34 uint32 R V
     /**
-     * The TxIndirectMaxRetryExpiryCount attribute shall indicate the total number of unique MAC transmission packets
-     * that meet maximal retry limit for indirect packets. The TxIndirectMaxRetryExpiryCount attribute shall only be
-     * incremented by 1 for each unique MAC transmission packets that meets the maximal retry limit for indirect
-     * packets. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of unique MAC transmission packets that meet maximal retry limit for indirect packets.
+     * The attribute shall only be incremented by 1 for each unique MAC transmission packets that meets the maximal
+     * retry limit for indirect packets. This value shall only be reset upon a Node reboot.
      */
     public Integer txIndirectMaxRetryExpiryCount; // 35 uint32 R V
     /**
-     * The TxErrCcaCount attribute shall indicate the total number of CCA failures. The TxErrCcaCount attribute shall
-     * only be incremented by 1 for each instance of a CCA failure. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of CCA failures. The TxErrCcaCount attribute shall only be incremented by 1 for each
+     * instance of a CCA failure. This value shall only be reset upon a Node reboot.
      */
     public Integer txErrCcaCount; // 36 uint32 R V
     /**
-     * The TxErrAbortCount attribute shall indicate the total number of unique MAC transmission request failures caused
-     * by an abort error. The TxErrAbortCount attribute shall only be incremented by 1 for each unique MAC transmission
-     * request failure caused by an abort error.
+     * Indicates the total number of unique MAC transmission request failures caused by an abort error. The attribute
+     * shall only be incremented by 1 for each unique MAC transmission request failure caused by an abort error.
      */
     public Integer txErrAbortCount; // 37 uint32 R V
     /**
-     * The TxErrBusyChannelCount attribute shall indicate the total number of unique MAC transmission request failures
-     * caused by an error as the result of a busy channel (a CSMA/CA fail). The TxErrBusyChannelCount attribute shall
-     * only be incremented by 1 for each unique MAC transmission request failure caused by a busy channel such as a
-     * CSMA/CA failure.
+     * Indicates the total number of unique MAC transmission request failures caused by an error as the result of a busy
+     * channel (a CSMA/CA fail). The attribute shall only be incremented by 1 for each unique MAC transmission request
+     * failure caused by a busy channel such as a CSMA/CA failure.
      */
     public Integer txErrBusyChannelCount; // 38 uint32 R V
     /**
-     * The RxTotalCount attribute shall indicate the total number of received unique MAC frames. This value shall only
-     * be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC frames. This value shall only be reset upon a Node reboot.
      */
     public Integer rxTotalCount; // 39 uint32 R V
     /**
-     * The RxUnicastCount attribute shall indicate the total number of received unique unicast MAC frames. This value
-     * shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique unicast MAC frames. This value shall only be reset upon a Node
+     * reboot.
      */
     public Integer rxUnicastCount; // 40 uint32 R V
     /**
-     * The RxBroadcastCount attribute shall indicate the total number of received unique broadcast MAC frames. This
-     * value shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique broadcast MAC frames. This value shall only be reset upon a Node
+     * reboot.
      */
     public Integer rxBroadcastCount; // 41 uint32 R V
     /**
-     * The RxDataCount attribute shall indicate the total number of received unique MAC Data frames. This value shall
-     * only be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC Data frames. This value shall only be reset upon a Node reboot.
      */
     public Integer rxDataCount; // 42 uint32 R V
     /**
-     * The RxDataPollCount attribute shall indicate the total number of received unique MAC Data Poll frames. This value
-     * shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC Data Poll frames. This value shall only be reset upon a Node
+     * reboot.
      */
     public Integer rxDataPollCount; // 43 uint32 R V
     /**
-     * The RxBeaconCount attribute shall indicate the total number of received unique MAC Beacon frames. This value
-     * shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC Beacon frames. This value shall only be reset upon a Node
+     * reboot.
      */
     public Integer rxBeaconCount; // 44 uint32 R V
     /**
-     * The RxBeaconRequestCount attribute shall indicate the total number of received unique MAC Beacon Request frames.
-     * This value shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC Beacon Request frames. This value shall only be reset upon a
+     * Node reboot.
      */
     public Integer rxBeaconRequestCount; // 45 uint32 R V
     /**
-     * The RxOtherCount attribute shall indicate the total number of received unique MAC frame requests that are not
-     * counted by any other attribute. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC frame requests that are not counted by any other attribute.
+     * This value shall only be reset upon a Node reboot.
      */
     public Integer rxOtherCount; // 46 uint32 R V
     /**
-     * The RxAddressFilteredCount attribute shall indicate the total number of received unique MAC frame requests that
-     * have been dropped as a result of MAC filtering. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of MAC
+     * filtering. This value shall only be reset upon a Node reboot.
      */
     public Integer rxAddressFilteredCount; // 47 uint32 R V
     /**
-     * The RxDestAddrFilteredCount attribute shall indicate the total number of received unique MAC frame requests that
-     * have been dropped as a result of a destination address check. This value shall only be reset upon a Node reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of a
+     * destination address check. This value shall only be reset upon a Node reboot.
      */
     public Integer rxDestAddrFilteredCount; // 48 uint32 R V
     /**
-     * The RxDuplicatedCount attribute shall indicate the total number of received MAC frame requests that have been
-     * dropped as a result of being a duplicate of a previously received MAC frame request. This value shall only be
-     * reset upon a Node reboot.
+     * Indicates the total number of received MAC frame requests that have been dropped as a result of being a duplicate
+     * of a previously received MAC frame request. This value shall only be reset upon a Node reboot.
      */
     public Integer rxDuplicatedCount; // 49 uint32 R V
     /**
-     * The RxErrNoFrameCount attribute shall indicate the total number of received unique MAC frame requests that have
-     * been dropped as a result of missing or malformed frame contents. This value shall only be reset upon a Node
-     * reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of missing or
+     * malformed frame contents. This value shall only be reset upon a Node reboot.
      */
     public Integer rxErrNoFrameCount; // 50 uint32 R V
     /**
-     * The RxErrUnknownNeighborCount attribute shall indicate the total number of received unique MAC frame requests
-     * that have been dropped as a result of originating from an unknown neighbor device. This value shall only be reset
-     * upon a Node reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of
+     * originating from an unknown neighbor device. This value shall only be reset upon a Node reboot.
      */
     public Integer rxErrUnknownNeighborCount; // 51 uint32 R V
     /**
-     * The RxErrInvalidSrcAddrCount attribute shall indicate the total number of received unique MAC frame requests that
-     * have been dropped as a result of containing an invalid source address. This value shall only be reset upon a Node
-     * reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of containing
+     * an invalid source address. This value shall only be reset upon a Node reboot.
      */
     public Integer rxErrInvalidSrcAddrCount; // 52 uint32 R V
     /**
-     * The RxErrSecCount attribute shall indicate the total number of received unique MAC frame requests that have been
-     * dropped as a result of an error with the security of the received frame. This value shall only be reset upon a
-     * Node reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of an error
+     * with the security of the received frame. This value shall only be reset upon a Node reboot.
      */
     public Integer rxErrSecCount; // 53 uint32 R V
     /**
-     * The RxErrFcsCount attribute shall indicate the total number of received unique MAC frame requests that have been
-     * dropped as a result of an error with the FCS of the received frame. This value shall only be reset upon a Node
-     * reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of an error
+     * with the FCS of the received frame. This value shall only be reset upon a Node reboot.
      */
     public Integer rxErrFcsCount; // 54 uint32 R V
     /**
-     * The RxErrOtherCount attribute shall indicate the total number of received unique MAC frame requests that have
-     * been dropped as a result of an error that is not counted by any other attribute. This value shall only be reset
-     * upon a Node reboot.
+     * Indicates the total number of received unique MAC frame requests that have been dropped as a result of an error
+     * that is not counted by any other attribute. This value shall only be reset upon a Node reboot.
      */
     public Integer rxErrOtherCount; // 55 uint32 R V
     /**
@@ -435,24 +404,35 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
      */
     public Integer delay; // 58 uint32 R V
     /**
-     * The SecurityPolicy attribute indicates the current security policies for the Thread partition to which a Node is
-     * connected. Null when there is no dataset configured.
+     * Indicates the current security policies for the Thread partition to which a Node is connected. Null when there is
+     * no dataset configured.
      */
     public SecurityPolicy securityPolicy; // 59 SecurityPolicy R V
     /**
-     * The ChannelPage0Mask attribute indicates the channels within channel page 0, in the 2.4GHz ISM band. The channels
-     * are represented in most significant bit order, with bit value 1 meaning selected, bit value 0 meaning unselected.
-     * For example, the most significant bit of the left-most byte indicates channel 0. If channel 0 and channel 10 are
-     * selected, the mask would be: 80 20 00 00. Null when there is no dataset configured.
+     * Indicates the channels within channel page 0, in the 2.4GHz ISM band. The channels are represented in most
+     * significant bit order, with bit value 1 meaning selected, bit value 0 meaning unselected. For example, the most
+     * significant bit of the left-most byte indicates channel 0. If channel 0 and channel 10 are selected, the mask
+     * would be: 80 20 00 00. Null when there is no dataset configured.
      */
     public OctetString channelPage0Mask; // 60 octstr R V
     /**
-     * The OperationalDatasetComponents attribute is a collection of flags to indicate the presence of various
-     * operationally acquired values.
+     * Indicates a collection of flags to indicate the presence of various operationally acquired values.
      */
     public OperationalDatasetComponents operationalDatasetComponents; // 61 OperationalDatasetComponents R V
     public List<NetworkFaultEnum> activeNetworkFaultsList; // 62 list R V
+    /**
+     * Indicates the IEEE 802.15.4 extended address for the Node. A value of null shall indicate that the extended
+     * address is not yet known. The uint64 value is composed by taking the 8 octets of the extended address EUI-64 and
+     * treating them as a big-endian integer. For example, octet string (in hexadecimal, from first octet to last)
+     * 00112233AABBCCDD would lead to a value of 0x00112233AABBCCDD.
+     */
     public BigInteger extAddress; // 63 uint64 R V
+    /**
+     * Indicates the RLOC16 of the Node. A value of null shall indicate that the Thread interface is not currently
+     * configured or operational. The uint16 value is composed by taking the two RLOC16 and treating the octet string as
+     * if it was encoding a big-endian integer. For example, octet string (in hexadecimal, from first octet to last)
+     * 44AA would lead to a value of 0x44AA.
+     */
     public Integer rloc16; // 64 uint16 R V
 
     // Structs
@@ -490,7 +470,10 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
 
     public static class NeighborTableStruct {
         /**
-         * This field shall specify the IEEE 802.15.4 extended address for the neighboring Node.
+         * This field shall specify the IEEE 802.15.4 extended address for the neighboring Node. The uint64 value is
+         * composed by taking the 8 octets of the extended address EUI-64 and treating them as a big-endian integer. For
+         * example, octet string (in hexadecimal, from first octet to last) 00112233AABBCCDD would lead to a value of
+         * 0x00112233AABBCCDD.
          */
         public BigInteger extAddress; // uint64
         /**
@@ -499,7 +482,9 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
          */
         public Integer age; // uint32
         /**
-         * This field shall specify the RLOC16 of the neighboring Node.
+         * This field shall specify the RLOC16 of the neighboring Node. The uint16 value is composed by taking the two
+         * RLOC16 and treating the octet string as if it was encoding a big-endian integer. For example, octet string
+         * (in hexadecimal, from first octet to last) 44AA would lead to a value of 0x44AA.
          */
         public Integer rloc16; // uint16
         /**
@@ -583,11 +568,16 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     public static class RouteTableStruct {
         /**
          * This field shall specify the IEEE 802.15.4 extended address for the Node for which this route table entry
-         * corresponds.
+         * corresponds. The uint64 value is composed by taking the 8 octets of the extended address EUI-64 and treating
+         * them as a big-endian integer. For example, octet string (in hexadecimal, from first octet to last)
+         * 00112233AABBCCDD would lead to a value of 0x00112233AABBCCDD.
          */
         public BigInteger extAddress; // uint64
         /**
-         * This field shall specify the RLOC16 for the Node for which this route table entry corresponds.
+         * This field shall specify the RLOC16 for the Node for which this route table entry corresponds. The uint16
+         * value is composed by taking the two RLOC16 and treating the octet string as if it was encoding a big-endian
+         * integer. For example, octet string (in hexadecimal, from first octet to last) 44AA would lead to a value of
+         * 0x44AA.
          */
         public Integer rloc16; // uint16
         /**
@@ -852,10 +842,10 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to reset the count attributes.
      * Reception of this command shall reset the following attributes to 0:
-     * • OverrunCount
-     * This command has no associated data. Upon completion, this command shall send a status code set to a value of
-     * SUCCESS back to the initiator.
+     * - OverrunCount
+     * Upon completion, this command shall send a status code of SUCCESS back to the initiator.
      */
     public static ClusterCommand resetCounts() {
         return new ClusterCommand("resetCounts");
@@ -864,7 +854,6 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "channel : " + channel + "\n";
         str += "routingRole : " + routingRole + "\n";

@@ -37,6 +37,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.NetworkCommiss
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.NitrogenDioxideConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OccupancySensingCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OnOffCluster;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OtaSoftwareUpdateRequestorCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.OzoneConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.Pm10ConcentrationMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.Pm1ConcentrationMeasurementCluster;
@@ -115,6 +116,8 @@ public class ConverterRegistry {
                 ThreadNetworkDiagnosticsConverter.class);
         ConverterRegistry.registerConverter(ThreadBorderRouterManagementCluster.CLUSTER_ID,
                 ThreadBorderRouterManagementConverter.class);
+        ConverterRegistry.registerConverter(OtaSoftwareUpdateRequestorCluster.CLUSTER_ID,
+                OtaSoftwareUpdateRequestorConverter.class);
         ConverterRegistry.registerConverter(NetworkCommissioningCluster.CLUSTER_ID,
                 NetworkCommissioningConverter.class);
         ConverterRegistry.registerConverter(GeneralDiagnosticsCluster.CLUSTER_ID, GeneralDiagnosticsConverter.class);

@@ -28,14 +28,12 @@ public class BooleanStateCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0045;
     public static final String CLUSTER_NAME = "BooleanState";
     public static final String CLUSTER_PREFIX = "booleanState";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_STATE_VALUE = "stateValue";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This represents a boolean state.
-     * The semantics of this boolean state are defined by the device type using this cluster.
-     * For example, in a Contact Sensor device type, FALSE&#x3D;open or no contact, TRUE&#x3D;closed or contact.
+     * The semantics of this boolean state are defined by the device type using this cluster. For example, in a Contact
+     * Sensor device type, FALSE&#x3D;open or no contact, TRUE&#x3D;closed or contact.
      */
     public Boolean stateValue; // 0 bool R V
 
@@ -65,7 +63,6 @@ public class BooleanStateCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "stateValue : " + stateValue + "\n";
         return str;
     }

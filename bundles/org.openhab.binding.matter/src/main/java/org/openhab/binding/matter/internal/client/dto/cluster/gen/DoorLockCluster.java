@@ -32,7 +32,6 @@ public class DoorLockCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0101;
     public static final String CLUSTER_NAME = "DoorLock";
     public static final String CLUSTER_PREFIX = "doorLock";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_LOCK_STATE = "lockState";
     public static final String ATTRIBUTE_LOCK_TYPE = "lockType";
@@ -70,7 +69,6 @@ public class DoorLockCluster extends BaseCluster {
     public static final String ATTRIBUTE_SEND_PIN_OVER_THE_AIR = "sendPinOverTheAir";
     public static final String ATTRIBUTE_REQUIRE_PIN_FOR_REMOTE_OPERATION = "requirePinForRemoteOperation";
     public static final String ATTRIBUTE_EXPIRING_USER_TIMEOUT = "expiringUserTimeout";
-    public static final String ATTRIBUTE_ALARM_MASK = "alarmMask";
     public static final String ATTRIBUTE_ALIRO_READER_VERIFICATION_KEY = "aliroReaderVerificationKey";
     public static final String ATTRIBUTE_ALIRO_READER_GROUP_IDENTIFIER = "aliroReaderGroupIdentifier";
     public static final String ATTRIBUTE_ALIRO_READER_GROUP_SUB_IDENTIFIER = "aliroReaderGroupSubIdentifier";
@@ -81,7 +79,6 @@ public class DoorLockCluster extends BaseCluster {
     public static final String ATTRIBUTE_NUMBER_OF_ALIRO_CREDENTIAL_ISSUER_KEYS_SUPPORTED = "numberOfAliroCredentialIssuerKeysSupported";
     public static final String ATTRIBUTE_NUMBER_OF_ALIRO_ENDPOINT_KEYS_SUPPORTED = "numberOfAliroEndpointKeysSupported";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute may be NULL if the lock hardware does not currently know the status of the locking mechanism. For
@@ -178,7 +175,7 @@ public class DoorLockCluster extends BaseCluster {
      */
     public Integer numberOfCredentialsSupportedPerUser; // 28 uint8 R V
     /**
-     * Indicates the language for the on-screen or audible user interface using a 2- byte language code from ISO-639-1.
+     * Indicates the language for the on-screen or audible user interface using a 2-byte language code from ISO-639-1.
      */
     public String language; // 33 string R[W] VM
     /**
@@ -196,13 +193,18 @@ public class DoorLockCluster extends BaseCluster {
      */
     public SoundVolumeEnum soundVolume; // 36 SoundVolumeEnum R[W] VM
     /**
-     * This attribute shall indicate the current operating mode of the lock as defined in OperatingModeEnum.
+     * Indicates the current operating mode of the lock as defined in OperatingModeEnum.
      */
     public OperatingModeEnum operatingMode; // 37 OperatingModeEnum R[W] VM
     /**
      * This attribute shall contain a bitmap with all operating bits of the OperatingMode attribute supported by the
-     * lock. All operating modes NOT supported by a lock shall be set to one. The value of the OperatingMode enumeration
-     * defines the related bit to be set.
+     * lock.
+     * A bit position set to zero shall indicate that the mode is supported. A bit position set to one shall indicate
+     * that the mode is not supported.
+     * Any bit that is not yet defined in OperatingModesBitmap shall be set to 1.
+     * The values considered valid to read or write in the OperatingMode attribute shall be the enum values from
+     * DoorLockOperatingModeEnum whose equivalent same-named bit from OperatingModesBitmap is set to zero in this
+     * attribute. WARNING: This is the opposite of most other semantically similar bitmaps in this specification.
      */
     public OperatingModesBitmap supportedOperatingModes; // 38 OperatingModesBitmap R V
     /**
@@ -289,22 +291,16 @@ public class DoorLockCluster extends BaseCluster {
      */
     public Integer expiringUserTimeout; // 53 uint16 R[W] VA
     /**
-     * This attribute is only supported if the Alarms cluster is on the same endpoint. The alarm mask is used to turn
-     * on/off alarms for particular functions. Alarms for an alarm group are enabled if the associated alarm mask bit is
-     * set. Each bit represents a group of alarms. Entire alarm groups can be turned on or off by setting or clearing
-     * the associated bit in the alarm mask.
-     * This mask DOES NOT apply to the Events mechanism of this cluster.
-     */
-    public AlarmMaskBitmap alarmMask; // 64 AlarmMaskBitmap RW VA
-    /**
      * Indicates the verification key component of the Reader’s key pair as defined in [Aliro]. The value, if not null,
      * shall be an uncompressed elliptic curve public key as defined in section 2.3.3 of SEC 1.
-     * Null if no Reader key pair has been configured on the lock. See SetAliroReaderConfig.
+     * Null if no Reader key pair has been configured on the lock. See Section 5.2.10.42, “SetAliroReaderConfig
+     * Command”.
      */
     public OctetString aliroReaderVerificationKey; // 128 octstr R A
     /**
      * Indicates the reader_group_identifier as defined in [Aliro].
-     * Null if no reader_group_identifier has been configured on the lock. See SetAliroReaderConfig.
+     * Null if no reader_group_identifier has been configured on the lock. See Section 5.2.10.42, “SetAliroReaderConfig
+     * Command”.
      */
     public OctetString aliroReaderGroupIdentifier; // 129 octstr R A
     /**
@@ -317,7 +313,8 @@ public class DoorLockCluster extends BaseCluster {
     public List<OctetString> aliroExpeditedTransactionSupportedProtocolVersions; // 131 list R A
     /**
      * Indicates the Group Resolving Key as defined in [Aliro].
-     * Null if no group resolving key has been configured on the lock. See SetAliroReaderConfig.
+     * Null if no group resolving key has been configured on the lock. See Section 5.2.10.42, “SetAliroReaderConfig
+     * Command”.
      */
     public OctetString aliroGroupResolvingKey; // 132 octstr R A
     /**
@@ -379,20 +376,20 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * The door lock server sends out a LockOperation event when the event is triggered by the various lock operation
      * sources.
-     * • If the door lock server supports the Unbolt Door command, it shall generate a LockOperation event with
+     * - If the door lock server supports the Unbolt Door command, it shall generate a LockOperation event with
      * LockOperationType set to Unlock after an Unbolt Door command succeeds.
-     * • If the door lock server supports the Unbolting feature and an Unlock Door command is performed, it shall
+     * - If the door lock server supports the Unbolting feature and an Unlock Door command is performed, it shall
      * generate a LockOperation event with LockOperationType set to Unlatch when the unlatched state is reached and a
      * LockOperation event with LockOperationType set to Unlock when the lock successfully completes the unlock → hold
      * latch → release latch and return to unlock state operation.
-     * • If the command fails during holding or releasing the latch but after passing the unlocked state, the door lock
+     * - If the command fails during holding or releasing the latch but after passing the unlocked state, the door lock
      * server shall generate a LockOperationError event with LockOperationType set to Unlatch and a LockOperation event
      * with LockOperationType set to Unlock.
-     * ◦ If it fails before reaching the unlocked state, the door lock server shall generate only a LockOperationError
+     * - If it fails before reaching the unlocked state, the door lock server shall generate only a LockOperationError
      * event with LockOperationType set to Unlock.
-     * • Upon manual actuation, a door lock server that supports the Unbolting feature:
-     * ◦ shall generate a LockOperation event of LockOperationType Unlatch when it is actuated from the outside.
-     * ◦ may generate a LockOperation event of LockOperationType Unlatch when it is actuated from the inside.
+     * - Upon manual actuation, a door lock server that supports the Unbolting feature:
+     * - shall generate a LockOperation event of LockOperationType Unlatch when it is actuated from the outside.
+     * - may generate a LockOperation event of LockOperationType Unlatch when it is actuated from the inside.
      */
     public static class LockOperation {
         /**
@@ -1137,6 +1134,12 @@ public class DoorLockCluster extends BaseCluster {
         }
     }
 
+    /**
+     * &gt; [!WARNING]
+     * &gt; For the OperatingModesBitmap, a bit SET indicates that the operating mode IS NOT supported. A bit CLEAR
+     * indicates that the operating mode IS supported. This is the inverse of most bitmaps in this specification, and it
+     * is recommended that clients carefully take this into consideration. See SupportedOperatingModes.
+     */
     public static class OperatingModesBitmap {
         public boolean normal;
         public boolean vacation;
@@ -1160,43 +1163,43 @@ public class DoorLockCluster extends BaseCluster {
         /**
          * The state of local programming functionality
          * This bit shall indicate the state related to local programming:
-         * • 0 &#x3D; Local programming is disabled
-         * • 1 &#x3D; Local programming is enabled
+         * - 0 &#x3D; Local programming is disabled
+         * - 1 &#x3D; Local programming is enabled
          */
         public boolean localProgramming;
         /**
          * The state of the keypad interface
          * This bit shall indicate the state related to keypad interface:
-         * • 0 &#x3D; Keypad interface is disabled
-         * • 1 &#x3D; Keypad interface is enabled
+         * - 0 &#x3D; Keypad interface is disabled
+         * - 1 &#x3D; Keypad interface is enabled
          */
         public boolean keypadInterface;
         /**
          * The state of the remote interface
          * This bit shall indicate the state related to remote interface:
-         * • 0 &#x3D; Remote interface is disabled
-         * • 1 &#x3D; Remote interface is enabled
+         * - 0 &#x3D; Remote interface is disabled
+         * - 1 &#x3D; Remote interface is enabled
          */
         public boolean remoteInterface;
         /**
          * Sound volume is set to Silent value
          * This bit shall indicate the state related to sound volume:
-         * • 0 &#x3D; Sound volume value is 0 (Silent)
-         * • 1 &#x3D; Sound volume value is equal to something other than 0
+         * - 0 &#x3D; Sound volume value is 0 (Silent)
+         * - 1 &#x3D; Sound volume value is equal to something other than 0
          */
         public boolean soundVolume;
         /**
          * Auto relock time it set to 0
          * This bit shall indicate the state related to auto relock time:
-         * • 0 &#x3D; Auto relock time value is 0
-         * • 1 &#x3D; Auto relock time value is equal to something other than 0
+         * - 0 &#x3D; Auto relock time value is 0
+         * - 1 &#x3D; Auto relock time value is equal to something other than 0
          */
         public boolean autoRelockTime;
         /**
          * LEDs is disabled
          * This bit shall indicate the state related to LED settings:
-         * • 0 &#x3D; LED settings value is 0 (NoLEDSignal)
-         * • 1 &#x3D; LED settings value is equal to something other than 0
+         * - 0 &#x3D; LED settings value is 0 (NoLEDSignal)
+         * - 1 &#x3D; LED settings value is equal to something other than 0
          */
         public boolean ledSettings;
 
@@ -1215,29 +1218,29 @@ public class DoorLockCluster extends BaseCluster {
         /**
          * The state of the ability to add users, credentials or schedules on the device
          * This bit shall indicate whether the door lock is able to add Users/Credentials/Schedules locally:
-         * • 0 &#x3D; This ability is disabled
-         * • 1 &#x3D; This ability is enabled
+         * - 0 &#x3D; This ability is disabled
+         * - 1 &#x3D; This ability is enabled
          */
         public boolean addUsersCredentialsSchedules;
         /**
          * The state of the ability to modify users, credentials or schedules on the device
          * This bit shall indicate whether the door lock is able to modify Users/Credentials/Schedules locally:
-         * • 0 &#x3D; This ability is disabled
-         * • 1 &#x3D; This ability is enabled
+         * - 0 &#x3D; This ability is disabled
+         * - 1 &#x3D; This ability is enabled
          */
         public boolean modifyUsersCredentialsSchedules;
         /**
          * The state of the ability to clear users, credentials or schedules on the device
          * This bit shall indicate whether the door lock is able to clear Users/Credentials/Schedules locally:
-         * • 0 &#x3D; This ability is disabled
-         * • 1 &#x3D; This ability is enabled
+         * - 0 &#x3D; This ability is disabled
+         * - 1 &#x3D; This ability is enabled
          */
         public boolean clearUsersCredentialsSchedules;
         /**
          * The state of the ability to adjust settings on the device
          * This bit shall indicate whether the door lock is able to adjust lock settings locally:
-         * • 0 &#x3D; This ability is disabled
-         * • 1 &#x3D; This ability is enabled
+         * - 0 &#x3D; This ability is disabled
+         * - 1 &#x3D; This ability is enabled
          */
         public boolean adjustSettings;
 
@@ -1340,8 +1343,8 @@ public class DoorLockCluster extends BaseCluster {
         public boolean user;
         /**
          * 
-         * If the User feature is supported then Year Day Schedules are applied to a User and not a credential. Year Day
-         * Schedules are used to restrict access to a specified date and time window.
+         * If the User feature is supported then Year Day Schedules are applied to a User and not a credential.
+         * Year Day Schedules are used to restrict access to a specified date and time window.
          * The lock may automatically adjust the UserType when a schedule is created or cleared.
          * Support for YearDayAccessSchedules requires that the lock has the capability of keeping track of local time.
          */
@@ -1539,6 +1542,7 @@ public class DoorLockCluster extends BaseCluster {
      * Set a weekly repeating schedule for a specified user.
      * The associated UserType may be changed to ScheduleRestrictedUser by the lock when a Week Day schedule is set.
      * Return status shall be one of the following values:
+     * One or more fields violates constraints or is invalid.
      */
     public static ClusterCommand setWeekDaySchedule(Integer weekDayIndex, Integer userIndex, DaysMaskBitmap daysMask,
             Integer startHour, Integer startMinute, Integer endHour, Integer endMinute) {
@@ -1697,6 +1701,8 @@ public class DoorLockCluster extends BaseCluster {
      * Set the user type for a specified user.
      * For user type value please refer to User Type Value.
      * Return status shall be one of the following values:
+     * One or more fields violates constraints or is invalid. Door lock is unable to switch from restricted to
+     * unrestricted user (e.g. need to clear schedules to switch).
      */
     public static ClusterCommand setUserType(Integer userId, UserTypeEnum userType) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -1780,12 +1786,44 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * Set user into the lock.
      * Fields used for different use cases:
+     * - OperationType shall be set to Add.
+     * - UserIndex value shall be set to a user record with UserType set to Available.
+     * - UserName may be null causing new user record to use empty string for UserName otherwise UserName shall be set
+     * to the value provided in the new user record.
+     * - UserUniqueID may be null causing new user record to use 0xFFFFFFFF for UserUniqueID otherwise UserUniqueID
+     * shall be set to the value provided in the new user record.
+     * - UserStatus may be null causing new user record to use OccupiedEnabled for UserStatus otherwise UserStatus shall
+     * be set to the value provided in the new user record.
+     * - UserType may be null causing new user record to use UnrestrictedUser for UserType otherwise UserType shall be
+     * set to the value provided in the new user record.
+     * - CredentialRule may be null causing new user record to use Single for CredentialRule otherwise CredentialRule
+     * shall be set to the value provided in the new user record.
+     * CreatorFabricIndex and LastModifiedFabricIndex in the new user record shall be set to the accessing fabric index.
+     * A LockUserChange event shall be generated after successfully creating a new user.
+     * - OperationType shall be set to Modify.
+     * - UserIndex value shall be set for a user record with UserType NOT set to Available.
+     * - UserName shall be null if modifying a user record that was not created by the accessing fabric.
+     * - INVALID_COMMAND shall be returned if UserName is not null and the accessing fabric index doesn’t match the
+     * CreatorFabricIndex in the user record otherwise UserName shall be set to the value provided in the user record.
+     * - UserUniqueID shall be null if modifying the user record that was not created by the accessing fabric.
+     * - INVALID_COMMAND shall be returned if UserUniqueID is not null and the accessing fabric index doesn’t match the
+     * CreatorFabricIndex in the user record otherwise UserUniqueID shall be set to the value provided in the user
+     * record.
+     * - UserStatus may be null causing no change to UserStatus in user record otherwise UserStatus shall be set to the
+     * value provided in the user record.
+     * - UserType may be null causing no change to UserType in user record otherwise UserType shall be set to the value
+     * provided in the user record.
+     * - CredentialRule may be null causing no change to CredentialRule in user record otherwise CredentialRule shall be
+     * set to the value provided in the user record.
+     * CreatorFabricIndex shall NOT be changed in the user record. LastModifiedFabricIndex in the new user record shall
+     * be set to the accessing fabric index.
+     * A LockUserChange event shall be generated after successfully modifying a user.
      * Return status is a global status code or a cluster-specific status code from the Status Codes table and shall be
      * one of the following values:
-     * • SUCCESS, if setting User was successful.
-     * • FAILURE, if some unexpected internal error occurred setting User.
-     * • OCCUPIED, if OperationType is Add and UserIndex points to an occupied slot.
-     * • INVALID_COMMAND, if one or more fields violate constraints or are invalid or if OperationType is Modify and
+     * - SUCCESS, if setting User was successful.
+     * - FAILURE, if some unexpected internal error occurred setting User.
+     * - OCCUPIED, if OperationType is Add and UserIndex points to an occupied slot.
+     * - INVALID_COMMAND, if one or more fields violate constraints or are invalid or if OperationType is Modify and
      * UserIndex points to an available slot.
      */
     public static ClusterCommand setUser(DataOperationTypeEnum operationType, Integer userIndex, String userName,
@@ -1847,6 +1885,57 @@ public class DoorLockCluster extends BaseCluster {
      * Set a credential (e.g. PIN, RFID, Fingerprint, etc.) into the lock for a new user, existing user, or
      * ProgrammingUser.
      * Fields used for different use cases:
+     * - OperationType shall be set to Add.
+     * - UserIndex shall be set to null and the lock will find a user record with a UserStatus value of Available and
+     * associate its UserIndex with the CredentialIndex in CredentialStruct provided.
+     * - CredentialIndex in CredentialStruct shall be for an unoccupied credential slot.
+     * - UserStatus may be null. If it is null, the new user record shall have UserStatus set to OccupiedEnabled.
+     * Otherwise the new user record shall have UserStatus set to the provided value.
+     * - UserType may be null. If it is null, the new user record shall have UserType set to UnrestrictedUser. Otherwise
+     * the new user record shall have UserType set to the provided value.
+     * - UserType shall NOT be set to ProgrammingUser for this use case.
+     * CreatorFabricIndex and LastModifiedFabricIndex in new user and credential records shall be set to the accessing
+     * fabric index.
+     * A LockUserChange event shall be generated after successfully creating a new credential and a new user. The
+     * UserIndex of this LockUserChange event shall be the UserIndex that was used to create the user. The DataIndex of
+     * this LockUserChange event shall be the CredentialIndex that was used to create the credential.
+     * - OperationType shall be set to Add.
+     * - UserIndex shall NOT be null and shall NOT already be associated with the CredentialIndex in CredentialStruct
+     * provided otherwise INVALID_COMMAND status response shall be returned.
+     * - INVALID_COMMAND shall be returned if the accessing fabric index doesn’t match the CreatorFabricIndex in the
+     * user record pointed to by UserIndex.
+     * - CredentialIndex in CredentialStruct provided shall be for an available credential slot.
+     * - UserStatus shall be null.
+     * - UserType shall be null.
+     * CreatorFabricIndex shall NOT be changed in the user record. LastModifiedFabricIndex in the user record shall be
+     * set to the accessing fabric index.
+     * CreatorFabricIndex and LastModifiedFabricIndex in the new credential record shall be set to the accessing fabric
+     * index.
+     * A LockUserChange event shall be generated after successfully adding a new credential.
+     * - OperationType shall be set to Modify.
+     * - UserIndex value shall already be associated with the CredentialIndex in CredentialStruct provided otherwise
+     * INVALID_COMMAND status response shall be returned.
+     * - INVALID_COMMAND shall be returned if the accessing fabric index doesn’t match the CreatorFabricIndex in the
+     * user record pointed to by UserIndex.
+     * - INVALID_COMMAND shall be returned if the accessing fabric index doesn’t match the CreatorFabricIndex in the
+     * credential record pointed to by the CredentialIndex field value of the Credential parameter.
+     * - CredentialIndex in CredentialStruct provided shall be for an occupied credential slot
+     * - UserStatus shall be null.
+     * - UserType shall be null.
+     * CreatorFabricIndex shall NOT be changed in user and credential records. LastModifiedFabricIndex in user and
+     * credential records shall be set to the accessing fabric index.
+     * A LockUserChange event shall be generated after successfully modifying a credential.
+     * - OperationType shall be set to Modify.
+     * - UserIndex shall be null.
+     * - INVALID_COMMAND shall be returned if the accessing fabric index doesn’t match the CreatorFabricIndex in the
+     * credential record pointed to by the CredentialIndex field value of the Credential parameter.
+     * - CredentialType in CredentialStruct shall be set to ProgrammingPIN.
+     * - CredentialIndex in CredentialStruct shall be 0.
+     * - UserStatus shall be null.
+     * - UserType shall be set to ProgrammingUser.
+     * CreatorFabricIndex shall NOT be changed in the credential record. LastModifiedFabricIndex in the credential
+     * record shall be set to the accessing fabric index.
+     * A LockUserChange event shall be generated after successfully modifying a ProgrammingUser PIN code.
      */
     public static ClusterCommand setCredential(DataOperationTypeEnum operationType, CredentialStruct credential,
             OctetString credentialData, Integer userIndex, UserStatusEnum userStatus, UserTypeEnum userType) {
@@ -1888,6 +1977,20 @@ public class DoorLockCluster extends BaseCluster {
     /**
      * Clear one, one type, or all credentials except ProgrammingPIN credential.
      * Fields used for different use cases:
+     * - CredentialType in Credential structure shall be set to the credential type to be cleared.
+     * - CredentialType in Credential structure shall NOT be set to ProgrammingPIN.
+     * - CredentialIndex in Credential structure shall be set to the credential index to be cleared.
+     * A LockUserChange event shall be generated after successfully clearing a credential.
+     * - CredentialType in Credential structure shall be set to the credential type to be cleared.
+     * - CredentialType in Credential structure shall NOT be set to ProgrammingPIN.
+     * - CredentialIndex in Credential structure shall be set to 0xFFFE to indicate all credentials of that type shall
+     * be cleared.
+     * A single LockUserChange event shall be generated after successfully clearing credentials. This event shall have
+     * DataIndex set to the CredentialIndex in the Credential structure.
+     * - Credential field shall be null.
+     * The ProgrammingPIN credential shall NOT be cleared.
+     * For each credential type cleared, a LockUserChange event with the corresponding LockDataType shall be generated.
+     * This event shall have DataIndex set to 0xFFFE.
      * For each credential cleared whose user doesn’t have another valid credential, the corresponding user record shall
      * be reset back to default values and its UserStatus value shall be set to Available and UserType value shall be
      * set to UnrestrictedUser and all schedules shall be cleared. In this case a LockUserChange event shall be
@@ -1940,8 +2043,8 @@ public class DoorLockCluster extends BaseCluster {
     }
 
     /**
-     * This command allows clearing an existing Aliro Reader configuration for the lock. Administrators shall NOT clear
-     * an Aliro Reader configuration without explicit user permission.
+     * This command allows clearing an existing Aliro Reader configuration for the lock.
+     * Administrators shall NOT clear an Aliro Reader configuration without explicit user permission.
      * &gt; [!NOTE]
      * &gt; Using this command will revoke the ability of all existing Aliro user devices that have the old verification
      * key to interact with the lock. This effect is not restricted to a single fabric or otherwise scoped in any way.
@@ -1953,7 +2056,6 @@ public class DoorLockCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "lockState : " + lockState + "\n";
         str += "lockType : " + lockType + "\n";
@@ -1991,7 +2093,6 @@ public class DoorLockCluster extends BaseCluster {
         str += "sendPinOverTheAir : " + sendPinOverTheAir + "\n";
         str += "requirePinForRemoteOperation : " + requirePinForRemoteOperation + "\n";
         str += "expiringUserTimeout : " + expiringUserTimeout + "\n";
-        str += "alarmMask : " + alarmMask + "\n";
         str += "aliroReaderVerificationKey : " + aliroReaderVerificationKey + "\n";
         str += "aliroReaderGroupIdentifier : " + aliroReaderGroupIdentifier + "\n";
         str += "aliroReaderGroupSubIdentifier : " + aliroReaderGroupSubIdentifier + "\n";

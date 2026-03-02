@@ -29,7 +29,6 @@ public class EnergyPreferenceCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x009B;
     public static final String CLUSTER_NAME = "EnergyPreference";
     public static final String CLUSTER_PREFIX = "energyPreference";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ENERGY_BALANCES = "energyBalances";
     public static final String ATTRIBUTE_CURRENT_ENERGY_BALANCE = "currentEnergyBalance";
@@ -37,7 +36,6 @@ public class EnergyPreferenceCluster extends BaseCluster {
     public static final String ATTRIBUTE_LOW_POWER_MODE_SENSITIVITIES = "lowPowerModeSensitivities";
     public static final String ATTRIBUTE_CURRENT_LOW_POWER_MODE_SENSITIVITY = "currentLowPowerModeSensitivity";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates a list of BalanceStructs, each representing a step along a linear scale of relative priorities. A Step
@@ -173,7 +171,6 @@ public class EnergyPreferenceCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "energyBalances : " + energyBalances + "\n";
         str += "currentEnergyBalance : " + currentEnergyBalance + "\n";

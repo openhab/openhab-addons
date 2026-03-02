@@ -31,7 +31,6 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0081;
     public static final String CLUSTER_NAME = "ValveConfigurationAndControl";
     public static final String CLUSTER_PREFIX = "valveConfigurationAndControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_OPEN_DURATION = "openDuration";
     public static final String ATTRIBUTE_DEFAULT_OPEN_DURATION = "defaultOpenDuration";
@@ -45,7 +44,6 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_VALVE_FAULT = "valveFault";
     public static final String ATTRIBUTE_LEVEL_STEP = "levelStep";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the total duration, in seconds, for which the valve will remain open for this current opening.
@@ -63,9 +61,9 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     /**
      * Indicates the UTC time when the valve will close, depending on value of the OpenDuration attribute.
      * Null:
-     * • When OpenDuration is null, or
-     * • When the valve does not have a synchronized UTCTime in the Time Synchronization cluster, or
-     * • When the valve is closed.
+     * - When OpenDuration is null, or
+     * - When the valve does not have a synchronized UTCTime in the Time Synchronization cluster, or
+     * - When the valve is closed.
      * When the value of this attribute is earlier or equal to the current UTC time, the valve shall automatically
      * transition to its closed position. The behavior of transitioning to the closed position, shall match the behavior
      * described in the Close command.
@@ -75,14 +73,15 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
      */
     public BigInteger autoCloseTime; // 2 epoch-us R V
     /**
-     * Indicates the remaining duration, in seconds, until the valve closes. Null:
-     * • When OpenDuration is null, or
-     * • When the valve is closed.
+     * Indicates the remaining duration, in seconds, until the valve closes.
+     * Null:
+     * - When OpenDuration is null, or
+     * - When the valve is closed.
      * The value of this attribute shall only be reported in the following cases:
-     * • When it changes from null to any other value and vice versa, or
-     * • When it changes to 0, or
-     * • When it increases, or
-     * • When the closing time changes.
+     * - When it changes from null to any other value and vice versa, or
+     * - When it changes to 0, or
+     * - When it increases, or
+     * - When the closing time changes.
      * Meaning that clients SHOULD NOT rely on the reporting of this attribute in order to keep track of the remaining
      * duration, due to this attribute not being reported during regular countdown.
      * When reading this attribute it shall return the remaining duration, in seconds, until the valve closes.
@@ -106,8 +105,8 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
      * Indicates the current level of the valve as a percentage value, between fully closed and fully open. During a
      * transition from one level to another level, the valve SHOULD keep this attribute updated to the best of its
      * ability, in order to represent the actual level of the valve during the movement.
-     * A value of 100 percent shall indicate the fully open position. A value of 0 percent shall indicate the fully
-     * closed position.
+     * A value of 100 percent shall indicate the fully open position.
+     * A value of 0 percent shall indicate the fully closed position.
      * A value of null shall indicate that the current state is not known.
      */
     public Integer currentLevel; // 6 percent R V
@@ -298,7 +297,6 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "openDuration : " + openDuration + "\n";
         str += "defaultOpenDuration : " + defaultOpenDuration + "\n";

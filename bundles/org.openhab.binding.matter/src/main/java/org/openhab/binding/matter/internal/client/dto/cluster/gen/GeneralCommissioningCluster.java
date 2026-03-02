@@ -31,7 +31,6 @@ public class GeneralCommissioningCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0030;
     public static final String CLUSTER_NAME = "GeneralCommissioning";
     public static final String CLUSTER_PREFIX = "generalCommissioning";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_BREADCRUMB = "breadcrumb";
     public static final String ATTRIBUTE_BASIC_COMMISSIONING_INFO = "basicCommissioningInfo";
@@ -44,7 +43,6 @@ public class GeneralCommissioningCluster extends BaseCluster {
     public static final String ATTRIBUTE_TC_ACKNOWLEDGEMENTS_REQUIRED = "tcAcknowledgementsRequired";
     public static final String ATTRIBUTE_TC_UPDATE_DEADLINE = "tcUpdateDeadline";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute allows for the storage of a client-provided small payload which Administrators and Commissioners
@@ -58,8 +56,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
      */
     public BigInteger breadcrumb; // 0 uint64 RW VA
     /**
-     * This attribute shall describe critical parameters needed at the beginning of commissioning flow. See
-     * BasicCommissioningInfo for more information.
+     * This attribute shall describe critical parameters needed at the beginning of commissioning flow. See Section
+     * 11.10.5.3, “BasicCommissioningInfo Type” for more information.
      */
     public BasicCommissioningInfo basicCommissioningInfo; // 1 BasicCommissioningInfo R V
     /**
@@ -81,9 +79,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
      */
     public RegulatoryLocationTypeEnum locationCapability; // 3 RegulatoryLocationTypeEnum R V
     /**
-     * This attribute shall indicate whether this device supports &quot;concurrent connection flow&quot; commissioning
-     * mode (see Section 5.5, “Commissioning Flows”). If false, the device only supports &quot;non-concurrent connection
-     * flow&quot; mode.
+     * Indicates whether this device supports &quot;concurrent connection flow&quot; commissioning mode (see Section
+     * 5.5, “Commissioning Flows”). If false, the device only supports &quot;non-concurrent connection flow&quot; mode.
      */
     public Boolean supportsConcurrentConnection; // 4 bool R V
     /**
@@ -92,7 +89,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * When Custom Commissioning Flow is used to obtain user consent (e. g. because the Commissioner does not support
      * the TC feature), the manufacturer-provided means for obtaining user consent shall ensure that this attribute is
      * set to a value which is greater than or equal to TCMinRequiredVersion before returning the user back to the
-     * originating Commissioner (see Enhanced Setup Flow).
+     * originating Commissioner (see Section 5.7.4, “Enhanced Setup Flow (ESF)”).
      */
     public Integer tcAcceptedVersion; // 5 uint16 R A
     /**
@@ -118,18 +115,19 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * Indicates whether SetTCAcknowledgements is currently required to be called with the inclusion of mandatory terms
      * accepted.
      * This attribute may be present and False in the case where no terms and conditions are currently mandatory to
-     * accept for CommissioningComplete to succeed.
+     * accept for CommissioningComplete command to succeed.
      * This attribute may appear, or become True after commissioning (e.g. due to a firmware update) to indicate that
      * new Terms &amp; Conditions are available that the user must accept.
      * Upon Factory Data Reset, this attribute shall be set to a value of True.
      * When Custom Commissioning Flow is used to obtain user consent (e.g. because the Commissioner does not support the
      * TC feature), the manufacturer-provided means for obtaining user consent shall ensure that this attribute is set
-     * to False before returning the user back to the original Commissioner (see Enhanced Setup Flow).
+     * to False before returning the user back to the original Commissioner (see Section 5.7.4, “Enhanced Setup Flow
+     * (ESF)”).
      */
     public Boolean tcAcknowledgementsRequired; // 8 bool R A
     /**
      * Indicates the System Time in seconds when any functionality limitations will begin due to a lack of acceptance of
-     * updated Terms and Conditions, as described in Section 5.7.4.5, “Presenting Updated Terms and Conditions”.
+     * updated Terms and Conditions, as described in Section 5.7.4.6, “Presenting Updated Terms and Conditions”.
      * A null value indicates that there is no pending deadline for updated TC acceptance.
      */
     public Integer tcUpdateDeadline; // 9 uint32 R A
@@ -281,6 +279,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to arm or disarm the fail-safe timer.
      * Success or failure of this command shall be communicated by the ArmFailSafeResponse command, unless some data
      * model validations caused a failure status code to be issued during the processing of the command.
      * If the fail-safe timer is not currently armed, the commissioning window is open, and the command was received
@@ -289,17 +288,17 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * which use PASE connections, the opportunity to use the failsafe during the relatively short commissioning window.
      * Otherwise, the command shall arm or re-arm the &quot;fail-safe timer&quot; with an expiry time set for a duration
      * of ExpiryLengthSeconds, or disarm it, depending on the situation:
-     * • If ExpiryLengthSeconds is 0 and the fail-safe timer was already armed and the accessing fabric matches the
+     * - If ExpiryLengthSeconds is 0 and the fail-safe timer was already armed and the accessing fabric matches the
      * Fabric currently associated with the fail-safe context, then the fail-safe timer shall be immediately expired
      * (see further below for side-effects of expiration).
-     * • If ExpiryLengthSeconds is 0 and the fail-safe timer was not armed, then this command invocation shall lead to a
+     * - If ExpiryLengthSeconds is 0 and the fail-safe timer was not armed, then this command invocation shall lead to a
      * success response with no side-effects against the fail-safe context.
-     * • If ExpiryLengthSeconds is non-zero and the fail-safe timer was not currently armed, then the fail-safe timer
+     * - If ExpiryLengthSeconds is non-zero and the fail-safe timer was not currently armed, then the fail-safe timer
      * shall be armed for that duration.
-     * • If ExpiryLengthSeconds is non-zero and the fail-safe timer was currently armed, and the accessing Fabric
+     * - If ExpiryLengthSeconds is non-zero and the fail-safe timer was currently armed, and the accessing Fabric
      * matches the fail-safe context’s associated Fabric, then the fail-safe timer shall be re-armed to expire in
      * ExpiryLengthSeconds.
-     * • Otherwise, the command shall leave the current fail-safe state unchanged and immediately respond with
+     * - Otherwise, the command shall leave the current fail-safe state unchanged and immediately respond with
      * ArmFailSafeResponse containing an ErrorCode value of BusyWithOtherAdmin, indicating a likely conflict between
      * commissioners.
      * The value of the Breadcrumb field shall be written to the Breadcrumb on successful execution of the command.
@@ -309,21 +308,21 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * ### Fail Safe Context
      * When first arming the fail-safe timer, a &#x27;Fail Safe Context&#x27; shall be created on the receiver, to track
      * the following state information while the fail-safe is armed:
-     * • The fail-safe timer duration.
-     * • The state of all Network Commissioning Networks attribute configurations, to allow recovery of connectivity
+     * - The fail-safe timer duration.
+     * - The state of all Network Commissioning Networks attribute configurations, to allow recovery of connectivity
      * after Fail-Safe expiry.
-     * • Whether an AddNOC command or UpdateNOC command has taken place.
-     * • A Fabric Index for the fabric-scoping of the context, starting at the accessing fabric index for the
-     * ArmFailSafe command, and updated with the Fabric Index associated with an AddNOC command or an UpdateNOC command
-     * being invoked successfully during the ongoing Fail-Safe timer period.
-     * • The operational credentials associated with any Fabric whose configuration is affected by the UpdateNOC
+     * - Whether an AddNOC command or UpdateNOC command has taken place.
+     * - A fabric-index for the fabric-scoping of the context, starting at the accessing fabric index for the
+     * ArmFailSafe command, and updated with the Fabric Index associated with an AddNOC or an UpdateNOC command being
+     * invoked successfully during the ongoing Fail-Safe timer period.
+     * - The operational credentials associated with any Fabric whose configuration is affected by the UpdateNOC
      * command.
-     * • Optionally: the previous state of non-fabric-scoped data that is mutated during the fail-safe period.
+     * - Optionally: the previous state of non-fabric-scoped data that is mutated during the fail-safe period.
      * Note the following to assist in understanding the above state-keeping, which summarizes other normative
      * requirements in the respective sections:
-     * • The AddNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, and only if no
+     * - The AddNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, and only if no
      * UpdateNOC command was previously processed within the same fail-safe timer period.
-     * • The UpdateNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, can only be
+     * - The UpdateNOC command can only be invoked once per contiguous non-expiring fail-safe timer period, can only be
      * invoked over a CASE session, and only if no AddNOC command was previously processed in the same fail-safe timer
      * period.
      * On creation of the Fail Safe Context a second timer shall be created to expire at MaxCumulativeFailsafeSeconds as
@@ -340,21 +339,22 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * 2. Revoke the temporary administrative privileges granted to any open PASE session (see Section 6.6.2.9,
      * “Bootstrapping of the Access Control Cluster”) at the Server.
      * 3. If an AddNOC or UpdateNOC command has been successfully invoked, terminate all CASE sessions associated with
-     * the Fabric whose Fabric Index is recorded in the Fail-Safe context (see ArmFailSafe) by clearing any associated
-     * Secure Session Context at the Server.
+     * the Fabric whose Fabric Index is recorded in the Fail-Safe context (see Section 11.10.7.2, “ArmFailSafe Command”)
+     * by clearing any associated Secure Session Context at the Server.
      * 4. Reset the configuration of all Network Commissioning Networks attribute to their state prior to the Fail-Safe
      * being armed.
      * 5. If an UpdateNOC command had been successfully invoked, revert the state of operational key pair, NOC and ICAC
      * for that Fabric to the state prior to the Fail-Safe timer being armed, for the Fabric Index that was the subject
      * of the UpdateNOC command.
      * 6. If an AddNOC command had been successfully invoked, achieve the equivalent effect of invoking the RemoveFabric
-     * command against the Fabric Index stored in the Fail-Safe Context for the Fabric Index that was the subject of the
+     * command against the fabric-index stored in the Fail-Safe Context for the Fabric Index that was the subject of the
      * AddNOC command. This shall remove all associations to that Fabric including all fabric-scoped data, and may
      * possibly factory-reset the device depending on current device state. This shall only apply to Fabrics added
      * during the fail-safe period as the result of the AddNOC command.
      * 7. If the CSRRequest command had been successfully invoked, but no AddNOC or UpdateNOC command had been
      * successfully invoked, then the new operational key pair temporarily generated for the purposes of NOC addition or
-     * update (see Node Operational CSR Procedure) shall be removed as it is no longer needed.
+     * update (see Section 6.4.6.1, “Node Operational Certificate Signing Request (NOCSR) Procedure”) shall be removed
+     * as it is no longer needed.
      * 8. Remove any RCACs added by the AddTrustedRootCertificate command that are not currently referenced by any entry
      * in the Fabrics attribute.
      * 9. Reset the Breadcrumb attribute to zero.
@@ -373,6 +373,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
     }
 
     /**
+     * This command is used to set the regulatory configuration for the device.
      * This shall add or update the regulatory configuration in the RegulatoryConfig Attribute to the value provided in
      * the NewRegulatoryConfig field.
      * Success or failure of this command shall be communicated by the SetRegulatoryConfigResponse command, unless some
@@ -411,7 +412,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
     }
 
     /**
-     * This command has no data.
+     * This command is used to indicate that the commissioning process is complete.
      * Success or failure of this command shall be communicated by the CommissioningCompleteResponse command, unless
      * some data model validations caused a failure status code to be issued during the processing of the command.
      * This command signals the Server that the Commissioner or Administrator has successfully completed all steps
@@ -424,9 +425,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * An ErrorCode of NoFailSafe shall be responded to the invoker if the CommissioningComplete command was received
      * when no Fail-Safe context exists.
      * If Terms and Conditions are required, then an ErrorCode of TCAcknowledgementsNotReceived shall be responded to
-     * the invoker if the user acknowledgements to the required Terms and Conditions have not been provided. If the
-     * TCAcceptedVersion for the provided acknowledgements is less than TCMinRequiredVersion, then an ErrorCode of
-     * TCMinVersionNotMet shall be responded to the invoker.
+     * the invoker if the user acknowledgements to the required Terms and Conditions have not been provided.
      * This command is fabric-scoped, so cannot be issued over a session that does not have an associated fabric, i.e.
      * over PASE session prior to an AddNOC command. In addition, this command is only permitted over CASE and must be
      * issued by a node associated with the ongoing Fail-Safe context. An ErrorCode of InvalidAuthentication shall be
@@ -436,9 +435,9 @@ public class GeneralCommissioningCluster extends BaseCluster {
      * This command shall only result in success with an ErrorCode value of OK in the CommissioningCompleteResponse if
      * received over a CASE session and the accessing fabric index matches the Fabric Index associated with the current
      * Fail-Safe context. In other words:
-     * • If no AddNOC command had been successfully invoked, the CommissioningComplete command must originate from the
+     * - If no AddNOC command had been successfully invoked, the CommissioningComplete command must originate from the
      * Fabric that initiated the Fail-Safe context.
-     * • After an AddNOC command has been successfully invoked, the CommissioningComplete command must originate from
+     * - After an AddNOC command has been successfully invoked, the CommissioningComplete command must originate from
      * the Fabric which was joined through the execution of that command, which updated the Fail-Safe context’s Fabric
      * Index.
      * On successful execution of the CommissioningComplete command, where the CommissioningCompleteResponse has an
@@ -457,8 +456,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
     }
 
     /**
-     * This command sets the user acknowledgements received in the Enhanced Setup Flow Terms &amp; Conditions into the
-     * node.
+     * This command is used to set the user acknowledgements received in the Enhanced Setup Flow Terms &amp; Conditions
+     * into the node.
      */
     public static ClusterCommand setTcAcknowledgements(Integer tcVersion, TcUserResponse tcUserResponse) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -474,7 +473,6 @@ public class GeneralCommissioningCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "breadcrumb : " + breadcrumb + "\n";
         str += "basicCommissioningInfo : " + basicCommissioningInfo + "\n";

@@ -29,12 +29,10 @@ public class PowerTopologyCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x009C;
     public static final String CLUSTER_NAME = "PowerTopology";
     public static final String CLUSTER_PREFIX = "powerTopology";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_AVAILABLE_ENDPOINTS = "availableEndpoints";
     public static final String ATTRIBUTE_ACTIVE_ENDPOINTS = "activeEndpoints";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the list of endpoints capable of providing power to and/or consuming power from the endpoint hosting
@@ -89,7 +87,6 @@ public class PowerTopologyCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "availableEndpoints : " + availableEndpoints + "\n";
         str += "activeEndpoints : " + activeEndpoints + "\n";

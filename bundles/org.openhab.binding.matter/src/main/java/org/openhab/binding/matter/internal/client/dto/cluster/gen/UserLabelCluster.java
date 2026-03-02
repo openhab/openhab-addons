@@ -29,10 +29,8 @@ public class UserLabelCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0041;
     public static final String CLUSTER_NAME = "UserLabel";
     public static final String CLUSTER_PREFIX = "userLabel";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_LABEL_LIST = "labelList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * This is a list of string tuples. Each entry is a LabelStruct.
      */
@@ -44,15 +42,15 @@ public class UserLabelCluster extends BaseCluster {
      */
     public static class LabelStruct {
         /**
-         * The Label or Value semantic is not defined here. Label examples: &quot;room&quot;, &quot;zone&quot;,
-         * &quot;group&quot;, &quot;direction&quot;.
+         * The Label or Value semantic is not defined here.
+         * Label examples: &quot;room&quot;, &quot;zone&quot;, &quot;group&quot;, &quot;direction&quot;.
          */
         public String label; // string
         /**
          * The Label or Value semantic is not defined here. The Value is a discriminator for a Label that may have
-         * multiple instances. Label:Value examples: &quot;room&quot;:&quot;bedroom 2&quot;,
-         * &quot;orientation&quot;:&quot;North&quot;, &quot;floor&quot;:&quot;2&quot;,
-         * &quot;direction&quot;:&quot;up&quot;
+         * multiple instances.
+         * Label:Value examples: &quot;room&quot;:&quot;bedroom 2&quot;, &quot;orientation&quot;:&quot;North&quot;,
+         * &quot;floor&quot;:&quot;2&quot;, &quot;direction&quot;:&quot;up&quot;
          */
         public String value; // string
 
@@ -73,7 +71,6 @@ public class UserLabelCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "labelList : " + labelList + "\n";
         return str;
     }

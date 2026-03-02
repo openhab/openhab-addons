@@ -31,7 +31,6 @@ public class LevelControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0008;
     public static final String CLUSTER_NAME = "LevelControl";
     public static final String CLUSTER_PREFIX = "levelControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CURRENT_LEVEL = "currentLevel";
     public static final String ATTRIBUTE_REMAINING_TIME = "remainingTime";
@@ -48,22 +47,21 @@ public class LevelControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPTIONS = "options";
     public static final String ATTRIBUTE_START_UP_CURRENT_LEVEL = "startUpCurrentLevel";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the current level of this device. The meaning of &#x27;level&#x27; is device dependent.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second, or
-     * • At the end of the movement/transition, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once per second, or
+     * - At the end of the movement/transition, or
+     * - When it changes from null to any other value and vice versa.
      */
     public Integer currentLevel; // 0 uint8 R V
     /**
      * Indicates the time remaining until the current command is complete - it is specified in 1/10ths of a second.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • When it changes from 0 to any value higher than 10, or
-     * • When it changes, with a delta larger than 10, caused by the invoke of a command, or
-     * • When it changes to 0.
+     * - When it changes from 0 to any value higher than 10, or
+     * - When it changes, with a delta larger than 10, caused by the invoke of a command, or
+     * - When it changes to 0.
      * For commands with a transition time or changes to the transition time less than 1 second, changes to this
      * attribute shall NOT be reported.
      * As this attribute is not being reported during a regular countdown, clients SHOULD NOT rely on the reporting of
@@ -79,12 +77,11 @@ public class LevelControlCluster extends BaseCluster {
      */
     public Integer maxLevel; // 3 uint8 R V
     /**
-     * This attribute shall indicate the frequency at which the device is at CurrentLevel. A CurrentFrequency of 0 is
-     * unknown.
+     * Indicates the frequency at which the device is at CurrentLevel. A CurrentFrequency of 0 is unknown.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once per second, or
-     * • At the start of the movement/transition, or
-     * • At the end of the movement/transition.
+     * - At most once per second, or
+     * - At the start of the movement/transition, or
+     * - At the end of the movement/transition.
      */
     public Integer currentFrequency; // 4 uint16 R V
     /**
@@ -138,10 +135,10 @@ public class LevelControlCluster extends BaseCluster {
      * attribute, but includes any bits that may be overridden by command fields.
      * This attribute is meant to be changed only during commissioning.
      * Command execution shall NOT continue beyond the Options processing if all of these criteria are true:
-     * • The command is one of the ‘without On/Off’ commands: Move, Move to Level, Step, or Stop.
-     * • The On/Off cluster exists on the same endpoint as this cluster.
-     * • The OnOff attribute of the On/Off cluster, on this endpoint, is FALSE.
-     * • The value of the ExecuteIfOff bit is 0.
+     * - The command is one of the ‘without On/Off’ commands: Move, Move to Level, Step, or Stop.
+     * - The On/Off cluster exists on the same endpoint as this cluster.
+     * - The OnOff attribute of the On/Off cluster, on this endpoint, is FALSE.
+     * - The value of the ExecuteIfOff bit is 0.
      */
     public OptionsBitmap options; // 15 OptionsBitmap RW VO
     /**
@@ -226,18 +223,19 @@ public class LevelControlCluster extends BaseCluster {
         public boolean onOff;
         /**
          * 
-         * This feature supports an interface for controlling the level of a light source. For the CurrentLevel
-         * attribute:
+         * This feature supports an interface for controlling the level of a light source.
+         * For the CurrentLevel attribute:
          * A value of 0x00 shall NOT be used.
-         * A value of 0x01 shall indicate the minimum level that can be attained on a device. A value of 0xFE shall
-         * indicate the maximum level that can be attained on a device. A value of null shall represent an undefined
-         * value.
+         * A value of 0x01 shall indicate the minimum level that can be attained on a device.
+         * A value of 0xFE shall indicate the maximum level that can be attained on a device.
+         * A value of null shall represent an undefined value.
          * All other values are application specific gradations from the minimum to the maximum level.
          */
         public boolean lighting;
         /**
          * 
-         * Supports frequency attributes and behavior.
+         * &gt; [!NOTE]
+         * &gt; The Frequency feature is provisional.
          */
         public boolean frequency;
 
@@ -404,7 +402,6 @@ public class LevelControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "currentLevel : " + currentLevel + "\n";
         str += "remainingTime : " + remainingTime + "\n";

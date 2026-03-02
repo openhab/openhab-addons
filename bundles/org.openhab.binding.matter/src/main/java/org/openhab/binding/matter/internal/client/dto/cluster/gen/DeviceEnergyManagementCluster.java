@@ -32,7 +32,6 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0098;
     public static final String CLUSTER_NAME = "DeviceEnergyManagement";
     public static final String CLUSTER_PREFIX = "deviceEnergyManagement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_ESA_TYPE = "esaType";
     public static final String ATTRIBUTE_ESA_CAN_GENERATE = "esaCanGenerate";
@@ -43,7 +42,6 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     public static final String ATTRIBUTE_FORECAST = "forecast";
     public static final String ATTRIBUTE_OPT_OUT_STATE = "optOutState";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the type of ESA.
@@ -104,8 +102,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * This attribute SHOULD be updated periodically by ESAs to reflect any changes in internal state, for example
      * temperature or stored energy, which would affect the power or duration limits.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds on changes, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds on changes, or
+     * - When it changes from null to any other value and vice versa.
      */
     public PowerAdjustCapabilityStruct powerAdjustmentCapability; // 5 PowerAdjustCapabilityStruct R V
     /**
@@ -115,10 +113,10 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * A server may reset this value attribute to null on a reboot, and it does not need to persist any previous
      * forecasts.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds on changes, or
-     * • When it changes from null to any other value and vice versa, or
-     * • As a result of a command which causes the forecast to be updated, or
-     * • As a result of a change in the opt-out status which in turn may cause the ESA to recalculate its forecast.
+     * - At most once every 10 seconds on changes, or
+     * - When it changes from null to any other value and vice versa, or
+     * - As a result of a command which causes the forecast to be updated, or
+     * - As a result of a change in the opt-out status which in turn may cause the ESA to recalculate its forecast.
      */
     public ForecastStruct forecast; // 6 ForecastStruct R V
     /**
@@ -183,7 +181,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     }
 
     /**
-     * This event shall be generated when the ESA enters the Paused state. There is no data for this event.
+     * This event shall be generated when the ESA enters the Paused state.
+     * There is no data for this event.
      */
     public static class Paused {
         public Paused() {
@@ -242,8 +241,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     public static class PowerAdjustStruct {
         /**
          * This field shall indicate the minimum power that the ESA can have its power adjusted to.
-         * Note that this is a signed value. Negative values indicate power flows out of the node
-         * discharging a battery).
+         * Note that this is a signed value. Negative values indicate power flows out of the node (e.g. discharging a
+         * battery).
          */
         public BigInteger minPower; // power-mW
         /**
@@ -332,8 +331,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          */
         public Integer endTime; // epoch-s
         /**
-         * This field shall indicate the earliest start time, in UTC, that the entire Forecast can be shifted to. A null
-         * value indicates that it can be started immediately.
+         * This field shall indicate the earliest start time, in UTC, that the entire Forecast can be shifted to.
+         * A null value indicates that it can be started immediately.
          */
         public Integer earliestStartTime; // epoch-s
         /**
@@ -431,6 +430,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * Manufacturers can use this value to indicate a variety of states in an unspecified way. For example, they may
          * choose to use values between 0-100 as a percentage of compressor modulation, or could use these values as
          * Enum states meaning heating with fan, heating without fan etc.
+         * &gt; [!NOTE]
+         * &gt; An ESA shall always use the same value to represent the same operating state.
          * By providing this information a smart EMS may be able to learn the observed power draw when the ESA is put
          * into a specific state. It can potentially then use the ManufacturerESAState field in the Forecast attribute
          * along with observed power drawn to predict the power draw from the appliance and potentially ask it to modify
@@ -544,8 +545,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         /**
          * This field shall indicate the new requested power that the ESA shall operate at. It MUST be between the
          * AbsMinPower and AbsMaxPower attributes as advertised by the ESA if it supports PFR.
-         * This is a signed value and can be used to indicate charging or discharging. If the ESA does NOT support PFR
-         * this value shall be ignored by the ESA.
+         * This is a signed value and can be used to indicate charging or discharging.
+         * If the ESA does NOT support PFR this value shall be ignored by the ESA.
          */
         public BigInteger nominalPower; // power-mW
         /**
@@ -832,6 +833,11 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * For example, a home may have solar PV which often produces more power than the home requires, resulting in
          * the excess power flowing into the grid. This excess power naturally fluctuates when clouds pass overhead and
          * other loads in the home are switched on and off.
+         * EVSE Example: An EMS may therefore be able to turn on the EVSE (if the vehicle is plugged in) and can start
+         * charging the vehicle, and periodically modify the charging power depending on PV generation and other home
+         * loads, so as to minimize import and export to the grid. An EMS may also use this feature to control the
+         * discharging (and re-charging) of the vehicle if the EVSE and vehicle support the V2X feature of the EVSE
+         * cluster of the associated EVSE device.
          */
         public boolean powerAdjustment;
         /**
@@ -842,6 +848,9 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * basic level of forecast is possible.
          * Forecasts are defined from a current time, using a slot format, where the slot is akin to a relatively
          * constant operating mode.
+         * Washing machine example: a washing machine may have stages of a washing cycle: heating, tumbling, rinse and
+         * spin stages. At each stage, the approximate minimum and maximum power consumption may be known, as well as
+         * the duration of that stage.
          * In some circumstances the ESA may allow the stage to be delayed or paused (subject to safety and
          * manufacturer’s discretion and user preferences).
          * Typically, appliances with a heating element cannot have their power consumption adjusted and can only be
@@ -851,6 +860,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * Appliances that only support the PowerForecastReporting and not any of the adjustment features may indicate
          * that they are not flexible in the forecast slot format.
          * The PowerForecastReporting and the adjustment features aim to align to the [SAREF4ENER] ontology.
+         * Inverter driven ESAs: some inverter driven ESAs can consume or generate a variable amount of power.
          * For example, a single phase EVSE can be adjusted in the range of 6-32Amps in 0.6 Amp steps in EU or on a
          * hardwired 120V supply in the range of 6-15 Amps in US.
          * For example, a home battery may be adjusted to charge or discharge in steps of 1W.
@@ -875,6 +885,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * 
          * ESAs which support the Start Time Adjustment feature, allow an EMS to recommend a change to the start time of
          * the energy transfer that the ESA has previously suggested it would use.
+         * Washing machine example: A Washing Machine may have been set to start a wash cycle at 9pm when the variable
+         * tariff normally reduces.
          * However, the EMS is aware that a grid event has occurred, making it cheaper to run the cycle at a later time,
          * but the washing machine is not aware of this.
          * The EMS first requests the Forecast data from each of its registered ESAs. It determines that the washing
@@ -889,6 +901,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * 
          * ESAs which support the Pausable feature, allow an EMS to recommend a pause in the middle of a forecast power
          * profile that the ESA is currently using.
+         * Washing machine example: A Washing Machine is in operation, and starting its water heating step.
          * However, the EMS becomes aware from the smart meter that the total home load on the grid is close to
          * exceeding its allowed total grid load.
          * The EMS first requests the Forecast data from each of its registered ESAs. It determines that the washing
@@ -905,6 +918,9 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * ESAs which support the Forecast adjustment feature, allow an EMS to recommend a change to the start, duration
          * and/or power level limits of the steps of the power profile that the ESA has previously suggested it would
          * use.
+         * Heat pump and Solar PV example: A heat pump may have the ability to heat hot water as well as heating the
+         * home. The heat pump scheduling system may have determined that the home will be unoccupied during the day, or
+         * that the indoor temperature is above the set-point and so it knows that it will not need to heat the home.
          * However, the hot water tank is likely to need to be reheated before the homeowner comes home in the evening.
          * The heat pump is not aware that the property also has a solar PV inverter which is also an ESA that is
          * communicating with the EMS.
@@ -924,6 +940,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
          * which power usage should be modified (for example when the EMS has been made aware that the grid supplier has
          * requested reduced energy usage due to overall peak grid demand) and may cause the ESA to modify the intended
          * power profile has previously suggested it would use.
+         * EVSE example: An EVSE scheduling system may have determined that the vehicle would be charged starting at a
+         * moderate rate at 1am, so that it has enough charge by the time it is needed later that morning.
          * However, the DSR service provider has informed the EMS that due to high forecast winds it is now forecast
          * that there will be very cheap energy available from wind generation between 2am and 3am.
          * The EMS first requests the Forecast data from each of its registered ESAs. It determines that the EVSE has a
@@ -1062,7 +1080,6 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "esaType : " + esaType + "\n";
         str += "esaCanGenerate : " + esaCanGenerate + "\n";

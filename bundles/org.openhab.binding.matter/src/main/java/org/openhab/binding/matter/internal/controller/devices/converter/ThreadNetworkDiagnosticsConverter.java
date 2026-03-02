@@ -24,8 +24,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
 
-import com.google.gson.Gson;
-
 /**
  * A converter for translating {@link ThreadNetworkDiagnosticsCluster} events and attributes to openHAB channels and
  * back again.
@@ -34,7 +32,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNetworkDiagnosticsCluster> {
-    private Gson gson = new Gson();
 
     public ThreadNetworkDiagnosticsConverter(ThreadNetworkDiagnosticsCluster cluster, MatterBaseThingHandler handler,
             int endpointNumber, String labelPrefix) {
@@ -61,7 +58,7 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
             case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE:
             case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS:
                 updateThingAttributeProperty(message.path.attributeName,
-                        message.value != null ? gson.toJson(message.value) : null);
+                        message.value != null ? GSON.toJson(message.value) : null);
                 break;
         }
         super.onEvent(message);
@@ -81,10 +78,10 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, cluster.extendedPanId);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
-                cluster.neighborTable != null ? gson.toJson(cluster.neighborTable) : null);
+                cluster.neighborTable != null ? GSON.toJson(cluster.neighborTable) : null);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
-                cluster.routeTable != null ? gson.toJson(cluster.routeTable) : null);
+                cluster.routeTable != null ? GSON.toJson(cluster.routeTable) : null);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS,
-                cluster.extAddress != null ? gson.toJson(cluster.extAddress) : null);
+                cluster.extAddress != null ? GSON.toJson(cluster.extAddress) : null);
     }
 }

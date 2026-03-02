@@ -29,19 +29,18 @@ public class DescriptorCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x001D;
     public static final String CLUSTER_NAME = "Descriptor";
     public static final String CLUSTER_PREFIX = "descriptor";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_DEVICE_TYPE_LIST = "deviceTypeList";
     public static final String ATTRIBUTE_SERVER_LIST = "serverList";
     public static final String ATTRIBUTE_CLIENT_LIST = "clientList";
     public static final String ATTRIBUTE_PARTS_LIST = "partsList";
     public static final String ATTRIBUTE_TAG_LIST = "tagList";
+    public static final String ATTRIBUTE_ENDPOINT_UNIQUE_ID = "endpointUniqueId";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * This is a list of device types and corresponding revisions declaring endpoint conformance (see DeviceTypeStruct).
-     * At least one device type entry shall be present.
+     * This is a list of device types and corresponding revisions declaring endpoint conformance (see Section 9.5.5.1,
+     * “DeviceTypeStruct Type”). At least one device type entry shall be present.
      * An endpoint shall conform to all device types listed in the DeviceTypeList. A cluster instance that is in common
      * for more than one device type in the DeviceTypeList shall be supported as a shared cluster instance on the
      * endpoint.
@@ -68,14 +67,24 @@ public class DescriptorCluster extends BaseCluster {
      * the left side.
      * It may also be used to provide information about an endpoint (e.g. the relative location of a Temperature sensor
      * in a Temperature Controlled Cabinet).
-     * • A client SHOULD use these tags to convey disambiguation information and other relevant information to the user
+     * - A client SHOULD use these tags to convey disambiguation information and other relevant information to the user
      * (e.g. showing it in a user interface), as appropriate.
-     * • A client SHOULD use these tags in its logic to make decisions, as appropriate.
+     * - A client SHOULD use these tags in its logic to make decisions, as appropriate.
      * For example, a client may identify which endpoint maps to a certain function, orientation or labeling.
      * A client may use the Label field of each SemanticTagStruct, if present in each structure, to indicate
      * characteristics of an endpoint, or to augment what is provided in the TagID field of the same structure.
      */
     public List<Semtag> tagList; // 4 list R V
+    /**
+     * Indicates an identifier which allows to uniquely identify the functionality exposed on an endpoint, and therefore
+     * shall be unique within the device. It is constructed in a manufacturer specific manner.
+     * - If a globally unique identifier is used, the same rules as defined for the UniqueID attribute in the Basic
+     * Information cluster apply.
+     * - If the identifier is only unique in the scope of the device, and cannot be used to track the device, then it
+     * may remain unchanged at factory reset.
+     * The value does not need to be human readable, since it is intended for machine to machine (M2M) communication.
+     */
+    public String endpointUniqueId; // 5 string R V
 
     // Structs
     /**
@@ -125,13 +134,13 @@ public class DescriptorCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "deviceTypeList : " + deviceTypeList + "\n";
         str += "serverList : " + serverList + "\n";
         str += "clientList : " + clientList + "\n";
         str += "partsList : " + partsList + "\n";
         str += "tagList : " + tagList + "\n";
+        str += "endpointUniqueId : " + endpointUniqueId + "\n";
         return str;
     }
 }

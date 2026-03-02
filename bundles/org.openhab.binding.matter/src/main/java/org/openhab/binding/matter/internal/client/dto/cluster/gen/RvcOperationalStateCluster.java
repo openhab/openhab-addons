@@ -30,7 +30,6 @@ public class RvcOperationalStateCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0061;
     public static final String CLUSTER_NAME = "RvcOperationalState";
     public static final String CLUSTER_PREFIX = "rvcOperationalState";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_PHASE_LIST = "phaseList";
     public static final String ATTRIBUTE_CURRENT_PHASE = "currentPhase";
     public static final String ATTRIBUTE_COUNTDOWN_TIME = "countdownTime";
@@ -38,7 +37,6 @@ public class RvcOperationalStateCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPERATIONAL_STATE = "operationalState";
     public static final String ATTRIBUTE_OPERATIONAL_ERROR = "operationalError";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates a list of names of different phases that the device can go through for the selected function or mode.
      * The list may not be in sequence order. For example in a washing machine this could include items such as
@@ -62,13 +60,13 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * A value of null represents that there is no time currently defined until operation completion. This may happen,
      * for example, because no operation is in progress or because the completion time is unknown.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • If it has changed due to a change in the CurrentPhase or OperationalState attributes, or
-     * • When it changes from 0 to any other value and vice versa, or
-     * • When it changes from null to any other value and vice versa, or
-     * • When it increases, or
-     * • When there is any increase or decrease in the estimated time remaining that was due to progressing insight of
+     * - If it has changed due to a change in the CurrentPhase or OperationalState attributes, or
+     * - When it changes from 0 to any other value and vice versa, or
+     * - When it changes from null to any other value and vice versa, or
+     * - When it increases, or
+     * - When there is any increase or decrease in the estimated time remaining that was due to progressing insight of
      * the server’s control logic, or
-     * • When it changes at a rate significantly different from one unit per second.
+     * - When it changes at a rate significantly different from one unit per second.
      * Changes to this attribute merely due to the normal passage of time with no other dynamic change of device state
      * shall NOT be reported.
      * As this attribute is not being reported during a regular countdown, clients SHOULD NOT rely on the reporting of
@@ -92,8 +90,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
     public OperationalStateEnum operationalState; // 4 OperationalStateEnum R V
     /**
      * This attribute shall specify the details of any current error condition being experienced on the device when the
-     * OperationalState attribute is populated with Error. Please see ErrorStateStruct for general requirements on the
-     * population of this attribute.
+     * OperationalState attribute is populated with Error. See Section 1.14.4.4, “ErrorStateStruct Type” for general
+     * requirements on the population of this attribute.
      * When there is no error detected, this shall have an ErrorStateID of NoError.
      */
     public ErrorStateStruct operationalError; // 5 ErrorStateStruct R V
@@ -157,9 +155,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
          */
         public OperationalStateEnum operationalStateId; // OperationalStateEnum
         /**
-         * This field shall be present if the OperationalStateID is from the set reserved for Manufacturer Specific
-         * States, otherwise it shall NOT be present. If present, this shall contain a human-readable description of the
-         * operational state.
+         * This field is present when the OperationalStateID is from the set reserved for Manufacturer Specific States.
+         * If present, this shall contain a human-readable description of the operational state.
          */
         public String operationalStateLabel; // string
 
@@ -175,10 +172,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
          */
         public ErrorStateEnum errorStateId; // ErrorStateEnum
         /**
-         * This field shall be present if the ErrorStateID is from the set reserved for Manufacturer Specific Errors,
-         * otherwise it shall NOT be present. If present, this shall contain a human-readable description of the
-         * ErrorStateID; e.g. for a manufacturer specific ErrorStateID of &quot;0x80&quot; the ErrorStateLabel may
-         * contain &quot;My special error&quot;.
+         * This field is present when the ErrorStateID is from the set reserved for Manufacturer Specific errors. If
+         * present, this shall contain a human-readable description of the error state.
          */
         public String errorStateLabel; // string
         /**
@@ -200,9 +195,7 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * The values defined herein are applicable to this derived cluster of Operational State only and are additional to
      * the set of values defined in Operational State itself.
      * RVC Pause Compatibility defines the compatibility of the states this cluster defines with the Pause command.
-     * ### Table 13. RVC Pause Compatibility
      * RVC Resume Compatibility defines the compatibility of the states this cluster defines with the Resume command.
-     * ### Table 14. RVC Resume Compatibility
      * While in the Charging or Docked states, the device shall NOT attempt to resume unless it transitioned to those
      * states while operating and can resume, such as, for example, if it is recharging while in a cleaning cycle. Else,
      * if the operational state is Charging or Docked but there’s no operation to resume or the operation can’t be
@@ -216,7 +209,11 @@ public class RvcOperationalStateCluster extends BaseCluster {
         ERROR(3, "Error"),
         SEEKING_CHARGER(64, "Seeking Charger"),
         CHARGING(65, "Charging"),
-        DOCKED(66, "Docked");
+        DOCKED(66, "Docked"),
+        EMPTYING_DUST_BIN(67, "Emptying Dust Bin"),
+        CLEANING_MOP(68, "Cleaning Mop"),
+        FILLING_WATER_TANK(69, "Filling Water Tank"),
+        UPDATING_MAPS(70, "Updating Maps");
 
         private final Integer value;
         private final String label;
@@ -253,7 +250,14 @@ public class RvcOperationalStateCluster extends BaseCluster {
         WATER_TANK_EMPTY(68, "Water Tank Empty"),
         WATER_TANK_MISSING(69, "Water Tank Missing"),
         WATER_TANK_LID_OPEN(70, "Water Tank Lid Open"),
-        MOP_CLEANING_PAD_MISSING(71, "Mop Cleaning Pad Missing");
+        MOP_CLEANING_PAD_MISSING(71, "Mop Cleaning Pad Missing"),
+        LOW_BATTERY(72, "Low Battery"),
+        CANNOT_REACH_TARGET_AREA(73, "Cannot Reach Target Area"),
+        DIRTY_WATER_TANK_FULL(74, "Dirty Water Tank Full"),
+        DIRTY_WATER_TANK_MISSING(75, "Dirty Water Tank Missing"),
+        WHEELS_JAMMED(76, "Wheels Jammed"),
+        BRUSH_JAMMED(77, "Brush Jammed"),
+        NAVIGATION_SENSOR_OBSCURED(78, "Navigation Sensor Obscured");
 
         private final Integer value;
         private final String label;
@@ -295,16 +299,14 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * OperationalCommandResponse command with an ErrorStateID of CommandInvalidInState and shall take no further
      * action.
      * States are defined as Pause-compatible as follows:
-     * • For states defined in this cluster specification, in Table 3, “Pause Compatibility”.
-     * • For states defined by derived cluster specifications, in the corresponding specifications.
-     * • For manufacturer-specific states, by the manufacturer.
+     * - For states defined in this cluster specification, in Table 3, “Pause Compatibility”.
+     * - For states defined by derived cluster specifications, in the corresponding specifications.
+     * - For manufacturer-specific states, by the manufacturer.
      * A device that is unable to honor the Pause command for whatever reason shall respond with an
      * OperationalCommandResponse command with an ErrorStateID of CommandInvalidInState but take no further action.
      * Otherwise, on success:
-     * • The OperationalState attribute shall be set to Paused.
-     * • The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
-     * The following table defines the compatibility of this cluster’s states with the Pause command.
-     * ### Table 3. Pause Compatibility
+     * - The OperationalState attribute shall be set to Paused.
+     * - The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
      */
     public static ClusterCommand pause() {
         return new ClusterCommand("pause");
@@ -321,8 +323,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * A device that is unable to honor the Stop command for whatever reason shall respond with an
      * OperationalCommandResponse command with an ErrorStateID of CommandInvalidInState but take no further action.
      * Otherwise, on success:
-     * • The OperationalState attribute shall be set to Stopped.
-     * • The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
+     * - The OperationalState attribute shall be set to Stopped.
+     * - The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
      */
     public static ClusterCommand stop() {
         return new ClusterCommand("stop");
@@ -341,8 +343,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * A device that is unable to honor the Start command for whatever reason shall respond with an
      * OperationalCommandResponse command with an ErrorStateID of UnableToStartOrResume but take no further action.
      * Otherwise, on success:
-     * • The OperationalState attribute shall be set to Running.
-     * • The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
+     * - The OperationalState attribute shall be set to Running.
+     * - The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
      */
     public static ClusterCommand start() {
         return new ClusterCommand("start");
@@ -360,17 +362,15 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * OperationalCommandResponse command with an ErrorStateID of CommandInvalidInState and shall take no further
      * action.
      * States are defined as Resume-compatible as follows:
-     * • For states defined in this cluster specification, in Table 4, “Resume Compatibility”.
-     * • For states defined by derived cluster specifications, in the corresponding specifications.
-     * • For manufacturer-specific states, by the manufacturer.
-     * The following table defines the compatibility of this cluster’s states with the Resume command.
-     * ### Table 4. Resume Compatibility
+     * - For states defined in this cluster specification, in Table 4, “Resume Compatibility”.
+     * - For states defined by derived cluster specifications, in the corresponding specifications.
+     * - For manufacturer-specific states, by the manufacturer.
      * A device that is unable to honor the Resume command for any other reason shall respond with an
      * OperationalCommandResponse command with an ErrorStateID of UnableToStartOrResume but take no further action.
      * Otherwise, on success:
-     * • The OperationalState attribute shall be set to the most recent non-Error operational state prior to entering
+     * - The OperationalState attribute shall be set to the most recent non-Error operational state prior to entering
      * the Paused state.
-     * • The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
+     * - The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
      */
     public static ClusterCommand resume() {
         return new ClusterCommand("resume");
@@ -385,8 +385,8 @@ public class RvcOperationalStateCluster extends BaseCluster {
      * Docked, shall respond with an OperationalCommandResponse command with an ErrorStateID of CommandInvalidInState
      * and shall have no other effect.
      * Otherwise, on success:
-     * • The OperationalState attribute shall be set to SeekingCharger.
-     * • The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
+     * - The OperationalState attribute shall be set to SeekingCharger.
+     * - The device shall respond with an OperationalCommandResponse command with an ErrorStateID of NoError.
      */
     public static ClusterCommand goHome() {
         return new ClusterCommand("goHome");
@@ -395,7 +395,6 @@ public class RvcOperationalStateCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "phaseList : " + phaseList + "\n";
         str += "currentPhase : " + currentPhase + "\n";
         str += "countdownTime : " + countdownTime + "\n";

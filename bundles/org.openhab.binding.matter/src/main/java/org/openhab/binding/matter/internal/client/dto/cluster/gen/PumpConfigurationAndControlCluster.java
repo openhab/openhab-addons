@@ -28,7 +28,6 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0200;
     public static final String CLUSTER_NAME = "PumpConfigurationAndControl";
     public static final String CLUSTER_PREFIX = "pumpConfigurationAndControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_MAX_PRESSURE = "maxPressure";
     public static final String ATTRIBUTE_MAX_SPEED = "maxSpeed";
@@ -54,7 +53,6 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_OPERATION_MODE = "operationMode";
     public static final String ATTRIBUTE_CONTROL_MODE = "controlMode";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute specifies the maximum pressure the pump can achieve. It is a physical limit, and does not apply to
@@ -71,7 +69,7 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     /**
      * This attribute specifies the maximum flow the pump can achieve. It is a physical limit, and does not apply to any
      * specific control mode or operation mode.
-     * Valid range is 0 m/h to 6,553.4 m/h (steps of 0.1 m/h). Null if the value is invalid.
+     * Valid range is 0 m^3/h to 6,553.4 m^3/h (steps of 0.1 m^3/h). Null if the value is invalid.
      */
     public Integer maxFlow; // 2 uint16 R V
     /**
@@ -113,13 +111,13 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     /**
      * This attribute specifies the minimum flow the pump can achieve when it is working with the ControlMode attribute
      * set to ConstantFlow.
-     * Valid range is 0 m/h to 6,553.4 m/h (steps of 0.1 m/h). Null if the value is invalid.
+     * Valid range is 0 m^3/h to 6,553.4 m^3/h (steps of 0.1 m^3/h). Null if the value is invalid.
      */
     public Integer minConstFlow; // 9 uint16 R V
     /**
      * This attribute specifies the maximum flow the pump can achieve when it is working with the ControlMode attribute
      * set to ConstantFlow.
-     * Valid range is 0 m/h to 6,553.4 m/h (steps of 0.1 m/h). Null if the value is invalid.
+     * Valid range is 0 m^3/h to 6,553.4 m^3/h (steps of 0.1 m^3/h). Null if the value is invalid.
      */
     public Integer maxConstFlow; // 10 uint16 R V
     /**
@@ -145,23 +143,25 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * This attribute specifies current effective operation mode of the pump as defined in OperationModeEnum.
      * The value of the EffectiveOperationMode attribute is the same as the OperationMode attribute, unless one of the
      * following points are true:
-     * • The pump is physically set to run with the local settings
-     * • The LocalOverride bit in the PumpStatus attribute is set,
-     * See OperationMode and ControlMode attributes for a detailed description of the operation and control of the pump.
+     * - The pump is physically set to run with the local settings
+     * - The LocalOverride bit in the PumpStatus attribute is set,
+     * See OperationMode Attribute and ControlMode Attribute for a detailed description of the operation and control of
+     * the pump.
      */
     public OperationModeEnum effectiveOperationMode; // 17 OperationModeEnum R V
     /**
      * This attribute specifies the current effective control mode of the pump as defined in ControlModeEnum.
      * This attribute contains the control mode that currently applies to the pump. It will have the value of the
      * ControlMode attribute, unless one of the following points are true:
-     * • The ControlMode attribute is set to Automatic. In this case, the value of the EffectiveControlMode shall match
+     * - The ControlMode attribute is set to Automatic. In this case, the value of the EffectiveControlMode shall match
      * the behavior of the pump.
-     * • A remote sensor is used as the sensor for regulation of the pump. In this case, EffectiveControlMode will
+     * - A remote sensor is used as the sensor for regulation of the pump. In this case, EffectiveControlMode will
      * display ConstantPressure, ConstantFlow or ConstantTemperature if the remote sensor is a pressure sensor, a flow
      * sensor or a temperature sensor respectively, regardless of the value of the ControlMode attribute.
      * In case the ControlMode attribute is not included on the device and no remote sensors are connected, the value of
      * the EffectiveControlMode shall match the vendor-specific behavior of the pump.
-     * See OperationMode and ControlMode attributes for detailed a description of the operation and control of the pump.
+     * See OperationMode Attribute and ControlMode Attribute for detailed a description of the operation and control of
+     * the pump.
      */
     public ControlModeEnum effectiveControlMode; // 18 ControlModeEnum R V
     /**
@@ -203,8 +203,7 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * in kWh. The value of the LifetimeEnergyConsumed attribute is updated dynamically as the energy consumption of the
      * pump increases. If LifetimeEnergyConsumed rises above maximum value it “rolls over” and starts at 0 (zero).
      * This attribute is writeable, in order to allow setting to an appropriate value after maintenance.
-     * Valid range is 0 kWh to 4,294,967,294 kWh.
-     * Null if the value is unknown.
+     * Valid range is 0 kWh to 4,294,967,294 kWh. Null if the value is unknown.
      */
     public Integer lifetimeEnergyConsumed; // 23 uint32 RW VM
     /**
@@ -212,7 +211,6 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
      * The actual operating mode of the pump is a result of the setting of the attributes OperationMode, ControlMode and
      * the optional connection of a remote sensor. The operation and control is prioritized as shown in the scheme
      * below:
-     * ### Priority Scheme of Pump Operation and Control
      * If this attribute is Maximum, Minimum or Local, the OperationMode attribute decides how the pump is operated.
      * If this attribute is Normal and a remote sensor is connected to the pump, the type of the remote sensor decides
      * the control mode of the pump. A connected remote pressure sensor will make the pump run in control mode Constant
@@ -229,7 +227,7 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     public OperationModeEnum operationMode; // 32 OperationModeEnum RW VM
     /**
      * This attribute specifies the control mode of the pump as defined in ControlModeEnum.
-     * See the OperationMode attribute for a detailed description of the operation and control of the pump.
+     * See OperationMode Attribute for a detailed description of the operation and control of the pump.
      * ControlMode may be changed at any time, even when the pump is running. The behavior of the pump at the point of
      * changing is vendor-specific.
      * In the case a device does not support a specific control mode, the write interaction to this attribute with an
@@ -493,7 +491,6 @@ public class PumpConfigurationAndControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "maxPressure : " + maxPressure + "\n";
         str += "maxSpeed : " + maxSpeed + "\n";
