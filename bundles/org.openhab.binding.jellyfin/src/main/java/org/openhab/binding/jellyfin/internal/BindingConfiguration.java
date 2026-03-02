@@ -23,7 +23,7 @@ import org.osgi.service.cm.ConfigurationAdmin;
 /**
  * The {@link BindingConfiguration} class contains fields mapping binding
  * configuration parameters.
- * 
+ *
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault

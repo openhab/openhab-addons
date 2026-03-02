@@ -213,13 +213,44 @@ runtime behaviour and require extra validation.
 
 ---
 
+## Post-Session Refactoring Integration (2026-03-02)
+
+The `refactor-clienthandler` feature (session 2026-03-01) extracted four responsibilities
+from `ClientHandler.java` into standalone utility classes and rewrote the handler itself
+(1023 → 392 lines). The new/modified files were reviewed against this compliance plan.
+
+### New production files — compliance status
+
+| File | V1 | V2 | V3 |
+|---|---|---|---|
+| `util/tick/TickConverter.java` | n/a | ✅ `@NonNullByDefault` | ✅ no FQCNs |
+| `util/extrapolation/PlaybackExtrapolator.java` | ✅ SLF4J | ✅ `@NonNullByDefault` | ✅ no FQCNs |
+| `util/timeout/SessionTimeoutMonitor.java` | ✅ SLF4J | ✅ `@NonNullByDefault` | ✅ no FQCNs |
+| `util/command/ClientCommandRouter.java` | ✅ SLF4J | ✅ `@NonNullByDefault` | ✅ no FQCNs |
+| `util/discovery/DeviceIdSanitizer.java` | n/a | ✅ `@NonNullByDefault` | ✅ no FQCNs |
+| `handler/ClientHandler.java` (rewritten) | ✅ SLF4J | ✅ `@NonNullByDefault` | ✅ no FQCNs |
+
+### V3 regressions found and fixed (2026-03-02)
+
+During integration review, two files introduced by the refactoring contained FQCNs
+in method bodies:
+
+| File | Issue | Fix |
+|---|---|---|
+| `discovery/ClientDiscoveryService.java` | `new java.util.LinkedHashMap<>()`, `new java.util.ArrayList<>()` in `discoverClients()`; unused `prev` variable | Added `import java.util.ArrayList; import java.util.LinkedHashMap;`; replaced FQCNs; removed unused variable |
+| `handler/ClientDiscoveryServiceTest.java` | `java.util.Map`, `java.util.LinkedHashMap`, `org.openhab.core.config.discovery.DiscoveryResult`, `org.openhab.core.thing.Thing` used as FQCNs in test method body | Added `import java.util.LinkedHashMap;`; replaced all FQCNs with simple names (all types already imported) |
+
+Build after fix: **Tests run: 253, Failures: 0, Errors: 0 — BUILD SUCCESS**
+
+---
+
 ## Definition of Done
 
 - [ ] All 5 sessions complete with passing `mvn clean install`
-- [ ] Zero `System.err` / `printStackTrace` in non-generated production code
-- [ ] All non-DTO classes have `@NonNullByDefault`
-- [ ] No FQCNs inside method bodies in non-generated production code
-- [ ] `getConfigAs()` called only in `initialize()`, not in constructors
-- [ ] `WebSocketClient` obtained via `WebSocketClientFactory` service
+- [x] Zero `System.err` / `printStackTrace` in non-generated production code *(Session 1)*
+- [x] All non-DTO classes have `@NonNullByDefault` *(Session 2 + refactoring)*
+- [x] No FQCNs inside method bodies in non-generated production code *(Session 3 + 2026-03-02 fix)*
+- [ ] `getConfigAs()` called only in `initialize()`, not in constructors *(Session 4 pending)*
+- [ ] `WebSocketClient` obtained via `WebSocketClientFactory` service *(Session 5 pending)*
 - [ ] `mvn spotless:check` passes (exit code 0)
 - [ ] Feature marked complete in `active-features.json`

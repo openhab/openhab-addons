@@ -16,11 +16,14 @@ import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERABLE_CLIEN
 import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERY_RESULT_TTL_SEC;
 import static org.openhab.binding.jellyfin.internal.Constants.THING_TYPE_JELLYFIN_CLIENT;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.util.discovery.DeviceIdSanitizer;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
@@ -107,6 +110,11 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
         logger.debug("Processing {} client(s) for discovery", clients.size());
 
+        // Deduplicate device IDs that are prefix variants of the same client.
+        // Prefer the longest deviceId when one is a prefix of another.
+        Map<String, SessionInfoDto> deduped = new LinkedHashMap<>();
+
+        // First pass: build deduplicated map
         for (Map.Entry<String, SessionInfoDto> entry : clients.entrySet()) {
             SessionInfoDto session = entry.getValue();
             String deviceId = session.getDeviceId();
@@ -117,6 +125,32 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
                         session.getId(), session.getClient());
                 continue;
             }
+
+            // Deduplication: if a previous id is a prefix of this id, prefer the longer id
+            boolean handled = false;
+            for (String existing : new ArrayList<>(deduped.keySet())) {
+                if (existing.startsWith(deviceId)) {
+                    // existing is longer or equal -> keep existing
+                    handled = true;
+                    break;
+                }
+                if (deviceId.startsWith(existing)) {
+                    // new id is longer -> replace existing
+                    deduped.remove(existing);
+                    deduped.put(deviceId, session);
+                    handled = true;
+                    break;
+                }
+            }
+            if (!handled) {
+                deduped.put(deviceId, session);
+            }
+        }
+
+        // Second pass: publish discovery results for deduplicated clients
+        for (Map.Entry<String, SessionInfoDto> entry : deduped.entrySet()) {
+            SessionInfoDto session = entry.getValue();
+            String deviceId = entry.getKey();
 
             // Sanitize device ID for use in ThingUID (remove special characters)
             String sanitizedDeviceId = sanitizeDeviceId(deviceId);
@@ -164,14 +198,11 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
     /**
      * Sanitizes a device ID for use in a ThingUID by removing or replacing invalid characters.
      *
-     * ThingUIDs have strict requirements: only alphanumeric characters, hyphens, and underscores are allowed.
-     * This method replaces any other characters with hyphens to ensure valid ThingUID generation.
-     *
      * @param deviceId the raw device ID from the Jellyfin session
      * @return the sanitized device ID safe for use in a ThingUID
+     * @see DeviceIdSanitizer#sanitize(String)
      */
-    private String sanitizeDeviceId(String deviceId) {
-        // Replace any character that is not alphanumeric, hyphen, or underscore with a hyphen
-        return deviceId.replaceAll("[^a-zA-Z0-9_-]", "-");
+    String sanitizeDeviceId(String deviceId) {
+        return DeviceIdSanitizer.sanitize(deviceId);
     }
 }

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Contextual exception handler that categorizes exceptions and publishes events
- * 
+ *
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault

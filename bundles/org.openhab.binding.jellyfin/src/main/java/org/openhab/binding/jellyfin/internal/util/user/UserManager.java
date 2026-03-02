@@ -48,8 +48,8 @@ public class UserManager {
      * @return UserChangeResult containing filtered users and detected changes
      */
     public UserChangeResult processUsersList(List<UserDto> users, List<String> previousUserIds) {
-        logger.info("Retrieved users list from Jellyfin server:");
-        logger.info("  Total users: {}", users.size());
+        logger.debug("Retrieved users list from Jellyfin server:");
+        logger.debug("  Total users: {}", users.size());
 
         Predicate<UserDto> isVisible = user -> !user.getPolicy().getIsHidden();
         Predicate<UserDto> isEnabled = user -> !user.getPolicy().getIsDisabled();
@@ -60,9 +60,13 @@ public class UserManager {
         List<String> addedUserIds = currentUserIds.stream().filter(id -> !previousUserIds.contains(id)).toList();
         List<String> removedUserIds = previousUserIds.stream().filter(id -> !currentUserIds.contains(id)).toList();
 
-        logger.info("  Enabled & visible users: {}", currentUsers.size());
-        logger.info("  Added users: {}", addedUserIds);
-        logger.info("  Removed users: {}", removedUserIds);
+        logger.debug("  Enabled & visible users: {}", currentUsers.size());
+        if (!addedUserIds.isEmpty()) {
+            logger.info("Added users: {}", addedUserIds);
+        }
+        if (!removedUserIds.isEmpty()) {
+            logger.info("Removed users: {}", removedUserIds);
+        }
 
         return new UserChangeResult(currentUserIds, addedUserIds, removedUserIds, currentUsers);
     }
