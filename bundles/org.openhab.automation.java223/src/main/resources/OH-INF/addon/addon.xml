@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="java223" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>automation</type>
+	<name>Java223 Scripting Automation</name>
+	<description>This bundle allows using Java in JSR223 scripts.</description>
+
+	<config-description>
+
+		<parameter-group name="helperLib">
+			<label>Helper Library</label>
+			<description>Helper library generation settings.</description>
+		</parameter-group>
+
+		<parameter-group name="cache">
+			<label>Cache</label>
+			<description>Cache compilation settings.</description>
+		</parameter-group>
+
+		<parameter name="allowInstanceReuse" type="boolean" groupName="cache">
+			<label>Allow Script Instance Reuse</label>
+			<description>Reuse a script instance if found in the cache. Allow sharing data between subsequent executions.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="enableHelper" type="boolean" groupName="helperLib">
+			<label>Enable Helper Library</label>
+			<description>If set to false, disable helper, convenience-dependencies and all code generation.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="additionalBundles" type="text" groupName="helperLib">
+			<advanced>true</advanced>
+			<label>Additional Bundles</label>
+			<description>Additional bundles exported for developing, concatenated by ",". Will be included in
+				convenience-dependencies.jar</description>
+		</parameter>
+		<parameter name="additionalClasses" type="text" groupName="helperLib">
+			<advanced>true</advanced>
+			<label>Additional Classes</label>
+			<description>Additional classes exported for developing, concatenated by ",". Will be included in
+				convenience-dependencies.jar</description>
+		</parameter>
+		<parameter name="stabilityGenerationWaitTime" type="integer" groupName="helperLib">
+			<advanced>true</advanced>
+			<label>Stability Generation Wait Time</label>
+			<description>Delay (in ms) before writing generated classes. Each new generation triggering event further delays the
+				generation. Useful to prevent multiple code generations when many Things activate at the same times.</description>
+			<default>10000</default>
+		</parameter>
+		<parameter name="startupGuardTime" type="integer" groupName="helperLib">
+			<advanced>true</advanced>
+			<label>Startup Guard Time</label>
+			<description>Delay (in ms) before overwriting previously generated classes, at startup. Useful to not replace files
+				from previous openHAB run with incomplete generation from a not fully loaded system.</description>
+			<default>60000</default>
+		</parameter>
+	</config-description>
+
+</addon:addon>
