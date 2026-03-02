@@ -114,7 +114,7 @@ public class HomeData extends NAThing implements NAModule, Location {
     }
 
     public ZoneId getZoneId() {
-        return zoneId instanceof ZoneId ? zoneId : NetatmoConstants.NETATMO_TZ;
+        return zoneId instanceof ZoneId zId ? zId : NetatmoConstants.NETATMO_TZ;
     }
 
     public NAObjectMap<HomeDataRoom> getRooms() {
