@@ -32,8 +32,6 @@ import org.openhab.binding.viessmann.internal.config.GatewayConfiguration;
 import org.openhab.binding.viessmann.internal.dto.device.DeviceDTO;
 import org.openhab.binding.viessmann.internal.dto.device.DeviceData;
 import org.openhab.binding.viessmann.internal.dto.events.EventsDTO;
-import org.openhab.binding.viessmann.internal.dto.features.FeatureDataDTO;
-import org.openhab.binding.viessmann.internal.dto.features.FeaturesDTO;
 import org.openhab.binding.viessmann.internal.interfaces.BridgeInterface;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.library.types.OnOffType;
@@ -83,11 +81,11 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
     protected final List<String> devicesList = new ArrayList<>();
     protected final List<DeviceData> discoveredDeviceList = new ArrayList<>();
 
-    private final ItemChannelLinkRegistry linkRegistry;
+    private @Nullable final ItemChannelLinkRegistry linkRegistry;
 
     private GatewayConfiguration config = new GatewayConfiguration();
 
-    public ViessmannGatewayHandler(Bridge bridge, ItemChannelLinkRegistry linkRegistry) {
+    public ViessmannGatewayHandler(Bridge bridge, @Nullable ItemChannelLinkRegistry linkRegistry) {
         super(bridge);
         this.linkRegistry = linkRegistry;
     }
@@ -238,22 +236,27 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
 
         updateThing(editThing().withChannels(newChannels).build());
 
-        if (linkRegistry != null) {
+        ItemChannelLinkRegistry registry = linkRegistry;
+        if (registry != null) {
             for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
                 ChannelUID oldUid = e.getKey();
                 ChannelUID newUid = e.getValue();
 
-                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+                Collection<ItemChannelLink> existing = registry.getLinks(oldUid);
+                if (existing.isEmpty()) {
+                    continue;
+                }
+                Collection<ItemChannelLink> links = new ArrayList<>(existing);
 
                 for (ItemChannelLink link : links) {
                     String item = link.getItemName();
                     try {
-                        linkRegistry.remove(link.getUID());
+                        registry.remove(link.getUID());
                     } catch (Exception ex) {
                         logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
                     }
 
-                    linkRegistry.add(new ItemChannelLink(item, newUid));
+                    registry.add(new ItemChannelLink(item, newUid));
                     logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
                 }
             }
@@ -360,36 +363,10 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
 
     @Override
     public void updateFeaturesOfDevice(@Nullable DeviceHandler handler) {
-        String deviceId = "";
         if (handler != null) {
-            deviceId = handler.getDeviceId();
-            logger.debug("Loading features from Device ID: {}", deviceId);
-            try {
-                FeaturesDTO allFeatures = null;
-
-                BridgeHandler bridgeHandler = getBridgeHandler();
-                if (bridgeHandler != null) {
-                    allFeatures = ((ViessmannAccountHandler) bridgeHandler).getAllFeatures(deviceId, installationId,
-                            gatewaySerial);
-                }
-                if (allFeatures != null) {
-                    List<FeatureDataDTO> featuresData = allFeatures.data;
-                    if (featuresData != null && !featuresData.isEmpty()) {
-                        for (FeatureDataDTO featureDataDTO : featuresData) {
-                            handler.handleUpdate(featureDataDTO);
-                        }
-                    } else {
-                        logger.warn("Features of Device ID \"{}\" is empty.", deviceId);
-                        String statusMessage = String.format("@text/offline.comm-error.features-empty [%s]", deviceId);
-                        handler.updateThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, statusMessage);
-                    }
-                }
-            } catch (ViessmannCommunicationException e) {
-                String statusMessage = String.format("@text/offline.comm-error.device-not-reachable [%s]",
-                        e.getMessage());
-                handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
-            } catch (JsonSyntaxException | IllegalStateException e) {
-                logger.warn("Parsing Viessmann response fails: {}", e.getMessage());
+            BridgeHandler bridgeHandler = getBridgeHandler();
+            if (bridgeHandler != null) {
+                ((ViessmannAccountHandler) bridgeHandler).updateFeaturesOfDevice(handler);
             }
         }
     }

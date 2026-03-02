@@ -12,13 +12,22 @@
  */
 package org.openhab.binding.viessmann.internal.dto.features;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 /**
- * The {@link FeatureShift} provides shift of features
+ * The {@link FeatureCommand} provides default command of features
  *
  * @author Ronny Grun - Initial contribution
  */
-public class FeatureShift {
-    public Boolean required;
-    public String type;
-    public FeatureConstraintsSteppingInteger constraints;
+public class FeatureCommand {
+    public String uri;
+    public String name;
+    public Boolean isExecutable;
+    public Map<String, FeatureCommandParams> params;
+    public Boolean isDeprecated = false;
+
+    public ArrayList<String> getAllParams() {
+        return params == null ? new ArrayList<>() : new ArrayList<>(params.keySet());
+    }
 }

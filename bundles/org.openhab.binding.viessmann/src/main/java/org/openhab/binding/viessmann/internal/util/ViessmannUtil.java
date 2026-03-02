@@ -12,18 +12,17 @@
  */
 package org.openhab.binding.viessmann.internal.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import java.time.ZoneId;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.viessmann.internal.handler.DeviceHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The {@link ViessmannUtil} class provides utility methods for the Viessmann binding.
@@ -32,48 +31,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public final class ViessmannUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ViessmannUtil.class);
 
     private ViessmannUtil() {
         throw new AssertionError("No instances allowed");
-    }
-
-    /**
-     * Gets a resource file as {@link InputStream}.
-     *
-     * @param clazz class used to get the classloader
-     * @param fileName resource file name
-     * @return optional stream of the resource
-     */
-    public static Optional<InputStream> getResourceStream(Class<?> clazz, String fileName) {
-        ClassLoader classLoader = clazz.getClassLoader();
-        if (classLoader == null) {
-            LOGGER.warn("Could not get classloader for class '{}'", clazz);
-            return Optional.empty();
-        }
-        return Optional.ofNullable(classLoader.getResourceAsStream(fileName));
-    }
-
-    /**
-     * Reads a properties file into a {@link Map}.
-     *
-     * @param clazz class used to get the classloader
-     * @param fileName properties file name
-     * @return map with key-value pairs, or empty map if not readable
-     */
-    public static Map<String, String> readProperties(Class<?> clazz, String fileName) {
-        return Objects.requireNonNull(getResourceStream(clazz, fileName).map(inputStream -> {
-            Properties properties = new Properties();
-            try {
-                properties.load(inputStream);
-                return properties.entrySet().stream()
-                        .collect(Collectors.toMap(e -> (String) e.getKey(), e -> (String) e.getValue()));
-            } catch (IOException e) {
-                LOGGER.warn("Could not read resource file '{}', binding will probably fail: {}", fileName,
-                        e.getMessage());
-                return new HashMap<String, String>();
-            }
-        }).orElse(Map.of()));
     }
 
     /**
@@ -85,6 +45,54 @@ public final class ViessmannUtil {
     public static String camelToHyphen(String input) {
         String result = input.replaceAll("([a-z])([A-Z])", "$1-$2").replaceAll("([A-Z])([A-Z][a-z])", "$1-$2");
         result = result.replaceAll("([a-zA-Z])([0-9]+)", "$1-$2").replaceAll("([0-9]+)([a-zA-Z])", "$1-$2");
-        return result.toLowerCase();
+        return result.toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * Converts a hyphen-separated string to camelCase or UpperCamelCase.
+     *
+     * @param input the hyphen-separated input (e.g. {@code "flow-temperature"})
+     * @param capitalizeFirst {@code true} for UpperCamelCase, {@code false} for camelCase
+     * @return the converted string, or the input if {@code null} or blank
+     */
+    public static @Nullable String hyphenToCamel(@Nullable String input, boolean capitalizeFirst) {
+        if (input == null || input.isBlank()) {
+            return input;
+        }
+
+        StringBuilder result = new StringBuilder();
+        boolean upperNext = capitalizeFirst;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (c == '-') {
+                upperNext = true;
+                continue;
+            }
+
+            if (upperNext) {
+                result.append(Character.toUpperCase(c));
+                upperNext = false;
+            } else {
+                result.append(Character.toLowerCase(c));
+            }
+        }
+        return result.toString();
+    }
+
+    @SuppressWarnings("null")
+    public static ZoneId getOpenHABZoneId() {
+        BundleContext ctx = FrameworkUtil.getBundle(DeviceHandler.class).getBundleContext();
+        if (ctx == null) {
+            return ZoneId.systemDefault();
+        }
+        ServiceReference<TimeZoneProvider> ref = ctx.getServiceReference(TimeZoneProvider.class);
+        if (ref != null) {
+            TimeZoneProvider tzProvider = ctx.getService(ref);
+            TimeZone tz = TimeZone.getTimeZone(tzProvider.getTimeZone());
+            return tz.toZoneId();
+        }
+        return ZoneId.systemDefault();
     }
 }

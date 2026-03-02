@@ -227,7 +227,7 @@ public class ViessmannAuth {
                 setState(ViessmannAuthState.NEED_AUTH);
                 return;
             }
-            logger.trace("ViessmannAuth: Got a valid token response: {}", response);
+            logger.debug("ViessmannAuth: Got a valid token response: {}", response);
             api.setTokenResponseDTO(tokenResponse);
             refreshToken = tokenResponse.refreshToken;
             api.setTokenExpiryDate(TimeUnit.SECONDS.toMillis(tokenResponse.expiresIn));
@@ -286,7 +286,8 @@ public class ViessmannAuth {
     }
 
     private @Nullable String executeUrlAuthorize(String url) {
-        String authorization = new String(Base64.getEncoder().encode((user + ":" + password).getBytes()),
+        String credentials = user + ":" + password;
+        String authorization = new String(Base64.getEncoder().encode(credentials.getBytes(StandardCharsets.UTF_8)),
                 StandardCharsets.UTF_8);
         httpClient.getAuthenticationStore().clearAuthentications();
         httpClient.getCookieStore().removeAll();

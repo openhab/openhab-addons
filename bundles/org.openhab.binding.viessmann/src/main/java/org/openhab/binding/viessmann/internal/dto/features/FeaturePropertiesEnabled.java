@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.viessmann.internal.dto.features;
 
+import com.google.gson.JsonElement;
+
 /**
- * The {@link FeatureSchedule} provides schedule of features
+ * The {@link FeaturePropertiesEnabled} provides enabled property of features
  *
  * @author Ronny Grun - Initial contribution
  */
-public class FeatureSchedule {
-    public String uri;
-    public String name;
-    public Boolean isExecutable;
-    public FeatureScheduleParams params;
+public class FeaturePropertiesEnabled {
+    public String type;
+    public JsonElement value;
 }
