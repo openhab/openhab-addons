@@ -187,18 +187,21 @@ public interface CommonInterface {
                 return;
             }
         }
-        String finalReason = null;
+
         for (Capability cap : getCapabilities().values()) {
-            String thingStatusReason = cap.setNewData(newData);
-            if (thingStatusReason != null) {
-                finalReason = thingStatusReason;
+            if (cap.setNewData(newData) instanceof String thingStatusReason) {
+                setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, thingStatusReason);
+                return;
             }
         }
+
+        if (newData.isIgnoredForThingUpdate()) {
+            return;
+        }
+
         // Prevent turning ONLINE myself if in the meantime something turned account OFFLINE
-        ApiBridgeHandler accountHandler = getAccountHandler();
-        if (accountHandler != null && accountHandler.isConnected() && !newData.isIgnoredForThingUpdate()) {
-            setThingStatus(finalReason == null ? ThingStatus.ONLINE : ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    finalReason);
+        if (getAccountHandler() instanceof ApiBridgeHandler accountHandler && accountHandler.isConnected()) {
+            setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
         }
     }
 
