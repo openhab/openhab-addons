@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.netatmo.internal.deserialization;
 
+import java.time.DateTimeException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -50,6 +53,15 @@ public class NADeserializer {
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
                 .registerTypeAdapter(ModuleType.class, new ModuleTypeDeserializer())
+                .registerTypeAdapter(ZoneId.class, (JsonDeserializer<ZoneId>) (json, type, context) -> {
+                    if (json.getAsString() instanceof String tz) {
+                        try {
+                            return ZoneId.of(tz);
+                        } catch (DateTimeException ignore) {
+                        }
+                    }
+                    return NetatmoConstants.NETATMO_TZ;
+                })
                 .registerTypeAdapter(HomeData.class,
                         (JsonDeserializer<HomeData>) (json, type, context) -> context.deserialize(json,
                                 json.getAsJsonObject().has("therm_mode") ? HomeData.Energy.class

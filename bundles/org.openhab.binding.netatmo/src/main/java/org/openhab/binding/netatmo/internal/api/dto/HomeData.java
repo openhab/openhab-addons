@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,9 +24,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
 import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HomeData} holds home information returned by homesdata endpoint.
@@ -35,7 +39,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
  */
 
 @NonNullByDefault
-public class HomeData extends NAThing implements NAModule, LocationEx {
+public class HomeData extends NAThing implements NAModule, Location {
     public class HomesDataResponse extends ApiResponse<ListBodyResponse<HomeData>> {
     }
 
@@ -84,7 +88,8 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
     private double altitude;
     private double[] coordinates = {};
     private @Nullable String country;
-    private @Nullable String timezone;
+    @SerializedName("timezone")
+    private @Nullable ZoneId zoneId;
 
     private NAObjectMap<HomeDataRoom> rooms = new NAObjectMap<>();
     private @Nullable NAObjectMap<HomeDataModule> modules;
@@ -104,14 +109,12 @@ public class HomeData extends NAThing implements NAModule, LocationEx {
         return coordinates;
     }
 
-    @Override
     public Optional<String> getCountry() {
         return Optional.ofNullable(country);
     }
 
-    @Override
-    public @Nullable String getTimezone() {
-        return timezone;
+    public ZoneId getZoneId() {
+        return zoneId instanceof ZoneId ? zoneId : NetatmoConstants.NETATMO_TZ;
     }
 
     public NAObjectMap<HomeDataRoom> getRooms() {
