@@ -53,13 +53,18 @@ public class NADeserializer {
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
                 .registerTypeAdapter(ModuleType.class, new ModuleTypeDeserializer())
                 .registerTypeAdapter(ZoneId.class, (JsonDeserializer<ZoneId>) (json, type, context) -> {
-                    if (json.getAsString() instanceof String tz) {
-                        try {
-                            return ZoneId.of(tz);
-                        } catch (DateTimeException ignore) {
-                        }
+                    if (json.isJsonNull() || !json.isJsonPrimitive()) {
+                        return null;
                     }
-                    return null;
+                    String tz = json.getAsString();
+                    if (tz.isEmpty()) {
+                        return null;
+                    }
+                    try {
+                        return ZoneId.of(tz);
+                    } catch (DateTimeException ignore) {
+                        return null;
+                    }
                 })
                 .registerTypeAdapter(HomeData.class,
                         (JsonDeserializer<HomeData>) (json, type, context) -> context.deserialize(json,
