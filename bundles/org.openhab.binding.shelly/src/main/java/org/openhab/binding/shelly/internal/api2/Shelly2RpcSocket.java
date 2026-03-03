@@ -139,8 +139,8 @@ public class Shelly2RpcSocket implements WriteCallback {
         request.setHeader("Pragma", "no-cache");
         request.setHeader("Cache-Control", "no-cache");
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}: Connect WebSocket, URI={}", thingName, uri);
+        if (logger.isDebugEnabled()) {
+            logger.debug("{}: Connect WebSocket, URI={}", thingName, uri);
         }
 
         // Start connecting the WebSocket session (result will be passed to onConnect()/onError())

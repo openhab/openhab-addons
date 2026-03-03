@@ -121,7 +121,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         String mac = "";
         String model = "";
         String mode = "";
-        String name = hostname;
+        String name = hostname; // will become the realm for auth response
         String deviceName = "";
         String thingType = "";
         Map<String, Object> properties = new TreeMap<>();
@@ -139,7 +139,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
-                config.realm = name = devInfo.hostname;
+                config.realm = name = getString(devInfo.hostname);
             }
 
             thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;

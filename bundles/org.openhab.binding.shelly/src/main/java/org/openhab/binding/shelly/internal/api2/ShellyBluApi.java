@@ -79,8 +79,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
 
     @Override
     public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
-        super.initialize(thingName, config);
-        connected = false;
+        if (!initialized) {
+            setConfig(thingName, config);
+            connected = false;
+        }
     }
 
     @Override
