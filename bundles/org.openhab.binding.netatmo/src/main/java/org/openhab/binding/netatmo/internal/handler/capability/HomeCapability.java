@@ -49,8 +49,6 @@ public class HomeCapability extends CacheCapability<HomeApi> {
     private final NetatmoDescriptionProvider descriptionProvider;
     private final Set<String> homeIds = new HashSet<>(3);
 
-    protected ZoneId zoneId = ZoneId.systemDefault();
-
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler, Duration.ofSeconds(2), HomeApi.class);
         this.descriptionProvider = descriptionProvider;
