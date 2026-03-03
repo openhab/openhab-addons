@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
 import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
@@ -113,8 +112,8 @@ public class HomeData extends NAThing implements NAModule, Location {
         return Optional.ofNullable(country);
     }
 
-    public ZoneId getZoneId() {
-        return zoneId instanceof ZoneId zId ? zId : NetatmoConstants.NETATMO_TZ;
+    public @Nullable ZoneId getZoneId() {
+        return zoneId;
     }
 
     public NAObjectMap<HomeDataRoom> getRooms() {

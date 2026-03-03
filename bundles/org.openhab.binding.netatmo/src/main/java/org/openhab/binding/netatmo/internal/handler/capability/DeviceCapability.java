@@ -14,6 +14,8 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.time.ZoneId;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
@@ -38,7 +40,9 @@ public class DeviceCapability extends Capability {
             newData.getPlace().ifPresent(place -> {
                 place.getCity().map(city -> properties.put(PROPERTY_CITY, city));
                 place.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
-                properties.put(PROPERTY_TIMEZONE, place.getZoneId().toString());
+                if (place.getZoneId() instanceof ZoneId zoneId) {
+                    properties.put(PROPERTY_TIMEZONE, zoneId.toString());
+                }
             });
         }
         if (!newData.hasFreshData(DATA_AGE_LIMIT_S)) {

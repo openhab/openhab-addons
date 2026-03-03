@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants;
 import org.openhab.binding.netatmo.internal.api.dto.HomeData;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -60,7 +59,7 @@ public class NADeserializer {
                         } catch (DateTimeException ignore) {
                         }
                     }
-                    return NetatmoConstants.NETATMO_TZ;
+                    return null;
                 })
                 .registerTypeAdapter(HomeData.class,
                         (JsonDeserializer<HomeData>) (json, type, context) -> context.deserialize(json,

@@ -89,7 +89,9 @@ public class HomeCapability extends CacheCapability<HomeApi> {
                 handler.removeChannels(getThing().getChannelsOfGroup(GROUP_ENERGY));
             }
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
-            properties.put(PROPERTY_TIMEZONE, home.getZoneId().toString());
+            if (home.getZoneId() instanceof ZoneId zoneId) {
+                properties.put(PROPERTY_TIMEZONE, zoneId.toString());
+            }
             properties.put(GROUP_LOCATION, home.getLocation().toString());
             properties.put(PROPERTY_FEATURE,
                     featureAreas.stream().map(FeatureArea::name).collect(Collectors.joining(",")));

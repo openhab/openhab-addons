@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -45,8 +44,8 @@ public class Place implements Location {
         return Optional.ofNullable(country);
     }
 
-    public ZoneId getZoneId() {
-        return zoneId instanceof ZoneId zId ? zId : NetatmoConstants.NETATMO_TZ;
+    public @Nullable ZoneId getZoneId() {
+        return zoneId;
     }
 
     @Override
