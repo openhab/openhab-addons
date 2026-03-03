@@ -261,9 +261,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.serviceName.isBlank()) {
-            config.serviceName = getString(profile.device.hostname);
-            logger.trace("{}: {} is used as serviceName", thingName, config.serviceName);
+        if (config.realm.isBlank()) {
+            config.realm = getString(profile.device.hostname);
+            logger.trace("{}: {} is used as realm", thingName, config.realm);
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
