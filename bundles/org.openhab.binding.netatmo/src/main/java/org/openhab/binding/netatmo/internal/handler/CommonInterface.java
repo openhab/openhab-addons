@@ -188,10 +188,11 @@ public interface CommonInterface {
             }
         }
 
+        String finalReason = null;
         for (Capability cap : getCapabilities().values()) {
-            if (cap.setNewData(newData) instanceof String thingStatusReason) {
-                setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, thingStatusReason);
-                return;
+            String statusReason = cap.setNewData(newData);
+            if (statusReason != null) {
+                finalReason = statusReason;
             }
         }
 
@@ -201,7 +202,8 @@ public interface CommonInterface {
 
         // Prevent turning ONLINE myself if in the meantime something turned account OFFLINE
         if (getAccountHandler() instanceof ApiBridgeHandler accountHandler && accountHandler.isConnected()) {
-            setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            setThingStatus(finalReason != null ? ThingStatus.OFFLINE : ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                    finalReason);
         }
     }
 
