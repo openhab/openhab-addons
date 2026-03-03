@@ -15,10 +15,13 @@ package org.openhab.binding.bluelink.internal.dto;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Token response from the Bluelink authentication API.
+ * Tire pressure warning status.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public record TirePressureWarning(@Override @SerializedName("tirePressureLampAll") int all,
+        @Override @SerializedName("tirePressureLampFL") int frontLeft,
+        @Override @SerializedName("tirePressureLampFR") int frontRight,
+        @Override @SerializedName("tirePressureLampRL") int rearLeft,
+        @Override @SerializedName("tirePressureLampRR") int rearRight) implements ITirePressureWarning {
 }

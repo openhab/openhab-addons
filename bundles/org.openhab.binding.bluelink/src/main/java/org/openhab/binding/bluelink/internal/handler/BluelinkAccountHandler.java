@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.bluelink.internal.handler;
 
-import static org.openhab.binding.bluelink.internal.BluelinkBindingConstants.API_ENDPOINT;
-
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -26,14 +25,18 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.bluelink.internal.api.BluelinkApi;
+import org.openhab.binding.bluelink.internal.api.AbstractBluelinkApi;
+import org.openhab.binding.bluelink.internal.api.BluelinkApiCA;
+import org.openhab.binding.bluelink.internal.api.BluelinkApiEU;
 import org.openhab.binding.bluelink.internal.api.BluelinkApiException;
+import org.openhab.binding.bluelink.internal.api.BluelinkApiUS;
 import org.openhab.binding.bluelink.internal.api.Region;
 import org.openhab.binding.bluelink.internal.api.RetryableRequestException;
+import org.openhab.binding.bluelink.internal.api.VehicleStatusCallback;
 import org.openhab.binding.bluelink.internal.config.BluelinkAccountConfiguration;
 import org.openhab.binding.bluelink.internal.discovery.BluelinkVehicleDiscoveryService;
-import org.openhab.binding.bluelink.internal.dto.VehicleInfo;
-import org.openhab.binding.bluelink.internal.dto.VehicleStatus;
+import org.openhab.binding.bluelink.internal.model.Brand;
+import org.openhab.binding.bluelink.internal.model.IVehicle;
 import org.openhab.binding.bluelink.internal.util.Backoff;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -63,7 +66,7 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
     private final TimeZoneProvider timeZoneProvider;
     private final LocaleProvider localeProvider;
 
-    private volatile @Nullable BluelinkApi api;
+    private volatile @Nullable AbstractBluelinkApi<?> api;
     private volatile @Nullable ScheduledFuture<?> loginTask;
 
     public BluelinkAccountHandler(final Bridge bridge, final HttpClient httpClient,
@@ -74,46 +77,86 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         this.localeProvider = localeProvider;
     }
 
+    public @Nullable AbstractBluelinkApi<?> getApi() {
+        return api;
+    }
+
     @Override
     public void initialize() {
         logger.debug("Initializing Bluelink account handler");
 
         final BluelinkAccountConfiguration config = getConfigAs(BluelinkAccountConfiguration.class);
-        final String username = config.username;
-        final String password = config.password;
-        if (username == null || username.isBlank() || password == null || password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/account-handler.initialize.missing-credentials");
-            return;
-        }
 
-        // Ensure a region is configured. The value is not used but is here to ensure backwards compatibility
-        // when support for other regions is added.
+        // Determine region
         final String regionStr;
         final String configuredRegion = config.region;
         if (configuredRegion != null && !configuredRegion.isBlank()) {
             regionStr = configuredRegion.toUpperCase(Locale.ROOT);
         } else {
             regionStr = localeProvider.getLocale().getCountry();
+            logger.debug("Auto-detected region: {}", regionStr);
         }
+        final Region region;
         try {
-            Region.valueOf(regionStr);
+            region = Region.valueOf(regionStr);
         } catch (final IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/account-handler.initialize.unsupported-region");
             return;
         }
 
-        final String configuredBaseUrl = config.apiBaseUrl;
-        final String baseUrl = configuredBaseUrl != null ? configuredBaseUrl : API_ENDPOINT;
-        this.api = new BluelinkApi(httpClient, baseUrl, timeZoneProvider, username, password, config.pin);
+        // Validate credentials
+        final String username = config.username;
+        final String password = config.password;
+        if (region == Region.EU) {
+            if (password == null || password.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/account-handler.initialize.missing-token");
+                return;
+            }
+        } else {
+            if (username == null || username.isBlank() || password == null || password.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/account-handler.initialize.missing-credentials");
+                return;
+            }
+        }
 
+        // Determine brand
+        final Brand brand;
+        final String configuredBrand = config.brand;
+        if (configuredBrand != null) {
+            try {
+                brand = Brand.valueOf(configuredBrand.toUpperCase(Locale.ROOT));
+            } catch (final IllegalArgumentException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/account-handler.initialize.unsupported-brand");
+                return;
+            }
+        } else if (region != Region.US) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/account-handler.initialize.brand-required");
+            return;
+        } else {
+            brand = Brand.UNKNOWN;
+        }
+
+        // baseUrl override for tests
+        final String baseUrl = config.apiBaseUrl;
+        // After validation, we know password is non-null for all regions, and username is non-null for US/CA
+        final String user = username != null ? username : "";
+        this.api = switch (region) {
+            case US -> new BluelinkApiUS(httpClient, baseUrl, timeZoneProvider, user, password, config.pin);
+            case CA -> new BluelinkApiCA(httpClient, brand, baseUrl, timeZoneProvider, user, password, config.pin);
+            case EU -> new BluelinkApiEU(httpClient, brand, editProperties(), baseUrl, timeZoneProvider, password);
+        };
+        logger.debug("Created API for region {} brand {}", region, brand);
         updateStatus(ThingStatus.UNKNOWN);
         loginTask = scheduler.schedule(this::login, 0, TimeUnit.MILLISECONDS);
     }
 
     private void login() {
-        final BluelinkApi bluelinkApi = api;
+        final AbstractBluelinkApi<?> bluelinkApi = api;
         if (bluelinkApi == null) {
             return;
         }
@@ -121,6 +164,12 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         try {
             if (bluelinkApi.login()) {
                 logger.debug("Bluelink login successful");
+                final Map<String, String> apiProps = bluelinkApi.getProperties();
+                if (!apiProps.isEmpty()) {
+                    final Map<String, String> thingProps = editProperties();
+                    thingProps.putAll(apiProps);
+                    updateProperties(thingProps);
+                }
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -152,9 +201,9 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         return List.of(BluelinkVehicleDiscoveryService.class);
     }
 
-    public List<VehicleInfo> getVehicles() throws BluelinkApiException {
+    public List<? extends IVehicle> getVehicles() throws BluelinkApiException {
         final Backoff backoff = new Backoff(Duration.ofSeconds(1), Duration.ofMillis(300), 3);
-        final BluelinkApi bluelinkApi = api;
+        final AbstractBluelinkApi<?> bluelinkApi = api;
         if (bluelinkApi == null) {
             return List.of();
         }
@@ -176,49 +225,40 @@ public class BluelinkAccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public boolean lockVehicle(final VehicleInfo vehicle) throws BluelinkApiException {
-        final BluelinkApi api = this.api;
+    public boolean lockVehicle(final IVehicle vehicle) throws BluelinkApiException {
+        final var api = this.api;
         return api != null && api.lockVehicle(vehicle);
     }
 
-    public boolean unlockVehicle(final VehicleInfo vehicle) throws BluelinkApiException {
-        final BluelinkApi api = this.api;
+    public boolean unlockVehicle(final IVehicle vehicle) throws BluelinkApiException {
+        final var api = this.api;
         return api != null && api.unlockVehicle(vehicle);
     }
 
-    public boolean startCharging(final VehicleInfo vehicle) throws BluelinkApiException {
-        final BluelinkApi api = this.api;
+    public boolean startCharging(final IVehicle vehicle) throws BluelinkApiException {
+        final var api = this.api;
         return api != null && api.startCharging(vehicle);
     }
 
-    public boolean stopCharging(final VehicleInfo vehicle) throws BluelinkApiException {
-        final BluelinkApi api = this.api;
+    public boolean stopCharging(final IVehicle vehicle) throws BluelinkApiException {
+        final var api = this.api;
         return api != null && api.stopCharging(vehicle);
     }
 
-    public boolean climateStart(final VehicleInfo vehicle, final QuantityType<Temperature> temperature,
-            final boolean heat, final boolean defrost) throws BluelinkApiException {
-        final BluelinkApi bluelinkApi = api;
-        if (bluelinkApi == null) {
-            return false;
-        }
-        return bluelinkApi.climateStart(vehicle, temperature, heat, defrost);
+    public boolean climateStart(final IVehicle vehicle, final QuantityType<Temperature> temperature, final boolean heat,
+            final boolean defrost, final @Nullable Integer igniOnDuration) throws BluelinkApiException {
+        final var api = this.api;
+        return api != null && api.climateStart(vehicle, temperature, heat, defrost, igniOnDuration);
     }
 
-    public boolean climateStop(final VehicleInfo vehicle) throws BluelinkApiException {
-        final BluelinkApi bluelinkApi = api;
-        if (bluelinkApi == null) {
-            return false;
-        }
-        return bluelinkApi.climateStop(vehicle);
+    public boolean climateStop(final IVehicle vehicle) throws BluelinkApiException {
+        final var api = this.api;
+        return api != null && api.climateStop(vehicle);
     }
 
-    public @Nullable VehicleStatus getVehicleStatus(final VehicleInfo vehicle, final boolean forceRefresh)
+    public boolean getVehicleStatus(final IVehicle vehicle, final boolean forceRefresh, final VehicleStatusCallback cb)
             throws BluelinkApiException {
-        final BluelinkApi bluelinkApi = api;
-        if (bluelinkApi == null) {
-            return null;
-        }
-        return bluelinkApi.getVehicleStatus(vehicle, forceRefresh);
+        final var api = this.api;
+        return api != null && api.getVehicleStatus(vehicle, forceRefresh, cb);
     }
 }

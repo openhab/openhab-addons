@@ -10,15 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluelink.internal.dto;
+package org.openhab.binding.bluelink.internal.dto.eu;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.UUID;
 
 /**
- * Token response from the Bluelink authentication API.
+ * Device registration response.
  *
- * @author Marcus Better - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public record TokenResponse(@SerializedName("access_token") String accessToken,
-        @SerializedName("expires_in") String expiresIn) implements Token {
+public record RegistrationResponse(UUID deviceId) {
 }
