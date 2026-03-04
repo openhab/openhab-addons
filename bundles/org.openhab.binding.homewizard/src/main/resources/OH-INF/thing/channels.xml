@@ -76,7 +76,7 @@
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>SignalStrength</tag>
 		</tags>
 	</channel-type>
 
