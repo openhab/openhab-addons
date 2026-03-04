@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
 import java.time.Duration;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,8 +47,6 @@ public class HomeCapability extends CacheCapability<HomeApi> {
     private final Set<FeatureArea> featureAreas = new HashSet<>();
     private final NetatmoDescriptionProvider descriptionProvider;
     private final Set<String> homeIds = new HashSet<>(3);
-
-    protected ZoneId zoneId = ZoneId.systemDefault();
 
     public HomeCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider) {
         super(handler, Duration.ofSeconds(2), HomeApi.class);
@@ -89,8 +86,7 @@ public class HomeCapability extends CacheCapability<HomeApi> {
                 handler.removeChannels(getThing().getChannelsOfGroup(GROUP_ENERGY));
             }
             home.getCountry().map(country -> properties.put(PROPERTY_COUNTRY, country));
-            zoneId = home.getZoneId(handler.getSystemTimeZone());
-            properties.put(PROPERTY_TIMEZONE, zoneId.toString());
+            home.getTimezone().map(tz -> properties.put(PROPERTY_TIMEZONE, tz));
             properties.put(GROUP_LOCATION, home.getLocation().toString());
             properties.put(PROPERTY_FEATURE,
                     featureAreas.stream().map(FeatureArea::name).collect(Collectors.joining(",")));
