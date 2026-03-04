@@ -100,7 +100,8 @@
 			This channel provides the state of the cloud communication.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 
