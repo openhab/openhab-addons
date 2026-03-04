@@ -13,21 +13,18 @@
 			<label>TTS Configuration</label>
 			<description>Configure Text to Speech.</description>
 		</parameter-group>
-		<parameter name="apiKey" type="text" required="true" groupName="authentication">
+		<parameter name="apiKey" type="text" required="true" groupName="authentication" required="true">
 			<label>API Key</label>
-			<required>true</required>
 			<description>OpenAI API key.</description>
 			<context>password</context>
 		</parameter>
-		<parameter name="apiUrl" type="text" required="true" groupName="authentication">
+		<parameter name="apiUrl" type="text" required="true" groupName="authentication" required="true">
 			<label>API URL</label>
-			<required>true</required>
 			<description>TTS host API URL.</description>
 			<default>https://api.openai.com/v1/audio/speech</default>
 		</parameter>
-		<parameter name="model" type="text" required="true" groupName="tts">
+		<parameter name="model" type="text" required="true" groupName="tts" required="true">
 			<label>Model</label>
-			<required>true</required>
 			<description>ID of the model to use.</description>
 			<options>
 				<option value="tts-1">Standard TTS (fast)</option>

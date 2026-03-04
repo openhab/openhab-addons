@@ -9,18 +9,16 @@
 			<label>Connection</label>
 		</parameter-group>
 
-		<parameter name="host" type="text" groupName="connection">
+		<parameter name="host" type="text" groupName="connection" required="true">
 			<context>network-address</context>
 			<label>Address</label>
 			<description>Network address of the HDMI Sync Box.</description>
-			<required>true</required>
 		</parameter>
-		<parameter name="port" type="integer" min="1" max="65535" groupName="connection">
+		<parameter name="port" type="integer" min="1" max="65535" groupName="connection" required="true">
 			<label>Port</label>
 			<description>Port of the HDMI Sync Box.</description>
 			<advanced>true</advanced>
 			<default>443</default>
-			<required>true</required>
 		</parameter>
 		<parameter name="registrationId" type="text" groupName="connection">
 			<label>Registration Id</label>
@@ -36,11 +34,11 @@
 				seconds to grant the binding the required permissions.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="statusUpdateInterval" type="integer" min="1" step="1" unit="s" groupName="connection">
+		<parameter name="statusUpdateInterval" type="integer" min="1" step="1" unit="s" groupName="connection"
+			required="true">
 			<label>Update Interval</label>
 			<description>Seconds between fetching values from the Hue Sync Box.</description>
 			<advanced>true</advanced>
-			<required>true</required>
 			<default>10</default>
 			<unitLabel>Seconds</unitLabel>
 		</parameter>
