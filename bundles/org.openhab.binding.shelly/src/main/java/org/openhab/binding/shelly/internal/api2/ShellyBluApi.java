@@ -82,6 +82,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!initialized) {
             setConfig(thingName, config);
             connected = false;
+            initialized = true;
         }
     }
 
