@@ -10,24 +10,21 @@
 		<description>This is an OZW IP interface</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
-			<parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/">
+			<parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/" required="true">
 				<label>Base URL</label>
 				<context>url</context>
 				<description>The URL of the Siemens HVAC IP gateway. Must be in the format http://hostname/ or
 					https://hostname/.
 					Don't forget the trailing '/'.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="userName" type="text">
+			<parameter name="userName" type="text" required="false">
 				<description>User name of the Siemens HVAC gateway</description>
-				<required>false</required>
 				<label>User Name</label>
 				<default>Administrator</default>
 			</parameter>
-			<parameter name="userPassword" type="text">
+			<parameter name="userPassword" type="text" required="false">
 				<context>password</context>
 				<description>User password of the Siemens HVAC gateway</description>
-				<required>false</required>
 				<label>User Password</label>
 				<default>password</default>
 			</parameter>

@@ -5,14 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:ecoflow:ecoflow-api">
-		<parameter name="accessKey" type="text">
+		<parameter name="accessKey" type="text" required="true">
 			<label>Access Key</label>
-			<required>true</required>
 		</parameter>
-		<parameter name="secretKey" type="text">
+		<parameter name="secretKey" type="text" required="true">
 			<label>Secret Key</label>
 			<context>password</context>
-			<required>true</required>
 		</parameter>
 	</config-description>
 
