@@ -82,12 +82,12 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="userIndex" type="integer" required="true" required="true">
+			<parameter name="userIndex" type="integer" required="true">
 				<label>User Index</label>
 				<description>User Index</description>
 				<default>70</default>
 			</parameter>
-			<parameter name="nodeIndex" type="integer" required="true" required="true">
+			<parameter name="nodeIndex" type="integer" required="true">
 				<label>Node Index</label>
 				<description>Node Index</description>
 				<default>120</default>
