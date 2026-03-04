@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -113,8 +112,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     protected @Nullable ShellyThingInterface thing;
 
     private static final String RPC_SRC_PREFIX = "ohshelly-";
-    private static final int MAX_ID = 10000;
-    private final AtomicInteger requestId = new AtomicInteger(ThreadLocalRandom.current().nextInt(1, MAX_ID + 1));
+    private static final AtomicInteger requestId = new AtomicInteger(1);
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -1320,7 +1318,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     private int getNextRequestId() {
-        return requestId.updateAndGet(id -> id >= MAX_ID ? 1 : id + 1);
+        return requestId.updateAndGet(id -> id + 1);
     }
 
     protected String mapValue(Map<String, String> map, String key) {
