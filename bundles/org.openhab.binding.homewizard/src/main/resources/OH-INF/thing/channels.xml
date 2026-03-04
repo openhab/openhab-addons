@@ -112,7 +112,8 @@
 			This channel provides the brightness of the status LED in percent.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
 		</tags>
 	</channel-type>
 
