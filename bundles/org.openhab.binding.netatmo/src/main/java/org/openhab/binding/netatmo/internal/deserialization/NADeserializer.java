@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.deserialization;
 
-import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,20 +50,6 @@ public class NADeserializer {
                 .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
                 .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
                 .registerTypeAdapter(ModuleType.class, new ModuleTypeDeserializer())
-                .registerTypeAdapter(ZoneId.class, (JsonDeserializer<ZoneId>) (json, type, context) -> {
-                    if (json.isJsonNull() || !json.isJsonPrimitive()) {
-                        return null;
-                    }
-                    String tz = json.getAsString();
-                    if (tz.isEmpty()) {
-                        return null;
-                    }
-                    try {
-                        return ZoneId.of(tz);
-                    } catch (DateTimeException ignore) {
-                        return null;
-                    }
-                })
                 .registerTypeAdapter(HomeData.class,
                         (JsonDeserializer<HomeData>) (json, type, context) -> context.deserialize(json,
                                 json.getAsJsonObject().has("therm_mode") ? HomeData.Energy.class

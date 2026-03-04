@@ -13,7 +13,6 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.time.Duration;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -27,8 +26,6 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HomeData} holds home information returned by homesdata endpoint.
@@ -87,8 +84,7 @@ public class HomeData extends NAThing implements NAModule, Location {
     private double altitude;
     private double[] coordinates = {};
     private @Nullable String country;
-    @SerializedName("timezone")
-    private @Nullable ZoneId zoneId;
+    private @Nullable String timezone;
 
     private NAObjectMap<HomeDataRoom> rooms = new NAObjectMap<>();
     private @Nullable NAObjectMap<HomeDataModule> modules;
@@ -112,8 +108,8 @@ public class HomeData extends NAThing implements NAModule, Location {
         return Optional.ofNullable(country);
     }
 
-    public @Nullable ZoneId getZoneId() {
-        return zoneId;
+    public Optional<String> getTimezone() {
+        return Optional.ofNullable(timezone);
     }
 
     public NAObjectMap<HomeDataRoom> getRooms() {

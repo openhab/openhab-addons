@@ -12,13 +12,10 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import java.time.ZoneId;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Place} reports location information of a Netatmo system.
@@ -31,8 +28,7 @@ import com.google.gson.annotations.SerializedName;
 public class Place implements Location {
     private @Nullable String city;
     private @Nullable String country;
-    @SerializedName("timezone")
-    private @Nullable ZoneId zoneId;
+    private @Nullable String timezone;
     private double altitude;
     private double[] location = {};
 
@@ -44,8 +40,8 @@ public class Place implements Location {
         return Optional.ofNullable(country);
     }
 
-    public @Nullable ZoneId getZoneId() {
-        return zoneId;
+    public Optional<String> getTimezone() {
+        return Optional.ofNullable(timezone);
     }
 
     @Override
