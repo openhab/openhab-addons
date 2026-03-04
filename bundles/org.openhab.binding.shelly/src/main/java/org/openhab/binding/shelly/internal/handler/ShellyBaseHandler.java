@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
 
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +64,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -1027,29 +1029,40 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         config.deviceAddress = config.deviceAddress.toLowerCase().replace(":", ""); // remove : from MAC address and
                                                                                     // convert to lower case
+        config.localIp = bindingConfig.localIP;
         if (!config.deviceIp.isEmpty()) {
             try {
                 String ip = config.deviceIp.contains(":") ? substringBefore(config.deviceIp, ":") : config.deviceIp;
                 String port = config.deviceIp.contains(":") ? substringAfter(config.deviceIp, ":") : "";
                 InetAddress addr = InetAddress.getByName(ip);
                 String saddr = addr.getHostAddress();
+                if (config.localIp.isBlank()) {
+                    InterfaceAddress localAddr = NetUtil.getSameSubnetInterfaceAddress(addr);
+                    if (localAddr != null) {
+                        config.localIp = localAddr.getAddress().getHostAddress();
+                    } else {
+                        String confHostAddr = bindingConfig.primaryIpv4HostAddress;
+                        if (confHostAddr.isBlank() || confHostAddr.startsWith("169.254")) {
+                            logger.warn("{}", messages.get("message.init.noipaddress"));
+                            setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "config-status.error.network-config", confHostAddr);
+                            return false;
+                        }
+                        config.localIp = bindingConfig.primaryIpv4HostAddress;
+                    }
+                }
                 if (!ip.equals(saddr)) {
                     logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
                     config.deviceIp = saddr + (port.isEmpty() ? "" : ":" + port);
                 }
             } catch (UnknownHostException e) {
                 logger.debug("{}: Unable to resolve hostname {}", thingName, config.deviceIp);
+                // TODO: Should probably set offline and return false
             }
         }
 
         config.realm = getString(properties.get(PROPERTY_SERVICE_NAME));
-        config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
-        if (config.localIp.startsWith("169.254")) {
-            setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
-                    config.localIp);
-            return false;
-        }
 
         if (!profile.isGen2 && config.userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
             // Gen2 has hard coded user "admin"
