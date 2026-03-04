@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -114,8 +115,8 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     @Override
     public @Nullable DiscoveryResult createResult(final ServiceInfo service) {
-        String serviceName = service.getName().toLowerCase(); // Shelly Duo: Name starts with "Shelly" rather than
-                                                              // "shelly"
+        // Shelly Duo: Name starts with "Shelly" rather than "shelly"
+        String serviceName = service.getName().toLowerCase(Locale.ROOT);
         if (!isValidShellyServiceName(serviceName)) {
             return null;
         }

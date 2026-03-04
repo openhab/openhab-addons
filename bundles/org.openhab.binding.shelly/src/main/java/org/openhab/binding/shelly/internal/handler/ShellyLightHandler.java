@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -277,7 +278,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
     }
 
     private boolean handleFullColor(ShellyColorUtils col, Command command) throws IllegalArgumentException {
-        String color = command.toString().toLowerCase();
+        String color = command.toString().toLowerCase(Locale.ROOT);
         if (color.contains(",")) {
             col.fromRGBW(color);
         } else if (color.equals(SHELLY_COLOR_RED)) {

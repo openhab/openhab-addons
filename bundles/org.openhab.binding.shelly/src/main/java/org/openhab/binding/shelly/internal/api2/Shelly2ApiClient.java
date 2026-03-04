@@ -20,6 +20,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -471,7 +472,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         rsettings.autoOn = getBool(cs.autoOn) ? cs.autoOnDelay : 0;
         rsettings.autoOff = getBool(cs.autoOff) ? cs.autoOffDelay : 0;
         rsettings.hasTimer = false;
-        rsettings.btnType = mapValue(MAP_INMODE_BTNTYPE, getString(cs.mode).toLowerCase());
+        rsettings.btnType = mapValue(MAP_INMODE_BTNTYPE, getString(cs.mode).toLowerCase(Locale.ROOT));
         relays.add(rsettings);
     }
 

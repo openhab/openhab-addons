@@ -350,7 +350,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("blink_mode_selector")
             public String blinkModeSelector;
             @SerializedName("phase_selector")
-            public String phase_selector;
+            public String phaseSelector;
             @SerializedName("monitor_phase_sequence")
             public Boolean monitorPhaseSequence;
         }
@@ -363,7 +363,7 @@ public class Shelly2ApiJsonDTO {
         public class Shelly2DevConfigCover {
             public class Shelly2DeviceConfigCoverMotor {
                 @SerializedName("idle_power_thr")
-                public Double idle_powerThr;
+                public Double idlePowerThr;
             }
 
             public class Shelly2DeviceConfigCoverSafetySwitch {
@@ -893,7 +893,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("fs_free")
             public Long fsFree;
             @SerializedName("cfg_rev")
-            public Integer cfg_rev;
+            public Integer cfgRev;
             @SerializedName("available_updates")
             public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
             @SerializedName("webhook_rev")
@@ -1160,12 +1160,12 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
-    public static String SHELLY2_AUTHDEF_USER = "admin";
-    public static String SHELLY2_AUTHTTYPE_DIGEST = "digest";
-    public static String SHELLY2_AUTHTTYPE_STRING = "string";
-    public static String SHELLY2_AUTHALG_SHA256 = "SHA-256";
+    public static final String SHELLY2_AUTHDEF_USER = "admin";
+    public static final String SHELLY2_AUTHTTYPE_DIGEST = "digest";
+    public static final String SHELLY2_AUTHTTYPE_STRING = "string";
+    public static final String SHELLY2_AUTHALG_SHA256 = "SHA-256";
     // = ':auth:'+HexHash("dummy_method:dummy_uri");
-    public static String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
+    public static final String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
 
     public static class Shelly2AuthChallenge { // on 401 message contains the auth info
         @SerializedName("auth_type")

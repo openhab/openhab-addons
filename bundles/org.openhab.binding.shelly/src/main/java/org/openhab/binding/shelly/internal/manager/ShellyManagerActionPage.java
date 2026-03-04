@@ -427,10 +427,9 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
         if (!gen2 && profile.extFeatures) {
             list.put(ACTION_OTACHECK, "Check for Update");
-            boolean debug_enable = getBool(profile.settings.debugEnable);
-            list.put(!debug_enable ? ACTION_ENDEBUG : ACTION_DISDEBUG,
-                    !debug_enable ? "Enable Debug" : "Disable Debug");
-            if (debug_enable) {
+            boolean debugEnable = getBool(profile.settings.debugEnable);
+            list.put(!debugEnable ? ACTION_ENDEBUG : ACTION_DISDEBUG, !debugEnable ? "Enable Debug" : "Disable Debug");
+            if (debugEnable) {
                 list.put(ACTION_GETDEB, "Get Debug log");
                 list.put(ACTION_GETDEB1, "Get Debug log1");
             }

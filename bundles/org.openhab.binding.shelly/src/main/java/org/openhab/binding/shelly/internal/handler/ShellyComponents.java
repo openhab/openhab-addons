@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.measure.MetricPrefix;
 
@@ -416,7 +417,7 @@ public class ShellyComponents {
                 updated |= changed;
             }
             if (sdata.tmp != null && getBool(sdata.tmp.isValid)) {
-                Double temp = getString(sdata.tmp.units).toUpperCase().equals(SHELLY_TEMP_CELSIUS)
+                Double temp = getString(sdata.tmp.units).toUpperCase(Locale.ROOT).equals(SHELLY_TEMP_CELSIUS)
                         ? getDouble(sdata.tmp.tC)
                         : getDouble(sdata.tmp.tF);
                 updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,

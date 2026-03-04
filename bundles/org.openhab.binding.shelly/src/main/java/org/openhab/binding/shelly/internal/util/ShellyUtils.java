@@ -23,7 +23,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -302,7 +301,7 @@ public class ShellyUtils {
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
             ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
-            ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
+            ZonedDateTime zdt = ZonedDateTime.now(zoneId);
             int delta = zdt.getOffset().getTotalSeconds();
             return new DateTimeType(Instant.ofEpochSecond(timestamp - delta));
         } catch (DateTimeException e) {
