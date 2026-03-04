@@ -112,7 +112,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     protected @Nullable ShellyThingInterface thing;
 
     private static final String RPC_SRC_PREFIX = "ohshelly-";
-    private static final AtomicInteger requestId = new AtomicInteger(1);
+    private static final AtomicInteger REQUEST_ID = new AtomicInteger(1);
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -1318,7 +1318,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     private int getNextRequestId() {
-        return requestId.updateAndGet(id -> id + 1);
+        return REQUEST_ID.updateAndGet(id -> id + 1);
     }
 
     protected String mapValue(Map<String, String> map, String key) {
