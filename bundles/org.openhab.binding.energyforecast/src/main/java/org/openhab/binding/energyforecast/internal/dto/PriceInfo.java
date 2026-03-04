@@ -188,6 +188,6 @@ public class PriceInfo {
     }
 
     public void handleRemoval() {
-        // store.remove(JSON_KEY_FORECAST);
+        store.remove(JSON_KEY_FORECAST);
     }
 }

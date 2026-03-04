@@ -22,7 +22,7 @@ Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/
 
 `zone` from [API](https://www.energyforecast.de/api-docs/index.html) are given as options.
 
-`resolution` time resoltion given as options. `PT15M` an `PT60M` are supported.
+`resolution` time resolution given as options. `PT15M` an `PT60M` are supported.
 
 `refreshInterval` given in minutes. Align this value with your [booked plan](https://www.energyforecast.de/pricing).
 
@@ -43,7 +43,7 @@ If you don't have a database installed [InMemory persistence](https://www.openha
 
 `series` delivers price information from 48h up to 96h into the future depending on your [booked plan](https://www.energyforecast.de/pricing).
 
-`origin' shows for every price the originator
+`origin` shows for every price the originator
 
 - 0: Market
 - 1: AI Forecast
@@ -80,4 +80,24 @@ For visualization you can limit these values with configuration `errorLimit`.
 
   
 ## Full Example
+
+### `demo.things`
+
+```java
+Thing energyforecast:energyforecast:UID "Energy Forecast" [zone="YOUR_BIDDING_ZONE", token="YOUR_TOKEN", fixCost=12.3, vat=19.0, resolution="PT15M", refreshInterval=180, errorLimit=0] 
+```
+
+### `demo.items' 
+
+```java
+Number:EnergyPrice      Energy_Forecast_Price_Series            "Price Series"              {channel="energyforecast:energyforecast:UID:price#series"}
+Number                  Energy_Forecast_Price_Origins           "Price Origin"              {channel="energyforecast:energyforecast:UID:price#origin"}
+
+Number:EnergyPrice      Energy_Forecast_Forecast                "Forecast"                  {channel="energyforecast:energyforecast:UID:metric#forecast"}
+Number:EnergyPrice      Energy_Forecast_Forecast_Error          "Forecast Error"            {channel="energyforecast:energyforecast:UID:metric#forecast-error"}
+Number:Dimensionless    Energy_Forecast_Percent_Error           "Percent Error"             {channel="energyforecast:energyforecast:UID:metric#percent-error"}
+Number:EnergyPrice      Energy_Forecast_Mean_Absolute           "Mean Absolute"             {channel="energyforecast:energyforecast:UID:metric#mean-abs"}
+Number:Dimensionless    Energy_Forecast_Mean_Absolute_Percent   "Mean Absolute Percent"     {channel="energyforecast:energyforecast:UID:metric#mean-abs-percent"}
+```
+
 

@@ -77,16 +77,17 @@ class PriceInfoTest {
         TimeSeries mapeSeries = timeSeriesMap.get(CHANNEL_METRIC_MAPE);
         assertNotNull(mapeSeries);
         assertEquals(1, mapeSeries.size());
+        double expectedMape = 12.94562;
         mapeSeries.getStates().forEach(entry -> {
-            System.out.println("MAE for " + entry.timestamp() + ": " + entry.state());
+            assertEquals(expectedMape, ((QuantityType<?>) entry.state()).doubleValue(), 0.0001,
+                    "MAPE value should match expected value");
         });
     }
 
     @Test
     void testStorage() {
         VolatileStorage<String> store = new VolatileStorage<>();
-        PriceInfo priceInfo = createPriceInfo(new EnergyForecastConfiguration(), store);
-        System.out.println(store.get(CHANNEL_METRIC_FORECAST));
+        createPriceInfo(new EnergyForecastConfiguration(), store);
         String storeString = store.get(CHANNEL_METRIC_FORECAST);
         JSONObject storedForecast = new JSONObject(storeString);
         assertEquals(23, storedForecast.length(), "Stored forecast should have 23 entries");
@@ -112,15 +113,14 @@ class PriceInfoTest {
         Iterator<TimeSeries.Entry> noFixCostIterator = priceTimeSeriesNoFixCost.getStates().iterator();
         Iterator<TimeSeries.Entry> fixCostIterator = priceTimeSeriesWithFixCost.getStates().iterator();
 
-        double EuroPerKWhFixCost = fixCost / 100;
+        double euroPerKWhFixCost = fixCost / 100;
         while (noFixCostIterator.hasNext() && fixCostIterator.hasNext()) {
             TimeSeries.Entry noFixCostEntry = noFixCostIterator.next();
             TimeSeries.Entry fixCostEntry = fixCostIterator.next();
 
             double noFixCostPrice = ((QuantityType<?>) noFixCostEntry.state()).doubleValue();
             double fixCostPrice = ((QuantityType<?>) fixCostEntry.state()).doubleValue();
-            System.out.println("Price with fix cost: " + fixCostPrice + ", Price without fix cost: " + noFixCostPrice);
-            assertEquals(EuroPerKWhFixCost, fixCostPrice - noFixCostPrice, 0.0001,
+            assertEquals(euroPerKWhFixCost, fixCostPrice - noFixCostPrice, 0.0001,
                     "Price difference should be equal to fix cost");
         }
     }

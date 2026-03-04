@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link ReleaseTest} performs real queries against the ENTSOE web service. Shall be performed before releasing a new
@@ -27,6 +29,8 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  */
 @NonNullByDefault
 public class ReleaseTest {
+    private final Logger logger = LoggerFactory.getLogger(ReleaseTest.class);
+
     private static HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
     private String token = "YOUR_TOKEN";
 
@@ -40,7 +44,8 @@ public class ReleaseTest {
             // ContentResponse response = httpClient.GET("https://api.energy-charts.info/price?bzn=DE-LU");
             ContentResponse response = httpClient
                     .GET("https://www.energyforecast.de/api/v1/predictions/next_96_hours?token=" + token);
-            System.out.println(response.getContentAsString());
+            logger.warn("Response status: {}", response.getStatus());
+            logger.warn("{}", response.getContentAsString());
             httpClient.stop();
         } catch (Exception e) {
             fail(e.getMessage());
