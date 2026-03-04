@@ -13,6 +13,8 @@
 package org.openhab.binding.homewizard.internal.devices.kwh_meter;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
@@ -62,7 +64,7 @@ public class HomeWizardKwhMeterHandler extends HomeWizardDeviceHandler {
             if (config.isUsingApiVersion2()) {
                 handleBatteriesData(getBatteriesData());
             }
-        } catch (Exception ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);

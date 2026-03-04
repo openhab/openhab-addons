@@ -62,7 +62,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
 
         try {
             handleStateData(getStateData());
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             return;
@@ -195,7 +195,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
         try {
             var response = putDataTo(url, command).getContentAsString();
             updatedState = gson.fromJson(response, HomeWizardDeviceStatePayload.class);
-        } catch (Exception ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             logger.warn("Failed to send command {} to {}", command, url);
         }
         return updatedState;

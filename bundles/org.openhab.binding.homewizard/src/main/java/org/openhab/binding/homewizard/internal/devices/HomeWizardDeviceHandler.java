@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.homewizard.internal.devices;
 
+import java.io.IOException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,7 +130,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                     keyStore.load(null, null);
                     keyStore.setCertificateEntry(CERTIFICATE_ALIAS, CertificateFactory.getInstance(CERTIFICATE_TYPE)
                             .generateCertificate(classloader.getResourceAsStream(caCertPath)));
-                } catch (Exception ex) {
+                } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException ex) {
                 }
 
                 SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
@@ -175,7 +179,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         try {
             httpClient.setConnectTimeout(30000);
             httpClient.start();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // No specific exception is thrown by the start method
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to reach device", ex);
@@ -197,7 +201,6 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         var cmd = "";
 
         switch (channelUID.getIdWithoutGroup()) {
-
             case HomeWizardBindingConstants.CHANNEL_SYSTEM_CLOUD_ENABLED: {
                 boolean onOff = command.equals(OnOffType.ON);
                 cmd = String.format("{\"cloud_enabled\": %b}", onOff);
@@ -224,7 +227,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             handleSystemData(getSystemData());
             handleMeasurementData(getMeasurementData());
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
@@ -245,7 +248,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
         try {
             deviceInformation = getDeviceInformationData();
-        } catch (Exception ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | SecurityException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get device information", ex);
@@ -296,7 +299,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         pollingJob = null;
         try {
             httpClient.stop();
-        } catch (Exception ex) {
+        } catch (Exception ex) { // No specific exception is thrown by the stop method
             logger.debug("Error stopping the http client: {}", ex.getMessage());
         }
     }
@@ -436,7 +439,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             } else {
                 logger.warn("Failed to send command {} to {}", command, url);
             }
-        } catch (Exception ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             logger.warn("Failed to send command {} to {}", command, url);
             logger.debug("Error sending command", ex);
         }
@@ -479,7 +482,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             } else {
                 logger.warn("Failed to send command {} to {}", command, url);
             }
-        } catch (Exception ex) {
+        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
             logger.debug("Failed to send command {} to {}", command, url);
             logger.debug("Error sending command", ex);
         }

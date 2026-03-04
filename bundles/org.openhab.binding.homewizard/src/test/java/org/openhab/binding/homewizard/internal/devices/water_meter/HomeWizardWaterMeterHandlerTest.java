@@ -16,8 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -82,7 +85,7 @@ public class HomeWizardWaterMeterHandlerTest extends HomeWizardHandlerTest {
                     .getDeviceInformationData();
             doReturn(DataUtil.fromFile("response-measurement-water-meter.json")).when(handler).getMeasurementData();
             doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
-        } catch (Exception e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | IOException ex) {
             assertFalse(true);
         }
 
