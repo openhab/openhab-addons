@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.verisure.internal.VerisureSession;
 import org.openhab.binding.verisure.internal.VerisureThingConfiguration;
 import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Device;
+import org.openhab.binding.verisure.internal.dto.VerisureBaseThingDTO.Gui;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.EventLog;
 import org.openhab.binding.verisure.internal.dto.VerisureEventLogDTO.PagedList;
@@ -128,8 +129,9 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
                     triggerEventChannels(eventLog);
                 }
             case CHANNEL_LAST_EVENT_DEVICE_TYPE:
-                return device != null && device.getGui().getLabel() != null ? new StringType(device.getGui().getLabel())
-                        : UnDefType.NULL;
+                Gui gui = device != null ? device.getGui() : null;
+                String label = gui != null ? gui.getLabel() : null;
+                return label != null ? new StringType(label) : UnDefType.NULL;
             case CHANNEL_LAST_EVENT_TYPE:
                 String lastEventType = eventLog.getPagedList().get(0).getEventType();
                 return lastEventType != null ? new StringType(lastEventType) : UnDefType.NULL;
