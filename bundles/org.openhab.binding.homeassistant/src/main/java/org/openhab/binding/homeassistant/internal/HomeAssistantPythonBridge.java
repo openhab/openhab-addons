@@ -56,8 +56,11 @@ public class HomeAssistantPythonBridge {
         VirtualFileSystem vfs = VirtualFileSystem.newBuilder().resourceLoadingClass(HomeAssistantPythonBridge.class)
                 .build();
 
-        File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
-        System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
+        // Set cache path if not already configured (e.g., by test environment)
+        if (System.getProperty("polyglot.engine.userResourceCache") == null) {
+            File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
+            System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
+        }
         context = GraalPyResources.contextBuilder(vfs).logHandler(new LogHandler(logger))
                 .option("engine.WarnInterpreterOnly", "false").build();
 
@@ -69,6 +72,12 @@ public class HomeAssistantPythonBridge {
                         # on Windows
                         import os
                         import sys
+
+                        try:
+                            import requests
+                            requests.urllib3.disable_warnings(requests.urllib3.exceptions.InsecureRequestWarning)
+                        except Exception:
+                            pass
 
                         if os.sep != '/':
                             sys.path.append(os.path.join(sys.prefix, "lib", "python%d.%d" % sys.version_info[:2], "site-packages"))

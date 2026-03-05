@@ -239,7 +239,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     private void checkJavaVersion() {
         String version = System.getProperty("java.version");
-        if (version.charAt(2) == '8') {
+        if (version != null && version.charAt(2) == '8') {
             // we are on Java 8, let's check the update
             String update = version.substring(version.indexOf('_') + 1);
             try {
@@ -258,7 +258,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     @Deactivate
     protected void deactivate() {
         logger.debug("openHAB Cloud connector deactivated");
-        cloudClient.shutdown();
+        NotificationAction.unsetCloudService(this);
+        if (cloudClient != null) {
+            cloudClient.shutdown();
+        }
         try {
             httpClient.stop();
         } catch (Exception e) {
@@ -268,20 +271,20 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     @Modified
     protected void modified(Map<String, ?> config) {
-        if (config != null && config.get(CFG_MODE) != null) {
-            remoteAccessEnabled = "remote".equals(config.get(CFG_MODE));
+        if (config != null && config.get(CFG_MODE) instanceof String cfgMode) {
+            remoteAccessEnabled = "remote".equals(cfgMode);
         } else {
             logger.debug("remoteAccessEnabled is not set, keeping value '{}'", remoteAccessEnabled);
         }
 
-        if (config.get(CFG_BASE_URL) != null) {
-            cloudBaseUrl = (String) config.get(CFG_BASE_URL);
+        if (config != null && config.get(CFG_BASE_URL) instanceof String cfgBaseUrl) {
+            cloudBaseUrl = cfgBaseUrl;
         } else {
             cloudBaseUrl = DEFAULT_URL;
         }
 
         exposedItems = new HashSet<>();
-        Object expCfg = config.get(CFG_EXPOSE);
+        Object expCfg = config == null ? null : config.get(CFG_EXPOSE);
         if (expCfg instanceof String value) {
             while (value.startsWith("[")) {
                 value = value.substring(1);
@@ -319,7 +322,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
                 remoteAccessEnabled, exposedItems);
         cloudClient.connect();
         cloudClient.setListener(this);
-        NotificationAction.cloudService = this;
+        NotificationAction.setCloudService(this);
     }
 
     @Override
@@ -352,7 +355,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
     private void writeFile(File file, String content) {
         // create intermediary directories
-        file.getParentFile().mkdirs();
+        File parentFile = file.getParentFile();
+        if (parentFile != null) {
+            parentFile.mkdirs();
+        }
         try {
             Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
             logger.debug("Created file '{}' with content '{}'", file.getAbsolutePath(), censored(content));

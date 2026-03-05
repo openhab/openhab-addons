@@ -58,7 +58,7 @@ public abstract class Event extends NAObject {
     @Override
     public @Nullable String getName() {
         String localMessage = super.getName();
-        return localMessage != null ? localMessage.replace("<b>", "").replace("</b>", "") : "";
+        return localMessage != null ? localMessage.replace("<b>", "").replace("</b>", "") : null;
     }
 
     public Optional<EventSubType> getSubTypeDescription() {
