@@ -33,11 +33,28 @@ public class EnergyStatsTest extends AbstractJSONTest {
         EnergyStats energyStats = getObjectFromJson("EnergyStats.json", EnergyStats.class, gson);
         assertNotNull(energyStats);
 
+        assertEquals(-9999, energyStats.mMValueAmp);
+        assertEquals(0.0, energyStats.getScaledAmperage(), DELTA);
         assertEquals(-9999, energyStats.mMValueVolt);
-        assertEquals(-99.99, energyStats.getScaledVoltage(), DELTA);
+        assertEquals(0.0, energyStats.getScaledVoltage(), DELTA);
         assertEquals(36100, energyStats.mMValuePower);
-        assertEquals(361.00, energyStats.getScaledPower(), DELTA);
+        assertEquals(361.0, energyStats.getScaledPower(), DELTA);
         assertEquals(17849392, energyStats.mMValueEnergy);
         assertEquals(17849.392, energyStats.getScaledEnergy(), DELTA);
+    }
+
+    @Test
+    public void currentStateUpdateWithInvalidValuesTest() throws IOException {
+        EnergyStats energyStats = getObjectFromJson("EnergyStatsInvalid.json", EnergyStats.class, gson);
+        assertNotNull(energyStats);
+
+        assertEquals(-9999, energyStats.mMValueAmp);
+        assertEquals(0.0, energyStats.getScaledAmperage(), DELTA);
+        assertEquals(-9999, energyStats.mMValueVolt);
+        assertEquals(0.0, energyStats.getScaledVoltage(), DELTA);
+        assertEquals(-9999, energyStats.mMValuePower);
+        assertEquals(0.0, energyStats.getScaledPower(), DELTA);
+        assertEquals(91000, energyStats.mMValueEnergy);
+        assertEquals(91.0, energyStats.getScaledEnergy(), DELTA);
     }
 }
