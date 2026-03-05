@@ -88,14 +88,14 @@ public class SonnenJSONCommunication {
     /**
      * Start and Stops the charging of the battery from the grid
      */
-    public String startStopBatteryCharging(String putData, int chargeRate) {
+    public String startStopBatteryCharging(@Nullable String putData, int chargeRate) {
         return executeBatteryOperation(putData, chargeRate, "charge");
     }
 
     /**
      * Start and Stops the discharging of the battery to the grid
      */
-    public String startStopBatteryDischarging(String putData, int dischargeRate) {
+    public String startStopBatteryDischarging(@Nullable String putData, int dischargeRate) {
         return executeBatteryOperation(putData, dischargeRate, "discharge");
     }
 
@@ -115,16 +115,17 @@ public class SonnenJSONCommunication {
                         "Max battery " + operation + " power needs to be in the range of 0 - 10000.");
             }
 
-            InputStream targetStream = new ByteArrayInputStream(putData.getBytes(StandardCharsets.UTF_8));
-            String response = HttpUtil.executeUrl("PUT", configUrl, header, targetStream,
-                    "application/x-www-form-urlencoded", 10000);
+            if (putData != null) {
+                InputStream targetStream = new ByteArrayInputStream(putData.getBytes(StandardCharsets.UTF_8));
+                String response = HttpUtil.executeUrl("PUT", configUrl, header, targetStream,
+                        "application/x-www-form-urlencoded", 10000);
 
-            if (response == null) {
-                throw new IOException("HttpUtil.executeUrl (PUT) returned null");
+                if (response == null) {
+                    throw new IOException("HttpUtil.executeUrl (PUT) returned null");
+                }
+
+                batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
             }
-            
-
-            batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
             SonnenJsonDataDTO currentData = getBatteryData();
 
             // Execute setpoint if manual mode (1) is active

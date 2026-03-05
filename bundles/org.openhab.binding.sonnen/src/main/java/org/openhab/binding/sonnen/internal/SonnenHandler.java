@@ -386,11 +386,13 @@ public class SonnenHandler extends BaseThingHandler {
         if (channelUID.getId().equals(CHANNEL_BATTERY_CHARGE_RATE)) {
             if (command instanceof QuantityType quantityCommand) {
                 chargeRate = quantityCommand.intValue();
+                serviceCommunication.startStopBatteryDischarging(null, chargeRate);
             }
         }
         if (channelUID.getId().equals(CHANNEL_BATTERY_DISCHARGE_RATE)) {
             if (command instanceof QuantityType quantityCommand) {
                 dischargeRate = quantityCommand.intValue();
+                serviceCommunication.startStopBatteryDischarging(null, dischargeRate);
             }
         }
     }
