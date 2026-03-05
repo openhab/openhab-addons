@@ -25,7 +25,7 @@ import org.openhab.core.types.TimeSeries;
 import org.openhab.transform.math.internal.profiles.config.DivideTransformationProfileConfiguration;
 
 /**
- * Profile to offer the {@link org.openhab.transform.math.internal.DivideTransformationService} on a ItemChannelLink.
+ * Profile to offer the {@link org.openhab.transform.math.internal.DivideTransformationService} on an ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

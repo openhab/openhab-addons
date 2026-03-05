@@ -24,7 +24,7 @@ import org.openhab.core.types.TimeSeries;
 import org.openhab.transform.math.internal.profiles.config.AddTransformationProfileConfiguration;
 
 /**
- * Profile to offer the {@link org.openhab.transform.math.internal.AddTransformationService} on a ItemChannelLink.
+ * Profile to offer the {@link org.openhab.transform.math.internal.AddTransformationService} on an ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

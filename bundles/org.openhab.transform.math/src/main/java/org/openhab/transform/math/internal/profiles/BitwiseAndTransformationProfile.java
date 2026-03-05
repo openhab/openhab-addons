@@ -19,7 +19,7 @@ import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.openhab.core.transform.TransformationService;
 
 /**
- * Profile to offer the {@link org.openhab.transform.math.internal.BitwiseAndTransformationService} on a
+ * Profile to offer the {@link org.openhab.transform.math.internal.BitwiseAndTransformationService} on an
  * ItemChannelLink.
  *
  * @author Christoph Weitkamp - Initial contribution
