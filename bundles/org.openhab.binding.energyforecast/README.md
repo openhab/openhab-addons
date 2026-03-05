@@ -15,8 +15,8 @@ Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/
 | fixCost           | decimal   | Fix costs in ct/kWh which will be added on top of the forecast price, e.g. 15,3   | 0         | no       |
 | vat               | decimal   | VAT in percent which will be added on top of the forecast price, e.g. 19,0        | 0         | no       |
 | resolution        | text      | Resolution in ISO 8601 Duration format                                            | PT15M     | no       |
-| refreshInterval   | decimal   | Refresh interval in minutes. Check with service throttling                        | 180       | no       |
-| errorLimit        | decimal   | Limit error percentage values for better visualization                            | 0         | no       |
+| refreshInterval   | integer   | Refresh interval in minutes. Check with service throttling                        | 180       | no       |
+| errorLimit        | integer   | Limit error percentage values for better visualization                            | 0         | no       |
 
 `token` needs to be generated after registration at [Energy Forecast Provider](https://www.energyforecast.de/api_keys).
 
@@ -87,7 +87,7 @@ For visualization you can limit these values with configuration `errorLimit`.
 Thing energyforecast:energyforecast:UID "Energy Forecast" [zone="YOUR_BIDDING_ZONE", token="YOUR_TOKEN", fixCost=12.3, vat=19.0, resolution="PT15M", refreshInterval=180, errorLimit=0] 
 ```
 
-### `demo.items' 
+### `demo.items`
 
 ```java
 Number:EnergyPrice      Energy_Forecast_Price_Series            "Price Series"              {channel="energyforecast:energyforecast:UID:price#series"}

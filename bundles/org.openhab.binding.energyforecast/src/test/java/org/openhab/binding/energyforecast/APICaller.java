@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.energyforecast;//
-
-import static org.junit.jupiter.api.Assertions.fail;
+package org.openhab.binding.energyforecast;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -22,33 +20,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ReleaseTest} performs real queries against the ENTSOE web service. Shall be performed before releasing a new
- * version
+ * {@link APICaller} performs a real query towards energyforecast.de to check if the API is still working as expected.
+ * This test should be executed before each release.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ReleaseTest {
-    private final Logger logger = LoggerFactory.getLogger(ReleaseTest.class);
+public class APICaller {
+    private final Logger logger = LoggerFactory.getLogger(APICaller.class);
 
     private static HttpClient httpClient = new HttpClient(new SslContextFactory.Client());
     private String token = "YOUR_TOKEN";
 
     public static void main(String[] args) {
-        new ReleaseTest();
+        APICaller api = new APICaller();
+        api.call();
     }
 
-    public ReleaseTest() {
+    private void call() {
         try {
             httpClient.start();
-            // ContentResponse response = httpClient.GET("https://api.energy-charts.info/price?bzn=DE-LU");
             ContentResponse response = httpClient
                     .GET("https://www.energyforecast.de/api/v1/predictions/next_96_hours?token=" + token);
             logger.warn("Response status: {}", response.getStatus());
             logger.warn("{}", response.getContentAsString());
             httpClient.stop();
         } catch (Exception e) {
-            fail(e.getMessage());
+            logger.warn("Call failed: {}", e.getMessage());
         }
     }
 }

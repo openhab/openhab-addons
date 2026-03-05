@@ -77,6 +77,7 @@ public class CallbackMock implements ThingHandlerCallback {
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
         synchronized (timeSeriesMap) {
             timeSeriesMap.put(channelUID.getAsString(), timeSeries);
+            timeSeriesMap.notifyAll();
         }
     }
 
@@ -92,13 +93,12 @@ public class CallbackMock implements ThingHandlerCallback {
                 }
                 check = Instant.now();
             }
+            TimeSeries timeSeries = timeSeriesMap.get(channel);
+            if (timeSeries == null) {
+                fail("No timeseries available for " + channel);
+            }
+            return timeSeries;
         }
-
-        TimeSeries timeSeries = timeSeriesMap.get(channel);
-        if (timeSeries == null) {
-            fail("No timeseries available for " + channel);
-        }
-        return timeSeries;
     }
 
     @Override

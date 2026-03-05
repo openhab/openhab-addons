@@ -28,5 +28,5 @@ public class EnergyForecastConfiguration {
     public double vat = 0.0;
     public String resolution = "PT15M";
     public int refreshInterval = 180;
-    public int errorLimit = 200;
+    public int errorLimit = 0;
 }

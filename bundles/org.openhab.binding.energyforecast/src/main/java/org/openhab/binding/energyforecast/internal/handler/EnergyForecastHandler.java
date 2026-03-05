@@ -73,6 +73,10 @@ public class EnergyForecastHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
+            if (prices == null) {
+                logger.debug("Ignoring refresh command for channel {} because prices are not initialized", channelUID);
+                return;
+            }
             updatePriceChannels();
         }
     }
@@ -114,7 +118,10 @@ public class EnergyForecastHandler extends BaseThingHandler {
 
     @Override
     public void handleRemoval() {
-        getPriceInfo().handleRemoval();
+        PriceInfo localPrices = prices;
+        if (localPrices != null) {
+            localPrices.handleRemoval();
+        }
         super.handleRemoval();
     }
 
@@ -189,13 +196,13 @@ public class EnergyForecastHandler extends BaseThingHandler {
             Request forecastRequest = httpClient.newRequest(ENERGY_FORECAST_URL).timeout(10, TimeUnit.SECONDS);
             forecastRequest.param("fixed_cost_cent", "0");
             forecastRequest.param("vat", "0");
-            forecastRequest.param("resolution", "PT15M".equals(config.resolution) ? "QUARTER_HOURLY" : "HOURLY ");
+            forecastRequest.param("resolution", "PT15M".equals(config.resolution) ? "QUARTER_HOURLY" : "HOURLY");
             forecastRequest.param("market_zone", config.zone);
             forecastRequest.param("token", config.token);
 
             ContentResponse response = forecastRequest.send();
             int status = response.getStatus();
-            logger.info("Energy price forecast response: {}", status);
+            logger.debug("Energy price forecast response: {}", status);
             if (status == HttpStatus.OK_200) {
                 getPriceInfo().newPriceSeries(response.getContentAsString());
                 updateStatus(ThingStatus.ONLINE);
