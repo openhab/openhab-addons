@@ -176,7 +176,7 @@ public class SonnenJSONCommunication {
                     && dischargeRate > 0 && dischargeRate <= 10000) {
                 // start discharging
                 String response2 = HttpUtil.executeUrl("POST", urlStr2, header, null, "application/json", 10000);
-                logger.debug("ChargingOperationMode = {}", response2);
+                logger.debug("DischargingOperationMode = {}", response2);
                 if (response2 == null) {
                     throw new IOException("HttpUtil.executeUrl returned null");
                 }
