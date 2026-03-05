@@ -176,7 +176,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceAddress)
-                || key.equalsIgnoreCase(config.serviceName) || key.equalsIgnoreCase(getThingName());
+                || key.equalsIgnoreCase(config.realm) || key.equalsIgnoreCase(getThingName());
     }
 
     /**
@@ -321,17 +321,17 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize();
+        api.initialize(thingName, config);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && config.password.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
-        if (config.serviceName.isEmpty()) {
-            config.serviceName = getString(device.hostname).toLowerCase();
+        if (config.realm.isEmpty()) {
+            config.realm = getString(device.hostname).toLowerCase();
+            api.setConfig(thingName, config); // update config
         }
 
-        api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
         tmpPrf.initFromThingType(thing.getThingTypeUID());
         String mode = getString(tmpPrf.device.mode);
@@ -552,8 +552,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
 
             skipUpdate++;
-            ThingStatus thingStatus = getThing().getStatus();
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
+                ThingStatus thingStatus = getThing().getStatus();
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
                     logger.debug("{}: Status update triggered thing initialization", thingName);
@@ -880,7 +880,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public boolean onEvent(String address, String deviceName, String deviceIndex, String type,
             Map<String, String> parameters) {
         if (thingName.equalsIgnoreCase(deviceName) || config.deviceAddress.equals(address)
-                || config.serviceName.equals(deviceName)) {
+                || config.realm.equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
             int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) : 1;
@@ -1042,7 +1042,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
         }
 
-        config.serviceName = getString(properties.get(PROPERTY_SERVICE_NAME));
+        config.realm = getString(properties.get(PROPERTY_SERVICE_NAME));
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
         if (config.localIp.startsWith("169.254")) {
@@ -1386,7 +1386,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
         Map<String, Object> properties = fillDeviceProperties(profile);
         String deviceName = getString(profile.settings.name);
-        properties.put(PROPERTY_SERVICE_NAME, config.serviceName);
+        properties.put(PROPERTY_SERVICE_NAME, config.realm);
         properties.put(PROPERTY_DEV_AUTH, getBool(profile.device.auth) ? "yes" : "no");
         if (!deviceName.isEmpty()) {
             properties.put(PROPERTY_DEV_NAME, deviceName);

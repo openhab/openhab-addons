@@ -10,10 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.shelly.internal.api;
+package org.openhab.binding.shelly.internal.discovery;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api.ShellyApiException;
+import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.core.thing.ThingTypeUID;

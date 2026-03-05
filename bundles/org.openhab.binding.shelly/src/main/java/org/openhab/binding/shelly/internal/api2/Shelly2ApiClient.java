@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.api2;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CHANNEL_INPUT;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_CAP_NUM_METERS;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,7 +63,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorHum;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor.ShellySensorLux;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRsp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2CBStatus;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigCover;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DevConfigInput;
@@ -110,7 +110,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     protected final ShellyStatusSensor sensorData = new ShellyStatusSensor();
     protected final ArrayList<ShellyRollerStatus> rollerStatus = new ArrayList<>();
     protected @Nullable ShellyThingInterface thing;
-    protected @Nullable Shelly2AuthRsp authReq;
+
+    private static final String RPC_SRC_PREFIX = "ohshelly-";
+    private static final AtomicInteger REQUEST_ID = new AtomicInteger(1);
 
     public Shelly2ApiClient(String thingName, ShellyThingInterface thing) {
         super(thingName, thing);
@@ -179,7 +181,8 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             SHELLY2_PROFILE_RGBW, SHELLY_MODE_COLOR);
 
     @Override
-    public void initialize() throws ShellyApiException {
+    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+        setConfig(thingName, config);
     }
 
     @Override
@@ -256,9 +259,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.serviceName.isBlank()) {
-            config.serviceName = getString(profile.device.hostname);
-            logger.trace("{}: {} is used as serviceName", thingName, config.serviceName);
+        if (config.realm.isBlank()) {
+            config.realm = getString(profile.device.hostname);
+            logger.trace("{}: {} is used as realm", thingName, config.realm);
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
@@ -1294,13 +1297,28 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     protected Shelly2RpcBaseMessage buildRequest(String method, @Nullable Object params) throws ShellyApiException {
+        String suffix = "";
+        ShellyThingInterface thing = this.thing;
+        // build unique suffix with thing id (when initialized) or local ip (discovery)
+        if (thing != null) {
+            String uid = thing.getThing().getUID().getAsString();
+            suffix = substringAfterLast(uid, ":");
+        } else {
+            suffix = config.localIp; // use a unique identifier;
+        }
+
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
-        request.id = Math.abs(random.nextInt());
-        request.src = "openhab-" + config.localIp; // use a unique identifier;
+        request.jsonrpc = SHELLY2_JSONRPC_VERSION;
+        request.id = getNextRequestId();
+        request.src = RPC_SRC_PREFIX + suffix + "-" + request.id; // use a unique identifier
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;
-        request.auth = authReq;
+
         return request;
+    }
+
+    private int getNextRequestId() {
+        return REQUEST_ID.updateAndGet(id -> id + 1);
     }
 
     protected String mapValue(Map<String, String> map, String key) {
@@ -1314,7 +1332,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                     map);
             return "";
         }
-        logger.trace("{}: API value was mapped to '{}'", thingName, value);
         return value;
     }
 
@@ -1325,7 +1342,6 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
                     map);
             return "";
         }
-        logger.trace("{}: API value '{}' was mapped to '{}'", thingName, key, value);
         return value;
     }
 
@@ -1334,9 +1350,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
     }
 
     protected ShellyThingInterface getThing() throws ShellyApiException {
-        ShellyThingInterface t = thing;
-        if (t != null) {
-            return t;
+        ShellyThingInterface thing = this.thing;
+        if (thing != null) {
+            return thing;
         }
         throw new ShellyApiException("Thing/profile not initialized!");
     }
