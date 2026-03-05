@@ -1,45 +1,45 @@
 # Piper Text-to-Speech
 
-This voice service allows you to use the open source library [Piper](https://github.com/rhasspy/piper) as your TTS service in openHAB.
-[Piper](https://github.com/rhasspy/piper) is a fast, local neural text to speech system that sounds great and is optimized for the Raspberry Pi 4.
+This voice service allows you to use [Piper](https://github.com/OHF-Voice/piper1-gpl) as your TTS service in openHAB.
+[Piper](https://github.com/OHF-Voice/piper1-gpl) is a open-source, fast, local neural text to speech system that sounds great and is optimized for the Raspberry Pi 4.
+
+::: tip Note
+This add-on depends on native libraries that cannot be included with the openHAB distribution due to their license.
+The add-on will download these native dependencies automatically on first activation.
+In case your openHAB server has no internet connection, you need to download the [piper-jni JAR file](https://repo1.maven.org/maven2/io/github/jvoice-project/piper-jni/1.4.1/piper-jni-1.4.1.jar) and place it at '<OPENHAB_USERDATA>/piper/'.
+:::
 
 ## Supported platforms
 
 The add-on is compatible with the following platforms:
 
-- Linux (x86_64/aarch64, min GLIBC version 2.31)
+- Linux (x86_64/aarch64, min. GLIBC version 2.31)
 - macOS (x86_64/aarch64, min. version macOS 14 Sonoma)
 - Windows (x86_64, min. version Windows 10).
 
 ## Configuration
 
-## Setting up dependencies
-
-The add-on will download the required dependencies at first activation.
-
-If your openHAB installation does not have access to the Internet, you need to download the [piper-jni jar file](https://repo1.maven.org/maven2/io/github/givimad/piper-jni/1.2.0-c0670df/piper-jni-1.2.0-c0670df.jar) and place it at '<OPENHAB_USERDATA>/piper/'.
-
 ### Downloading Voice Model Files
 
-You can find the link to the available voices at the [Piper README](https://github.com/rhasspy/piper).
+You can find an overview of the available voices on [GitHub](https://github.com/OHF-Voice/piper1-gpl/blob/main/docs/VOICES.md).
 
-Each voice model is composed of two files an onnx runtime model file with extension '.onnx' and a model config file with extension '.onnx.json'.
+Each voice model is composed of two files: an ONNX runtime model file with extension `.onnx` and a model config file with extension `.onnx.json`.
 For the add-on to load your voices you need both to be named equal (obviously excluding their extensions).
 
 You should place both voice files at '<OPENHAB_USERDATA>/piper/'.
-After that the UI should display your available voices at 'Settings / System Settings / Voice'.
+After that, Main UI should display your available voices at _Settings / System Settings / Voice_.
 
-### Multi Speaker Voices
+#### Multi Speaker Voices
 
 Models that support multiples speakers are shown as multiple voices in openHAB.
 
 ### Text to Speech Configuration
 
-Use your favorite configuration UI to edit **Settings / Other Services - Piper Text-to-Speech**:
+Use Main UI to edit **Settings / Add-on Settings / Piper Text-to-Speech**:
 
-- **Preload model** - Keep last voice model used loaded in memory, these way it can be reused on next execution if the voice option matches.
+- **Preload model**: Keep last voice model used loaded in memory, these way it can be reused on next execution if the voice option matches.
 
-### Configuration via a text file
+#### Configuration via a text file
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `pipertts.cfg`
 
