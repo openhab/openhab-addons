@@ -14,9 +14,6 @@ package org.openhab.binding.roborock.internal;
 
 import static org.openhab.binding.roborock.internal.RoborockBindingConstants.*;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -32,8 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.imageio.ImageIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,6 +48,7 @@ import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
 import org.openhab.binding.roborock.internal.map.RRMapData;
 import org.openhab.binding.roborock.internal.map.RRMapParser;
+import org.openhab.binding.roborock.internal.map.RRMapRenderer;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
 import org.openhab.binding.roborock.internal.util.RequestCorrelationTracker;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
@@ -128,6 +124,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private final RequestCorrelationTracker requestCorrelationTracker = new RequestCorrelationTracker();
     private final RRMapParser rrMapParser = new RRMapParser();
+    private final RRMapRenderer rrMapRenderer = new RRMapRenderer();
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(
             Stream.of(RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
@@ -970,40 +967,12 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         try {
             RRMapData mapData = rrMapParser.parse(mapPayload);
-            byte[] jpegBytes = toJpeg(mapData);
-            updateState(CHANNEL_VACUUM_MAP, new RawType(jpegBytes, "image/jpeg"));
+            byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
+            updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
         } catch (RoborockException e) {
             logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
         } finally {
             requestCorrelationTracker.removeByRequestId(requestId);
-        }
-    }
-
-    private byte[] toJpeg(RRMapData mapData) throws RoborockException {
-        int width = mapData.imageWidth();
-        int height = mapData.imageHeight();
-        byte[] imageData = mapData.imageData();
-        if (width <= 0 || height <= 0 || imageData.length < width * height) {
-            throw new RoborockException("Cannot render map image as JPEG due to invalid dimensions or data length.");
-        }
-
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        int offset = 0;
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int value = imageData[offset++] & 0xFF;
-                int rgb = (value << 16) | (value << 8) | value;
-                image.setRGB(x, y, rgb);
-            }
-        }
-
-        try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            if (!ImageIO.write(image, "jpg", output)) {
-                throw new RoborockException("No suitable image writer for JPEG map rendering.");
-            }
-            return output.toByteArray();
-        } catch (IOException e) {
-            throw new RoborockException("Failed to encode map image as JPEG.", e);
         }
     }
 

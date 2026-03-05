@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public final class ProtocolUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolUtils.class);
+    private static final int MAX_GZIP_DECOMPRESSED_SIZE_BYTES = 10 * 1024 * 1024;
+    private static final int GZIP_DECOMPRESSION_BUFFER_SIZE_BYTES = 8192;
 
     public sealed interface DecodedMessage permits JsonPayloadResponse, MapPayloadResponse, IgnoredResponse {
     }
@@ -199,6 +201,18 @@ public final class ProtocolUtils {
         return !(crc32.getValue() != (expectedCrc32 & 0xFFFFFFFFL));
     }
 
+    /**
+     * Handles messages with protocol 301 (map/image payload).
+     * Decrypts the transport payload, validates and parses the map transport header,
+     * then decrypts, unpads, and decompresses the map body.
+     *
+     * @param message The full message byte array.
+     * @param header The parsed message header.
+     * @param localKey The local key for transport payload decryption.
+     * @param nonce The nonce used for AES/CBC decryption of the map body.
+     * @param endpointPrefix Optional endpoint prefix for validation/logging.
+     * @return A {@link MapPayloadResponse} when decoding succeeds, otherwise {@link IgnoredResponse}.
+     */
     private static DecodedMessage handleImageProtocol(byte[] message, MessageHeader header, String localKey,
             byte[] nonce, String endpointPrefix) {
         int payloadStart = HEADER_LENGTH_WITHOUT_CRC;
@@ -227,12 +241,14 @@ public final class ProtocolUtils {
         byte[] endpointBytes = Arrays.copyOfRange(payload, 0, MAP_ENDPOINT_LENGTH);
         byte[] reservedBytes = Arrays.copyOfRange(payload, MAP_ENDPOINT_LENGTH,
                 MAP_ENDPOINT_LENGTH + MAP_RESERVED_LENGTH);
+        int requestId = readInt16LE(payload, MAP_REQUEST_ID_OFFSET);
         byte[] tailBytes = Arrays.copyOfRange(payload, MAP_REQUEST_ID_OFFSET + 2,
                 MAP_REQUEST_ID_OFFSET + 2 + MAP_TAIL_LENGTH);
         String endpoint = new String(endpointBytes, StandardCharsets.UTF_8).replace("\0", "");
         if (!endpointPrefix.isEmpty() && !endpoint.startsWith(endpointPrefix)) {
-            LOGGER.debug("Protocol {} endpoint mismatch. expectedPrefix='{}', actualEndpoint='{}'. Continuing decode.",
-                    PROTOCOL_MAP, endpointPrefix, endpoint);
+            LOGGER.debug(
+                    "Protocol {} endpoint mismatch for requestId={}. expectedPrefix='{}', actualEndpoint='{}'. Continuing decode.",
+                    PROTOCOL_MAP, requestId, endpointPrefix, endpoint);
         }
 
         if (LOGGER.isTraceEnabled()) {
@@ -240,7 +256,6 @@ public final class ProtocolUtils {
                     reservedBytes.length, tailBytes.length);
         }
 
-        int requestId = readInt16LE(payload, MAP_REQUEST_ID_OFFSET);
         byte[] encryptedBody = Arrays.copyOfRange(payload, MAP_TRANSPORT_HEADER_LENGTH, payload.length);
 
         try {
@@ -382,10 +397,16 @@ public final class ProtocolUtils {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(payload);
                 GZIPInputStream gzipInputStream = new GZIPInputStream(bais);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[GZIP_DECOMPRESSION_BUFFER_SIZE_BYTES];
+            int decompressedBytes = 0;
             int read;
             while ((read = gzipInputStream.read(buffer)) != -1) {
+                if (read > MAX_GZIP_DECOMPRESSED_SIZE_BYTES - decompressedBytes) {
+                    throw new RoborockException("Map payload decompressed size exceeds limit of "
+                            + MAX_GZIP_DECOMPRESSED_SIZE_BYTES + " bytes.");
+                }
                 baos.write(buffer, 0, read);
+                decompressedBytes += read;
             }
             return baos.toByteArray();
         } catch (IOException e) {
