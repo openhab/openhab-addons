@@ -156,8 +156,13 @@ jobs:
     needs: [ plan-shards, build ]
     # only run for full shard builds; single-addon PRs don't need Karaf features verification
     if: needs.plan-shards.outputs.selected_parts != '1'
-    name: Build (Java 21, ubuntu-24.04, features)
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21' ]
+        os: [ 'ubuntu-24.04' ]
+    name: Build Features (Java ${{ matrix.java }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     steps:
       - name: Checkout
@@ -180,11 +185,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up Java 21
+      - name: Set up Java ${{ matrix.java }}
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: ${{ matrix.java }}
 
       - name: Build Features
         id: build
@@ -201,5 +206,5 @@ jobs:
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: actions/upload-artifact@v7
         with:
-          name: build-log-java-21-ubuntu-24.04-features
+          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}-features
           path: build.log
