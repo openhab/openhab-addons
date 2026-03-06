@@ -24,6 +24,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.PointType;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Gaël L'hopital - Initial Contribution
  */
 
+@Component(service = DepartmentDbService.class)
 @NonNullByDefault
 public class DepartmentDbService {
     private final Logger logger = LoggerFactory.getLogger(DepartmentDbService.class);
@@ -48,6 +51,7 @@ public class DepartmentDbService {
             double westestLon) {
     }
 
+    @Activate
     public DepartmentDbService() {
         try (InputStream is = Thread.currentThread().getContextClassLoader()
                 .getResourceAsStream("/db/departments.json");
