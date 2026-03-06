@@ -1,9 +1,10 @@
 # evcc Binding
 
 This binding integrates [evcc](https://evcc.io), an extensible **E**lectric **V**ehicle **C**harge **C**ontroller and home energy management system.
-The binding is compatible to evcc [version 0.123.1](https://github.com/evcc-io/evcc/releases/tag/0.123.1) or newer and was tested with [version 0.205.0](https://github.com/evcc-io/evcc/releases/tag/0.205.0).
+The binding is compatible to evcc [version 0.209.8](https://github.com/evcc-io/evcc/releases/tag/0.209.8) or newer and was tested with [version 0.301.1](https://github.com/evcc-io/evcc/releases/tag/0.301.1).
 
-You can easily install and upgrade evcc on openHABian using `sudo openhabian-config`.
+**Important compatibility note:** Starting with this version of the binding, evcc versions **below 0.209.8** are no longer supported due to changes in the evcc API.
+If you are currently running evcc `< 0.209.8`, you must either upgrade your evcc installation to at least `0.209.8` or continue using an older version of this binding that still supports the legacy API.
 
 evcc controls your wallbox(es) with multiple charging modes and allows you to charge your ev with your photovoltaic's excess current.
 To provide an intelligent charging control, evcc supports over 30 wallboxes and over 20 energy meters/home energy management systems from many manufacturers as well as electric vehicles from over 20 car manufacturers.

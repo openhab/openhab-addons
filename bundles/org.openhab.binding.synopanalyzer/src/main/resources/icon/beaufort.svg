@@ -1,0 +1,6 @@
+<svg width="64" height="64" viewBox="-25 -25 50 50" xmlns="http://www.w3.org/2000/svg">
+   <path d="M-22 9.14v-1l5-17.25 5 17.25v1" fill="#ccc" stroke="#ccc" stroke-opacity=".8" />
+   <path d="M22 8.141h-40m10 0l-5-17" fill="none" stroke="#ccc" stroke-width="2" /><text style="white-space:pre"
+      transform="scale(1.02258 .97792)" x="-7.708" y="12.019" fill="#999" font-family="'Noto Sans'" font-size="33.809"
+      font-weight="700" stroke-width=".638">?</text>
+</svg>
