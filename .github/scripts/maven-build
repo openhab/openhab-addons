@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BUILD_LOG=build.log
-SHARD_SUMMARY=shard-summary.md
+SHARD_SUMMARY=target/shard-summary.md
 
 ARGUMENTS="clean verify -B -T 1.5C -U"
 if [ $# -ge 1 ]; then
@@ -31,6 +31,8 @@ function write_shard_summary() {
     local addon_count="$3"
     local range="$4"
     local indices="$5"
+
+    mkdir -p "$(dirname "$SHARD_SUMMARY")"
 
     {
         echo "### Build Shard"
@@ -264,4 +266,5 @@ function build_based_on_changes() {
 }
 
 ./mvnw -v
+rm -f shard-summary.md
 build_based_on_changes
