@@ -132,8 +132,16 @@ jobs:
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('target/summary_report.html') != '' }}
         uses: actions/upload-artifact@v7
         with:
-          name: sat-summary-report-shard-${{ matrix.build_task.build_part }}
+          name: sat-summary-report-java-${{ matrix.java }}-${{ matrix.os }}-shard-${{ matrix.build_task.build_part }}
           path: target/summary_report.html
+
+      - name: Upload SAT Merge XML
+        if: ${{ steps.build.outcome == 'success' && needs.plan-shards.outputs.selected_parts != '1' && runner.os == 'Linux' && hashFiles('target/merge.xml') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: sat-merge-xml-java-${{ matrix.java }}-${{ matrix.os }}-shard-${{ matrix.build_task.build_part }}
+          path: target/merge.xml
+          retention-days: 1
 
       - name: Report SAT Errors as Annotations
         if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('**/checkstyle-result.xml') != '' }}
@@ -223,40 +231,88 @@ jobs:
         with:
           name: build-log-java-${{ matrix.java }}-${{ matrix.os }}-features
           path: build.log
+
+      - name: Upload SAT Merge XML
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('target/merge.xml') != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: sat-merge-xml-java-${{ matrix.java }}-${{ matrix.os }}-features
+          path: target/merge.xml
+          retention-days: 1
   finalize:
     needs: [ plan-shards, build, build-features ]
     if: |
       always() &&
       needs.build.result == 'success' &&
       (needs.build-features.result == 'success' || needs.build-features.result == 'skipped')
-    name: Finalize
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21' ]
+        os: [ 'ubuntu-24.04' ]
+    name: Finalize (Java ${{ matrix.java }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+
+      - name: Restore Maven Cache
+        uses: actions/cache/restore@v5
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Download Build Logs
         uses: actions/download-artifact@v7
         with:
-          pattern: build-log-*
+          pattern: build-log-java-${{ matrix.java }}-${{ matrix.os }}-*
           path: build-logs
           merge-multiple: false
 
-      - name: Upload Combined Build Logs
+      - name: Combine Build Logs
+        run: python3 .github/scripts/combine-build-logs build-logs combined/build.log
+
+      - name: Upload Combined Build Log
         uses: actions/upload-artifact@v7
         with:
-          name: build-logs
-          path: build-logs
+          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
+          path: combined/build.log
 
-      - name: Download SAT Summary Reports
+      - name: Download SAT Merge XMLs
         id: download-sat
         continue-on-error: true
         uses: actions/download-artifact@v7
         with:
-          pattern: sat-summary-report-*
-          path: sat-summary-reports
+          pattern: sat-merge-xml-java-${{ matrix.java }}-${{ matrix.os }}-*
+          path: sat-merge-xmls
           merge-multiple: false
 
-      - name: Upload Combined SAT Summary Reports
+      - name: Merge SAT XMLs
         if: steps.download-sat.outcome == 'success'
+        run: python3 .github/scripts/merge-sat-xmls sat-merge-xmls target/merge.xml
+
+      - name: Generate SAT Summary Report
+        if: steps.download-sat.outcome == 'success'
+        run: |
+          SAT_VER=$(./mvnw help:evaluate -Dexpression=sat.version -q -DforceStdout -N)
+          ./mvnw -N --no-transfer-progress \
+            org.openhab.tools.sat:sat-plugin:$SAT_VER:report \
+            -Dreport.fail.on.error=false \
+            -Dreport.fail.on.warning=false \
+            -Dreport.fail.on.info=false \
+            -Dreport.in.maven=false
+
+      - name: Upload Combined SAT Report
+        if: steps.download-sat.outcome == 'success' && hashFiles('target/summary_report.html') != ''
         uses: actions/upload-artifact@v7
         with:
-          name: sat-summary-reports
-          path: sat-summary-reports
+          name: sat-summary-report-java-${{ matrix.java }}-${{ matrix.os }}
+          path: target/summary_report.html
