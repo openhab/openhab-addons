@@ -15,6 +15,7 @@ package org.openhab.binding.solarforecast.internal.utils;
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.KILOWATT_UNIT;
 
 import java.time.Clock;
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -164,8 +165,17 @@ public class Utils {
         return null;
     }
 
+    public static Instant startOfDayInstant() {
+        return Utils.now().atZone(timeZoneProvider.getTimeZone()).truncatedTo(ChronoUnit.DAYS).toInstant();
+    }
+
     public static ZonedDateTime getZdtFromUTC(Instant utc) {
-        return utc.atZone(timeZoneProvider.getTimeZone());
+        try {
+            return utc.atZone(timeZoneProvider.getTimeZone());
+        } catch (DateTimeException dtpe) {
+            LOGGER.warn("Exception parsing time {} Reason: {}", utc, dtpe.getMessage());
+            throw dtpe;
+        }
     }
 
     public static Instant now() {

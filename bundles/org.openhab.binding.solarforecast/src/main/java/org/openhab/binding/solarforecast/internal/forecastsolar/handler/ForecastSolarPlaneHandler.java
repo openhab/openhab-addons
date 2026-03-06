@@ -148,9 +148,9 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
         if (command instanceof RefreshType) {
             ForecastSolarObject localForecast = getForecast();
             if (CHANNEL_POWER_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.Average));
+                sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.AVERAGE));
             } else if (CHANNEL_ENERGY_ESTIMATE.equals(channelUID.getIdWithoutGroup())) {
-                sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
+                sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.AVERAGE));
             } else {
                 bridge().getSequentialScheduler().execute(this::updateData);
             }
@@ -263,8 +263,8 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
      */
     private void updateTimeseries() {
         ForecastSolarObject localForecast = getForecast();
-        sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.Average));
-        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.Average));
+        sendTimeSeries(CHANNEL_POWER_ESTIMATE, localForecast.getPowerTimeSeries(QueryMode.AVERAGE));
+        sendTimeSeries(CHANNEL_ENERGY_ESTIMATE, localForecast.getEnergyTimeSeries(QueryMode.AVERAGE));
     }
 
     /**
