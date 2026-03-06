@@ -74,6 +74,7 @@
 
 		<config-description>
 			<parameter name="mac" type="text">
+				<context>mac-address</context>
 				<label>MAC</label>
 				<description>The MAC of the device as reported by the API.</description>
 			</parameter>
@@ -171,6 +172,7 @@
 
 		<config-description>
 			<parameter name="macId" type="text">
+				<context>mac-address</context>
 				<label>MAC Id</label>
 				<description>The MAC Id of the device as reported by the API.</description>
 			</parameter>
