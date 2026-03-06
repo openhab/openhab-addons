@@ -108,10 +108,10 @@ jobs:
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: Upload Built openHAB JARs
-        if: ${{ steps.build.outcome == 'success' && needs.plan-shards.outputs.selected_parts != '1' }}
+        if: ${{ steps.build.outcome == 'success' && needs.plan-shards.outputs.selected_parts != '1' && runner.os == 'Linux' }}
         uses: actions/upload-artifact@v7
         with:
-          name: openhab-jars-shard-${{ matrix.build_task.build_part }}
+          name: openhab-jars-java-${{ matrix.java }}-shard-${{ matrix.build_task.build_part }}
           path: ~/.m2/repository/org/openhab
           retention-days: 1
 
@@ -202,7 +202,7 @@ jobs:
       - name: Download Built openHAB JARs
         uses: actions/download-artifact@v7
         with:
-          pattern: openhab-jars-shard-*
+          pattern: openhab-jars-java-${{ matrix.java }}-shard-*
           path: ~/.m2/repository/org/openhab
           merge-multiple: true
 
