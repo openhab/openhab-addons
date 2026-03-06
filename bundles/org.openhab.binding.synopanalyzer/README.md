@@ -48,6 +48,7 @@ The weather information that is retrieved is available as these channels:
 | attenuation-factor*   | Number             | Cloud layer attenuation factor             |
 | time-utc              | DateTime           | Observation time of the Synop message      |
 | horizontal-visibility | String             | Horizontal visibility range                |
+| wind-barb             | Image              | Graph of the wind speed and direction      |
 
 - "Cloud attenuation factor" (Kc) as defined by Kasten and Czeplak (1980).
 
@@ -76,6 +77,7 @@ DateTime           Synop_time        "Observation Time [%1$ta %1$tR]" <clock>  {
 ### Transformations
 
 octa.map
+
 ```text
 0=○ No clouds
 1=⌽ A few clouds
@@ -95,6 +97,7 @@ NULL=Unknown ⁉
 ```
 
 beaufort.scale
+
 ```text
 [0..1[=Calm
 [1..2[=Very light breeze
