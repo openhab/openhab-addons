@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class EnergyStats {
 
-    public static final double INVALID_VALUE = -9999.0;
+    public static final int INVALID_VALUE = -9999;
 
     public static final double AMPERAGE_FACTOR = 0.01;
     public static final double VOLTAGE_FACTOR = 0.01;

@@ -13,6 +13,7 @@
 package org.openhab.binding.avmfritz.internal.dto.json;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.binding.avmfritz.internal.dto.json.EnergyStats.INVALID_VALUE;
 
 import java.io.IOException;
 
@@ -33,9 +34,9 @@ public class EnergyStatsTest extends AbstractJSONTest {
         EnergyStats energyStats = getObjectFromJson("EnergyStats.json", EnergyStats.class, gson);
         assertNotNull(energyStats);
 
-        assertEquals(-9999, energyStats.mMValueAmp);
+        assertEquals(INVALID_VALUE, energyStats.mMValueAmp);
         assertEquals(0.0, energyStats.getScaledAmperage(), DELTA);
-        assertEquals(-9999, energyStats.mMValueVolt);
+        assertEquals(INVALID_VALUE, energyStats.mMValueVolt);
         assertEquals(0.0, energyStats.getScaledVoltage(), DELTA);
         assertEquals(36100, energyStats.mMValuePower);
         assertEquals(361.0, energyStats.getScaledPower(), DELTA);
@@ -48,11 +49,11 @@ public class EnergyStatsTest extends AbstractJSONTest {
         EnergyStats energyStats = getObjectFromJson("EnergyStatsInvalid.json", EnergyStats.class, gson);
         assertNotNull(energyStats);
 
-        assertEquals(-9999, energyStats.mMValueAmp);
+        assertEquals(INVALID_VALUE, energyStats.mMValueAmp);
         assertEquals(0.0, energyStats.getScaledAmperage(), DELTA);
-        assertEquals(-9999, energyStats.mMValueVolt);
+        assertEquals(INVALID_VALUE, energyStats.mMValueVolt);
         assertEquals(0.0, energyStats.getScaledVoltage(), DELTA);
-        assertEquals(-9999, energyStats.mMValuePower);
+        assertEquals(INVALID_VALUE, energyStats.mMValuePower);
         assertEquals(0.0, energyStats.getScaledPower(), DELTA);
         assertEquals(91000, energyStats.mMValueEnergy);
         assertEquals(91.0, energyStats.getScaledEnergy(), DELTA);
