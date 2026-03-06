@@ -66,7 +66,6 @@
 
 	<config-description uri="thing-type:unifi:client">
 		<parameter name="cid" type="text" required="true">
-			<context>mac-address</context>
 			<label>Client ID</label>
 			<description>The MAC address, IP address, hostname or alias of the client</description>
 		</parameter>
@@ -117,6 +116,7 @@
 			<description>The number of the port as reported by the UniFi switch</description>
 		</parameter>
 		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>Switch MAC Address</label>
 			<description>The MAC address of the switch this port is part of</description>
 		</parameter>
@@ -124,6 +124,7 @@
 
 	<config-description uri="thing-type:unifi:accessPoint">
 		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>Access Point MAC Address</label>
 			<description>The MAC address of the access point</description>
 		</parameter>
