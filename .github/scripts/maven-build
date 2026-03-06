@@ -121,10 +121,6 @@ function build_addon_shard() {
 
     local projects=$(for addon in $addons; do addon_projects "$addon"; done | tr ',' '\n' | sed '/^$/d' | grep -Ev '^-:org\.openhab\.addons\.reactor\.features\.karaf$|^-:org\.openhab\.addons\.features\.karaf\.openhab-addons$|^-:org\.openhab\.addons\.features\.karaf\.openhab-addons-external$' | awk '!seen[$0]++' | paste -sd, -)
 
-    if [ "$part" -eq 1 ]; then
-        projects="$projects,:org.openhab.addons.reactor.features.karaf,:org.openhab.addons.features.karaf.openhab-addons,:org.openhab.addons.features.karaf.openhab-addons-external"
-    fi
-
     local command="./mvnw $ARGUMENTS -am -pl $projects"
 
     write_shard_summary "alphabetical-shard" "assigned add-ons" "$addon_total" "$first_addon .. $last_addon"
@@ -141,9 +137,28 @@ function build_addon_shard() {
     exit $?
 }
 
+function build_features() {
+    local projects=":org.openhab.addons.reactor.features.karaf,:org.openhab.addons.features.karaf.openhab-addons,:org.openhab.addons.features.karaf.openhab-addons-external"
+    local command="./mvnw $ARGUMENTS -am -pl $projects"
+
+    echo
+    echo "Building features"
+    echo
+    echo "+ $command"
+    echo
+
+    write_shard_summary "features" "feature modules" "" ""
+
+    set -o pipefail
+    $command 2>&1 | tee "$BUILD_LOG"
+    exit $?
+}
+
 function build_based_on_changes() {
     if [ -n "${MAVEN_BUILD_ADDON:-}" ]; then
         build_addon "${MAVEN_BUILD_ADDON}"
+    elif [ -n "${MAVEN_BUILD_FEATURES:-}" ]; then
+        build_features
     elif [ -n "${MAVEN_SHARD_ADDONS:-}" ]; then
         build_addon_shard
     else
