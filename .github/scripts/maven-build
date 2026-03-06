@@ -139,7 +139,7 @@ function build_addon_shard() {
 
 function build_features() {
     local projects=":org.openhab.addons.reactor.features.karaf,:org.openhab.addons.features.karaf.openhab-addons,:org.openhab.addons.features.karaf.openhab-addons-external"
-    local command="./mvnw $ARGUMENTS -am -pl $projects"
+    local command="./mvnw $ARGUMENTS -pl $projects"
 
     echo
     echo "Building features"
