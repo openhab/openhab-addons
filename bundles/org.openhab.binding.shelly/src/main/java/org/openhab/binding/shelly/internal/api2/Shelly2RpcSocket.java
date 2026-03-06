@@ -139,16 +139,16 @@ public class Shelly2RpcSocket implements WriteCallback {
         request.setHeader("Pragma", "no-cache");
         request.setHeader("Cache-Control", "no-cache");
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}: Connect WebSocket, URI={}", thingName, uri);
+        if (logger.isDebugEnabled()) {
+            logger.debug("{}: Connect WebSocket, URI={}", thingName, uri);
         }
 
         // Start connecting the WebSocket session (result will be passed to onConnect()/onError())
         synchronized (this) {
             disconnect(); // for safety
 
-            // Connect async
             try {
+                // Connect async
                 client.connect(this, uri, request);
             } catch (RuntimeException | IOException e) {
                 // Keep this if your Jetty version still declares IOException on start()/connect path
@@ -345,7 +345,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                                     } else {
                                         // new device
                                         if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            addBluThing(message.src, e.blu, thingTable);
+                                            addBluThing(getString(message.src), e.blu, thingTable);
                                         } else {
                                             logger.debug(
                                                     "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",

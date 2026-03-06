@@ -72,7 +72,7 @@ This action will give feedback on the pairing process, if successful a device wi
 
 See [Device Pairing: Code Types](#device-pairing-code-types) for more information on pairing codes and code formats.
 
-The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.  
+The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.
 
 <img src="./doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
 
@@ -82,7 +82,7 @@ In order to pair (commission in matter terminology) a device, you must have an 1
 If the device has not been paired before, use the code provided by the manufacturer and **ensure the device is in pairing mode**, refer to your devices instructions for pairing for more information.
 You can include dashes or omit them in a manual pairing code.
 
-If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must use that ecosystem to generate a new pairing code and search for devices.  
+If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must use that ecosystem to generate a new pairing code and search for devices.
 The pairing code and device will only be available for commissioning for a limited time.
 Refer to the ecosystem that generated the code for the exact duration (typically 5-15 minutes). In this case, openHAB still talks directly to the device and is not associated with that existing ecosystem.
 
@@ -158,7 +158,7 @@ The controller Thing must be created manually before devices can be discovered.
 |--------|--------|----------------------------------------|---------|----------|----------|
 | nodeId | number | The matter node ID for this controller | 0       | yes      | no       |
 
-Note: The controller nodeId must not be changed after a controller is created.  
+Note: The controller nodeId must not be changed after a controller is created.
 
 ### Node Thing Configuration
 
@@ -406,7 +406,7 @@ when
     Channel "matter:node:main:12345678901234567890:1#doorlock-alarm" triggered
 then
     logInfo("DoorLock", "Lock alarm triggered with code: " + receivedEvent)
-    // Alarm codes: 0=Jammed, 1=Factory Reset, 3=Radio Power Cycled, 4=Wrong Code Limit, 
+    // Alarm codes: 0=Jammed, 1=Factory Reset, 3=Radio Power Cycled, 4=Wrong Code Limit,
     //              5=Escutcheon Removed, 6=Door Forced Open, 7=Door Ajar, 8=Forced User
 end
 ```
@@ -416,13 +416,13 @@ end
 ### Thing Configuration
 
 ```java
-Thing configuration example for the Matter controller:
+// Thing configuration example for the Matter controller:
 Thing matter:controller:main [ nodeId="1" ]
 
-Thing configuration example for a Matter node:
+// Thing configuration example for a Matter node:
 Thing matter:node:main:12345678901234567890 [ nodeId="12345678901234567890"]
 
-Thing configuration example for a Matter bridge endpoint:
+// Thing configuration example for a Matter bridge endpoint:
 Thing matter:endpoint:main:12345678901234567890:2 [ endpointId=2]
 ```
 
@@ -628,7 +628,7 @@ A note on semantic tags:
 - If used, you can not mix different semantic namespaces as seen in the example above where `switches` is the base namespace being used for all tags.
 - These are provided by the Matter spec, but its up to clients (like Apple, Alexa, Google....) to interpret these tags (or not).
 - Each ecosystem will likely differ in its use of these tags.
-- They are provided here for maximum flexibility but are not guarenteed to have any affect.  
+- They are provided here for maximum flexibility but are not guarenteed to have any affect.
 
 </details>
 

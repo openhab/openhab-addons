@@ -15,15 +15,13 @@
 		</properties>
 
 		<config-description>
-			<parameter name="username" type="text">
+			<parameter name="username" type="text" required="true">
 				<context>email</context>
-				<required>true</required>
 				<label>Username</label>
 				<description>Name of a registered VeSync user, that allows to access the mobile application.</description>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="true">
 				<context>password</context>
-				<required>true</required>
 				<label>Password</label>
 				<description>Password for the registered VeSync username, that allows to access the mobile application.</description>
 			</parameter>

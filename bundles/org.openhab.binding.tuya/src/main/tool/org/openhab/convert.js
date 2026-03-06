@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 /**
  * Converts the device-specific data from ioBroker.tuya to a binding compatible JSON
  *
@@ -412,16 +411,16 @@ function normalizeUnit(productKey, orig_code, properties, orig_unit) {
     return "";
 }
 
-const prevSchemas = require('../../../src/main/resources/schema.json');
+const prevSchemas = require('../../../resources/schema.json');
 
-const schemaJson = fs.createWriteStream("../../../target/in-schema.json");
+const schemaJson = fs.createWriteStream("../../../../../target/in-schema.json");
 http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/schema.json", function(response) {
     response.setEncoding('utf8');
     response.pipe(schemaJson);
     schemaJson.on('finish', () => {
         schemaJson.close();
 
-        const knownSchemas = require('../../../target/in-schema.json');
+        const knownSchemas = require('../../../../../target/in-schema.json');
 
         let productKey, value;
         let convertedSchemas = {};
@@ -484,7 +483,7 @@ http.get("https://raw.githubusercontent.com/Apollon77/ioBroker.tuya/master/lib/s
                         return sorted;
                     }, {}) : value;
 
-        fs.writeFile('../resources/schema.json', JSON.stringify(convertedSchemas, replacer, '\t'), (err) => {
+        fs.writeFile('../../../resources/schema.json', JSON.stringify(convertedSchemas, replacer, '\t'), (err) => {
             if (err) throw err;
         });
     });

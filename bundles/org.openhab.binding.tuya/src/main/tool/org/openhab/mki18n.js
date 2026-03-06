@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 /**
  * Builds an i18n translation file from the local schemas.
  *
@@ -19,7 +18,7 @@
 const http = require('https');
 const fs = require('fs');
 
-const schemas = require('../../../src/main/resources/schema.json');
+const schemas = require('../../../resources/schema.json');
 
 
 function optionToLabel(option) {

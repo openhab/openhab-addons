@@ -46,12 +46,17 @@ import org.openhab.binding.roborock.internal.api.enums.FanModeType;
 import org.openhab.binding.roborock.internal.api.enums.RobotCapabilities;
 import org.openhab.binding.roborock.internal.api.enums.StatusType;
 import org.openhab.binding.roborock.internal.api.enums.VacuumErrorType;
+import org.openhab.binding.roborock.internal.map.RRMapData;
+import org.openhab.binding.roborock.internal.map.RRMapParser;
+import org.openhab.binding.roborock.internal.map.RRMapRenderer;
 import org.openhab.binding.roborock.internal.util.ProtocolUtils;
+import org.openhab.binding.roborock.internal.util.RequestCorrelationTracker;
 import org.openhab.binding.roborock.internal.util.SchedulerTask;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -104,6 +109,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     private String rrHomeId = "";
     private String localKey = "";
     private String localIP = "";
+    private String endpointPrefix = "";
     private final byte[] nonce = new byte[16];
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCapabilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
@@ -116,7 +122,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private String lastHistoryID = "";
 
-    private final Map<String, Integer> outstandingRequests = new ConcurrentHashMap<>();
+    private final RequestCorrelationTracker requestCorrelationTracker = new RequestCorrelationTracker();
+    private final RRMapParser rrMapParser = new RRMapParser();
+    private final RRMapRenderer rrMapRenderer = new RRMapRenderer();
 
     private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(
             Stream.of(RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
@@ -304,6 +312,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         if (localBridgeHandler != null) {
             if (token.isEmpty()) {
                 token = getTokenFromBridge();
+                endpointPrefix = localBridgeHandler.getEndpointPrefix();
                 if (!token.isEmpty()) {
                     if (rrHomeId.isEmpty()) {
                         Home home = localBridgeHandler.getHomeDetail();
@@ -427,34 +436,40 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private void sendAllMqttCommands() {
         try {
-            outstandingRequests.put("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
-            outstandingRequests.put("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
-            outstandingRequests.put("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
-            outstandingRequests.put("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
-            outstandingRequests.put("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
-            outstandingRequests.put("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
-            outstandingRequests.put("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
-            outstandingRequests.put("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
-            outstandingRequests.put("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
-            outstandingRequests.put("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
-            outstandingRequests.put("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
-            outstandingRequests.put("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
-            outstandingRequests.put("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
+            registerRequest("getStatus", sendRPCCommand(COMMAND_GET_STATUS));
+            registerRequest("getConsumable", sendRPCCommand(COMMAND_GET_CONSUMABLE));
+            registerRequest("getNetworkInfo", sendRPCCommand(COMMAND_GET_NETWORK_INFO));
+            registerRequest("getCleanSummary", sendRPCCommand(COMMAND_GET_CLEAN_SUMMARY));
+            registerRequest("getDndTimer", sendRPCCommand(COMMAND_GET_DND_TIMER));
+            registerRequest("getRoomMapping", sendRPCCommand(COMMAND_GET_ROOM_MAPPING));
+            registerRequest("getSegmentStatus", sendRPCCommand(COMMAND_GET_SEGMENT_STATUS));
+            registerRequest("getMapStatus", sendRPCCommand(COMMAND_GET_MAP_STATUS));
+            registerRequest("getLedStatus", sendRPCCommand(COMMAND_GET_LED_STATUS));
+            registerRequest("getCarpetMode", sendRPCCommand(COMMAND_GET_CARPET_MODE));
+            registerRequest("getFwFeatures", sendRPCCommand(COMMAND_GET_FW_FEATURES));
+            registerRequest("getMultiMapsList", sendRPCCommand(COMMAND_GET_MULTI_MAP_LIST));
+            registerRequest("getCustomizeCleanMode", sendRPCCommand(COMMAND_GET_CUSTOMIZE_CLEAN_MODE));
+            registerRequest("getMap", sendRPCCommand(COMMAND_GET_MAP));
         } catch (UnsupportedEncodingException e) {
             logger.warn("Failed to send MQTT commands due to unsupported encoding: {}", e.getMessage());
         }
     }
 
     public void handleMessage(byte[] payload) {
+        requestCorrelationTracker.cleanupExpired(MAP_REQUEST_CORRELATION_TIMEOUT_MS);
         try {
-            String response = ProtocolUtils.handleMessage(payload, localKey, nonce);
-            if (response.isEmpty()) {
+            ProtocolUtils.DecodedMessage decodedMessage = ProtocolUtils.decodeMessage(payload, localKey, nonce,
+                    endpointPrefix);
+            if (decodedMessage instanceof ProtocolUtils.IgnoredResponse) {
                 return;
             }
 
-            if (logger.isTraceEnabled()) {
-                logger.trace("Received MQTT message: {}", response);
+            if (decodedMessage instanceof ProtocolUtils.MapPayloadResponse mapPayloadResponse) {
+                handleGetMap(mapPayloadResponse.requestId(), mapPayloadResponse.payload());
+                return;
             }
+
+            String response = ((ProtocolUtils.JsonPayloadResponse) decodedMessage).payload();
 
             if (JsonParser.parseString(response).isJsonObject()
                     && JsonParser.parseString(response).getAsJsonObject().get("dps").isJsonObject()
@@ -465,9 +480,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("id")
                         && JsonParser.parseString(jsonString).getAsJsonObject().has("result")) {
                     int messageId = JsonParser.parseString(jsonString).getAsJsonObject().get("id").getAsInt();
-                    String methodName = outstandingRequests.entrySet().stream()
-                            .filter(entry -> entry.getValue() == messageId).map(Map.Entry::getKey).findFirst()
-                            .orElse(null);
+                    String methodName = requestCorrelationTracker.findMethodByRequestId(messageId);
 
                     if (methodName == null) {
                         logger.trace("Received response {} for unknown or already handled message ID: {}", response,
@@ -518,14 +531,11 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         case "getCustomizeCleanMode":
                             handleGetCustomizeCleanMode(jsonString);
                             break;
-                        case "getMap":
-                            handleGetMap(jsonString);
-                            break;
                         default:
                             logger.debug("No handler for method: {}", methodName);
                             break;
                     }
-                    outstandingRequests.remove(methodName);
+                    requestCorrelationTracker.removeByRequestId(messageId);
                 }
             } else {
                 // handle live updates ie any one (or more of values of dps)
@@ -825,7 +835,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 if (!lastClean.equals(lastHistoryID)) {
                     lastHistoryID = lastClean;
                     try {
-                        outstandingRequests.put("getCleanRecord",
+                        registerRequest("getCleanRecord",
                                 sendRPCCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
                     } catch (UnsupportedEncodingException e) {
                         // Shouldn't occur
@@ -847,7 +857,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                     if (!lastClean.equals(lastHistoryID)) {
                         lastHistoryID = lastClean;
                         try {
-                            outstandingRequests.put("getCleanRecord",
+                            registerRequest("getCleanRecord",
                                     sendRPCCommand(COMMAND_GET_CLEAN_RECORD, "[" + lastClean + "]"));
                         } catch (UnsupportedEncodingException e) {
                             // Shouldn't occur
@@ -948,8 +958,29 @@ public class RoborockVacuumHandler extends BaseThingHandler {
         }
     }
 
-    private void handleGetMap(String response) {
-        logger.trace("handleGetMap, response = {}", response);
+    private void handleGetMap(int requestId, byte[] mapPayload) {
+        String methodName = requestCorrelationTracker.findMethodByRequestId(requestId);
+        if (!"getMap".equals(methodName)) {
+            logger.debug("Ignoring map response for request id {} with unknown method mapping", requestId);
+            return;
+        }
+
+        try {
+            RRMapData mapData = rrMapParser.parse(mapPayload);
+            byte[] pngBytes = rrMapRenderer.renderAsPng(mapData);
+            updateState(CHANNEL_VACUUM_MAP, new RawType(pngBytes, "image/png"));
+        } catch (RoborockException e) {
+            logger.debug("Failed to parse map payload for request id {}: {}", requestId, e.getMessage());
+        } finally {
+            requestCorrelationTracker.removeByRequestId(requestId);
+        }
+    }
+
+    private void registerRequest(String methodName, int requestId) {
+        requestCorrelationTracker.register(methodName, requestId);
+        if ("getMap".equals(methodName)) {
+            logger.debug("Registered getMap request correlation id {}", requestId);
+        }
     }
 
     private void setCapabilities(JsonObject statusResponse) {
@@ -1015,10 +1046,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             int id;
             do {
                 id = secureRandom.nextInt(22767 + 1) + 10000;
-                final int tempId = id;
-                // make sure id is unique
-                methodName = outstandingRequests.entrySet().stream().filter(entry -> entry.getValue() == tempId)
-                        .map(Map.Entry::getKey).findFirst().orElse(null);
+                methodName = requestCorrelationTracker.isRequestIdInUse(id) ? "inUse" : null;
             } while (methodName != null);
             return localBridge.sendRPCCommand(method, params, config.duid, localKey, nonce, id);
         } catch (IllegalStateException e) {
