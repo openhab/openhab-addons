@@ -8,42 +8,21 @@ if [ $# -ge 1 ]; then
     ARGUMENTS=$@
 fi
 
-function build_parts() {
-    local parts="${MAVEN_BUILD_PARTS:-1}"
-    if ! [[ "$parts" =~ ^[1-9][0-9]*$ ]]; then
-        parts=1
-    fi
-    echo "$parts"
-}
-
-function build_part() {
-    local part="${MAVEN_BUILD_PART:-1}"
-    local parts=$(build_parts)
-    if ! [[ "$part" =~ ^[1-9][0-9]*$ ]] || [ "$part" -gt "$parts" ]; then
-        part=1
-    fi
-    echo "$part"
-}
-
 function write_shard_summary() {
     local mode="$1"
     local scope="$2"
     local addon_count="$3"
     local range="$4"
-    local indices="$5"
 
     mkdir -p "$(dirname "$SHARD_SUMMARY")"
 
     {
         echo "### Build Shard"
-        echo "- Shard: $(build_part)/$(build_parts)"
+        echo "- Shard: ${MAVEN_BUILD_PART:-1}/${MAVEN_BUILD_PARTS:-1}"
         echo "- Mode: $mode"
         echo "- Scope: $scope"
         if [ -n "$addon_count" ]; then
             echo "- Add-ons: $addon_count"
-        fi
-        if [ -n "$indices" ]; then
-            echo "- Alphabetical slice indices: $indices"
         fi
         if [ -n "$range" ]; then
             echo "- Alphabetical range: $range"
@@ -77,7 +56,7 @@ function build_all() {
     echo "+ ./mvnw $ARGUMENTS"
     echo
 
-    write_shard_summary "full-build" "all projects" "" "" ""
+    write_shard_summary "full-build" "all projects" "" ""
 
     mvnp $ARGUMENTS
 
@@ -91,82 +70,6 @@ function build_all() {
     fi
 
     exit $status
-}
-
-function changed_files() {
-    sed 's#,#\n#g' <<< $CHANGED_FILES
-}
-
-function addon_unrelated_changed_files() {
-    local addon="$1"
-    changed_files | \
-        grep -Ev "^(bundles/|itests/)$addon([/.].*)?$" | \
-        grep -Ev "^(CODEOWNERS|bom/openhab-addons/pom.xml|bundles/pom.xml|itests/pom.xml)$"
-}
-
-function changed_addons() {
-    changed_files | grep -E '(bundles/|itests/)org\.openhab\.' | sed -E 's#.+/(org\.openhab\.[a-z0-9]+\.[a-z0-9]+).*#\1#g' | sort -u
-}
-
-function all_addons() {
-    find bundles itests -mindepth 1 -maxdepth 1 -type d 2>/dev/null | \
-        sed -E 's#^(bundles|itests)/(org\.openhab\.[a-z0-9]+\.[a-z0-9]+).*#\2#g' | \
-        grep -E '^org\.openhab\.[a-z0-9]+\.[a-z0-9]+$' | \
-        sort -u
-}
-
-function addon_count() {
-    all_addons | wc -l
-}
-
-function shard_range() {
-    local part=$(build_part)
-    local parts=$(build_parts)
-    local total=$(addon_count)
-
-    if [ "$total" -eq 0 ]; then
-        echo "0 0"
-        return
-    fi
-
-    local start=$(( ((part - 1) * total) / parts + 1 ))
-    local end=$(( (part * total) / parts ))
-    echo "$start $end"
-}
-
-function addon_assigned_to_build_part() {
-    local addon="$1"
-    local parts=$(build_parts)
-
-    if [ "$parts" -le 1 ]; then
-        return 0
-    fi
-
-    local index=$(all_addons | nl -ba | awk -v addon="$addon" '$2 == addon { print $1; exit }')
-    if [ -z "$index" ]; then
-        return 0
-    fi
-
-    local range=$(shard_range)
-    local start=$(awk '{print $1}' <<< "$range")
-    local end=$(awk '{print $2}' <<< "$range")
-
-    [ "$index" -ge "$start" ] && [ "$index" -le "$end" ]
-}
-
-function sharded_addons() {
-    local parts=$(build_parts)
-
-    if [ "$parts" -le 1 ]; then
-        all_addons
-    else
-        local range=$(shard_range)
-        local start=$(awk '{print $1}' <<< "$range")
-        local end=$(awk '{print $2}' <<< "$range")
-        if [ "$start" -le "$end" ]; then
-            all_addons | nl -ba | awk -v start="$start" -v end="$end" '$1 >= start && $1 <= end { print $2 }'
-        fi
-    fi
 }
 
 function addon_projects() {
@@ -194,7 +97,7 @@ function build_addon() {
     echo "+ $command"
     echo
 
-    write_shard_summary "single-addon" "$addon" "1" "$addon" ""
+    write_shard_summary "single-addon" "$addon" "1" "$addon"
 
     set -o pipefail # exit build with error when pipes fail
     $command 2>&1 | tee "$BUILD_LOG"
@@ -202,23 +105,19 @@ function build_addon() {
 }
 
 function build_addon_shard() {
-    local shard_addons=$(sharded_addons)
-    local addons=$(echo "$shard_addons" | xargs)
-    local part=$(build_part)
-    local parts=$(build_parts)
-    local range=$(shard_range)
-    local start=$(awk '{print $1}' <<< "$range")
-    local end=$(awk '{print $2}' <<< "$range")
+    local addons="${MAVEN_SHARD_ADDONS:-}"
+    local part="${MAVEN_BUILD_PART:-1}"
+    local parts="${MAVEN_BUILD_PARTS:-1}"
 
     if [ -z "$addons" ]; then
-        write_shard_summary "empty-shard" "no assigned add-ons" "0" "" ""
+        write_shard_summary "empty-shard" "no assigned add-ons" "0" ""
         echo "No add-ons assigned to shard $part/$parts" | tee "$BUILD_LOG"
         exit 0
     fi
 
-    local first_addon=$(echo "$shard_addons" | head -n1)
-    local last_addon=$(echo "$shard_addons" | tail -n1)
-    local addon_total=$(echo "$shard_addons" | sed '/^$/d' | wc -l)
+    local first_addon=$(echo "$addons" | awk '{print $1}')
+    local last_addon=$(echo "$addons" | awk '{print $NF}')
+    local addon_total=$(echo "$addons" | wc -w)
 
     local projects=$(for addon in $addons; do addon_projects "$addon"; done | tr ',' '\n' | sed '/^$/d' | grep -Ev '^-:org\.openhab\.addons\.reactor\.features\.karaf$|^-:org\.openhab\.addons\.features\.karaf\.openhab-addons$|^-:org\.openhab\.addons\.features\.karaf\.openhab-addons-external$' | awk '!seen[$0]++' | paste -sd, -)
 
@@ -228,11 +127,10 @@ function build_addon_shard() {
 
     local command="./mvnw $ARGUMENTS -am -pl $projects"
 
-    write_shard_summary "alphabetical-shard" "assigned add-ons" "$addon_total" "$first_addon .. $last_addon" "$start..$end"
+    write_shard_summary "alphabetical-shard" "assigned add-ons" "$addon_total" "$first_addon .. $last_addon"
 
     echo
-    echo "Building add-on shard: $part/$parts"
-    echo "Alphabetical slice indices: $start..$end ($addon_total add-ons)"
+    echo "Building add-on shard: $part/$parts ($addon_total add-ons)"
     echo "Alphabetical range: $first_addon .. $last_addon"
     echo
     echo "+ $command"
@@ -244,24 +142,12 @@ function build_addon_shard() {
 }
 
 function build_based_on_changes() {
-    local changed_addon=$(changed_addons | xargs)
-    if [ $(echo $changed_addon | wc -w) -eq 1 ] && \
-        [ $(addon_unrelated_changed_files $changed_addon | wc -l) -eq 0 ] && \
-        [ -d "./bundles/$changed_addon" ]
-    then
-        if addon_assigned_to_build_part "$changed_addon"; then
-            build_addon $changed_addon
-        else
-            write_shard_summary "single-addon-skipped" "$changed_addon" "0" "" ""
-            echo "Skipping add-on $changed_addon on shard $(build_part)/$(build_parts)" | tee "$BUILD_LOG"
-            exit 0
-        fi
+    if [ -n "${MAVEN_BUILD_ADDON:-}" ]; then
+        build_addon "${MAVEN_BUILD_ADDON}"
+    elif [ -n "${MAVEN_SHARD_ADDONS:-}" ]; then
+        build_addon_shard
     else
-        if [ "$(build_parts)" -gt 1 ]; then
-            build_addon_shard
-        else
-            build_all
-        fi
+        build_all
     fi
 }
 

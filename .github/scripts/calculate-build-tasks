@@ -62,28 +62,43 @@ def all_addons() -> list[str]:
     return sorted(addons)
 
 
-def shard_range_label(part: int, parts: int, addons: list[str]) -> str:
-    """Return '{first} .. {last}' for the add-ons assigned to this shard."""
+def addon_shard(part: int, parts: int, addons: list[str]) -> list[str]:
+    """Return the slice of addons assigned to this shard."""
     total = len(addons)
     start = ((part - 1) * total) // parts
-    end = (part * total) // parts - 1
-    return f"{addons[start]} .. {addons[end]}" if start <= end else "no assigned add-ons"
+    end = (part * total) // parts
+    return addons[start:end]
+
+
+def shard_range_label(part: int, parts: int, addons: list[str]) -> str:
+    """Return '{first} .. {last}' for the add-ons assigned to this shard."""
+    shard = addon_shard(part, parts, addons)
+    return f"{shard[0]} .. {shard[-1]}" if shard else "no assigned add-ons"
 
 
 def build_tasks(parts: int, addons: list[str], single_addon: str = "") -> list[dict]:
     if single_addon:
-        return [{"build_part": "1", "range_label": single_addon}]
-    return [{"build_part": str(p), "range_label": shard_range_label(p, parts, addons)} for p in range(1, parts + 1)]
+        return [{"build_part": "1", "range_label": single_addon, "shard_addons": ""}]
+    if parts == 1:
+        return [{"build_part": "1", "range_label": shard_range_label(1, 1, addons), "shard_addons": ""}]
+    return [
+        {
+            "build_part": str(p),
+            "range_label": shard_range_label(p, parts, addons),
+            "shard_addons": " ".join(addon_shard(p, parts, addons)),
+        }
+        for p in range(1, parts + 1)
+    ]
 
 
-def write_github_output(parts: int, tasks: list[dict], changed_files_csv: str) -> None:
+def write_github_output(parts: int, tasks: list[dict], selected_addon: str) -> None:
     output_path = os.environ.get("GITHUB_OUTPUT")
     if not output_path:
         raise RuntimeError("GITHUB_OUTPUT is not set")
     with open(output_path, "a", encoding="utf-8") as f:
         f.write(f"selected_parts={parts}\n")
         f.write(f"build_task_matrix={json.dumps(tasks, separators=(',', ':'))}\n")
-        f.write(f"changed_files={changed_files_csv}\n")
+        f.write(f"selected_addon={selected_addon}\n")
 
 
 def main() -> None:
@@ -100,7 +115,7 @@ def main() -> None:
 
     parts = 1 if single_addon else default_parts
     tasks = build_tasks(parts, all_addons(), single_addon)
-    write_github_output(parts, tasks, os.environ.get("CHANGED_FILES", ""))
+    write_github_output(parts, tasks, single_addon)
 
 
 if __name__ == "__main__":
