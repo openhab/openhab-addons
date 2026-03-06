@@ -22,6 +22,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -50,20 +52,27 @@ public class EvccBatteryHandler extends EvccBaseThingHandler {
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_BATTERY).get(index).getAsJsonObject();
+            JsonObject state = getStateFromCachedState(stateOpt);
             commonInitialize(state);
         });
     }
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        state = state.has(JSON_KEY_BATTERY) ? state.getAsJsonArray(JSON_KEY_BATTERY).get(index).getAsJsonObject()
+        state = state.has(JSON_KEY_BATTERY) && state.getAsJsonObject(JSON_KEY_BATTERY).has(JSON_KEY_DEVICES)
+                ? getStateFromCachedState(state)
                 : new JsonObject();
         updateStatesFromApiResponse(state);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.getAsJsonArray(JSON_KEY_BATTERY).get(index).getAsJsonObject();
+        JsonElement battElement = state.get(JSON_KEY_BATTERY);
+        JsonArray battArray = battElement.isJsonArray()
+                // for up to version 0.300.0
+                ? (JsonArray) battElement
+                // for version 0.300.0+
+                : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES);
+        return battArray.get(index).getAsJsonObject();
     }
 }
