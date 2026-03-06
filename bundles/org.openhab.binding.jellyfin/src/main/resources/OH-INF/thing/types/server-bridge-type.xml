@@ -47,44 +47,43 @@
 					<b>Note:</b> These settings only affect the openHAB Inbox; they do not remove already-discovered things.]]></description>
 				<advanced>true</advanced>
 			</parameter-group>
-			<parameter name="discoverWebClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+			<parameter name="discoverWebClients" type="boolean" groupName="clientDiscoveryFilters">
 				<label>Discover Web Clients</label>
 				<description><![CDATA[Discover Jellyfin Web clients.<br/>
 					Matches clients reporting as: <i>Jellyfin Web</i>]]></description>
 				<default>false</default>
 			</parameter>
-			<parameter name="discoverAndroidClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+			<parameter name="discoverAndroidClients" type="boolean" groupName="clientDiscoveryFilters">
 				<label>Discover Android Clients</label>
 				<description><![CDATA[Discover Jellyfin Android clients.<br/>
 					Matches clients reporting as: <i>Jellyfin for Android</i>]]></description>
 				<default>true</default>
 			</parameter>
-			<parameter name="discoverAndroidTvClients" type="boolean" groupName="clientDiscoveryFilters"
-				advanced="true">
+			<parameter name="discoverAndroidTvClients" type="boolean" groupName="clientDiscoveryFilters">
 				<label>Discover Android TV Clients</label>
 				<description><![CDATA[Discover Jellyfin Android TV clients.<br/>
 					Matches clients reporting as: <i>Jellyfin for Android TV</i>]]></description>
 				<default>true</default>
 			</parameter>
-			<parameter name="discoverIosClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+			<parameter name="discoverIosClients" type="boolean" groupName="clientDiscoveryFilters">
 				<label>Discover iOS Clients</label>
 				<description><![CDATA[Discover iOS clients.<br/>
 					Matches clients reporting as: <i>Jellyfin iOS</i>, <i>Swiftfin</i>, <i>Infuse</i>]]></description>
 				<default>true</default>
 			</parameter>
-			<parameter name="discoverKodiClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+			<parameter name="discoverKodiClients" type="boolean" groupName="clientDiscoveryFilters">
 				<label>Discover Kodi Clients</label>
 				<description><![CDATA[Discover Kodi clients.<br/>
 					Matches clients reporting as: <i>JellyCon</i>, <i>Jellyfin for Kodi</i>]]></description>
 				<default>true</default>
 			</parameter>
-			<parameter name="discoverRokuClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+			<parameter name="discoverRokuClients" type="boolean" groupName="clientDiscoveryFilters">
 				<label>Discover Roku Clients</label>
 				<description><![CDATA[Discover Roku clients.<br/>
 					Matches clients reporting as: <i>Jellyfin for Roku</i>]]></description>
 				<default>true</default>
 			</parameter>
-			<parameter name="discoverOtherClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+			<parameter name="discoverOtherClients" type="boolean" groupName="clientDiscoveryFilters">
 				<label>Discover Other Clients</label>
 				<description><![CDATA[Discover third-party clients not matched by any other category above.]]></description>
 				<default>true</default>
