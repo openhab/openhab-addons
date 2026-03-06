@@ -194,7 +194,7 @@ function build_addon() {
     echo "+ $command"
     echo
 
-    write_shard_summary "single-addon" "$addon" "1" "$addon .. $addon" ""
+    write_shard_summary "single-addon" "$addon" "1" "$addon" ""
 
     set -o pipefail # exit build with error when pipes fail
     $command 2>&1 | tee "$BUILD_LOG"
