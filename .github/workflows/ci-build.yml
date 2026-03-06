@@ -80,10 +80,10 @@ jobs:
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: Publish Shard Summary
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('shard-summary.md') != '' }}
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('target/shard-summary.md') != '' }}
         run: |
           echo "## CI Build" >> $GITHUB_STEP_SUMMARY
-          cat shard-summary.md >> $GITHUB_STEP_SUMMARY
+          cat target/shard-summary.md >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Build Log
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
