@@ -3,7 +3,7 @@
 BUILD_LOG=build.log
 SHARD_SUMMARY=target/shard-summary.md
 
-ARGUMENTS="clean verify -B -T 1.5C -U"
+ARGUMENTS="clean install -B -T 1.5C -U"
 if [ $# -ge 1 ]; then
     ARGUMENTS=$@
 fi
