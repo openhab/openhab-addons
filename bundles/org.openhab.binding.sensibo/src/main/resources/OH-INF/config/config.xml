@@ -19,10 +19,10 @@ https://openhab.org/schemas/config-description-1.0.0.xsd">
 	</config-description>
 
 	<config-description uri="thing-type:sensibo:sensibosky">
-		<parameter name="macAddress" type="text" required="true"
-			pattern="(?:([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})">
+		<parameter name="macAddress" type="text" required="true">
+			<context>mac-address</context>
 			<label>MAC Address</label>
-			<description>With or without colons</description>
+			<description>With or without delimiters</description>
 		</parameter>
 	</config-description>
 
