@@ -20,7 +20,8 @@ jobs:
       matrix:
         java: [ '21' ]
         os: [ 'ubuntu-24.04' ]
-    name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
+        build_part: [ '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20' ]
+    name: Build (Java ${{ matrix.java }}, ${{ matrix.os }}, shard ${{ matrix.build_part }}/20)
     runs-on: ${{ matrix.os }}
     # typical duration is ~70min, set twice the amount as limit (default is 6h)
     timeout-minutes: 140
@@ -70,28 +71,36 @@ jobs:
         run: bash './.github/scripts/maven-build'
         env:
           CHANGED_FILES: ${{ steps.files.outputs.all }}
+          MAVEN_BUILD_PART: ${{ matrix.build_part }}
+          MAVEN_BUILD_PARTS: '20'
           MAVEN_OPTS: >-
             -Xmx8g
             -Dmaven.wagon.http.retryHandler.count=5
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
+      - name: Publish Shard Summary
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('shard-summary.md') != '' }}
+        run: |
+          echo "## CI Build" >> $GITHUB_STEP_SUMMARY
+          cat shard-summary.md >> $GITHUB_STEP_SUMMARY
+
       - name: Upload Build Log
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: actions/upload-artifact@v7
         with:
-          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
+          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}-shard-${{ matrix.build_part }}
           path: build.log
 
       - name: Upload SAT Summary Report
-        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('target/summary_report.html') != '' }}
         uses: actions/upload-artifact@v7
         with:
-          name: sat-summary-report
+          name: sat-summary-report-shard-${{ matrix.build_part }}
           path: target/summary_report.html
 
       - name: Report SAT Errors as Annotations
-        if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        if: ${{ matrix.java == '21' && always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('**/checkstyle-result.xml') != '' }}
         uses: ghys/checkstyle-github-action@main
         with:
           title: CheckStyle Violations
