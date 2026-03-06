@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="60.031 174.895 324.246 254.315" width="324.246" height="254.315" xmlns="http://www.w3.org/2000/svg">
-  <path d="M 116.904 378.169 L 316.164 189.834" stroke-width="9" stroke="#000" fill="transparent"/>
-  <ellipse cx="101.201" cy="395.143" rx="23.799" ry="23.104" stroke="#000" fill="transparent" stroke-width="7"/>
-  <path stroke="#000" d="M317.125 192.768l-4.516 105.965-53.851-52.809z"/>
-  <path d="M 311.914 194.158 L 260.098 243.311 L 310.492 292.29" stroke="#000"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="-48 -33 50 50">
+	<path d="M-44 1V0l5-17.25L-34 0v1" />
+	<path d="M0 0h-40" fill="none" stroke="#000" stroke-width="2" />
 </svg>

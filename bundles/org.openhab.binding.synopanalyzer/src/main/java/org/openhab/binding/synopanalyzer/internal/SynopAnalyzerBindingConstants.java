@@ -48,6 +48,7 @@ public class SynopAnalyzerBindingConstants {
     public static final String WIND_STRENGTH = "wind-speed";
     public static final String WIND_SPEED_BEAUFORT = "wind-speed-beaufort";
     public static final String TIME_UTC = "time-utc";
+    public static final String WIND_BARB = "wind-barb";
 
     // Default units
     public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;

@@ -20,6 +20,7 @@
 			<channel id="attenuation-factor" typeId="attenuation-factor"/>
 			<channel id="horizontal-visibility" typeId="horizontal-visibility"/>
 			<channel id="time-utc" typeId="time-utc"/>
+			<channel id="wind-barb" typeId="wind-barb"/>
 		</channels>
 
 		<config-description>
@@ -136,6 +137,13 @@
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wind-barb">
+		<item-type>Image</item-type>
+		<label>Wind Barb</label>
+		<description>Wind Barb representation</description>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -19,12 +19,14 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.naming.CommunicationException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.ecowatt.internal.configuration.EcowattConfiguration;
 import org.openhab.binding.ecowatt.internal.exception.EcowattApiLimitException;
 import org.openhab.binding.ecowatt.internal.restapi.EcowattApiResponse;
@@ -32,7 +34,6 @@ import org.openhab.binding.ecowatt.internal.restapi.EcowattDaySignals;
 import org.openhab.binding.ecowatt.internal.restapi.EcowattRestApi;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.cache.ExpiringCache;
-import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
@@ -43,12 +44,11 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.sun.org.slf4j.internal.LoggerFactory;
 
 /**
  * The {@link EcowattHandler} is responsible for updating the state of the channels
@@ -144,7 +144,7 @@ public class EcowattHandler extends BaseThingHandler {
                 delayNextUpdate = retryDelay;
             } else {
                 // Schedule a new update at the beginning of the following hour
-                final LocalDateTime now = LocalDateTime.now();
+                final LocalDateTime now = LocalDateTime.now(Locale.ROOT);
                 final LocalDateTime beginningNextHour = now.plusHours(1).truncatedTo(ChronoUnit.HOURS);
                 delayNextUpdate = ChronoUnit.SECONDS.between(now, beginningNextHour);
             }

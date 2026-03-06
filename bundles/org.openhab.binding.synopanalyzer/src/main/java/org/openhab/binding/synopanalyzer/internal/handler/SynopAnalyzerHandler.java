@@ -32,6 +32,8 @@ import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.synopanalyzer.internal.WindBarb;
+import org.openhab.binding.synopanalyzer.internal.WindBarbGenerator;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.openhab.binding.synopanalyzer.internal.stationdb.Station;
 import org.openhab.binding.synopanalyzer.internal.synop.Overcast;
@@ -46,6 +48,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
@@ -193,6 +196,15 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                         : UnDefType.NULL;
             case WIND_STRENGTH:
                 return getWindStrength(synop);
+            case WIND_BARB:
+                WindBarb wb = new WindBarb();
+                String svg2 = wb.generateSVG(45, 22);
+                String svg = WindBarbGenerator.generate(120, // km/h
+                        44, // direction du vent
+                        64, // taille icône
+                        "#222");
+                byte[] bytes = svg2.getBytes();
+                return new RawType(bytes, "image/svg+xml");
             case WIND_SPEED_BEAUFORT:
                 QuantityType<Speed> wsKpH = getWindStrength(synop).toUnit(SIUnits.KILOMETRE_PER_HOUR);
                 return wsKpH != null ? new DecimalType(Math.round(Math.pow(wsKpH.floatValue() / 3.01, 0.666666666)))
