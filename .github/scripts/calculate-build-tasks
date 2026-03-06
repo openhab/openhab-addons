@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+
+"""Calculate CI build task count and task metadata for dynamic matrix expansion.
+
+Inputs:
+- CHANGED_FILES: CSV list from get-changed-files action (optional)
+- GITHUB_EVENT_NAME: GitHub event name, used for PR-specific optimization
+- DEFAULT_PARTS: Default shard count when not reduced (defaults to 20)
+- GITHUB_OUTPUT: Output file path provided by GitHub Actions
+
+Outputs (written to GITHUB_OUTPUT):
+- selected_parts: Effective shard count (1 or DEFAULT_PARTS)
+- build_task_matrix: JSON array of objects with build_part and range_label
+- changed_files: CSV string of changed files (for downstream build job)
+
+Behavior:
+- For single-addon-only PRs, reduces the matrix to a single build task.
+- Otherwise emits DEFAULT_PARTS tasks with alphabetical range labels.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+from pathlib import Path
+
+# Matches a path belonging to a specific add-on, e.g. bundles/org.openhab.binding.foo/...
+ADDON_PATH_RE = re.compile(r"(?:bundles|itests)/(org\.openhab\.[a-z0-9]+\.[a-z0-9]+)")
+
+# Files that are allowed alongside a single add-on's changes without breaking single-shard mode
+ALLOWED_SINGLE_ADDON_FILES = {
+    "CODEOWNERS",
+    "bom/openhab-addons/pom.xml",
+    "bundles/pom.xml",
+    "itests/pom.xml",
+}
+
+ADDON_DIR_RE = re.compile(r"^org\.openhab\.[a-z0-9]+\.[a-z0-9]+$")
+
+
+def get_changed_files() -> list[str]:
+    return [f for f in os.environ.get("CHANGED_FILES", "").split(",") if f]
+
+
+def changed_addons(files: list[str]) -> list[str]:
+    addons = {m.group(1) for f in files if (m := ADDON_PATH_RE.search(f))}
+    return sorted(addons)
+
+
+def only_affects_one_addon(files: list[str], addon: str) -> bool:
+    """Return True if every changed file belongs to `addon` or an allowed shared file."""
+    addon_re = re.compile(rf"^(?:bundles|itests)/{re.escape(addon)}([/.].*)?$")
+    return all(addon_re.match(f) or f in ALLOWED_SINGLE_ADDON_FILES for f in files)
+
+
+def all_addons() -> list[str]:
+    addons = set()
+    for base in (Path("bundles"), Path("itests")):
+        if base.is_dir():
+            addons.update(d.name for d in base.iterdir() if d.is_dir() and ADDON_DIR_RE.fullmatch(d.name))
+    return sorted(addons)
+
+
+def shard_range_label(part: int, parts: int, addons: list[str]) -> str:
+    """Return '{first} .. {last}' for the add-ons assigned to this shard."""
+    total = len(addons)
+    start = ((part - 1) * total) // parts
+    end = (part * total) // parts - 1
+    return f"{addons[start]} .. {addons[end]}" if start <= end else "no assigned add-ons"
+
+
+def build_tasks(parts: int, addons: list[str], single_addon: str = "") -> list[dict]:
+    if single_addon:
+        return [{"build_part": "1", "range_label": single_addon}]
+    return [{"build_part": str(p), "range_label": shard_range_label(p, parts, addons)} for p in range(1, parts + 1)]
+
+
+def write_github_output(parts: int, tasks: list[dict], changed_files_csv: str) -> None:
+    output_path = os.environ.get("GITHUB_OUTPUT")
+    if not output_path:
+        raise RuntimeError("GITHUB_OUTPUT is not set")
+    with open(output_path, "a", encoding="utf-8") as f:
+        f.write(f"selected_parts={parts}\n")
+        f.write(f"build_task_matrix={json.dumps(tasks, separators=(',', ':'))}\n")
+        f.write(f"changed_files={changed_files_csv}\n")
+
+
+def main() -> None:
+    default_parts = int(os.environ.get("DEFAULT_PARTS", "20"))
+    files = get_changed_files()
+    single_addon = ""
+
+    if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
+        addons = changed_addons(files)
+        if len(addons) == 1:
+            candidate = addons[0]
+            if only_affects_one_addon(files, candidate) and Path("bundles", candidate).is_dir():
+                single_addon = candidate
+
+    parts = 1 if single_addon else default_parts
+    tasks = build_tasks(parts, all_addons(), single_addon)
+    write_github_output(parts, tasks, os.environ.get("CHANGED_FILES", ""))
+
+
+if __name__ == "__main__":
+    main()
