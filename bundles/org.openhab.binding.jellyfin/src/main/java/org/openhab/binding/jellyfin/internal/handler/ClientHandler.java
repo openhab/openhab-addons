@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
 import org.openhab.binding.jellyfin.internal.events.SessionEventListener;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.client.ClientStateUpdater;
 import org.openhab.binding.jellyfin.internal.util.command.ClientCommandRouter;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;

@@ -39,19 +39,19 @@ import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask;
 import org.openhab.binding.jellyfin.internal.server.SessionsMessageHandler;
 import org.openhab.binding.jellyfin.internal.server.WebSocketTask;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.ItemsApi;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.UserLibraryApi;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.MessageCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlaystateCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.ItemsApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.SessionApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.UserLibraryApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.GeneralCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.MessageCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlaystateCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.binding.jellyfin.internal.util.client.ClientListUpdater;
 import org.openhab.binding.jellyfin.internal.util.config.SystemInfoConfigurationExtractor;
@@ -644,7 +644,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             this.configuration.path = newConfig.path;
             this.configuration.token = newConfig.token;
             this.configuration.refreshSeconds = newConfig.refreshSeconds;
-            this.configuration.clientActiveWithInSeconds = newConfig.clientActiveWithInSeconds;
 
             // Re-initialize the handler to apply the new configuration
             // This will re-authenticate with the new token and restart tasks
@@ -655,7 +654,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
             // For non-critical parameters (like refresh intervals), just update the config object
             Configuration newConfig = getConfigAs(Configuration.class);
             this.configuration.refreshSeconds = newConfig.refreshSeconds;
-            this.configuration.clientActiveWithInSeconds = newConfig.clientActiveWithInSeconds;
 
             // Restart tasks with new refresh interval if needed
             if (configurationParameters.containsKey("refreshSeconds")) {

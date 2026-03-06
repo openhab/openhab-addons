@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.jellyfin.internal.discovery;
 
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_ANDROID;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_ANDROID_TV;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_INFUSE;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_IOS;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_JELLYCON;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_KODI;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_ROKU;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_SWIFTFIN;
+import static org.openhab.binding.jellyfin.internal.Constants.CLIENT_FILTER_WEB;
 import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERABLE_CLIENT_THING_TYPES;
 import static org.openhab.binding.jellyfin.internal.Constants.DISCOVERY_RESULT_TTL_SEC;
 import static org.openhab.binding.jellyfin.internal.Constants.THING_TYPE_JELLYFIN_CLIENT;
@@ -21,8 +30,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.discovery.DeviceIdSanitizer;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -148,9 +159,16 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
         }
 
         // Second pass: publish discovery results for deduplicated clients
+        Configuration config = thingHandler.getThing().getConfiguration().as(Configuration.class);
         for (Map.Entry<String, SessionInfoDto> entry : deduped.entrySet()) {
             SessionInfoDto session = entry.getValue();
             String deviceId = entry.getKey();
+
+            // Apply client category filter
+            if (!isClientCategoryEnabled(config, session.getClient())) {
+                logger.debug("Skipping client '{}' (category disabled by configuration)", session.getClient());
+                continue;
+            }
 
             // Sanitize device ID for use in ThingUID (remove special characters)
             String sanitizedDeviceId = sanitizeDeviceId(deviceId);
@@ -204,5 +222,45 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
      */
     String sanitizeDeviceId(String deviceId) {
         return DeviceIdSanitizer.sanitize(deviceId);
+    }
+
+    /**
+     * Returns whether discovery of the given client is enabled by the current configuration.
+     *
+     * <p>
+     * The category is determined by matching the client name (case-insensitive) against
+     * known client name substrings. Android TV is checked before Android to prevent false matches.
+     * A {@code null} or blank client name falls back to the "other" category.
+     *
+     * @param config the current binding configuration
+     * @param clientName the client application name as reported by the Jellyfin server (may be null)
+     * @return {@code true} if this client category is enabled for discovery
+     */
+    private boolean isClientCategoryEnabled(Configuration config, @Nullable String clientName) {
+        if (clientName == null || clientName.isBlank()) {
+            return config.discoverOtherClients;
+        }
+        String lower = clientName.toLowerCase();
+        if (lower.contains(CLIENT_FILTER_WEB)) {
+            return config.discoverWebClients;
+        }
+        // Check Android TV before Android to avoid false positive matches
+        if (lower.contains(CLIENT_FILTER_ANDROID_TV)) {
+            return config.discoverAndroidTvClients;
+        }
+        if (lower.contains(CLIENT_FILTER_ANDROID)) {
+            return config.discoverAndroidClients;
+        }
+        if (lower.contains(CLIENT_FILTER_IOS) || lower.contains(CLIENT_FILTER_SWIFTFIN)
+                || lower.contains(CLIENT_FILTER_INFUSE)) {
+            return config.discoverIosClients;
+        }
+        if (lower.contains(CLIENT_FILTER_KODI) || lower.contains(CLIENT_FILTER_JELLYCON)) {
+            return config.discoverKodiClients;
+        }
+        if (lower.contains(CLIENT_FILTER_ROKU)) {
+            return config.discoverRokuClients;
+        }
+        return config.discoverOtherClients;
     }
 }

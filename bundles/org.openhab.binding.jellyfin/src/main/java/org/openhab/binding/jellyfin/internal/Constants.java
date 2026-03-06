@@ -75,4 +75,18 @@ public class Constants {
     public static final String MEDIA_SUBTITLE_CHANNEL = "media-subtitle";
     // Discovery
     public static final int DISCOVERY_RESULT_TTL_SEC = 600;
+
+    /**
+     * Lowercase client name substrings used for discovery category filtering.
+     * Android TV must be checked before Android to prevent false positive matches.
+     */
+    public static final String CLIENT_FILTER_WEB = "jellyfin web";
+    public static final String CLIENT_FILTER_ANDROID_TV = "android tv";
+    public static final String CLIENT_FILTER_ANDROID = "android";
+    public static final String CLIENT_FILTER_IOS = "ios";
+    public static final String CLIENT_FILTER_SWIFTFIN = "swiftfin";
+    public static final String CLIENT_FILTER_INFUSE = "infuse";
+    public static final String CLIENT_FILTER_KODI = "kodi";
+    public static final String CLIENT_FILTER_JELLYCON = "jellycon";
+    public static final String CLIENT_FILTER_ROKU = "roku";
 }
