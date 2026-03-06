@@ -180,7 +180,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                 SmartThingsProperty prop = attr.schema.properties.get("value");
 
                 if (prop != null) {
-                    if (prop.type.equals("object")) {
+                    if (prop.type != null && prop.type.equals("object")) {
                         if (prop.properties != null) {
                             for (Map.Entry<String, SmartThingsProperty> subEntry : prop.properties.entrySet()) {
                                 generateChannelTypeForProp(capa, key, subEntry.getKey(), attr, subEntry.getValue());
@@ -366,7 +366,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             logger.trace("registerDeviceType: {} {}", deviceType, gson.toJson(device));
             generateThingsType(device.deviceId, device.label, deviceType, device);
         } catch (Exception ex) {
-            logger.info("wrong: {}", ex.toString());
+            logger.error("wrong: {}" + ex.toString(), ex);
         }
     }
 
@@ -463,7 +463,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             SmartThingsProperty prop = propsMap.get("value");
             String propType = prop.type;
 
-            if (propType.equals("object")) {
+            if (propType != null && propType.equals("object")) {
                 Hashtable<String, SmartThingsProperty> subPropList = prop.properties;
 
                 if (subPropList != null) {
