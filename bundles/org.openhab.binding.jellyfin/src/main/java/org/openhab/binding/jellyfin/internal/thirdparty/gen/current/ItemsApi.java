@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,24 +28,24 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiException;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiResponse;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Pair;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ImageType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ItemFields;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ItemFilter;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ItemSortBy;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.LocationType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.MediaType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SeriesStatus;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SortOrder;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UpdateUserItemDataDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserItemDataDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.VideoType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiResponse;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Configuration;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Pair;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ImageType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ItemFields;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ItemFilter;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ItemSortBy;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.LocationType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.MediaType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SeriesStatus;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SortOrder;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UpdateUserItemDataDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserItemDataDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.VideoType;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,14 +27,14 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiException;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiResponse;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Pair;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.DeviceInfoDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.DeviceInfoDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.DeviceOptionsDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiResponse;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Configuration;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Pair;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.DeviceInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.DeviceInfoDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.DeviceOptionsDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

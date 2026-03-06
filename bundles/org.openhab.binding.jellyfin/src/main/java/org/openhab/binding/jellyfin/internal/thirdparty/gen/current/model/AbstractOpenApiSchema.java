@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current.model;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model;
 
 import java.util.Map;
 import java.util.Objects;

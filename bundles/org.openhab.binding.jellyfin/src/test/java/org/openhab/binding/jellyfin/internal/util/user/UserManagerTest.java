@@ -17,9 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserPolicy;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserPolicy;
 
+/**
+ * @author Patrik Gfeller - Initial contribution
+ */
 class UserManagerTest {
     private final UserManager userManager = new UserManager();
 

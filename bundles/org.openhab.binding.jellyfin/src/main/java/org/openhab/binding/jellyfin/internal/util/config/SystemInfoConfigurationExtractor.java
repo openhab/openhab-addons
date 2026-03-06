@@ -16,7 +16,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
 
 /**
  * Extracts configuration properties from Jellyfin SystemInfo by parsing relevant
@@ -42,7 +42,6 @@ public class SystemInfoConfigurationExtractor implements ConfigurationExtractor<
         updated.path = current.path;
         updated.token = current.token;
         updated.refreshSeconds = current.refreshSeconds;
-        updated.clientActiveWithInSeconds = current.clientActiveWithInSeconds;
 
         boolean hasChanges = !Objects.equals(serverName, current.serverName)
                 || !Objects.equals(hostname, current.hostname);

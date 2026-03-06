@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,21 +27,21 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiException;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiResponse;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Pair;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ClientCapabilitiesDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.GeneralCommandType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.MediaType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.MessageCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.NameIdPair;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlaystateCommand;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiResponse;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Configuration;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Pair;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ClientCapabilitiesDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.GeneralCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.GeneralCommandType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.MediaType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.MessageCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.NameIdPair;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlaystateCommand;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

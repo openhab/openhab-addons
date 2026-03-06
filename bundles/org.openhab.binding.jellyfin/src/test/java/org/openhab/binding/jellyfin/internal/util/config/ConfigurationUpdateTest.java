@@ -36,7 +36,6 @@ class ConfigurationUpdateTest {
         baseConfig.path = "/jellyfin";
         baseConfig.token = "test-token";
         baseConfig.refreshSeconds = 30;
-        baseConfig.clientActiveWithInSeconds = 60;
     }
 
     @Test
@@ -48,7 +47,6 @@ class ConfigurationUpdateTest {
         updated.path = "/newpath";
         updated.token = baseConfig.token;
         updated.refreshSeconds = baseConfig.refreshSeconds;
-        updated.clientActiveWithInSeconds = baseConfig.clientActiveWithInSeconds;
 
         ConfigurationUpdate update = new ConfigurationUpdate(updated, true);
 
@@ -97,7 +95,6 @@ class ConfigurationUpdateTest {
         updated.path = "/newpath";
         updated.token = baseConfig.token;
         updated.refreshSeconds = baseConfig.refreshSeconds;
-        updated.clientActiveWithInSeconds = baseConfig.clientActiveWithInSeconds;
 
         ConfigurationUpdate update = new ConfigurationUpdate(updated, true);
 
@@ -110,6 +107,5 @@ class ConfigurationUpdateTest {
         // Verify other fields were preserved
         assertEquals("test-token", update.configuration().token);
         assertEquals(30, update.configuration().refreshSeconds);
-        assertEquals(60, update.configuration().clientActiveWithInSeconds);
     }
 }

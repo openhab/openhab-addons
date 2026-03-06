@@ -43,7 +43,6 @@ public class UriConfigurationExtractor implements ConfigurationExtractor<URI> {
         updated.path = path;
         updated.token = current.token;
         updated.refreshSeconds = current.refreshSeconds;
-        updated.clientActiveWithInSeconds = current.clientActiveWithInSeconds;
 
         boolean hasChanges = !Objects.equals(hostname, current.hostname) || port != current.port || ssl != current.ssl
                 || !Objects.equals(path, current.path);

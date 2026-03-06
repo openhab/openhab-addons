@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,17 +27,17 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiException;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiResponse;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Pair;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDtoQueryResult;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemKind;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ImageType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ItemFields;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserItemDataDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiResponse;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Configuration;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Pair;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ImageType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ItemFields;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserItemDataDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

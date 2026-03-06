@@ -23,6 +23,6 @@
  * <li>Binding code is responsible for null-checking when consuming API responses</li>
  * </ul>
  *
- * @see org.openhab.binding.jellyfin.internal.thirdparty.api.current
+ * @see org.openhab.binding.jellyfin.internal.thirdparty.gen.current
  */
 package org.openhab.binding.jellyfin.internal.thirdparty;

@@ -41,8 +41,8 @@ import org.openhab.binding.jellyfin.internal.handler.tasks.DiscoveryTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactoryInterface;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 
 /**
