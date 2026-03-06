@@ -668,7 +668,7 @@ class DPTTest {
 
     @Test
     void testRawFormat() {
-        // DPT 0.0: special handling as raw format, should be passed through as a string
+        // DPT 0.000: special handling as raw format, should be passed through as a string
         byte[] data = new byte[] { 0x01, 0x02, 0x03, (byte) 0xff };
         assertEquals("010203ff", ((StringType) ValueDecoder.decode("0.000", data, StringType.class)).toString());
     }
