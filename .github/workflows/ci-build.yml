@@ -223,3 +223,40 @@ jobs:
         with:
           name: build-log-java-${{ matrix.java }}-${{ matrix.os }}-features
           path: build.log
+  finalize:
+    needs: [ plan-shards, build, build-features ]
+    if: |
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.build-features.result == 'success' || needs.build-features.result == 'skipped')
+    name: Finalize
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download Build Logs
+        uses: actions/download-artifact@v7
+        with:
+          pattern: build-log-*
+          path: build-logs
+          merge-multiple: false
+
+      - name: Upload Combined Build Logs
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-logs
+          path: build-logs
+
+      - name: Download SAT Summary Reports
+        id: download-sat
+        continue-on-error: true
+        uses: actions/download-artifact@v7
+        with:
+          pattern: sat-summary-report-*
+          path: sat-summary-reports
+          merge-multiple: false
+
+      - name: Upload Combined SAT Summary Reports
+        if: steps.download-sat.outcome == 'success'
+        uses: actions/upload-artifact@v7
+        with:
+          name: sat-summary-reports
+          path: sat-summary-reports
