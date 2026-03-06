@@ -80,7 +80,7 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
     @Override
     public synchronized void processWatchEvent(Kind kind, Path fullPath) {
         Path sourcePath = fullPath;
-        if (Files.isDirectory(sourcePath) || !Files.isReadable(sourcePath)) {
+        if (kind != Kind.DELETE && (Files.isDirectory(sourcePath) || !Files.isReadable(sourcePath))) {
             return;
         }
 
@@ -164,9 +164,17 @@ public class YamlComposerWatchService implements WatchService.WatchEventListener
                 @Override
                 public FileVisitResult visitFile(@Nullable Path sourcePath, @Nullable BasicFileAttributes attrs)
                         throws IOException {
-                    if (sourcePath != null && attrs != null && attrs.isRegularFile()) {
+
+                    if (sourcePath == null || attrs == null || !attrs.isRegularFile()) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    String fileName = sourcePath.getFileName().toString();
+
+                    if (YamlComposer.isYamlFile(fileName) && !YamlComposer.isIncludeFile(fileName)) {
                         processWatchEvent(Kind.CREATE, sourcePath);
                     }
+
                     return FileVisitResult.CONTINUE;
                 }
 
