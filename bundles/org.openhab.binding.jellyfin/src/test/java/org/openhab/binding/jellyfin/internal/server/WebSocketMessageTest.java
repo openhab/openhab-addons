@@ -21,11 +21,11 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayMethod;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionMessageType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionsMessage;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayMethod;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionMessageType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionsMessage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

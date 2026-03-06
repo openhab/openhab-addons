@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current.model;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

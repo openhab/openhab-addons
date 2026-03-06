@@ -17,7 +17,8 @@
 		<parameter name="discoveryPort" type="integer" min="0" max="65535" required="true" groupName="discovery">
 			<label>Port</label>
 			<advanced>true</advanced>
-			<description>Port used to query servers on local network(s)</description>
+			<description>UDP port used to broadcast discovery queries on the local network. This is the Jellyfin auto-discovery
+				port (default 7359), not the HTTP/HTTPS port used to connect to the server.</description>
 			<default>7359</default>
 		</parameter>
 		<parameter name="discoveryTimeout" type="integer" min="500" max="5000" required="true" unit="ms"

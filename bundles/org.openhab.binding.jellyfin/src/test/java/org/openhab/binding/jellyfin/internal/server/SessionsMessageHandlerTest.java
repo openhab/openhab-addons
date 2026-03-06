@@ -26,10 +26,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.events.SessionEventBus;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.ForceKeepAliveMessage;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionMessageType;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionsMessage;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.ForceKeepAliveMessage;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionMessageType;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionsMessage;
 import org.openhab.binding.jellyfin.internal.util.session.SessionManager;
 
 /**

@@ -27,14 +27,16 @@ import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.handler.TaskManager;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.SessionApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
 
 /**
  * Integration-style test that verifies the end-to-end flow:
  * DiscoveryTask.fetchUsers -> ServerHandler.handleUsersList -> ClientListUpdater -> discovery
+ *
+ * @author Patrik Gfeller - Initial contribution
  */
 class DiscoveryIntegrationTest {
 
@@ -150,7 +152,7 @@ class DiscoveryIntegrationTest {
             verify(discoveryService, times(2)).discoverClients();
 
             // Assert - clients map now contains our session
-            java.util.Map<String, org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto> clients = handler
+            java.util.Map<String, org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto> clients = handler
                     .getClients();
             assertTrue(clients.containsKey("session-1"));
             assertEquals(session.getUserId(), clients.get("session-1").getUserId());

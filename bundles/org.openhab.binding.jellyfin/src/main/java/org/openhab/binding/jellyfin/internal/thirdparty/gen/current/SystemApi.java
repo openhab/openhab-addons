@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,16 +26,16 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiException;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.ApiResponse;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.Pair;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.EndPointInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.LogFile;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PublicSystemInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemStorageDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiException;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiResponse;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Configuration;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.Pair;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.EndPointInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.LogFile;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PublicSystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemStorageDto;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

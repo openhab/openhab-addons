@@ -33,7 +33,7 @@ import org.mockito.quality.Strictness;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;

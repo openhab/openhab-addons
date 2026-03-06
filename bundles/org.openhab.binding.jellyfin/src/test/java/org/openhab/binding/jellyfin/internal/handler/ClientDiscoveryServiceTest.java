@@ -29,8 +29,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.discovery.DeviceIdSanitizer;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.Bridge;
@@ -64,8 +65,40 @@ class ClientDiscoveryServiceTest {
         when(bridge.getStatus()).thenReturn(ThingStatus.ONLINE);
         when(serverHandler.getThing()).thenReturn(bridge);
 
+        // All categories enabled by default so existing tests are unaffected
+        when(bridge.getConfiguration()).thenReturn(allCategoriesEnabled());
+
         discoveryService = new ClientDiscoveryService();
         discoveryService.setThingHandler(serverHandler);
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper methods
+    // -------------------------------------------------------------------------
+
+    private Configuration allCategoriesEnabled() {
+        return buildConfig(true, true, true, true, true, true, true);
+    }
+
+    private Configuration buildConfig(boolean web, boolean android, boolean androidTv, boolean ios, boolean kodi,
+            boolean roku, boolean other) {
+        Configuration config = new Configuration();
+        config.put("discoverWebClients", web);
+        config.put("discoverAndroidClients", android);
+        config.put("discoverAndroidTvClients", androidTv);
+        config.put("discoverIosClients", ios);
+        config.put("discoverKodiClients", kodi);
+        config.put("discoverRokuClients", roku);
+        config.put("discoverOtherClients", other);
+        return config;
+    }
+
+    private SessionInfoDto sessionWith(String deviceId, String clientName) {
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId(deviceId);
+        session.setDeviceName(deviceId);
+        session.setClient(clientName);
+        return session;
     }
 
     @Test
@@ -345,5 +378,175 @@ class ClientDiscoveryServiceTest {
         assertNotNull(result);
         Map<String, Object> props = result.getProperties();
         assertEquals("dev-ext", props.get(Thing.PROPERTY_SERIAL_NUMBER));
+    }
+
+    // =========================================================================
+    // Client discovery filter tests
+    // =========================================================================
+
+    @Test
+    void testWebClientSkippedWhenDiscoverWebClientsIsFalse() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(false, true, true, true, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("web-1", "Jellyfin Web")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testWebClientDiscoveredWhenDiscoverWebClientsIsTrue() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("web-1", "Jellyfin Web")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, timeout(500).times(1)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testAndroidClientSkippedWhenDiscoverAndroidClientsIsFalse() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, false, true, true, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("android-1", "Jellyfin for Android")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testAndroidTvClientSkippedWhenDiscoverAndroidTvClientsIsFalse() {
+        // Android TV disabled, plain Android enabled — TV client must be skipped
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, false, true, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("atv-1", "Jellyfin for Android TV")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testAndroidTvClientNotMatchedByAndroidFilter() {
+        // Android TV enabled, plain Android disabled — TV client must still be discovered
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, false, true, true, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("atv-1", "Jellyfin for Android TV")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, timeout(500).times(1)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testIosClientSkippedWhenDiscoverIosClientsIsFalse() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("ios-1", "Jellyfin iOS")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testSwiftfinMatchedAsIosCategory() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("swiftfin-1", "Swiftfin")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testInfuseMatchedAsIosCategory() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, false, true, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("infuse-1", "Infuse")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testKodiClientSkippedWhenDiscoverKodiClientsIsFalse() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, false, true, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("kodi-1", "JellyCon")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testRokuClientSkippedWhenDiscoverRokuClientsIsFalse() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, false, true));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("roku-1", "Jellyfin for Roku")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testUnknownClientSkippedWhenDiscoverOtherClientsIsFalse() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, true, false));
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", sessionWith("other-1", "Some Unknown App")));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testNullClientNameFallsIntoOtherCategory() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(true, true, true, true, true, true, false));
+        SessionInfoDto session = new SessionInfoDto();
+        session.setDeviceId("null-client-1");
+        session.setDeviceName("Unknown Device");
+        session.setClient(null);
+        when(serverHandler.getClients()).thenReturn(Map.of("s1", session));
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void testAllFiltersDisabledResultsInNoDiscovery() {
+        when(bridge.getConfiguration()).thenReturn(buildConfig(false, false, false, false, false, false, false));
+
+        Map<String, SessionInfoDto> clients = new HashMap<>();
+        clients.put("s1", sessionWith("web-1", "Jellyfin Web"));
+        clients.put("s2", sessionWith("android-1", "Jellyfin for Android"));
+        when(serverHandler.getClients()).thenReturn(clients);
+
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discoveryService.addDiscoveryListener(listener);
+        discoveryService.discoverClients();
+
+        verify(listener, after(200).never()).thingDiscovered(any(), any());
     }
 }

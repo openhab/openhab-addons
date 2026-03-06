@@ -21,8 +21,11 @@ import org.openhab.binding.jellyfin.internal.api.util.UuidDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+/**
+ * @author Patrik Gfeller - Initial contribution
+ */
 @NonNullByDefault
-public class ApiClient extends org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient {
+public class ApiClient extends org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient {
 
     /**
      * Required dummy URI for constructor compatibility with generated code and factory pattern.
@@ -69,7 +72,7 @@ public class ApiClient extends org.openhab.binding.jellyfin.internal.thirdparty.
     public static ObjectMapper createDefaultObjectMapper() {
         // Start with the default configuration from the generated ApiClient
         // Keep fully-qualified name to avoid colliding with this ApiClient subclass
-        ObjectMapper mapper = org.openhab.binding.jellyfin.internal.thirdparty.api.ApiClient
+        ObjectMapper mapper = org.openhab.binding.jellyfin.internal.thirdparty.gen.ApiClient
                 .createDefaultObjectMapper();
 
         // Register custom UUID deserializer to handle Jellyfin's 32-character UUID format

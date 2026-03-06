@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.thirdparty.api.current.model;
+package org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

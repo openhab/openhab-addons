@@ -36,14 +36,58 @@
 				<description>Interval to pull devices state from the server</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="clientActiveWithInSeconds" type="integer" min="0" max="950" required="true">
-				<label>Client Active Timeout</label>
-				<description>Amount off seconds allowed since the last client activity to assert it's online (0 disabled)</description>
-				<default>0</default>
-			</parameter>
 			<parameter name="token" type="text">
 				<label>Access Token</label>
 				<description>The user access token</description>
+			</parameter>
+			<parameter-group name="clientDiscoveryFilters">
+				<label>Client Discovery Filters</label>
+				<description><![CDATA[Enable or disable automatic discovery for specific Jellyfin client categories.<br/>
+					The category is determined by the client application name as reported to the Jellyfin server.<br/>
+					<b>Note:</b> These settings only affect the openHAB Inbox; they do not remove already-discovered things.]]></description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter name="discoverWebClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+				<label>Discover Web Clients</label>
+				<description><![CDATA[Discover Jellyfin Web clients.<br/>
+					Matches clients reporting as: <i>Jellyfin Web</i>]]></description>
+				<default>false</default>
+			</parameter>
+			<parameter name="discoverAndroidClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+				<label>Discover Android Clients</label>
+				<description><![CDATA[Discover Jellyfin Android clients.<br/>
+					Matches clients reporting as: <i>Jellyfin for Android</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverAndroidTvClients" type="boolean" groupName="clientDiscoveryFilters"
+				advanced="true">
+				<label>Discover Android TV Clients</label>
+				<description><![CDATA[Discover Jellyfin Android TV clients.<br/>
+					Matches clients reporting as: <i>Jellyfin for Android TV</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverIosClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+				<label>Discover iOS Clients</label>
+				<description><![CDATA[Discover iOS clients.<br/>
+					Matches clients reporting as: <i>Jellyfin iOS</i>, <i>Swiftfin</i>, <i>Infuse</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverKodiClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+				<label>Discover Kodi Clients</label>
+				<description><![CDATA[Discover Kodi clients.<br/>
+					Matches clients reporting as: <i>JellyCon</i>, <i>Jellyfin for Kodi</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverRokuClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+				<label>Discover Roku Clients</label>
+				<description><![CDATA[Discover Roku clients.<br/>
+					Matches clients reporting as: <i>Jellyfin for Roku</i>]]></description>
+				<default>true</default>
+			</parameter>
+			<parameter name="discoverOtherClients" type="boolean" groupName="clientDiscoveryFilters" advanced="true">
+				<label>Discover Other Clients</label>
+				<description><![CDATA[Discover third-party clients not matched by any other category above.]]></description>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

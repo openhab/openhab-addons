@@ -19,7 +19,7 @@ import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Configuration;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SystemInfo;
 
 /**
  * Unit tests for {@link ConfigurationManager}.
@@ -95,7 +95,6 @@ class ConfigurationManagerTest {
             updated.path = current.path;
             updated.token = current.token;
             updated.refreshSeconds = current.refreshSeconds;
-            updated.clientActiveWithInSeconds = current.clientActiveWithInSeconds;
 
             boolean hasChanges = !source.equals(current.hostname);
             return new ConfigurationUpdate(updated, hasChanges);

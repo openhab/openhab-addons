@@ -25,9 +25,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.BaseItemDto;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.PlayerStateInfo;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.PlayerStateInfo;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapolator;
 
 /**
@@ -37,6 +37,8 @@ import org.openhab.binding.jellyfin.internal.util.extrapolation.PlaybackExtrapol
  * Tests exercise the per-second tick increment logic that was formerly embedded in
  * {@code ClientHandler}. Using the extracted class directly removes the need for reflection
  * and anonymous-subclass workarounds.
+ *
+ * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
 class ClientHandlerExtrapolationTest {

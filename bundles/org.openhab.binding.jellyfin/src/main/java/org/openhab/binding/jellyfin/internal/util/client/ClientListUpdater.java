@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.SessionApi;
-import org.openhab.binding.jellyfin.internal.thirdparty.api.current.model.SessionInfoDto;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.SessionApi;
+import org.openhab.binding.jellyfin.internal.thirdparty.gen.current.model.SessionInfoDto;
 
 /**
  * Utility for updating the Jellyfin client list based on active users.
