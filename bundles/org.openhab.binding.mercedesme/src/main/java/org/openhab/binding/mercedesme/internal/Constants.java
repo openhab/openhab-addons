@@ -80,7 +80,7 @@ public class Constants {
     public static final String MB_KEY_IGNITIONSTATE = "ignitionstate";
     public static final String MB_KEY_DOOR_STATUS_OVERALL = "doorStatusOverall";
     public static final String MB_KEY_WINDOW_STATUS_OVERALL = "windowStatusOverall";
-    public static final String MB_KEY_DOOR_LOCK_STATUS_OVERALL = "doorLockStatusOverall";
+    public static final String MB_KEY_DOOR_LOCK_STATUS_OVERALL = "doorlockstatusvehicle";
     public static final String MB_KEY_TIRE_MARKER_FRONT_RIGHT = "tireMarkerFrontRight";
     public static final String MB_KEY_TIRE_MARKER_FRONT_LEFT = "tireMarkerFrontLeft";
     public static final String MB_KEY_TIRE_MARKER_REAR_RIGHT = "tireMarkerRearRight";
