@@ -1,6 +1,52 @@
 {
 	"features": [
 		{
+			"id": "client-discovery-filters",
+			"name": "Client Discovery Filters",
+			"description": "Add 7 boolean server-thing configuration parameters to enable/disable discovery of Jellyfin clients by category (Web, Android, Android TV, iOS, Kodi, Roku, Other). Also removes dead clientActiveWithInSeconds field.",
+			"status": "active",
+			"startDate": "2026-03-06",
+			"priority": "medium",
+			"relatedIssues": [
+				"#17674"
+			],
+			"relatedPRs": [
+				"#18628"
+			],
+			"phases": [
+				{
+					"phase": 0,
+					"name": "Remove dead code (clientActiveWithInSeconds)",
+					"status": "not-started"
+				},
+				{
+					"phase": 1,
+					"name": "Add 7 boolean config fields",
+					"status": "not-started"
+				},
+				{
+					"phase": 2,
+					"name": "Add client name constants",
+					"status": "not-started"
+				},
+				{
+					"phase": 3,
+					"name": "Implement filter logic",
+					"status": "not-started"
+				},
+				{
+					"phase": 4,
+					"name": "Add filter tests",
+					"status": "not-started"
+				},
+				{
+					"phase": 5,
+					"name": "Update README",
+					"status": "not-started"
+				}
+			]
+		},
+		{
 			"id": "coding-guidelines-compliance",
 			"name": "Coding Guidelines Compliance",
 			"description": "Fix confirmed violations of the official openHAB coding guidelines: SLF4J-only logging, @NonNullByDefault on all non-DTO classes, no FQCNs in method bodies, configuration read in initialize(), WebSocketClientFactory service injection",

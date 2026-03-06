@@ -37,7 +37,7 @@ Once a Jellyfin server bridge has been added, clients will be detected automatic
 To allow the server thing to go online, you must provide a valid access token for the user that the binding will use to interact with the server.
 Please note that the user should be allowed on the Jellyfin server to remote control devices.
 
-In order to assist you with this process the binding exposes a simple login form you can access on `<local openHAB server url>/jellyfin/<server thing id>` (example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`).
+You can generate an access token in the Jellyfin web UI under **Dashboard → API Keys**.
 
 ## Server Thing Configuration
 
@@ -48,8 +48,24 @@ In order to assist you with this process the binding exposes a simple login form
 | ssl                       | Boolean | Connect through https (required)                                                            |
 | path                      | Text    | Base path of the server                                                                     |
 | refreshSeconds            | Integer | Interval to pull devices state from the server                                              |
-| clientActiveWithInSeconds | Integer | Amount of seconds allowed since the last client activity to assert it's online (0 disabled) |
 | token                     | Text    | The user access token                                                                       |
+
+### Advanced: Client Discovery Filters
+
+These settings are visible under **Show advanced** in the openHAB UI.
+They only affect which Jellyfin clients appear in the openHAB Inbox; already-discovered things are not removed.
+
+The client category is determined by the application name reported by the Jellyfin client to the server.
+
+| Config                   | Type    | Default | Description                                                                                 |
+| ------------------------ | ------- | ------- | ------------------------------------------------------------------------------------------- |
+| discoverWebClients       | Boolean | false   | Discover Jellyfin Web clients (e.g., `Jellyfin Web`)                                        |
+| discoverAndroidClients   | Boolean | true    | Discover Jellyfin Android clients (e.g., `Jellyfin for Android`)                            |
+| discoverAndroidTvClients | Boolean | true    | Discover Jellyfin Android TV clients (e.g., `Jellyfin for Android TV`)                      |
+| discoverIosClients       | Boolean | true    | Discover iOS clients (e.g., `Jellyfin iOS`, `Swiftfin`, `Infuse`)                           |
+| discoverKodiClients      | Boolean | true    | Discover Kodi clients (e.g., `JellyCon`, `Jellyfin for Kodi`)                               |
+| discoverRokuClients      | Boolean | true    | Discover Roku clients (e.g., `Jellyfin for Roku`)                                           |
+| discoverOtherClients     | Boolean | true    | Discover third-party clients not matched by any category above                              |
 
 ### WebSocket Real-Time Updates
 
@@ -166,7 +182,6 @@ If you notice delayed state updates:
 
 ```java
 Bridge jellyfin:server:exampleServerId "Jellyfin Server" [
-    clientActiveWithInSeconds=0,
     hostname="192.168.1.177",
     port=8096,
     refreshSeconds=30,
@@ -176,7 +191,7 @@ Bridge jellyfin:server:exampleServerId "Jellyfin Server" [
 ]
 ```
 
-The `token` and `userId` can be obtained using the login form at `http://YOUROPENHABIP:PORT/jellyfin/exampleServerId`
+The `token` can be obtained from the Jellyfin web UI under **Dashboard → API Keys**.
 
 ### Example Client - jellyfin_clients.things
 

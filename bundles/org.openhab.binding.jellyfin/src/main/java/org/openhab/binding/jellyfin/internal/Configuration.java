@@ -50,13 +50,38 @@ public class Configuration {
      */
     public int refreshSeconds = 60;
     /**
-     * Amount off seconds allowed since the last client update to assert it's online
-     */
-    public int clientActiveWithInSeconds = 0;
-    /**
      * Access Token
      */
     public String token = "";
+    /**
+     * Discover Jellyfin Web clients (e.g., "Jellyfin Web").
+     * Disabled by default to reduce Inbox noise from browser sessions.
+     */
+    public boolean discoverWebClients = false;
+    /**
+     * Discover Jellyfin Android clients (e.g., "Jellyfin for Android").
+     */
+    public boolean discoverAndroidClients = true;
+    /**
+     * Discover Jellyfin Android TV clients (e.g., "Jellyfin for Android TV").
+     */
+    public boolean discoverAndroidTvClients = true;
+    /**
+     * Discover iOS clients (e.g., "Jellyfin iOS", "Swiftfin", "Infuse").
+     */
+    public boolean discoverIosClients = true;
+    /**
+     * Discover Kodi clients (e.g., "JellyCon", "Jellyfin for Kodi").
+     */
+    public boolean discoverKodiClients = true;
+    /**
+     * Discover Roku clients (e.g., "Jellyfin for Roku").
+     */
+    public boolean discoverRokuClients = true;
+    /**
+     * Discover other third-party clients not matched by any category above.
+     */
+    public boolean discoverOtherClients = true;
     /**
      * User ID
      *
