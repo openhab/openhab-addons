@@ -87,7 +87,7 @@ public class Shelly1EventServlet extends HttpServlet {
             Map<String, String[]> parameters = request.getParameterMap();
             logger.debug("Shelly1EventServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
-            if (!path.toLowerCase(Locale.ROOT).startsWith(SHELLY1_CALLBACK_URI) || !path.contains("/event/shelly")) {
+            if (!path.startsWith(SHELLY1_CALLBACK_URI) || !path.contains("/event/shelly")) {
                 logger.warn("Shelly1EventServlet received unknown request: path = {}", path);
                 return;
             }
