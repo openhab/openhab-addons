@@ -384,15 +384,29 @@ public class SonnenHandler extends BaseThingHandler {
             }
         }
         if (channelUID.getId().equals(CHANNEL_BATTERY_CHARGE_RATE)) {
-            if (command instanceof QuantityType quantityCommand) {
-                chargeRate = quantityCommand.intValue();
-                serviceCommunication.startStopBatteryCharging(null, chargeRate);
+            if (command instanceof QuantityType<?> quantityCommand) {
+                QuantityType<?> powerInWatt = quantityCommand.toUnit(Units.WATT);
+                if (powerInWatt != null) {
+                    chargeRate = powerInWatt.intValue();
+                    serviceCommunication.startStopBatteryCharging(null, chargeRate);
+                    updateState(channelUID, powerInWatt);
+                } else {
+                    logger.debug("Unable to convert {} command {} to {}", CHANNEL_BATTERY_CHARGE_RATE, quantityCommand,
+                            Units.WATT);
+                }
             }
         }
         if (channelUID.getId().equals(CHANNEL_BATTERY_DISCHARGE_RATE)) {
-            if (command instanceof QuantityType quantityCommand) {
-                dischargeRate = quantityCommand.intValue();
-                serviceCommunication.startStopBatteryDischarging(null, dischargeRate);
+            if (command instanceof QuantityType<?> quantityCommand) {
+                QuantityType<?> powerInWatt = quantityCommand.toUnit(Units.WATT);
+                if (powerInWatt != null) {
+                    dischargeRate = powerInWatt.intValue();
+                    serviceCommunication.startStopBatteryDischarging(null, dischargeRate);
+                    updateState(channelUID, powerInWatt);
+                } else {
+                    logger.debug("Unable to convert {} command {} to {}", CHANNEL_BATTERY_DISCHARGE_RATE,
+                            quantityCommand, Units.WATT);
+                }
             }
         }
     }
