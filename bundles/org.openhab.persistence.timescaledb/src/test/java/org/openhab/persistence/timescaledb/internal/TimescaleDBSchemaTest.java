@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link TimescaleDBSchema} using mocked JDBC connections.
+ *
+ * @author René Ulbricht - Initial contribution
  */
 class TimescaleDBSchemaTest {
 

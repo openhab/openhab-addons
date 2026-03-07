@@ -42,6 +42,8 @@ import com.zaxxer.hikari.HikariDataSource;
  * <p>
  * The service is constructed and activated directly (bypassing OSGi) to allow
  * mock injection.
+ *
+ * @author René Ulbricht - Initial contribution
  */
 class TimescaleDBPersistenceServiceTest {
 

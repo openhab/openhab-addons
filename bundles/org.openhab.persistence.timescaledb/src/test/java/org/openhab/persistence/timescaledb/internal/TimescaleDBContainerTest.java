@@ -84,6 +84,8 @@ import com.zaxxer.hikari.HikariDataSource;
  * <p>
  * Tag: {@code integration} — can be excluded from fast unit-test runs with
  * {@code mvn test -Dgroups='!integration'}.
+ *
+ * @author René Ulbricht - Initial contribution
  */
 @Tag("integration")
 @Testcontainers

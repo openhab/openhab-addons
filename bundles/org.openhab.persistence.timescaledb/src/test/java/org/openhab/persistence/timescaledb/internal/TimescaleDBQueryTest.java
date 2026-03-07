@@ -36,6 +36,8 @@ import org.openhab.core.persistence.HistoricItem;
 
 /**
  * Unit tests for {@link TimescaleDBQuery} using mocked JDBC connections.
+ *
+ * @author René Ulbricht - Initial contribution
  */
 class TimescaleDBQueryTest {
 

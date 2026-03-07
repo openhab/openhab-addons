@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * The only dynamically formatted strings are validated enum/allowlist values
  * (SQL operator, ORDER BY direction).
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 public class TimescaleDBQuery {

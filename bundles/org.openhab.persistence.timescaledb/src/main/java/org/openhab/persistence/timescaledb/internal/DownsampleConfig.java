@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @param retainRawDays Keep raw data for N days before aggregating. Default: 5.
  * @param retentionDays Drop all data older than N days. 0 = disabled.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 public record DownsampleConfig(AggregationFunction function, String sqlInterval, int retainRawDays, int retentionDays) {

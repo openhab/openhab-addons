@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * }
  * </pre>
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 @Component(service = TimescaleDBMetadataService.class)

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * ({@link DownsampleConfig#INTERVAL_MAP} and {@link AggregationFunction} enum)
  * before use. The {@code item_id} is always a JDBC bind parameter.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 public class TimescaleDBDownsampleJob implements Runnable {

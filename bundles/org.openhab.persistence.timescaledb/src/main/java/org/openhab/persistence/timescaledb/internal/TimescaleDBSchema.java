@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * <li>{@code items} — single hypertable for all item states</li>
  * </ul>
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 public class TimescaleDBSchema {

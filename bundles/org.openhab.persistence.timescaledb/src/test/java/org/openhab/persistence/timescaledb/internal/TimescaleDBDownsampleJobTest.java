@@ -43,6 +43,8 @@ import org.openhab.core.items.MetadataRegistry;
  * <li>Items not in the item_id cache are skipped gracefully</li>
  * <li>A per-item SQL error does not abort the entire job</li>
  * </ul>
+ *
+ * @author René Ulbricht - Initial contribution
  */
 class TimescaleDBDownsampleJobTest {
 

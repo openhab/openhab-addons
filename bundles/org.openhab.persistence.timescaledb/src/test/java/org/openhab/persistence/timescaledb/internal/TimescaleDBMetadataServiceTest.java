@@ -30,6 +30,8 @@ import org.openhab.core.items.MetadataRegistry;
 
 /**
  * Unit tests for {@link TimescaleDBMetadataService}.
+ *
+ * @author René Ulbricht - Initial contribution
  */
 class TimescaleDBMetadataServiceTest {
 

@@ -23,7 +23,7 @@ import org.openhab.core.types.State;
 /**
  * A historic item returned by TimescaleDB queries.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 public class TimescaleDBHistoricItem implements HistoricItem {

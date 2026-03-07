@@ -62,7 +62,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * Item names are cached in-memory ({@code name → item_id}) to avoid a SELECT on every
  * {@link #store} call. The cache is populated lazily on first store per item.
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class, QueryablePersistenceService.class,

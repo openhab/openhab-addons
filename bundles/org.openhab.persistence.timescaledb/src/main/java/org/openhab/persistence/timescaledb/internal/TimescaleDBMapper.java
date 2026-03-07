@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
  * <li>{@link StringType} → string=raw value</li>
  * </ul>
  *
- * @author openHAB Contributors - Initial contribution
+ * @author René Ulbricht - Initial contribution
  */
 @NonNullByDefault
 public class TimescaleDBMapper {

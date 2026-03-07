@@ -51,6 +51,8 @@ import org.openhab.core.types.UnDefType;
 
 /**
  * Unit tests for {@link TimescaleDBMapper} — covers all state types in both directions.
+ *
+ * @author René Ulbricht - Initial contribution
  */
 class TimescaleDBMapperTest {
 
