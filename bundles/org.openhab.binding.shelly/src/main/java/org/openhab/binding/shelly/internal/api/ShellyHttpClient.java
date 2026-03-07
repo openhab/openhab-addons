@@ -38,6 +38,7 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.shelly.internal.api.ShellyApiResult.ShellyApiResultBuilder;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRsp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
@@ -107,7 +108,7 @@ public class ShellyHttpClient {
     }
 
     protected String httpRequest(String uri) throws ShellyApiException {
-        ShellyApiResult apiResult = new ShellyApiResult();
+        ShellyApiResult apiResult;
         int retries = 3;
         boolean timeout = false;
         while (retries > 0) {
@@ -126,6 +127,8 @@ public class ShellyHttpClient {
                     logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
                     basicAuth = true;
                     apiResult = innerRequest(HttpMethod.GET, uri, null, "");
+                } else {
+                    apiResult = ShellyApiResult.builder().build();
                 }
 
                 if (e.isConnectionError()
@@ -158,7 +161,7 @@ public class ShellyHttpClient {
             String data) throws ShellyApiException {
         Request request = null;
         String url = "http://" + config.deviceIp + uri;
-        ShellyApiResult apiResult = new ShellyApiResult(method.toString(), url);
+        ShellyApiResultBuilder builder = ShellyApiResult.builder(method.toString(), url);
 
         try {
             request = httpClient.newRequest(url).method(method.toString()).timeout(SHELLY_API_TIMEOUT_MS,
@@ -189,8 +192,8 @@ public class ShellyHttpClient {
 
             // Do request and get response
             ContentResponse contentResponse = request.send();
-            apiResult = new ShellyApiResult(contentResponse);
-            apiResult.httpCode = contentResponse.getStatus();
+            builder = ShellyApiResult.builder(contentResponse);
+            builder.httpCode(contentResponse.getStatus());
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}\n{}", thingName, contentResponse.getStatus(), response,
                     contentResponse.getHeaders());
@@ -198,22 +201,22 @@ public class ShellyHttpClient {
             if (response.contains("\"error\":{")) { // Gen2
                 Shelly2RpcBaseMessage message = gson.fromJson(response, Shelly2RpcBaseMessage.class);
                 if (message != null && message.error != null) {
-                    apiResult.httpCode = message.error.code;
-                    apiResult.response = message.error.message;
+                    builder.httpCode(message.error.code);
+                    builder.response(message.error.message);
                     if (getInteger(message.error.code) == HttpStatus.UNAUTHORIZED_401) {
-                        apiResult.authChallenge = getString(message.error.message).replaceAll("\\\"", "\"");
+                        builder.authChallenge(getString(message.error.message).replaceAll("\\\"", "\""));
                     }
                 }
             }
             HttpFields headers = contentResponse.getHeaders();
             String authChallenge = headers.get(HttpHeader.WWW_AUTHENTICATE);
             if (!getString(authChallenge).isEmpty()) {
-                apiResult.authChallenge = authChallenge;
+                builder.authChallenge(authChallenge);
             }
 
             // validate response, API errors are reported as Json
-            if (apiResult.httpCode != HttpStatus.OK_200) {
-                throw new ShellyApiException(apiResult);
+            if (builder.httpCode() != HttpStatus.OK_200) {
+                throw new ShellyApiException(builder.build());
             }
 
             if (response.isEmpty() || !response.startsWith("{") && !response.startsWith("[") && !url.contains("/debug/")
@@ -221,13 +224,13 @@ public class ShellyHttpClient {
                 throw new ShellyApiException("Unexpected response: " + response);
             }
         } catch (ExecutionException | InterruptedException | TimeoutException | IllegalArgumentException e) {
-            ShellyApiException ex = new ShellyApiException(apiResult, e);
+            ShellyApiException ex = new ShellyApiException(builder.build(), e);
             if (!ex.isConnectionError() && !ex.isTimeout()) { // will be handled by the caller
                 logger.trace("{}: API call returned exception", thingName, ex);
             }
             throw ex;
         }
-        return apiResult;
+        return builder.build();
     }
 
     protected @Nullable Shelly2AuthRsp buildAuthResponse(String uri, @Nullable Shelly2AuthChallenge challenge,
