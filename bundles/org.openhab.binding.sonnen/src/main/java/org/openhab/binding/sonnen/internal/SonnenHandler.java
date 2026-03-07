@@ -89,6 +89,9 @@ public class SonnenHandler extends BaseThingHandler {
         if (!config.authToken.isEmpty()) {
             sonnenAPIV2 = true;
         }
+        if (config.chargingPower != -1) {
+            chargeRate = config.chargingPower;
+        }
 
         serviceCommunication.setConfig(config);
         updateStatus(ThingStatus.UNKNOWN);
@@ -282,12 +285,14 @@ public class SonnenHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_BATTERY_CHARGING_GRID:
                         if (putData != null) {
-                            serviceCommunication.startStopBatteryCharging(putData, chargeRate);
-                            // put it to true as switch was turned on if it goes into manual mode
-                            if (putData.contains("1")) {
-                                update(OnOffType.from(true), channelId);
-                            } else if (putData.contains("2")) {
-                                update(OnOffType.from(false), channelId);
+                            String result = serviceCommunication.startStopBatteryCharging(putData, chargeRate);
+                            if (!result.isEmpty()) {
+                                // put it to true as switch was turned on if it goes into manual mode
+                                if (putData.contains("1")) {
+                                    update(OnOffType.from(true), channelId);
+                                } else if (putData.contains("2")) {
+                                    update(OnOffType.from(false), channelId);
+                                }
                             }
                         } else {
                             // Reflect the status of operation mode in the switch
@@ -296,12 +301,14 @@ public class SonnenHandler extends BaseThingHandler {
                         break;
                     case CHANNEL_BATTERY_DISCHARGING_GRID:
                         if (putData != null) {
-                            serviceCommunication.startStopBatteryDischarging(putData, dischargeRate);
-                            // put it to true as switch was turned on if it goes into manual mode
-                            if (putData.contains("1")) {
-                                update(OnOffType.from(true), channelId);
-                            } else if (putData.contains("2")) {
-                                update(OnOffType.from(false), channelId);
+                            String result = serviceCommunication.startStopBatteryDischarging(putData, dischargeRate);
+                            if (!result.isEmpty()) {
+                                // put it to true as switch was turned on if it goes into manual mode
+                                if (putData.contains("1")) {
+                                    update(OnOffType.from(true), channelId);
+                                } else if (putData.contains("2")) {
+                                    update(OnOffType.from(false), channelId);
+                                }
                             }
                         } else {
                             // Reflect the status of operation mode in the switch

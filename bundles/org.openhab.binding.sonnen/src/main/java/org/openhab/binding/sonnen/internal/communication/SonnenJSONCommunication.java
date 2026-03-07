@@ -40,7 +40,7 @@ public class SonnenJSONCommunication {
     private final Logger logger = LoggerFactory.getLogger(SonnenJSONCommunication.class);
     private SonnenConfiguration config;
     private static final int HTTP_TIMEOUT = 10000;
-    private String BASE_URL = "";
+    private String baseURL = "";
 
     private Gson gson;
     private @Nullable SonnenJsonDataDTO batteryData;
@@ -58,7 +58,7 @@ public class SonnenJSONCommunication {
      */
     public String refreshBatteryConnectionAPICALLV2(boolean powerMeter) {
         String result = "";
-        String urlStr = BASE_URL + "v2/status";
+        String urlStr = baseURL + "v2/status";
         Properties httpHeader = createHeader(config.authToken);
         try {
             String response = HttpUtil.executeUrl("GET", urlStr, httpHeader, null, "application/json", HTTP_TIMEOUT);
@@ -69,7 +69,7 @@ public class SonnenJSONCommunication {
             batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
 
             if (powerMeter) {
-                response = HttpUtil.executeUrl("GET", BASE_URL + "v2/powermeter", httpHeader, null, "application/json",
+                response = HttpUtil.executeUrl("GET", baseURL + "v2/powermeter", httpHeader, null, "application/json",
                         HTTP_TIMEOUT);
                 logger.debug("PowerMeterData = {}", response);
                 if (response == null) {
@@ -106,8 +106,8 @@ public class SonnenJSONCommunication {
      */
     private String executeBatteryOperation(@Nullable String putData, int rate, String operation) {
         String result = "";
-        String configUrl = BASE_URL + "v2/configurations";
-        String setpointUrl = BASE_URL + "v2/setpoint/" + operation + "/" + rate;
+        String configUrl = baseURL + "v2/configurations";
+        String setpointUrl = baseURL + "v2/setpoint/" + operation + "/" + rate;
         Properties header = createHeader(config.authToken);
 
         try {
@@ -169,7 +169,7 @@ public class SonnenJSONCommunication {
      */
     public String refreshBatteryConnectionAPICALLV1() {
         String result = "";
-        String urlStr = BASE_URL + "v1/status";
+        String urlStr = baseURL + "v1/status";
         try {
             String response = HttpUtil.executeUrl("GET", urlStr, HTTP_TIMEOUT);
             logger.debug("BatteryData = {}", response);
@@ -187,7 +187,7 @@ public class SonnenJSONCommunication {
 
     public void setConfig(SonnenConfiguration config2) {
         this.config = config2;
-        BASE_URL = "http://" + config.hostIP + "/api/";
+        baseURL = "http://" + config.hostIP + "/api/";
     }
 
     public @Nullable SonnenJsonDataDTO getBatteryData() {
