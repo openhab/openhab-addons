@@ -316,12 +316,3 @@ jobs:
         with:
           name: sat-summary-report-java-${{ matrix.java }}-${{ matrix.os }}
           path: target/summary_report.html
-
-      - name: Delete Per-Shard SAT Artifacts
-        if: steps.download-sat.outcome == 'success'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts \
-            --paginate --jq '.artifacts[] | select(.name | test("^sat-(summary-report|merge-xml)-java-${{ matrix.java }}-${{ matrix.os }}-")) | .id' \
-          | xargs -r -I{} gh api --method DELETE repos/${{ github.repository }}/actions/artifacts/{}
