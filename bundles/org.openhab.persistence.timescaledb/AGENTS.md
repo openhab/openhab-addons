@@ -292,3 +292,4 @@ Test: schema creation, store/query round-trips, downsampling job result, compres
 - [Compression](https://docs.timescale.com/use-timescale/latest/compression/)
 - InfluxDB persistence (metadata pattern): `bundles/org.openhab.persistence.influxdb/src/main/java/.../InfluxDBMetadataService.java`
 - Existing downsampling logic (Python/MongoDB): `DOWNSAMPLE_IMPLEMENTATION_GUIDE.md` in this bundle
+
