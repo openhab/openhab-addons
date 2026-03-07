@@ -21,6 +21,8 @@ jobs:
       build_task_matrix: ${{ steps.set-matrix.outputs.build_task_matrix }}
       selected_addon: ${{ steps.set-matrix.outputs.selected_addon }}
       selected_parts: ${{ steps.set-matrix.outputs.selected_parts }}
+      java_versions: ${{ steps.set-matrix.outputs.java_versions }}
+      min_java: ${{ steps.set-matrix.outputs.min_java }}
     steps:
       - name: Checkout
         if: github.head_ref == ''
@@ -45,15 +47,19 @@ jobs:
         env:
           CHANGED_FILES: ${{ steps.files.outputs.all }}
           DEFAULT_PARTS: '20'
+          JAVA_VERSIONS: '["21"]'
         run: |
           python3 ./.github/scripts/calculate-build-tasks
+          min_java=$(echo "${JAVA_VERSIONS}" | python3 -c "import sys,json; print(min(json.load(sys.stdin)))")
+          echo "java_versions=${JAVA_VERSIONS}" >> "$GITHUB_OUTPUT"
+          echo "min_java=${min_java}" >> "$GITHUB_OUTPUT"
 
   build:
     needs: plan-shards
     strategy:
       fail-fast: false
       matrix:
-        java: [ '21' ]
+        java: ${{ fromJSON(needs.plan-shards.outputs.java_versions) }}
         os: [ 'ubuntu-24.04' ]
         build_task: ${{ fromJSON(needs.plan-shards.outputs.build_task_matrix) }}
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }}, shard ${{ matrix.build_task.build_part }}/${{ needs.plan-shards.outputs.selected_parts }}, ${{ matrix.build_task.range_label }})
@@ -174,13 +180,8 @@ jobs:
     needs: [ plan-shards, build ]
     # only run for full shard builds; single-addon PRs don't need Karaf features verification
     if: needs.plan-shards.outputs.selected_parts != '1'
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [ '21' ]
-        os: [ 'ubuntu-24.04' ]
-    name: Build Features (Java ${{ matrix.java }}, ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+    name: Build Features
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
       - name: Checkout
@@ -204,16 +205,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: Set up Java ${{ matrix.java }}
+      - name: Set up Java ${{ needs.plan-shards.outputs.min_java }}
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: ${{ matrix.java }}
+          java-version: ${{ needs.plan-shards.outputs.min_java }}
 
       - name: Download Built openHAB JARs
         uses: actions/download-artifact@v7
         with:
-          pattern: openhab-jars-java-${{ matrix.java }}-shard-*
+          pattern: openhab-jars-java-${{ needs.plan-shards.outputs.min_java }}-shard-*
           path: ~/.m2/repository/org/openhab
           merge-multiple: true
 
@@ -233,14 +234,14 @@ jobs:
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
         uses: actions/upload-artifact@v7
         with:
-          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}-features
+          name: build-log-java-${{ needs.plan-shards.outputs.min_java }}-ubuntu-24.04-features
           path: build.log
 
       - name: Upload SAT Merge XML
         if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) && hashFiles('target/merge.xml') != '' }}
         uses: actions/upload-artifact@v7
         with:
-          name: sat-merge-xml-java-${{ matrix.java }}-${{ matrix.os }}-features
+          name: sat-merge-xml-java-${{ needs.plan-shards.outputs.min_java }}-ubuntu-24.04-features
           path: target/merge.xml
           retention-days: 1
   lint-markdown:
