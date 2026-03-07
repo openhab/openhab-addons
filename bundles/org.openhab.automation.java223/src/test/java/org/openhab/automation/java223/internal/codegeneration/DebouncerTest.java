@@ -12,7 +12,8 @@
  */
 package org.openhab.automation.java223.internal.codegeneration;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -45,7 +46,6 @@ public class DebouncerTest {
 
     @Test
     public void debouncerFirstTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
-
         AtomicInteger value = new AtomicInteger(0);
         AtomicInteger count = new AtomicInteger(0);
         ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
@@ -71,14 +71,13 @@ public class DebouncerTest {
         service.shutdown();
 
         // but only one call, and the value set is the first one
-        assertThat(service.awaitTermination(1, TimeUnit.SECONDS)).isTrue();
-        assertThat(count.get()).isEqualTo(1);
-        assertThat(value.get()).isEqualTo(1);
+        assertTrue(service.awaitTermination(1, TimeUnit.SECONDS));
+        assertEquals(1, count.get());
+        assertEquals(1, value.get());
     }
 
     @Test
     public void debouncerLastTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
-
         AtomicInteger value = new AtomicInteger(0);
         AtomicInteger count = new AtomicInteger(0);
         ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
@@ -104,9 +103,9 @@ public class DebouncerTest {
         service.shutdown();
 
         // but only one call, and the value set is the last one
-        assertThat(service.awaitTermination(1, TimeUnit.SECONDS)).isTrue();
-        assertThat(count.get()).isEqualTo(1);
-        assertThat(value.get()).isEqualTo(2);
+        assertTrue(service.awaitTermination(1, TimeUnit.SECONDS));
+        assertEquals(1, count.get());
+        assertEquals(2, value.get());
     }
 
     private void exec(Java223Rule rule, int value) {
@@ -117,7 +116,6 @@ public class DebouncerTest {
 
     @Test
     public void debouncerStableTest() throws InterruptedException, NoSuchFieldException, IllegalAccessException {
-
         AtomicInteger value = new AtomicInteger(0);
         AtomicInteger count = new AtomicInteger(0);
         ScheduledExecutorService service = Executors.newScheduledThreadPool(2);
@@ -145,9 +143,9 @@ public class DebouncerTest {
         service.shutdown();
 
         // but only one call, and the value set is the last one
-        assertThat(service.awaitTermination(2, TimeUnit.SECONDS)).isTrue();
-        assertThat(count.get()).isEqualTo(1);
-        assertThat(value.get()).isEqualTo(3);
+        assertTrue(service.awaitTermination(2, TimeUnit.SECONDS));
+        assertEquals(1, count.get());
+        assertEquals(3, value.get());
     }
 
     /**

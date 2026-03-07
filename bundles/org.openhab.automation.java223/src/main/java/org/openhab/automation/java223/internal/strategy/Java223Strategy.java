@@ -65,12 +65,12 @@ import ch.obermuhlner.scriptengine.java.name.NameStrategy;
 public class Java223Strategy
         implements ExecutionStrategyFactory, ExecutionStrategy, BindingStrategy, CompilationStrategy {
 
-    private static final Logger logger = LoggerFactory.getLogger(Java223Strategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Java223Strategy.class);
 
     private static final List<String> METHOD_NAMES_TO_EXECUTE = Arrays.asList("eval", "main", "run", "exec");
 
     // Keeping a list of .java files libraries in the lib directory
-    private static final Map<String, JavaFileObject> librariesByPath = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<String, JavaFileObject> LIBRARIES_BY_PATH = Collections.synchronizedMap(new HashMap<>());
 
     NameStrategy nameStrategy = new DefaultNameStrategy();
     JarFileManagerFactory jarFileManagerfactory;
@@ -127,7 +127,6 @@ public class Java223Strategy
      * @throws ScriptException When the script cannot execute
      */
     public @Nullable Object execute(Object instance, Map<String, Object> bindings) throws ScriptException {
-
         Class<?> compiledClass = instance.getClass();
 
         // inject binding's data in the script
@@ -163,7 +162,7 @@ public class Java223Strategy
                     String simpleName = instance.getClass().getSimpleName();
                     // keep responsibility of logging full stack trace, as ScriptException cannot contain cause
                     // and the caller sometimes does not log it fully.
-                    logger.error("Error executing entry point {} in {}, exception {}", method.getName(), simpleName,
+                    LOGGER.error("Error executing entry point {} in {}, exception {}", method.getName(), simpleName,
                             e.getMessage(), e);
                     throw new ScriptException("Cannot execute script. Entry point error");
                 }
@@ -177,7 +176,7 @@ public class Java223Strategy
             return returned.orElse(null);
         }
         if (bindings.containsKey("javax.script.filename")) {
-            logger.trace("No runnable method found in {}", bindings.get("javax.script.filename"));
+            LOGGER.trace("No runnable method found in {}", bindings.get("javax.script.filename"));
             return null;
         }
 
@@ -199,7 +198,7 @@ public class Java223Strategy
         JavaFileObject currentJavaFileObject = MemoryFileManager.createSourceFileObject(null, simpleClassName,
                 currentSource);
         // and we add all the .java libraries
-        List<JavaFileObject> sumFileObjects = new ArrayList<>(librariesByPath.values());
+        List<JavaFileObject> sumFileObjects = new ArrayList<>(LIBRARIES_BY_PATH.values());
         sumFileObjects.add(currentJavaFileObject);
         return sumFileObjects;
     }
@@ -218,7 +217,7 @@ public class Java223Strategy
                     removeLibrary(fullPath);
                     break;
                 default:
-                    logger.warn("watch event not implemented {}", kind);
+                    LOGGER.warn("watch event not implemented {}", kind);
             }
         } else if (fullPath.getFileName().toString().endsWith("." + Java223Constants.JAR_FILE_TYPE)) {
             // jar will be scanned to be added to the JarFileManagerFactory
@@ -233,14 +232,14 @@ public class Java223Strategy
                 case MODIFY:
                 case DELETE:
                     // we cannot remove something from a ClassLoader, so we have to rebuild it
-                    logger.debug("From watch event {} {}", kind, pathEvent);
+                    LOGGER.debug("From watch event {} {}", kind, pathEvent);
                     jarFileManagerfactory.rebuildLibPackages();
                     break;
                 case OVERFLOW:
                     break;
             }
         } else {
-            logger.trace(
+            LOGGER.trace(
                     "Received '{}' for path '{}' - ignoring (wrong extension, only .java and .jar file are supported)",
                     kind, fullPath);
         }
@@ -252,21 +251,21 @@ public class Java223Strategy
             String fullName = nameStrategy.getFullName(readString);
             String simpleClassName = NameStrategy.extractSimpleName(fullName);
             JavaFileObject javafileObject = MemoryFileManager.createSourceFileObject(null, simpleClassName, readString);
-            librariesByPath.put(path.toString(), javafileObject);
+            LIBRARIES_BY_PATH.put(path.toString(), javafileObject);
         } catch (ScriptException | IOException e) {
-            logger.warn("Cannot get the file {} as a valid java object. Cause: {} {}", path, e.getClass().getName(),
+            LOGGER.warn("Cannot get the file {} as a valid java object. Cause: {} {}", path, e.getClass().getName(),
                     e.getMessage());
         }
     }
 
     private void removeLibrary(Path path) {
-        librariesByPath.remove(path.toString());
+        LIBRARIES_BY_PATH.remove(path.toString());
     }
 
     public Set<Path> getAllLibraries() {
         // combine lib package (jar) and lib java file :
         HashSet<Path> libsPath = new HashSet<>();
-        libsPath.addAll(librariesByPath.keySet().stream().map(Path::of).collect(Collectors.toSet()));
+        libsPath.addAll(LIBRARIES_BY_PATH.keySet().stream().map(Path::of).collect(Collectors.toSet()));
         libsPath.addAll(jarFileManagerfactory.getAllJarPaths());
         return libsPath;
     }
@@ -278,7 +277,7 @@ public class Java223Strategy
                     .forEach(this::addLibrary);
             jarFileManagerfactory.rebuildLibPackages();
         } catch (IOException e) {
-            logger.error("Cannot use libraries", e);
+            LOGGER.error("Cannot use libraries", e);
         }
     }
 

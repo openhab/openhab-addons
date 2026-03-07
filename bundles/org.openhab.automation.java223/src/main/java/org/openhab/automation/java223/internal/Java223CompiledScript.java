@@ -71,7 +71,6 @@ public class Java223CompiledScript extends JavaCompiledScript {
 
     @Override
     public @Nullable Object eval(@Nullable ScriptContext context) throws ScriptException {
-
         // prepare bindings data
         if (context == null) {
             throw new IllegalArgumentException("ScriptContext must not be null");
@@ -136,7 +135,6 @@ public class Java223CompiledScript extends JavaCompiledScript {
     }
 
     private Object construct(Class<?> compiledClass, Map<String, Object> bindings) {
-
         // create real instance from compiled class
         // use the empty constructor if available, or the first one otherwise
         Constructor<?>[] constructors = compiledClass.getDeclaredConstructors();
