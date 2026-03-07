@@ -29,8 +29,8 @@ import org.openhab.binding.restify.internal.servlet.Json.NumberValue;
 import org.openhab.binding.restify.internal.servlet.Json.StringValue;
 import org.osgi.service.component.annotations.Component;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
