@@ -14,14 +14,20 @@ package org.openhab.persistence.timescaledb.internal;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
+import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
+import org.openhab.core.library.items.LocationItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -30,7 +36,11 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.State;
@@ -53,6 +63,10 @@ import org.slf4j.LoggerFactory;
  * <li>{@link UpDownType} → value (UP=0.0, DOWN=1.0)</li>
  * <li>{@link HSBType} → string="H,S,B"</li>
  * <li>{@link DateTimeType} → string=ISO-8601</li>
+ * <li>{@link PointType} → string="lat,lon[,alt]"</li>
+ * <li>{@link PlayPauseType} → string=enum name</li>
+ * <li>{@link StringListType} → string=comma-separated values</li>
+ * <li>{@link RawType} → string=Base64-encoded bytes, unit=MIME type</li>
  * <li>{@link StringType} → string=raw value</li>
  * </ul>
  *
@@ -101,6 +115,14 @@ public class TimescaleDBMapper {
             return new Row(upDown == UpDownType.UP ? 0.0 : 1.0, null, null);
         } else if (state instanceof DateTimeType dt) {
             return new Row(null, dt.getZonedDateTime(ZoneId.systemDefault()).toString(), null);
+        } else if (state instanceof PointType point) {
+            return new Row(null, point.toString(), null);
+        } else if (state instanceof PlayPauseType playPause) {
+            return new Row(null, playPause.toString(), null);
+        } else if (state instanceof StringListType stringList) {
+            return new Row(null, stringList.toString(), null);
+        } else if (state instanceof RawType raw) {
+            return new Row(null, Base64.getEncoder().encodeToString(raw.getBytes()), raw.getMimeType());
         } else if (state instanceof StringType str) {
             return new Row(null, str.toString(), null);
         } else {
@@ -119,7 +141,16 @@ public class TimescaleDBMapper {
      * @return The reconstructed state, or {@link UnDefType#UNDEF} if reconstruction fails.
      */
     public static State toState(Item item, @Nullable Double value, @Nullable String string, @Nullable String unit) {
-        // QuantityType: unit column is always present
+        // Unwrap GroupItem to its base item for type dispatch
+        Item realItem = item;
+        if (item instanceof GroupItem groupItem) {
+            Item baseItem = groupItem.getBaseItem();
+            if (baseItem != null) {
+                realItem = baseItem;
+            }
+        }
+
+        // QuantityType: unit column present together with a numeric value
         if (unit != null && value != null) {
             try {
                 return new QuantityType<>(value + " " + unit);
@@ -132,7 +163,7 @@ public class TimescaleDBMapper {
 
         // String-based states
         if (string != null) {
-            if (item instanceof ColorItem) {
+            if (realItem instanceof ColorItem) {
                 try {
                     return new HSBType(string);
                 } catch (IllegalArgumentException e) {
@@ -140,7 +171,7 @@ public class TimescaleDBMapper {
                     return UnDefType.UNDEF;
                 }
             }
-            if (item instanceof DateTimeItem) {
+            if (realItem instanceof DateTimeItem) {
                 try {
                     return new DateTimeType(ZonedDateTime.parse(string));
                 } catch (Exception e) {
@@ -148,20 +179,49 @@ public class TimescaleDBMapper {
                     return UnDefType.UNDEF;
                 }
             }
-            // StringItem and anything else with a string value
+            if (realItem instanceof LocationItem) {
+                try {
+                    return new PointType(string);
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warn("Failed to parse PointType for item '{}': {}", item.getName(), e.getMessage());
+                    return UnDefType.UNDEF;
+                }
+            }
+            if (realItem instanceof PlayerItem) {
+                try {
+                    return PlayPauseType.valueOf(string);
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warn("Failed to parse PlayPauseType for item '{}': {}", item.getName(), e.getMessage());
+                    return UnDefType.UNDEF;
+                }
+            }
+            if (realItem instanceof CallItem) {
+                return new StringListType(string);
+            }
+            if (realItem instanceof ImageItem) {
+                try {
+                    byte[] bytes = Base64.getDecoder().decode(string);
+                    String mimeType = unit != null ? unit : "application/octet-stream";
+                    return new RawType(bytes, mimeType);
+                } catch (IllegalArgumentException e) {
+                    LOGGER.warn("Failed to decode RawType for item '{}': {}", item.getName(), e.getMessage());
+                    return UnDefType.UNDEF;
+                }
+            }
+            // StringItem, GenericItem, and anything else with a string value
             return new StringType(string);
         }
 
         // Numeric states without unit
         if (value != null) {
-            if (item instanceof DimmerItem || item instanceof RollershutterItem) {
+            if (realItem instanceof DimmerItem || realItem instanceof RollershutterItem) {
                 // DimmerItem extends SwitchItem — must be checked before SwitchItem
                 return new PercentType((int) Math.round(value));
             }
-            if (item instanceof SwitchItem) {
+            if (realItem instanceof SwitchItem) {
                 return value >= 0.5 ? OnOffType.ON : OnOffType.OFF;
             }
-            if (item instanceof ContactItem) {
+            if (realItem instanceof ContactItem) {
                 return value >= 0.5 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             }
             // NumberItem, GenericItem, UpDownType stored as decimal, etc.

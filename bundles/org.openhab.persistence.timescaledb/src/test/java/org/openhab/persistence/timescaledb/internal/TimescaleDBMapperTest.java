@@ -15,15 +15,21 @@ package org.openhab.persistence.timescaledb.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.ZonedDateTime;
+import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.openhab.core.items.GroupItem;
+import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
+import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
@@ -33,7 +39,11 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.persistence.FilterCriteria.Operator;
@@ -148,6 +158,56 @@ class TimescaleDBMapperTest {
     }
 
     @Test
+    void toRow_PointType() {
+        var row = TimescaleDBMapper.toRow(new PointType("52.5,13.4,34.0"));
+        assertNotNull(row);
+        assertNull(row.value());
+        assertNotNull(row.string());
+        assertTrue(row.string().contains("52.5"));
+        assertTrue(row.string().contains("13.4"));
+        assertNull(row.unit());
+    }
+
+    @Test
+    void toRow_PlayPauseType_PLAY() {
+        var row = TimescaleDBMapper.toRow(PlayPauseType.PLAY);
+        assertNotNull(row);
+        assertNull(row.value());
+        assertEquals("PLAY", row.string());
+        assertNull(row.unit());
+    }
+
+    @Test
+    void toRow_PlayPauseType_PAUSE() {
+        var row = TimescaleDBMapper.toRow(PlayPauseType.PAUSE);
+        assertNotNull(row);
+        assertEquals("PAUSE", row.string());
+    }
+
+    @Test
+    void toRow_StringListType() {
+        var row = TimescaleDBMapper.toRow(new StringListType("Alice", "Bob", "Charlie"));
+        assertNotNull(row);
+        assertNull(row.value());
+        assertNotNull(row.string());
+        assertTrue(row.string().contains("Alice"));
+        assertNull(row.unit());
+    }
+
+    @Test
+    void toRow_RawType() {
+        byte[] bytes = { 0x01, 0x02, 0x03 };
+        var row = TimescaleDBMapper.toRow(new RawType(bytes, "image/png"));
+        assertNotNull(row);
+        assertNull(row.value());
+        assertNotNull(row.string());
+        assertEquals("image/png", row.unit());
+        // Verify round-trip base64
+        byte[] decoded = Base64.getDecoder().decode(row.string());
+        assertArrayEquals(bytes, decoded);
+    }
+
+    @Test
     void toRow_UnDefType_returnsNull() {
         var row = TimescaleDBMapper.toRow(UnDefType.UNDEF);
         assertNull(row);
@@ -227,6 +287,78 @@ class TimescaleDBMapperTest {
     }
 
     @Test
+    void toState_PointType_fromString_locationItem() {
+        var item = new LocationItem("TestLocation");
+        var state = TimescaleDBMapper.toState(item, null, "52.5200,13.4050,34.0000", null);
+        assertInstanceOf(PointType.class, state);
+        PointType point = (PointType) state;
+        assertEquals(52.52, point.getLatitude().doubleValue(), 1e-3);
+        assertEquals(13.405, point.getLongitude().doubleValue(), 1e-3);
+    }
+
+    @Test
+    void toState_PlayPauseType_fromString_playerItem() {
+        var item = new PlayerItem("TestPlayer");
+        assertEquals(PlayPauseType.PLAY, TimescaleDBMapper.toState(item, null, "PLAY", null));
+        assertEquals(PlayPauseType.PAUSE, TimescaleDBMapper.toState(item, null, "PAUSE", null));
+    }
+
+    @Test
+    void toState_StringListType_fromString_callItem() {
+        var item = new CallItem("TestCall");
+        var state = TimescaleDBMapper.toState(item, null, "Alice,Bob,Charlie", null);
+        assertInstanceOf(StringListType.class, state);
+        assertEquals("Alice,Bob,Charlie", state.toString());
+    }
+
+    @Test
+    void toState_RawType_fromBase64_imageItem() {
+        byte[] bytes = { 0x01, 0x02, 0x03 };
+        String encoded = Base64.getEncoder().encodeToString(bytes);
+        var item = new ImageItem("TestImage");
+        var state = TimescaleDBMapper.toState(item, null, encoded, "image/jpeg");
+        assertInstanceOf(RawType.class, state);
+        RawType raw = (RawType) state;
+        assertEquals("image/jpeg", raw.getMimeType());
+        assertArrayEquals(bytes, raw.getBytes());
+    }
+
+    @Test
+    void toState_RawType_missingMimeType_usesDefault() {
+        byte[] bytes = { 0x00 };
+        String encoded = Base64.getEncoder().encodeToString(bytes);
+        var item = new ImageItem("TestImage");
+        var state = TimescaleDBMapper.toState(item, null, encoded, null);
+        assertInstanceOf(RawType.class, state);
+        assertEquals("application/octet-stream", ((RawType) state).getMimeType());
+    }
+
+    @Test
+    void toState_GroupItem_withNumberBaseItem_returnsDecimalType() {
+        var baseItem = new NumberItem("Base");
+        var groupItem = new GroupItem("TestGroup", baseItem);
+        var state = TimescaleDBMapper.toState(groupItem, 99.0, null, null);
+        assertInstanceOf(DecimalType.class, state);
+        assertEquals(99.0, ((DecimalType) state).doubleValue(), 1e-6);
+    }
+
+    @Test
+    void toState_GroupItem_withSwitchBaseItem_returnsOnOffType() {
+        var baseItem = new SwitchItem("Base");
+        var groupItem = new GroupItem("TestGroup", baseItem);
+        assertEquals(OnOffType.ON, TimescaleDBMapper.toState(groupItem, 1.0, null, null));
+        assertEquals(OnOffType.OFF, TimescaleDBMapper.toState(groupItem, 0.0, null, null));
+    }
+
+    @Test
+    void toState_GroupItem_withColorBaseItem_returnsHSBType() {
+        var baseItem = new ColorItem("Base");
+        var groupItem = new GroupItem("TestGroup", baseItem);
+        var state = TimescaleDBMapper.toState(groupItem, null, "240,100,50", null);
+        assertInstanceOf(HSBType.class, state);
+    }
+
+    @Test
     void toState_allNullReturnsUndef() {
         var item = new NumberItem("TestNumber");
         var state = TimescaleDBMapper.toState(item, null, null, null);
@@ -245,6 +377,27 @@ class TimescaleDBMapperTest {
     void toState_invalidHSB_returnsUndef() {
         var item = new ColorItem("TestColor");
         var state = TimescaleDBMapper.toState(item, null, "not-a-valid-hsb", null);
+        assertEquals(UnDefType.UNDEF, state);
+    }
+
+    @Test
+    void toState_invalidPointType_returnsUndef() {
+        var item = new LocationItem("TestLocation");
+        var state = TimescaleDBMapper.toState(item, null, "not-a-valid-point", null);
+        assertEquals(UnDefType.UNDEF, state);
+    }
+
+    @Test
+    void toState_invalidPlayPauseType_returnsUndef() {
+        var item = new PlayerItem("TestPlayer");
+        var state = TimescaleDBMapper.toState(item, null, "INVALID_STATE", null);
+        assertEquals(UnDefType.UNDEF, state);
+    }
+
+    @Test
+    void toState_invalidBase64_returnsUndef() {
+        var item = new ImageItem("TestImage");
+        var state = TimescaleDBMapper.toState(item, null, "!!!not-base64!!!", null);
         assertEquals(UnDefType.UNDEF, state);
     }
 

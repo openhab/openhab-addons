@@ -15,9 +15,8 @@ TimescaleDB is a time-series extension for PostgreSQL — all standard PostgreSQ
 
 | Class | Role |
 |---|---|
-| `TimescaleDBPersistenceService` | Main OSGi service, implements `QueryablePersistenceService` |
-| `TimescaleDBConfiguration` | OSGi config mapping (`@ConfigurationProperties`) |
-| `TimescaleDBMapper` | `State` ↔ SQL value conversion |
+| `TimescaleDBPersistenceService` | Main OSGi service, implements `ModifiablePersistenceService` |
+| `TimescaleDBMapper` | `State` ↔ SQL value conversion (all openHAB item types) |
 | `TimescaleDBSchema` | Schema creation and migration on startup |
 | `TimescaleDBQuery` | SQL query builder for all persistence operations |
 | `TimescaleDBMetadataService` | Reads per-item downsampling config from `MetadataRegistry` |
@@ -26,8 +25,14 @@ TimescaleDB is a time-series extension for PostgreSQL — all standard PostgreSQ
 ### OSGi Service Registration
 
 - Service ID: `timescaledb`
-- Implements: `org.openhab.core.persistence.QueryablePersistenceService`
+- Implements: `ModifiablePersistenceService` (= `QueryablePersistenceService` + `remove()`)
 - Config PID: `org.openhab.persistence.timescaledb`
+- `@ConfigurableService` present → visible in mainUI under Settings → Other Services
+- Config description: `OH-INF/config/timescaledb.xml`
+- `ConfigurationPolicy.REQUIRE` — service does not start without configuration
+- Scheduler: `ThreadPoolManager.getScheduledPool("timescaledb")` (shared pool — never call `shutdownNow()`)
+- Deactivate: `ScheduledFuture.cancel(false)`, then `HikariDataSource.close()`
+- State indicator: `dataSource != null` — no `initialized` boolean
 
 ### Dependencies
 
@@ -72,19 +77,45 @@ openHAB reads persisted data directly from the hypertable via `QueryablePersiste
 
 ## State Type Mapping
 
-```
-DecimalType        → value (DOUBLE PRECISION), unit = NULL
-QuantityType       → value = quantity.doubleValue(), unit = quantity.getUnit().toString()
-OnOffType          → value: ON=1.0, OFF=0.0
-OpenClosedType     → value: OPEN=1.0, CLOSED=0.0
-PercentType        → value (0.0–100.0)
-UpDownType         → value: UP=0.0, DOWN=1.0
-HSBType            → string = "H,S,B"
-DateTimeType       → string = ISO-8601
-StringType         → string = raw value
-```
+All openHAB item types are fully supported. `TimescaleDBMapper` handles the conversion in both directions.
 
-**Reading back:** if `unit` column is not null, wrap the numeric `value` in `new QuantityType<>(value, unit)`.
+### Store direction (`toRow`)
+
+| State type | `value` column | `string` column | `unit` column |
+|---|---|---|---|
+| `QuantityType` | numeric | null | unit string (e.g. `"°C"`) |
+| `DecimalType` | numeric | null | null |
+| `OnOffType` | `ON=1.0 / OFF=0.0` | null | null |
+| `OpenClosedType` | `OPEN=1.0 / CLOSED=0.0` | null | null |
+| `PercentType` | 0.0–100.0 | null | null |
+| `UpDownType` | `UP=0.0 / DOWN=1.0` | null | null |
+| `HSBType` | null | `"H,S,B"` | null |
+| `DateTimeType` | null | ISO-8601 string | null |
+| `PointType` | null | `"lat,lon[,alt]"` | null |
+| `PlayPauseType` | null | enum name (`"PLAY"`, `"PAUSE"`, …) | null |
+| `StringListType` | null | comma-separated values | null |
+| `RawType` | null | Base64-encoded bytes | MIME type |
+| `StringType` | null | raw string | null |
+
+### Load direction (`toState`)
+
+`GroupItem` is unwrapped to its base item before dispatch. Item type determines how the row is interpreted:
+
+- `ColorItem` → `HSBType` (parsed from `string`)
+- `DateTimeItem` → `DateTimeType` (parsed from `string`)
+- `LocationItem` → `PointType` (parsed from `string`)
+- `PlayerItem` → `PlayPauseType` (parsed from `string`)
+- `CallItem` → `StringListType` (parsed from `string`)
+- `ImageItem` → `RawType` (Base64-decoded from `string`, MIME type from `unit`)
+- `DimmerItem` / `RollershutterItem` → `PercentType` (**must be checked before `SwitchItem`**)
+- `SwitchItem` → `OnOffType`
+- `ContactItem` → `OpenClosedType`
+- `NumberItem` with `unit != null` → `QuantityType`
+- `NumberItem` without unit → `DecimalType`
+- anything else with `string` → `StringType`
+
+**Critical instanceof ordering in `toRow()`:** `HSBType` before `PercentType` before `DecimalType`
+(because `HSBType extends PercentType extends DecimalType`).
 
 ---
 

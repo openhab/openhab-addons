@@ -34,15 +34,21 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.ImageItem;
+import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.PlayerItem;
+import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DateTimeType;
@@ -51,7 +57,11 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
@@ -197,12 +207,85 @@ class TimescaleDBContainerTest {
                 s -> assertEquals("hello world", s.toString()));
     }
 
+    @Test
+    @Order(18)
+    void roundTrip_PointType_locationItem() throws SQLException {
+        storeAndVerify("Location1", new LocationItem("Location1"), new PointType("52.5200,13.4050,34.0000"),
+                s -> assertInstanceOf(PointType.class, s), s -> {
+                    PointType pt = (PointType) s;
+                    assertEquals(52.52, pt.getLatitude().doubleValue(), 1e-3);
+                    assertEquals(13.405, pt.getLongitude().doubleValue(), 1e-3);
+                });
+    }
+
+    @Test
+    @Order(19)
+    void roundTrip_PlayPauseType_playerItem() throws SQLException {
+        storeAndVerify("Player1", new PlayerItem("Player1"), PlayPauseType.PLAY,
+                s -> assertEquals(PlayPauseType.PLAY, s));
+        storeAndVerify("Player2", new PlayerItem("Player2"), PlayPauseType.PAUSE,
+                s -> assertEquals(PlayPauseType.PAUSE, s));
+    }
+
+    @Test
+    @Order(20)
+    void roundTrip_StringListType_callItem() throws SQLException {
+        storeAndVerify("Call1", new CallItem("Call1"), new StringListType("Alice", "Bob"),
+                s -> assertInstanceOf(StringListType.class, s),
+                s -> assertEquals(new StringListType("Alice", "Bob").toString(), s.toString()));
+    }
+
+    @Test
+    @Order(21)
+    void roundTrip_RawType_imageItem() throws SQLException {
+        byte[] bytes = { (byte) 0x89, 0x50, 0x4E, 0x47 }; // PNG magic bytes
+        storeAndVerify("Image1", new ImageItem("Image1"), new RawType(bytes, "image/png"),
+                s -> assertInstanceOf(RawType.class, s), s -> {
+                    RawType raw = (RawType) s;
+                    assertEquals("image/png", raw.getMimeType());
+                    assertArrayEquals(bytes, raw.getBytes());
+                });
+    }
+
+    @Test
+    @Order(22)
+    void roundTrip_UpDownType_rollershutterItem() throws SQLException {
+        storeAndVerify("Roller2", new RollershutterItem("Roller2"), new PercentType(30),
+                s -> assertInstanceOf(PercentType.class, s), s -> assertEquals(30, ((PercentType) s).intValue()));
+    }
+
+    @Test
+    @Order(23)
+    void roundTrip_GroupItem_withNumberBase() throws SQLException {
+        var baseItem = new NumberItem("GBase");
+        var groupItem = new GroupItem("Group1", baseItem);
+        storeAndVerify("Group1", groupItem, new DecimalType(55.5), s -> assertInstanceOf(DecimalType.class, s),
+                s -> assertEquals(55.5, ((DecimalType) s).doubleValue(), 1e-6));
+    }
+
+    @Test
+    @Order(24)
+    void roundTrip_GroupItem_withSwitchBase() throws SQLException {
+        var baseItem = new SwitchItem("GBase");
+        var groupItem = new GroupItem("GroupSwitch1", baseItem);
+        storeAndVerify("GroupSwitch1", groupItem, OnOffType.ON, s -> assertEquals(OnOffType.ON, s));
+    }
+
+    @Test
+    @Order(25)
+    void roundTrip_GroupItem_withColorBase() throws SQLException {
+        var baseItem = new ColorItem("GBase");
+        var groupItem = new GroupItem("GroupColor1", baseItem);
+        storeAndVerify("GroupColor1", groupItem, new HSBType("240,100,50"), s -> assertInstanceOf(HSBType.class, s),
+                s -> assertEquals("240,100,50", s.toString()));
+    }
+
     // ------------------------------------------------------------------
     // Query — filtering and ordering
     // ------------------------------------------------------------------
 
     @Test
-    @Order(20)
+    @Order(31)
     void query_dateRange_returnsOnlyRowsInRange() throws SQLException {
         ZonedDateTime t1 = ZonedDateTime.now().minusDays(10);
         ZonedDateTime t2 = ZonedDateTime.now().minusDays(5);
@@ -227,7 +310,7 @@ class TimescaleDBContainerTest {
     }
 
     @Test
-    @Order(21)
+    @Order(32)
     void query_ordering_ascending() throws SQLException {
         NumberItem item = new NumberItem("OrderSensor");
         try (Connection conn = dataSource.getConnection()) {
@@ -249,7 +332,7 @@ class TimescaleDBContainerTest {
     }
 
     @Test
-    @Order(22)
+    @Order(33)
     void query_pagination_limitsResults() throws SQLException {
         NumberItem item = new NumberItem("PageSensor");
         try (Connection conn = dataSource.getConnection()) {
