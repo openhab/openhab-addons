@@ -79,8 +79,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
     }
 
     public void connect(String host, Integer port, String login, String nick, String domain, String password,
-            SecurityMode securityMode, boolean disableHostnameVerification)
-            throws XMPPClientConfigException, XMPPClientException {
+            SecurityMode securityMode) throws XMPPClientConfigException, XMPPClientException {
         disconnect();
         String serverHost = domain;
         if (!host.isBlank()) {

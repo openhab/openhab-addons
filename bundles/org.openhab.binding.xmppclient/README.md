@@ -18,7 +18,7 @@ Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ username="openhab", domain="ex
 ```
 
 ```java
-Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=7222, username="openhab", domain="example.com", password="********", disableHostnameVerification="true" ] {
+Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=7222, username="openhab", domain="example.com", password="********" ] {
     Channels:
         Trigger String : xmpp_command [ separator="##" ]
 }
@@ -34,7 +34,6 @@ Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=
 | host                        | Server Hostname/IP            | The IP address or hostname of the XMPP server                      | false    | as "domain" parameter |
 | port                        | XMPP Server Port              | Port for the XMPP server                                           | false    | 5222                  |
 | securityMode                | Security Mode                 | Sets the TLS security mode: `required`, `ifpossible` or `disabled` | false    | `required`            |
-| disableHostnameVerification | Disable Hostname Verification | Disables hostname verification for the TLS connection              | false    | false                 |
 
 ## Channels
 

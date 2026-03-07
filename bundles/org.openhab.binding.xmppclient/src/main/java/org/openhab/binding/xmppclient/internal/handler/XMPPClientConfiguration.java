@@ -30,7 +30,6 @@ public class XMPPClientConfiguration {
     public String password = "";
     public String domain = "";
     public String securityMode = SecurityMode.required.toString();
-    public boolean disableHostnameVerification = false;
 
     public boolean isValid() {
         String host = this.host;
