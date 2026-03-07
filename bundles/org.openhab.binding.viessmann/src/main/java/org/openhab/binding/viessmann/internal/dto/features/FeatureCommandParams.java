@@ -13,6 +13,7 @@
 package org.openhab.binding.viessmann.internal.dto.features;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,9 +31,9 @@ public final class FeatureCommandParams {
     @JsonCreator
     public FeatureCommandParams(@JsonProperty("type") String type, @JsonProperty("required") boolean required,
             @JsonProperty("constraints") Map<String, Object> constraints) {
-        this.type = type;
+        this.type = Objects.requireNonNullElse(type, "");
         this.required = required;
-        this.constraints = constraints;
+        this.constraints = Objects.requireNonNullElse(constraints, Map.of());
     }
 
     public String getType() {
