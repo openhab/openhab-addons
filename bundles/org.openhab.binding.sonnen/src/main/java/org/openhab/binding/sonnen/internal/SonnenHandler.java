@@ -365,7 +365,7 @@ public class SonnenHandler extends BaseThingHandler {
                 putData = "EM_OperatingMode=2";
             }
             if (putData != null) {
-                logger.debug("Executing {} command", CHANNEL_BATTERY_CHARGING_GRID);
+                logger.debug("Executing {} command, putData = {}", CHANNEL_BATTERY_CHARGING_GRID, putData);
                 updateChannel(channelUID.getId(), putData);
             }
         }
@@ -379,14 +379,14 @@ public class SonnenHandler extends BaseThingHandler {
                 putData = "EM_OperatingMode=2";
             }
             if (putData != null) {
-                logger.debug("Executing {} command", CHANNEL_BATTERY_DISCHARGING_GRID);
+                logger.debug("Executing {} command, putData = {}", CHANNEL_BATTERY_DISCHARGING_GRID, putData);
                 updateChannel(channelUID.getId(), putData);
             }
         }
         if (channelUID.getId().equals(CHANNEL_BATTERY_CHARGE_RATE)) {
             if (command instanceof QuantityType quantityCommand) {
                 chargeRate = quantityCommand.intValue();
-                serviceCommunication.startStopBatteryDischarging(null, chargeRate);
+                serviceCommunication.startStopBatteryCharging(null, chargeRate);
             }
         }
         if (channelUID.getId().equals(CHANNEL_BATTERY_DISCHARGE_RATE)) {

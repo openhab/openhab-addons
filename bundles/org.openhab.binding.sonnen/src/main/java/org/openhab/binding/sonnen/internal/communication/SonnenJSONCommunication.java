@@ -112,7 +112,7 @@ public class SonnenJSONCommunication {
             // Validate range before network calls
             if (rate < 0 || rate > 10000) {
                 throw new IllegalArgumentException(
-                        "Max battery " + operation + " power needs to be in the range of 0 - 10000.");
+                        "Max battery " + operation + " power " + rate + " needs to be in the range of 0 - 10000.");
             }
 
             if (putData != null) {
@@ -128,8 +128,9 @@ public class SonnenJSONCommunication {
             }
             SonnenJsonDataDTO currentData = getBatteryData();
 
-            // Execute setpoint if manual mode (1) is active
-            if (currentData != null && "1".equals(currentData.emgetOperationMode())) {
+            // Execute setpoint if manual mode (1) is active, or isInAutomaticMode = false
+            if (currentData != null
+                    && ("1".equals(currentData.emgetOperationMode()) || !currentData.isInAutomaticMode())) {
                 String response2 = HttpUtil.executeUrl("POST", setpointUrl, header, null, "application/json", 10000);
                 logger.debug("{}OperationMode = {}", operation, response2);
                 if (response2 == null) {
