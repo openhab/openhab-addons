@@ -58,8 +58,8 @@ jobs:
         build_task: ${{ fromJSON(needs.plan-shards.outputs.build_task_matrix) }}
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }}, shard ${{ matrix.build_task.build_part }}/${{ needs.plan-shards.outputs.selected_parts }}, ${{ matrix.build_task.range_label }})
     runs-on: ${{ matrix.os }}
-    # dynamic timeout: single-addon builds get lower timeout, full/build-all runs get 90min
-    timeout-minutes: ${{ needs.plan-shards.outputs.selected_parts == '1' && 60 || 90 }}
+    # Each shard is expected to take around 5-15 minutes
+    timeout-minutes: 45
     steps:
       - name: Checkout
         if: github.head_ref == ''
@@ -316,3 +316,12 @@ jobs:
         with:
           name: sat-summary-report-java-${{ matrix.java }}-${{ matrix.os }}
           path: target/summary_report.html
+
+      - name: Delete Per-Shard SAT Artifacts
+        if: steps.download-sat.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts \
+            --paginate --jq '.artifacts[] | select(.name | test("^sat-(summary-report|merge-xml)-java-${{ matrix.java }}-${{ matrix.os }}-")) | .id' \
+          | xargs -r -I{} gh api --method DELETE repos/${{ github.repository }}/actions/artifacts/{}
