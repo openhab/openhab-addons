@@ -90,8 +90,14 @@ public final class ViessmannUtil {
         ServiceReference<TimeZoneProvider> ref = ctx.getServiceReference(TimeZoneProvider.class);
         if (ref != null) {
             TimeZoneProvider tzProvider = ctx.getService(ref);
-            TimeZone tz = TimeZone.getTimeZone(tzProvider.getTimeZone());
-            return tz.toZoneId();
+            if (tzProvider != null) {
+                try {
+                    TimeZone tz = TimeZone.getTimeZone(tzProvider.getTimeZone());
+                    return tz.toZoneId();
+                } finally {
+                    ctx.ungetService(ref);
+                }
+            }
         }
         return ZoneId.systemDefault();
     }
