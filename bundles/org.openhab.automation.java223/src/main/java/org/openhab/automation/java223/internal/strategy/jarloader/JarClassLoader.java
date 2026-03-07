@@ -55,10 +55,11 @@ public class JarClassLoader extends ClassLoader {
     public void addJar(Path path) {
         try (JarFile jarFile = new JarFile(path.toFile())) {
             jarFile.stream().map(JarEntry::getName).forEach(name -> availableResources.put(name, path));
+            // only add classes from JAR starting with 'java223' prefix to the user libraries
+            // Only the user libraries are candidates for auto-injection, so we keep a dedicated register for them.
             if (path.getFileName().toString().startsWith("java223")) {
                 jarFile.stream().map(JarEntry::getName).filter(p -> p.endsWith(CLASS_FILE_TYPE))
                         .forEach(className -> availableUserClass.put(className, path));
-
             }
         } catch (IOException e) {
             logger.warn("Failed to process '{}': {}", path, e.getMessage());

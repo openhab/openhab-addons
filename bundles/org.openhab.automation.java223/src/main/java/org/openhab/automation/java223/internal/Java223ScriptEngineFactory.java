@@ -82,7 +82,7 @@ import ch.obermuhlner.scriptengine.java.packagelisting.PackageResourceListingStr
 public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
         implements ScriptEngineFactory, EventSubscriber, WatchService.WatchEventListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(Java223ScriptEngineFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Java223ScriptEngineFactory.class);
     public static final String HELPER_LIB_JAR = "helper-lib.jar";
 
     private final BundleWiring bundleWiring;
@@ -116,11 +116,10 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
             @Reference ItemRegistry itemRegistry, @Reference ThingRegistry thingRegistry,
             @Reference ModuleTypeRegistry moduleTypeRegistry, @Reference Java223DependencyTracker dependencyTracker,
             @Reference InjectedCodeGenerator injectedCodeGenerator, @Reference ServiceGetter serviceGetter) {
-
         try {
             Files.createDirectories(LIB_DIR);
         } catch (IOException e) {
-            logger.warn("Failed to create directory '{}': {}", LIB_DIR, e.getMessage());
+            LOGGER.warn("Failed to create directory '{}': {}", LIB_DIR, e.getMessage());
             throw new IllegalStateException("Failed to initialize lib folder.");
         }
 
@@ -162,7 +161,7 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
         // registering the watch service for dependency tracker. We must do it AFTER our own
         dependencyTracker.finalizeInitialisation();
 
-        logger.info("Bundle activated");
+        LOGGER.info("Bundle activated");
     }
 
     private void generateOrDeleteHelpers() throws IOException {
@@ -242,7 +241,7 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
         } catch (IOException e) {
             throw new Java223Exception("Cannot create or delete helper library / class files in lib directory", e);
         }
-        logger.debug("java223 configuration update received ({})", properties);
+        LOGGER.debug("java223 configuration update received ({})", properties);
     }
 
     @Deactivate
@@ -295,7 +294,7 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
     @Override
     public void receive(Event event) {
         if (!enableHelper) {
-            logger.debug("Event received but helper is disabled");
+            LOGGER.debug("Event received but helper is disabled");
             return;
         }
 
@@ -310,10 +309,10 @@ public class Java223ScriptEngineFactory extends JavaScriptEngineFactory
                 sourceGenerator.generateActions(writeWaitTime);
             }
         } else if (ITEM_EVENTS.contains(eventType)) {
-            logger.debug("Added/updated item: {}", event);
+            LOGGER.debug("Added/updated item: {}", event);
             sourceGenerator.generateItems(writeWaitTime);
         } else if (THING_EVENTS.contains(eventType)) {
-            logger.debug("Added/updated thing: {}", event);
+            LOGGER.debug("Added/updated thing: {}", event);
             sourceGenerator.generateThings(writeWaitTime);
             sourceGenerator.generateActions(writeWaitTime);
         }

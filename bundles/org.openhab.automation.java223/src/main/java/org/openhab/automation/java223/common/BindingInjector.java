@@ -45,7 +45,7 @@ import ch.obermuhlner.scriptengine.java.MemoryClassLoader;
 @NonNullByDefault
 public class BindingInjector {
 
-    private static final Logger logger = LoggerFactory.getLogger(BindingInjector.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BindingInjector.class);
 
     /**
      * Smart injection of bindings value into an object.
@@ -61,14 +61,13 @@ public class BindingInjector {
             injectBindingsInto(sourceScriptClassLoader, bindings, objectToInjectInto, new HashMap<>());
         } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InstantiationException
                 | InvocationTargetException e) {
-            logger.error("Cannot inject bindings or libs", e);
+            LOGGER.error("Cannot inject bindings or libs", e);
         }
     }
 
     private static void injectBindingsInto(ClassLoader sourceScriptClassLoader, Map<String, Object> bindings,
             Object objectToInjectInto, Map<Class<?>, Object> libAlreadyInstantiated)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-
         Class<?> clazz = objectToInjectInto.getClass();
 
         for (Field field : getAllFields(clazz)) {
@@ -104,7 +103,6 @@ public class BindingInjector {
     private static @Nullable Object extractBindingValueForElement(ClassLoader classLoader, Map<String, Object> bindings,
             AnnotatedElement annotatedElement, Map<Class<?>, Object> libAlreadyInstantiated)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-
         Class<?> fieldType;
         String codeName;
         if (annotatedElement instanceof Parameter parameter) {
@@ -114,7 +112,7 @@ public class BindingInjector {
             fieldType = field.getType();
             codeName = field.getName();
         } else {
-            logger.warn("Cannot check target class for parameter. Only Parameter or Field accepted. Cannot inject.");
+            LOGGER.warn("Cannot check target class for parameter. Only Parameter or Field accepted. Cannot inject.");
             return null;
         }
 
@@ -163,18 +161,18 @@ public class BindingInjector {
                 if (!presetMap.isEmpty()) {
                     value = presetMap;
                 } else {
-                    logger.warn("Cannot find the preset {} for the named parameter {}",
+                    LOGGER.warn("Cannot find the preset {} for the named parameter {}",
                             injectBindingAnnotation.get().preset(), named);
                 }
             } else {
-                logger.warn("Cannot find scriptExtension in bindings. Should not happen");
+                LOGGER.warn("Cannot find scriptExtension in bindings. Should not happen");
             }
         }
 
         // 2.c, browse deep inside the object if there is a path to traverse
         while (!namePath.isEmpty()) {
             if (value == null) {
-                logger.debug("Find null value for the path {}", named);
+                LOGGER.debug("Find null value for the path {}", named);
                 break;
             }
             String namePart = namePath.poll();
@@ -183,7 +181,7 @@ public class BindingInjector {
                 if (elementToParseAsMap.containsKey(namePart)) {
                     found = true;
                 } else {
-                    logger.trace("Didn't find an element with the key '{}'. Ignoring (not an error)", namePart);
+                    LOGGER.trace("Didn't find an element with the key '{}'. Ignoring (not an error)", namePart);
                 }
             } else {
                 try {
@@ -194,7 +192,7 @@ public class BindingInjector {
                         found = true;
                     }
                 } catch (NoSuchFieldException | SecurityException e) {
-                    logger.debug("Cannot map a value to the path {}", named);
+                    LOGGER.debug("Cannot map a value to the path {}", named);
                     value = null;
                     found = false;
                     break;
@@ -206,7 +204,7 @@ public class BindingInjector {
         if (value == null && !found) {
             ServiceGetter serviceGetter = (ServiceGetter) bindings.get(Java223Constants.SERVICE_GETTER);
             if (serviceGetter == null) {
-                logger.trace(
+                LOGGER.trace(
                         "Cannot find a service getter in bindings. Probably in a rule action. Skipping service lookup");
             } else {
                 value = serviceGetter.getService(fieldType);
@@ -224,7 +222,7 @@ public class BindingInjector {
 
         // six, check class compatibility
         if (!fieldType.isAssignableFrom(value.getClass())) {
-            logger.warn(
+            LOGGER.warn(
                     "Parameter/field entry {} is of class {} and not assignable to type {}. Did you use a reserved variable name ?",
                     named, value.getClass().getName(), fieldType.getName());
         }

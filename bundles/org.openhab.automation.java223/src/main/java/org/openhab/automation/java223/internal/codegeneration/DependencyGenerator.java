@@ -49,7 +49,7 @@ public class DependencyGenerator {
 
     public static final String CONVENIENCE_DEPENDENCIES_JAR = "convenience-dependencies.jar";
 
-    private static final Logger logger = LoggerFactory.getLogger(DependencyGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DependencyGenerator.class);
 
     // A set of default dependencies to export
     private static final Set<String> DEFAULT_DEPENDENCIES = Set.of("org.openhab.automation.java223.common",
@@ -114,7 +114,6 @@ public class DependencyGenerator {
             manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 
             try (JarOutputStream target = new JarOutputStream(outFile, manifest)) {
-
                 Set<String> dependencies = new HashSet<>(DEFAULT_DEPENDENCIES);
                 dependencies.addAll(Arrays.asList(additionalBundlesConfig.split(",")));
 
@@ -139,12 +138,12 @@ public class DependencyGenerator {
                 }
 
                 // we want to warn about the list of packages we didn't find
-                if (logger.isWarnEnabled()) {
+                if (LOGGER.isWarnEnabled()) {
                     Set<String> packagesNotFound = new HashSet<>(dependencies);
                     packagesSuccessfullyExported.stream().map(s -> s.replaceAll("/", ".")).toList()
                             .forEach(packagesNotFound::remove);
                     for (String remainingPackage : packagesNotFound) {
-                        logger.warn("Failed to found classes to export in package {}", remainingPackage);
+                        LOGGER.warn("Failed to found classes to export in package {}", remainingPackage);
                     }
                 }
 
@@ -155,7 +154,7 @@ public class DependencyGenerator {
                 copyExportedClassesByClassLoader(classesDependencies, target);
             }
         } catch (IOException e) {
-            logger.warn("Failed to create dependencies jar in '{}': {}", libDir, e.getMessage());
+            LOGGER.warn("Failed to create dependencies jar in '{}': {}", libDir, e.getMessage());
         }
     }
 
@@ -167,17 +166,17 @@ public class DependencyGenerator {
             String path = classToExtract.replaceAll("\\.", "/") + ".class";
             ClassLoader classLoader = DependencyGenerator.class.getClassLoader();
             if (classLoader == null) {
-                logger.warn("Failed (no classloader) to copy from classpath : {}", classToExtract);
+                LOGGER.warn("Failed (no classloader) to copy from classpath : {}", classToExtract);
                 return;
             }
             try (InputStream stream = classLoader.getResourceAsStream(path)) {
                 if (stream != null) {
                     addEntryToJar(target, path, stream);
                 } else {
-                    logger.warn("InputStream {} from classpath is null", classToExtract);
+                    LOGGER.warn("InputStream {} from classpath is null", classToExtract);
                 }
             } catch (IOException e) {
-                logger.warn("Failed to copy classes '{}' from classpath : {}", classToExtract, e.getMessage());
+                LOGGER.warn("Failed to copy classes '{}' from classpath : {}", classToExtract, e.getMessage());
             }
         }
     }
@@ -186,7 +185,7 @@ public class DependencyGenerator {
             JarOutputStream target, Set<String> classesSuccessfullyExported) {
         String exportPackage = bundle.getHeaders().get("Export-Package");
         if (exportPackage == null) {
-            logger.warn("Bundle '{}' does not export any package!", bundle.getSymbolicName());
+            LOGGER.warn("Bundle '{}' does not export any package!", bundle.getSymbolicName());
             return;
         }
         List<String> exportedPackages = Arrays.stream(exportPackage //
@@ -209,7 +208,7 @@ public class DependencyGenerator {
 
                             URL urlEntry = bundle.getEntry(classFile);
                             if (urlEntry == null) {
-                                logger.warn("URL for {} is empty, skipping", classFile);
+                                LOGGER.warn("URL for {} is empty, skipping", classFile);
                             } else {
                                 try (InputStream stream = urlEntry.openStream()) {
                                     addEntryToJar(target, classFile, stream);
@@ -218,7 +217,7 @@ public class DependencyGenerator {
                             }
                         }
                     } catch (IOException e) {
-                        logger.warn("Failed to copy class '{}' from '{}': {}", classFile, bundle.getSymbolicName(),
+                        LOGGER.warn("Failed to copy class '{}' from '{}': {}", classFile, bundle.getSymbolicName(),
                                 e.getMessage());
                     }
                 });
@@ -267,7 +266,6 @@ public class DependencyGenerator {
      * @param allClassesToExport Classes to export inside the JAR
      */
     public void setClassesToAddToDependenciesLib(Set<String> allClassesToExport) {
-
         Set<String> newAdditionalClassesToExport = new HashSet<>();
         for (String clazzAsString : allClassesToExport) {
             Class<?> clazz;
@@ -277,7 +275,7 @@ public class DependencyGenerator {
                 newAdditionalClassesToExport.addAll(getAllSuperclasses(clazz));
                 getAllInterfaces(clazz, newAdditionalClassesToExport);
             } catch (ClassNotFoundException e) {
-                logger.warn("Cannot inspect class {} to add it as a dependency", clazzAsString);
+                LOGGER.warn("Cannot inspect class {} to add it as a dependency", clazzAsString);
             }
         }
 
