@@ -175,16 +175,16 @@ public class FeatureProperties {
         if (hoursLoadClassOne != null) {
             list.add("hoursLoadClassOne");
         }
-        if (hoursLoadClassOne != null) {
+        if (hoursLoadClassTwo != null) {
             list.add("hoursLoadClassTwo");
         }
-        if (hoursLoadClassOne != null) {
+        if (hoursLoadClassThree != null) {
             list.add("hoursLoadClassThree");
         }
-        if (hoursLoadClassOne != null) {
+        if (hoursLoadClassFour != null) {
             list.add("hoursLoadClassFour");
         }
-        if (hoursLoadClassOne != null) {
+        if (hoursLoadClassFive != null) {
             list.add("hoursLoadClassFive");
         }
         if (min != null) {
