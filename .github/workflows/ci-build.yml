@@ -330,7 +330,10 @@ jobs:
 
       - name: Download SAT Merge XMLs
         id: download-sat
-        continue-on-error: true
+        # SAT merge XML artifacts are only uploaded for multi-shard builds.
+        # download-artifact exits 0 even when no artifacts match, so guard
+        # explicitly to avoid running merge-sat-xmls against a missing directory.
+        if: needs.plan-shards.outputs.selected_parts != '1'
         uses: actions/download-artifact@v7
         with:
           pattern: sat-merge-xml-java-${{ matrix.java }}-${{ matrix.os }}-*
