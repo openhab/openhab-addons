@@ -15,14 +15,14 @@
   <name>openHAB Add-ons :: Bundles :: RESTify Binding</name>
 
   <properties>
-    <bnd.importpackage>javax.servlet;version="[3.1,4)",javax.servlet.http;version="[3.1,4)",org.osgi.service.http.whiteboard.*,org.graalvm.polyglot;resolution:=optional,org.jspecify.annotations;resolution:=optional,tools.jackson.dataformat.yaml;resolution:=optional,*</bnd.importpackage>
+    <bnd.importpackage>javax.servlet;version="[3.1,4)",javax.servlet.http;version="[3.1,4)",org.osgi.service.http.whiteboard.*,org.graalvm.polyglot;resolution:=optional,org.jspecify.annotations;resolution:=optional,com.fasterxml.jackson.dataformat.yaml;resolution:=optional,*</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.networknt</groupId>
       <artifactId>json-schema-validator</artifactId>
-      <version>3.0.0</version>
+      <version>2.0.1</version>
       <exclusions>
         <exclusion>
           <groupId>org.graalvm.js</groupId>

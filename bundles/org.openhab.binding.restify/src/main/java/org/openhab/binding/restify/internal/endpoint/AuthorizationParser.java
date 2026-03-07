@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.restify.internal.servlet.Authorization;
 import org.osgi.service.component.annotations.Component;
 
-import tools.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -44,6 +44,6 @@ public class AuthorizationParser {
         if (value == null || value.isNull()) {
             throw new EndpointParseException("Missing required field: " + fieldName);
         }
-        return value.asString();
+        return value.asText();
     }
 }

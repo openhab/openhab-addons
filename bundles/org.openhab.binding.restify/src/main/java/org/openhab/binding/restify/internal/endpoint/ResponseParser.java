@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.restify.internal.servlet.Response;
 import org.osgi.service.component.annotations.Component;
 
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.node.ArrayNode;
-import tools.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -44,8 +44,8 @@ public class ResponseParser {
         if (response.isArray()) {
             return parseFromArray((ArrayNode) response);
         }
-        if (response.isString()) {
-            return parseFromString(response.asString());
+        if (response.isTextual()) {
+            return parseFromString(response.asText());
         }
         if (response.isNumber()) {
             return new Response.NumberResponse(response.numberValue());
