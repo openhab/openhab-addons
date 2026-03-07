@@ -76,6 +76,7 @@ jobs:
         with:
           path: |
             ~/.m2/repository
+            ~/.m2/openhab-schemas
             !~/.m2/repository/org/openhab
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
@@ -196,6 +197,7 @@ jobs:
         with:
           path: |
             ~/.m2/repository
+            ~/.m2/openhab-schemas
             !~/.m2/repository/org/openhab
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
@@ -265,7 +267,9 @@ jobs:
       - name: Restore Maven Cache
         uses: actions/cache/restore@v5
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            ~/.m2/openhab-schemas
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
