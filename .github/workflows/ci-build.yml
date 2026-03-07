@@ -96,7 +96,7 @@ jobs:
 
       - name: Build
         id: build
-        run: bash './.github/scripts/maven-build'
+        run: bash 'bash ./.github/scripts/maven-build'
         env:
           MAVEN_BUILD_ADDON: ${{ needs.plan-shards.outputs.selected_addon }}
           MAVEN_BUILD_PART: ${{ matrix.build_task.build_part }}
@@ -104,6 +104,7 @@ jobs:
           MAVEN_SHARD_ADDONS: ${{ matrix.build_task.shard_addons }}
           MAVEN_OPTS: >-
             -Xmx8g
+            -Dmarkdownlint.skip=true
             -Dmaven.wagon.http.retryHandler.count=5
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -218,11 +219,12 @@ jobs:
 
       - name: Build Features
         id: build
-        run: './.github/scripts/maven-build'
+        run: 'bash ./.github/scripts/maven-build'
         env:
           MAVEN_BUILD_FEATURES: 'true'
           MAVEN_OPTS: >-
             -Xmx8g
+            -Dmarkdownlint.skip=true
             -Dmaven.wagon.http.retryHandler.count=5
             -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
             -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
@@ -241,12 +243,48 @@ jobs:
           name: sat-merge-xml-java-${{ matrix.java }}-${{ matrix.os }}-features
           path: target/merge.xml
           retention-days: 1
+  lint-markdown:
+    name: Lint Markdown
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        if: github.head_ref == ''
+        uses: actions/checkout@v6
+
+      - name: Checkout merge
+        if: github.head_ref != ''
+        uses: actions/checkout@v6
+        with:
+          ref: refs/pull/${{github.event.pull_request.number}}/merge
+
+      # Cache the Node.js toolchain installed by frontend-maven-plugin so it is
+      # only downloaded once rather than on every CI run.
+      - name: Set up Node Cache
+        uses: actions/cache@v5
+        with:
+          path: target/.mvn/node-markdownlint
+          key: markdownlint-node-v24.12.0
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Run markdownlint for all bundles in parallel.
+      # markdownlint.skip defaults to false so the check is active when the
+      # frontend-maven-plugin/markdownlint configuration is present (PR #19010).
+      - name: Lint Markdown
+        run: ./mvnw validate -T4C -Dmarkdownlint.skip=false
+
   finalize:
-    needs: [ plan-shards, build, build-features ]
+    needs: [ plan-shards, build, build-features, lint-markdown ]
     if: |
       always() &&
       needs.build.result == 'success' &&
-      (needs.build-features.result == 'success' || needs.build-features.result == 'skipped')
+      (needs.build-features.result == 'success' || needs.build-features.result == 'skipped') &&
+      (needs.lint-markdown.result == 'success' || needs.lint-markdown.result == 'skipped')
     strategy:
       fail-fast: false
       matrix:
