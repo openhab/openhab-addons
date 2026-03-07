@@ -64,8 +64,8 @@ public class SonnenHandler extends BaseThingHandler {
 
     private Map<String, Boolean> linkedChannels = new HashMap<>();
 
-    private int chargeRate = -1;
-    private int dischargeRate = -1;
+    private int chargeRate = 0;
+    private int dischargeRate = 0;
 
     public SonnenHandler(Thing thing) {
         super(thing);

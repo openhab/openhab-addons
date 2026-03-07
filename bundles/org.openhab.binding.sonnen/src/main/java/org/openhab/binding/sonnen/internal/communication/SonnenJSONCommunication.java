@@ -40,7 +40,7 @@ public class SonnenJSONCommunication {
     private final Logger logger = LoggerFactory.getLogger(SonnenJSONCommunication.class);
     private SonnenConfiguration config;
     private static final int HTTP_TIMEOUT = 10000;
-    private final String BASE_URL = "http://" + config.hostIP + "/api/";
+    private String BASE_URL = "";
 
     private Gson gson;
     private @Nullable SonnenJsonDataDTO batteryData;
@@ -187,6 +187,7 @@ public class SonnenJSONCommunication {
 
     public void setConfig(SonnenConfiguration config2) {
         this.config = config2;
+        BASE_URL = "http://" + config.hostIP + "/api/";
     }
 
     public @Nullable SonnenJsonDataDTO getBatteryData() {
