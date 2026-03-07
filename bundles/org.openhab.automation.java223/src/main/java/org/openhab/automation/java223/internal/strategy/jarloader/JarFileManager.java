@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFileManager<M> {
-    private static final Logger logger = LoggerFactory.getLogger(JarFileManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JarFileManager.class);
 
     private final Map<String, List<JavaFileObject>> additionalPackages;
     private final ClassLoader classLoader;
@@ -181,12 +181,12 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
                 }
                 byte[] newMd5LibSum = md5Digest.digest();
                 if (Arrays.equals(newMd5LibSum, md5LibSum)) {
-                    logger.debug("No change and no need to rebuild lib package classloader");
+                    LOGGER.debug("No change and no need to rebuild lib package classloader");
                     return;
                 }
 
-                logger.info("Full rebuild of java223 classpath");
-                logger.debug("Libraries to load from '{}' to memory: {}", libDirectory, libFiles);
+                LOGGER.info("Full rebuild of java223 classpath");
+                LOGGER.debug("Libraries to load from '{}' to memory: {}", libDirectory, libFiles);
 
                 JarClassLoader newClassLoader = new JarClassLoader(parentClassLoader);
                 Map<String, List<JavaFileObject>> additionalPackages = new HashMap<>();
@@ -196,9 +196,8 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
                 upToDateAdditionalPackages = additionalPackages;
 
                 md5LibSum = newMd5LibSum;
-
             } catch (IOException e) {
-                logger.warn("Could not load libraries: {}", e.getMessage());
+                LOGGER.warn("Could not load libraries: {}", e.getMessage());
             } finally {
                 FILEMANAGER_LOCK.unlock();
             }
@@ -212,7 +211,7 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
             jarPaths.add(newLib);
             try {
                 FILEMANAGER_LOCK.lock();
-                logger.debug("Library to load to memory: {}", newLib);
+                LOGGER.debug("Library to load to memory: {}", newLib);
                 if (upToDateClassLoader instanceof JarClassLoader upToDateJarClassLoader) {
                     processLibrary(newLib, upToDateJarClassLoader, upToDateAdditionalPackages);
                 } else {
@@ -239,14 +238,14 @@ public class JarFileManager<M extends JavaFileManager> extends ForwardingJavaFil
 
                     Objects.requireNonNull(additionalPackages.computeIfAbsent(packageName, k -> new ArrayList<>()))
                             .add(JarFileObject.classFileObject(classUri));
-                    logger.trace("Added entry {} to additional libraries with package {}.", entry, packageName);
+                    LOGGER.trace("Added entry {} to additional libraries with package {}.", entry, packageName);
                 }
             } catch (IOException e) {
-                logger.warn("Failed to process {}: {}", jarFile, e.getMessage());
+                LOGGER.warn("Failed to process {}: {}", jarFile, e.getMessage());
             }
 
             jarClassLoader.addJar(jarFile);
-            logger.info("JAR loaded in the java223 script classpath: {}", jarFile);
+            LOGGER.info("JAR loaded in the java223 script classpath: {}", jarFile);
         }
     }
 }

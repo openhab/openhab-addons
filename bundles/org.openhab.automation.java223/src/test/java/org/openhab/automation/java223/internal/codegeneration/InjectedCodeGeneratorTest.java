@@ -12,7 +12,8 @@
  */
 package org.openhab.automation.java223.internal.codegeneration;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,7 +55,6 @@ class InjectedCodeGeneratorTest {
 
     @Test
     void nameParseBindingsTest() {
-
         // given
         Map<String, Object> defaultPresets = new HashMap<>();
         ItemRegistryImpl itemRegistry = new ItemRegistryImpl(medataRegistry, defaultStateDescriptionFragmentProvider);
@@ -71,13 +71,13 @@ class InjectedCodeGeneratorTest {
         // then
         List<String> injectedFieldsDeclaration = Arrays
                 .stream(injectedCodeGenerator.getInjectedFieldsDeclaration().split("\n")).map(String::strip).toList();
-        assertThat(injectedFieldsDeclaration).contains("protected @InjectBinding ItemRegistry ir;");
-        assertThat(injectedFieldsDeclaration).contains("protected @InjectBinding Map<String, State> items;");
+        assertTrue(injectedFieldsDeclaration.contains("protected @InjectBinding ItemRegistry ir;"));
+        assertTrue(injectedFieldsDeclaration.contains("protected @InjectBinding Map<String, State> items;"));
 
         List<String> defaultPresetImportList = Arrays
                 .stream(injectedCodeGenerator.getDefaultPresetImportList().split("\n")).map(String::strip).toList();
-        assertThat(defaultPresetImportList).contains("import org.openhab.core.items.ItemRegistry;");
+        assertTrue(defaultPresetImportList.contains("import org.openhab.core.items.ItemRegistry;"));
 
-        assertThat(injectedCodeGenerator.getEnumByType()).containsEntry("OnOffType", Set.of("ON", "OFF"));
+        assertEquals(Set.of("ON", "OFF"), injectedCodeGenerator.getEnumByType().get("OnOffType"));
     }
 }

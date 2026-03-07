@@ -38,7 +38,7 @@ import ch.obermuhlner.scriptengine.java.compilation.ScriptInterceptorStrategy;
 @NonNullByDefault
 public class ScriptWrappingStrategy implements ScriptInterceptorStrategy {
 
-    private static final Logger logger = LoggerFactory.getLogger(ScriptWrappingStrategy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScriptWrappingStrategy.class);
 
     private Boolean enableHelper;
 
@@ -116,7 +116,6 @@ public class ScriptWrappingStrategy implements ScriptInterceptorStrategy {
 
     @Override
     public @Nullable String intercept(@Nullable String script) {
-
         if (script == null) {
             return "";
         }
@@ -166,7 +165,7 @@ public class ScriptWrappingStrategy implements ScriptInterceptorStrategy {
         }
         modifiedScript.append(BOILERPLATE_CODE_AFTER);
         String returnedScript = modifiedScript.toString();
-        logger.trace("Full script wrapped {}", returnedScript);
+        LOGGER.trace("Full script wrapped {}", returnedScript);
         return returnedScript;
     }
 
