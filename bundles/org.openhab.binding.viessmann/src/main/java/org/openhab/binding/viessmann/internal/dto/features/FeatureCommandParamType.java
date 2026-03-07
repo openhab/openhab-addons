@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * The {@link FeatureCommandParams} provides parameters of features command
+ * The {@link FeatureCommandParamType} provides parameters of features command
  *
  * @author Ronny Grun - Initial contribution
  */
