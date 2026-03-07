@@ -369,17 +369,6 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
         if (customDebug) {
             logger.info("DIRIGERA BASE_HANDLER {} handleUpdate JSON {}", thing.getUID(), update);
         }
-        // check online offline for each device
-        if (update.has(Model.REACHABLE)) {
-            if (update.getBoolean(Model.REACHABLE)) {
-                updateStatus(ThingStatus.ONLINE);
-                online = true;
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/dirigera.device.status.not-reachable");
-                online = false;
-            }
-        }
         if (update.has(PROPERTY_DEVICE_TYPE) && deviceType.isBlank()) {
             deviceType = update.getString(PROPERTY_DEVICE_TYPE);
         }
@@ -462,6 +451,17 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 setLinks(updateList);
                 // just update internal link list and let the gateway update do all updates regarding soft links
                 gateway().updateLinks();
+            }
+        }
+        // check online offline for each device
+        if (update.has(Model.REACHABLE)) {
+            if (update.getBoolean(Model.REACHABLE)) {
+                updateStatus(ThingStatus.ONLINE);
+                online = true;
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/dirigera.device.status.not-reachable");
+                online = false;
             }
         }
     }
