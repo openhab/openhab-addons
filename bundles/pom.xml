@@ -730,6 +730,11 @@
         <inherited>false</inherited>
         <executions>
           <!-- 1. Download XSD -->
+          <!-- The XSD is stored in ~/.m2/openhab-schemas rather than target/schemas for two reasons:
+               - target/ is deleted by "mvn clean", which would force a fresh network fetch on every build,
+                 defeating the usetimestamp="true" conditional-GET optimisation.
+               - ~/.m2/openhab-schemas is included in the CI Maven cache, so parallel shards and
+                 subsequent builds share one cached copy instead of each fetching it independently. -->
           <execution>
             <id>download-xsd</id>
             <goals>
@@ -738,8 +743,8 @@
             <phase>generate-resources</phase>
             <configuration>
               <target>
-                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
-                <get dest="${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd" src="https://openhab.org/schemas/thing-description-1.0.0.xsd" usetimestamp="true"/>
+                <mkdir dir="${user.home}/.m2/openhab-schemas"/>
+                <get dest="${user.home}/.m2/openhab-schemas/thing-description-1.0.0.xsd" src="https://openhab.org/schemas/thing-description-1.0.0.xsd" usetimestamp="true"/>
               </target>
             </configuration>
           </execution>
@@ -757,7 +762,7 @@
                 <echo file="${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <uri name="https://openhab.org/schemas/thing-description-1.0.0.xsd"
-         uri="file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd"/>
+         uri="file:///${user.home}/.m2/openhab-schemas/thing-description-1.0.0.xsd"/>
 </catalog>]]></echo>
               </target>
             </configuration>
