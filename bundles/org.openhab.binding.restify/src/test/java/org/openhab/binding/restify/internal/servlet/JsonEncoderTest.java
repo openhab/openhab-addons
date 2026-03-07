@@ -108,6 +108,6 @@ class JsonEncoderTest {
         var actual = sut.encode(root);
 
         // Then
-        assertThat(actual).isEqualTo("{\"emptyObject\":{},\"emptyArray\":[]}");
+        assertThat(actual).isEqualTo("{\"emptyArray\":[],\"emptyObject\":{}}");
     }
 }
