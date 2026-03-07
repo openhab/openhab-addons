@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonnen.internal.communication.SonnenJSONCommunication;
 import org.openhab.binding.sonnen.internal.communication.SonnenJsonDataDTO;
 import org.openhab.binding.sonnen.internal.communication.SonnenJsonPowerMeterDataDTO;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -401,6 +402,10 @@ public class SonnenHandler extends BaseThingHandler {
                     logger.debug("Unable to convert {} command {} to {}", CHANNEL_BATTERY_CHARGE_RATE, quantityCommand,
                             Units.WATT);
                 }
+            } else if (command instanceof DecimalType decimal) {
+                chargeRate = decimal.intValue();
+                serviceCommunication.startStopBatteryCharging(null, chargeRate);
+                updateState(channelUID, decimal);
             }
         }
         if (channelUID.getId().equals(CHANNEL_BATTERY_DISCHARGE_RATE)) {
@@ -414,6 +419,10 @@ public class SonnenHandler extends BaseThingHandler {
                     logger.debug("Unable to convert {} command {} to {}", CHANNEL_BATTERY_DISCHARGE_RATE,
                             quantityCommand, Units.WATT);
                 }
+            } else if (command instanceof DecimalType decimal) {
+                chargeRate = decimal.intValue();
+                serviceCommunication.startStopBatteryCharging(null, chargeRate);
+                updateState(channelUID, decimal);
             }
         }
     }
