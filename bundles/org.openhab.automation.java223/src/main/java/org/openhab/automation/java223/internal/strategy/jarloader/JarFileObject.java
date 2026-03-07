@@ -84,7 +84,7 @@ public class JarFileObject implements JavaFileObject {
 
     @Override
     public Writer openWriter() throws IOException {
-        return new OutputStreamWriter(openOutputStream());
+        return new OutputStreamWriter(openOutputStream(), StandardCharsets.UTF_8);
     }
 
     @Override

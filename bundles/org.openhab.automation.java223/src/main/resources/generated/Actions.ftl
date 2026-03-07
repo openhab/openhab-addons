@@ -17,7 +17,7 @@ import ${classToImport};
 public class Actions {
 
     @InjectBinding
-    private ScriptThingActions actions;
+    private final ScriptThingActions actions;
 
     public Actions(ScriptThingActions actions) {
         this.actions = actions;
@@ -26,9 +26,9 @@ public class Actions {
     /**
      * Helper method to call arbitrary action. You should use the dedicated generated static actions class if possible
      *
-     * @param thingActions
-     * @param method
-     * @param params
+     * @param thingActions the ThingActions to call method upon
+     * @param method The name of the method to call
+     * @param params The parameters of the method
      */
     public static void invokeAction(ThingActions thingActions, String method, Object... params) {
         Class<?>[] paramClasses = new Class<?>[params.length];

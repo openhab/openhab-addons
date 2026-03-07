@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -525,7 +526,7 @@ public class SourceGenerator {
 
         @SuppressWarnings("unchecked")
         TemplateMethodModelEx tmm = (args) -> escapeName(
-                ((List<freemarker.ext.beans.StringModel>) args).getFirst().getWrappedObject().toString());
+                ((List<freemarker.ext.beans.GenericObjectModel>) args).getFirst().getWrappedObject().toString());
         context.put("escapeName", tmm);
 
         StringWriter writer = new StringWriter();
@@ -536,7 +537,7 @@ public class SourceGenerator {
     }
 
     private static String capitalize(String minusString) {
-        return minusString.substring(0, 1).toUpperCase() + minusString.substring(1);
+        return minusString.substring(0, 1).toUpperCase(Locale.FRANCE) + minusString.substring(1);
     }
 
     private static String escapeName(String textToEscape) {

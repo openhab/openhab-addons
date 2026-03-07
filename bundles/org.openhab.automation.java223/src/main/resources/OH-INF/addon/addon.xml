@@ -4,8 +4,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>automation</type>
-	<name>Java223 Scripting Automation</name>
+	<name>Java223 Scripting</name>
 	<description>This bundle allows using Java in JSR223 scripts.</description>
+	<connection>none</connection>
 
 	<config-description>
 
