@@ -226,8 +226,7 @@
 		<item-type>Switch</item-type>
 		<label>Discharging to Grid</label>
 		<description>Starts and stops the active battery discharging to Grid. Note: "Write-API" in Software-Integration page
-			of
-			the local web interface from the sonnen battery must be activated and the given token must be entered in
+			of the local web interface from the sonnen battery must be activated and the given token must be entered in
 			authentication token field of the binding.</description>
 	</channel-type>
 	<channel-type id="batteryOperationMode">
