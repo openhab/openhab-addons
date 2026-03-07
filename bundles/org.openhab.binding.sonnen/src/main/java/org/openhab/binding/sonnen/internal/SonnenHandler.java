@@ -420,8 +420,8 @@ public class SonnenHandler extends BaseThingHandler {
                             quantityCommand, Units.WATT);
                 }
             } else if (command instanceof DecimalType decimal) {
-                chargeRate = decimal.intValue();
-                serviceCommunication.startStopBatteryCharging(null, chargeRate);
+                dischargeRate = decimal.intValue();
+                serviceCommunication.startStopBatteryDischarging(null, dischargeRate);
                 updateState(channelUID, decimal);
             }
         }
