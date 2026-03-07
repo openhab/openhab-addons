@@ -13,6 +13,7 @@
 package org.openhab.binding.dirigera.internal.model;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.time.Duration;
@@ -21,10 +22,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
+import org.openhab.binding.dirigera.internal.handler.DirigeraHandlerManipulator;
 import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
@@ -207,7 +210,7 @@ class TestModel {
     void testDeviceAdded() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/device-added/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -216,7 +219,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/device-added/device-added.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/device-added/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/device-added/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message
@@ -231,7 +236,7 @@ class TestModel {
     void testDeviceRemoved() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/device-removed/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -240,7 +245,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/device-removed/device-removed.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/device-removed/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/device-removed/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message
@@ -256,7 +263,7 @@ class TestModel {
     void testSceneCreated() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/scene-created/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -265,7 +272,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/scene-created/scene-created.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/scene-created/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/scene-created/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message
@@ -280,7 +289,7 @@ class TestModel {
     void testSceneDeleted() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/scene-deleted/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -289,7 +298,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/scene-deleted/scene-deleted.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/scene-deleted/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/scene-deleted/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message

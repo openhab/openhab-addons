@@ -88,19 +88,19 @@ class TestSmartPlug {
 
     @Test
     void testCommands() {
-        DirigeraAPISimu.patchMap.clear();
         BaseHandler handler = getHandler();
         Thing thing = handler.getThing();
         CallbackMock callback = (CallbackMock) handler.getCallback();
+        DirigeraAPISimu api = (DirigeraAPISimu) handler.gateway().api();
         assertNotNull(handler);
         assertNotNull(thing);
         assertNotNull(callback);
+
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_ENERGY_RESET_DATE), new DateTimeType());
-        DirigeraAPISimu.waitForPatch();
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+
+        String patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"energyConsumedAtLastReset\":0}}", patch, "Reset Power");
-        DirigeraAPISimu.patchMap.clear();
     }
 
     void checkSmartPlugStates(CallbackMock callback) {

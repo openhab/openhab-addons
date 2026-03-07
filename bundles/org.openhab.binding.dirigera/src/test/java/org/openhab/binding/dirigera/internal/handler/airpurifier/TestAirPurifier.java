@@ -94,19 +94,20 @@ class TestAirPurifier {
         assertNotNull(handler);
         Thing thing = handler.getThing();
         assertNotNull(thing);
+        DirigeraAPISimu api = (DirigeraAPISimu) handler.gateway().api();
 
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_MODE), new DecimalType(4));
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        String patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"fanMode\":\"on\"}}", patch, "Fan Mode on");
 
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_SPEED), new PercentType(23));
-        patch = DirigeraAPISimu.patchMap.get(deviceId);
+        patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"motorState\":12}}", patch, "Fan Speed");
 
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_PURIFIER_FAN_SPEED), new PercentType(100));
-        patch = DirigeraAPISimu.patchMap.get(deviceId);
+        patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"motorState\":50}}", patch, "Fan Speed");
     }

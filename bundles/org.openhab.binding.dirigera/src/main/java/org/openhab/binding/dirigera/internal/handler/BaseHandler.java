@@ -140,14 +140,22 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/dirigera.device.status.wrong-bridge-type");
+                    return;
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/dirigera.device.missing-bridge-handler");
+                return;
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/dirigera.device.status.missing-bridge");
+            return;
+        }
+        if (config.id.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/dirigera.device.status.id-mandatory");
+            return;
         }
     }
 
@@ -190,11 +198,9 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
             // if handler doesn't match model status will be set to offline and it will stay until correction
             return;
         } else {
+            updateProperties();
             JSONObject values = gateway().api().readDevice(config.id);
             handleUpdate(values);
-        }
-        if (!config.id.isBlank()) {
-            updateProperties();
             gateway().registerDevice(child, config.id);
         }
     }
@@ -450,9 +456,10 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
                 updateList.add(link.toString());
             });
             Collections.sort(updateList);
-            Collections.sort(hardLinks);
-            if (!hardLinks.equals(updateList)) {
-                hardLinks = updateList;
+            List<String> localHardLinks = getLinks();
+            Collections.sort(localHardLinks);
+            if (!localHardLinks.equals(updateList)) {
+                setLinks(updateList);
                 // just update internal link list and let the gateway update do all updates regarding soft links
                 gateway().updateLinks();
             }
@@ -579,8 +586,12 @@ public class BaseHandler extends BaseThingHandler implements DebugHandler {
      *
      * @return links attached to this device
      */
-    public List<String> getLinks() {
+    public synchronized List<String> getLinks() {
         return new ArrayList<String>(hardLinks);
+    }
+
+    private synchronized void setLinks(List<String> newLinks) {
+        hardLinks = new ArrayList<>(newLinks);
     }
 
     private void linkUpdate(String linkedDeviceId, boolean add) {

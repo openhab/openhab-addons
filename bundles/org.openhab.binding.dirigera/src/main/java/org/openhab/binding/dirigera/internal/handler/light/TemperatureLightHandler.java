@@ -73,6 +73,18 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                     properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax));
                 }
             }
+
+            // KAJPLATS is delivering color temperature in Mired https://en.wikipedia.org/wiki/Mired
+            if (colorTemperatureMin - colorTemperatureMax < 0) {
+                properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin) + "M");
+                properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax) + "M");
+                colorTemperatureMin = 1000000 / colorTemperatureMin;
+                colorTemperatureMax = 1000000 / colorTemperatureMax;
+            } else {
+                properties.put("colorTemperatureMin", String.valueOf(colorTemperatureMin) + "K");
+                properties.put("colorTemperatureMax", String.valueOf(colorTemperatureMax) + "K");
+            }
+
             StateDescriptionFragment fragment = StateDescriptionFragmentBuilder.create()
                     .withMinimum(BigDecimal.valueOf(colorTemperatureMax))
                     .withMaximum(BigDecimal.valueOf(colorTemperatureMin)).withStep(BigDecimal.valueOf(100))

@@ -77,23 +77,22 @@ class TestSwitchLight {
 
     @Test
     void testCommands() {
-        DirigeraAPISimu.patchMap.clear();
         BaseHandler handler = getHandler();
         Thing thing = handler.getThing();
-        // DirigeraAPISimu api = (DirigeraAPISimu) ((DirigeraHandler) hubBridge.getHandler()).api();
+        DirigeraAPISimu api = (DirigeraAPISimu) handler.gateway().api();
+
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), OnOffType.ON);
-        DirigeraAPISimu.waitForPatch();
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+
+        String patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"isOn\":true}}", patch, "Power on");
-        DirigeraAPISimu.patchMap.clear();
+        api.clear();
 
         // simulate feedback
         handler.handleUpdate(new JSONObject("{\"attributes\": {\"isOn\": true}}"));
 
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), OnOffType.OFF);
-        DirigeraAPISimu.waitForPatch();
-        patch = DirigeraAPISimu.patchMap.get(deviceId);
+        patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"isOn\":false}}", patch, "Power off");
     }

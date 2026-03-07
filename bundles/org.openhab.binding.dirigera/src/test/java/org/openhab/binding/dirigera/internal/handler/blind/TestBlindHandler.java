@@ -85,9 +85,11 @@ class TestBlindHandler {
         assertNotNull(handler);
         Thing thing = handler.getThing();
         assertNotNull(thing);
+        DirigeraAPISimu api = (DirigeraAPISimu) handler.gateway().api();
+
         // DirigeraAPISimu api = (DirigeraAPISimu) ((DirigeraHandler) hubBridge.getHandler()).api();
         handler.handleCommand(new ChannelUID(thing.getUID(), "blind-level"), new PercentType(20));
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        String patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"blindsTargetLevel\":20}}", patch, "Target Blind Level");
     }
