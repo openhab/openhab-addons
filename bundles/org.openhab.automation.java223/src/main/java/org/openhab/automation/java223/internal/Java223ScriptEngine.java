@@ -76,7 +76,6 @@ public class Java223ScriptEngine extends JavaScriptEngine implements Invocable {
     @Override
     public Java223CompiledScript compile(@Nullable String originalScript) throws ScriptException {
         try {
-
             if (originalScript == null) {
                 throw new ScriptException("script cannot be null");
             }

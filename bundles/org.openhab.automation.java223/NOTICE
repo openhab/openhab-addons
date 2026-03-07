@@ -8,6 +8,16 @@ This program and the accompanying materials are made available under the terms
 of the Eclipse Public License 2.0 which is available at
 https://www.eclipse.org/legal/epl-2.0/.
 
+== Apache Freemarker
+
+This bundle uses Apache Freemarker, with the 'Apache License 2.0'.
+
+== Java ScriptEngine
+
+In the 3rd party directory you will find a copy of the JavaScript Engine used by the Java223 binding, made by
+the user eobermuhlner (source available at https://github.com/eobermuhlner/java-scriptengine). This work is distributed
+under the MIT licence.
+
 == Source Code
 
 https://github.com/openhab/openhab-addons
