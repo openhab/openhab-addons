@@ -104,11 +104,14 @@ import com.google.gson.GsonBuilder;
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private static final int TIMEOUT_S = 20;
     private static final int API_LIMIT_INTERVAL_S = 3600;
+    private static final int MAX_REQUESTS_PER_SECOND = 5;
+    private static final long ONE_SECOND_IN_NANOS = TimeUnit.SECONDS.toNanos(1);
 
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
     private final AuthenticationApi connectApi = new AuthenticationApi(this);
     private final Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private final Deque<Instant> requestsTimestamps = new ArrayDeque<>(200);
+    private final Deque<Long> requestsWindowInNanos = new ArrayDeque<>(MAX_REQUESTS_PER_SECOND);
     private final BindingConfiguration bindingConf;
     private final HttpClient httpClient;
     private final OAuthFactory oAuthFactory;
@@ -328,28 +331,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             }
             connectApi.getAuthorization().ifPresent(auth -> request.header(HttpHeader.AUTHORIZATION, auth));
 
-            if (payload != null && contentType != null
-                    && (HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
-                InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
-                try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
-                    request.content(inputStreamContentProvider, contentType);
-                    request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-                }
-                logger.trace(" -with payload: {} ", payload);
-            }
-
-            if (isLinked(requestCountChannelUID)) {
-                Instant now = Instant.now();
-                requestsTimestamps.addLast(now);
-                Instant oneHourAgo = now.minus(1, ChronoUnit.HOURS);
-                while (requestsTimestamps.getFirst().isBefore(oneHourAgo)) {
-                    requestsTimestamps.removeFirst();
-                }
-                updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
-            }
+            handlePayload(method, payload, contentType, request);
+            handleRequestCounter();
 
             logger.trace(" -with headers: {} ",
                     String.join(", ", request.getHeaders().stream().map(HttpField::toString).toList()));
+
+            throttleApiRequestRate();
             ContentResponse response = request.send();
 
             Code statusCode = HttpStatus.getCode(response.getStatus());
@@ -377,8 +365,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 String delayStr = response.getHeaders().get(HttpHeader.RETRY_AFTER);
                 int delay = delayStr != null ? Integer.valueOf(delayStr) : Integer.MAX_VALUE;
                 if (exception.getStatusCode() == ServiceError.CONCURRENCY_LIMIT_TIMED_OUT) {
-                    delay = Math.min(delay, TIMEOUT_S);
-                    message = "@text/concurrency-limit-timed-out [ \"%d\" ]";
+                    if (retryCount > 0) {
+                        logger.debug("Concurrency limited section, retry counter: {}", retryCount);
+                        return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
+                    } else {
+                        delay = Math.min(delay, TIMEOUT_S);
+                        message = "@text/concurrency-limit-timed-out [ \"%d\" ]";
+                    }
                 } else { // ServiceError.MAXIMUM_USAGE_REACHED
                     delay = Math.min(delay, API_LIMIT_INTERVAL_S);
                     message = "@text/maximum-usage-reached [ \"%d\" ]";
@@ -397,6 +390,56 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             }
             prepareReconnection("@text/request-time-out", null, e.getMessage());
             throw new NetatmoException("%s: \"%s\"".formatted(e.getClass().getName(), e.getMessage()));
+        }
+    }
+
+    private void handleRequestCounter() {
+        if (!isLinked(requestCountChannelUID)) {
+            return;
+        }
+
+        Instant now = Instant.now();
+        requestsTimestamps.addLast(now);
+        Instant oneHourAgo = now.minus(1, ChronoUnit.HOURS);
+        requestsTimestamps.removeIf(t -> t.isBefore(oneHourAgo));
+        updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
+    }
+
+    private void handlePayload(HttpMethod method, @Nullable String payload, @Nullable String contentType,
+            Request request) {
+        if (payload == null || contentType == null
+                || !(HttpMethod.POST.equals(method) || HttpMethod.PUT.equals(method))) {
+            return;
+        }
+
+        InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
+        try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
+            request.content(inputStreamContentProvider, contentType);
+            request.header(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
+        }
+        logger.trace(" -with payload: {} ", payload);
+    }
+
+    private void throttleApiRequestRate() throws InterruptedException {
+        while (true) {
+            long now = System.nanoTime();
+            long threshold = now - ONE_SECOND_IN_NANOS;
+
+            while (!requestsWindowInNanos.isEmpty() && requestsWindowInNanos.getFirst() <= threshold) {
+                requestsWindowInNanos.removeFirst();
+            }
+
+            if (requestsWindowInNanos.size() < MAX_REQUESTS_PER_SECOND) {
+                requestsWindowInNanos.addLast(now);
+                return;
+            }
+
+            long waitNanos = requestsWindowInNanos.getFirst() + ONE_SECOND_IN_NANOS - now;
+            if (waitNanos > 0) {
+                logger.trace("Rate limit reached ({} req/s), waiting {} ms", MAX_REQUESTS_PER_SECOND,
+                        TimeUnit.NANOSECONDS.toMillis(waitNanos));
+                TimeUnit.NANOSECONDS.sleep(waitNanos);
+            }
         }
     }
 
