@@ -19,6 +19,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -62,9 +63,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
     @Override
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
-        String filter = getUrlParm(parameters, URLPARM_FILTER).toLowerCase();
-        String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase();
-        String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase();
+        String filter = getUrlParm(parameters, URLPARM_FILTER).toLowerCase(Locale.ROOT);
+        String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase(Locale.ROOT);
+        String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase(Locale.ROOT);
 
         logger.debug("Generating overview for {} devices", getThingHandlers().size());
 

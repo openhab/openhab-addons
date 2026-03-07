@@ -87,19 +87,19 @@ public class Shelly1EventServlet extends HttpServlet {
             Map<String, String[]> parameters = request.getParameterMap();
             logger.debug("Shelly1EventServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
-            if (!path.toLowerCase().startsWith(SHELLY1_CALLBACK_URI) || !path.contains("/event/shelly")) {
+            if (!path.toLowerCase(Locale.ROOT).startsWith(SHELLY1_CALLBACK_URI) || !path.contains("/event/shelly")) {
                 logger.warn("Shelly1EventServlet received unknown request: path = {}", path);
                 return;
             }
 
-            deviceName = substringBetween(path, "/event/", "/").toLowerCase();
+            deviceName = substringBetween(path, "/event/", "/").toLowerCase(Locale.ROOT);
             if (path.contains("/" + EVENT_TYPE_RELAY + "/") || path.contains("/" + EVENT_TYPE_ROLLER + "/")
                     || path.contains("/" + EVENT_TYPE_LIGHT + "/")) {
-                index = substringAfterLast(path, "/").toLowerCase();
+                index = substringAfterLast(path, "/").toLowerCase(Locale.ROOT);
                 type = substringBetween(path, deviceName + "/", "/" + index);
             } else {
                 index = "";
-                type = substringAfterLast(path, "/").toLowerCase();
+                type = substringAfterLast(path, "/").toLowerCase(Locale.ROOT);
             }
             logger.trace("{}: Process event of type type={}, index={}", deviceName, type, index);
 

@@ -23,6 +23,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -110,7 +111,7 @@ public class ShellyApiException extends Exception {
         Class<?> extype = !isEmpty() ? getCauseClass() : null;
         return (extype != null) && ((extype == TimeoutException.class) || extype == InterruptedException.class
                 || extype == SocketTimeoutException.class
-                || nonNullString(getMessage()).toLowerCase().contains("timeout"));
+                || nonNullString(getMessage()).toLowerCase(Locale.ROOT).contains("timeout"));
     }
 
     public boolean isConnectionError() {

@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -191,7 +192,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
-        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(), String.class);
+        callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(Locale.ROOT),
+                String.class);
     }
 
     @Override
@@ -201,7 +203,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public ShellyShortLightStatus setLightTurn(int id, String turnMode) throws ShellyApiException {
-        return callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(),
+        return callApi(getControlUriPrefix(id) + "?" + SHELLY_LIGHT_TURN + "=" + turnMode.toLowerCase(Locale.ROOT),
                 ShellyShortLightStatus.class);
     }
 
@@ -249,7 +251,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             status.charger = profile.settings.externalPower != 0;
         }
         if (status.tmp != null && status.tmp.tC == null && status.tmp.value != null) { // Motion is is missing tC and tF
-            status.tmp.tC = getString(status.tmp.units).toUpperCase().equals(SHELLY_TEMP_FAHRENHEIT)
+            status.tmp.tC = getString(status.tmp.units).toUpperCase(Locale.ROOT).equals(SHELLY_TEMP_FAHRENHEIT)
                     ? ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(status.tmp.value).doubleValue()
                     : status.tmp.value;
         }

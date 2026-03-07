@@ -15,6 +15,8 @@ package org.openhab.binding.shelly.internal.api;
 import static org.eclipse.jetty.http.HttpStatus.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -73,7 +75,8 @@ public class ShellyApiResult {
     }
 
     public boolean isHttpTimeout() {
-        return httpCode == -1 || response.toUpperCase().contains(SHELLY_APIERR_TIMEOUT.toLowerCase());
+        return httpCode == -1
+                || response.toUpperCase(Locale.ROOT).contains(SHELLY_APIERR_TIMEOUT.toLowerCase(Locale.ROOT));
     }
 
     public boolean isHttpServerError() {

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -433,7 +434,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             if (cl != null) {
                 try (InputStream inputStream = cl.getResourceAsStream(file)) {
                     if (inputStream != null) {
-                        code = new BufferedReader(new InputStreamReader(inputStream)).lines()
+                        code = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
                                 .collect(Collectors.joining("\n"));
                     }
                 } catch (IOException | UncheckedIOException e) {
@@ -482,7 +483,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 if (ourId == -1) {
                     // find free script id
                     ourId = 0;
-                    for (ourId = 1; ourId <= MAX_SCRIPT_ID && testScriptId(scriptList, ourId); ourId++) {
+                    for (ourId = 1; ourId <= MAX_SCRIPT_ID; ourId++) {
+                        if (!testScriptId(scriptList, ourId)) {
+                            break;
+                        }
                     }
                 }
                 if (ourId <= MAX_SCRIPT_ID) {
