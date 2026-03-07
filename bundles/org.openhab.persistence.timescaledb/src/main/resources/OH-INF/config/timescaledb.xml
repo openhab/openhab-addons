@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="persistence:timescaledb">
+
+		<parameter-group name="connection">
+			<label>Connection</label>
+			<advanced>false</advanced>
+		</parameter-group>
+
+		<parameter-group name="tuning">
+			<label>Tuning</label>
+			<advanced>true</advanced>
+		</parameter-group>
+
+		<parameter name="url" type="text" required="true" groupName="connection">
+			<context>url</context>
+			<label>JDBC URL</label>
+			<description>JDBC connection URL, e.g. jdbc:postgresql://localhost:5432/openhab</description>
+		</parameter>
+
+		<parameter name="user" type="text" required="false" groupName="connection">
+			<label>Username</label>
+			<description>Database username</description>
+			<default>openhab</default>
+		</parameter>
+
+		<parameter name="password" type="text" required="true" groupName="connection">
+			<context>password</context>
+			<label>Password</label>
+			<description>Database password</description>
+		</parameter>
+
+		<parameter name="chunkInterval" type="text" required="false" groupName="tuning">
+			<label>Chunk Interval</label>
+			<description>TimescaleDB hypertable chunk interval (e.g. "7 days", "1 day")</description>
+			<default>7 days</default>
+		</parameter>
+
+		<parameter name="retentionDays" type="integer" required="false" groupName="tuning" min="0">
+			<label>Retention (days)</label>
+			<description>Drop all data older than N days. 0 = disabled.</description>
+			<default>0</default>
+		</parameter>
+
+		<parameter name="compressionAfterDays" type="integer" required="false" groupName="tuning" min="0">
+			<label>Compress After (days)</label>
+			<description>Compress chunks older than N days. 0 = disabled.</description>
+			<default>0</default>
+		</parameter>
+
+		<parameter name="maxConnections" type="integer" required="false" groupName="tuning" min="1">
+			<label>Max Connections</label>
+			<description>Maximum number of database connections in the pool</description>
+			<default>5</default>
+		</parameter>
+
+		<parameter name="connectTimeout" type="integer" required="false" groupName="tuning" min="0">
+			<label>Connect Timeout (ms)</label>
+			<description>Connection timeout in milliseconds</description>
+			<default>5000</default>
+		</parameter>
+
+	</config-description>
+</config-description:config-descriptions>
