@@ -245,7 +245,7 @@
 	<channel-type id="batteryChargeRate">
 		<item-type>Number:Power</item-type>
 		<label>Battery Charge Rate</label>
-		<description>Indicates the desired charge rate for the battery. (1 - 10000W)</description>
+		<description>Indicates the desired charge rate for the battery. (0 - 10000W)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -255,7 +255,7 @@
 	<channel-type id="batteryDischargeRate">
 		<item-type>Number:Power</item-type>
 		<label>Battery Discharge Rate</label>
-		<description>Indicates the desired discharge rate for the battery. (1 - 10000W)</description>
+		<description>Indicates the desired discharge rate for the battery. (0 - 10000W)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
