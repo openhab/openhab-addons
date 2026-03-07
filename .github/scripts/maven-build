@@ -166,6 +166,6 @@ function build_based_on_changes() {
     fi
 }
 
-./mvnw -v
+bash ./mvnw -v
 rm -f shard-summary.md
 build_based_on_changes
