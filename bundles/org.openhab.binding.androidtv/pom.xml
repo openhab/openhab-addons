@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: AndroidTV Binding</name>
 
   <properties>
-    <bnd.importpackage>!org.openhab.binding.androidtv.*,!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
+    <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
     <bouncycastle.version>1.83</bouncycastle.version>
   </properties>
 
