@@ -22,6 +22,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -352,7 +353,7 @@ public class Shelly1CoIoTVersion2 extends Shelly1CoIoTProtocol implements Shelly
                 reason = getString(s.valueStr);
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_STOPR, getStringType(reason));
                 if (!reason.isEmpty() && !reason.equalsIgnoreCase(SHELLY_API_STOPR_NORMAL)) {
-                    thingHandler.postEvent("ROLLER_" + reason.toUpperCase(), true);
+                    thingHandler.postEvent("ROLLER_" + reason.toUpperCase(Locale.ROOT), true);
                 }
             case "6106": // A, flood, 0/1, -1
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_FLOOD, OnOffType.from(value == 1));

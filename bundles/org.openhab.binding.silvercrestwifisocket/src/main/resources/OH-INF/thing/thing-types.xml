@@ -15,6 +15,7 @@
 
 		<config-description>
 			<parameter name="macAddress" type="text" required="true">
+				<context>mac-address</context>
 				<label>MAC Address</label>
 				<description>The socket MAC address.</description>
 			</parameter>

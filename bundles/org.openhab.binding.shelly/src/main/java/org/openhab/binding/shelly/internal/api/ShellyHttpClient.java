@@ -176,7 +176,8 @@ public class ShellyHttpClient {
                 } else {
                     if (basicAuth) {
                         String bearer = config.userId + ":" + config.password;
-                        authHeader = HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder().encodeToString(bearer.getBytes());
+                        authHeader = HTTP_AUTH_TYPE_BASIC + " "
+                                + Base64.getEncoder().encodeToString(bearer.getBytes(StandardCharsets.UTF_8));
                     }
                 }
                 if (!authHeader.isEmpty()) {

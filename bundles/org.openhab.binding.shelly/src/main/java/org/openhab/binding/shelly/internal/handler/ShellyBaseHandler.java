@@ -22,6 +22,7 @@ import static org.openhab.core.thing.Thing.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
@@ -296,8 +297,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         profile.initFromThingType(thing.getThingTypeUID());
         logger.debug(
                 "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
-                thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(), gen2, profile.isBlu,
-                profile.alwaysOn, profile.hasBattery, config.eventsCoIoT);
+                thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(Locale.ROOT), gen2,
+                profile.isBlu, profile.alwaysOn, profile.hasBattery, config.eventsCoIoT);
         if (config.deviceAddress.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
                     "config-status.error.missing-device-address");
@@ -328,7 +329,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
         if (config.realm.isEmpty()) {
-            config.realm = getString(device.hostname).toLowerCase();
+            config.realm = getString(device.hostname).toLowerCase(Locale.ROOT);
             api.setConfig(thingName, config); // update config
         }
 
@@ -835,7 +836,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         if (force || !lastAlarm.equals(event)
                 || (lastAlarm.equals(event) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
-            switch (event.toUpperCase()) {
+            switch (event.toUpperCase(Locale.ROOT)) {
                 case "":
                 case "0": // DW2 1.8
                 case SHELLY_WAKEUPT_SENSOR:
@@ -854,7 +855,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 default:
                     logger.debug("{}: {}", thingName, messages.get("event.triggered", event));
                     triggerChannel(channelId, event);
-                    cache.updateChannel(channelId, getStringType(event.toUpperCase()));
+                    cache.updateChannel(channelId, getStringType(event.toUpperCase(Locale.ROOT)));
                     stats.lastAlarm = event;
                     stats.lastAlarmTs = (long) now();
                     stats.alarms++;
@@ -973,7 +974,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     case SHELLY_EVENT_ALARM_OFF:
                     case SHELLY_EVENT_VIBRATION: // DW2
                         channel = CHANNEL_SENSOR_ALARM_STATE;
-                        payload = event.toUpperCase();
+                        payload = event.toUpperCase(Locale.ROOT);
                         break;
 
                     default:
@@ -981,11 +982,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 }
 
                 if (!onoff.isEmpty()) {
-                    updateChannel(group, onoff, OnOffType.from(event.toLowerCase().contains("_on")));
+                    updateChannel(group, onoff, OnOffType.from(event.toLowerCase(Locale.ROOT).contains("_on")));
                 }
                 if (!payload.isEmpty()) {
                     // Pass event to trigger channel
-                    payload = payload.toUpperCase();
+                    payload = payload.toUpperCase(Locale.ROOT);
                     logger.debug("{}: Post event {}", thingName, payload);
                     triggerChannel(mkChannelId(group, channel), payload);
                 }
@@ -1012,7 +1013,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         final Map<String, String> properties = getThing().getProperties();
         thingName = getString(properties.get(PROPERTY_SERVICE_NAME));
         if (thingName.isEmpty()) {
-            thingName = getString(thingType + "-" + getString(getThing().getUID().getId())).toLowerCase();
+            thingName = getString(thingType + "-" + getString(getThing().getUID().getId())).toLowerCase(Locale.ROOT);
         }
 
         config = getConfigAs(ShellyThingConfiguration.class);
@@ -1020,13 +1021,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             config.deviceAddress = config.deviceIp;
         }
         if (config.deviceAddress.isEmpty()) {
-            logger.debug("{}: IP/MAC address for the device must not be empty", thingName); // may not set in .things
-                                                                                            // file
+            // may not be set in .things file
+            logger.debug("{}: IP/MAC address for the device must not be empty", thingName);
             return false;
         }
 
-        config.deviceAddress = config.deviceAddress.toLowerCase().replace(":", ""); // remove : from MAC address and
-                                                                                    // convert to lower case
+        // remove : from MAC address and convert to lower case
+        config.deviceAddress = config.deviceAddress.toLowerCase(Locale.ROOT).replace(":", "");
         if (!config.deviceIp.isEmpty()) {
             try {
                 String ip = config.deviceIp.contains(":") ? substringBefore(config.deviceIp, ":") : config.deviceIp;
@@ -1272,7 +1273,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));
             changed |= !lastWakeupReason.isEmpty() && !lastWakeupReason.equals(newVal);
             if (changed) {
-                postEvent(reason.toUpperCase(), true);
+                postEvent(reason.toUpperCase(Locale.ROOT), true);
             }
             lastWakeupReason = newVal;
         }

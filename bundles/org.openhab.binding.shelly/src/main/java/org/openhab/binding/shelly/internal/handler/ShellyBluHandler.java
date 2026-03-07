@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyBluHandler extends ShellyBaseHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyBluHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyBluHandler.class);
 
     public ShellyBluHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
@@ -39,7 +39,7 @@ public class ShellyBluHandler extends ShellyBaseHandler {
 
     @Override
     public void initialize() {
-        LOGGER.debug("Thing is using  {}", this.getClass());
+        logger.debug("Thing is using  {}", this.getClass());
         super.initialize();
     }
 }

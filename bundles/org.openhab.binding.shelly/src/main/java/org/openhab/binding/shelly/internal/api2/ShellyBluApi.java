@@ -238,10 +238,9 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                                 sensorData.tmp.units = SHELLY_TEMP_CELSIUS;
                                 sensorData.tmp.isValid = true;
                                 sensorData.tmp.tC = e.blu.temperatures[0];
-                            } else {
-                                // BLU TRV reports current temp and target temp
-                                // However, we don't support BLU TRV yet, so ignore
                             }
+                            // BLU TRV reports current temp and target temp
+                            // However, we don't support BLU TRV yet, so ignore
                         }
                         if (e.blu.humidity != null) {
                             sensorData.hum.value = e.blu.humidity;
