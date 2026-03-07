@@ -164,8 +164,9 @@ public class ShellyVersionDTO {
         if (version == null) {
             return false;
         }
-        return version.isEmpty() || version.contains("???") || version.toLowerCase(Locale.ROOT).contains("master")
-                || (version.toLowerCase(Locale.ROOT).contains("-rc")
-                        || version.toLowerCase(Locale.ROOT).contains("beta"));
+        String lowVersion;
+        return version.isEmpty() || version.contains("???")
+                || (lowVersion = version.toLowerCase(Locale.ROOT)).contains("master")
+                || (lowVersion.contains("-rc") || lowVersion.contains("beta"));
     }
 }

@@ -193,7 +193,6 @@ public class ShellyHttpClient {
             // Do request and get response
             ContentResponse contentResponse = request.send();
             builder = ShellyApiResult.builder(contentResponse);
-            builder.httpCode(contentResponse.getStatus());
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}\n{}", thingName, contentResponse.getStatus(), response,
                     contentResponse.getHeaders());
