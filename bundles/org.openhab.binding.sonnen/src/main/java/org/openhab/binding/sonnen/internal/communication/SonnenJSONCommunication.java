@@ -39,6 +39,8 @@ public class SonnenJSONCommunication {
 
     private final Logger logger = LoggerFactory.getLogger(SonnenJSONCommunication.class);
     private SonnenConfiguration config;
+    private static final int HTTP_TIMEOUT = 10000;
+    private final String BASE_URL = "http://" + config.hostIP + "/api/";
 
     private Gson gson;
     private @Nullable SonnenJsonDataDTO batteryData;
@@ -56,10 +58,10 @@ public class SonnenJSONCommunication {
      */
     public String refreshBatteryConnectionAPICALLV2(boolean powerMeter) {
         String result = "";
-        String urlStr = "http://" + config.hostIP + "/api/v2/status";
+        String urlStr = BASE_URL + "v2/status";
         Properties httpHeader = createHeader(config.authToken);
         try {
-            String response = HttpUtil.executeUrl("GET", urlStr, httpHeader, null, "application/json", 10000);
+            String response = HttpUtil.executeUrl("GET", urlStr, httpHeader, null, "application/json", HTTP_TIMEOUT);
             logger.debug("BatteryData = {}", response);
             if (response == null) {
                 throw new IOException("HttpUtil.executeUrl returned null");
@@ -67,8 +69,8 @@ public class SonnenJSONCommunication {
             batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
 
             if (powerMeter) {
-                response = HttpUtil.executeUrl("GET", "http://" + config.hostIP + "/api/v2/powermeter", httpHeader,
-                        null, "application/json", 10000);
+                response = HttpUtil.executeUrl("GET", BASE_URL + "v2/powermeter", httpHeader, null, "application/json",
+                        HTTP_TIMEOUT);
                 logger.debug("PowerMeterData = {}", response);
                 if (response == null) {
                     throw new IOException("HttpUtil.executeUrl returned null");
@@ -104,8 +106,8 @@ public class SonnenJSONCommunication {
      */
     private String executeBatteryOperation(@Nullable String putData, int rate, String operation) {
         String result = "";
-        String configUrl = "http://" + config.hostIP + "/api/v2/configurations";
-        String setpointUrl = "http://" + config.hostIP + "/api/v2/setpoint/" + operation + "/" + rate;
+        String configUrl = BASE_URL + "v2/configurations";
+        String setpointUrl = BASE_URL + "v2/setpoint/" + operation + "/" + rate;
         Properties header = createHeader(config.authToken);
 
         try {
@@ -118,7 +120,7 @@ public class SonnenJSONCommunication {
             if (putData != null) {
                 InputStream targetStream = new ByteArrayInputStream(putData.getBytes(StandardCharsets.UTF_8));
                 String response = HttpUtil.executeUrl("PUT", configUrl, header, targetStream,
-                        "application/x-www-form-urlencoded", 10000);
+                        "application/x-www-form-urlencoded", HTTP_TIMEOUT);
 
                 if (response == null) {
                     throw new IOException("HttpUtil.executeUrl (PUT) returned null");
@@ -131,7 +133,8 @@ public class SonnenJSONCommunication {
             // Execute setpoint if manual mode (1) is active, or isInAutomaticMode = false
             if (currentData != null
                     && ("1".equals(currentData.emgetOperationMode()) || !currentData.isInAutomaticMode())) {
-                String response2 = HttpUtil.executeUrl("POST", setpointUrl, header, null, "application/json", 10000);
+                String response2 = HttpUtil.executeUrl("POST", setpointUrl, header, null, "application/json",
+                        HTTP_TIMEOUT);
                 logger.debug("{}OperationMode = {}", operation, response2);
                 if (response2 == null) {
                     throw new IOException("HttpUtil.executeUrl (POST) returned null");
@@ -166,9 +169,9 @@ public class SonnenJSONCommunication {
      */
     public String refreshBatteryConnectionAPICALLV1() {
         String result = "";
-        String urlStr = "http://" + config.hostIP + "/api/v1/status";
+        String urlStr = BASE_URL + "v1/status";
         try {
-            String response = HttpUtil.executeUrl("GET", urlStr, 10000);
+            String response = HttpUtil.executeUrl("GET", urlStr, HTTP_TIMEOUT);
             logger.debug("BatteryData = {}", response);
             if (response == null) {
                 throw new IOException("HttpUtil.executeUrl returned null");
