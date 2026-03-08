@@ -364,9 +364,8 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
     @Override
     public void updateFeaturesOfDevice(@Nullable DeviceHandler handler) {
         if (handler != null) {
-            BridgeHandler bridgeHandler = getBridgeHandler();
-            if (bridgeHandler != null) {
-                ((ViessmannAccountHandler) bridgeHandler).updateFeaturesOfDevice(handler);
+            if (getBridgeHandler() instanceof ViessmannAccountHandler bridgeHandler) {
+                bridgeHandler.updateFeaturesOfDevice(handler);
             }
         }
     }
