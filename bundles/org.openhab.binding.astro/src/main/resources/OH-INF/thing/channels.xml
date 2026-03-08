@@ -113,6 +113,7 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>The start time of the event</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -125,6 +126,7 @@
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>The end time of the event</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -312,6 +314,7 @@
 		<item-type>DateTime</item-type>
 		<label>Total Eclipse</label>
 		<description>The DateTime of the next total eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -323,6 +326,7 @@
 		<item-type>DateTime</item-type>
 		<label>Partial Eclipse</label>
 		<description>The DateTime of the next partial eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -334,6 +338,7 @@
 		<item-type>DateTime</item-type>
 		<label>Ring Eclipse</label>
 		<description>The DateTime of the next ring eclipse</description>
+		<category>Calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -345,6 +350,7 @@
 		<kind>trigger</kind>
 		<label>Sun Eclipse Event</label>
 		<description>Sun eclipse event</description>
+		<category>oh:astro:sun_eclipse</category>
 		<event>
 			<options>
 				<option value="TOTAL">total</option>
@@ -383,8 +389,9 @@
 				<option value="ASTRO_DUSK">Astro dusk</option>
 				<option value="SUN_SET">Sunset</option>
 				<option value="DAYLIGHT">Daylight</option>
-				<option value="NOON">Noon</option>
+				<option value="NOON">Solar noon</option>
 				<option value="NIGHT">Night</option>
+				<option value="MIDNIGHT">Solar midnight</option>
 			</options>
 		</state>
 	</channel-type>
@@ -411,6 +418,7 @@
 		<item-type>DateTime</item-type>
 		<label>First Quarter</label>
 		<description>The DateTime the moon is in the first quarter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -422,6 +430,7 @@
 		<item-type>DateTime</item-type>
 		<label>Third Quarter</label>
 		<description>The DateTime the moon is in the third quarter</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -433,6 +442,7 @@
 		<item-type>DateTime</item-type>
 		<label>Full Moon</label>
 		<description>The DateTime for full moon</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -444,6 +454,7 @@
 		<item-type>DateTime</item-type>
 		<label>New Moon</label>
 		<description>The DateTime for new moon</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -452,9 +463,10 @@
 	</channel-type>
 
 	<channel-type id="age">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 		<label>Moon Age</label>
-		<description>The age of the moon in days</description>
+		<description>The age of the moon</description>
+		<category>oh:astro:moon_day</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Duration</tag>
@@ -496,6 +508,7 @@
 		<item-type>String</item-type>
 		<label>Moon Phase Name</label>
 		<description>The name of the current moon phase</description>
+		<category>oh:astro:moon_phase</category>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -570,6 +583,7 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The DateTime when the distance is reached</description>
+		<category>calendar</category>
 		<tags>
 			<tag>Calculation</tag>
 			<tag>Timestamp</tag>
@@ -604,6 +618,7 @@
 	<channel-group-type id="moonZodiac">
 		<label>Zodiac</label>
 		<description>The zodiac of the moon</description>
+		<category>oh:astro:zodiac</category>
 		<channels>
 			<channel id="sign" typeId="sign"/>
 		</channels>

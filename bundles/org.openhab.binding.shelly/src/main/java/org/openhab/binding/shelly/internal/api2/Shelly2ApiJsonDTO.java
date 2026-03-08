@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.api2;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
@@ -31,6 +32,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Shelly2ApiJsonDTO {
     public static final String SHELLYRPC_ENDPOINT = "/rpc";
+    public static final String SHELLY2_JSONRPC_VERSION = "2.0";
 
     public static final String SHELLYRPC_METHOD_CLASS_SHELLY = "Shelly";
     public static final String SHELLYRPC_METHOD_CLASS_SWITCH = "Switch";
@@ -303,7 +305,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("factory_reset")
             public Boolean factoryReset;
             @SerializedName("report_thr")
-            public Double reportTreshold; // only for type analog
+            public Double reportThreshold; // only for type analog
         }
 
         public class Shelly2DevConfigSwitch {
@@ -348,7 +350,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("blink_mode_selector")
             public String blinkModeSelector;
             @SerializedName("phase_selector")
-            public String phase_selector;
+            public String phaseSelector;
             @SerializedName("monitor_phase_sequence")
             public Boolean monitorPhaseSequence;
         }
@@ -361,7 +363,7 @@ public class Shelly2ApiJsonDTO {
         public class Shelly2DevConfigCover {
             public class Shelly2DeviceConfigCoverMotor {
                 @SerializedName("idle_power_thr")
-                public Double idle_powerThr;
+                public Double idlePowerThr;
             }
 
             public class Shelly2DeviceConfigCoverSafetySwitch {
@@ -891,7 +893,7 @@ public class Shelly2ApiJsonDTO {
             @SerializedName("fs_free")
             public Long fsFree;
             @SerializedName("cfg_rev")
-            public Integer cfg_rev;
+            public Integer cfgRev;
             @SerializedName("available_updates")
             public Shelly2DeviceStatusSysAvlUpdate availableUpdates;
             @SerializedName("webhook_rev")
@@ -1131,6 +1133,7 @@ public class Shelly2ApiJsonDTO {
             public String message;
         }
 
+        public @Nullable String jsonrpc;
         public Integer id;
         public String src;
         public String dst;
@@ -1157,12 +1160,12 @@ public class Shelly2ApiJsonDTO {
         public Shelly2RpcMessageError error;
     }
 
-    public static String SHELLY2_AUTHDEF_USER = "admin";
-    public static String SHELLY2_AUTHTTYPE_DIGEST = "digest";
-    public static String SHELLY2_AUTHTTYPE_STRING = "string";
-    public static String SHELLY2_AUTHALG_SHA256 = "SHA-256";
+    public static final String SHELLY2_AUTHDEF_USER = "admin";
+    public static final String SHELLY2_AUTHTTYPE_DIGEST = "digest";
+    public static final String SHELLY2_AUTHTTYPE_STRING = "string";
+    public static final String SHELLY2_AUTHALG_SHA256 = "SHA-256";
     // = ':auth:'+HexHash("dummy_method:dummy_uri");
-    public static String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
+    public static final String SHELLY2_AUTH_NOISE = "6370ec69915103833b5222b368555393393f098bfbfbb59f47e0590af135f062";
 
     public static class Shelly2AuthChallenge { // on 401 message contains the auth info
         @SerializedName("auth_type")

@@ -19,7 +19,9 @@ After (manually) adding a Roborock Account bridge, registered vacuums will be au
 
 Account configuration is necessary.
 The easiest way to do this is from the UI.
-Just add a new thing, select the Roborock binding, then Roborock Account Binding Thing, and enter the email for your Roborock account. If the email is valid, you will be send an email with a verification code. Once received, update the twofa field and hit save.
+Just add a new thing, select the Roborock binding, then Roborock Account Binding Thing, and enter the email for your Roborock account.
+If the email is valid, you will be sent an email with a verification code.
+Once received, update the twofa field and hit save.
 
 | Thing Parameter | Default Value | Required | Advanced | Description                                                                          |
 |-----------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
@@ -70,6 +72,7 @@ Just add a new thing, select the Roborock binding, then Roborock Account Binding
 | Number:Time          | cleaning#last-clean-duration      | Last Clean Time                            |
 | Number               | cleaning#last-clean-error         | Last Clean Error                           |
 | Switch               | cleaning#last-clean-finish        | Last Cleaning Completed                    |
+| Image                | cleaning#map                      | Rendered cleaning map image (PNG)          |
 
 Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
 
@@ -146,4 +149,5 @@ Number:Area          lastArea         "Last Cleaned Area [%1.0fm²]"   <zoom>   
 Number:Time          lastTime         "Last Clean Time [%1.0f']"      <clock>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-duration"}
 Number               lastError        "Error [%s]"                    <error>        (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-error" }
 Switch               lastCompleted    "Last Cleaning Completed"                      (gVacLast)      {channel="roborock:vacuum:034F0E45:cleaning#last-clean-finish" }
+Image                cleaningMap      "Cleaning Map"                                                 {channel="roborock:vacuum:034F0E45:cleaning#map"}
 ```

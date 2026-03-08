@@ -35,11 +35,12 @@ Bridge hue:bridge-api2:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopa
 | checkMinutes             | Interval in minutes between retrying the HTTP 2 and SSE connections. Default is 60. **Advanced**   |
 | useSelfSignedCertificate | Use self-signed certificate for HTTPS connection to Hue Bridge. Default is `true`. **Advanced**    |
 
-### Devices, Rooms, and Zones
+### Devices, Rooms, Zones, and Areas
 
-Apart from the Bridge, there are three other types of thing -- namely `device`, `room`, and `zone`.
+Apart from the Bridge, there are four other types of thing -- namely `device`, `room`, `zone`, and `area`.
 Device things represent physical hardware devices in the system, whereas `room` and `zone` things represent sets of physical lights, either in a room or a zone.
 In addition to regular rooms and zones, there is a 'super' `zone` that allows you to control all of the lights in the system.
+On Hue version 3 bridges and higher, there is a special `area` thing which represents specific groups of 'Motion Aware' lights which are able to act as virtual motion sensors.
 
 All things are identified by a unique Resource Identifier string that the Hue Bridge assigns to them e.g. `d1ae958e-8908-449a-9897-7f10f9b8d4c2`.
 Thus, all it needs for manual configuration is this single value, like:

@@ -20,15 +20,15 @@ After confirming this request, the user can link its items to receive data or co
 
 ## Thing Configuration
 
-There are three mandatory configuration parameters for a thing: `ipAddress`, `macAddress` and `deviceType`.
+There are three mandatory configuration parameters for a Thing: `ipAddress`, `macAddress` and `deviceType`.
 
-| parameter  | required | description |
-|----------|------------|-------------------------------------------|
-| ipAddress | Y | The IP Address or hostname of the device. |
-| macAddress | Y | The MAC address of the device. |
-| deviceType | Y | Defines the type of device. It is an integer value and its best to use the automatic discovery to obtain it from the device. |
-| pollingTime | N | The time interval in seconds in which the data should be polled from the device, default is 10 seconds. |
-| hash | N | It is a negative integer value and it is used by the device to identify a connection to a client, like the App from the vendor for example. (*) |
+| parameter   | required | description                                                                                                                                     |
+|-------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| ipAddress   | Y        | The IP Address or hostname of the device.                                                                                                       |
+| macAddress  | Y        | The MAC address of the device.                                                                                                                  |
+| deviceType  | Y        | Defines the type of device. It is an integer value and its best to use the automatic discovery to obtain it from the device.                    |
+| pollingTime | N        | The time interval in seconds in which the data should be polled from the device, default is 10 seconds.                                         |
+| hash        | N        | It is a negative integer value and it is used by the device to identify a connection to a client, like the App from the vendor for example. (*) |
 
 (*) I do not know whether there are devices which are restricted to only one client, so I added this parameter to allow the user to set the same value as his App on the phone (can be obtained via sniffing the network).
 However, the LW60-T allows for multiple connections to different clients, identified by different `hash` values at the same time without issues.
@@ -44,25 +44,25 @@ Thing ventaair:lw60t:humidifier [ ipAddress="192.168.42.69", macAddress="f8:f0:0
 
 These are the channels that are currently supported:
 
-| channel  | type (RO=read-only)   | description                  |
-|----------|--------|------------------------------|
-| power          | Switch | This is the power on/off channel  |
-| fanSpeed       | Number | This is the channel to control the steps (in range 0-5 where 0 means "off") for the speed of the fan |
-| targetHumidity | Number | This channel sets the target humidity (in percent) that should be tried to reach by the device (allowed values: 30-70)  |
-| timer          | Number | This channel sets the power off timer to the set value in hours, i.e. 3 = turn off in 3 hours from now (allowed values: 0-9 where 0 means "off") |
-| sleepMode      | Switch | This channel controls the sleep mode of the device (dims the display and slows down the fan) |
-| childLock      | Switch | This is the control channel for the child lock |
-| automatic      | Switch | This is the control channel to start the automatic operation mode of the device |
-| cleanMode      | Switch (RO) | This is the channel that indicates if the device is in the cleaning mode |
-| temperature    | Number:Temperature (RO) | This channel provides the current measured temperature in Celsius or Fahrenheit as configured on the device |
-| humidity       | Number:Dimensionless (RO) | This channel provides the humidity measured by the device in percent |
-| waterLevel     | Number (RO) | This channel indicates the water level of the tank where 1 is equal to the yellow "refill tank" warning on the device/App |
-| fanRPM         | Number (RO) | This channel provides the speed of the ventilation fan |
-| timerTimePassed  | Number:Time (RO) | If a timer has been set, this channel provides the minutes since when the timer was started  |
-| operationTime  | Number:Time (RO) | This channel provides the operation time of the device in hours |
-| discReplaceTime | Number:Time (RO) | This channel provides the time in how many hours the cleaning disc should be replaced  |
-| cleaningTime   | Number:Time (RO) | This channel provides the time in how many hours the device should be cleaned  |
-| boost          | Switch | This is the control channel for the boost mode (on some devices that supports it) |
+| channel         | type (RO=read-only)       | description                                                                                                                                      |
+|-----------------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| power           | Switch                    | This is the power on/off channel                                                                                                                 |
+| fanSpeed        | Number                    | This is the channel to control the steps (in range 0-5 where 0 means "off") for the speed of the fan                                             |
+| targetHumidity  | Number                    | This channel sets the target humidity (in percent) that should be tried to reach by the device (allowed values: 30-70)                           |
+| timer           | Number                    | This channel sets the power off timer to the set value in hours, i.e. 3 = turn off in 3 hours from now (allowed values: 0-9 where 0 means "off") |
+| sleepMode       | Switch                    | This channel controls the sleep mode of the device (dims the display and slows down the fan)                                                     |
+| childLock       | Switch                    | This is the control channel for the child lock                                                                                                   |
+| automatic       | Switch                    | This is the control channel to start the automatic operation mode of the device                                                                  |
+| cleanMode       | Switch (RO)               | This is the channel that indicates if the device is in the cleaning mode                                                                         |
+| temperature     | Number:Temperature (RO)   | This channel provides the current measured temperature in Celsius or Fahrenheit as configured on the device                                      |
+| humidity        | Number:Dimensionless (RO) | This channel provides the humidity measured by the device in percent                                                                             |
+| waterLevel      | Number (RO)               | This channel indicates the water level of the tank where 1 is equal to the yellow "refill tank" warning on the device/App                        |
+| fanRPM          | Number (RO)               | This channel provides the speed of the ventilation fan                                                                                           |
+| timerTimePassed | Number:Time (RO)          | If a timer has been set, this channel provides the minutes since when the timer was started                                                      |
+| operationTime   | Number:Time (RO)          | This channel provides the operation time of the device in hours                                                                                  |
+| discReplaceTime | Number:Time (RO)          | This channel provides the time in how many hours the cleaning disc should be replaced                                                            |
+| cleaningTime    | Number:Time (RO)          | This channel provides the time in how many hours the device should be cleaned                                                                    |
+| boost           | Switch                    | This is the control channel for the boost mode (on some devices that supports it)                                                                |
 
 ## Full Example
 

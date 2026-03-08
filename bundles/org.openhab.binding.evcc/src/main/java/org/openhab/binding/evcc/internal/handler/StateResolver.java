@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.measure.Unit;
@@ -46,7 +47,7 @@ public final class StateResolver {
     }
 
     // Regex patterns for key matching (case-insensitive)
-    private static final Pattern DECIMAL_PATTERN = Pattern.compile("(?i)(price|tariff)");
+    private static final Pattern DECIMAL_PATTERN = Pattern.compile("(?i)(price|tariff|forecast-grid|forecast-feedin)");
     private static final Pattern KILO_EQ_PATTERN = Pattern
             .compile("(?i)^(energy|grid-energy|charged-energy|pv-energy|charged-kwh)$");
     private static final Pattern KILO_CONTAINS_PATTERN = Pattern
@@ -178,7 +179,7 @@ public final class StateResolver {
      * @return the inferred {@link Unit}
      */
     private Unit<?> determineBaseUnitFromKey(String key) {
-        String lower = key.toLowerCase();
+        String lower = key.toLowerCase(Locale.ROOT);
 
         if (lower.contains("soc") || lower.contains("percentage")) {
             return Units.PERCENT;
@@ -186,7 +187,8 @@ public final class StateResolver {
         if (lower.contains("power") || lower.contains("threshold") || lower.contains("tariffsolar")) {
             return Units.WATT;
         }
-        if (lower.contains("energy") || lower.contains("capacity") || lower.contains("import")) {
+        if (lower.contains("energy") || lower.contains("capacity") || lower.contains("import")
+                || lower.contains("solar") || lower.contains("today") || lower.contains("tomorrow")) {
             return Units.WATT_HOUR;
         }
         if (lower.contains("temp") || lower.contains("temperature") || lower.contains("heating")) {

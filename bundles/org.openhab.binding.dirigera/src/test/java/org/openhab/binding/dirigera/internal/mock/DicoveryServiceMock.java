@@ -14,6 +14,8 @@ package org.openhab.binding.dirigera.internal.mock;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,24 +45,30 @@ public class DicoveryServiceMock extends DirigeraDiscoveryService {
 
     @Override
     public void deviceRemoved(final DiscoveryResult discoveryResult) {
-        // logger.warn("Discovery thingRemoved {}", discoveryResult);
         String id = discoveryResult.getThingUID().getId();
-        DiscoveryResult remover = discoveries.remove(id);
-        // assertNotNull(remover);
-        if (remover != null) {
-            deletes.put(id, remover);
+        synchronized (this) {
+            DiscoveryResult remover = discoveries.remove(id);
+            if (remover != null) {
+                deletes.put(id, remover);
+            }
         }
     }
 
-    public void waitForDetection() {
+    public void waitForDetection(int size) {
         synchronized (this) {
-            if (discoveries.isEmpty()) {
+            Instant start = Instant.now();
+            Instant check = Instant.now();
+            while (discoveries.size() != size && Duration.between(start, check).getSeconds() < 5) {
                 try {
-                    wait(5000);
+                    wait(100);
                 } catch (InterruptedException e) {
                     fail(e.getMessage());
                 }
+                check = Instant.now();
             }
+        }
+        if (discoveries.size() != size) {
+            fail("Discovery size expected " + size + " but was " + discoveries.size());
         }
     }
 }

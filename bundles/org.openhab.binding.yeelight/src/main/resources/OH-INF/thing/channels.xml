@@ -8,9 +8,8 @@
 	<channel-type id="brightness">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
-		<description>The brightness channel allows to control the brightness of a light.
-			It is also possible to switch the
-			light on and off.
+		<description>Control the brightness of the light.
+			It is also possible to switch the light on and off.
 		</description>
 		<category>Light</category>
 		<tags>
@@ -23,7 +22,7 @@
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
-		<description>The color channel allows to control the color of a light.</description>
+		<description>Control the color of the light.</description>
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
@@ -35,7 +34,7 @@
 	<channel-type id="colorTemperature">
 		<item-type>Dimmer</item-type>
 		<label>Color Temperature</label>
-		<description>The CT channel allows to control the CT of a light.</description>
+		<description>Control the color temperature of the light.</description>
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
@@ -54,7 +53,7 @@
 	<channel-type id="backgroundColor">
 		<item-type>Color</item-type>
 		<label>Background Color</label>
-		<description>The color channel allows to control the color of a light.</description>
+		<description>Control the color of the background (ambient) light.</description>
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
@@ -64,8 +63,8 @@
 
 	<channel-type id="nightlight">
 		<item-type>Switch</item-type>
-		<label>nightlight</label>
-		<description>The nightlight channel allows to switch to nightlight mode.</description>
+		<label>Nightlight</label>
+		<description>Switch to nightlight mode.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

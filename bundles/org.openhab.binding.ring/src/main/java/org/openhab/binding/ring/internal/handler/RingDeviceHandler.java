@@ -31,7 +31,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -79,14 +78,30 @@ public abstract class RingDeviceHandler extends AbstractRingHandler {
     }
 
     protected @Nullable RingDevice getDevice() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler instanceof RingAccount ringAccount) {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
                 return ringAccount.getDevice(config.id);
             }
         }
         return null;
+    }
+
+    protected long getSnapshotTimestamp() {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
+                return ringAccount.getSnapshotTimestamp(config.id);
+            }
+        }
+        return -1;
+    }
+
+    protected byte[] getSnapshot() {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof RingAccount ringAccount) {
+                return ringAccount.getSnapshot(config.id);
+            }
+        }
+        return new byte[0];
     }
 
     /**

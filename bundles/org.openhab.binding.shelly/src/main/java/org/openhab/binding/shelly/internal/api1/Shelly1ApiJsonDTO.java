@@ -685,10 +685,6 @@ public class Shelly1ApiJsonDTO {
         public Boolean rainSensor; // Flood: true=in rain mode
 
         // FW 1.5.7: Door Window
-        @SerializedName("dark_treshold")
-        public Integer darkTreshold; // Illumination definition for "dark" in lux
-        @SerializedName("twilight_treshold")
-        public Integer twiLightTreshold; // Illumination definition for "twilight" in lux
         @SerializedName("dark_url")
         public String darkUrl; // URL to report to when luminance <= dark_threshold
         @SerializedName("twilight_url")
@@ -717,8 +713,14 @@ public class Shelly1ApiJsonDTO {
         public ShellyMotionSettings motion;
         @SerializedName("tamper_sensitivity")
         public Integer tamperSensitivity;
+        /**
+         * Illumination level threshold for dark condition.
+         */
         @SerializedName("dark_threshold")
         public Integer darkThreshold;
+        /**
+         * Illumination level threshold for twilight condition.
+         */
         @SerializedName("twilight_threshold")
         public Integer twilightThreshold;
 

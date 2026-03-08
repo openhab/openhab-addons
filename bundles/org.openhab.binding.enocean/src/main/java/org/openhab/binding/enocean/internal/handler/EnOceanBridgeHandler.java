@@ -348,10 +348,7 @@ public class EnOceanBridgeHandler extends ConfigStatusBridgeHandler implements T
     public @Nullable Integer getNextSenderId(String enoceanId) {
         EnOceanBridgeConfig config = getConfigAs(EnOceanBridgeConfig.class);
         Integer senderId = config.nextSenderId;
-        if (senderId == null) {
-            return null;
-        }
-        if (sendingThings[senderId] == null) {
+        if (senderId != null && sendingThings[senderId] == null) {
             Configuration c = this.editConfiguration();
             c.put(PARAMETER_NEXT_SENDERID, null);
             updateConfiguration(c);

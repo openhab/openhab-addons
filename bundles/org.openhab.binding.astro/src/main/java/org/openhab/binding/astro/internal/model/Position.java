@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import javax.measure.quantity.Angle;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.astro.internal.util.MathUtils;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
- * Holds the calculated azimuth and elevation.
+ * Immutable class holding calculated azimuth and elevation.
  *
  * @author Gerhard Riegler - Initial contribution
  * @author Gaël L'hopital - Added shade length
@@ -27,39 +29,35 @@ import org.openhab.core.library.unit.Units;
  */
 @NonNullByDefault
 public class Position {
+    public static final Position NONE = new Position();
+    private final double azimuth;
+    private final double elevation;
 
-    private double azimuth;
-    private double elevation;
-    private double shadeLength;
-
-    public Position() {
+    private Position() {
+        this(Double.NaN, Double.NaN);
     }
 
-    public Position(double azimuth, double elevation, double shadeLength) {
+    public Position(double azimuth, double elevation) {
         this.azimuth = azimuth;
         this.elevation = elevation;
-        this.shadeLength = shadeLength;
     }
 
     /**
      * Returns the azimuth.
      */
-    public QuantityType<Angle> getAzimuth() {
-        return new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
+    public State getAzimuth() {
+        return Double.isNaN(azimuth) ? UnDefType.UNDEF : new QuantityType<>(azimuth, Units.DEGREE_ANGLE);
     }
 
-    /**
-     * Sets the azimuth.
-     */
-    public void setAzimuth(double azimuth) {
-        this.azimuth = azimuth;
+    public double getAzimuthAsDouble() {
+        return azimuth;
     }
 
     /**
      * Returns the elevation.
      */
-    public QuantityType<Angle> getElevation() {
-        return new QuantityType<>(elevation, Units.DEGREE_ANGLE);
+    public State getElevation() {
+        return Double.isNaN(elevation) ? UnDefType.UNDEF : new QuantityType<>(elevation, Units.DEGREE_ANGLE);
     }
 
     public double getElevationAsDouble() {
@@ -67,23 +65,10 @@ public class Position {
     }
 
     /**
-     * Sets the elevation.
+     * Returns the shade length ratio.
      */
-    public void setElevation(double elevation) {
-        this.elevation = elevation;
-    }
-
-    /**
-     * Returns the shade length.
-     */
-    public double getShadeLength() {
-        return shadeLength;
-    }
-
-    /**
-     * Sets the shade length.
-     */
-    public void setShadeLength(double shadeLength) {
-        this.shadeLength = shadeLength;
+    public State getShadeLength() {
+        return Double.isNaN(elevation) ? UnDefType.UNDEF
+                : elevation <= 0 ? UnDefType.NULL : new DecimalType(1d / MathUtils.tanDeg(elevation));
     }
 }

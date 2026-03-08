@@ -77,15 +77,14 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.wimpi.modbus.Modbus;
-
 /**
- * The {@link Modbus.StiebelEltronHandlerAllWpm} is responsible for handling commands,
+ * The {@link StiebelEltronHandlerAllWpm} is responsible for handling commands,
  * which are sent to one of the channels and for polling the modbus.
  * It supports a WPM compatible heat pump and provides more channels and information than the first implementation.
  *
  * @author Paul Frank - Initial contribution of first handler implementation
  * @author Thomas Burri - Extended the thing handler for a WPM compatible heat pump with more channels.
+ * @author Gerd Zanker - Fixed 'hotwater-*-temperature' handleCommands, improved comments and a nullable check.
  */
 @NonNullByDefault
 public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
@@ -236,7 +235,6 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
-     * @param modbusManager the modbus manager
      */
     public StiebelEltronHandlerAllWpm(Thing thing) {
         super(thing);
@@ -368,10 +366,10 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                         case CHANNEL_FIXED_TEMPERATURE_SETPOINT:
                             writeInt16(1507, getScaledInt16Value(command, 10));
                             break;
-                        case CHANNEL_COMFORT_TEMPERATURE_WATER:
+                        case CHANNEL_HOTWATER_COMFORT_TEMPERATURE:
                             writeInt16(1509, getScaledInt16Value(command, 10));
                             break;
-                        case CHANNEL_ECO_TEMPERATURE_WATER:
+                        case CHANNEL_HOTWATER_ECO_TEMPERATURE:
                             writeInt16(1510, getScaledInt16Value(command, 10));
                             break;
                         case CHANNEL_HOTWATER_STAGES:
@@ -1281,6 +1279,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             throw new IllegalStateException("handlePolledEnergyRuntimeData called without proper configuration");
         }
 
+        @Nullable
         EnergyRuntimeControlAllWpm localErRtCtr = energyRuntimeControl;
         if (localErRtCtr == null) {
             logger.error("handlePolledEnergyRuntimeData - energyRuntimeControl not set; should not happen!");
@@ -1290,7 +1289,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                 myconfig.getHeatpumpCount());
 
         logger.trace("\n {}", energyRuntimeBlock);
-        logger.trace("\n {}", energyRuntimeControl);
+        logger.trace("\n {}", localErRtCtr);
 
         // Energy and runtime information group
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_PRODUCTION_HEAT_TODAY),
@@ -1316,7 +1315,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
         updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_CONSUMPTION_WATER_TOTAL), getEnergyQuantity(
                 energyRuntimeBlock.consumptionWaterTotalHigh, energyRuntimeBlock.consumptionWaterTotalLow));
 
-        if (energyRuntimeControl.featureAvailable(EnergyRuntimeFeatureKeys.COMMON_RUNTIMES)) {
+        if (localErRtCtr.featureAvailable(EnergyRuntimeFeatureKeys.COMMON_RUNTIMES)) {
             logger.trace("runtimeCompressorHeating = {}", energyRuntimeBlock.runtimeCompressorHeating);
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_HEATING_RUNTIME),
                     new QuantityType<>(energyRuntimeBlock.runtimeCompressorHeating, HOUR));
@@ -1333,24 +1332,24 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
             logger.trace("runtimeNhz12 = {}", energyRuntimeBlock.runtimeNhz12);
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_NHZ12_RUNTIME),
                     new QuantityType<>(energyRuntimeBlock.runtimeNhz12, HOUR));
-        } else if (!energyRuntimeControl.featureReported(EnergyRuntimeFeatureKeys.COMMON_RUNTIMES)) {
+        } else if (!localErRtCtr.featureReported(EnergyRuntimeFeatureKeys.COMMON_RUNTIMES)) {
             logger.trace("Common compressor runtimes not available");
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_HEATING_RUNTIME), UnDefType.NULL);
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_HOTWATER_RUNTIME), UnDefType.NULL);
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_NHZ1_RUNTIME), UnDefType.NULL);
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_NHZ2_RUNTIME), UnDefType.NULL);
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_NHZ12_RUNTIME), UnDefType.NULL);
-            energyRuntimeControl.setFeatureReported(EnergyRuntimeFeatureKeys.COMMON_RUNTIMES, true);
+            localErRtCtr.setFeatureReported(EnergyRuntimeFeatureKeys.COMMON_RUNTIMES, true);
         }
 
-        if (energyRuntimeControl.featureAvailable(EnergyRuntimeFeatureKeys.COMMON_COOLING_RUNTIME)) {
+        if (localErRtCtr.featureAvailable(EnergyRuntimeFeatureKeys.COMMON_COOLING_RUNTIME)) {
             logger.trace("runtimeCooling = {}", energyRuntimeBlock.runtimeCompressorCooling);
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_COOLING_RUNTIME),
                     new QuantityType<>(energyRuntimeBlock.runtimeCompressorCooling, HOUR));
-        } else if (!energyRuntimeControl.featureReported(EnergyRuntimeFeatureKeys.COMMON_COOLING_RUNTIME)) {
+        } else if (!localErRtCtr.featureReported(EnergyRuntimeFeatureKeys.COMMON_COOLING_RUNTIME)) {
             logger.trace("Common cooling runtime not available");
             updateState(channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM, CHANNEL_COOLING_RUNTIME), UnDefType.NULL);
-            energyRuntimeControl.setFeatureReported(EnergyRuntimeFeatureKeys.COMMON_COOLING_RUNTIME, true);
+            localErRtCtr.setFeatureReported(EnergyRuntimeFeatureKeys.COMMON_COOLING_RUNTIME, true);
         }
 
         for (int idx = 0; idx < myconfig.getHeatpumpCount(); idx++) {
@@ -1401,7 +1400,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
                     getEnergyQuantity(energyRuntimeBlock.heatPumps[idx].consumptionWaterTotalHigh,
                             energyRuntimeBlock.heatPumps[idx].consumptionWaterTotalLow));
 
-            EnergyRuntimeHpFeature hpFeaturesObj = energyRuntimeControl.hpEgRtList[idx];
+            EnergyRuntimeHpFeature hpFeaturesObj = localErRtCtr.hpEgRtList[idx];
             if (hpFeaturesObj.featureAvailable(EnergyRuntimeHpFeatureKeys.RUNTIMES)) {
                 updateState(
                         channelUID(GROUP_ENERGY_RUNTIME_INFO_ALLWPM,
@@ -1559,7 +1558,7 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
     }
 
     /**
-     * @param bridgeStatusInfo
+     * Notifies the handler that the bridge's status has changed.
      */
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
@@ -1600,8 +1599,6 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
 
     /**
      * Returns true, if we're in a CONFIGURATION_ERROR state
-     *
-     * @return
      */
     protected boolean hasConfigurationError() {
         ThingStatusInfo statusInfo = getThing().getStatusInfo();
@@ -1623,8 +1620,8 @@ public class StiebelEltronHandlerAllWpm extends BaseThingHandler {
     /**
      * Returns the channel UID for the specified group and channel id
      *
-     * @param string the channel group
-     * @param string the channel id in that group
+     * @param group the channel group
+     * @param id the channel id in that group
      * @return the globally unique channel uid
      */
     ChannelUID channelUID(String group, String id) {

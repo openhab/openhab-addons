@@ -34,6 +34,8 @@ public class ApiConstants {
     public static final String URL_RECORDING_END = "/share/play?disable_redirect=true";
     public static final String URL_DOORBELLS = API_BASE + "/clients_api/doorbots";
     public static final String URL_CHIMES = API_BASE + "/clients_api/chimes";
+    public static final String URL_SNAPSHOT_TIMESTAMPS = API_BASE + "/clients_api/snapshots/timestamps";
+    public static final String URL_SNAPSHOTS = API_BASE + "/clients_api/snapshots/image/";
 
     public static final String URL_RECORDING = "/clients_api/dings/{0}/recording";
 

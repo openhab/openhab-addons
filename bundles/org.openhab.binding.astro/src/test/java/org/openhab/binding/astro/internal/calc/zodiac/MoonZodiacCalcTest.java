@@ -14,6 +14,8 @@ package org.openhab.binding.astro.internal.calc.zodiac;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Instant;
+import java.time.InstantSource;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -34,7 +36,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * covered:
  * <ul>
  * <li>checks if generated data are the same (with some accuracy) as produced by
- * haevens-above.com</li>
+ * heavens-above.com</li>
  * </ul>
  *
  * @author Leo Siepel - Initial contribution
@@ -53,15 +55,15 @@ public class MoonZodiacCalcTest {
 
     @BeforeEach
     public void init() {
-        moonCalc = new MoonCalc();
+        moonCalc = new MoonCalc(InstantSource.fixed(Instant.ofEpochMilli(1551225600000L)));
     }
 
     @Test
     public void testGetMoonInfoForZodiac() {
         MoonCalc moonCalc = this.moonCalc;
         assertNotNull(moonCalc);
-        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
-        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE, Locale.ROOT);
+        Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE);
+        moonCalc.setPositionalInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, moon, TIME_ZONE);
 
         assertEquals(ZodiacSign.SAGITTARIUS, moon.getZodiac().getSign());
     }

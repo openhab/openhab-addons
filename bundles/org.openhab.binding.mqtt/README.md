@@ -1,5 +1,10 @@
 # MQTT Things and Channels Binding
 
+This binding supports generic MQTT devices.
+And has specialist extensions for the following manufacturers products:
+
+<!--list-subs-->
+
 MQTT is one of the most commonly used protocols in IoT (Internet of Things) projects. It stands for Message Queuing Telemetry Transport.
 
 It is designed as a lightweight messaging protocol that uses publish/subscribe operations to exchange data between clients and the server.
@@ -18,9 +23,6 @@ You can use any of the freely available MQTT Brokers like [Mosquitto](https://mo
 
 This particular binding allows to configure connections to brokers via openHAB Things, and configure channels corresponding to MQTT topics.
 This binding does NOT perform auto-discovery of available MQTT topics.
-Please check out the available extensions:
-
-<!--list-subs-->
 
 ## MQTT Topics
 

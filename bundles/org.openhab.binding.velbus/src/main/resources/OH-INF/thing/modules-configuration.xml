@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vmbsig">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBSIG</label>
+		<description>Signum IoT Gateway Module</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+
+		<config-description-ref uri="thing-type:velbus:0channelDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbsig-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBSIG-20</label>
+		<description>Signum IoT Gateway Module</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<channels>
+			<channel id="status" typeId="error-status"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelStatusDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbsig-21">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBSIG-21</label>
+		<description>Signum IoT Gateway Module</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<channels>
+			<channel id="status" typeId="error-status"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:1channelStatusDevice"/>
+	</thing-type>
+
+	<thing-type id="vmbpsumngr-20">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMBPSUMNGR-20</label>
+		<description>PSU Manager</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="16channelInputModule"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:16channelDevice"/>
+	</thing-type>
+
+</thing:thing-descriptions>

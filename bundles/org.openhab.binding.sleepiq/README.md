@@ -17,11 +17,11 @@ Currently, only dual-chamber beds are supported by this binding.
 
 ## Discovery
 
-The SleepIQ cloud thing must be added manually with the username and password used to register with the service.
+The SleepIQ cloud Thing must be added manually with the username and password used to register with the service.
 After that, beds are discovered automatically by querying the service.
 If the bed has a foundation, it will be auto-discovered by the binding.
 If a foundation is discovered, the channels for controlling presets, position and outlets can be operated.
-The thing properties will show whether or not a foundation is installed.
+The Thing properties will show whether or not a foundation is installed.
 
 ## Binding Configuration
 
@@ -71,33 +71,33 @@ Bridge sleepiq:cloud:1 [ username="mail@example.com", password="password", polli
 
 All channels within this group are read-only, except for the sleepNumber and privacyMode channels.
 
-| Channel ID                        | Item Type      | Description  |
-|-----------------------------------|----------------|---------------------------------------------------------------------------------------------------------------------|
-| inBed                             | Switch         | The presence of a person or object on the chamber  |
-| sleepNumber                       | Number         | The Sleep Number setting of the chamber. Set the sleep number of the chamber by sending a command to the sleepNumber channel with a value between 5 and 100. The value must be a multiple of 5  |
-| sleepGoalMinutes                  | Number:Time    | The person's sleep goal in minutes |
-| pressure                          | Number         | The current pressure inside the chamber |
-| privacyMode                       | Switch         | Enable or disable privacy mode |
-| lastLink                          | String         | The amount of time that has passed since a connection was made from the chamber to the cloud service (D d HH:MM:SS) |
-| alertId                           | Number         | Identifier for an alert condition with the chamber |
-| alertDetailedMessage              | String         | A detailed message describing an alert condition with the chamber |
-| todaySleepIQ                      | Number         | The Sleep IQ score for the current day |
-| todayAverageHeartRate             | Number         | The average heart rate for the current day |
-| todayAverageRespirationRate       | Number         | The average respiration rate for the current day |
-| todayMessage                      | String         | A description of the sleep quality for the current day |
-| todaySleepDurationSeconds         | Number:Time    | The duration of sleep for the current day |
-| todaySleepInBedSeconds            | Number:Time    | The duration of time in bed for the current day |
-| todaySleepOutOfBedSeconds         | Number:Time    | The duration of time out of bed for the current day |
-| todaySleepRestfulSeconds          | Number:Time    | The duration of restful sleep for the current day |
-| todaySleepRestlessSeconds         | Number:Time    | The duration of restless sleep for the current day |
-| monthlySleepIQ                    | Number         | The average Sleep IQ score for the current month |
-| monthlyAverageHeartRate           | Number         | The average heart rate for the current month |
-| monthlyAverageRespirationRate     | Number         | The average respiration rate for the current month |
-| foundationPreset                  | Number         | Sets the head and foot position to one of the 6 available presets (1-6) (foundation required) |
-| foundationPositionHead            | Dimmer         | Sets the head position (foundation required) |
-| foundationPositionFoot            | Dimmer         | Sets the foot position (foundation required) |
-| nightStandOutlet                  | Switch         | Turn on/off the night stand outlet (foundation required) |
-| underBedLight                     | Switch         | Turn on/off the under bed light (foundation required) |
+| Channel ID                    | Item Type   | Description                                                                                                  |
+|-------------------------------|-------------|--------------------------------------------------------------------------------------------------------------|
+| inBed                         | Switch      | Presence of a person or object on the chamber                                                                |
+| sleepNumber                   | Number      | Sleep Number setting of the chamber. Set by sending a command with a value between 5 and 100 (multiple of 5) |
+| sleepGoalMinutes              | Number:Time | Sleep goal in minutes                                                                                        |
+| pressure                      | Number      | Current pressure inside the chamber                                                                          |
+| privacyMode                   | Switch      | Enable or disable privacy mode                                                                               |
+| lastLink                      | String      | Time since last connection to the cloud service (D d HH:MM:SS)                                               |
+| alertId                       | Number      | Identifier for an alert condition with the chamber                                                           |
+| alertDetailedMessage          | String      | A detailed message describing an alert condition with the chamber                                            |
+| todaySleepIQ                  | Number      | The Sleep IQ score for the current day                                                                       |
+| todayAverageHeartRate         | Number      | The average heart rate for the current day                                                                   |
+| todayAverageRespirationRate   | Number      | The average respiration rate for the current day                                                             |
+| todayMessage                  | String      | A description of the sleep quality for the current day                                                       |
+| todaySleepDurationSeconds     | Number:Time | The duration of sleep for the current day                                                                    |
+| todaySleepInBedSeconds        | Number:Time | The duration of time in bed for the current day                                                              |
+| todaySleepOutOfBedSeconds     | Number:Time | The duration of time out of bed for the current day                                                          |
+| todaySleepRestfulSeconds      | Number:Time | The duration of restful sleep for the current day                                                            |
+| todaySleepRestlessSeconds     | Number:Time | The duration of restless sleep for the current day                                                           |
+| monthlySleepIQ                | Number      | The average Sleep IQ score for the current month                                                             |
+| monthlyAverageHeartRate       | Number      | The average heart rate for the current month                                                                 |
+| monthlyAverageRespirationRate | Number      | The average respiration rate for the current month                                                           |
+| foundationPreset              | Number      | Sets the head and foot position to one of the 6 available presets (1-6) (foundation required)                |
+| foundationPositionHead        | Dimmer      | Sets the head position (foundation required)                                                                 |
+| foundationPositionFoot        | Dimmer      | Sets the foot position (foundation required)                                                                 |
+| nightStandOutlet              | Switch      | Turn on/off the night stand outlet (foundation required)                                                     |
+| underBedLight                 | Switch      | Turn on/off the under bed light (foundation required)                                                        |
 
 ## Items
 
@@ -106,7 +106,7 @@ Here is a sample item configuration:
 ```java
 Switch      MasterBR_SleepIQ_InBed_Alice                 "In Bed [%s]"                      { channel="sleepiq:dualBed:1:master:left#inBed" }
 Number      MasterBR_SleepIQ_SleepNumber_Alice           "Sleep Number [%s]"                { channel="sleepiq:dualBed:1:master:left#sleepNumber" }
-Number:Time MasterBR_SleepIQ_SleepGoal_Alice             "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:left#sleepGoalMinutes"
+Number:Time MasterBR_SleepIQ_SleepGoal_Alice             "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:left#sleepGoalMinutes" }
 Number      MasterBR_SleepIQ_Pressure_Alice              "Pressure [%s]"                    { channel="sleepiq:dualBed:1:master:left#pressure" }
 Switch      MasterBR_SleepIQ_PrivacyMode_Alice           "Privacy Mode [%s]"                { channel="sleepiq:dualBed:1:master:left#privacyMode" }
 String      MasterBR_SleepIQ_LastLink_Alice              "Last Update [%s]"                 { channel="sleepiq:dualBed:1:master:left#lastLink" }
@@ -132,8 +132,8 @@ Switch      MasterBR_SleepIQ_FoundationNightLight_Alice  "Night Light [%d]"     
 
 Switch      MasterBR_SleepIQ_InBed_Bob                   "In Bed [%s]"                      { channel="sleepiq:dualBed:1:master:right#inBed" }
 Number      MasterBR_SleepIQ_SleepNumber_Bob             "Sleep Number [%s]"                { channel="sleepiq:dualBed:1:master:right#sleepNumber" }
-Number      MasterBR_SleepIQ_SleepGoal_Bob               "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:left#sleepGoalMinutes"
-Number:Time MasterBR_SleepIQ_Pressure_Bob                "Pressure [%s]"                    { channel="sleepiq:dualBed:1:master:right#pressure" }
+Number:Time MasterBR_SleepIQ_SleepGoal_Bob               "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:right#sleepGoalMinutes" }
+Number      MasterBR_SleepIQ_Pressure_Bob                "Pressure [%s]"                    { channel="sleepiq:dualBed:1:master:right#pressure" }
 Switch      MasterBR_SleepIQ_PrivacyMode_Bob             "Privacy Mode [%s]"                { channel="sleepiq:dualBed:1:master:right#privacyMode" }
 String      MasterBR_SleepIQ_LastLink_Bob                "Last Update [%s]"                 { channel="sleepiq:dualBed:1:master:right#lastLink" }
 Number      MasterBR_SleepIQ_AlertId_Bob                 "Alert ID [%s]"                    { channel="sleepiq:dualBed:1:master:right#alertId" }

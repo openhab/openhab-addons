@@ -35,4 +35,8 @@ public enum MuteType {
         }
         return UNMUTE;
     }
+
+    public static MuteType of(boolean isMuted) {
+        return isMuted ? MUTE : UNMUTE;
+    }
 }

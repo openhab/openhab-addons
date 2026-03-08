@@ -17,10 +17,10 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO.CoIotDescrBlk;
@@ -79,7 +79,7 @@ public class Shelly1CoIoTProtocol {
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                 : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
 
-        switch (sen.type.toLowerCase()) {
+        switch (sen.type.toLowerCase(Locale.ROOT)) {
             case "b": // BatteryLevel +
                 updateChannel(updates, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                         toQuantityType(s.value, 0, Units.PERCENT));
@@ -96,7 +96,7 @@ public class Shelly1CoIoTProtocol {
                         toQuantityType(s.value, DIGITS_LUX, Units.LUX));
                 break;
             case "s": // CatchAll
-                switch (sen.desc.toLowerCase()) {
+                switch (sen.desc.toLowerCase(Locale.ROOT)) {
                     case "state": // Relay status +
                     case "output":
                         updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
@@ -257,8 +257,8 @@ public class Shelly1CoIoTProtocol {
             double brightness = -1.0;
             double power = -1.0;
             for (CoIotSensor update : allUpdates) {
-                CoIotDescrSen d = fixDescription(sensorMap.get(update.id), blkMap);
-                if (!checkL.isEmpty() && !d.links.equals(checkL)) {
+                CoIotDescrSen d = sensorMap.getOrDefault(update.id, new CoIotDescrSen());
+                if (!checkL.isEmpty() && !checkL.equals(d.links)) {
                     // continue until we find the correct one
                     continue;
                 }
@@ -321,7 +321,7 @@ public class Shelly1CoIoTProtocol {
         int idx = -1;
         CoIotDescrBlk blk = blkMap.get(sen.links);
         if (blk != null) {
-            String desc = blk.desc.toLowerCase();
+            String desc = blk.desc.toLowerCase(Locale.ROOT);
             if (desc.startsWith(SHELLY_CLASS_RELAY) || desc.startsWith(SHELLY_CLASS_ROLLER)
                     || desc.startsWith(SHELLY_CLASS_LIGHT) || desc.startsWith(SHELLY_CLASS_EMETER)) {
                 if (desc.contains("_")) { // CoAP v2
@@ -368,10 +368,6 @@ public class Shelly1CoIoTProtocol {
 
     protected ShellyDeviceProfile getProfile() {
         return profile;
-    }
-
-    public CoIotDescrSen fixDescription(@Nullable CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap) {
-        return sen != null ? sen : new CoIotDescrSen();
     }
 
     public void completeMissingSensorDefinition(Map<String, CoIotDescrSen> sensorMap) {

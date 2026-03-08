@@ -13,9 +13,11 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+import static org.openhab.binding.evcc.internal.handler.Utils.getKeyFromChannelUID;
 import static org.openhab.core.util.StringUtils.capitalize;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,15 +30,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
@@ -48,13 +48,13 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -80,7 +80,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     protected boolean isInitialized = false;
     protected String endpoint = "";
     protected String smartCostType = "";
-    protected @Nullable StateResolver stateResolver = StateResolver.getInstance();
 
     public EvccBaseThingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -88,34 +87,37 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     protected void commonInitialize(JsonObject state) {
-        List<Channel> newChannels = new ArrayList<>();
-
-        for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
-            String key = entry.getKey();
-            JsonElement value = entry.getValue();
-            if (null == key || value == null) {
-                continue;
-            }
-            String thingKey = getThingKey(key);
-
-            // Skip non-primitive values
-            if (!value.isJsonPrimitive()) {
-                continue;
-            }
-
-            @Nullable
-            Channel channel = createChannel(thingKey, value);
-            if (null != channel) {
-                newChannels.add(channel);
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        Set<String> validChannelIds = extractValidChannelIds(state);
+        if (syncThingChannels(channels, state, validChannelIds)) {
+            if (!channels.isEmpty()) {
+                updateThing(editThing().withChannels(channels).build());
             }
         }
 
-        newChannels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
-        updateThing(editThing().withChannels(newChannels).build());
         updateStatus(ThingStatus.ONLINE);
         isInitialized = true;
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
                 () -> logger.error("No bridgeHandler present when initializing the thing"));
+        // Initialize all channels to UNDEF first to avoid stale data
+        getThing().getChannels().forEach(channel -> {
+            updateState(channel.getUID(), UnDefType.UNDEF);
+        });
+    }
+
+    protected String getPropertyOrConfigValue(String propertyName) {
+        Object value = thing.getConfiguration().get(propertyName);
+        if (value instanceof String s) {
+            return s;
+        } else if (value instanceof BigDecimal bd) {
+            return bd.toString();
+        } else {
+            return switch (propertyName) {
+                case PROPERTY_INDEX -> thing.getProperties().getOrDefault(propertyName, "0");
+                case PROPERTY_VEHICLE_ID -> thing.getProperties().getOrDefault(propertyName, "");
+                default -> "";
+            };
+        }
     }
 
     @Override
@@ -142,12 +144,13 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 JsonObject jsonState = getStateFromCachedState(handler.getCachedEvccState());
                 if (!jsonState.isEmpty()) {
                     JsonElement value = jsonState.get(key);
-                    Optional.ofNullable(stateResolver).ifPresent(resolver -> {
-                        State state = resolver.resolveState(key, value);
-                        if (null != state) {
-                            updateState(channelUID, state);
-                        }
-                    });
+                    if (value == null) {
+                        return;
+                    }
+                    State state = StateResolver.getInstance().resolveState(key, value);
+                    if (null != state) {
+                        updateState(channelUID, state);
+                    }
                 }
             });
         }
@@ -170,7 +173,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             String label = getChannelLabel(thingKey);
             Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey)).withLabel(label)
                     .withType(channelTypeUID).withAcceptedItemType(itemType).build();
-            if (getThing().getChannels().stream().noneMatch(c -> c.getUID().equals(channel.getUID()))) {
+            if (getThing().getChannel(channel.getUID()) == null) {
                 return channel;
             }
         } else {
@@ -208,7 +211,40 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         if (!isInitialized || jsonState.isEmpty()) {
             return;
         }
+        Set<String> validChannelIds = extractValidChannelIds(jsonState);
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+        boolean channelsChanged = syncThingChannels(channels, jsonState, validChannelIds);
+        if (channelsChanged) {
+            updateThing(editThing().withChannels(channels).build());
+            updateStatus(ThingStatus.ONLINE);
+            return;
+        }
+        updateChannelStates(getThing().getChannels(), jsonState, validChannelIds);
+        updateStatus(ThingStatus.ONLINE);
+    }
 
+    private Set<String> extractValidChannelIds(JsonObject jsonState) {
+        return jsonState.entrySet().stream()
+                .filter(e -> e.getKey() != null && e.getValue() != null && e.getValue().isJsonPrimitive())
+                .map(e -> getThingKey(e.getKey())).collect(Collectors.toSet());
+    }
+
+    private boolean syncThingChannels(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
+        boolean channelsChanged = addNonExistingChannels(channels, jsonState);
+
+        if (JSON_KEY_FORECAST.equals(type)) {
+            return channelsChanged;
+        }
+        boolean removed = channels.removeIf(c -> {
+            String id = c.getUID().getId();
+            return !validChannelIds.contains(id) && !isLinked(c.getUID());
+        });
+
+        return channelsChanged || removed;
+    }
+
+    private boolean addNonExistingChannels(List<Channel> channels, JsonObject jsonState) {
+        boolean channelsAdded = false;
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : jsonState.entrySet()) {
             String key = entry.getKey();
             JsonElement value = entry.getValue();
@@ -217,69 +253,82 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             }
 
             String thingKey = getThingKey(key);
-            ChannelUID channelUID = channelUID(thingKey);
-            Channel existingChannel = getThing().getChannel(channelUID.getId());
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), thingKey);
+            Channel existingChannel = getThing().getChannel(channelUID);
             if (existingChannel == null) {
-                ThingBuilder builder = editThing();
-                List<Channel> channels = new ArrayList<>(getThing().getChannels());
-                builder.withoutChannels(channels);
                 @Nullable
                 Channel newChannel = createChannel(thingKey, value);
                 if (null != newChannel) {
                     channels.add(newChannel);
-                    channels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
-                    updateThing(builder.withChannels(channels).build());
+                    channelsAdded = true;
                 }
             }
-            resolveAndUpdateState(channelUID, thingKey, value);
         }
-        updateStatus(ThingStatus.ONLINE);
+        if (channelsAdded) {
+            channels.sort(Comparator.comparing(c -> c.getUID().getId()));
+        }
+        return channelsAdded;
+    }
+
+    private void updateChannelStates(List<Channel> channels, JsonObject jsonState, Set<String> validChannelIds) {
+        for (Channel channel : channels) {
+            ChannelUID uid = channel.getUID();
+            String id = uid.getId();
+
+            if (validChannelIds.contains(id)) {
+                // If channel is valid -> resolve state and set channel state
+                @Nullable
+                JsonElement value = jsonState.get(getKeyFromChannelUID(uid));
+                if (value != null) {
+                    resolveAndUpdateState(uid, id, value);
+                }
+            } else {
+                // else set channel state to UNDEF if channel is linked
+                if (isLinked(uid)) {
+                    updateState(uid, UnDefType.UNDEF);
+                }
+            }
+        }
     }
 
     protected void resolveAndUpdateState(ChannelUID channelUID, String key, JsonElement value) {
-        Optional.ofNullable(stateResolver).ifPresent(resolver -> {
-            State state = resolver.resolveState(key, value);
-            if (null != state) {
-                updateState(channelUID, state);
-            }
-        });
+        State state = StateResolver.getInstance().resolveState(key, value);
+        if (null != state) {
+            updateState(channelUID, state);
+        }
     }
 
-    protected boolean sendCommand(String url) {
-        AtomicBoolean successful = new AtomicBoolean(false);
+    protected void performApiRequest(String url, String method, JsonElement payload) {
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            HttpClient httpClient = handler.getHttpClient();
-            try {
-                ContentResponse response = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS)
-                        .method(HttpMethod.POST).header(HttpHeader.ACCEPT, "application/json").send();
-
-                if (response.getStatus() == 200) {
-                    logger.debug("Sending command was successful");
-                    successful.set(true);
-                } else {
-                    @Nullable
-                    JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                    Optional.ofNullable(responseJson).ifPresent(json -> {
-                        if (json.has("error")) {
-                            logger.debug("Sending command was unsuccessful, got this error:\n {}",
-                                    json.get("error").getAsString());
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
-                                    json.get("error").getAsString());
-                        } else {
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
-                            logger.warn("evcc API error: HTTP {}", response.getStatus());
-                        }
-                    });
-                }
-            } catch (Exception e) {
-                logger.warn("evcc bridge couldn't call the API", e);
-            }
+            HttpMethod httpMethod = HttpMethod.valueOf(method);
+            handler.enqueueRequest(url, httpMethod, payload, this::checkResponse, error -> {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            });
         });
-        return successful.get();
     }
 
-    private ChannelUID channelUID(String id) {
-        return new ChannelUID(getThing().getUID(), id);
+    private void checkResponse(ContentResponse response) {
+        if (response.getStatus() == 200) {
+            logger.debug("Sending command was successful");
+        } else {
+            try {
+                @Nullable
+                JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
+                Optional.ofNullable(responseJson).ifPresent(json -> {
+                    if (json.has("error")) {
+                        logger.debug("Sending command was unsuccessful, got this error:\n {}",
+                                json.get("error").getAsString());
+                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
+                                json.get("error").getAsString());
+                    } else {
+                        updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
+                        logger.warn("evcc API error: HTTP {}", response.getStatus());
+                    }
+                });
+            } catch (Exception e) {
+                logger.warn("evcc bridge couldn't parse the API error response", e);
+            }
+        }
     }
 
     @Override

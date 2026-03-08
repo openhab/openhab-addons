@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.evcc.internal.discovery;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.util.HexUtils;
 
 /**
  * The {@link Utils} provides utility functions
@@ -26,7 +31,7 @@ public class Utils {
 
     /**
      * This method removes specific local characters (like ä, ö, ü), so we get a sanitized string
-     * 
+     *
      * @param name that will be sanitized
      * @return a sanitized name that has replaced any invalid char
      */
@@ -36,6 +41,23 @@ public class Utils {
             result = Normalizer.normalize(name, Normalizer.Form.NFKD);
             result = result.replaceAll("\\p{M}", "");
         }
-        return result.replaceAll("[^a-zA-Z0-9_]", "-").toLowerCase();
+        return result.replaceAll("[^a-zA-Z0-9_]", "-").toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * This method creates a stable ID string based on the provided list of values (cut down to first 10 hex chars of
+     * SHA-256)
+     *
+     * @param values strings to create the ID from
+     * @return a stable ID string
+     */
+    public static String createIdString(String... values) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(String.join("", values).getBytes(StandardCharsets.UTF_8));
+            return HexUtils.bytesToHex(digest).substring(0, 10);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
     }
 }

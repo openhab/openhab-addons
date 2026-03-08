@@ -177,7 +177,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             }
         }
 
-        if (needRefresh) {
+        if (needRefresh && configuration.pollingInterval > 0) {
             TuyaDevice tuyaDevice = this.tuyaDevice;
             if (tuyaDevice != null) {
                 ScheduledFuture<?> pollingJob = this.pollingJob;

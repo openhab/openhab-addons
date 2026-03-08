@@ -114,7 +114,7 @@ public class SolarmanRegisterUpdater {
     private void updateIntRegisters(ChannelUID channelUID, ParameterItem channelToUpdate, Command command, int size,
             IntegerValueType integerValueType) {
         final DecimalType decimalValue = switch (command) {
-            case DecimalType decimal -> decimal;
+            case Number number -> new DecimalType(number);
             case OnOffType onOff -> onOff == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
             case StringType stringType -> {
                 if (channelToUpdate.getLookup().isEmpty()) {
@@ -147,9 +147,9 @@ public class SolarmanRegisterUpdater {
             }
             ByteBuffer buffer = ByteBuffer.allocate(size);
             switch (size) {
-                case 2 -> buffer.putShort((short) value);
-                case 4 -> buffer.putInt((int) value);
-                case 8 -> buffer.putLong(value);
+                case Short.BYTES -> buffer.putShort((short) value);
+                case Integer.BYTES -> buffer.putInt((int) value);
+                case Long.BYTES -> buffer.putLong(value);
             }
             byte[] data = buffer.array();
             writeRegisters(channelToUpdate.getRegisters().getFirst(), size / 2, data);
@@ -221,9 +221,13 @@ public class SolarmanRegisterUpdater {
             }
 
             if (solarmanProtocol.writeRegisters(solarmanLoggerConnection, firstRegister, data)) {
-                logger.info("Successfully updated registers");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Successfully updated {} register(s) starting from 0x{}", registerCount,
+                            String.format("%04X", firstRegister));
+                }
             } else {
-                logger.error("Failed to update registers");
+                logger.error("Failed to update {} register(s) starting from 0x{}", registerCount,
+                        String.format("%04X", firstRegister));
             }
         } catch (SolarmanException e) {
             logger.error("Failed to communicate with logger", e);
@@ -231,6 +235,6 @@ public class SolarmanRegisterUpdater {
     }
 
     private void logUnexpectedCommand(ChannelUID uid, Command command) {
-        logger.warn("Received unexpected command {} in channel {}", command, uid);
+        logger.warn("Received unexpected command {} ({}) in channel {}", command, command.getClass(), uid);
     }
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
+import java.time.InstantSource;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -21,18 +22,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.astro.internal.model.Eclipse;
-import org.openhab.binding.astro.internal.model.EclipseType;
+import org.openhab.binding.astro.internal.model.EclipseSet;
 import org.openhab.binding.astro.internal.model.Position;
-import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Season;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.model.SunPhase;
+import org.openhab.binding.astro.internal.util.AstroConstants;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.binding.astro.internal.util.MathUtils;
 
@@ -45,9 +46,6 @@ import org.openhab.binding.astro.internal.util.MathUtils;
  */
 @NonNullByDefault
 public class SunCalc {
-    private static final double J2000 = 2451545.0;
-    private static final double SC = 1367; // Solar constant in W/m²
-
     private static final double M0 = Math.toRadians(357.5291);
     private static final double M1 = Math.toRadians(0.98560028);
     private static final double J0 = 0.0009;
@@ -59,7 +57,7 @@ public class SunCalc {
     private static final double P = Math.toRadians(102.9372);
     private static final double E = Math.toRadians(23.45);
     private static final double TH0 = Math.toRadians(280.1600);
-    private static final double TH1 = Math.toRadians(360.9856235);
+    private static final double TH1 = Math.toRadians(AstroConstants.W_DOT);
     private static final double SUN_ANGLE = -0.83;
     private static final double SUN_DIAMETER = Math.toRadians(0.53); // sun diameter
     private static final double H0 = Math.toRadians(SUN_ANGLE);
@@ -67,13 +65,28 @@ public class SunCalc {
     private static final double H2 = Math.toRadians(-12.0); // astronomical twilight angle
     private static final double H3 = Math.toRadians(-18.0); // darkness angle
     private static final int CURVE_TIME_INTERVAL = 20; // 20 minutes
-    private static final double JD_ONE_MINUTE_FRACTION = 1.0 / 60 / 24;
+    private static final EclipseCalc ECLIPSE_CALC = new SunEclipseCalc();
+
+    private final InstantSource instantSource;
+
+    /**
+     * Creates a new instance using the specified {@link InstantSource}.
+     *
+     * @param instantSource the source of the current time.
+     */
+    public SunCalc(InstantSource instantSource) {
+        this.instantSource = instantSource;
+    }
 
     /**
      * Calculates the sun position (azimuth and elevation).
      */
-    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
-            Sun sun) {
+    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Sun sun) {
+        Position sunPosition = getPosition(calendar, latitude, longitude);
+        sun.setPosition(sunPosition);
+    }
+
+    public Position getPosition(Calendar calendar, double latitude, double longitude) {
         double lw = Math.toRadians(-longitude);
         double phi = Math.toRadians(latitude);
 
@@ -85,57 +98,21 @@ public class SunCalc {
         double a = getRightAscension(lsun);
         double th = getSiderealTime(j, lw);
 
-        double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d));
+        double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d)) + 180;
         double elevation = Math.toDegrees(getElevation(th, a, phi, d));
-        double shadeLength = getShadeLength(elevation);
-
-        Position position = sun.getPosition();
-        position.setAzimuth(azimuth + 180);
-        position.setElevation(elevation);
-        position.setShadeLength(shadeLength);
-
-        setRadiationInfo(calendar, elevation, altitude, sun);
-    }
-
-    /**
-     * Calculates sun radiation data.
-     */
-    private void setRadiationInfo(Calendar calendar, double elevation, @Nullable Double altitude, Sun sun) {
-        double sinAlpha = MathUtils.sinDeg(elevation);
-
-        int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
-        int daysInYear = calendar.getActualMaximum(Calendar.DAY_OF_YEAR);
-
-        // Direct Solar Radiation (in W/m²) at the atmosphere entry
-        // At sunrise/sunset - calculations limits are reached
-        double rOut = (elevation > 3) ? SC * (0.034 * MathUtils.cosDeg(360 * dayOfYear / daysInYear) + 1) : 0;
-        double altitudeRatio = (altitude != null) ? 1 / Math.pow((1 - (6.5 / 288) * (altitude / 1000.0)), 5.256) : 1;
-        double m = (Math.sqrt(1229 + Math.pow(614 * sinAlpha, 2)) - 614 * sinAlpha) * altitudeRatio;
-
-        // Direct radiation after atmospheric layer
-        // 0.6 = Coefficient de transmissivité
-        double rDir = rOut * Math.pow(0.6, m) * sinAlpha;
-
-        // Diffuse Radiation
-        double rDiff = rOut * (0.271 - 0.294 * Math.pow(0.6, m)) * sinAlpha;
-        double rTot = rDir + rDiff;
-
-        Radiation radiation = sun.getRadiation();
-        radiation.setDirect(rDir);
-        radiation.setDiffuse(rDiff);
-        radiation.setTotal(rTot);
+        return new Position(azimuth, elevation);
     }
 
     /**
      * Returns true, if the sun is up all day (no rise and set).
      */
-    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
+    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude) {
         Sun sun = new Sun();
         Calendar start = DateTimeUtils.truncateToMidnight(calendar);
         Calendar cal = (Calendar) start.clone();
         var numberOfSamples = 24 * 60 / CURVE_TIME_INTERVAL;
         for (int i = 0; i <= numberOfSamples; i++) {
-            setPositionalInfo(cal, latitude, longitude, altitude, sun);
+            setPositionalInfo(cal, latitude, longitude, sun);
             if (sun.getPosition().getElevationAsDouble() < SUN_ANGLE) {
                 return false;
             }
@@ -182,111 +159,125 @@ public class SunCalc {
         double jastro2 = getSunriseJulianDate(jtransit, jdark);
 
         Sun sun = new Sun();
-        sun.setAstroDawn(new Range(DateTimeUtils.toCalendar(jastro2, zone, locale),
+        sun.setRange(SunPhase.ASTRO_DAWN, new Range(DateTimeUtils.toCalendar(jastro2, zone, locale),
                 DateTimeUtils.toCalendar(jnau2, zone, locale)));
-        sun.setAstroDusk(new Range(DateTimeUtils.toCalendar(jastro, zone, locale),
+        sun.setRange(SunPhase.ASTRO_DUSK, new Range(DateTimeUtils.toCalendar(jastro, zone, locale),
                 DateTimeUtils.toCalendar(jdark, zone, locale)));
 
         if (onlyAstro) {
             return sun;
         }
 
-        sun.setNoon(new Range(DateTimeUtils.toCalendar(jtransit, zone, locale),
-                DateTimeUtils.toCalendar(jtransit + JD_ONE_MINUTE_FRACTION, zone, locale)));
+        Calendar noon = DateTimeUtils.toCalendar(jtransit, zone, locale);
+        sun.setRange(SunPhase.NOON, new Range(noon,
+                DateTimeUtils.toCalendar(jtransit + DateTimeUtils.JD_ONE_MINUTE_FRACTION, zone, locale)));
+        Calendar midnight, midnightEnd;
+        if (noon != null) {
+            midnight = (Calendar) noon.clone();
+            midnight.add(Calendar.HOUR, -12);
+            if (!DateTimeUtils.isSameDay(noon, midnight)) {
+                midnight.add(Calendar.HOUR, 24);
+            }
+            midnightEnd = (Calendar) midnight.clone();
+            midnightEnd.add(Calendar.MINUTE, 1);
+        } else {
+            midnight = null;
+            midnightEnd = null;
+        }
+        sun.setRange(SunPhase.MIDNIGHT, new Range(midnight, midnightEnd));
         sun.setRise(new Range(DateTimeUtils.toCalendar(jrise, zone, locale),
                 DateTimeUtils.toCalendar(jriseend, zone, locale)));
         sun.setSet(new Range(DateTimeUtils.toCalendar(jsetstart, zone, locale),
                 DateTimeUtils.toCalendar(jset, zone, locale)));
 
-        sun.setCivilDawn(new Range(DateTimeUtils.toCalendar(jciv2, zone, locale),
+        sun.setRange(SunPhase.CIVIL_DAWN, new Range(DateTimeUtils.toCalendar(jciv2, zone, locale),
                 DateTimeUtils.toCalendar(jrise, zone, locale)));
-        sun.setCivilDusk(
+        sun.setRange(SunPhase.CIVIL_DUSK,
                 new Range(DateTimeUtils.toCalendar(jset, zone, locale), DateTimeUtils.toCalendar(jnau, zone, locale)));
 
-        sun.setNauticDawn(new Range(DateTimeUtils.toCalendar(jnau2, zone, locale),
+        sun.setRange(SunPhase.NAUTIC_DAWN, new Range(DateTimeUtils.toCalendar(jnau2, zone, locale),
                 DateTimeUtils.toCalendar(jciv2, zone, locale)));
-        sun.setNauticDusk(new Range(DateTimeUtils.toCalendar(jnau, zone, locale),
+        sun.setRange(SunPhase.NAUTIC_DUSK, new Range(DateTimeUtils.toCalendar(jnau, zone, locale),
                 DateTimeUtils.toCalendar(jastro, zone, locale)));
 
-        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude, altitude);
+        boolean isSunUpAllDay = isSunUpAllDay(calendar, latitude, longitude);
 
         // daylight
         Range daylightRange = new Range();
         if (sun.getRise().getStart() == null && sun.getRise().getEnd() == null) {
             if (isSunUpAllDay) {
                 daylightRange = new Range(DateTimeUtils.truncateToMidnight(calendar),
-                        DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
+                        DateTimeUtils.truncateToMidnight(DateTimeUtils.addDays(calendar, 1)));
             }
         } else {
             daylightRange = new Range(sun.getRise().getEnd(), sun.getSet().getStart());
         }
-        sun.setDaylight(daylightRange);
+        sun.setRange(SunPhase.DAYLIGHT, daylightRange);
 
         // morning night
-        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true,
+        Sun sunYesterday = getSunInfo(DateTimeUtils.addDays(calendar, -1), latitude, longitude, altitude, true,
                 useMeteorologicalSeason, zone, locale);
         Range morningNightRange = null;
         Range range, range2;
-        if ((range = sunYesterday.getAstroDusk()) != null && range.getEnd() != null
+        if ((range = sunYesterday.getRange(SunPhase.ASTRO_DUSK)) != null && range.getEnd() != null
                 && DateTimeUtils.isSameDay(range.getEnd(), calendar)) {
             morningNightRange = new Range(range.getEnd(),
-                    (range2 = sun.getAstroDawn()) == null ? null : range2.getStart());
-        } else if (isSunUpAllDay || (range2 = sun.getAstroDawn()) == null || range2.getStart() == null) {
+                    (range2 = sun.getRange(SunPhase.ASTRO_DAWN)) == null ? null : range2.getStart());
+        } else if (isSunUpAllDay || (range2 = sun.getRange(SunPhase.ASTRO_DAWN)) == null || range2.getStart() == null) {
             morningNightRange = new Range();
         } else {
             morningNightRange = new Range(DateTimeUtils.truncateToMidnight(calendar),
-                    (range2 = sun.getAstroDawn()) == null ? null : range2.getStart());
+                    (range2 = sun.getRange(SunPhase.ASTRO_DAWN)) == null ? null : range2.getStart());
         }
-        sun.setMorningNight(morningNightRange);
+        sun.setRange(SunPhase.MORNING_NIGHT, morningNightRange);
 
         // evening night
         Range eveningNightRange = null;
-        if ((range = sun.getAstroDusk()) != null && range.getEnd() != null
+        if ((range = sun.getRange(SunPhase.ASTRO_DUSK)) != null && range.getEnd() != null
                 && DateTimeUtils.isSameDay(range.getEnd(), calendar)) {
-            eveningNightRange = new Range(range.getEnd(), DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
+            eveningNightRange = new Range(range.getEnd(),
+                    DateTimeUtils.truncateToMidnight(DateTimeUtils.addDays(calendar, 1)));
         } else {
             eveningNightRange = new Range();
         }
-        sun.setEveningNight(eveningNightRange);
+        sun.setRange(SunPhase.EVENING_NIGHT, eveningNightRange);
 
         // night
         if (isSunUpAllDay) {
-            sun.setNight(new Range());
+            sun.setRange(SunPhase.NIGHT, new Range());
         } else {
-            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
+            Sun sunTomorrow = getSunInfo(DateTimeUtils.addDays(calendar, 1), latitude, longitude, altitude, true,
                     useMeteorologicalSeason, zone, locale);
-            sun.setNight(new Range((range = sun.getAstroDusk()) == null ? null : range.getEnd(),
-                    (range2 = sunTomorrow.getAstroDawn()) == null ? null : range2.getStart()));
+            sun.setRange(SunPhase.NIGHT,
+                    new Range((range = sun.getRange(SunPhase.ASTRO_DUSK)) == null ? null : range.getEnd(),
+                            (range2 = sunTomorrow.getRange(SunPhase.ASTRO_DAWN)) == null ? null : range2.getStart()));
         }
 
         // eclipse
-        Eclipse eclipse = sun.getEclipse();
-        MoonCalc mc = new MoonCalc();
 
-        eclipse.getKinds().forEach(eclipseKind -> {
-            double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
-            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
-            if (eclipseDate != null) {
-                eclipse.set(eclipseKind, eclipseDate, new Position());
-            }
-        });
+        if (sun.getEclipseSet().needsRecalc(j)) {
+            sun.setEclipseSet(new EclipseSet(ECLIPSE_CALC.getNextEclipses(j).stream().map(eclipse -> {
+                Calendar eclipseCal = Objects.requireNonNull(DateTimeUtils.toCalendar(eclipse.when(), zone, locale));
+                return eclipse.withPosition(getPosition(eclipseCal, latitude, longitude));
+            })));
+        }
 
         sun.setZodiac(ZodiacCalc.calculate(lsun, calendar.toInstant()));
 
         Season season = sun.getSeason();
         var year = calendar.get(Calendar.YEAR);
         if (season == null || season.getYear() != year) {
-            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone));
+            sun.setSeason(SeasonCalc.calculate(year, latitude, useMeteorologicalSeason, zone, instantSource));
         }
 
         // phase
-        for (Entry<SunPhaseName, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
-            SunPhaseName entryPhase = rangeEntry.getKey();
+        for (Entry<SunPhase, Range> rangeEntry : sortByValue(sun.getAllRanges()).entrySet()) {
+            SunPhase entryPhase = rangeEntry.getKey();
             if (rangeEntry.getValue().matches(calendar)) {
-                if (entryPhase == SunPhaseName.MORNING_NIGHT || entryPhase == SunPhaseName.EVENING_NIGHT) {
-                    sun.getPhase().setName(SunPhaseName.NIGHT);
+                if (entryPhase == SunPhase.MORNING_NIGHT || entryPhase == SunPhase.EVENING_NIGHT) {
+                    sun.setSunPhase(SunPhase.NIGHT);
                 } else {
-                    sun.getPhase().setName(entryPhase);
+                    sun.setSunPhase(entryPhase);
                 }
             }
         }
@@ -294,27 +285,18 @@ public class SunCalc {
         return sun;
     }
 
-    /**
-     * Adds the specified days to the calendar.
-     */
-    private Calendar addDays(Calendar calendar, int days) {
-        Calendar cal = (Calendar) calendar.clone();
-        cal.add(Calendar.DAY_OF_MONTH, days);
-        return cal;
-    }
-
     // all the following methods are translated to java based on the javascript
     // calculations of http://www.suncalc.net
     private double getJulianCycle(double j, double lw) {
-        return Math.round(j - J2000 - J0 - lw / MathUtils.TWO_PI);
+        return Math.round(j - DateTimeUtils.JD_J2000 - J0 - lw / MathUtils.TWO_PI);
     }
 
     private double getApproxSolarTransit(double ht, double lw, double n) {
-        return J2000 + J0 + (ht + lw) / MathUtils.TWO_PI + n;
+        return DateTimeUtils.JD_J2000 + J0 + (ht + lw) / MathUtils.TWO_PI + n;
     }
 
     private double getSolarMeanAnomaly(double js) {
-        return M0 + M1 * (js - J2000);
+        return M0 + M1 * (js - DateTimeUtils.JD_J2000);
     }
 
     private double getEquationOfCenter(double m) {
@@ -338,7 +320,7 @@ public class SunCalc {
     }
 
     private double getSiderealTime(double j, double lw) {
-        return TH0 + TH1 * (j - J2000) - lw;
+        return TH0 + TH1 * (j - DateTimeUtils.JD_J2000) - lw;
     }
 
     private double getAzimuth(double th, double a, double phi, double d) {
@@ -348,10 +330,6 @@ public class SunCalc {
 
     private double getElevation(double th, double a, double phi, double d) {
         return Math.asin(Math.sin(phi) * Math.sin(d) + Math.cos(phi) * Math.cos(d) * Math.cos(th - a));
-    }
-
-    private double getShadeLength(double elevation) {
-        return 1 / MathUtils.tanDeg(elevation);
     }
 
     private double getHourAngle(double h, double phi, double d) {
@@ -366,20 +344,20 @@ public class SunCalc {
         return jtransit - (jset - jtransit);
     }
 
-    public static Map<SunPhaseName, Range> sortByValue(Map<SunPhaseName, Range> map) {
-        List<Entry<SunPhaseName, Range>> list = new ArrayList<>(map.entrySet());
+    public static Map<SunPhase, Range> sortByValue(Map<SunPhase, Range> map) {
+        List<Entry<SunPhase, Range>> list = new ArrayList<>(map.entrySet());
 
         Collections.sort(list, new Comparator<>() {
             @Override
-            public int compare(Entry<SunPhaseName, Range> p1, Entry<SunPhaseName, Range> p2) {
+            public int compare(Entry<SunPhase, Range> p1, Entry<SunPhase, Range> p2) {
                 Range p1Range = p1.getValue();
                 Range p2Range = p2.getValue();
                 return p1Range.compareTo(p2Range);
             }
         });
 
-        Map<SunPhaseName, Range> result = new LinkedHashMap<>();
-        for (Entry<SunPhaseName, Range> entry : list) {
+        Map<SunPhase, Range> result = new LinkedHashMap<>();
+        for (Entry<SunPhase, Range> entry : list) {
             result.put(entry.getKey(), entry.getValue());
         }
 

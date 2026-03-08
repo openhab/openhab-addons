@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal.model;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,12 +52,15 @@ public class Season {
 
     private final List<LocalSeason> seasons = new ArrayList<>(5);
     private final int year;
+    private final InstantSource instantSource;
 
-    public Season(double latitude, boolean useMeteorologicalSeason, TimeZone zone, Instant... equiSols) {
+    public Season(double latitude, boolean useMeteorologicalSeason, TimeZone zone, InstantSource instantSource,
+            Instant... equiSols) {
         // Expect to receive last of previous year, all from current year, first of next year
         if (equiSols.length != SeasonName.values().length + 2) {
             throw new IllegalArgumentException("Incorrect number of seasons provided");
         }
+        this.instantSource = instantSource;
         var hemisphere = Hemisphere.getHemisphere(latitude);
         List<Instant> moments = Arrays.stream(equiSols).sorted()
                 .map(i -> useMeteorologicalSeason ? DateTimeUtils.atMidnightOfFirstMonthDay(i, zone) : i).toList();
@@ -74,37 +78,9 @@ public class Season {
         return year;
     }
 
-    private Instant getSeasonStart(SeasonName season) {
+    public Instant getSeasonStart(SeasonName season) {
         return seasons.stream().filter(s -> s.name.equals(season) && s.year == year).map(s -> s.startsOn).findFirst()
                 .orElseThrow(NoSuchElementException::new);
-    }
-
-    /**
-     * Returns the date of the beginning of spring.
-     */
-    public Instant getSpring() {
-        return getSeasonStart(SeasonName.SPRING);
-    }
-
-    /**
-     * Returns the date of the beginning of summer.
-     */
-    public Instant getSummer() {
-        return getSeasonStart(SeasonName.SUMMER);
-    }
-
-    /**
-     * Returns the date of the beginning of autumn.
-     */
-    public Instant getAutumn() {
-        return getSeasonStart(SeasonName.AUTUMN);
-    }
-
-    /**
-     * Returns the date of the beginning of winter.
-     */
-    public Instant getWinter() {
-        return getSeasonStart(SeasonName.WINTER);
     }
 
     private LocalSeason getSeason(Instant when) {
@@ -115,28 +91,28 @@ public class Season {
      * Returns the current season name.
      */
     public SeasonName getName() {
-        return getSeason(Instant.now()).name;
+        return getSeason(instantSource.instant()).name;
     }
 
     /**
      * Returns the next season.
      */
     public Instant getNextSeason() {
-        return getSeason(Instant.now()).endsOn;
+        return getSeason(instantSource.instant()).endsOn;
     }
 
     /**
      * Returns the next season name.
      */
     public SeasonName getNextName() {
-        return getSeason(Instant.now()).name.next();
+        return getSeason(instantSource.instant()).name.next();
     }
 
     /**
      * Returns the time left for current season
      */
     public QuantityType<Time> getTimeLeft() {
-        var now = Instant.now();
+        var now = instantSource.instant();
         var timeLeft = Duration.between(now, getSeason(now).endsOn);
 
         return new QuantityType<>(timeLeft.toDays(), Units.DAY);

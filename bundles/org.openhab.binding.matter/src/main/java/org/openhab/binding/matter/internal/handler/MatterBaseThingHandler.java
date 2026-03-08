@@ -244,6 +244,19 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
     }
 
     /**
+     * Check if a channel is linked.
+     *
+     * @param endpointNumber The endpoint number.
+     * @param channelId The channel ID.
+     * @return True if the channel is linked, false otherwise.
+     */
+    public boolean isLinked(int endpointNumber, String channelId) {
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID(getThing().getUID(), String.valueOf(endpointNumber));
+        ChannelUID channelUID = new ChannelUID(channelGroupUID, channelId);
+        return isLinked(channelUID);
+    }
+
+    /**
      * Set the thing status of the endpoint.
      *
      * @param status The status to set.

@@ -171,7 +171,7 @@
 	<channel-type id="ir-code">
 		<item-type>String</item-type>
 		<label>IR Code</label>
-		<description>Supported codes: tuya base64 codes diy mode, nec-format codes, samsung-format codes</description>
+		<description>Supported codes: Tuya DIY base64 codes, NEC-format codes, Samsung-format codes.</description>
 
 		<config-description>
 			<parameter name="irType" type="text" required="true">
@@ -186,8 +186,8 @@
 			</parameter>
 			<parameter name="activeListen" type="boolean" required="false">
 				<label>Active Listening</label>
-				<description>Device will be always in learning mode. After send command with key code device stays in the learning
-					mode</description>
+				<description>Device will always be in learning mode. After sending a command with a key code, the device stays in
+					learning mode.</description>
 			</parameter>
 			<parameter name="irCode" type="text" required="false">
 				<label>IR Code</label>
@@ -208,7 +208,7 @@
 			</parameter>
 			<parameter name="dp" type="integer" required="false">
 				<label>DP Study Key</label>
-				<description>DP number for study key. Uses for receive key code in learning mode</description>
+				<description>DP number for the study key. Used to receive key codes in learning mode.</description>
 				<default>2</default>
 				<advanced>true</advanced>
 			</parameter>

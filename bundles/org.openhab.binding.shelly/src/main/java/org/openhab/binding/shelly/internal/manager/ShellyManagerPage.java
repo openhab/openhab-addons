@@ -22,8 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -86,8 +88,8 @@ public class ShellyManagerPage {
     protected final Map<String, String> htmlTemplates = new HashMap<>();
     protected final Gson gson = new Gson();
 
-    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo = new ShellyManagerCache<>(15 * 60 * 1000);
-    protected final ShellyManagerCache<String, FwArchList> firmwareArch = new ShellyManagerCache<>(15 * 60 * 1000);
+    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
+    protected final ShellyManagerCache<String, FwArchList> firmwareArch;
 
     public static class ShellyMgrResponse {
         public @Nullable Object data = "";
@@ -145,13 +147,16 @@ public class ShellyManagerPage {
     }
 
     public ShellyManagerPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
         this.configurationAdmin = configurationAdmin;
         this.resources = translationProvider;
         this.handlerFactory = handlerFactory;
         this.httpClient = httpClient;
         this.localIp = localIp;
         this.localPort = localPort;
+        this.firmwareRepo = firmwareRepo;
+        this.firmwareArch = firmwareArch;
     }
 
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
@@ -170,7 +175,7 @@ public class ShellyManagerPage {
         if (cl != null) {
             try (InputStream inputStream = cl.getResourceAsStream(file)) {
                 if (inputStream != null) {
-                    html = new BufferedReader(new InputStreamReader(inputStream)).lines()
+                    html = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
                             .collect(Collectors.joining("\n"));
                     htmlTemplates.put(template, html);
                 }
@@ -329,7 +334,7 @@ public class ShellyManagerPage {
             default:
                 statusIcon = ts.toString();
         }
-        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase());
+        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase(Locale.ROOT));
 
         return properties;
     }
@@ -393,10 +398,11 @@ public class ShellyManagerPage {
 
     protected FwRepoEntry getFirmwareRepoEntry(String deviceType, String mode) throws ShellyApiException {
         logger.debug("ShellyManager: Load firmware list from {}", FWREPO_PROD_URL);
-        FwRepoEntry fw = null;
-        if (firmwareRepo.containsKey(deviceType)) {
-            fw = firmwareRepo.get(deviceType);
+        FwRepoEntry fw = firmwareRepo.get(deviceType);
+        if (fw != null) {
+            return fw;
         }
+
         String json = httpGet(FWREPO_PROD_URL); // returns a strange JSON format so we are parsing this manually
         String entry = substringBetween(json, "\"" + deviceType + "\":{", "}");
         if (!entry.isEmpty()) {
@@ -434,14 +440,10 @@ public class ShellyManagerPage {
     }
 
     protected FwArchList getFirmwareArchiveList(String deviceType) throws ShellyApiException {
-        FwArchList list;
         String json = "";
-
-        if (firmwareArch.contains(deviceType)) {
-            list = firmwareArch.get(deviceType); // return from cache
-            if (list != null) {
-                return list;
-            }
+        FwArchList list = firmwareArch.get(deviceType); // return from cache
+        if (list != null) {
+            return list;
         }
 
         try {
@@ -489,15 +491,13 @@ public class ShellyManagerPage {
     }
 
     protected String httpRequest(HttpMethod method, String url) throws ShellyApiException {
-        ShellyApiResult apiResult = new ShellyApiResult();
-
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON);
             logger.trace("{}: HTTP {} {}", LOG_PREFIX, method, url);
             ContentResponse contentResponse = request.send();
-            apiResult = new ShellyApiResult(contentResponse);
+            ShellyApiResult apiResult = ShellyApiResult.builder(contentResponse).build();
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}", LOG_PREFIX, contentResponse.getStatus(), response);
 

@@ -6,18 +6,18 @@
 
 	<!-- The Bridge Type -->
 	<bridge-type id="smartthings">
-		<label>Smartthings Hub</label>
-		<description>Smartthings Hub V2 that is attached to the same network</description>
+		<label>SmartThings Hub</label>
+		<description>SmartThings Hub V2 that is attached to the same network</description>
 		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="smartthingsIp" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
-				<description>IP address of the Smartthings Hub</description>
+				<description>IP address of the SmartThings Hub</description>
 			</parameter>
 			<parameter name="smartthingsPort" type="integer" min="0" max="65535" required="false">
 				<label>IP Port Number</label>
-				<description>Port number of the Smartthings Hub</description>
+				<description>Port number of the SmartThings Hub</description>
 				<default>39500</default>
 			</parameter>
 		</config-description>
@@ -150,7 +150,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
-		<label>carbon Monoxide Detector</label>
+		<label>Carbon Monoxide Detector</label>
 		<description>Carbon Monoxide Detector</description>
 		<semantic-equipment-tag>COSensor</semantic-equipment-tag>
 		<channels>
@@ -332,8 +332,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
-		<label>estimated Time of Arrival</label>
-		<description>Estimated Time Of Arrival</description>
+		<label>Estimated Time of Arrival</label>
+		<description>Estimated Time of Arrival</description>
 		<channels>
 			<channel id="estimatedTimeOfArrival" typeId="estimatedTimeOfArrival-channel">
 				<label>Estimated Time of Arrival</label>
@@ -685,7 +685,7 @@
 			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Signal Strength</label>
-		<description>Gives the ability to read the signal stregth of Devices that support it</description>
+		<description>Gives the ability to read the signal strength of devices that support it</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="lqi" typeId="lqi-channel">

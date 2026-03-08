@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.icalendar.internal.logic;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,6 +55,7 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar_issue9647;
     private AbstractPresentableCalendar calendar_issue10808;
     private AbstractPresentableCalendar calendar_issue11084;
+    private AbstractPresentableCalendar calendar_location;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
@@ -62,6 +68,8 @@ public class BiweeklyPresentableCalendarTest {
                 new FileInputStream("src/test/resources/test-issue10808.ics"));
         calendar_issue11084 = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-issue11084.ics"));
+        calendar_location = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-location.ics"));
     }
 
     /**
@@ -591,30 +599,31 @@ public class BiweeklyPresentableCalendarTest {
     public void testGetFilteredEventsBetween() {
         Event[] expectedFilteredEvents1 = new Event[] {
                 new Event("Test Series in UTC", Instant.parse("2019-09-12T09:05:00Z"),
-                        Instant.parse("2019-09-12T09:10:00Z"), ""),
+                        Instant.parse("2019-09-12T09:10:00Z"), "", ""),
                 new Event("Test Event in UTC+2", Instant.parse("2019-09-14T08:00:00Z"),
-                        Instant.parse("2019-09-14T09:00:00Z"), "") };
+                        Instant.parse("2019-09-14T09:00:00Z"), "", "") };
         List<Event> realFilteredEvents1 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
                 Instant.parse("2019-09-15T06:00:00Z"), null, 3);
         assertArrayEquals(expectedFilteredEvents1, realFilteredEvents1.toArray(new Event[0]));
 
         Event[] expectedFilteredEvents2 = new Event[] {
-                new Event("Evt", Instant.parse("2019-11-10T10:00:00Z"), Instant.parse("2019-11-10T11:45:00Z"), ""),
-                new Event("Evt", Instant.parse("2019-11-17T10:00:00Z"), Instant.parse("2019-11-17T11:45:00Z"), ""),
-                new Event("Evt", Instant.parse("2019-12-01T10:00:00Z"), Instant.parse("2019-12-01T11:45:00Z"), "") };
+                new Event("Evt", Instant.parse("2019-11-10T10:00:00Z"), Instant.parse("2019-11-10T11:45:00Z"), "", ""),
+                new Event("Evt", Instant.parse("2019-11-17T10:00:00Z"), Instant.parse("2019-11-17T11:45:00Z"), "", ""),
+                new Event("Evt", Instant.parse("2019-12-01T10:00:00Z"), Instant.parse("2019-12-01T11:45:00Z"), "",
+                        "") };
         List<Event> realFilteredEvents2 = calendar2.getFilteredEventsBetween(Instant.parse("2019-11-08T06:00:00Z"),
                 Instant.parse("2019-12-31T06:00:00Z"), null, 3);
         assertArrayEquals(expectedFilteredEvents2, realFilteredEvents2.toArray(new Event[] {}));
 
         Event[] expectedFilteredEvents3 = new Event[] { new Event("Test Event in UTC+2",
-                Instant.parse("2019-09-14T08:00:00Z"), Instant.parse("2019-09-14T09:00:00Z"), "") };
+                Instant.parse("2019-09-14T08:00:00Z"), Instant.parse("2019-09-14T09:00:00Z"), "", "") };
         List<Event> realFilteredEvents3 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
                 Instant.parse("2019-09-15T06:00:00Z"),
                 new EventTextFilter(EventTextFilter.Field.SUMMARY, "utc+2", EventTextFilter.Type.TEXT), 3);
         assertArrayEquals(expectedFilteredEvents3, realFilteredEvents3.toArray(new Event[] {}));
 
         Event[] expectedFilteredEvents4 = new Event[] { new Event("Test Series in UTC",
-                Instant.parse("2019-09-12T09:05:00Z"), Instant.parse("2019-09-12T09:10:00Z"), "") };
+                Instant.parse("2019-09-12T09:05:00Z"), Instant.parse("2019-09-12T09:10:00Z"), "", "") };
         List<Event> realFilteredEvents4 = calendar.getFilteredEventsBetween(Instant.parse("2019-09-12T06:00:00Z"),
                 Instant.parse("2019-09-15T06:00:00Z"),
                 new EventTextFilter(EventTextFilter.Field.SUMMARY, ".*UTC$", EventTextFilter.Type.REGEX), 3);
@@ -635,9 +644,9 @@ public class BiweeklyPresentableCalendarTest {
 
         Event[] expectedFilteredEvents8 = new Event[] {
                 new Event("Restabfall", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), ""),
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "", ""),
                 new Event("Gelbe Tonne", LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "") };
+                        LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), "", "") };
         List<Event> realFilteredEvents8 = calendar_issue9647.getFilteredEventsBetween(
                 LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
                 LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
@@ -646,5 +655,47 @@ public class BiweeklyPresentableCalendarTest {
         List<Event> realFilteredEvents9 = calendar_issue11084.getFilteredEventsBetween(
                 Instant.parse("2021-08-16T16:45:00.123456Z"), Instant.parse("2021-08-16T16:46:00.768643Z"), null, 3);
         assertEquals(0, realFilteredEvents9.size());
+    }
+
+    /**
+     * Tests location field extraction from events.
+     */
+    @Test
+    public void testEventLocation() {
+        // Test event with location
+        Event eventWithLocation = calendar_location.getCurrentEvent(Instant.parse("2024-02-01T10:30:00Z"));
+        assertNotNull(eventWithLocation);
+        assertEquals("Meeting with Location", eventWithLocation.title);
+        assertEquals("Conference Room A", eventWithLocation.location);
+
+        // Test event without location
+        Event eventWithoutLocation = calendar_location.getCurrentEvent(Instant.parse("2024-02-01T14:30:00Z"));
+        assertNotNull(eventWithoutLocation);
+        assertEquals("Event without Location", eventWithoutLocation.title);
+        assertEquals("", eventWithoutLocation.location);
+
+        // Test event with URL location
+        Event eventWithUrlLocation = calendar_location.getNextEvent(Instant.parse("2024-02-01T14:30:00Z"));
+        assertNotNull(eventWithUrlLocation);
+        assertEquals("Virtual Meeting", eventWithUrlLocation.title);
+        assertEquals("https://example.com/meeting", eventWithUrlLocation.location);
+    }
+
+    /**
+     * Tests that location is preserved across next event retrieval.
+     */
+    @Test
+    public void testNextEventLocation() {
+        // Get next event from before first event
+        Event nextEvent = calendar_location.getNextEvent(Instant.parse("2024-02-01T09:00:00Z"));
+        assertNotNull(nextEvent);
+        assertEquals("Meeting with Location", nextEvent.title);
+        assertEquals("Conference Room A", nextEvent.location);
+
+        // Get next event after first event
+        Event nextEventAfterFirst = calendar_location.getNextEvent(Instant.parse("2024-02-01T11:00:00Z"));
+        assertNotNull(nextEventAfterFirst);
+        assertEquals("Event without Location", nextEventAfterFirst.title);
+        assertEquals("", nextEventAfterFirst.location);
     }
 }

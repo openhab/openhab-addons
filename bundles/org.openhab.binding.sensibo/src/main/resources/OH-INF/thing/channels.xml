@@ -35,7 +35,7 @@
 	<channel-type id="timer">
 		<item-type>Number</item-type>
 		<label>Off Timer</label>
-		<description>Number of seconds until turning off</description>
+		<description>Number of seconds until turning off.</description>
 		<state readOnly="false"/>
 	</channel-type>
 </thing:thing-descriptions>

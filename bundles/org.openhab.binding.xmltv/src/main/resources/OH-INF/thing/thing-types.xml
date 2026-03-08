@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="xmltvfile">
-		<label>XmlTVFile</label>
-		<description>This is the interface to a XmlTV file</description>
+		<label>XMLTV File</label>
+		<description>Interface to an XMLTV file.</description>
 
 		<config-description>
 			<parameter name="filePath" type="text" required="true">
@@ -19,7 +19,7 @@
 				<default>24</default>
 			</parameter>
 			<parameter name="encoding" type="text" required="true">
-				<label>File encoding</label>
+				<label>File Encoding</label>
 				<description>Specifies the XMLTV file encoding.</description>
 				<default>UTF8</default>
 			</parameter>
@@ -31,7 +31,7 @@
 			<bridge-type-ref id="xmltvfile"/>
 		</supported-bridge-type-refs>
 		<label>Channel</label>
-		<description>This represent a channel on a given TV file</description>
+		<description>Represents a channel from the XMLTV file.</description>
 
 		<channel-groups>
 			<channel-group id="channelprops" typeId="channelprops"/>
@@ -41,13 +41,13 @@
 
 		<config-description>
 			<parameter name="channelId" type="text" required="true">
-				<label>Channel Id</label>
-				<description>Id of the channel as presented in the XmlTV file.</description>
+				<label>Channel ID</label>
+				<description>ID of the channel as presented in the XMLTV file.</description>
 			</parameter>
 
 			<parameter name="offset" type="integer" min="-1440" max="1440" unit="min">
 				<label>Offset</label>
-				<description>Moves an event or datetime value forward or backward (in minutes)</description>
+				<description>Moves an event or datetime value forward or backward (in minutes).</description>
 				<default>0</default>
 			</parameter>
 
@@ -88,7 +88,7 @@
 
 	<channel-group-type id="nextprog">
 		<label>Next Program</label>
-		<description>Program which will follow current program on this channel.</description>
+		<description>Program that will follow the current program on this channel.</description>
 		<channels>
 			<channel id="progStart" typeId="progStart"/>
 			<channel id="timeLeft" typeId="timeLeft"/>
@@ -109,7 +109,7 @@
 
 	<channel-type id="progIconUrl" advanced="true">
 		<item-type>String</item-type>
-		<label>Program URL</label>
+		<label>Program Icon URL</label>
 		<description>URL to an image of the program.</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
@@ -117,21 +117,21 @@
 	<channel-type id="progTitle">
 		<item-type>String</item-type>
 		<label>Title</label>
-		<description>Program Title.</description>
+		<description>Program title.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="progCategory">
 		<item-type>String</item-type>
 		<label>Category</label>
-		<description>Program Category.</description>
+		<description>Program category.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="progStart">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
-		<description>Program Start Time</description>
+		<description>Program start time</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
@@ -142,7 +142,7 @@
 	<channel-type id="progEnd">
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
-		<description>Program End Time</description>
+		<description>Program end time</description>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Timestamp</tag>
@@ -152,8 +152,8 @@
 
 	<channel-type id="elapsedTime">
 		<item-type>Number:Time</item-type>
-		<label>Current Time</label>
-		<description>Current time of currently playing program.</description>
+		<label>Elapsed Time</label>
+		<description>Elapsed time of the currently playing program.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Duration</tag>
@@ -171,7 +171,7 @@
 	<channel-type id="timeLeft" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Time Left</label>
-		<description>Time left before program start</description>
+		<description>Time left before program start.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -189,7 +189,7 @@
 	<channel-type id="icon">
 		<item-type>Image</item-type>
 		<label>Icon</label>
-		<description>Icon of the channel / program.</description>
+		<description>Icon of the channel/program.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

@@ -1,16 +1,16 @@
 # SunSynk Binding
 
 This binding integrates the [Sun Synk Connect web services](https://www.sunsynk.net/).
-This binding is used to connect your openHAB system with Sun Synk Connect (where you log in and find Your Inverters).
-From the binding, you will get the status of your inverters and also command channels where you can control them. Also available is solar data for the plant the inverter belongs to.
-Since the binding uses a polling mechanism, there may be some latency depending on your setting regarding refresh time.
+It connects your openHAB system to Sun Synk Connect (where you log in and manage your inverters).
+The binding provides status channels for your inverters and command channels to control them.
+Since the binding uses a polling mechanism, there may be some latency depending on your refresh interval settings.
 
 ## Introduction
 
-You will require to have installed a Sun Synk inverter with a WiFi [Data logger](https://www.sunsynk.org/remote-monitoring) (or [e-linter](https://www.e-linter.com/)) connected to the Sun Synk App or Connect.
+You need a Sun Synk inverter with a Wi‑Fi [data logger](https://www.sunsynk.org/remote-monitoring) (or [e-linter](https://www.e-linter.com/)) connected to the Sun Synk app or Connect.
 See [Data Logger set up](https://www.sunsynk.org/_files/ugd/39fbfb_a325b6884e684c4ba1a3ad80afd5da20.pdf) or [Sun Synk Web](https://www.sunsynk.org/remote-monitoring).
-It is recommended, but not necessary that the "data interval" of your Gateway is set via Sun Synk Connect to 60s for best latency.
-If you do not have that setting available you can request it set via Sun Synk, your installer or you can ask for an [User Level Access Change Request](https://www.sunsynk.org/remote-monitoring)
+It's recommended (but not required) to set the gateway's data interval to 60 s in Sun Synk Connect for best latency.
+If you don't have that setting available, you can request it via Sun Synk or your installer, or ask for a [User Level Access Change Request](https://www.sunsynk.org/remote-monitoring).
 
 This binding uses your Sun Synk Connect credentials to access Sun Synk's web services via an openHAB Bridge (SunSynk Account).
 The bridge manages the account authentication and the discovery of SunSynk Inverter Things. Only the Inverter Thing is currently supported.
@@ -21,6 +21,8 @@ This binding has been tested and works with inverters:
 - [SYNK-8K-SG05LP1](https://www.sunsynk.org/8kw-hybrid-inverter)
 
 The sunsynk binding should work with any inverter and its connected equipment (batteries or solar strings) that is supported by Sun Synk Connect.
+This binding uses your Sun Synk Connect credentials to access Sun Synk's web services via an openHAB bridge (SunSynk Account).
+The bridge manages account authentication and discovery of SunSynk Inverter Things. Only the Inverter Thing is currently supported.
 
 Acknowledgements:
 
@@ -31,7 +33,7 @@ Acknowledgements:
 
 ## Supported Things
 
-|Name            | Thing type    |  Thing Id  |
+|Name            | Thing type    |  Thing ID  |
 |----------------|---------------|------------|
 |SunSynk Account | Bridge Thing  | account    |
 |SunSynk Inverter| Thing         | inverter   |
@@ -40,21 +42,21 @@ Acknowledgements:
 
 The binding supports discovery via configuring your login and password in an openHAB bridge.
 
-1. Add the sunsynk binding.
-1. Add a new thing of type SunSynk Account via the SunSynk Binding and configure with username and password.
-1. Go to Inbox press \[+\] and via the SunSynk Binding start discovery \[Scan\] of inverters.
-1. Inverters should appear in your inbox!
+1. Add the SunSynk binding.
+1. Add a new Thing of type SunSynk Account via the SunSynk binding and configure it with username and password.
+1. Go to the Inbox, press [+], and use the SunSynk Account to start a discovery [Scan] of inverters.
+1. Inverters should appear in your Inbox.
 
-The SunSynk Account bridge thing will discover connected inverters through the UI Scan service.
+The SunSynk Account bridge Thing will discover connected inverters through the UI Scan service.
 When using the UI Scan service all the parameters for an Inverter Thing are discovered.
 
 - Inverter Serial Number maps to the Sun Synk Connect inverter serial number
 - Inverter Name maps to the Sun Synk Connect inverter alias
 - Plant ID maps to the Sun Synk plant number (not available via Sun Synk Connect App)
 - Plant Name maps to the Sun Synk Connect plant name.
-- Refresh time (advanced) default 60s; determines the interval between polls of Sun Synk Connect. A value above 60 is enforced. When setting this remember your inverter values are only published by Sun Synk Connect at the rate set by "data interval".
+- Refresh time (advanced) default 60 s; determines the interval between polls of Sun Synk Connect. A minimum of 60 s is enforced. Remember that inverter values are only published by Sun Synk Connect at the gateway "data interval".
 
-The refresh rate is limited to once every 60s to prevent too many requests from the Sun Synk Connect API, although there is no rate limit, the **Sun Synk data is fully refreshed at the "data interval" set in Sun Synk Connect**, at best that is every 60s.
+The refresh rate is limited to once every 60 s to avoid excessive requests to the Sun Synk Connect API. Although there's no documented rate limit, data is fully refreshed at the "data interval" set in Sun Synk Connect (typically every 60 s).
 This can mean the data in openHAB is more than 1 minute delayed from real-time.
 Commands sent (from openHAB) to Sun Synk are buffered up until the next refresh interval and as they take a while to propagate through to your inverter, some channels are not refreshed (read back) from Sun Synk Connect until the next minute.
 
@@ -62,16 +64,16 @@ You can check the data interval setting in the [Sun Synk Connect web services](h
 
 ![Setting data interval on Sun Synk Connect (web only)](doc/data_interval.png)
 
-The SunSynk Account requires the user e-mail address and password used to login to Sun Synk Connect.
+The SunSynk Account requires the user e‑mail address and password used to log in to Sun Synk Connect.
 
 ## Thing Configuration
 
 ### `sunsynk:account` Bridge Thing Configuration
 
-| Name            | Type    | Description                                     | Default | Required | Advanced |
-|-----------------|---------|-------------------------------------------------|---------|----------|----------|
-| email           | text    | Email address used to login Sun Synk Connect    | N/A     | yes      | no       |
-| password        | text    | Password to access the Sun Synk Connect account | N/A     | yes      | no       |
+| Name     | Type | Description                                       | Default | Required | Advanced |
+|----------|------|---------------------------------------------------|---------|----------|----------|
+| email    | text | E‑mail address used to log in to Sun Synk Connect | N/A     | yes      | no       |
+| password | text | Password to access the Sun Synk Connect account   | N/A     | yes      | no       |
 
 ### `sunsynk:inverter:` Thing Configuration
 
@@ -88,73 +90,72 @@ The SunSynk Account requires the user e-mail address and password used to login 
 The SunSynk Account has no channels.
 The SunSynk Inverter has the following channels.
 
-| Channel                        | Type                    | R/W | Description                       | Advanced |
-|--------------------------------|-------------------------|-----|-----------------------------------|----------|
-|battery-soc                     |Number:Dimensionless     | R   | Inverter battery % charged        | no       |
-|battery-grid-voltage            |Number:ElectricPotential | R   | Battery dc electric-voltage       | no       |
-|battery-grid-current            |Number:ElectricCurrent   | R   | Battery dc electric-current       | no       |
-|battery-grid-power              |Number:Power             | R   | Battery dc electric-power         | no       |
-|battery-temperature             |Number:Temperature       | R   | Battery temperature               | no       |
-|inverter-ac-temperature         |Number:Temperature       | R   | Inverter ac temperature           | no       |
-|inverter-dc-temperature         |Number:Temperature       | R   | Inverter dc temperature           | no       |
-|inverter-grid-power             |Number:Power             | R   | Grid ac electric-power            | no       |
-|inverter-grid-voltage           |Number:ElectricPotential | R   | Grid ac electric-voltage          | no       |
-|inverter-grid-current           |Number:ElectricCurrent   | R   | Grid ac electric-current          | no       |
-|inverter-grid-frequency         |Number:Frequency         | R   | Grid frequency                    | no       |
-|inverter-rated-ac-output        |Number:Power             | R   | Inverter energy capacity          | no       |
-|inverter-solar-energy-today     |Number:Energy            | R   | Solar energy generated today      | no       |
-|inverter-solar-energy-month     |Number:Energy            | R   | Solar energy generated this month | no       |
-|inverter-solar-energy-year      |Number:Energy            | R   | Solar energy generated this year  | no       |
-|inverter-solar-efficiency       |Number:Dimensionless     | R   | Solar production efficiency       | no       |
-|inverter-solar-ac-power         |Number:Power             | R   | Solar power being generated       | no       |
-|inverter-solar-energy-total     |Number:Energy            | R   | Solar energy generated to date    | no       |
-|inverter-solar-string-voltage-1 |Number:ElectricPotential | R   | String 1 Solar Voltage            | no       |
-|inverter-solar-string-voltage-2 |Number:ElectricPotential | R   | String 2 Solar Voltage            | no       |
-|inverter-solar-string-current-1 |Number:ElectricCurrent   | R   | String 1 Solar Current            | no       |
-|inverter-solar-string-current-2 |Number:ElectricCurrent   | R   | String 2 Solar Current            | no       |
-|inverter-solar-string-power-1   |Number:Power             | R   | String 1 Solar Power              | no       |
-|inverter-solar-string-power-2   |Number:Power             | R   | String 2 Solar Power              | no       |
-|interval-1-grid-charge          |Switch                   | R/W | Interval 1 grid charge on/off     | yes      |
-|interval-1-grid-time            |DateTime                 | R/W | Interval 1 start grid charge time | yes      |
-|interval-1-grid-capacity        |Number:Dimensionless     | R/W | Interval 1 battery charge target  | yes      |
-|interval-1-grid-power-limit     |Number:Power             | R/W | Interval 1 charge power limit     | yes      |
-|interval-2-grid-charge          |Switch                   | R/W | Interval 2 grid charge on/off     | yes      |
-|interval-2-grid-time            |DateTime                 | R/W | Interval 2 start grid charge time | yes      |
-|interval-2-grid-capacity        |Number:Dimensionless     | R/W | Interval 2 battery charge target  | yes      |
-|interval-2-grid-power-limit     |Number:Power             | R/W | Interval 2 charge power limit     | yes      |
-|interval-3-grid-charge          |Switch                   | R/W | Interval 3 grid charge on/off     | yes      |
-|interval-3-grid-time            |DateTime                 | R/W | Interval 3 start grid charge time | yes      |
-|interval-3-grid-capacity        |Number:Dimensionless     | R/W | Interval 3 battery charge target  | yes      |
-|interval-3-grid-power-limit     |Number:Power             | R/W | Interval 3 charge power limit     | yes      |
-|interval-4-grid-charge          |Switch                   | R/W | Interval 4 grid charge on/off     | yes      |
-|interval-4-grid-time            |DateTime                 | R/W | Interval 4 start grid charge time | yes      |
-|interval-4-grid-capacity        |Number:Dimensionless     | R/W | Interval 4 battery charge target  | yes      |
-|interval-4-grid-power-limit     |Number:Power             | R/W | Interval 4 charge power limit     | yes      |
-|interval-5-grid-charge          |Switch                   | R/W | Interval 5 grid charge on/off     | yes      |
-|interval-5-grid-time            |DateTime                 | R/W | Interval 5 start grid charge time | yes      |
-|interval-5-grid-capacity        |Number:Dimensionless     | R/W | Interval 5 battery charge target  | yes      |
-|interval-5-grid-power-limit     |Number:Power             | R/W | Interval 5 charge power limit     | yes      |
-|interval-6-grid-charge          |Switch                   | R/W | Interval 6 grid charge on/off     | yes      |
-|interval-6-grid-time            |DateTime                 | R/W | Interval 6 start grid charge time | yes      |
-|interval-6-grid-capacity        |Number:Dimensionless     | R/W | Interval 6 battery charge target  | yes      |
-|interval-6-grid-power-limit     |Number:Power             | R/W | Interval 6 charge power limit     | yes      |
-|interval-1-gen-charge           |Switch                   | R/W | Interval 1 generator charge on/of | yes      |
-|interval-2-gen-charge           |Switch                   | R/W | Interval 2 generator charge on/of | yes      |
-|interval-3-gen-charge           |Switch                   | R/W | Interval 3 generator charge on/of | yes      |
-|interval-4-gen-charge           |Switch                   | R/W | Interval 4 generator charge on/of | yes      |
-|interval-5-gen-charge           |Switch                   | R/W | Interval 5 generator charge on/of | yes      |
-|interval-6-gen-charge           |Switch                   | R/W | Interval 6 generator charge on/of | yes      |
-|inverter-control-timer          |Switch                   | R/W | Inverter control timer on/off     | yes      |
-|inverter-control-work-mode      |String                   | R/W | Inverter work mode 1, 2 or 3      | yes      |
-|inverter-control-energy-pattern |String                   | R/W | Inverter energy pattern 1 or 2    | yes      |
+| Channel                         | Type                     | R/W | Description                        | Advanced |
+|---------------------------------|--------------------------|-----|------------------------------------|----------|
+| battery-soc                     | Number:Dimensionless     | R   | Inverter battery % charged         | no       |
+| battery-grid-voltage            | Number:ElectricPotential | R   | Battery dc electric-voltage        | no       |
+| battery-grid-current            | Number:ElectricCurrent   | R   | Battery dc electric-current        | no       |
+| battery-grid-power              | Number:Power             | R   | Battery dc electric-power          | no       |
+| inverter-ac-temperature         | Number:Temperature       | R   | Inverter ac temperature            | no       |
+| inverter-dc-temperature         | Number:Temperature       | R   | Inverter dc temperature            | no       |
+| inverter-grid-power             | Number:Power             | R   | Grid ac electric-power             | no       |
+| inverter-grid-voltage           | Number:ElectricPotential | R   | Grid ac electric-voltage           | no       |
+| inverter-grid-current           | Number:ElectricCurrent   | R   | Grid ac electric-current           | no       |
+| inverter-grid-frequency         | Number:Frequency         | R   | Grid frequency                     | no       |
+| inverter-rated-ac-output        | Number:Power             | R   | Inverter energy capacity           | no       |
+| inverter-solar-energy-today     | Number:Energy            | R   | Solar energy generated today       | no       |
+| inverter-solar-energy-month     | Number:Energy            | R   | Solar energy generated this month  | no       |
+| inverter-solar-energy-year      | Number:Energy            | R   | Solar energy generated this year   | no       |
+| inverter-solar-efficiency       | Number:Dimensionless     | R   | Solar production efficiency        | no       |
+| inverter-solar-ac-power         | Number:Power             | R   | Solar power being generated        | no       |
+| inverter-solar-energy-total     | Number:Energy            | R   | Solar energy generated to date     | no       |
+| inverter-solar-string-voltage-1 | Number:ElectricPotential | R   | String 1 Solar Voltage             | no       |
+| inverter-solar-string-voltage-2 | Number:ElectricPotential | R   | String 2 Solar Voltage             | no       |
+| inverter-solar-string-current-1 | Number:ElectricCurrent   | R   | String 1 Solar Current             | no       |
+| inverter-solar-string-current-2 | Number:ElectricCurrent   | R   | String 2 Solar Current             | no       |
+| inverter-solar-string-power-1   | Number:Power             | R   | String 1 Solar Power               | no       |
+| inverter-solar-string-power-2   | Number:Power             | R   | String 2 Solar Power               | no       |
+| interval-1-grid-charge          | Switch                   | R/W | Interval 1 grid charge on/off      | yes      |
+| interval-1-grid-time            | DateTime                 | R/W | Interval 1 start grid charge time  | yes      |
+| interval-1-grid-capacity        | Number:Dimensionless     | R/W | Interval 1 battery charge target   | yes      |
+| interval-1-grid-power-limit     | Number:Power             | R/W | Interval 1 charge power limit      | yes      |
+| interval-2-grid-charge          | Switch                   | R/W | Interval 2 grid charge on/off      | yes      |
+| interval-2-grid-time            | DateTime                 | R/W | Interval 2 start grid charge time  | yes      |
+| interval-2-grid-capacity        | Number:Dimensionless     | R/W | Interval 2 battery charge target   | yes      |
+| interval-2-grid-power-limit     | Number:Power             | R/W | Interval 2 charge power limit      | yes      |
+| interval-3-grid-charge          | Switch                   | R/W | Interval 3 grid charge on/off      | yes      |
+| interval-3-grid-time            | DateTime                 | R/W | Interval 3 start grid charge time  | yes      |
+| interval-3-grid-capacity        | Number:Dimensionless     | R/W | Interval 3 battery charge target   | yes      |
+| interval-3-grid-power-limit     | Number:Power             | R/W | Interval 3 charge power limit      | yes      |
+| interval-4-grid-charge          | Switch                   | R/W | Interval 4 grid charge on/off      | yes      |
+| interval-4-grid-time            | DateTime                 | R/W | Interval 4 start grid charge time  | yes      |
+| interval-4-grid-capacity        | Number:Dimensionless     | R/W | Interval 4 battery charge target   | yes      |
+| interval-4-grid-power-limit     | Number:Power             | R/W | Interval 4 charge power limit      | yes      |
+| interval-5-grid-charge          | Switch                   | R/W | Interval 5 grid charge on/off      | yes      |
+| interval-5-grid-time            | DateTime                 | R/W | Interval 5 start grid charge time  | yes      |
+| interval-5-grid-capacity        | Number:Dimensionless     | R/W | Interval 5 battery charge target   | yes      |
+| interval-5-grid-power-limit     | Number:Power             | R/W | Interval 5 charge power limit      | yes      |
+| interval-6-grid-charge          | Switch                   | R/W | Interval 6 grid charge on/off      | yes      |
+| interval-6-grid-time            | DateTime                 | R/W | Interval 6 start grid charge time  | yes      |
+| interval-6-grid-capacity        | Number:Dimensionless     | R/W | Interval 6 battery charge target   | yes      |
+| interval-6-grid-power-limit     | Number:Power             | R/W | Interval 6 charge power limit      | yes      |
+| interval-1-gen-charge           | Switch                   | R/W | Interval 1 generator charge on/off | yes      |
+| interval-2-gen-charge           | Switch                   | R/W | Interval 2 generator charge on/off | yes      |
+| interval-3-gen-charge           | Switch                   | R/W | Interval 3 generator charge on/off | yes      |
+| interval-4-gen-charge           | Switch                   | R/W | Interval 4 generator charge on/off | yes      |
+| interval-5-gen-charge           | Switch                   | R/W | Interval 5 generator charge on/off | yes      |
+| interval-6-gen-charge           | Switch                   | R/W | Interval 6 generator charge on/off | yes      |
+| inverter-control-timer          | Switch                   | R/W | Inverter control timer on/off      | yes      |
+| inverter-control-work-mode      | String                   | R/W | Inverter work mode 0, 1 or 2       | yes      |
+| inverter-control-energy-pattern | String                   | R/W | Inverter energy pattern 0 or 1     | yes      |
 
 ### Full Example
 
 #### sunsynk.things
 
 ```java
-Bridge sunsynk:account:xxx @ "Loft" [email= "user.symbol@domain.", password="somepassword"]{
-    Thing inverter E1234567R1231234567890 @ "Loft" [alias= "My Inverter", serialnumber= "1234567890", plantId ="123456", plantName="plant 1",  refresh= 60]
+Bridge sunsynk:account:xxx @ "Loft" [email="user@domain.com", password="somepassword"]{
+    Thing inverter E1234567R1231234567890 @ "Loft" [alias= "My Inverter", serialnumber= "1234567890", plantId ="123456", plantName="plant 1", refresh= 60]
 }
 ```
 
@@ -203,9 +204,10 @@ Number:ElectricPotential    BatteryGridVoltage          "Battery Voltage"       
 Number:ElectricCurrent      BatteryGridCurrent          "Battery Current"                              {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-current"}
 Number:Power                BatteryGridPower            "Battery Power"                                {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-power"}
 Number:Power                InverterCapacity            "Inverter Capacity"                            {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-rated-ac-output"}
-Number:Temperature          BatteryTemperature          "Battery Temperature "                         {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-temperature"}
+Number:Temperature          BatteryTemperature          "Battery Temperature"                          {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-temperature"}
 Number:Temperature          InverterACTemperature       "Inverter AC Temperature"                      {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-ac-temperature"}
 Number:Temperature          InverterDCTemperature       "Inverter DC Temperature"                      {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-dc-temperature"}
+
 
 Number:Power                InverterGridPower           "Grid Power"                                   {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-power"}
 Number:ElectricPotential    InverterGridVoltage         "Grid Voltage"                                 {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-voltage"}
@@ -234,9 +236,9 @@ String                      InverterControlPattern      "System Mode Energy Patt
 
 The items file above adds Metadata: Default Standalone widget: [rlk_datetime_standalone](https://community.openhab.org/t/datetime-standalone-widget/127966) to the DateTime items. Only the time portion of the DateTime item is important.
 
-Be sure to understand the time zone set up for the inverter, this can either be synchronised with Sun Synk servers, which in the UK at least applies daylight saving, or free-wheeling locally.
-The times set in the DateTime items using the widget are not adjusted to any time zone and are sent to the SunSynk API as Strings where they will be applied directly to your inverter.
-This is in contrast to other solar / energy APIs that use Zulu (GMT) time.
+Be sure to understand the time zone set up for the inverter; it can either be synchronized with Sun Synk servers (which, in the UK at least, apply daylight saving) or free‑running locally.
+The times set in the DateTime items using the widget are not adjusted to any time zone and are sent to the SunSynk API as strings where they will be applied directly to your inverter.
+This is in contrast to other solar/energy APIs that use Zulu (GMT) time.
 
 ## Debugging
 

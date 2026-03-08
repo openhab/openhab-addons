@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,7 +55,13 @@ public class HeosFacade {
     }
 
     public synchronized List<BrowseResult> getFavorites() throws IOException, ReadException {
-        return getBrowseResults(FAVORITE_SID);
+        return getBrowseResults(FAVORITE_SID).stream().map(r -> {
+            String name = r.name;
+            if (name != null) {
+                r.name = decodeSpecialCharacters(name);
+            }
+            return r;
+        }).toList();
     }
 
     public List<BrowseResult> getInputs() throws IOException, ReadException {
@@ -72,7 +77,7 @@ public class HeosFacade {
         logger.debug("Response: {}", response);
 
         if (response.payload == null) {
-            return Collections.emptyList();
+            return List.of();
         }
         logger.debug("Received results: {}", Arrays.asList(response.payload));
 
@@ -552,5 +557,9 @@ public class HeosFacade {
 
     public void closeConnection() {
         heosSystem.closeConnection();
+    }
+
+    private static String decodeSpecialCharacters(String str) {
+        return str.replace("%26", "&").replace("%3D", "=").replace("%25", "%");
     }
 }

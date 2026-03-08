@@ -614,7 +614,7 @@
 		<label>Party Mode Temperature Set Point</label>
 		<description>Target temperature of party mode</description>
 		<category>Temperature</category>
-		<state min="6" step="1" pattern="%.1f °C" readOnly="false"/>
+		<state min="6" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="save_temp_setpoint" advanced="true">
@@ -622,7 +622,7 @@
 		<label>Save Mode Temperature Set Point</label>
 		<description>Target temperature of save mode</description>
 		<category>Temperature</category>
-		<state min="6" step="1" pattern="%.1f °C" readOnly="false"/>
+		<state min="6" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="room_temp" advanced="true">
@@ -646,7 +646,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="6" step="1" pattern="%.1f °C" readOnly="false"/>
+		<state min="6" max="30" step="1" pattern="%.1f °C" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="gradient" advanced="true">

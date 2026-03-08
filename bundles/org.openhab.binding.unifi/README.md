@@ -1,12 +1,12 @@
 # UniFi Binding
 
-This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/products/#unifi) allowing for presence detection of network clients.
+This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/products/#unifi), allowing presence detection of network clients.
 
 ## Supported Things
 
 - `controller` - An instance of the UniFi controller software
-- `site` - A site thing with connection statistics
-- `wlan` - A wireless network thing. Control Wi-Fi network and easy access to access.
+- `site` - A site with connection statistics
+- `wlan` - A wireless network. Control the Wi‑Fi network and provide easy access via QR code.
 - `wirelessClient` - Any wireless client connected to a UniFi wireless network
 - `wiredClient` - A wired client connected to the UniFi network
 - `poePort` - A PoE (Power over Ethernet) port on a UniFi switch
@@ -15,29 +15,29 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 
 ## Discovery
 
-The binding supports discovery of things connected to a UniFi controller (Bridge).
-To discover things start the discovery process manually.
+The binding supports discovery of Things connected to a UniFi controller (bridge).
+To discover Things, start the discovery process manually.
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at the Bridge and Thing levels.
+The binding has no global configuration options; all configuration is done at the bridge and Thing levels.
 
 ## Bridge Configuration
 
-You need at least one UniFi Controller (Bridge) for this binding to work.
+You need at least one UniFi Controller (bridge) for this binding to work.
 It requires a network accessible instance of the [Ubiquiti Networks Controller Software](https://www.ubnt.com/download/unifi).
 
 The following table describes the Bridge configuration parameters:
 
-| Parameter      | Description                                                                 | Config   | Default |
-|----------------|-----------------------------------------------------------------------------|--------- |---------|
-| host           | Hostname of IP address of the UniFi Controller                              | Required | -       |
-| port           | Port of the UniFi Controller. For UniFi OS, the default port is usually 443 | Required | -       |
-| unifios        | If the UniFi Controller is running on UniFi OS                              | Required | false   |
-| username       | The username to access the UniFi Controller                                 | Required | -       |
-| password       | The password to access the UniFi Controller                                 | Required | -       |
-| refresh        | Refresh interval in seconds                                                 | Optional | 10      |
-| timeoutSeconds | Request timeout in seconds. Increase if you experience TimeoutExceptions    | Optional | 5       |
+| Parameter      | Description                                                                  | Config   | Default |
+|----------------|------------------------------------------------------------------------------|--------- |---------|
+| host           | Hostname or IP address of the UniFi Controller                               | Required | unifi   |
+| port           | Port of the UniFi Controller. On UniFi OS, the default port is typically 443 | Optional | 8443    |
+| unifios        | Whether the UniFi Controller is running on UniFi OS                          | Required | false   |
+| username       | The username to access the UniFi Controller                                  | Required | -       |
+| password       | The password to access the UniFi Controller                                  | Required | -       |
+| refresh        | Refresh interval in seconds                                                  | Optional | 10      |
+| timeoutSeconds | Request timeout in seconds. Increase if you experience timeout exceptions    | Optional | 5       |
 
 ## Thing Configuration
 
@@ -49,15 +49,15 @@ The following table describes the `site` configuration parameters:
 
 | Parameter    | Description                                                  | Config   | Default |
 | ------------ | -------------------------------------------------------------|--------- | ------- |
-| sid          | The name, description or id of the site                      | Required | -       |
+| sid          | The ID, name, or description of the site                     | Required | -       |
 
 ### `wlan`
 
 The following table describes the `wlan` configuration parameters:
 
-| Parameter    | Description                                                  | Config   | Default |
-| ------------ | -------------------------------------------------------------|--------- | ------- |
-| wid          | The name or id of the WLAN                                   | Required | -       |
+| Parameter    | Description                | Config   | Default |
+| ------------ |----------------------------|--------- | ------- |
+| wid          | The name or ID of the WLAN | Required | -       |
 
 ### `wirelessClient` & `wiredClient`
 
@@ -69,7 +69,7 @@ The following table describes the `wirelessClient` & `wiredClient` configuration
 | site         | The site where the client should be found                    | Optional | -       |
 | considerHome | The interval in seconds to consider the client as home       | Optional | 180     |
 
-Here's some additional notes regarding the thing configuration parameters:
+Here's some additional notes regarding the Thing configuration parameters:
 
 #### `cid`
 
@@ -77,16 +77,16 @@ The `cid` parameter is a universal "client identifier". It accepts the following
 
   1. MAC address [highest priority]
   1. IP address
-  1. Hostname (as show by the controller)
+  1. Hostname (as shown by the controller)
   1. Alias (as defined by you in the controller UI) [lowest priority]
 
-The priority essentially means the binding attempts to lookup by MAC address, then by IP address, then by hostname and finally by alias.
-Once it finds a matching client, it short circuits and stops searching.
-Most of the time, you will simply use the  MAC address.
+The priority essentially means the binding attempts to look up by MAC address, then by IP address, then by hostname, and finally by alias.
+Once it finds a matching client, it short-circuits and stops searching.
+Most of the time, you will simply use the MAC address.
 
 #### `site`
 
-The `site` parameter is optional. If you leave it blank, the client will appear `ONLINE` if found in _any_ site defined on the controller.
+The `site` parameter is optional. If you leave it blank, the client will appear `ONLINE` if found in any site defined on the controller.
 
 You may use the `site` parameter as a filter if you only want the client to appear home if it is found in the site defined in the `site` parameter.
 
@@ -95,7 +95,7 @@ Additionally, you may use friendly site names as they appear in the controller U
 #### `considerHome`
 
 The `considerHome` parameter allows you to control how quickly the binding marks a client as away.
-For example, using the default of `180` (seconds), the binding will report a client away as soon as `lastSeen` + `180` (seconds) < `now`.
+For example, using the default of `180` (seconds), the binding will report a client as away as soon as `lastSeen` + `180` (seconds) < `now`.
 
 ### `poePort`
 
@@ -160,22 +160,22 @@ The `wlan` information that is retrieved is available as these channels:
 | wirelessClients | Number    | Number of wireless clients connected                                            | Read        |
 | guestClients    | Number    | Number of guest clients connected                                               | Read        |
 | essid           | String    | Wireless Network (ESSID)                                                        | Read        |
-| site            | String    | UniFi Site the client is associated with                                        | Read        |
+| site            | String    | UniFi site the WLAN is associated with                                          | Read        |
 | security        | String    | Security protocol of the Wi-Fi network                                          | Read        |
 | wlanBand        | String    | Wireless LAN band of the Wi-Fi network                                          | Read        |
 | wpaEnc          | String    | WPA Encoding of the Wi-Fi network                                               | Read        |
 | wpaMode         | String    | WPA Mode of the Wi-Fi network                                                   | Read        |
 | passphrase      | String    | Passphrase of the Wi-Fi network                                                 | Read        |
-| qrcodeEncoding  | String    | MECARD like encoding to generate a QR Code for easy access to the Wi-Fi network | Read        |
+| qrcodeEncoding  | String    | MECARD-like encoding to generate a QR code for easy access to the Wi‑Fi network | Read        |
 
 ::: warning Attention
-If you link an item to the `passphrase` or `qrcodeEncoding` channel your Wi-Fi password will be  exposed in openHAB.
-The password will also be visible in openHAB event log.
+If you link an item to the `passphrase` or `qrcodeEncoding` channel, your Wi‑Fi password will be exposed in openHAB.
+The password will also be visible in the openHAB event log.
 :::
 
-The `qrcodeEncoding` channel can be used to easily create a QR Code to access, for example, a guest network.
-It contains a MECARD like representation of the access.
-This is the notation used in QR Codes that can be scanned by mobile phones.
+The `qrcodeEncoding` channel can be used to easily create a QR code to access, for example, a guest network.
+It contains a MECARD-like representation of the access.
+This is the notation used in QR codes that can be scanned by mobile phones.
 
 ### `wirelessClient`
 
@@ -274,7 +274,7 @@ The `network` information that is retrieved is available as these channels:
 
 ## Rule Actions
 
-As an alternative to using the `guestVoucher` and `guestVouchersGenerate` channels on the `site` thing, it is possible to use rule actions on the thing to generate, revoke and list guest vouchers.
+As an alternative to using the `guestVoucher` and `guestVouchersGenerate` channels on the `site` Thing, it is possible to use rule actions on the Thing to generate, revoke and list guest vouchers.
 The following actions are available:
 
 - `boolean success = generateVoucher(Integer expire, Integer users, Integer upLimit, Integer downLimit, Integer dataQuota)`
@@ -284,7 +284,7 @@ The following actions are available:
 - `boolean success = revokeAllVouchers()`
 - `String vouchers = listVouchers()`
 
-Since there is a separate rule action instance for each `site` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
+Since there is a separate rule action instance for each `site` Thing, this needs to be retrieved through `getActions(scope, thingUID)`.
 The first parameter always has to be `unifi` and the second is the full Thing UID of the site that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
 
@@ -351,10 +351,10 @@ Bridge unifi:controller:home "UniFi Controller" [ host="unifi", port=8443, unifi
 ```
 
 :::tip Note
-Usually on Unifi OS, the default port is 443
+On UniFi OS, the default port is typically 443.
 :::
 
-Replace `$user`, `$password`, `$cid` and `$sid` accordingly.
+Replace `$username`, `$password`, `$cid`, and `$sid` accordingly.
 
 ### `items/unifi.items`
 
@@ -366,7 +366,7 @@ String       MatthewsPhoneIP         "Matthew's iPhone: IP [%s]"                
 String       MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                        { channel="unifi:wirelessClient:home:matthewsPhone:ap" }
 String       MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
 Number:Power MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d dBm]"                  { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
-Number:Time  MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%1$tR]"                 { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
+Number:Time  MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%d %unit%]"             { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
 DateTime     MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
 Switch       MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
 Switch       MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
@@ -400,7 +400,7 @@ sitemap unifi label="UniFi Binding"
 }
 ```
 
-### `rule actions` for `site` thing
+### `rule actions` for `site` Thing
 
 ```java
 val uniFiActions = getActions("unifi","unifi:site:home:mysite")

@@ -32,26 +32,14 @@ This is done by setting `useMeteorologicalSeason` to true in the advanced settin
 
 This binding has its own IconProvider and makes available the following list of icons
 
-| Icon Name                   | Dynamic | Illustration |
-|-----------------------------|---------|--------------|
-| oh:astro:zodiac             |   Yes   | ![Zodiac](doc/images/zodiac.svg) |
-| oh:astro:zodiac-aquarius    |   Yes   | ![Aquarius](doc/images/zodiac-aquarius.svg) |
-| oh:astro:zodiac-aries       |   Yes   | ![Aries](doc/images/zodiac-aries.svg) |
-| oh:astro:zodiac-cancer      |   Yes   | ![Cancer](doc/images/zodiac-cancer.svg) |
-| oh:astro:zodiac-capricorn   |   Yes   | ![Capricorn](doc/images/zodiac-capricorn.svg) |
-| oh:astro:zodiac-gemini      |   Yes   | ![Gemini](doc/images/zodiac-gemini.svg) |
-| oh:astro:zodiac-leo         |   Yes   | ![Leo](doc/images/zodiac-leo.svg) |
-| oh:astro:zodiac-libra       |   Yes   | ![Libra](doc/images/zodiac-libra.svg) |
-| oh:astro:zodiac-pisces      |   Yes   | ![Pisces](doc/images/zodiac-pisces.svg) |
-| oh:astro:zodiac-sagittarius |   Yes   | ![Sagittarius](doc/images/zodiac-sagittarius.svg) |
-| oh:astro:zodiac-scorpio     |   Yes   | ![Scorpio](doc/images/zodiac-scorpio.svg) |
-| oh:astro:zodiac-taurus      |   Yes   | ![Taurus](doc/images/zodiac-taurus.svg) |
-| oh:astro:zodiac-virgo       |   Yes   | ![Virgo](doc/images/zodiac-virgo.svg) |
-| oh:astro:season             |   Yes   | ![Season](doc/images/season.svg) |
-| oh:astro:season-autumn      |   Yes   | ![Autumn](doc/images/season-autumn.svg) |
-| oh:astro:season-spring      |   Yes   | ![Spring](doc/images/season-spring.svg) |
-| oh:astro:season-summer      |   Yes   | ![Summer](doc/images/season-summer.svg) |
-| oh:astro:season-winter      |   Yes   | ![Winter](doc/images/season-winter.svg) |
+| Icon Name                   | Dynamic | Illustration                                      |
+| --------------------------- | ------- | ------------------------------------------------- |
+| oh:astro:moon_day           | Yes     | ![Moon Age](doc/images/moon_day.svg)              |
+| oh:astro:moon_eclipse       | Yes     | ![Moon Age](doc/images/moon_eclipse.svg)          |
+| oh:astro:moon_phase         | Yes     | ![Moon Phase](doc/images/moon_day.svg)            |
+| oh:astro:season             | Yes     | ![Season](doc/images/season.svg)                  |
+| oh:astro:sun_eclipse        | Yes     | ![Sun Eclipse](doc/images/sun_eclipse.svg)        |
+| oh:astro:zodiac             | Yes     | ![Zodiac](doc/images/zodiac.svg)                  |
 
 ## Channels
 

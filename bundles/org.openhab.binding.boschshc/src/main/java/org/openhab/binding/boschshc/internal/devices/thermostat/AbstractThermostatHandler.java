@@ -1,0 +1,124 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.boschshc.internal.devices.thermostat;
+
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
+
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.childlock.ChildLockService;
+import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
+import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
+import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
+import org.openhab.binding.boschshc.internal.services.temperatureoffset.TemperatureOffsetService;
+import org.openhab.binding.boschshc.internal.services.temperatureoffset.dto.TemperatureOffsetServiceState;
+import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
+import org.openhab.binding.boschshc.internal.services.valvetappet.dto.ValveTappetServiceState;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
+
+/**
+ * Abstract base class for thermostat handlers.
+ * <p>
+ * It provides functionality for the following services:
+ * <ul>
+ * <li>Temperature Level</li>
+ * <li>Valve Tappet</li>
+ * <li>Child Lock</li>
+ * </ul>
+ * 
+ * @author David Pace - Initial contribution
+ *
+ */
+@NonNullByDefault
+public abstract class AbstractThermostatHandler extends AbstractBatteryPoweredDeviceHandler {
+
+    private ChildLockService childLockService;
+    private TemperatureOffsetService temperatureOffsetService;
+
+    protected AbstractThermostatHandler(Thing thing) {
+        super(thing);
+        this.childLockService = new ChildLockService();
+        this.temperatureOffsetService = new TemperatureOffsetService();
+    }
+
+    @Override
+    protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
+        this.createService(TemperatureLevelService::new, this::updateChannels, List.of(CHANNEL_TEMPERATURE));
+        this.createService(ValveTappetService::new, this::updateChannels, List.of(CHANNEL_VALVE_TAPPET_POSITION));
+
+        this.registerService(this.childLockService, this::updateChannels, List.of(CHANNEL_CHILD_LOCK));
+        this.registerService(this.temperatureOffsetService, this::updateChannels, List.of(CHANNEL_TEMPERATURE_OFFSET));
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+
+        if (CHANNEL_CHILD_LOCK.equals(channelUID.getId())) {
+            this.handleServiceCommand(this.childLockService, command);
+        } else if (CHANNEL_TEMPERATURE_OFFSET.equals(channelUID.getId())) {
+            this.handleServiceCommand(this.temperatureOffsetService, command);
+        }
+    }
+
+    /**
+     * Updates the channels which are linked to the {@link TemperatureLevelService}
+     * of the device.
+     *
+     * @param state current {@link TemperatureLevelServiceState} received from the
+     *            Smart Home Controller
+     */
+    private void updateChannels(TemperatureLevelServiceState state) {
+        super.updateState(CHANNEL_TEMPERATURE, state.getTemperatureState());
+    }
+
+    /**
+     * Updates the channels which are linked to the {@link TemperatureOffsetService}
+     * of the device.
+     * 
+     * @param state current {@link TemperatureOffsetServiceState} received from the Smart
+     *            Home Controller
+     */
+    private void updateChannels(TemperatureOffsetServiceState state) {
+        super.updateState(CHANNEL_TEMPERATURE_OFFSET, state.getOffsetState());
+    }
+
+    /**
+     * Updates the channels which are linked to the {@link ValveTappetService} of
+     * the device.
+     *
+     * @param state current {@link ValveTappetServiceState} received from the Smart
+     *            Home Controller
+     */
+    private void updateChannels(ValveTappetServiceState state) {
+        super.updateState(CHANNEL_VALVE_TAPPET_POSITION, state.getPositionState());
+    }
+
+    /**
+     * Updates the channels which are linked to the {@link ChildLockService} of the
+     * device.
+     *
+     * @param state current {@link ChildLockServiceState} received from the Smart
+     *            Home Controller
+     */
+    private void updateChannels(ChildLockServiceState state) {
+        super.updateState(CHANNEL_CHILD_LOCK, state.getActiveState());
+    }
+}

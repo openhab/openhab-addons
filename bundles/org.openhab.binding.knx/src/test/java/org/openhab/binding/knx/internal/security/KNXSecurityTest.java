@@ -57,9 +57,7 @@ public class KNXSecurityTest {
         GroupAddress ga = new GroupAddress(8, 0, 0);
         byte[] key800enc = keys.groups().get(ga);
         assertNotNull(key800enc);
-        if (key800enc != null) {
-            assertNotEquals(0, key800enc.length);
-        }
+        assertNotEquals(0, key800enc.length);
         byte[] key800dec = keys.decryptKey(key800enc, password);
         assertEquals(16, key800dec.length);
 

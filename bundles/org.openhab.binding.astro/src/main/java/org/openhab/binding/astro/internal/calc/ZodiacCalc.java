@@ -52,7 +52,7 @@ public class ZodiacCalc {
             return new Zodiac(index, start, end);
         } catch (IllegalArgumentException e) {
             LOGGER.warn("Error defining Zodiac: {}", e.getMessage());
-            return Zodiac.NULL;
+            return Zodiac.NONE;
         }
     }
 

@@ -162,4 +162,12 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
         // a bridge requires all enabled bridged-accessories to be ready
         notReadyThings.addAll(getThing().getThings().stream().filter(thing -> thing.isEnabled()).toList());
     }
+
+    public TranslationProvider getTranslationProvider() {
+        return i18nProvider;
+    }
+
+    public Bundle getBundle() {
+        return bundle;
+    }
 }

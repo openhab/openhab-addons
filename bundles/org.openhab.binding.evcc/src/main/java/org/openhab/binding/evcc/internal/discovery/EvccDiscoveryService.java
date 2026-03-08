@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.discovery;
 
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.SUPPORTED_THING_TYPES;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,17 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.evcc.internal.discovery.mapper.BatteryDiscoveryMapper;
 import org.openhab.binding.evcc.internal.discovery.mapper.EvccDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.LoadpointDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.PvDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.SiteDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.StatisticsDiscoveryMapper;
-import org.openhab.binding.evcc.internal.discovery.mapper.VehicleDiscoveryMapper;
 import org.openhab.binding.evcc.internal.handler.EvccBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +37,7 @@ import com.google.gson.JsonObject;
 
 /**
  * The {@link EvccDiscoveryService} is responsible for scanning the API response for things
- * 
+ *
  * @author Marcel Goerentz - Initial contribution
  */
 @NonNullByDefault
@@ -54,14 +50,14 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<EvccDiscoveryMapper> mappers = List.of(new LoadpointDiscoveryMapper(),
-            new VehicleDiscoveryMapper(), new BatteryDiscoveryMapper(), new SiteDiscoveryMapper(),
-            new PvDiscoveryMapper(), new StatisticsDiscoveryMapper());
+    private final List<EvccDiscoveryMapper> mappers;
 
     private @Nullable ScheduledFuture<?> evccDiscoveryJob;
 
-    public EvccDiscoveryService() {
+    @Activate
+    public EvccDiscoveryService(@Reference List<EvccDiscoveryMapper> mappers) {
         super(EvccBridgeHandler.class, SUPPORTED_THING_TYPES, TIMEOUT, true);
+        this.mappers = mappers;
     }
 
     @Override
@@ -70,10 +66,15 @@ public class EvccDiscoveryService extends AbstractThingHandlerDiscoveryService<E
         JsonObject state = thingHandler.getCachedEvccState().deepCopy();
         if (!state.isEmpty()) {
             for (EvccDiscoveryMapper mapper : mappers) {
-                mapper.discover(state, thingHandler).forEach(thing -> {
-                    logger.debug("Thing discovered {}", thing);
-                    thingDiscovered(thing);
-                });
+                try {
+                    mapper.discover(state, thingHandler).forEach(thing -> {
+                        logger.debug("Thing discovered {}", thing);
+                        thingDiscovered(thing);
+                    });
+                } catch (RuntimeException e) {
+                    // isolate the mapper calls so that a single evcc API change does not affect stable parts
+                    logger.warn("discovery for things failed, possibly due to an API change", e);
+                }
             }
         }
     }

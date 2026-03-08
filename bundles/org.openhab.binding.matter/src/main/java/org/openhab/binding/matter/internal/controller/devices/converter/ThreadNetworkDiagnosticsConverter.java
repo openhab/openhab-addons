@@ -42,55 +42,49 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
     }
 
     @Override
-    public void pollCluster() {
-        // read the whole cluster
-        handler.readCluster(ThreadNetworkDiagnosticsCluster.class, endpointNumber, initializingCluster.id)
-                .thenAccept(cluster -> {
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, cluster.channel);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE,
-                            cluster.routingRole);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME,
-                            cluster.networkName);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, cluster.panId);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID,
-                            cluster.extendedPanId);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
-                            gson.toJson(cluster.neighborTable));
-                    updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
-                            gson.toJson(cluster.routeTable));
-                }).exceptionally(e -> {
-                    logger.debug("Error polling thread network diagnostics", e);
-                    return null;
-                });
-    }
-
-    @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
         return Collections.emptyMap();
     }
 
     @Override
     public void onEvent(AttributeChangedMessage message) {
-        updateThingAttributeProperty(message.path.attributeName, message.value);
+        switch (message.path.attributeName) {
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16:
+                updateThingAttributeProperty(message.path.attributeName, message.value);
+                break;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS:
+                updateThingAttributeProperty(message.path.attributeName,
+                        message.value != null ? gson.toJson(message.value) : null);
+                break;
+        }
         super.onEvent(message);
     }
 
     @Override
     public void initState() {
         logger.debug("initState");
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, initializingCluster.channel);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE,
-                initializingCluster.routingRole);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME,
-                initializingCluster.networkName);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, initializingCluster.panId);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID,
-                initializingCluster.extendedPanId);
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, initializingCluster.rloc16);
-        String neighborTable = initializingCluster.neighborTable != null
-                ? gson.toJson(initializingCluster.neighborTable)
-                : null;
-        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE, neighborTable);
+        updateThingProperties(initializingCluster);
+    }
+
+    private void updateThingProperties(ThreadNetworkDiagnosticsCluster cluster) {
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL, cluster.channel);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE, cluster.routingRole);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME, cluster.networkName);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID, cluster.panId);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, cluster.extendedPanId);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
+                cluster.neighborTable != null ? gson.toJson(cluster.neighborTable) : null);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
+                cluster.routeTable != null ? gson.toJson(cluster.routeTable) : null);
+        updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS,
+                cluster.extAddress != null ? gson.toJson(cluster.extAddress) : null);
     }
 }

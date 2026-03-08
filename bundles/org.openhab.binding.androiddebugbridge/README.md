@@ -1,5 +1,9 @@
 # Android Debug Bridge Binding
 
+:::warning
+Enabling debugging over the network on your Android device can pose a serious security risk, potentially allowing unauthorized access to your device and other devices on your network.
+:::
+
 This binding allows to connect to android devices through the adb protocol.
 
 The device needs to have **usb debugging enabled** and **allow debugging over tcp**, some devices allow to enable this in the device options but others need a previous connection through adb or even be rooted.

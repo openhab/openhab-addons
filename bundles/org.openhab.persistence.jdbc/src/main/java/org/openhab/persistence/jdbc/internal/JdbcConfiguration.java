@@ -324,22 +324,22 @@ public class JdbcConfiguration {
                         warn += "\tDerby:     version >= 10.17.1.0 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
                         break;
                     case "h2":
-                        warn += "\tH2:        version >= 2.3.232 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
+                        warn += "\tH2:        version >= 2.4.240 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
                         break;
                     case "hsqldb":
                         warn += "\tHSQLDB:    version >= 2.7.4 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
                         break;
                     case "mariadb":
-                        warn += "\tMariaDB:   version >= 3.5.5 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
+                        warn += "\tMariaDB:   version >= 3.5.7 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
                         warn += "\tMySQL:     version >= 9.5.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 42.7.7 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.7.9 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
-                        warn += "\tSQLite:    version >= 3.50.3.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        warn += "\tSQLite:    version >= 3.51.1.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
                         break;
                     case "oracle":
                         warn += "\tOracle:    version >= 23.5.0.0 from           https://mvnrepository.com/artifact/org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11\n";

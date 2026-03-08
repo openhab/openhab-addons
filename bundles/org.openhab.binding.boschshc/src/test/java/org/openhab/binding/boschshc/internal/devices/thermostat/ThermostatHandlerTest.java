@@ -25,17 +25,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.boschshc.internal.devices.AbstractBatteryPoweredDeviceHandlerTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
-import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
-import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockServiceState;
-import org.openhab.binding.boschshc.internal.services.childlock.dto.ChildLockState;
 import org.openhab.binding.boschshc.internal.services.silentmode.SilentModeState;
 import org.openhab.binding.boschshc.internal.services.silentmode.dto.SilentModeServiceState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -54,9 +48,7 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
-class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<ThermostatHandler> {
-
-    private @Captor @NonNullByDefault({}) ArgumentCaptor<ChildLockServiceState> childLockServiceStateCaptor;
+class ThermostatHandlerTest extends AbstractThermostatHandlerTest<ThermostatHandler> {
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<SilentModeServiceState> silentModeServiceStateCaptor;
 
@@ -76,36 +68,13 @@ class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<Ther
     }
 
     @Test
-    void testHandleCommandChildLockService()
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_LOCK),
-                OnOffType.ON);
-        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("Thermostat"), childLockServiceStateCaptor.capture());
-        ChildLockServiceState state = childLockServiceStateCaptor.getValue();
-        assertSame(ChildLockState.ON, state.childLock);
-    }
-
-    @Test
-    void testHandleCommandSilentModeService()
-            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    void testHandleCommandSilentModeService() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_SILENT_MODE),
                 OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("SilentMode"),
                 silentModeServiceStateCaptor.capture());
         SilentModeServiceState state = silentModeServiceStateCaptor.getValue();
         assertSame(SilentModeState.MODE_SILENT, state.mode);
-    }
-
-    @Test
-    void testHandleCommandUnknownCommandChildLockService() {
-        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_LOCK),
-                new DecimalType(42));
-        ThingStatusInfo expectedThingStatusInfo = ThingStatusInfoBuilder
-                .create(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR)
-                .withDescription(
-                        "Error when service Thermostat should handle command org.openhab.core.library.types.DecimalType: Thermostat: Can not handle command org.openhab.core.library.types.DecimalType")
-                .build();
-        verify(getCallback()).statusUpdated(getThing(), expectedThingStatusInfo);
     }
 
     @Test
@@ -118,39 +87,6 @@ class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<Ther
                         "Error when service SilentMode should handle command org.openhab.core.library.types.DecimalType: SilentMode: Can not handle command org.openhab.core.library.types.DecimalType")
                 .build();
         verify(getCallback()).statusUpdated(getThing(), expectedThingStatusInfo);
-    }
-
-    @Test
-    void testUpdateChannelsTemperatureLevelService() {
-        JsonElement jsonObject = JsonParser.parseString("""
-                {
-                   "@type": "temperatureLevelState",
-                   "temperature": 21.5
-                 }\
-                """);
-        getFixture().processUpdate("TemperatureLevel", jsonObject);
-        verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
-                new QuantityType<>(21.5, SIUnits.CELSIUS));
-    }
-
-    @Test
-    void testUpdateChannelsValveTappetService() {
-        JsonElement jsonObject = JsonParser
-                .parseString("{\n" + "   \"@type\": \"valveTappetState\",\n" + "   \"position\": 42\n" + " }");
-        getFixture().processUpdate("ValveTappet", jsonObject);
-        verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_VALVE_TAPPET_POSITION),
-                new DecimalType(42));
-    }
-
-    @Test
-    void testUpdateChannelsChildLockService() {
-        JsonElement jsonObject = JsonParser
-                .parseString("{\n" + "   \"@type\": \"childLockState\",\n" + "   \"childLock\": \"ON\"\n" + " }");
-        getFixture().processUpdate("Thermostat", jsonObject);
-        verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_LOCK), OnOffType.ON);
     }
 
     @Test

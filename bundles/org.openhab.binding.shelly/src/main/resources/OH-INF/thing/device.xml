@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="deviceStatus">
-		<label>@text/channel-group-type.shelly.deviceStatus.label</label>
-		<description>@text/channel-group-type.shelly.deviceStatus.description</description>
+		<label>Device Status</label>
+		<description>Information about the device status</description>
 		<channels>
 			<channel id="alarm" typeId="alarmTrigger"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
@@ -15,92 +15,93 @@
 
 	<channel-type id="alarmTrigger">
 		<kind>trigger</kind>
-		<label>@text/channel-type.shelly.alarmTrigger.label</label>
-		<description>@text/channel-type.shelly.alarmTrigger.description</description>
+		<label>Alarm</label>
+		<description>Alarm Trigger, e.g. weak WiFi Signal detected or over heating</description>
 		<category>Alarm</category>
 		<event>
 			<options>
-				<option value="NONE">@text/channel-type.shelly.alarmTrigger.option.NONE</option>
-				<option value="WEAK_SIGNAL">@text/channel-type.shelly.alarmTrigger.option.WEAK_SIGNAL</option>
-				<option value="RESTARTED">@text/channel-type.shelly.alarmTrigger.option.RESTARTED</option>
-				<option value="OVERTEMP">@text/channel-type.shelly.alarmTrigger.option.OVERTEMP</option>
-				<option value="OVERLOAD">@text/channel-type.shelly.alarmTrigger.option.OVERLOAD</option>
-				<option value="OVERPOWER">@text/channel-type.shelly.alarmTrigger.option.OVERPOWER</option>
-				<option value="LOAD_ERROR">@text/channel-type.shelly.alarmTrigger.option.LOAD_ERROR</option>
-				<option value="LOW_BATTERY">@text/channel-type.shelly.alarmTrigger.option.LOW_BATTERY</option>
-				<option value="BATTERY">@text/channel-type.shelly.alarmTrigger.option.BATTERY</option>
-				<option value="POWERON">@text/channel-type.shelly.alarmTrigger.option.POWERON</option>
-				<option value="EXT_POWER">@text/channel-type.shelly.alarmTrigger.option.EXT_POWER</option>
-				<option value="BUTTON">@text/channel-type.shelly.alarmTrigger.option.BUTTON</option>
-				<option value="SENSOR">@text/channel-type.shelly.alarmTrigger.option.SENSOR</option>
+				<option value="NONE">None</option>
+				<option value="WEAK_SIGNAL">Weak WiFi</option>
+				<option value="RESTARTED">Device restarted</option>
+				<option value="OVERTEMP">Device is overheating</option>
+				<option value="OVERLOAD">Device is overloaded</option>
+				<option value="OVERPOWER">Device is over max power</option>
+				<option value="LOAD_ERROR">Load error</option>
+				<option value="LOW_BATTERY">Low battery</option>
+				<option value="BATTERY">Wakeup by battery</option>
+				<option value="POWERON">Device was powered on</option>
+				<option value="EXT_POWER">External power supply was connected</option>
+				<option value="BUTTON">Button was pressed</option>
+				<option value="SENSOR">Sensor data updated</option>
 			</options>
 		</event>
 	</channel-type>
 	<channel-type id="sensorWakeup" advanced="true">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.sensorWakeup.label</label>
-		<description>@text/channel-type.shelly.sensorWakeup.description</description>
+		<label>Wakeup Reason</label>
+		<description>Last reason which woke up the device (button/battery/perodic/poweron/sensor/alarm/ext_power)</description>
 		<state pattern="%s" readOnly="true">
 			<options>
-				<option value="button">@text/channel-type.shelly.sensorWakeup.state.option.button</option>
-				<option value="battery">@text/channel-type.shelly.sensorWakeup.state.option.battery</option>
-				<option value="periodic">@text/channel-type.shelly.sensorWakeup.state.option.periodic</option>
-				<option value="poweron">@text/channel-type.shelly.sensorWakeup.state.option.poweron</option>
-				<option value="sensor">@text/channel-type.shelly.sensorWakeup.state.option.sensor</option>
-				<option value="alarm">@text/channel-type.shelly.sensorWakeup.state.option.alarm</option>
-				<option value="ext_power">@text/channel-type.shelly.sensorWakeup.state.option.ext_power</option>
+				<option value="button">Button</option>
+				<option value="battery">Battery</option>
+				<option value="periodic">Periodic</option>
+				<option value="poweron">Power-On</option>
+				<option value="sensor">Sensor</option>
+				<option value="alarm">Alarm</option>
+				<option value="ext_power">Charger connected</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="deviceName" advanced="true">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.deviceName.label</label>
-		<description>@text/channel-type.shelly.deviceName.description</description>
+		<label>Device Name</label>
+		<description>Symbolic Device Name as configured in the Shelly App</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="gatewayDevice" advanced="true">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.gatewayDevice.label</label>
-		<description>@text/channel-type.shelly.gatewayDevice.description</description>
+		<label>Gateway Device</label>
+		<description>Last Shelly Device, which forwarded the event</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="calibrated" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.calibrated.label</label>
-		<description>@text/channel-type.shelly.calibrated.description</description>
+		<label>Calibrated</label>
+		<description>ON: The device/sensor is calibrated</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="charger" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.charger.label</label>
-		<description>@text/channel-type.shelly.charger.description</description>
+		<label>External Power</label>
+		<description>ON: External power is connected</description>
 		<category>Battery</category>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="externalPower" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.externalPower.label</label>
-		<description>@text/channel-type.shelly.externalPower.description</description>
+		<label>External Power</label>
+		<description>ON: Device is charging, OFF: No charger connected</description>
 		<category>Status</category>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>@text/channel-type.shelly.uptime.label</label>
-		<description>@text/channel-type.shelly.uptime.description</description>
+		<label>Uptime</label>
+		<description>Number of seconds since the device was powered up</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="heartBeat" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>@text/channel-type.shelly.heartBeat.label</label>
-		<description>@text/channel-type.shelly.heartBeat.description</description>
+		<label>Last Heartbeat</label>
+		<description>Last time we received a signal from the device (API result or sensor report), This indicates that device
+			communication works on the network layer (WiFi + IP)</description>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -111,16 +112,16 @@
 	</channel-type>
 	<channel-type id="updateAvailable" advanced="true">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.shelly.updateAvailable.label</label>
-		<description>@text/channel-type.shelly.updateAvailable.description</description>
+		<label>Update available</label>
+		<description>ON: A firmware update is available (use the Shelly App to perform update)</description>
 		<category>Status</category>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="deviceTemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.shelly.deviceTemp.label</label>
-		<description>@text/channel-type.shelly.deviceTemp.description</description>
+		<label>Internal Temperature</label>
+		<description>Internal device temperature, helps to detect overheating due to installation issues</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -131,34 +132,34 @@
 	</channel-type>
 	<channel-type id="supplyVoltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>@text/channel-type.shelly.supplyVoltage.label</label>
-		<description>@text/channel-type.shelly.supplyVoltage.description</description>
+		<label>Supply Voltage</label>
+		<description>External voltage supplied to the device</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"></state>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="selfTest">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.selfTest.label</label>
-		<description>@text/channel-type.shelly.selfTest.description</description>
+		<label>Self Test</label>
+		<description>Self Test Status/Result</description>
 		<state pattern="%s" readOnly="true">
 			<options>
-				<option value="not_completed">@text/channel-type.shelly.selfTest.state.option.not_completed</option>
-				<option value="completed">@text/channel-type.shelly.selfTest.state.option.completed</option>
-				<option value="running">@text/channel-type.shelly.selfTest.state.option.running</option>
-				<option value="pending">@text/channel-type.shelly.selfTest.state.option.pending</option>
-				<option value="unknown">@text/channel-type.shelly.selfTest.state.option.unknown</option>
+				<option value="not_completed">Not completed</option>
+				<option value="completed">Completed</option>
+				<option value="running">Running</option>
+				<option value="pending">Pending</option>
+				<option value="unknown">Unknown</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="deviceFirmware" advanced="true">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.deviceFirmware.label</label>
-		<description>@text/channel-type.shelly.firmware.description</description>
+		<label>Device Firmware</label>
+		<description>Current firmware version of the device</description>
 		<state pattern="%s" readOnly="true">
 		</state>
 	</channel-type>

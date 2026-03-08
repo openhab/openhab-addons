@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.time.Clock;
 import java.time.Instant;
+import java.time.InstantSource;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -67,7 +67,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyNoChanges() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2023-01-23T12:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2023-01-23T12:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
@@ -81,7 +81,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyNewTariffTomorrowWhenSummertime() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2023-03-31T12:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2023-03-31T12:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
@@ -95,7 +95,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyNewTariffAtMidnight() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2022-12-31T12:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2022-12-31T12:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser
                 .toHourly(Arrays.stream(records.records()).filter(r -> r.chargeTypeCode().equals("CD")).toList());
@@ -109,7 +109,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyDiscount() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2022-12-31T12:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2022-12-31T12:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser
                 .toHourly(Arrays.stream(records.records()).filter(r -> r.chargeTypeCode().equals("CD R")).toList());
@@ -123,7 +123,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyTariffAndDiscountIsSum() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2022-11-30T15:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2022-11-30T15:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
@@ -135,7 +135,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyTariffAndDiscountIsFree() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2022-12-31T12:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2022-12-31T12:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
 
@@ -149,7 +149,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyFixedTariff() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2022-12-31T23:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2022-12-31T23:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistNordEnergi.json",
                 DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
@@ -164,7 +164,7 @@ public class PriceListParserTest {
     @Test
     void toHourlyDailyTariffs() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2023-01-28T04:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2023-01-28T04:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistTrefor.json",
                 DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
@@ -183,7 +183,7 @@ public class PriceListParserTest {
     @Test
     void toHourlySystemTariff() throws IOException {
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(Instant.parse("2023-06-30T21:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                InstantSource.fixed(Instant.parse("2023-06-30T21:00:00Z")));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistElectricityTax.json",
                 DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList());
