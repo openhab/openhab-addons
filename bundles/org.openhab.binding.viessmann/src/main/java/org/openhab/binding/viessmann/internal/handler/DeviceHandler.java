@@ -536,8 +536,13 @@ public class DeviceHandler extends ViessmannThingHandler {
         // setActive / setEnabled (highest priority)
         for (String base : List.of("setActive", "setEnabled")) {
             if (prop.containsKey(base + "Uri")) {
-                String key = require(prop, base + "Params");
-                return new UriParam(require(prop, base + "Uri"), "{\"" + key + "\":" + isOn + "}");
+                String uri = prop.get(base + "Uri");
+                String key = prop.get(base + "Params");
+                if (uri == null || uri.isBlank() || key == null || key.isBlank()) {
+                    logger.warn("Channel {} misconfigured (missing {}Uri or {}Params)", channelId, base, base);
+                    return null;
+                }
+                return new UriParam(uri, "{\"" + key + "\":" + isOn + "}");
             }
         }
 
