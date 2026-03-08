@@ -169,7 +169,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     /**
      * Get generic device settings/status. Json returned from API will be mapped to a Gson object
      *
-     * @param ping ping not applicable for HTTP API
      * @return Device settings/status as ShellySettingsStatus object
      * @throws ShellyApiException
      */
