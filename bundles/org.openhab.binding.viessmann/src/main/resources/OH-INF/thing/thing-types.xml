@@ -673,7 +673,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state pattern="%.14f %unit%" readOnly="true"/>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
