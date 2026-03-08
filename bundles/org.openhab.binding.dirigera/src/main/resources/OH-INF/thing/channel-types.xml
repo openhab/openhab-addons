@@ -91,6 +91,10 @@
 		<item-type>Switch</item-type>
 		<label>Display Switch</label>
 		<description>Switch display on and off</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="disable-status-light">
