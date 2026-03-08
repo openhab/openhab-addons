@@ -25,7 +25,8 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class CVPropertiesTO {
     @SerializedName("person_detected")
-    public boolean personDetected;
+    @Nullable
+    public Boolean personDetected;
     @SerializedName("detection_type")
     @Nullable
     public String detectionType = "";
