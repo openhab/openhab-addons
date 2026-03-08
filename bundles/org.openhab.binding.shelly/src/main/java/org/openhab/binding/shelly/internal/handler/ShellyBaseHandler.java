@@ -369,7 +369,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             tmpPrf.updatePeriod = UPDATE_SETTINGS_INTERVAL_SECONDS + 10;
         }
 
-        tmpPrf.status = api.getStatus(false); // update thing properties
+        tmpPrf.status = api.getStatus(); // update thing properties
         tmpPrf.updateFromStatus(tmpPrf.status);
         addStateOptions(tmpPrf);
 
@@ -560,7 +560,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
-                ShellySettingsStatus status = api.getStatus(profile.alwaysOn);
+                if (profile.alwaysOn) {
+                    // For Gen2+: Keep WS connection alive
+                    api.sendPing();
+                }
+
+                ShellySettingsStatus status = api.getStatus();
                 boolean restarted = checkRestarted(status);
                 profile = getProfile(refreshSettings || restarted);
                 profile.status = status;

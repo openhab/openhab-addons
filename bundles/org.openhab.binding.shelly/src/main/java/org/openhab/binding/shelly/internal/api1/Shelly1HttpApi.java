@@ -161,14 +161,20 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         return profile.initialized;
     }
 
+    @Override
+    public void sendPing() {
+        // not required for Gen1 http api
+    }
+
     /**
      * Get generic device settings/status. Json returned from API will be mapped to a Gson object
      *
+     * @param ping ping not applicable for HTTP API
      * @return Device settings/status as ShellySettingsStatus object
      * @throws ShellyApiException
      */
     @Override
-    public ShellySettingsStatus getStatus(boolean ping) throws ShellyApiException {
+    public ShellySettingsStatus getStatus() throws ShellyApiException {
         String json = "";
         try {
             json = httpRequest(SHELLY_URL_STATUS);

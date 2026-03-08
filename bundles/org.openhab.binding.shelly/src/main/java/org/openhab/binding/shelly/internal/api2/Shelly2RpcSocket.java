@@ -449,7 +449,7 @@ public class Shelly2RpcSocket implements WriteCallback {
             try {
                 remote.sendPing(ByteBuffer.allocate(0));
             } catch (IOException e) {
-                logger.debug("{}: Faied to send WebSocket PING to {}", thingName, ipAddress, e);
+                logger.debug("{}: Failed to send WebSocket PING to {}", thingName, ipAddress, e);
             }
         }
     }
@@ -457,9 +457,13 @@ public class Shelly2RpcSocket implements WriteCallback {
     @OnWebSocketFrame
     public void onFrame(Session session, Frame frame) {
         switch (frame.getOpCode()) {
-            case 0xA: // PONG opcode
-            case 0x9: // PING opcode (optional)
+            case 0x09: // PING opcode
                 // Jetty auto-responds with PONG by default
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{}: WebSocket PING received", thingName);
+                }
+                break;
+            case 0x0A: // PING opcode (optional)
                 if (logger.isTraceEnabled()) {
                     logger.trace("{}: WebSocket PONG received", thingName);
                 }
