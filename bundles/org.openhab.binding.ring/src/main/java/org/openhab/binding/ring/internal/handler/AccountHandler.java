@@ -462,7 +462,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                                     "There is motion at your " + lastEvents.getFirst().doorbot.description));
                             break;
                     }
-                    ExecutorService service = videoExecutorService;
+                    ScheduledExecutorService service = videoExecutorService;
                     if (service != null) {
                         service.submit(() -> getVideo(lastEvents.getFirst()));
                     }
