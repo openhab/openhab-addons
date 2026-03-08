@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.viessmann.internal.handler.DeviceHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -81,9 +82,12 @@ public final class ViessmannUtil {
         return result.toString();
     }
 
-    @SuppressWarnings("null")
     public static ZoneId getOpenHABZoneId() {
-        BundleContext ctx = FrameworkUtil.getBundle(DeviceHandler.class).getBundleContext();
+        Bundle bundle = FrameworkUtil.getBundle(DeviceHandler.class);
+        if (bundle == null) {
+            return ZoneId.systemDefault();
+        }
+        BundleContext ctx = bundle.getBundleContext();
         if (ctx == null) {
             return ZoneId.systemDefault();
         }
