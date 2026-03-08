@@ -31,7 +31,7 @@
 			<parameter name="macAddress" type="text">
 				<context>mac-address</context>
 				<label>MAC Address</label>
-				<description>Use this format ab:cd:ef:12:34:56</description>
+				<description>Hardware MAC address of the WLED device, in standard 6-byte hexadecimal format separated by colons (for example: AB:CD:EF:12:34:56).</description>
 			</parameter>
 			<parameter name="pollTime" type="integer" min="1" unit="s">
 				<label>Poll Time</label>
