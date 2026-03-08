@@ -44,8 +44,74 @@ public class ShieldTVMessageParser {
 
     private final ShieldTVConnectionManager callback;
 
+    private static final class VarintResult {
+        final int value;
+        final int nextOffset;
+
+        VarintResult(int value, int nextOffset) {
+            this.value = value;
+            this.nextOffset = nextOffset;
+        }
+    }
+
     public ShieldTVMessageParser(ShieldTVConnectionManager callback) {
         this.callback = callback;
+    }
+
+    private static VarintResult readVarintHex(char[] chars, int offset) {
+        int value = 0;
+        int shift = 0;
+        int i = offset;
+
+        while (i + 1 < chars.length) {
+            int b = Integer.parseInt("" + chars[i] + chars[i + 1], 16);
+            i += 2;
+            value |= (b & 0x7F) << shift;
+            if ((b & 0x80) == 0) {
+                return new VarintResult(value, i);
+            }
+            shift += 7;
+            if (shift > 28) {
+                throw new IllegalArgumentException("ShieldTV protobuf varint too large");
+            }
+        }
+
+        throw new IllegalArgumentException("Truncated ShieldTV protobuf varint");
+    }
+
+    private static int readDerHexLength(char[] chars, int offset) {
+        if (offset + 3 >= chars.length) {
+            throw new IllegalArgumentException("DER object truncated");
+        }
+
+        String derTag = "" + chars[offset] + chars[offset + 1];
+        if (!"30".equals(derTag)) {
+            throw new IllegalArgumentException(
+                    "Expected DER SEQUENCE (30) at offset " + offset + " but found " + derTag);
+        }
+
+        int lenByte = Integer.parseInt("" + chars[offset + 2] + chars[offset + 3], 16);
+        if ((lenByte & 0x80) == 0) {
+            return (1 + 1 + lenByte) * 2;
+        }
+
+        int numLenBytes = lenByte & 0x7F;
+        if (numLenBytes <= 0 || numLenBytes > 4) {
+            throw new IllegalArgumentException("Unsupported DER length form: " + lenByte);
+        }
+
+        int contentLen = 0;
+        int p = offset + 4;
+        for (int n = 0; n < numLenBytes; n++) {
+            if (p + 1 >= chars.length) {
+                throw new IllegalArgumentException("DER length truncated");
+            }
+            int b = Integer.parseInt("" + chars[p] + "" + chars[p + 1], 16);
+            contentLen = (contentLen << 8) | b;
+            p += 2;
+        }
+
+        return (1 + 1 + numLenBytes + contentLen) * 2;
     }
 
     public void handleMessage(String msg) {
@@ -423,31 +489,59 @@ public class ShieldTVMessageParser {
                     for (; i < 44; i++) {
                         preamble.append(charArray[i]);
                     }
-                    logger.trace("{} - Cert Preamble:   {}", thingId, preamble.toString());
+                    logger.trace("{} - Cert Preamble: {}", thingId, preamble.toString());
 
-                    i += 2; // 1a
-                    String st = "" + charArray[i + 2] + "" + charArray[i + 3] + "" + charArray[i] + ""
-                            + charArray[i + 1];
-                    int privLen = 2246 + ((Integer.parseInt(st, 16) - 2400) * 2);
-                    i += 4; // length
-                    current = i;
+                    // Field 3: private key (protobuf length-delimited field, tag 0x1a)
+                    if (!"1a".equals("" + charArray[i] + charArray[i + 1])) {
+                        throw new IllegalArgumentException("Expected private key field tag 1a");
+                    }
+                    i += 2;
 
-                    logger.trace("{} - Cert privLen: {} {}", thingId, st, privLen);
+                    VarintResult privFieldLen = readVarintHex(charArray, i);
+                    i = privFieldLen.nextOffset;
+                    int privLen = privFieldLen.value * 2;
+                    int privDerLen = readDerHexLength(charArray, i);
+                    if (privDerLen != privLen) {
+                        throw new IllegalArgumentException(
+                                "Private key protobuf length " + privLen + " does not match DER length " + privDerLen);
+                    }
 
-                    for (; i < current + privLen; i++) {
+                    logger.trace("{} - Cert privLen: {}", thingId, privLen);
+                    if (i + privLen > charArray.length) {
+                        throw new IllegalArgumentException("Private key payload truncated: need " + privLen
+                                + " chars but only " + (charArray.length - i) + " remain");
+                    }
+                    for (int end = i + privLen; i < end; i++) {
                         privKey.append(charArray[i]);
                     }
 
                     logger.trace("{} - Cert privKey: {} {}", thingId, privLen, privKey.toString());
 
-                    for (; i < msg.length() - 4; i++) {
+                    // Field 4: certificate (protobuf length-delimited field, tag 0x22)
+                    if (!"22".equals("" + charArray[i] + charArray[i + 1])) {
+                        throw new IllegalArgumentException("Expected certificate field tag 22");
+                    }
+                    i += 2;
+
+                    VarintResult pubFieldLen = readVarintHex(charArray, i);
+                    i = pubFieldLen.nextOffset;
+                    int pubLen = pubFieldLen.value * 2;
+                    int pubDerLen = readDerHexLength(charArray, i);
+                    if (pubDerLen != pubLen) {
+                        throw new IllegalArgumentException(
+                                "Certificate protobuf length " + pubLen + " does not match DER length " + pubDerLen);
+                    }
+
+                    if (i + pubLen > charArray.length) {
+                        throw new IllegalArgumentException("Certificate payload truncated: need " + pubLen
+                                + " chars but only " + (charArray.length - i) + " remain");
+                    }
+                    for (int end = i + pubLen; i < end; i++) {
                         pubKey.append(charArray[i]);
                     }
 
-                    logger.trace("{} - Cert pubKey:  {} {}", thingId, msg.length() - privLen - 4, pubKey.toString());
-
-                    logger.debug("{} - Cert Pair Received privLen: {} pubLen: {}", thingId, privLen,
-                            msg.length() - privLen - 4);
+                    logger.trace("{} - Cert pubKey: {} {}", thingId, pubLen, pubKey.toString());
+                    logger.debug("{} - Cert Pair Received privLen: {} pubLen: {}", thingId, privLen, pubLen);
 
                     byte[] privKeyB64Byte = DatatypeConverter.parseHexBinary(privKey.toString());
                     byte[] pubKeyB64Byte = DatatypeConverter.parseHexBinary(pubKey.toString());
