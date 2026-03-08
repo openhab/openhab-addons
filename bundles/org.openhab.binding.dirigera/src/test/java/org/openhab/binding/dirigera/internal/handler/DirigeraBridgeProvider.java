@@ -28,7 +28,6 @@ import org.openhab.binding.dirigera.internal.Constants;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
-import org.openhab.binding.dirigera.internal.mock.DirigeraHandlerManipulator;
 import org.openhab.binding.dirigera.internal.mock.HandlerFactoryMock;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.test.storage.VolatileStorageService;
@@ -58,7 +57,7 @@ public class DirigeraBridgeProvider {
     public static Bridge prepareSimuBridge(String homeFile, boolean discovery, List<String> knownDevicesd) {
         String ipAddress = "1.2.3.4";
         HttpClient httpMock = mock(HttpClient.class);
-        DirigeraAPISimu.fileName = homeFile;
+
         /**
          * Prepare persistence
          */
@@ -82,6 +81,8 @@ public class DirigeraBridgeProvider {
          */
         DirigeraHandlerManipulator hubHandler = new DirigeraHandlerManipulator(hubBridge, httpMock, mockStorage,
                 new DicoveryServiceMock());
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(httpMock, hubHandler, homeFile);
+        hubHandler.setAPIHandler(apiSimu);
         hubBridge.setHandler(hubHandler);
         CallbackMock bridgeCallback = new CallbackMock();
         hubHandler.setCallback(bridgeCallback);

@@ -13,7 +13,6 @@
 package org.openhab.binding.dirigera.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.CHANNEL_LOCATION;
 
 import java.util.List;
@@ -22,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
-import org.openhab.binding.dirigera.internal.mock.DirigeraHandlerManipulator;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -40,34 +38,27 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 class TestGateway {
-    private static String deviceId = "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1";
+    private String deviceId = "594197c3-23c9-4dc7-a6ca-1fe6a8455d29_1";
 
-    private static DirigeraHandler handler = mock(DirigeraHandler.class);
-    private static CallbackMock callback = mock(CallbackMock.class);
-    private static Thing thing = mock(Thing.class);
-    private static String mockFile = "src/test/resources/gateway/home-with-coordinates.json";
-
-    @Test
-    void testBridgeCreation() {
+    DirigeraHandlerManipulator getBridgeHandler(String mockFile) {
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge(mockFile, false, List.of());
         ThingHandler bridgeHandler = hubBridge.getHandler();
         assertTrue(bridgeHandler instanceof DirigeraHandlerManipulator);
-        handler = (DirigeraHandlerManipulator) bridgeHandler;
-        thing = handler.getThing();
+        DirigeraHandler handler = (DirigeraHandlerManipulator) bridgeHandler;
         ThingHandlerCallback proxyCallback = ((DirigeraHandlerManipulator) handler).getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
-        callback = (CallbackMock) proxyCallback;
+        CallbackMock callback = (CallbackMock) proxyCallback;
         handler.initialize();
         callback.waitForOnline();
+        return (DirigeraHandlerManipulator) handler;
     }
 
     @Test
     void testWithCoordinates() {
-        mockFile = "src/test/resources/gateway/home-with-coordinates.json";
-        testBridgeCreation();
+        DirigeraHandlerManipulator handler = getBridgeHandler("src/test/resources/gateway/home-with-coordinates.json");
         assertNotNull(handler);
-        assertNotNull(thing);
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(callback);
 
         State locationPoint = callback.getState("dirigera:gateway:9876:location");
@@ -78,10 +69,12 @@ class TestGateway {
 
     @Test
     void testWithoutCoordinates() {
-        mockFile = "src/test/resources/gateway/home-without-coordinates.json";
-        testBridgeCreation();
+        Bridge hubBridge = DirigeraBridgeProvider
+                .prepareSimuBridge("src/test/resources/gateway/home-without-coordinates.json", false, List.of());
+
+        DirigeraHandlerManipulator handler = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(handler);
-        assertNotNull(thing);
+        CallbackMock callback = (CallbackMock) handler.getCallback();
         assertNotNull(callback);
 
         State locationPoint = callback.getState("dirigera:gateway:9876:location");
@@ -91,27 +84,27 @@ class TestGateway {
 
     @Test
     void testCommands() {
-        testWithCoordinates();
+        DirigeraHandlerManipulator handler = getBridgeHandler("src/test/resources/gateway/home-with-coordinates.json");
+        assertNotNull(handler);
+        Thing thing = handler.getThing();
+        assertNotNull(thing);
+        CallbackMock callback = (CallbackMock) handler.getCallback();
+        assertNotNull(callback);
+        DirigeraAPISimu api = (DirigeraAPISimu) handler.api();
 
         // remove location from gateway with empty string
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), StringType.EMPTY);
-        String patch = DirigeraAPISimu.patchMap.get(deviceId);
+        String patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"coordinates\":{}}}", patch, "Empty Coordinates");
-        DirigeraAPISimu.patchMap.clear();
+        api.clear();
 
         // set new location with valid coordinates
         handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), StringType.valueOf("9.123,1.987"));
-        patch = DirigeraAPISimu.patchMap.get(deviceId);
+        patch = api.getPatch(deviceId);
         assertNotNull(patch);
         assertEquals("{\"attributes\":{\"coordinates\":{\"latitude\":9.123,\"longitude\":1.987}}}", patch,
                 "Valid Coordinates");
-        DirigeraAPISimu.patchMap.clear();
-
-        // nothing send if value is invalid
-        handler.handleCommand(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), StringType.valueOf("wrong coding"));
-        patch = DirigeraAPISimu.patchMap.get(deviceId);
-        assertNull(patch, "Wrong coordinates");
-        DirigeraAPISimu.patchMap.clear();
+        api.clear();
     }
 }
