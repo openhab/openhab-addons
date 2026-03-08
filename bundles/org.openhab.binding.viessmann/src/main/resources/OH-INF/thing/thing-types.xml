@@ -331,7 +331,7 @@
 
 	<channel-type id="watt-hour">
 		<item-type unitHint="Wh">Number:Energy</item-type>
-		<label> Electric Energy</label>
+		<label>Electric Energy</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
