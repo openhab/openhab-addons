@@ -1141,8 +1141,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                         break;
                     default:
                         if (logger.isDebugEnabled()) {
-                            logger.warn(
-                                    "This is only shown in [DEBUG] => Unknown property {}, type: {}, value: {}, unit: {}, feature: {} JSON: \r\n{}",
+                            logger.debug("Unknown property {}, type: {}, value: {}, unit: {}, feature: {} JSON: \r\n{}",
                                     entry, typeEntry, valueEntry, viUnit, featureDataDTO.feature,
                                     featureDataDTO.toPrettyJson());
                         }
