@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dirigera.internal.model;
 
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.ResourceReader;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -85,17 +86,7 @@ public class MatterModel {
     private final Map<String, JSONObject> statusProperties = new HashMap<>();
     private final List<String> thingProperties = new ArrayList<>();
 
-    /**
-     * Creates the specific model for one matter device type
-     *
-     * @param deviceId
-     * @param deviceType
-     */
     public MatterModel(String deviceId, String deviceType) {
-        this(deviceId, deviceType, false);
-    }
-
-    public MatterModel(String deviceId, String deviceType, boolean custom) {
         this.deviceId = deviceId;
         this.deviceType = deviceType;
         if (MATTER_DEVICE_CONFIG.isEmpty()) {
@@ -145,19 +136,19 @@ public class MatterModel {
             if (deviceStatus.has(propertyKey)) {
                 handlerProperties.put(propertyKey, deviceStatus.get(propertyKey).toString());
             }
-            if (deviceStatus.has(Model.JSON_KEY_CAPABILITIES)) {
-                JSONObject capabilities = deviceStatus.getJSONObject(Model.JSON_KEY_CAPABILITIES);
-                if (capabilities.has(Model.CAPABILITIES_KEY_CAN_RECEIVE)) {
-                    handlerProperties.put(Model.CAPABILITIES_KEY_CAN_RECEIVE,
-                            capabilities.get(Model.CAPABILITIES_KEY_CAN_RECEIVE).toString());
+            if (deviceStatus.has(JSON_KEY_CAPABILITIES)) {
+                JSONObject capabilities = deviceStatus.getJSONObject(JSON_KEY_CAPABILITIES);
+                if (capabilities.has(CAPABILITIES_KEY_CAN_RECEIVE)) {
+                    handlerProperties.put(CAPABILITIES_KEY_CAN_RECEIVE,
+                            capabilities.get(CAPABILITIES_KEY_CAN_RECEIVE).toString());
                 }
-                if (capabilities.has(Model.CAPABILITIES_KEY_CAN_SEND)) {
-                    handlerProperties.put(Model.CAPABILITIES_KEY_CAN_SEND,
-                            capabilities.get(Model.CAPABILITIES_KEY_CAN_SEND).toString());
+                if (capabilities.has(CAPABILITIES_KEY_CAN_SEND)) {
+                    handlerProperties.put(CAPABILITIES_KEY_CAN_SEND,
+                            capabilities.get(CAPABILITIES_KEY_CAN_SEND).toString());
                 }
             }
-            if (deviceStatus.has(Model.JSON_KEY_ATTRIBUTES)) {
-                JSONObject attributes = deviceStatus.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
+            if (deviceStatus.has(JSON_KEY_ATTRIBUTES)) {
+                JSONObject attributes = deviceStatus.getJSONObject(JSON_KEY_ATTRIBUTES);
                 if (attributes.has(propertyKey)) {
                     handlerProperties.put(propertyKey, attributes.get(propertyKey).toString());
                 }
@@ -193,7 +184,7 @@ public class MatterModel {
      */
     public Map<String, State> getAttributeUpdates(JSONObject deviceUpdate) {
         Map<String, State> channelUpdates = new HashMap<>();
-        JSONObject attributeUpdates = deviceUpdate.optJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        JSONObject attributeUpdates = deviceUpdate.optJSONObject(JSON_KEY_ATTRIBUTES);
         if (attributeUpdates != null) {
             attributeUpdates.toMap().forEach((attributeKey, value) -> {
                 Entry<String, State> attributeUpdate = attributeUpdate(attributeKey, value);
@@ -382,7 +373,7 @@ public class MatterModel {
             var json = switch (jsonContent) {
                 case CHANNEL_KEY_ATTRIBUTE -> {
                     JSONObject attributes = (new JSONObject()).put(targetAttribute, commandValue);
-                    JSONObject patch = (new JSONObject()).put(Model.JSON_KEY_ATTRIBUTES, attributes);
+                    JSONObject patch = (new JSONObject()).put(JSON_KEY_ATTRIBUTES, attributes);
                     yield patch;
                 }
                 default -> {

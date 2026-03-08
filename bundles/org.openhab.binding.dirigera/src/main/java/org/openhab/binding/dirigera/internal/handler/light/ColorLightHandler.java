@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.light;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
-import static org.openhab.binding.dirigera.internal.interfaces.Model.ATTRIBUTES_KEY_COLOR_MODE;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -21,7 +21,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.ColorModel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -103,7 +102,7 @@ public class ColorLightHandler extends TemperatureLightHandler {
             }
             // there are color lights which cannot handle tempera HSB {}t ,kelvin,colorTempure as stored in capabilities
             // in this case calculate color which is fitting to temperature
-            if (colorTemp != null && !receiveCapabilities.contains(Model.CAPABILITIES_VALUE_COLOR_TEMPERATURE)) {
+            if (colorTemp != null && !receiveCapabilities.contains(CAPABILITIES_VALUE_COLOR_TEMPERATURE)) {
                 HSBType colorTempAdaption = new HSBType(colorTemp.getHue(), colorTemp.getSaturation(),
                         hsbDevice.getBrightness());
                 if (customDebug) {
@@ -145,8 +144,8 @@ public class ColorLightHandler extends TemperatureLightHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        if (update.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             boolean deliverHSB = false;
             while (attributesIterator.hasNext()) {
@@ -192,7 +191,7 @@ public class ColorLightHandler extends TemperatureLightHandler {
             }
             if (deliverHSB) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_LIGHT_COLOR), hsbStateReflection);
-                if (!receiveCapabilities.contains(Model.CAPABILITIES_VALUE_COLOR_TEMPERATURE)) {
+                if (!receiveCapabilities.contains(CAPABILITIES_VALUE_COLOR_TEMPERATURE)) {
                     // if color light doesn't support native light temperature converted values are taken
                     long kelvin = Math.min(colorTemperatureMin,
                             Math.max(colorTemperatureMax, ColorModel.hsb2Kelvin(hsbStateReflection)));

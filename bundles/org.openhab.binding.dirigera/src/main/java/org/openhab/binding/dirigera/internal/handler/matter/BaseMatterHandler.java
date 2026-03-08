@@ -34,7 +34,6 @@ import org.openhab.binding.dirigera.internal.exception.GatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.BaseDevice;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.interfaces.PowerListener;
 import org.openhab.binding.dirigera.internal.model.MatterModel;
 import org.openhab.core.library.CoreItemFactory;
@@ -219,7 +218,7 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
     private void initializeCache() {
         deviceModelMap.forEach((deviceId, deviceModel) -> {
             deviceModel.getStatusProperties().forEach((key, value) -> {
-                channelStateMap.put(value.getString(MatterModel.CHANNEL_KEY_CHANNEL_NAME), UnDefType.UNDEF);
+                channelStateMap.put(value.getString(CHANNEL_KEY_CHANNEL_NAME), UnDefType.UNDEF);
             });
         });
     }
@@ -391,8 +390,8 @@ public class BaseMatterHandler extends BaseThingHandler implements BaseDevice, D
         // check reachable flag to determine ONLINE/OFFLINE status
         // very important to check this before any other processing to avoid wrong updates e.g. "power is on" while
         // device is not reachable
-        if (deviceUpdate.has(Model.JSON_KEY_REACHABLE)) {
-            if (deviceUpdate.getBoolean(Model.JSON_KEY_REACHABLE)) {
+        if (deviceUpdate.has(JSON_KEY_REACHABLE)) {
+            if (deviceUpdate.getBoolean(JSON_KEY_REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
                 online = true;
             } else {

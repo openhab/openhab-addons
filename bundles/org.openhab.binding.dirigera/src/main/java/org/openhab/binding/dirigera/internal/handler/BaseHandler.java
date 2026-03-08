@@ -35,7 +35,6 @@ import org.openhab.binding.dirigera.internal.exception.GatewayException;
 import org.openhab.binding.dirigera.internal.interfaces.BaseDevice;
 import org.openhab.binding.dirigera.internal.interfaces.DebugHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.interfaces.PowerListener;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -226,7 +225,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                 }
             });
         }
-        Object canSendCapabilities = modelProperties.get(Model.CAPABILITIES_KEY_CAN_SEND);
+        Object canSendCapabilities = modelProperties.get(CAPABILITIES_KEY_CAN_SEND);
         if (canSendCapabilities instanceof JSONArray jsonArray) {
             jsonArray.forEach(capability -> {
                 if (!sendCapabilities.contains(capability.toString())) {
@@ -378,41 +377,11 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
             deviceType = update.getString(JSON_KEY_DEVICE_TYPE);
         }
 
-        // check online offline for each device
-        if (update.has(Model.JSON_KEY_REACHABLE)) {
-            if (update.getBoolean(Model.JSON_KEY_REACHABLE)) {
-                updateStatus(ThingStatus.ONLINE);
-                online = true;
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/dirigera.device.status.not-reachable");
-                online = false;
-                /**
-                 * If device is not reachable set especially power channel to UNDEF. For OFFLINE maybe it's "real"
-                 * communication problems between device and hub or the power is cut off e.g. using a light switch.
-                 * Group handling is disturbed if state stays ON while device is not reachable
-                 */
-                if (thing.getChannel(CHANNEL_POWER_STATE) != null) {
-                    updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), UnDefType.UNDEF);
-                }
-            }
+        if (update.has(JSON_KEY_REACHABLE)) {
+            online = update.getBoolean(JSON_KEY_REACHABLE);
         }
-        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
-            // see comment in status handling, handle power state only in ONLINE status
-            if (attributes.has(ATTRIBUTES_KEY_POWER_STATE) && online) {
-                currentPowerState = OnOffType.from(attributes.getBoolean(ATTRIBUTES_KEY_POWER_STATE));
-                updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), currentPowerState);
-                synchronized (powerListeners) {
-                    if (online) {
-                        boolean requested = currentPowerState.equals(requestedPowerState);
-                        powerListeners.forEach(listener -> {
-                            listener.powerChanged((OnOffType) currentPowerState, requested);
-                        });
-                        requestedPowerState = UnDefType.UNDEF;
-                    }
-                }
-            }
+        if (update.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(JSON_KEY_ATTRIBUTES);
             // check OTA for each device
             if (attributes.has(ATTRIBUTES_KEY_OTA_STATUS)) {
                 createChannelIfNecessary(CHANNEL_OTA_STATUS, "ota-status", CoreItemFactory.NUMBER);
@@ -459,6 +428,19 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
                             startupString);
                 }
             }
+            if (attributes.has(ATTRIBUTES_KEY_POWER_STATE) && online) {
+                currentPowerState = OnOffType.from(attributes.getBoolean(ATTRIBUTES_KEY_POWER_STATE));
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), currentPowerState);
+                synchronized (powerListeners) {
+                    if (online) {
+                        boolean requested = currentPowerState.equals(requestedPowerState);
+                        powerListeners.forEach(listener -> {
+                            listener.powerChanged((OnOffType) currentPowerState, requested);
+                        });
+                        requestedPowerState = UnDefType.UNDEF;
+                    }
+                }
+            }
             if (attributes.has(ATTRIBUTES_KEY_CUSTOM_NAME) && customName.isBlank()) {
                 customName = attributes.getString(ATTRIBUTES_KEY_CUSTOM_NAME);
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME), StringType.valueOf(customName));
@@ -480,14 +462,20 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
             }
         }
         // check online offline for each device
-        if (update.has(Model.REACHABLE)) {
-            if (update.getBoolean(Model.REACHABLE)) {
+        if (update.has(JSON_KEY_REACHABLE)) {
+            if (update.getBoolean(JSON_KEY_REACHABLE)) {
                 updateStatus(ThingStatus.ONLINE);
-                online = true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "@text/dirigera.device.status.not-reachable");
-                online = false;
+                /**
+                 * If device is not reachable set especially power channel to UNDEF. For OFFLINE maybe it's "real"
+                 * communication problems between device and hub or the power is cut off e.g. using a light switch.
+                 * Group handling is disturbed if state stays ON while device is not reachable
+                 */
+                if (thing.getChannel(CHANNEL_POWER_STATE) != null) {
+                    updateState(new ChannelUID(thing.getUID(), CHANNEL_POWER_STATE), UnDefType.UNDEF);
+                }
             }
         }
     }

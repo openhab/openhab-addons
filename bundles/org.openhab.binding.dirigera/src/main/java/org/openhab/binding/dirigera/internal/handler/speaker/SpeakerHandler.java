@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.speaker;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
-import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_SOUND_CONTROLLER;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +22,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.handler.BaseHandler;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
@@ -143,8 +142,8 @@ public class SpeakerHandler extends BaseHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        if (update.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

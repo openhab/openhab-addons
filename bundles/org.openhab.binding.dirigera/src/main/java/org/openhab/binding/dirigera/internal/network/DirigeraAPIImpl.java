@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.network;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
-import static org.openhab.binding.dirigera.internal.interfaces.Model.JSON_KEY_DEVICE_ID;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
@@ -34,7 +34,6 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.ResourceReader;
 import org.openhab.binding.dirigera.internal.interfaces.DirigeraAPI;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -128,7 +127,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public int sendAttributes(String id, JSONObject attributes) {
         JSONObject data = new JSONObject();
-        data.put(Model.JSON_KEY_ATTRIBUTES, attributes);
+        data.put(JSON_KEY_ATTRIBUTES, attributes);
         return sendPatch(id, data);
     }
 
@@ -204,7 +203,7 @@ public class DirigeraAPIImpl implements DirigeraAPI {
     @Override
     public String createScene(String uuid, String clickPattern, String controllerId) {
         String url = String.format(SCENES_URL, gateway.getIpAddress());
-        String sceneTemplate = ResourceReader.getResource(Model.TEMPLATE_CLICK_SCENE);
+        String sceneTemplate = ResourceReader.getResource(TEMPLATE_CLICK_SCENE);
         String payload = String.format(sceneTemplate, uuid, "openHAB Shortcut Proxy", clickPattern, "0", controllerId);
         StringContentProvider stringProvider = new StringContentProvider("application/json", payload,
                 StandardCharsets.UTF_8);

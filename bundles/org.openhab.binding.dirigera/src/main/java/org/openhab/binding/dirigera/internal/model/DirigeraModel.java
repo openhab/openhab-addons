@@ -328,8 +328,8 @@ public class DirigeraModel implements Model {
         List<String> allDevices = getAllDeviceIds();
         allDevices.forEach(deviceId -> {
             JSONObject data = getAllFor(deviceId, MODEL_KEY_DEVICES);
-            if (data.has(Model.JSON_KEY_RELATION_ID)) {
-                String relation = data.getString(Model.JSON_KEY_RELATION_ID);
+            if (data.has(JSON_KEY_RELATION_ID)) {
+                String relation = data.getString(JSON_KEY_RELATION_ID);
                 if (relationId.equals(relation)) {
                     String relationDeviceId = data.getString(JSON_KEY_DEVICE_ID);
                     String deviceType = data.getString(JSON_KEY_DEVICE_TYPE);
@@ -446,8 +446,8 @@ public class DirigeraModel implements Model {
 
     private ThingTypeUID identifyStandardDevice(String id, JSONObject data) {
         String typeDeviceType = "";
-        if (data.has(Model.JSON_KEY_RELATION_ID)) {
-            return identifiyComplexDevice(data.getString(Model.JSON_KEY_RELATION_ID));
+        if (data.has(JSON_KEY_RELATION_ID)) {
+            return identifiyComplexDevice(data.getString(JSON_KEY_RELATION_ID));
         } else if (data.has(JSON_KEY_DEVICE_TYPE)) {
             String deviceType = data.getString(JSON_KEY_DEVICE_TYPE);
             typeDeviceType = deviceType;

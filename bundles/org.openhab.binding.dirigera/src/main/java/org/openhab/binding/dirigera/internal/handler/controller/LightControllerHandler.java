@@ -59,15 +59,13 @@ public class LightControllerHandler extends BaseHandler {
                             // fine - array stays empty
                             break;
                         case "Warm":
-                            presetValues = new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_WARM));
+                            presetValues = new JSONArray(ResourceReader.getResource(TEMPLATE_LIGHT_PRESET_WARM));
                             break;
                         case "Slowdown":
-                            presetValues = new JSONArray(
-                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
+                            presetValues = new JSONArray(ResourceReader.getResource(TEMPLATE_LIGHT_PRESET_SLOWDOWN));
                             break;
                         case "Smooth":
-                            presetValues = new JSONArray(
-                                    ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
+                            presetValues = new JSONArray(ResourceReader.getResource(TEMPLATE_LIGHT_PRESET_SMOOTH));
                             break;
                         case "Bright":
                             presetValues = new JSONArray(
@@ -86,8 +84,8 @@ public class LightControllerHandler extends BaseHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        if (update.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

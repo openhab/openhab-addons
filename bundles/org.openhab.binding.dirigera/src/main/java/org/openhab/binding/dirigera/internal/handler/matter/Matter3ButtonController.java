@@ -88,7 +88,7 @@ public class Matter3ButtonController extends BaseMatterHandler {
     private void createTriggerChannels(String group, String relationId, int subDeviceId) {
         for (int i = subDeviceId; i > (subDeviceId - 3); i--) {
             String deviceId = relationId + "_" + i;
-            deviceModelMap.put(deviceId, new MatterModel(deviceId, thing.getThingTypeUID().getId(), true));
+            deviceModelMap.put(deviceId, new MatterModel(deviceId, thing.getThingTypeUID().getId()));
             triggerChannelMapping.put(deviceId, createTriggerChannel(group, i));
         }
     }

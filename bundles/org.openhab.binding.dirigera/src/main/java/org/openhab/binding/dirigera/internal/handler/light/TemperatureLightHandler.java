@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.light;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
-import static org.openhab.binding.dirigera.internal.interfaces.Model.ATTRIBUTES_KEY_COLOR_TEMPERATURE;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.math.BigDecimal;
 import java.util.Iterator;
@@ -23,7 +23,6 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
@@ -63,7 +62,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     public void initializeDevice() {
         if (super.checkHandler()) {
             JSONObject values = gateway().api().readDevice(config.id);
-            JSONObject attributes = values.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
+            JSONObject attributes = values.getJSONObject(JSON_KEY_ATTRIBUTES);
             // check for settings of color temperature in attributes
             TreeMap<String, String> properties = new TreeMap<>(editProperties());
             Iterator<String> attributesIterator = attributes.keys();
@@ -107,8 +106,6 @@ public class TemperatureLightHandler extends DimmableLightHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("DIRIGERA COLOR_LIGHT {} handle command {} for channel {}", thing.getLabel(), command,
-                channelUID.getIdWithoutGroup());
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
         String targetProperty = channel2PropertyMap.get(channel);
@@ -131,7 +128,7 @@ public class TemperatureLightHandler extends DimmableLightHandler {
                  * some color lights which inherit this temperature light don't have the temperature capability.
                  * As workaround child class ColorLightHandler is handling color temperature
                  */
-                if (receiveCapabilities.contains(Model.CAPABILITIES_VALUE_COLOR_TEMPERATURE) && percentValue != -1
+                if (receiveCapabilities.contains(CAPABILITIES_VALUE_COLOR_TEMPERATURE) && percentValue != -1
                         && kelvinValue != -1) {
                     JSONObject attributes = new JSONObject();
                     attributes.put(targetProperty, kelvinValue);
@@ -153,8 +150,8 @@ public class TemperatureLightHandler extends DimmableLightHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        if (update.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

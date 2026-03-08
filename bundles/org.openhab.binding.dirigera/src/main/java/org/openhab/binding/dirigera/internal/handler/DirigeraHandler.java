@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -59,7 +58,6 @@ import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.DirigeraModel;
 import org.openhab.binding.dirigera.internal.network.DirigeraAPIImpl;
 import org.openhab.binding.dirigera.internal.network.Websocket;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -97,11 +95,6 @@ import org.slf4j.LoggerFactory;
 public class DirigeraHandler extends BaseBridgeHandler implements Gateway, DebugHandler {
 
     private final Logger logger = LoggerFactory.getLogger(DirigeraHandler.class);
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getPoolBasedSequentialScheduledExecutorService("dirigera", "handler");
-    // Can be overwritten by Unit test for mocking API
-    protected Map<String, State> channelStateMap = new HashMap<>();
-
     private final Map<String, List<BaseDevice>> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryService discoveryService;
     private final DirigeraStateDescriptionProvider stateProvider;
@@ -119,6 +112,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     @Nullable
     private ScheduledFuture<?> updater;
 
+    private Map<String, State> channelStateMap = new HashMap<>();
     private List<Object> knownDevices = new ArrayList<>();
     private ArrayList<String> websocketQueue = new ArrayList<>();
     private ArrayList<DeviceUpdate> deviceModificationQueue = new ArrayList<>();
@@ -184,7 +178,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 coordinatesPoint = point;
             } else if (command instanceof StringType string) {
                 if (string.toFullString().isBlank()) {
-                    String nullCoordinates = ResourceReader.getResource(Model.TEMPLATE_NULL_COORDINATES);
+                    String nullCoordinates = ResourceReader.getResource(TEMPLATE_NULL_COORDINATES);
                     JSONObject patchCoordinates = new JSONObject(nullCoordinates);
                     if (customDebug) {
                         logger.info("DIRIGERA HANDLER send null coordinates {}", patchCoordinates);
@@ -200,7 +194,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                 }
             }
             if (coordinatesPoint != null) {
-                String coordinatesTemplate = ResourceReader.getResource(Model.TEMPLATE_COORDINATES);
+                String coordinatesTemplate = ResourceReader.getResource(TEMPLATE_COORDINATES);
                 String coordinates = String.format(coordinatesTemplate, coordinatesPoint.getLatitude().toFullString(),
                         coordinatesPoint.getLongitude().toFullString());
                 if (customDebug) {
@@ -301,8 +295,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     @Override
     public void handleRemoval() {
-        // todo cleanup storage on removal
-        // storage.remove(config.ipAddress);
+        storage.remove(config.ipAddress);
         super.handleRemoval();
     }
 
@@ -691,7 +684,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                     List<String> links = handler.getLinks();
                     if (!links.isEmpty()) {
                         if (customDebug) {
-                            logger.info("DIRIGERA HANDLER links found for {} {}", handler.getThing().getLabel(),
+                            logger.info("DIRIGERA HANDLER links found for {} {}", handler.getNameForId(linkSourceId),
                                     links.size());
                         }
                     }
@@ -882,10 +875,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                                 // in order to present the updated name in discovery
                                 if (data.has(JSON_KEY_ATTRIBUTES)) {
                                     JSONObject attributes = data.getJSONObject(JSON_KEY_ATTRIBUTES);
-                                    if (attributes.has(Model.ATTRIBUTES_KEY_CUSTOM_NAME)) {
+                                    if (attributes.has(ATTRIBUTES_KEY_CUSTOM_NAME)) {
                                         if (customDebug) {
                                             logger.info("DIRIGERA HANDLER possible name change detected {}",
-                                                    attributes.getString(Model.ATTRIBUTES_KEY_CUSTOM_NAME));
+                                                    attributes.getString(ATTRIBUTES_KEY_CUSTOM_NAME));
                                         }
                                         modelUpdate();
                                     }
@@ -941,8 +934,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
         updateState(new ChannelUID(thing.getUID(), CHANNEL_STATISTICS),
                 StringType.valueOf(websocket.getStatistics().toString()));
 
-        if (data.has(Model.JSON_KEY_ATTRIBUTES)) {
-            JSONObject attributes = data.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        if (data.has(JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = data.getJSONObject(JSON_KEY_ATTRIBUTES);
             // check ota for each device
             if (attributes.has(ATTRIBUTES_KEY_CUSTOM_NAME)) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_CUSTOM_NAME),

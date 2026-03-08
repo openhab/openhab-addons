@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
-import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_OCCUPANCY_SENSOR;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -71,13 +71,11 @@ public class MatterSensor extends BaseMatterHandler {
     @Override
     public void handleUpdate(JSONObject update) {
         super.handleUpdate(update);
-        if (!getProperty(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig", update).isBlank()) {
-            String scheduleOn = getProperty(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/scheduleOn", update);
-            String duration = getProperty(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/onDuration", update);
-            String onCondition = getProperty(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/schedule/onCondition/time",
-                    update);
-            String offCondition = getProperty(Model.JSON_KEY_ATTRIBUTES + "/sensorConfig/schedule/offCondition/time",
-                    update);
+        if (!getProperty(JSON_KEY_ATTRIBUTES + "/sensorConfig", update).isBlank()) {
+            String scheduleOn = getProperty(JSON_KEY_ATTRIBUTES + "/sensorConfig/scheduleOn", update);
+            String duration = getProperty(JSON_KEY_ATTRIBUTES + "/sensorConfig/onDuration", update);
+            String onCondition = getProperty(JSON_KEY_ATTRIBUTES + "/sensorConfig/schedule/onCondition/time", update);
+            String offCondition = getProperty(JSON_KEY_ATTRIBUTES + "/sensorConfig/schedule/offCondition/time", update);
 
             if (!duration.isBlank()) {
                 updateState(new ChannelUID(thing.getUID(), CHANNEL_ACTIVE_DURATION),
@@ -174,8 +172,8 @@ public class MatterSensor extends BaseMatterHandler {
             case CHANNEL_ACTIVE_DURATION:
                 int seconds = getDurationInSeconds(command);
                 if (seconds >= 0) {
-                    String patchString = String
-                            .format(ResourceReader.getResource(Model.TEMPLATE_SENSOR_DURATION_UPDATE), seconds);
+                    String patchString = String.format(ResourceReader.getResource(TEMPLATE_SENSOR_DURATION_UPDATE),
+                            seconds);
                     sendRequest(new JSONObject(patchString));
                 }
                 break;
@@ -194,11 +192,10 @@ public class MatterSensor extends BaseMatterHandler {
                 if (command instanceof StringType string) {
                     var preset = switch (string.toFullString()) {
                         case "Off" -> new JSONArray();
-                        case "Warm" -> new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_WARM));
-                        case "Slowdown" ->
-                            new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SLOWDOWN));
-                        case "Smooth" -> new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_SMOOTH));
-                        case "Bright" -> new JSONArray(ResourceReader.getResource(Model.TEMPLATE_LIGHT_PRESET_BRIGHT));
+                        case "Warm" -> new JSONArray(ResourceReader.getResource(TEMPLATE_LIGHT_PRESET_WARM));
+                        case "Slowdown" -> new JSONArray(ResourceReader.getResource(TEMPLATE_LIGHT_PRESET_SLOWDOWN));
+                        case "Smooth" -> new JSONArray(ResourceReader.getResource(TEMPLATE_LIGHT_PRESET_SMOOTH));
+                        case "Bright" -> new JSONArray(ResourceReader.getResource(TEMPLATE_LIGHT_PRESET_BRIGHT));
                         default -> {
                             try {
                                 yield new JSONArray(string.toFullString());
@@ -211,7 +208,7 @@ public class MatterSensor extends BaseMatterHandler {
                     };
                     if (preset instanceof JSONArray) {
                         JSONObject presetJson = (new JSONObject()).put("circadianPresets", preset);
-                        sendRequest((new JSONObject()).put(Model.JSON_KEY_ATTRIBUTES, presetJson));
+                        sendRequest((new JSONObject()).put(JSON_KEY_ATTRIBUTES, presetJson));
                     }
                 }
         }
@@ -225,10 +222,10 @@ public class MatterSensor extends BaseMatterHandler {
      */
     private JSONObject getSchedulePatch(DecimalType decimal) {
         return switch (decimal.intValue()) {
-            case 0 -> new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_ALWQAYS_ON));
-            case 1 -> new JSONObject(ResourceReader.getResource(Model.TEMPLATE_SENSOR_FOLLOW_SUN));
+            case 0 -> new JSONObject(ResourceReader.getResource(TEMPLATE_SENSOR_ALWQAYS_ON));
+            case 1 -> new JSONObject(ResourceReader.getResource(TEMPLATE_SENSOR_FOLLOW_SUN));
             case 2 -> new JSONObject(
-                    String.format(ResourceReader.getResource(Model.TEMPLATE_SENSOR_SCHEDULE_ON), startTime, endTime));
+                    String.format(ResourceReader.getResource(TEMPLATE_SENSOR_SCHEDULE_ON), startTime, endTime));
             default -> new JSONObject();
         };
     }

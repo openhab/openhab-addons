@@ -13,7 +13,7 @@
 package org.openhab.binding.dirigera.internal.handler.matter;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
-import static org.openhab.binding.dirigera.internal.interfaces.Model.DEVICE_TYPE_LIGHT;
+import static org.openhab.binding.dirigera.internal.interfaces.Model.*;
 import static org.openhab.binding.dirigera.internal.model.MatterModel.*;
 
 import java.util.Map;
@@ -24,7 +24,6 @@ import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.DirigeraStateDescriptionProvider;
 import org.openhab.binding.dirigera.internal.config.ColorLightConfiguration;
 import org.openhab.binding.dirigera.internal.handler.light.ColorLightHandler;
-import org.openhab.binding.dirigera.internal.interfaces.Model;
 import org.openhab.binding.dirigera.internal.model.MatterModel;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Thing;
@@ -54,11 +53,11 @@ public class MatterLight extends ColorLightHandler {
     }
 
     private void createChannels(JSONObject deviceStatus) {
-        JSONObject attributes = deviceStatus.optJSONObject(Model.JSON_KEY_ATTRIBUTES);
+        JSONObject attributes = deviceStatus.optJSONObject(JSON_KEY_ATTRIBUTES);
         if (attributes != null) {
             configMap.forEach((deviceId, deviceModel) -> {
                 deviceModel.getStatusProperties().forEach((statusPropertyKey, statusPropertyJson) -> {
-                    String deviceAttribute = statusPropertyJson.optString(MatterModel.CHANNEL_KEY_ATTRIBUTE);
+                    String deviceAttribute = statusPropertyJson.optString(CHANNEL_KEY_ATTRIBUTE);
                     if (attributes.has(deviceAttribute)) {
                         createChannelIfNecessary(statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_NAME),
                                 statusPropertyJson.optString(CHANNEL_KEY_CHANNEL_TYPE),
