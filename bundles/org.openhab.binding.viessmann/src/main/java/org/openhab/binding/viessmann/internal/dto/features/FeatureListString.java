@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.viessmann.internal.dto.features;
 
+import java.util.List;
+
 /**
- * The {@link FeatureNewSchedule} provides new schedule of features
+ * The {@link FeatureListString} provides list with string value of features
  *
  * @author Ronny Grun - Initial contribution
  */
-public class FeatureNewSchedule {
-    public Boolean required;
+public class FeatureListString {
     public String type;
-    public FeatureConstraintsSchedule constraints;
+    public List<String> value = null;
+    public String unit;
 }

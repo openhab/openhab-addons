@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.viessmann.internal.dto.features;
 
+import com.google.gson.JsonElement;
+
 /**
- * The {@link FeatureShift} provides shift of features
+ * The {@link FeaturePropertiesEnabled} provides enabled property of features
  *
  * @author Ronny Grun - Initial contribution
  */
-public class FeatureShift {
-    public Boolean required;
+public class FeaturePropertiesEnabled {
     public String type;
-    public FeatureConstraintsSteppingInteger constraints;
+    public JsonElement value;
 }
