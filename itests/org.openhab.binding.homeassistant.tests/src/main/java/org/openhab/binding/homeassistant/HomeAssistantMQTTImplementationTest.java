@@ -158,6 +158,10 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         @Override
         public void componentRemoved(HaID homeAssistantTopicID) {
         }
+
+        @Override
+        public void deviceConfigUpdated(HaID homeAssistantTopicID, String configPayload) {
+        }
     }
 
     @Test

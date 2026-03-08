@@ -22,9 +22,11 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homeassistant.internal.AbstractHomeAssistantTests;
 import org.openhab.binding.homeassistant.internal.config.dto.AbstractComponentConfiguration;
@@ -53,11 +55,15 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
         }
     }
 
+    private static Map<String, @Nullable Object> parsePayload(String topic, String json) {
+        return PYTHON.processDiscoveryConfig(topic, json).getFirst().getDiscoveryPayload();
+    }
+
     @Test
     public void testAbbreviations() {
         String json = readTestJson("configA.json");
 
-        Switch.Configuration config = AbstractComponentConfiguration.create(PYTHON, "switch", json,
+        Switch.Configuration config = AbstractComponentConfiguration.create(parsePayload("switch/a", json),
                 Switch.Configuration.class);
 
         assertThat(config.getName(), is("A"));
@@ -85,7 +91,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testTildeSubstritution() {
         String json = readTestJson("configB.json");
 
-        Switch.Configuration config = AbstractComponentConfiguration.create(PYTHON, "switch", json,
+        Switch.Configuration config = AbstractComponentConfiguration.create(parsePayload("switch/a", json),
                 Switch.Configuration.class);
 
         assertThat(config.getAvailabilityTopic(), is("D/E"));
@@ -103,7 +109,8 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testSampleFanConfig() {
         String json = readTestJson("configFan.json");
 
-        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(parsePayload("fan/a", json),
+                Fan.Configuration.class);
         assertThat(config.getName(), is("Bedroom Fan"));
     }
 
@@ -111,7 +118,8 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testDeviceListConfig() {
         String json = readTestJson("configDeviceList.json");
 
-        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(parsePayload("fan/a", json),
+                Fan.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -124,7 +132,8 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     public void testDeviceSingleStringConfig() {
         String json = readTestJson("configDeviceSingleString.json");
 
-        Fan.Configuration config = AbstractComponentConfiguration.create(PYTHON, "fan", json, Fan.Configuration.class);
+        Fan.Configuration config = AbstractComponentConfiguration.create(parsePayload("fan/a", json),
+                Fan.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -136,7 +145,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     @Test
     public void testTS0601ClimateConfig() {
         String json = readTestJson("configTS0601ClimateThermostat.json");
-        Climate.Configuration config = AbstractComponentConfiguration.create(PYTHON, "climate", json,
+        Climate.Configuration config = AbstractComponentConfiguration.create(parsePayload("climate/a", json),
                 Climate.Configuration.class);
         assertThat(config.getDevice(), is(notNullValue()));
         assertThat(config.getDevice().getIdentifiers(), is(notNullValue()));
@@ -174,7 +183,7 @@ public class HAConfigurationTests extends AbstractHomeAssistantTests {
     @Test
     public void testClimateConfig() {
         String json = readTestJson("configClimate.json");
-        Climate.Configuration config = AbstractComponentConfiguration.create(PYTHON, "climate", json,
+        Climate.Configuration config = AbstractComponentConfiguration.create(parsePayload("climate/a", json),
                 Climate.Configuration.class);
         assertThat(config.getActionTemplate().toString(), is("Template<template=(a) renders=0>"));
         assertThat(config.getActionTopic(), is("b"));
