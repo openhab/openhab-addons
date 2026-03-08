@@ -1,7 +1,7 @@
 # Piper Text-to-Speech
 
 This voice service allows you to use [Piper](https://github.com/OHF-Voice/piper1-gpl) as your TTS service in openHAB.
-[Piper](https://github.com/OHF-Voice/piper1-gpl) is a open-source, fast, local neural text-to-speech system that sounds great and is optimized for the Raspberry Pi 4.
+[Piper](https://github.com/OHF-Voice/piper1-gpl) is an open-source, fast, local neural text-to-speech system that sounds great and is optimized for the Raspberry Pi 4.
 
 ::: tip Note
 This add-on depends on native libraries that cannot be included with the openHAB distribution due to their license.
