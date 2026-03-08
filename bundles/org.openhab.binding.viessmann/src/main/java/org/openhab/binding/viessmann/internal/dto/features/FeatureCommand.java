@@ -23,9 +23,9 @@ import java.util.Map;
 public class FeatureCommand {
     public String uri;
     public String name;
-    public Boolean isExecutable;
+    public boolean isExecutable;
     public Map<String, FeatureCommandParams> params;
-    public Boolean isDeprecated = false;
+    public boolean isDeprecated;
 
     public ArrayList<String> getAllParams() {
         return params == null ? new ArrayList<>() : new ArrayList<>(params.keySet());
