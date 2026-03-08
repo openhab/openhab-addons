@@ -98,7 +98,8 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
         if (!macAddress.isBlank()) {
             // convert plain mac string to common mac-address format with ":"
-            String macAddressProperty = macAddress.toUpperCase().replaceAll("(.{2})(?!$)", "$1:");
+            String macAddressProperty = macAddress.replaceAll("[^A-Fa-f0-9]", "").toUpperCase()
+                    .replaceAll("(.{2})(?!$)", "$1:");
             String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
             ThingUID thingUID = new ThingUID(THING_TYPE_JSON, macAddress);
             Map<String, Object> properties = Map.of(Thing.PROPERTY_MAC_ADDRESS, macAddressProperty,
