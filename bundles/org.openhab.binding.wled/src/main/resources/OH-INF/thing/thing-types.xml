@@ -23,15 +23,14 @@
 			<channel id="syncSend" typeId="syncSend"/>
 			<channel id="syncReceive" typeId="syncReceive"/>
 		</channels>
+		<properties>
+			<property name="macAddress"></property>
+		</properties>
+		<representation-property>macAddress</representation-property>
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>Use this format http://192.168.1.2:80</description>
-			</parameter>
-			<parameter name="macAddress" type="text">
-				<context>mac-address</context>
-				<label>MAC Address</label>
-				<description>Hardware MAC address of the WLED device, in standard 6-byte hexadecimal format separated by colons (for example: AB:CD:EF:12:34:56).</description>
 			</parameter>
 			<parameter name="pollTime" type="integer" min="1" unit="s">
 				<label>Poll Time</label>
