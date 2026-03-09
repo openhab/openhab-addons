@@ -279,10 +279,11 @@ jobs:
       - name: Lint Markdown
         run: ./mvnw validate -T4C -Dmarkdownlint.skip=false
 
-  finalize:
+  finalize-multi-shard:
     needs: [ plan-shards, build, build-features, lint-markdown ]
     if: |
       always() &&
+      needs.plan-shards.outputs.selected_parts != '1' &&
       needs.build.result == 'success' &&
       (needs.build-features.result == 'success' || needs.build-features.result == 'skipped') &&
       (needs.lint-markdown.result == 'success' || needs.lint-markdown.result == 'skipped')
@@ -291,7 +292,7 @@ jobs:
       matrix:
         java: [ '21' ]
         os: [ 'ubuntu-24.04' ]
-    name: Finalize (Java ${{ matrix.java }}, ${{ matrix.os }})
+    name: Finalize Multi-Shard Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -331,10 +332,8 @@ jobs:
 
       - name: Download SAT Merge XMLs
         id: download-sat
-        # SAT merge XML artifacts are only uploaded for multi-shard builds.
         # download-artifact exits 0 even when no artifacts match, so guard
         # explicitly to avoid running merge-sat-xmls against a missing directory.
-        if: needs.plan-shards.outputs.selected_parts != '1'
         uses: actions/download-artifact@v7
         with:
           pattern: sat-merge-xml-java-${{ matrix.java }}-${{ matrix.os }}-*
