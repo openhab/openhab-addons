@@ -19,8 +19,6 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -109,7 +107,7 @@ public class HomeWizardEnergySocketHandlerTest extends HomeWizardHandlerTest {
             doReturn(DataUtil.fromFile("response-measurement-energy-socket.json")).when(handler).getMeasurementData();
             doReturn(DataUtil.fromFile("response-state-energy-socket.json")).when(handler).getStateData();
             doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
-        } catch (InterruptedException | TimeoutException | ExecutionException | IOException ex) {
+        } catch (IOException ex) {
             assertFalse(true);
         }
 

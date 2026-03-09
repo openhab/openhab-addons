@@ -227,7 +227,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
             handleSystemData(getSystemData());
             handleMeasurementData(getMeasurementData());
             updateStatus(ThingStatus.ONLINE);
-        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
+        } catch (JsonSyntaxException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
@@ -248,7 +248,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
         try {
             deviceInformation = getDeviceInformationData();
-        } catch (InterruptedException | TimeoutException | ExecutionException | SecurityException ex) {
+        } catch (SecurityException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get device information", ex);
@@ -324,16 +324,13 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      * Device specific handling of the returned measurement data.
      *
      * @param payload The data obtained from the API call
+     * @throws JsonSyntaxException when the returned data cannot be parsed
      */
-    protected void handleMeasurementData(String data) {
+    protected void handleMeasurementData(String data) throws JsonSyntaxException {
         if (!config.isUsingApiVersion2()) {
             // We're only interested in the Wi-Fi data and the water meter payload processes these data.
             HomeWizardWaterMeterMeasurementPayload payload = null;
-            try {
-                payload = gson.fromJson(data, HomeWizardWaterMeterMeasurementPayload.class);
-            } catch (JsonSyntaxException ex) {
-                logger.warn("Wi-Fi data is not available");
-            }
+            payload = gson.fromJson(data, HomeWizardWaterMeterMeasurementPayload.class);
 
             if (payload != null) {
                 updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
@@ -356,14 +353,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      * Device specific handling of the returned system data.
      *
      * @param data The data obtained from the API call
+     * @throws JsonSyntaxException when the returned data cannot be parsed
      */
-    protected void handleSystemData(String data) {
+    protected void handleSystemData(String data) throws JsonSyntaxException {
         HomeWizardSystemPayload payload = null;
-        try {
-            payload = gson.fromJson(data, HomeWizardSystemPayload.class);
-        } catch (JsonSyntaxException ex) {
-            logger.warn("No System data available");
-        }
+        payload = gson.fromJson(data, HomeWizardSystemPayload.class);
         if (payload != null) {
             if (config.isUsingApiVersion2()) {
                 updateState(HomeWizardBindingConstants.CHANNEL_GROUP_SYSTEM,
@@ -382,47 +376,60 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
     }
 
-    protected ContentResponse putDataTo(String url, String data)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    protected @Nullable ContentResponse putDataTo(String url, String data) {
         var request = httpClient.newRequest(url).method(HttpMethod.PUT).content(new StringContentProvider(data));
 
         return sendRequest(request);
     }
 
-    public ContentResponse getResponseFrom(String url)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public @Nullable ContentResponse getResponseFrom(String url) {
         return sendRequest(httpClient.newRequest(url));
     }
 
-    private ContentResponse sendRequest(Request request)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    private @Nullable ContentResponse sendRequest(Request request) {
         if (config.isUsingApiVersion2()) {
             request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
             request.header(API_VERSION_HEADER, "2");
         }
-        return request.timeout(20, TimeUnit.SECONDS).send();
+        try {
+            return request.timeout(20, TimeUnit.SECONDS).send();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt(); // restore interrupt status
+            return null;
+        } catch (TimeoutException | ExecutionException ex) {
+            logger.debug("Error sending request", ex);
+            return null;
+        }
     }
 
     /**
-     * @return json response from the device information api
-     * @throws InterruptedException, TimeoutException, ExecutionException, SecurityException
+     * @return json response from the device information api or an empty string if no data is available
+     * @throws SecurityException
      */
-    public String getDeviceInformationData()
-            throws InterruptedException, TimeoutException, ExecutionException, SecurityException {
+    public String getDeviceInformationData() throws SecurityException {
         var response = getResponseFrom(apiURL);
+        if (response == null) {
+            logger.warn("No Device Information data available");
+            return "";
+        }
         if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             throw new SecurityException("Bearer token is invalid.");
         }
-        return response.getContentAsString();
+        if (response.getStatus() == HttpStatus.OK_200) {
+            return response.getContentAsString();
+        } else {
+            logger.warn("No Device Information data available");
+            return "";
+        }
     }
 
     /**
-     * @return json response from the system api
-     * @throws InterruptedException, TimeoutException, ExecutionException
+     * @return json response from the system api or an empty string if no data is available
+     *
      */
-    public String getSystemData() throws InterruptedException, TimeoutException, ExecutionException {
+    public String getSystemData() {
         var response = getResponseFrom(getApiUrl() + SYSTEM_URL);
-        if (response.getStatus() == HttpStatus.OK_200) {
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
             return response.getContentAsString();
         } else {
             logger.warn("No System data available");
@@ -432,40 +439,41 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     public void sendSystemCommand(String command) {
         var url = getApiUrl() + SYSTEM_URL;
-        try {
-            var response = putDataTo(url, command);
-            if (response.getStatus() == HttpStatus.OK_200) {
-                handleSystemData(response.getContentAsString());
-            } else {
-                logger.warn("Failed to send command {} to {}", command, url);
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
+        var response = putDataTo(url, command);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            handleSystemData(response.getContentAsString());
+        } else {
             logger.warn("Failed to send command {} to {}", command, url);
-            logger.debug("Error sending command", ex);
         }
     }
 
     /**
-     * @return json response from the measurement api
-     * @throws InterruptedException, TimeoutException, ExecutionException
+     * @return json response from the measurement api or an empty string if no data is available
+     * 
      */
-    public String getMeasurementData() throws InterruptedException, TimeoutException, ExecutionException {
+    public String getMeasurementData() {
         var url = getApiUrl();
         if (config.isUsingApiVersion2()) {
             url += "measurement";
         } else {
             url += "data";
         }
-        return getResponseFrom(url).getContentAsString();
+        var response = getResponseFrom(url);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            return response.getContentAsString();
+        } else {
+            logger.warn("No Measurements data available");
+            return "";
+        }
     }
 
     /**
-     * @return json response from the batteries api
-     * @throws InterruptedException, TimeoutException, ExecutionException
+     * @return json response from the batteries api or an empty string if no data is available
+     * 
      */
-    public String getBatteriesData() throws InterruptedException, TimeoutException, ExecutionException {
+    public String getBatteriesData() {
         var response = getResponseFrom(getApiUrl() + BATTERIES_URL);
-        if (response.getStatus() == HttpStatus.OK_200) {
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
             return response.getContentAsString();
         } else {
             logger.warn("No Batteries data available");
@@ -475,16 +483,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
     protected void sendBatteriesCommand(String command) {
         var url = getApiUrl() + BATTERIES_URL;
-        try {
-            var response = putDataTo(url, command);
-            if (response.getStatus() == HttpStatus.OK_200) {
-                handleBatteriesData(response.getContentAsString());
-            } else {
-                logger.warn("Failed to send command {} to {}", command, url);
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
-            logger.debug("Failed to send command {} to {}", command, url);
-            logger.debug("Error sending command", ex);
+        var response = putDataTo(url, command);
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
+            handleBatteriesData(response.getContentAsString());
+        } else {
+            logger.warn("Failed to send command {} to {}", command, url);
         }
     }
 }

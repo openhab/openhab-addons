@@ -86,14 +86,12 @@ public class HomeWizardBatteriesSubHandler {
      * Device specific handling of the returned batteries data.
      *
      * @param data The data obtained from the API call
+     * @throws JsonSyntaxException when the data cannot be parsed to the expected format
      */
-    public static void handleBatteriesData(String data, HomeWizardDeviceHandler handler) {
+    public static void handleBatteriesData(String data, HomeWizardDeviceHandler handler) throws JsonSyntaxException {
         HomeWizardBatteriesPayload payload = null;
-        try {
-            payload = gson.fromJson(data, HomeWizardBatteriesPayload.class);
-        } catch (JsonSyntaxException ex) {
-            logger.warn("No Batteries data available");
-        }
+        payload = gson.fromJson(data, HomeWizardBatteriesPayload.class);
+
         if (payload != null) {
             var mode = payload.getMode();
             if (mode.equals(HomeWizardBindingConstants.BATTERIES_MODE_ZERO)) {

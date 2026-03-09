@@ -13,8 +13,6 @@
 package org.openhab.binding.homewizard.internal.devices.kwh_meter;
 
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
@@ -31,6 +29,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link HomeWizardKwhMeterHandler} implements functionality to handle a HomeWizard kWh Meter.
@@ -64,7 +64,7 @@ public class HomeWizardKwhMeterHandler extends HomeWizardDeviceHandler {
             if (config.isUsingApiVersion2()) {
                 handleBatteriesData(getBatteriesData());
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
+        } catch (JsonSyntaxException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             logger.debug("Unable to get data from the API", ex);
@@ -113,9 +113,10 @@ public class HomeWizardKwhMeterHandler extends HomeWizardDeviceHandler {
      * Device specific handling of the returned batteries data.
      *
      * @param data The data obtained from the API call
+     * @throws JsonSyntaxException when the data cannot be parsed to the expected format
      */
     @Override
-    protected void handleBatteriesData(String data) {
+    protected void handleBatteriesData(String data) throws JsonSyntaxException {
         HomeWizardBatteriesSubHandler.handleBatteriesData(data, this);
     }
 }

@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.homewizard.internal.devices.energy_socket;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus;
@@ -62,7 +59,7 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
 
         try {
             handleStateData(getStateData());
-        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
+        } catch (JsonSyntaxException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.comm-error-device-offline");
             return;
@@ -172,11 +169,11 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
 
     /**
      * @return json response from the state api
-     * @throws InterruptedException, TimeoutException, ExecutionException
+     * 
      */
-    public String getStateData() throws InterruptedException, TimeoutException, ExecutionException {
+    public String getStateData() {
         var response = getResponseFrom(getApiUrl() + STATE_URL);
-        if (response.getStatus() == HttpStatus.OK_200) {
+        if (response != null && response.getStatus() == HttpStatus.OK_200) {
             return response.getContentAsString();
         } else {
             logger.warn("No State data available");
@@ -190,15 +187,18 @@ public class HomeWizardEnergySocketHandler extends HomeWizardDeviceHandler {
      * @param command The command to send.
      */
     private @Nullable HomeWizardDeviceStatePayload sendStateCommand(String command) {
-        HomeWizardDeviceStatePayload updatedState = null;
         var url = getApiUrl() + STATE_URL;
-        try {
-            var response = putDataTo(url, command).getContentAsString();
-            updatedState = gson.fromJson(response, HomeWizardDeviceStatePayload.class);
-        } catch (InterruptedException | TimeoutException | ExecutionException ex) {
+        var response = putDataTo(url, command);
+        if (response == null) {
             logger.warn("Failed to send command {} to {}", command, url);
+            return null;
         }
-        return updatedState;
+        try {
+            return gson.fromJson(response.getContentAsString(), HomeWizardDeviceStatePayload.class);
+        } catch (JsonSyntaxException ex) {
+            logger.warn("Failed to parse response for command {} to {}", command, url);
+            return null;
+        }
     }
 
     /**
