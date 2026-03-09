@@ -448,19 +448,21 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     if (detectionType == null) {
                         detectionType = "";
                     }
-                    switch (detectionType) {
-                        case "human":
-                            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                    "There is a Person at your " + lastEvents.getFirst().doorbot.description));
-                            break;
-                        case "vehicle":
-                            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                    "There is a Vehicle at your " + lastEvents.getFirst().doorbot.description));
-                            break;
-                        default:
-                            updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
-                                    "There is motion at your " + lastEvents.getFirst().doorbot.description));
-                            break;
+                    if (lastEvents.getFirst().kind.equals("motion")) {
+                        switch (detectionType) {
+                            case "human":
+                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                        "There is a Person at your " + lastEvents.getFirst().doorbot.description));
+                                break;
+                            case "vehicle":
+                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                        "There is a Vehicle at your " + lastEvents.getFirst().doorbot.description));
+                                break;
+                            default:
+                                updateState(CHANNEL_EVENT_EXTENDED_DESCRIPTION, new StringType(
+                                        "There is motion at your " + lastEvents.getFirst().doorbot.description));
+                                break;
+                        }
                     }
                     ScheduledExecutorService service = videoExecutorService;
                     if (service != null) {
