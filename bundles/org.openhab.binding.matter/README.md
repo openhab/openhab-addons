@@ -72,7 +72,7 @@ This action will give feedback on the pairing process, if successful a device wi
 
 See [Device Pairing: Code Types](#device-pairing-code-types) for more information on pairing codes and code formats.
 
-The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.  
+The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.
 
 <img src="./doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
 
@@ -82,7 +82,7 @@ In order to pair (commission in matter terminology) a device, you must have an 1
 If the device has not been paired before, use the code provided by the manufacturer and **ensure the device is in pairing mode**, refer to your devices instructions for pairing for more information.
 You can include dashes or omit them in a manual pairing code.
 
-If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must use that ecosystem to generate a new pairing code and search for devices.  
+If the device is paired with another Matter ecosystem (Apple, Google, Amazon, etc..) you must use that ecosystem to generate a new pairing code and search for devices.
 The pairing code and device will only be available for commissioning for a limited time.
 Refer to the ecosystem that generated the code for the exact duration (typically 5-15 minutes). In this case, openHAB still talks directly to the device and is not associated with that existing ecosystem.
 
@@ -158,7 +158,7 @@ The controller Thing must be created manually before devices can be discovered.
 |--------|--------|----------------------------------------|---------|----------|----------|
 | nodeId | number | The matter node ID for this controller | 0       | yes      | no       |
 
-Note: The controller nodeId must not be changed after a controller is created.  
+Note: The controller nodeId must not be changed after a controller is created.
 
 ### Node Thing Configuration
 
@@ -186,6 +186,9 @@ Nodes are discovered automatically (see [Discovery](#discovery) for more informa
 | Generate a new pairing code for a Matter device | Generates a new manual and QR pairing code to be used to pair the Matter device with an external Matter controller                                                                                                                                                        |
 | List Connected Matter Fabrics                   | This will list all the Matter fabrics this node belongs to                                                                                                                                                                                                                |
 | Remove Connected Matter Fabric                  | This removes a connected Matter fabric from a device. Use the 'List connected Matter fabrics' action to retrieve the fabric index number                                                                                                                                  |
+| OTA: Check for firmware updates                 | Queries the Matter server for available firmware updates for this device                                                                                                                                                                                                  |
+| OTA: Start firmware update                      | Starts the firmware update process for this device. Check the Thing status for download progress.                                                                                                                                                                         |
+| OTA: Cancel firmware update                     | Cancels the firmware update process for this device if the download is in progress. Updates will not be possible for approximately 10 minutes after cancellation.                                                                                                         |
 
 For nodes that contain a Thread Border Router Management Cluster, the following additional actions will be present
 
@@ -199,6 +202,63 @@ For nodes that contain a Thread Border Router Management Cluster, the following 
 A Thread operational data set is a hex encoded string which contains a Thread border router's configuration.
 Using the same operational data set across multiple Thread border routers allows those routers to form a single network where Thread devices can roam from router to router.
 Some Thread border routers allow a "pending" operational dataset to be configured, this allows routers to coordinate the configuration change with current Thread devices without requiring those devices to be reconfigured (live migration).
+
+## OTA (Over-The-Air) Firmware Updates
+
+Matter devices support OTA firmware updates, allowing devices to be updated with the latest firmware without requiring physical access or manufacturer-specific applications.
+openHAB uses the official Matter Distributed Compliance Ledger (DCL),  a cryptographically secure, distributed network that allows Matter device manufacturers and vendors to query and publish public firmware updates.
+This is the same method commercial Matter systems use to update their devices.
+
+### Checking for Updates
+
+openHAB will query the public DCL every 24 hours for available updates.
+To manually check if a firmware update is available for a device, use the "OTA: Check for firmware updates" action on the Node Thing.
+This will query the Matter server for available updates and update the Thing status if an update is found.
+
+If an update is available, the `otasoftwareupdaterequestor-updateavailable` channel will be set to ON, and the Thing status will display "Firmware update available".
+
+<img src="./doc/ota-update-available.png" alt="Firmware Update Available" width="600"/>
+
+### Starting an Update
+
+Once an update is available, use the "OTA: Start firmware update" action to begin the download and installation process.
+The Thing status will be updated with the current state of the update process:
+
+- **Downloading**: The firmware is being downloaded from the Matter server. The status will show the download progress as a percentage.
+- **Applying**: The firmware is being applied to the device.
+- **Delayed on apply**: The device is waiting to apply the firmware (may require user intervention).
+- **Delayed on user consent**: The device is waiting for user consent to proceed.
+
+<img src="./doc/ota-update-downloading.png" alt="Firmware Update Downloading" width="600"/>
+
+**Note:** During the update process, the device may become temporarily unavailable or unresponsive.
+Most devices will automatically reboot after the update is applied.
+
+### Canceling an Update
+
+If a firmware update is in progress and you need to cancel it, use the "OTA: Cancel firmware update" action.
+This will stop the download if it is in progress. If the update is in the applying state, then this action will not have any effect.
+
+**Important:** After canceling an update, the device will enter a cool down period of approximately 10 minutes during which updates cannot be initiated.
+
+### Update Available Channel
+
+Devices that support OTA updates will have an `otasoftwareupdaterequestor-updateavailable` channel that indicates whether a firmware update is available.
+This channel can be used in rules to automate notifications or actions when updates become available.
+
+Example rule:
+
+```javascript
+rules.when().item('Matter_Node_Ota_Update_Available').changed().toOn().then(e => {
+    console.log("Matter Node OTA Update Available!: {}", e);
+}).build("Matter Node OTA Update Available Rule");
+```
+
+### Troubleshooting
+
+- **No updates available**: Not all Matter devices support OTA updates, and updates are only available when the device manufacturer provides them to the Matter network.
+- **Update fails**: If an update fails, check the Thing status and logs for error messages. The device may need to be power cycled or reset.
+- **Update stuck**: If an update appears to be stuck, you can try canceling it and restarting the update process after the cool down period.
 
 ## Channels
 
@@ -249,6 +309,7 @@ Possible channels include:
 | nitrogendioxideconcentrationmeasurement-measuredvalue               | Number:Dimensionless     | NO2 Concentration            | Indicates the measured nitrogen dioxide concentration                                                                                                                                                                                                                | Gas              | true     | %.2f ppm    |                                                                                                                                                                      |
 | occupancysensing-occupied                                           | Switch                   | Occupancy                    | Indicates if an occupancy sensor is triggered                                                                                                                                                                                                                        | Presence         | true     |             |                                                                                                                                                                      |
 | onoffcontrol-onoff                                                  | Switch                   | Switch                       | Switches the power on and off                                                                                                                                                                                                                                        | Light            |          |             |                                                                                                                                                                      |
+| otasoftwareupdaterequestor-updateavailable                          | Switch                   | Update Available             | Indicates if there is a firmware update available for the device. Use the "Start Firmware Update" Thing action to start the update process.                                                                                                                          | Status           | true     |             |                                                                                                                                                                      |
 | ozoneconcentrationmeasurement-measuredvalue                         | Number:Dimensionless     | Ozone Concentration          | Indicates the measured ozone (O₃) concentration                                                                                                                                                                                                                      | Gas              | true     | %.2f ppm    |                                                                                                                                                                      |
 | pm1concentrationmeasurement-measuredvalue                           | Number:Dimensionless     | PM1 Concentration            | Indicates the measured PM1 particulate matter concentration                                                                                                                                                                                                          | QualityOfService | true     | %.1f µg/m³  |                                                                                                                                                                      |
 | pm10concentrationmeasurement-measuredvalue                          | Number:Dimensionless     | PM10 Concentration           | Indicates the measured PM10 particulate matter concentration                                                                                                                                                                                                         | QualityOfService | true     | %.1f µg/m³  |                                                                                                                                                                      |
@@ -309,7 +370,6 @@ Possible channels include:
 | threadnetworkdiagnostics-routingrole                                | Number                   | Routing Role                 | The Thread routing role                                                                                                                                                                                                                                              | Network          | true     | %d          | 0=Unspecified, 1=Unassigned, 2=Sleepy End Device, 3=End Device, 4=Reed, 5=Router, 6=Leader                                                                           |
 | wifinetworkdiagnostics-rssi                                         | Number:Power             | Signal                       | Wi-Fi signal strength indicator.                                                                                                                                                                                                                                     | QualityOfService | true     | %d %unit%   |                                                                                                                                                                      |
 | windowcovering-lift                                                 | Rollershutter            | Window Covering Lift         | Sets the window covering level - supporting open/close and up/down type commands                                                                                                                                                                                     | Blinds           |          | %.0f %%     |                                                                                                                                                                      |
->>>>>>> main
 
 ## Supported Matter Device Types
 
@@ -407,7 +467,7 @@ when
     Channel "matter:node:main:12345678901234567890:1#doorlock-alarm" triggered
 then
     logInfo("DoorLock", "Lock alarm triggered with code: " + receivedEvent)
-    // Alarm codes: 0=Jammed, 1=Factory Reset, 3=Radio Power Cycled, 4=Wrong Code Limit, 
+    // Alarm codes: 0=Jammed, 1=Factory Reset, 3=Radio Power Cycled, 4=Wrong Code Limit,
     //              5=Escutcheon Removed, 6=Door Forced Open, 7=Door Ajar, 8=Forced User
 end
 ```
@@ -417,13 +477,13 @@ end
 ### Thing Configuration
 
 ```java
-Thing configuration example for the Matter controller:
+// Thing configuration example for the Matter controller:
 Thing matter:controller:main [ nodeId="1" ]
 
-Thing configuration example for a Matter node:
+// Thing configuration example for a Matter node:
 Thing matter:node:main:12345678901234567890 [ nodeId="12345678901234567890"]
 
-Thing configuration example for a Matter bridge endpoint:
+// Thing configuration example for a Matter bridge endpoint:
 Thing matter:endpoint:main:12345678901234567890:2 [ endpointId=2]
 ```
 
@@ -629,7 +689,7 @@ A note on semantic tags:
 - If used, you can not mix different semantic namespaces as seen in the example above where `switches` is the base namespace being used for all tags.
 - These are provided by the Matter spec, but its up to clients (like Apple, Alexa, Google....) to interpret these tags (or not).
 - Each ecosystem will likely differ in its use of these tags.
-- They are provided here for maximum flexibility but are not guarenteed to have any affect.  
+- They are provided here for maximum flexibility but are not guarenteed to have any affect.
 
 </details>
 

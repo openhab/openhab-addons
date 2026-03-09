@@ -28,7 +28,6 @@ public class RadonConcentrationMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x042F;
     public static final String CLUSTER_NAME = "RadonConcentrationMeasurement";
     public static final String CLUSTER_PREFIX = "radonConcentrationMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_MEASURED_VALUE = "measuredValue";
     public static final String ATTRIBUTE_MIN_MEASURED_VALUE = "minMeasuredValue";
@@ -42,13 +41,12 @@ public class RadonConcentrationMeasurementCluster extends BaseCluster {
     public static final String ATTRIBUTE_MEASUREMENT_MEDIUM = "measurementMedium";
     public static final String ATTRIBUTE_LEVEL_VALUE = "levelValue";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the most recent measurement as a single-precision floating-point number. MeasuredValue’s unit is
      * represented by MeasurementUnit.
-     * A value of null indicates that the measurement is unknown or outside the valid range. MinMeasuredValue and
-     * MaxMeasuredValue define the valid range for MeasuredValue.
+     * A value of null indicates that the measurement is unknown or outside the valid range.
+     * MinMeasuredValue and MaxMeasuredValue define the valid range for MeasuredValue.
      */
     public Float measuredValue; // 0 single R V
     /**
@@ -76,8 +74,7 @@ public class RadonConcentrationMeasurementCluster extends BaseCluster {
      */
     public Float averageMeasuredValue; // 5 single R V
     /**
-     * This attribute shall represent the window of time used for determining the AverageMeasuredValue. The value is in
-     * seconds.
+     * Indicates the window of time used for determining the AverageMeasuredValue. The value is in seconds.
      */
     public Integer averageMeasuredValueWindow; // 6 elapsed-s R V
     /**
@@ -90,7 +87,7 @@ public class RadonConcentrationMeasurementCluster extends BaseCluster {
      */
     public MeasurementUnitEnum measurementUnit; // 8 MeasurementUnitEnum R V
     /**
-     * Indicates the medium in which MeasuredValue is being measured. See MeasurementMediumEnum.
+     * Indicates the medium in which MeasuredValue or LevelValue is being measured. See MeasurementMediumEnum.
      */
     public MeasurementMediumEnum measurementMedium; // 9 MeasurementMediumEnum R V
     /**
@@ -100,7 +97,7 @@ public class RadonConcentrationMeasurementCluster extends BaseCluster {
 
     // Enums
     /**
-     * Where mentioned, Billion refers to 10, Trillion refers to 1012 (short scale).
+     * Where mentioned, Billion refers to 10^9, Trillion refers to 10^12 (short scale).
      */
     public enum MeasurementUnitEnum implements MatterEnum {
         PPM(0, "Ppm"),
@@ -190,7 +187,7 @@ public class RadonConcentrationMeasurementCluster extends BaseCluster {
         public boolean numericMeasurement;
         /**
          * 
-         * Cluster supports basic level indication for substance using the ConcentrationLev el enum
+         * Cluster supports basic level indication for substance using the ConcentrationLevel enum
          */
         public boolean levelIndication;
         /**
@@ -237,7 +234,6 @@ public class RadonConcentrationMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "measuredValue : " + measuredValue + "\n";
         str += "minMeasuredValue : " + minMeasuredValue + "\n";

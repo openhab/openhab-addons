@@ -19,7 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Value;
-import org.openhab.binding.homeassistant.internal.HomeAssistantPythonBridge;
+import org.openhab.binding.homeassistant.internal.HomeAssistantBindingConstants;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.util.UIDUtils;
 
@@ -37,17 +37,15 @@ public class AbstractComponentConfiguration extends AbstractConfiguration {
     private final @Nullable List<Availability> availability;
 
     /**
-     * Parse the base properties of the configJSON into an {@link AbstractComponentConfiguration}
+     * Parse the base properties of the discoveryPayload into an {@link AbstractComponentConfiguration}
      *
-     * @param configJSON channels configuration in JSON
-     * @param gson parser
+     * @param discoveryPayload pre-parsed JSON discovery payload
      * @return configuration object
      */
-    public static <C extends AbstractComponentConfiguration> C create(HomeAssistantPythonBridge python,
-            String component, String configJSON, Class<C> clazz) {
+    public static <C extends AbstractComponentConfiguration> C create(Map<String, @Nullable Object> discoveryPayload,
+            Class<C> clazz) {
         try {
-            return clazz.getDeclaredConstructor(Map.class)
-                    .newInstance(python.processDiscoveryConfig(component, configJSON));
+            return clazz.getDeclaredConstructor(Map.class).newInstance(discoveryPayload);
         } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
             if (cause == null) {
@@ -62,9 +60,8 @@ public class AbstractComponentConfiguration extends AbstractConfiguration {
         }
     }
 
-    public static AbstractComponentConfiguration create(HomeAssistantPythonBridge python, String component,
-            String configJSON) {
-        return create(python, component, configJSON, AbstractComponentConfiguration.class);
+    public static AbstractComponentConfiguration create(Map<String, @Nullable Object> discoveryPayload) {
+        return create(discoveryPayload, AbstractComponentConfiguration.class);
     }
 
     protected AbstractComponentConfiguration(Map<String, @Nullable Object> config) {
@@ -75,7 +72,8 @@ public class AbstractComponentConfiguration extends AbstractConfiguration {
     protected AbstractComponentConfiguration(Map<String, @Nullable Object> config, String defaultName) {
         super(config);
         this.qos = getInt("qos");
-        Map<String, @Nullable Object> deviceConfig = (Map<String, @Nullable Object>) config.get("device");
+        Map<String, @Nullable Object> deviceConfig = (Map<String, @Nullable Object>) config
+                .get(HomeAssistantBindingConstants.DEVICE_COMPONENT);
         if (deviceConfig != null) {
             this.device = new Device(deviceConfig);
         } else {

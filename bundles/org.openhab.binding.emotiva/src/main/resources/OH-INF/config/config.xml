@@ -10,64 +10,55 @@
 			<label>Network Address</label>
 			<description>IP Network Address where Emotiva device can be Reached.</description>
 		</parameter>
-		<parameter name="controlPort" type="integer" required="false">
-			<context>control-port</context>
+		<parameter name="controlPort" type="integer" required="false" min="1" max="65535">
 			<label>Control Port</label>
 			<description>Network address port for control (UDP)</description>
 			<default>7002</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="notifyPort" type="integer" required="false">
-			<context>notify-port</context>
+		<parameter name="notifyPort" type="integer" required="false" min="1" max="65535">
 			<label>Notify Port</label>
 			<description>Network address port for notifications (UDP)</description>
 			<default>7003</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="infoPort" type="integer" required="false">
-			<context>info-port</context>
+		<parameter name="infoPort" type="integer" required="false" min="1" max="65535">
 			<label>Info Port</label>
 			<description>Network address port for info (UDP)</description>
 			<default>7004</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="menuNotifyPort" type="integer" required="false">
-			<context>setup-port</context>
+		<parameter name="menuNotifyPort" type="integer" required="false" min="1" max="65535">
 			<label>Menu Notify Port</label>
 			<description>Network address port for menu notify port (UDP)</description>
 			<default>7005</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="setupPortTCP" type="integer" required="false">
-			<context>setup-port</context>
+		<parameter name="setupPortTCP" type="integer" required="false" min="1" max="65535">
 			<label>Setup Port</label>
 			<description>Network address port for setup port (TCP)</description>
 			<default>7100</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="activateFrontBar" type="boolean" required="false">
-			<context>feature</context>
 			<label>Enable Front Bar Channels</label>
 			<description>Subscribe to notification related to front bar</description>
 			<default>false</default>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="activateOSDMenu" type="boolean" required="false">
-			<context>feature</context>
 			<label>Enable Menu Channels</label>
 			<description>Subscribe to notification related to OSD menu</description>
 			<default>false</default>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="activateZone2" type="boolean" required="false">
-			<context>feature</context>
 			<label>Enable Zone 2 Channels</label>
 			<description>Subscribe to notification related to zone 2</description>
 			<default>false</default>
 			<advanced>false</advanced>
 		</parameter>
 		<parameter name="protocolVersion" type="text" required="false">
-			<context>protocol-revision</context>
 			<label>Protocol Version</label>
 			<description>Protocol version, only change if you know what your doing</description>
 			<advanced>true</advanced>

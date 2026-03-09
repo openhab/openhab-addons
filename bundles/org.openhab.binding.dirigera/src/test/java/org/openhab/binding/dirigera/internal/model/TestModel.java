@@ -13,22 +13,28 @@
 package org.openhab.binding.dirigera.internal.model;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.FileReader;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.handler.DirigeraHandler;
+import org.openhab.binding.dirigera.internal.handler.DirigeraHandlerManipulator;
 import org.openhab.binding.dirigera.internal.handler.sensor.WaterSensorHandler;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -147,30 +153,42 @@ class TestModel {
 
     @Test
     void testDiscoveryAfterHandlerRemoval() {
+        DirigeraHandler.detectionTimeSeonds = 0;
         Bridge hubBridge = DirigeraBridgeProvider.prepareSimuBridge("src/test/resources/home/home-one-device.json",
                 true, List.of());
         Gateway gateway = (Gateway) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
+        discovery.waitForDetection(1);
         assertEquals(1, discovery.discoveries.size(), "Initial discoveries");
 
+        String deviceId = "9af826ad-a8ad-40bf-8aed-125300bccd20_1";
         ThingHandler factoryHandler = DirigeraBridgeProvider.createHandler(THING_TYPE_WATER_SENSOR, hubBridge,
-                "9af826ad-a8ad-40bf-8aed-125300bccd20_1");
+                deviceId);
         assertTrue(factoryHandler instanceof WaterSensorHandler);
         WaterSensorHandler handler = (WaterSensorHandler) factoryHandler;
         ThingHandlerCallback proxyCallback = handler.getCallback();
         assertNotNull(proxyCallback);
         assertTrue(proxyCallback instanceof CallbackMock);
         CallbackMock callback = (CallbackMock) proxyCallback;
-        callback.waitForOnline();
 
-        DirigeraHandler.detectionTimeSeonds = 0;
-        discovery.discoveries.clear();
-        assertEquals(0, discovery.discoveries.size(), "Cleanup after handler creation");
+        // wait until device is registered
+        Instant start = Instant.now();
+        Instant check = Instant.now();
+        while (!gateway.isKnownDevice(deviceId) && Duration.between(start, check).getSeconds() < 10) {
+            try {
+                Thread.sleep(100);
+                check = Instant.now();
+            } catch (InterruptedException e) {
+                fail(e.getMessage());
+            }
+        }
+
         handler.dispose();
         handler.handleRemoval();
-        discovery.waitForDetection();
+        callback.waitForStatus(ThingStatus.REMOVED);
+        discovery.waitForDetection(1);
         assertEquals(1, discovery.discoveries.size(), "After removal new discovery result shall be present ");
     }
 
@@ -192,7 +210,7 @@ class TestModel {
     void testDeviceAdded() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/device-added/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -201,7 +219,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/device-added/device-added.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/device-added/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/device-added/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message
@@ -216,7 +236,7 @@ class TestModel {
     void testDeviceRemoved() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/device-removed/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -225,7 +245,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/device-removed/device-removed.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/device-removed/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/device-removed/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message
@@ -241,7 +263,7 @@ class TestModel {
     void testSceneCreated() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/scene-created/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -250,7 +272,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/scene-created/scene-created.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/scene-created/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/scene-created/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message
@@ -265,7 +289,7 @@ class TestModel {
     void testSceneDeleted() {
         Bridge hubBridge = DirigeraBridgeProvider
                 .prepareSimuBridge("src/test/resources/websocket/scene-deleted/home-before.json", true, List.of());
-        Gateway gateway = (Gateway) hubBridge.getHandler();
+        DirigeraHandlerManipulator gateway = (DirigeraHandlerManipulator) hubBridge.getHandler();
         assertNotNull(gateway);
 
         DicoveryServiceMock discovery = (DicoveryServiceMock) gateway.discovery();
@@ -274,7 +298,9 @@ class TestModel {
         // Prepare update message
         String update = FileReader.readFileInString("src/test/resources/websocket/scene-deleted/scene-deleted.json");
         // prepare mock
-        DirigeraAPISimu.fileName = "src/test/resources/websocket/scene-deleted/home-after.json";
+        DirigeraAPISimu apiSimu = new DirigeraAPISimu(mock(HttpClient.class), gateway,
+                "src/test/resources/websocket/scene-deleted/home-after.json");
+        gateway.setAPIHandler(apiSimu);
         try {
             gateway.websocketUpdate(update);
             // give the gateway some time to handle the message

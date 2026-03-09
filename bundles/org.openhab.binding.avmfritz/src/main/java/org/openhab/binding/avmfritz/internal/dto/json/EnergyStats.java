@@ -19,6 +19,10 @@ import com.google.gson.annotations.SerializedName;
  * @author Christoph Weitkamp - Initial contribution
  */
 public class EnergyStats {
+
+    public static final int INVALID_VALUE = -9999;
+
+    public static final double AMPERAGE_FACTOR = 0.01;
     public static final double VOLTAGE_FACTOR = 0.01;
     public static final double POWER_FACTOR = 0.01;
     public static final double ENERGY_FACTOR = 0.001;
@@ -55,12 +59,21 @@ public class EnergyStats {
     public boolean requestResult;
 
     /**
+     * Gets the scaled amperage value.
+     *
+     * @return the scaled amperage value
+     */
+    public double getScaledAmperage() {
+        return mMValueAmp == INVALID_VALUE ? 0.0 : mMValueAmp * AMPERAGE_FACTOR;
+    }
+
+    /**
      * Gets the scaled voltage value.
      *
      * @return the scaled voltage value
      */
     public double getScaledVoltage() {
-        return mMValueVolt * VOLTAGE_FACTOR;
+        return mMValueVolt == INVALID_VALUE ? 0.0 : mMValueVolt * VOLTAGE_FACTOR;
     }
 
     /**
@@ -69,7 +82,7 @@ public class EnergyStats {
      * @return the scaled power value
      */
     public double getScaledPower() {
-        return mMValuePower * POWER_FACTOR;
+        return mMValuePower == INVALID_VALUE ? 0.0 : mMValuePower * POWER_FACTOR;
     }
 
     /**

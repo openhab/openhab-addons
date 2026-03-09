@@ -51,6 +51,7 @@ class TestWrongHandler {
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
+        callback.waitForStatus(ThingStatus.OFFLINE);
         ThingStatusInfo status = callback.getStatus();
         assertEquals(ThingStatus.OFFLINE, status.getStatus(), "OFFLINE");
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, status.getStatusDetail(), "Config Error");
@@ -78,6 +79,7 @@ class TestWrongHandler {
         handler.handleConfigurationUpdate(config);
 
         handler.initialize();
+        callback.waitForStatus(ThingStatus.OFFLINE);
         ThingStatusInfo status = callback.getStatus();
         assertEquals(ThingStatus.OFFLINE, status.getStatus(), "OFFLINE");
         assertEquals(ThingStatusDetail.GONE, status.getStatusDetail(), "Device disappeared");

@@ -49,22 +49,76 @@ import org.openhab.core.types.TimeSeries;
  */
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
+    private final int STATUS_DURATION_TIMEOUT_SEC = 10;
+    private ThingStatusInfo statusInfo = ThingStatusInfoBuilder.create(ThingStatus.UNINITIALIZED).build();
     private @Nullable Bridge bridge;
-    private ThingStatusInfo status = ThingStatusInfoBuilder.create(ThingStatus.OFFLINE).build();
     public Map<String, State> stateMap = new HashMap<>();
     public Map<String, String> triggerMap = new HashMap<>();
+
+    @Override
+    public void statusUpdated(Thing thing, ThingStatusInfo thingStatusInfo) {
+        synchronized (this) {
+            thing.setStatusInfo(thingStatusInfo);
+            statusInfo = thingStatusInfo;
+            this.notifyAll();
+        }
+    }
+
+    public void waitForStatus(ThingStatus expectedStatus) {
+        synchronized (this) {
+            Instant start = Instant.now();
+            Instant check = Instant.now();
+            while (!expectedStatus.equals(statusInfo.getStatus())
+                    && Duration.between(start, check).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
+                try {
+                    this.wait(100);
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                }
+                check = Instant.now();
+            }
+        }
+        // if method is exited without reaching ONLINE e.g. through timeout fail
+        if (!expectedStatus.equals(statusInfo.getStatus())) {
+            fail("Wait for status " + expectedStatus + " reached just " + statusInfo);
+        }
+    }
+
+    public void waitForOnline() {
+        waitForStatus(ThingStatus.ONLINE);
+    }
+
+    public ThingStatusInfo getStatus() {
+        return statusInfo;
+    }
 
     public void clear() {
         stateMap.clear();
     }
 
     public @Nullable State getState(String channel) {
+        synchronized (stateMap) {
+            Instant start = Instant.now();
+            Instant check = Instant.now();
+            while (stateMap.get(channel) == null
+                    && Duration.between(start, check).getSeconds() < STATUS_DURATION_TIMEOUT_SEC) {
+                try {
+                    stateMap.wait(100);
+                } catch (InterruptedException e) {
+                    fail("Interruppted waiting for ONLINE");
+                }
+                check = Instant.now();
+            }
+        }
         return stateMap.get(channel);
     }
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
-        stateMap.put(channelUID.getAsString(), state);
+        synchronized (stateMap) {
+            stateMap.put(channelUID.getAsString(), state);
+            stateMap.notifyAll();
+        }
     }
 
     @Override
@@ -73,37 +127,6 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
-    }
-
-    @Override
-    public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        synchronized (this) {
-            status = thingStatus;
-            this.notifyAll();
-        }
-    }
-
-    public ThingStatusInfo getStatus() {
-        return status;
-    }
-
-    public void waitForOnline() {
-        synchronized (this) {
-            Instant start = Instant.now();
-            Instant check = Instant.now();
-            while (!ThingStatus.ONLINE.equals(status.getStatus()) && Duration.between(start, check).getSeconds() < 10) {
-                try {
-                    this.wait(1000);
-                } catch (InterruptedException e) {
-                    fail("Interruppted waiting for ONLINE");
-                }
-                check = Instant.now();
-            }
-        }
-        // if method is exited without reaching ONLINE e.g. through timeout fail
-        if (!ThingStatus.ONLINE.equals(status.getStatus())) {
-            fail("waitForOnline just reached status " + status);
-        }
     }
 
     @Override

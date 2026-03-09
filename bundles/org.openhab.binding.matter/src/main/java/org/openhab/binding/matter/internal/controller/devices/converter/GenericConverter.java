@@ -34,6 +34,8 @@ import org.openhab.core.types.StateDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * A generic abstract converter for translating Matter clusters to openHAB channels.
  *
@@ -44,6 +46,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class GenericConverter<T extends BaseCluster> implements AttributeListener, EventTriggeredListener {
+    protected static final Gson GSON = new Gson();
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     // This cluster is used for initializing the converter, but is not kept updated as values change over time.
@@ -110,6 +113,10 @@ public abstract class GenericConverter<T extends BaseCluster> implements Attribu
     public final void updateState(String channelId, State state) {
         handler.updateState(endpointNumber, channelId, state);
         stateCache.put(channelId, state);
+    }
+
+    public final boolean isChannelLinked(String channelId) {
+        return handler.isLinked(endpointNumber, channelId);
     }
 
     public final void triggerChannel(String channelId, String event) {

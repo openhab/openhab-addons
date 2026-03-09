@@ -32,7 +32,6 @@ public class ThermostatCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0201;
     public static final String CLUSTER_NAME = "Thermostat";
     public static final String CLUSTER_PREFIX = "thermostat";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_LOCAL_TEMPERATURE = "localTemperature";
     public static final String ATTRIBUTE_OUTDOOR_TEMPERATURE = "outdoorTemperature";
@@ -94,14 +93,13 @@ public class ThermostatCluster extends BaseCluster {
     public static final String ATTRIBUTE_SCHEDULES = "schedules";
     public static final String ATTRIBUTE_SETPOINT_HOLD_EXPIRY_TIMESTAMP = "setpointHoldExpiryTimestamp";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the current Calculated Local Temperature, when available.
-     * • If the LTNE feature is not supported:
-     * ◦ If the LocalTemperatureCalibration is invalid or currently unavailable, the attribute shall report null.
-     * ◦ If the LocalTemperatureCalibration is valid, the attribute shall report that value.
-     * • Otherwise, if the LTNE feature is supported, there is no feedback externally available for the
+     * - If the LTNE feature is not supported:
+     * - If the LocalTemperatureCalibration is invalid or currently unavailable, the attribute shall report null.
+     * - If the LocalTemperatureCalibration is valid, the attribute shall report that value.
+     * - Otherwise, if the LTNE feature is supported, there is no feedback externally available for the
      * LocalTemperatureCalibration. In that case, the LocalTemperature attribute shall always report null.
      */
     public Integer localTemperature; // 0 temperature R V
@@ -116,7 +114,7 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * Indicates the absolute minimum level that the heating setpoint may be set to. This is a limitation imposed by the
      * manufacturer.
-     * ### Refer to Setpoint Limits for constraints
+     * Refer to Setpoint Limits for constraints
      */
     public Integer absMinHeatSetpointLimit; // 3 temperature R V
     public Integer absMaxHeatSetpointLimit; // 4 temperature R V
@@ -124,7 +122,7 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * Indicates the absolute maximum level that the cooling setpoint may be set to. This is a limitation imposed by the
      * manufacturer.
-     * ### Refer to Setpoint Limits for constraints
+     * Refer to Setpoint Limits for constraints
      */
     public Integer absMaxCoolSetpointLimit; // 6 temperature R V
     /**
@@ -154,7 +152,8 @@ public class ThermostatCluster extends BaseCluster {
      */
     public Integer localTemperatureCalibration; // 16 SignedTemperature RW VM
     /**
-     * Indicates the cooling mode setpoint when the room is occupied. Refer to Setpoint Limits for constraints.
+     * Indicates the cooling mode setpoint when the room is occupied.
+     * Refer to Setpoint Limits for constraints.
      * If an attempt is made to set this attribute to a value greater than MaxCoolSetpointLimit or less than
      * MinCoolSetpointLimit, a response with the status code CONSTRAINT_ERROR shall be returned.
      * If this attribute is set to a value that is less than (OccupiedHeatingSetpoint + MinSetpointDeadBand), the value
@@ -166,7 +165,8 @@ public class ThermostatCluster extends BaseCluster {
      */
     public Integer occupiedCoolingSetpoint; // 17 temperature RW VO
     /**
-     * Indicates the heating mode setpoint when the room is occupied. Refer to Setpoint Limits for constraints.
+     * Indicates the heating mode setpoint when the room is occupied.
+     * Refer to Setpoint Limits for constraints.
      * If an attempt is made to set this attribute to a value greater than MaxHeatSetpointLimit or less than
      * MinHeatSetpointLimit, a response with the status code CONSTRAINT_ERROR shall be returned.
      * If this attribute is set to a value that is greater than (OccupiedCoolingSetpoint - MinSetpointDeadBand), the
@@ -178,7 +178,8 @@ public class ThermostatCluster extends BaseCluster {
      */
     public Integer occupiedHeatingSetpoint; // 18 temperature RW VO
     /**
-     * Indicates the cooling mode setpoint when the room is unoccupied. Refer to Setpoint Limits for constraints.
+     * Indicates the cooling mode setpoint when the room is unoccupied.
+     * Refer to Setpoint Limits for constraints.
      * If an attempt is made to set this attribute to a value greater than MaxCoolSetpointLimit or less than
      * MinCoolSetpointLimit, a response with the status code CONSTRAINT_ERROR shall be returned.
      * If this attribute is set to a value that is less than (UnoccupiedHeatingSetpoint + MinSetpointDeadBand), the
@@ -189,7 +190,8 @@ public class ThermostatCluster extends BaseCluster {
      */
     public Integer unoccupiedCoolingSetpoint; // 19 temperature RW VO
     /**
-     * Indicates the heating mode setpoint when the room is unoccupied. Refer to Setpoint Limits for constraints.
+     * Indicates the heating mode setpoint when the room is unoccupied.
+     * Refer to Setpoint Limits for constraints.
      * If an attempt is made to set this attribute to a value greater than MaxHeatSetpointLimit or less than
      * MinHeatSetpointLimit, a response with the status code CONSTRAINT_ERROR shall be returned.
      * If this attribute is set to a value that is greater than (UnoccupiedCoolingSetpoint - MinSetpointDeadBand), the
@@ -245,8 +247,9 @@ public class ThermostatCluster extends BaseCluster {
      * &gt; [!NOTE]
      * &gt; Prior to revision 8 of this cluster specification the value of this attribute was constrained to a range of
      * 0°C to 2.5°C.
-     * For backwards compatibility, this attribute is optionally writeable. However any writes to this attribute shall
-     * be silently ignored.
+     * &gt; [!NOTE]
+     * &gt; For backwards compatibility, this attribute is optionally writeable. However any writes to this attribute
+     * shall be silently ignored.
      */
     public Integer minSetpointDeadBand; // 25 SignedTemperature R[W] VM
     /**
@@ -332,8 +335,8 @@ public class ThermostatCluster extends BaseCluster {
      */
     public ProgrammingOperationModeBitmap thermostatProgrammingOperationMode; // 37 ProgrammingOperationModeBitmap RW VM
     /**
-     * Indicates the current relay state of the heat, cool, and fan relays. Unimplemented outputs shall be treated as if
-     * they were Off.
+     * Indicates the current relay state of the heat, cool, and fan relays.
+     * Unimplemented outputs shall be treated as if they were Off.
      */
     public RelayStateBitmap thermostatRunningState; // 41 RelayStateBitmap R V
     /**
@@ -360,8 +363,7 @@ public class ThermostatCluster extends BaseCluster {
      * Indicates the amount that the Thermostat server will allow the Calculated Local Temperature to float above the
      * OccupiedCoolingSetpoint (i.e., OccupiedCoolingSetpoint + OccupiedSetback) or below the OccupiedHeatingSetpoint
      * setpoint (i.e., OccupiedHeatingSetpoint – OccupiedSetback) before initiating a state change to bring the
-     * temperature back to the user’s
-     * desired setpoint. This attribute is sometimes also referred to as the “span.”
+     * temperature back to the user’s desired setpoint. This attribute is sometimes also referred to as the “span.”
      * The purpose of this attribute is to allow remote configuration of the span between the desired setpoint and the
      * measured temperature to help prevent over-cycling and reduce energy bills, though this may result in lower
      * comfort on the part of some users.
@@ -424,9 +426,9 @@ public class ThermostatCluster extends BaseCluster {
      * SystemMode attribute is in a heating-related mode, then the Thermostat server shall immediately switch to the
      * SystemMode attribute value that provides the highest stage of heating (e.g., emergency heat) and continue
      * operating in that running state until the OccupiedHeatingSetpoint value is reached. For example:
-     * • Calculated Local Temperature &#x3D; 10.0°C
-     * • OccupiedHeatingSetpoint &#x3D; 16.0°C
-     * • EmergencyHeatDelta &#x3D; 2.0°C
+     * - Calculated Local Temperature &#x3D; 10.0°C
+     * - OccupiedHeatingSetpoint &#x3D; 16.0°C
+     * - EmergencyHeatDelta &#x3D; 2.0°C
      * ⇒ OccupiedHeatingSetpoint - Calculated Local Temperature ≥? EmergencyHeatDelta
      * ⇒ 16°C - 10°C ≥? 2°C
      * ⇒ TRUE &gt;&gt;&gt; Thermostat server changes its SystemMode to operate in 2nd stage or emergency heat mode
@@ -502,7 +504,8 @@ public class ThermostatCluster extends BaseCluster {
      */
     public OctetString activeScheduleHandle; // 79 octstr R V
     /**
-     * This attribute shall contain the current list of configured presets. On receipt of a write request:
+     * This attribute shall contain the current list of configured presets.
+     * On receipt of a write request:
      * 1. If the PresetHandle field is null, the PresetStruct shall be treated as an added preset, and the device shall
      * create a new unique value for the PresetHandle field.
      * a. If the BuiltIn field is true, a response with the status code CONSTRAINT_ERROR shall be returned.
@@ -548,7 +551,8 @@ public class ThermostatCluster extends BaseCluster {
      */
     public List<PresetStruct> presets; // 80 list RW VM
     /**
-     * This attribute shall contain a list of ScheduleStructs. On receipt of a write request:
+     * This attribute shall contain a list of ScheduleStructs.
+     * On receipt of a write request:
      * 1. For all schedules in the write request:
      * a. If the ScheduleHandle field is null, the ScheduleStruct shall be treated as an added schedule, and the device
      * shall create a new unique value for the ScheduleHandle field.
@@ -621,9 +625,10 @@ public class ThermostatCluster extends BaseCluster {
     /**
      * If there is a known time when the TemperatureSetpointHold shall be cleared, this attribute shall contain the
      * timestamp in UTC indicating when that will happen. If there is no such known time, this attribute shall be null.
-     * If the TemperatureSetpointHold is set to SetpointHoldOff or the TemperatureSetpointHoldDuration is set to null,
-     * this attribute shall be set to null indicating there is no hold on the Thermostat either with or without a
-     * duration.
+     * If the TemperatureSetpointHold is set to SetpointHoldOn and the TemperatureSetpointHoldDuration is set to null,
+     * this attribute shall be set to null indicating there is a hold on the Thermostat without a duration.
+     * If the TemperatureSetpointHold is set to SetpointHoldOff, this attribute shall be set to null indicating there is
+     * no hold on the Thermostat.
      */
     public Integer setpointHoldExpiryTimestamp; // 82 epoch-s R V
 
@@ -800,24 +805,24 @@ public class ThermostatCluster extends BaseCluster {
      * If the setpoint was derived from a preset, then the ActivePresetHandle shall be set to the PresetHandle of that
      * preset.
      * If a CoolingSetpoint was used to determine the cooling setpoint:
-     * • If the server supports the OCC feature, and the Occupied bit is not set on the Occupancy attribute, then the
+     * - If the server supports the OCC feature, and the Occupied bit is not set on the Occupancy attribute, then the
      * UnoccupiedCoolingSetpoint attribute shall be set to the CoolingSetpoint
-     * • Otherwise, the OccupiedCoolingSetpoint attribute shall be set to the CoolingSetpoint If a HeatingSetpoint was
-     * used to determine the heating setpoint:
-     * • If the server supports the OCC feature, and the Occupied bit is not set on the Occupancy attribute, then the
+     * - Otherwise, the OccupiedCoolingSetpoint attribute shall be set to the CoolingSetpoint
+     * If a HeatingSetpoint was used to determine the heating setpoint:
+     * - If the server supports the OCC feature, and the Occupied bit is not set on the Occupancy attribute, then the
      * UnoccupiedHeatingSetpoint attribute shall be set to the HeatingSetpoint
-     * • Otherwise, the OccupiedHeatingSetpoint attribute shall be set to the HeatingSetpoint The
-     * ScheduleTransitionStruct shall be invalid if all the following are true:
-     * • The HeatingSetpoint field is not provided
-     * • The PresetHandle field is not provided
-     * • The PresetHandle field on the encompassing ScheduleStruct is not provided
-     * • The SystemMode field is provided and has the value Heat or Auto, or the SystemMode field on the parent
+     * - Otherwise, the OccupiedHeatingSetpoint attribute shall be set to the HeatingSetpoint
+     * The ScheduleTransitionStruct shall be invalid if all the following are true:
+     * - The HeatingSetpoint field is not provided
+     * - The PresetHandle field is not provided
+     * - The PresetHandle field on the encompassing ScheduleStruct is not provided
+     * - The SystemMode field is provided and has the value Heat or Auto, or the SystemMode field on the parent
      * ScheduleStruct has the value Heat or Auto
      * The ScheduleTransitionStruct shall be invalid if all the following are true:
-     * • The CoolingSetpoint field is not provided
-     * • The PresetHandle field is not provided
-     * • The PresetHandle field on the encompassing ScheduleStruct is not provided
-     * • The SystemMode field is provided and has the value Cool or Auto, or the SystemMode field on the parent
+     * - The CoolingSetpoint field is not provided
+     * - The PresetHandle field is not provided
+     * - The PresetHandle field on the encompassing ScheduleStruct is not provided
+     * - The SystemMode field is provided and has the value Cool or Auto, or the SystemMode field on the parent
      * ScheduleStruct has the value Cool or Auto
      */
     public static class ScheduleTransitionStruct {
@@ -1040,10 +1045,10 @@ public class ThermostatCluster extends BaseCluster {
 
     /**
      * &gt; [!NOTE]
-     * &gt; CoolingAndHeating
-     * A thermostat indicating it supports CoolingAndHeating (or CoolingAndHeatingWithReheat) SHOULD be able to request
-     * heating or cooling on demand and will usually support the Auto SystemMode.
-     * Systems which support cooling or heating, requiring external intervention to change modes or where the whole
+     * &gt; A thermostat indicating it supports CoolingAndHeating (or CoolingAndHeatingWithReheat) SHOULD be able to
+     * request heating or cooling on demand and will usually support the Auto SystemMode.
+     * &gt; [!NOTE]
+     * &gt; Systems which support cooling or heating, requiring external intervention to change modes or where the whole
      * building must be in the same mode, SHOULD report CoolingOnly or HeatingOnly based on the current capability.
      */
     public enum ControlSequenceOfOperationEnum implements MatterEnum {
@@ -1153,9 +1158,6 @@ public class ThermostatCluster extends BaseCluster {
         }
     }
 
-    /**
-     * Table 9. Interpretation of Heat, Cool and Auto SystemModeEnum Values
-     */
     public enum SystemModeEnum implements MatterEnum {
         OFF(0, "Off"),
         AUTO(1, "Auto"),
@@ -1251,49 +1253,37 @@ public class ThermostatCluster extends BaseCluster {
         }
     }
 
-    public static class AlarmCodeBitmap {
-        public boolean initialization;
-        public boolean hardware;
-        public boolean selfCalibration;
-
-        public AlarmCodeBitmap(boolean initialization, boolean hardware, boolean selfCalibration) {
-            this.initialization = initialization;
-            this.hardware = hardware;
-            this.selfCalibration = selfCalibration;
-        }
-    }
-
     public static class HVACSystemTypeBitmap {
         /**
          * Stage of cooling the HVAC system is using.
          * These bits shall indicate what stage of cooling the HVAC system is using.
-         * • 00 &#x3D; Cool Stage 1
-         * • 01 &#x3D; Cool Stage 2
-         * • 10 &#x3D; Cool Stage 3
-         * • 11 &#x3D; Reserved
+         * - 00 &#x3D; Cool Stage 1
+         * - 01 &#x3D; Cool Stage 2
+         * - 10 &#x3D; Cool Stage 3
+         * - 11 &#x3D; Reserved
          */
         public short coolingStage;
         /**
          * Stage of heating the HVAC system is using.
          * These bits shall indicate what stage of heating the HVAC system is using.
-         * • 00 &#x3D; Heat Stage 1
-         * • 01 &#x3D; Heat Stage 2
-         * • 10 &#x3D; Heat Stage 3
-         * • 11 &#x3D; Reserved
+         * - 00 &#x3D; Heat Stage 1
+         * - 01 &#x3D; Heat Stage 2
+         * - 10 &#x3D; Heat Stage 3
+         * - 11 &#x3D; Reserved
          */
         public short heatingStage;
         /**
          * Is the heating type Heat Pump.
          * This bit shall indicate whether the HVAC system is conventional or a heat pump.
-         * • 0 &#x3D; Conventional
-         * • 1 &#x3D; Heat Pump
+         * - 0 &#x3D; Conventional
+         * - 1 &#x3D; Heat Pump
          */
         public boolean heatingIsHeatPump;
         /**
          * Does the HVAC system use fuel.
          * This bit shall indicate whether the HVAC system uses fuel.
-         * • 0 &#x3D; Does not use fuel
-         * • 1 &#x3D; Uses fuel
+         * - 0 &#x3D; Does not use fuel
+         * - 1 &#x3D; Uses fuel
          */
         public boolean heatingUsesFuel;
 
@@ -1364,10 +1354,6 @@ public class ThermostatCluster extends BaseCluster {
 
     public static class RemoteSensingBitmap {
         public boolean localTemperature;
-        /**
-         * OutdoorTemperature is derived from a remote node
-         * This bit shall be supported if the OutdoorTemperature attribute is supported.
-         */
         public boolean outdoorTemperature;
         public boolean occupancy;
 
@@ -1488,7 +1474,8 @@ public class ThermostatCluster extends BaseCluster {
         public boolean localTemperatureNotExposed;
         /**
          * 
-         * Supports enhanced schedules
+         * This feature indicates that the thermostat is capable of schedules. If this feature is supported, the
+         * thermostat shall support a mechanism to do time synchronization.
          */
         public boolean matterScheduleConfiguration;
         /**
@@ -1597,10 +1584,23 @@ public class ThermostatCluster extends BaseCluster {
         return new ClusterCommand("setActivePresetRequest", map);
     }
 
+    public static ClusterCommand atomicRequest(Integer requestType, List<Integer> attributeRequests, Integer timeout) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        if (requestType != null) {
+            map.put("requestType", requestType);
+        }
+        if (attributeRequests != null) {
+            map.put("attributeRequests", attributeRequests);
+        }
+        if (timeout != null) {
+            map.put("timeout", timeout);
+        }
+        return new ClusterCommand("atomicRequest", map);
+    }
+
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "localTemperature : " + localTemperature + "\n";
         str += "outdoorTemperature : " + outdoorTemperature + "\n";

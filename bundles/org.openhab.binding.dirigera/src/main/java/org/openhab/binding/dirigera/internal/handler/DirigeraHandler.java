@@ -14,7 +14,6 @@ package org.openhab.binding.dirigera.internal.handler;
 
 import static org.openhab.binding.dirigera.internal.Constants.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -94,7 +93,6 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
     // Can be overwritten by Unit test for mocking API
     protected Map<String, State> channelStateMap = new HashMap<>();
-    protected Class<?> apiProvider = DirigeraAPIImpl.class;
 
     private final Map<String, BaseHandler> deviceTree = new HashMap<>();
     private final DirigeraDiscoveryService discoveryService;
@@ -146,6 +144,8 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             locationOptions.add(new CommandOption(location.toFullString(), "Home location"));
         }
         commandProvider.setCommandOptions(new ChannelUID(thing.getUID(), CHANNEL_LOCATION), locationOptions);
+
+        api = Optional.of(new DirigeraAPIImpl(httpClient, this));
     }
 
     @Override
@@ -249,25 +249,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
 
         // Step 2 - if token is fine start initializing, else set status pairing retry
         if (!token.isBlank()) {
-            // now create api and model
-            try {
-                DirigeraAPI apiProviderInstance = (DirigeraAPI) apiProvider
-                        .getConstructor(HttpClient.class, Gateway.class).newInstance(httpClient, this);
-                if (apiProviderInstance != null) {
-                    api = Optional.of(apiProviderInstance);
-                } else {
-                    throw (new InstantiationException(apiProvider.descriptorString()));
-                }
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                // this will not happen - DirirgeraAPIIMpl tested with mocks in unit tests
-                logger.error("Error {}", apiProvider.descriptorString());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                        "@text/dirigera.gateway.status.api-error" + " [\"" + apiProvider.descriptorString() + "\"]");
-                return;
-            }
-            Model houseModel = new DirigeraModel(this);
-            model = Optional.of(houseModel);
+            model = Optional.of(new DirigeraModel(this));
             modelUpdate(); // initialize model
             websocket.initialize();
             // checks API access and starts websocket
@@ -282,6 +264,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NOT_YET_READY,
                     "@text/dirigera.gateway.status.pairing-retry");
         }
+    }
+
+    void setAPIHandler(DirigeraAPI api) {
+        this.api = Optional.of(api);
     }
 
     @Override

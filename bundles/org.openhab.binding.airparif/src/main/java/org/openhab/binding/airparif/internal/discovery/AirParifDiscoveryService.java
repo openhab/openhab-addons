@@ -27,6 +27,7 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
@@ -44,25 +45,22 @@ public class AirParifDiscoveryService extends AbstractThingHandlerDiscoveryServi
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(AirParifDiscoveryService.class);
-    private final DepartmentDbService dbService = new DepartmentDbService();
+    private final LocationProvider locationProvider;
+    private final DepartmentDbService dbService;
 
-    private @NonNullByDefault({}) LocationProvider locationProvider;
-
-    public AirParifDiscoveryService() {
+    @Activate
+    public AirParifDiscoveryService(@Reference LocationProvider locationProvider,
+            @Reference DepartmentDbService dbService) {
         super(AirParifBridgeHandler.class, Set.of(LOCATION_THING_TYPE), DISCOVER_TIMEOUT_SECONDS);
-    }
-
-    @Reference(unbind = "-")
-    public void setLocationProvider(LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
+        this.dbService = dbService;
     }
 
     @Override
     public void startScan() {
         logger.debug("Starting AirParif discovery scan");
 
-        LocationProvider localLocation = locationProvider;
-        PointType location = localLocation != null ? localLocation.getLocation() : null;
+        PointType location = locationProvider.getLocation();
         if (location == null) {
             logger.warn("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
             return;

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -107,7 +107,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
      */
     private int eventIndex = 0;
 
-    private @Nullable ExecutorService videoExecutorService;
+    private @Nullable ScheduledExecutorService videoExecutorService;
 
     /*
      * The number of video files to keep when auto-downloading
@@ -444,7 +444,7 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     updateState(CHANNEL_EVENT_DOORBOT_ID, new StringType(lastEvents.getFirst().doorbot.id));
                     updateState(CHANNEL_EVENT_DOORBOT_DESCRIPTION,
                             new StringType(lastEvents.getFirst().doorbot.description));
-                    ExecutorService service = videoExecutorService;
+                    ScheduledExecutorService service = videoExecutorService;
                     if (service != null) {
                         service.submit(() -> getVideo(lastEvents.getFirst()));
                     }
@@ -545,11 +545,6 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
 
         stopSessionRefresh();
         stopAutomaticRefresh();
-        ExecutorService service = this.videoExecutorService;
-        if (!service.isShutdown()) {
-            service.shutdownNow();
-        }
-        this.videoExecutorService = null;
         super.dispose();
     }
 
@@ -584,6 +579,17 @@ public class AccountHandler extends BaseBridgeHandler implements RingAccount {
                     "@text/offline.comm-error.auth-exception");
         }
         return new byte[0];
+    }
+
+    @Override
+    public void sendCommand(String url) {
+        try {
+            logger.debug("sending url {} to Ring API", url);
+            restClient.sendCommand(url, tokens);
+        } catch (AuthenticationException ae) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error.invalid-response");
+        }
     }
 
     @Override

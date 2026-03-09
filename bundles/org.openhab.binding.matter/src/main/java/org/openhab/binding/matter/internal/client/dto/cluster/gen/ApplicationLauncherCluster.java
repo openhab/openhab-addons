@@ -32,16 +32,15 @@ public class ApplicationLauncherCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x050C;
     public static final String CLUSTER_NAME = "ApplicationLauncher";
     public static final String CLUSTER_PREFIX = "applicationLauncher";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CATALOG_LIST = "catalogList";
     public static final String ATTRIBUTE_CURRENT_APP = "currentApp";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute shall specify the list of supported application catalogs, where each entry in the list is the
-     * CSA-issued vendor ID for the catalog. The DIAL registry (see [DIAL Registry]) shall use value 0x0000.
+     * Connectivity Standards Alliance-issued vendor ID for the catalog. The DIAL registry (see [DIAL Registry]) shall
+     * use value 0x0000.
      * It is expected that Content App Platform providers will have their own catalog vendor ID (set to their own Vendor
      * ID) and will assign an ApplicationID to each Content App.
      */
@@ -59,7 +58,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
      */
     public static class ApplicationStruct {
         /**
-         * This field shall indicate the CSA-issued vendor ID for the catalog. The DIAL registry shall use value 0x0000.
+         * This field shall indicate the Connectivity Standards Alliance-issued vendor ID for the catalog. The DIAL
+         * registry shall use value 0x0000.
          * Content App Platform providers will have their own catalog vendor ID (set to their own Vendor ID) and will
          * assign an ApplicationID to each Content App.
          */
@@ -144,8 +144,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
     /**
      * Upon receipt of this command, the server shall launch the application with optional data. The application shall
      * be either
-     * • the specified application, if the Application Platform feature is supported;
-     * • otherwise the application corresponding to the endpoint.
+     * - the specified application, if the Application Platform feature is supported;
+     * - otherwise the application corresponding to the endpoint.
      * The endpoint shall launch and bring to foreground the requisite application if the application is not already
      * launched and in foreground. The Status attribute shall be updated to ActiveVisibleFocus on the Application Basic
      * cluster of the Endpoint corresponding to the launched application. The Status attribute shall be updated on any
@@ -167,8 +167,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
     /**
      * Upon receipt of this command, the server shall stop the application if it is running. The application shall be
      * either
-     * • the specified application, if the Application Platform feature is supported;
-     * • otherwise the application corresponding to the endpoint.
+     * - the specified application, if the Application Platform feature is supported;
+     * - otherwise the application corresponding to the endpoint.
      * The Status attribute shall be updated to Stopped on the Application Basic cluster of the Endpoint corresponding
      * to the stopped application. The Status attribute shall be updated on any other application whose Status may have
      * changed as a result of this command.
@@ -184,13 +184,14 @@ public class ApplicationLauncherCluster extends BaseCluster {
 
     /**
      * Upon receipt of this command, the server shall hide the application. The application shall be either
-     * • the specified application, if the Application Platform feature is supported;
-     * • otherwise the application corresponding to the endpoint.
+     * - the specified application, if the Application Platform feature is supported;
+     * - otherwise the application corresponding to the endpoint.
      * The endpoint may decide to stop the application based on manufacturer specific behavior or resource constraints
      * if any. The Status attribute shall be updated to ActiveHidden or Stopped, depending on the action taken, on the
      * Application Basic cluster of the Endpoint corresponding to the application on which the action was taken. The
      * Status attribute shall be updated on any other application whose Status may have changed as a result of this
-     * command. This command returns a Launcher Response.
+     * command.
+     * This command returns a Launcher Response.
      */
     public static ClusterCommand hideApp(ApplicationStruct application) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -203,7 +204,6 @@ public class ApplicationLauncherCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "catalogList : " + catalogList + "\n";
         str += "currentApp : " + currentApp + "\n";

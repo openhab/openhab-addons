@@ -329,6 +329,19 @@ const globalDataTypes = (matterData.children as DatatypeElement[]).filter(c => c
 const globalAttributes = (matterData.children as AttributeElement[]).filter(c => c.tag === "attribute");
 
 /**
+ * Global cluster attributes that should be in BaseCluster, not individual clusters
+ * These are defined in the Matter spec as mandatory for all clusters
+ * Note: FeatureMap is NOT included here because each cluster has its own specific FeatureMap bitmap structure
+ */
+const globalClusterAttributeNames = new Set([
+    "ClusterRevision",
+    "AttributeList",
+    "EventList",
+    "AcceptedCommandList",
+    "GeneratedCommandList"
+]);
+
+/**
  * Global type mapping lookup, clusters will combine this with their own mapping
  */
 const globalTypeMapping = new Map();
@@ -377,6 +390,10 @@ const clusters: ExtendedClusterElement[] =
             const attributes = cluster.children
                 ?.filter(c => c.tag == "attribute")
                 ?.filter((element, index, self) => {
+                    // Filter out global cluster attributes (they're in BaseCluster)
+                    if (globalClusterAttributeNames.has(element.name)) {
+                        return false;
+                    }
                     //remove duplicates, not sure why they exist in the model
                     const dupIndex = self.findIndex(e => e.name === element.name);
                     if (dupIndex != index) {
@@ -534,7 +551,25 @@ const datatypes = {
 
 fs.mkdir("out", { recursive: true }, err => {});
 
-const baseClusterClass = baseClusterTemplate(datatypes);
+// Prepare global cluster attributes for BaseCluster
+const globalClusterAttributes = globalAttributes
+    .filter(attr => globalClusterAttributeNames.has(attr.name))
+    .map(attr => {
+        const mapped = typeMapper(globalTypeMapping, attr);
+        // EventList is deprecated but should still be List<Integer>
+        if (attr.name === "EventList") {
+            return {
+                ...mapped,
+                mappedType: "List<Integer>",
+            };
+        }
+        return mapped;
+    });
+
+const baseClusterClass = baseClusterTemplate({
+    ...datatypes,
+    globalAttributes: globalClusterAttributes,
+});
 fs.writeFileSync(`out/BaseCluster.java`, baseClusterClass);
 
 const deviceTypeClass = deviceTypeTemplate({

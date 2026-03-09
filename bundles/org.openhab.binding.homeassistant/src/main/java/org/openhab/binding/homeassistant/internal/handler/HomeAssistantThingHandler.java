@@ -144,12 +144,20 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
         config = getConfigAs(HandlerConfiguration.class);
         if (config.topics.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device topics unknown");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.no-component-topics");
+            return;
+        }
+        if (!validateTopics()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.only-one-device");
             return;
         }
         discoveryHomeAssistantIDs.addAll(HaID.fromConfig(config));
 
         ThingTypeUID typeID = getThing().getThingTypeUID();
+        restorePersistedDeviceConfigFromThingConfig();
+
         for (Channel channel : thing.getChannels()) {
             final String groupID = channel.getUID().getGroupId();
             if (groupID != null) {
@@ -182,14 +190,15 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 ThingUID thingUID = channel.getUID().getThingUID();
                 String channelConfigurationJSON = (String) channelConfig.get("config");
                 try {
-                    AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
+                    List<AbstractComponent<?>> components = ComponentFactory.createComponent(thingUID, haID,
                             channelConfigurationJSON, this, this, this, scheduler, gson, python, unitProvider);
-                    if (typeID.equals(HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING)
+                    if (!components.isEmpty() && typeID.equals(HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING)
                             || typeID.getBindingId().equals(HomeAssistantBindingConstants.LEGACY_BINDING_ID)) {
-                        typeID = calculateThingTypeUID(component);
+                        typeID = calculateThingTypeUID(components.getFirst());
                     }
-
-                    addComponent(component);
+                    components.forEach(component -> {
+                        addComponent(component);
+                    });
                 } catch (ConfigurationException e) {
                     logger.warn("Cannot restore component {}: {}", thing, e.getMessage());
                 }
@@ -219,6 +228,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      */
     @Override
     protected CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection) {
+        logger.debug("Starting MQTT connection for {}", getThing().getUID());
         started = true;
 
         connection.setQos(1);
@@ -272,6 +282,22 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     @Override
     public void componentDiscovered(HaID homeAssistantTopicID, AbstractComponent<?> component) {
         delayedProcessing.accept(component);
+    }
+
+    /**
+     * Callback of {@link DiscoverComponents} for a device topic update.
+     * Persists the full raw device config JSON on the Thing, so the handler can
+     * restore device-originated components after restart and still reconcile
+     * component removals/migrations when later discovery messages arrive.
+     */
+    @Override
+    public void deviceConfigUpdated(HaID homeAssistantTopicID, String configPayload) {
+        if (!config.deviceConfig.equals(configPayload)) {
+            config.deviceConfig = configPayload;
+            Configuration configuration = editConfiguration();
+            configuration.put(HandlerConfiguration.PROPERTY_DEVICE_CONFIG, config.deviceConfig);
+            updateConfiguration(configuration);
+        }
     }
 
     @Override
@@ -357,7 +383,10 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     private void removeComponents(List<HaID> removedComponentsList) {
         synchronized (haComponents) {
             boolean componentActuallyRemoved = false;
+            List<String> updatedTopics = new ArrayList<>(config.topics);
             for (HaID removed : removedComponentsList) {
+                updatedTopics.remove(removed.getTopic());
+
                 AbstractComponent<?> known = haComponentsByHaId.get(removed);
                 if (known != null) {
                     // Don't wait for the future to complete. We are also not interested in failures.
@@ -373,6 +402,10 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 }
             }
             if (componentActuallyRemoved) {
+                config.topics = List.copyOf(updatedTopics);
+                Configuration configuration = editConfiguration();
+                configuration.put(HandlerConfiguration.PROPERTY_TOPICS, config.topics);
+                updateConfiguration(configuration);
                 updateThingType(getThing().getThingTypeUID());
             }
         }
@@ -424,7 +457,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 changeThingType(typeID, getConfig());
                 return false;
             }
-
             synchronized (haComponents) { // sync whenever discoverComponents is started
                 var sortedComponents = haComponents.values().stream().sorted(COMPONENT_COMPARATOR).toList();
 
@@ -437,14 +469,12 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                 var channelDefs = sortedComponents.stream().map(AbstractComponent::getChannelDefinitions)
                         .flatMap(List::stream).toList();
                 thingTypeBuilder.withChannelDefinitions(channelDefs).withChannelGroupDefinitions(groupDefs);
-
                 channelTypeProvider.putThingType(thingTypeBuilder.build());
 
                 removeStateDescriptions();
                 sortedComponents.stream().forEach(c -> c.addStateDescriptions(stateDescriptionProvider));
 
                 ThingBuilder thingBuilder = editThing().withChannels();
-
                 sortedComponents.stream().map(AbstractComponent::getChannels).flatMap(List::stream)
                         .forEach(c -> thingBuilder.withChannel(c));
 
@@ -461,6 +491,49 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         return new ThingTypeUID(HomeAssistantBindingConstants.BINDING_ID,
                 HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING.getId() + "_"
                         + component.getConfig().getThingId(component.getHaID().objectID));
+    }
+
+    private boolean validateTopics() {
+        boolean hasDeviceTopic = false;
+        for (String topic : config.topics) {
+            String[] parts = topic.split("/");
+            if (parts.length == 0 || parts[0].isBlank()) {
+                continue;
+            }
+            if (HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(parts[0])) {
+                if (hasDeviceTopic) {
+                    return false;
+                }
+                hasDeviceTopic = true;
+            }
+        }
+        return true;
+    }
+
+    private void restorePersistedDeviceConfigFromThingConfig() {
+        String persistedPayload = config.deviceConfig;
+        if (persistedPayload.isBlank()) {
+            return;
+        }
+
+        List<HaID> deviceHaIDs = HaID.fromConfig(config).stream()
+                .filter(id -> HomeAssistantBindingConstants.DEVICE_COMPONENT.equals(id.component)).toList();
+        if (deviceHaIDs.size() != 1) {
+            logger.debug("Ignoring persisted device config for thing {} because {} device topics are configured",
+                    thing.getUID(), deviceHaIDs.size());
+            return;
+        }
+
+        HaID haID = deviceHaIDs.getFirst();
+        try {
+            List<AbstractComponent<?>> components = ComponentFactory.createComponent(thing.getUID(), haID,
+                    persistedPayload, this, this, this, scheduler, gson, python, unitProvider);
+            if (!components.isEmpty()) {
+                components.forEach(delayedProcessing::accept);
+            }
+        } catch (ConfigurationException e) {
+            logger.debug("Ignoring invalid deviceConfig in thing {}: {}", thing.getUID(), e.getMessage());
+        }
     }
 
     @Override

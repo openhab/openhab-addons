@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,14 +46,18 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class DirigeraAPISimu implements DirigeraAPI {
-    private static JSONObject model = new JSONObject();
+    private JSONObject model = new JSONObject();
 
-    public static String fileName = "src/test/resources/home/home.json";
-    public static Map<String, String> patchMap = new HashMap<>();
+    private String fileName = "src/test/resources/home/home.json";
+    private Map<String, String> patchMap = new HashMap<>();
     public static List<String> scenesAdded = new ArrayList<>();
     public static List<String> scenesDeleted = new ArrayList<>();
 
     public DirigeraAPISimu(HttpClient client, Gateway gateway) {
+    }
+
+    public DirigeraAPISimu(HttpClient client, Gateway gateway, String homeFile) {
+        fileName = homeFile;
     }
 
     @Override
@@ -136,15 +142,25 @@ public class DirigeraAPISimu implements DirigeraAPI {
         scenesDeleted.add(uuid);
     }
 
-    public static void waitForPatch() {
+    public @Nullable String getPatch(String id) {
+        Instant endTime = Instant.now().plusSeconds(10);
         synchronized (patchMap) {
-            if (patchMap.isEmpty()) {
+            String patch = patchMap.get(id);
+            while (patch == null && Instant.now().isBefore(endTime)) {
                 try {
-                    patchMap.wait(5000);
+                    patchMap.wait(100);
+                    patch = patchMap.get(id);
                 } catch (InterruptedException e) {
                     fail();
                 }
             }
+            return patch;
         }
+    }
+
+    public void clear() {
+        patchMap.clear();
+        scenesAdded.clear();
+        scenesDeleted.clear();
     }
 }

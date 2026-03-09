@@ -24,8 +24,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
 
-import com.google.gson.Gson;
-
 /**
  * A converter for translating {@link ThreadNetworkDiagnosticsCluster} events and attributes to openHAB channels and
  * back again.
@@ -34,22 +32,10 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNetworkDiagnosticsCluster> {
-    private Gson gson = new Gson();
 
     public ThreadNetworkDiagnosticsConverter(ThreadNetworkDiagnosticsCluster cluster, MatterBaseThingHandler handler,
             int endpointNumber, String labelPrefix) {
         super(cluster, handler, endpointNumber, labelPrefix);
-    }
-
-    @Override
-    public void pollCluster() {
-        handler.readCluster(ThreadNetworkDiagnosticsCluster.class, endpointNumber, initializingCluster.id)
-                .thenAccept(cluster -> {
-                    updateThingProperties(cluster);
-                }).exceptionally(e -> {
-                    logger.debug("Error polling thread network diagnostics", e);
-                    return null;
-                });
     }
 
     @Override
@@ -59,7 +45,22 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
 
     @Override
     public void onEvent(AttributeChangedMessage message) {
-        updateThingAttributeProperty(message.path.attributeName, message.value);
+        switch (message.path.attributeName) {
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_CHANNEL:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTING_ROLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NETWORK_NAME:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16:
+                updateThingAttributeProperty(message.path.attributeName, message.value);
+                break;
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE:
+            case ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS:
+                updateThingAttributeProperty(message.path.attributeName,
+                        message.value != null ? GSON.toJson(message.value) : null);
+                break;
+        }
         super.onEvent(message);
     }
 
@@ -77,10 +78,10 @@ public class ThreadNetworkDiagnosticsConverter extends GenericConverter<ThreadNe
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXTENDED_PAN_ID, cluster.extendedPanId);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_RLOC16, cluster.rloc16);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_NEIGHBOR_TABLE,
-                cluster.neighborTable != null ? gson.toJson(cluster.neighborTable) : null);
+                cluster.neighborTable != null ? GSON.toJson(cluster.neighborTable) : null);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_ROUTE_TABLE,
-                cluster.routeTable != null ? gson.toJson(cluster.routeTable) : null);
+                cluster.routeTable != null ? GSON.toJson(cluster.routeTable) : null);
         updateThingAttributeProperty(ThreadNetworkDiagnosticsCluster.ATTRIBUTE_EXT_ADDRESS,
-                cluster.extAddress != null ? gson.toJson(cluster.extAddress) : null);
+                cluster.extAddress != null ? GSON.toJson(cluster.extAddress) : null);
     }
 }

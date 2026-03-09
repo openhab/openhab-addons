@@ -15,10 +15,8 @@ package org.openhab.binding.shelly.internal.api;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyRollerStatus;
-import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
@@ -27,7 +25,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLi
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link ShellyApiInterface} Defines device API
@@ -35,17 +32,10 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public interface ShellyApiInterface {
+public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     boolean isInitialized();
 
-    void initialize() throws ShellyApiException;
-
     void setConfig(String thingName, ShellyThingConfiguration config);
-
-    ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
-
-    ShellyDeviceProfile getDeviceProfile(ThingTypeUID thingTypeUID, @Nullable ShellySettingsDevice device)
-            throws ShellyApiException;
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
 
@@ -140,8 +130,6 @@ public interface ShellyApiInterface {
     void sendIRKey(String keyCode) throws ShellyApiException;
 
     void postEvent(String device, String index, String event, Map<String, String> parms) throws ShellyApiException;
-
-    void close();
 
     void startScan();
 }

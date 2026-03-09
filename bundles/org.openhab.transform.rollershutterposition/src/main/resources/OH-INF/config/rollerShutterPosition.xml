@@ -8,7 +8,6 @@
 		<parameter name="uptime" type="decimal" required="true">
 			<label>Up Time</label>
 			<description>Time it takes for roller shutter to fully open (in seconds).</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="downtime" type="decimal">
 			<label>Down Time</label>

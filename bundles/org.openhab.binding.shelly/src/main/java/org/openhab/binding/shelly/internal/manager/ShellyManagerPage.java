@@ -22,8 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -173,7 +175,7 @@ public class ShellyManagerPage {
         if (cl != null) {
             try (InputStream inputStream = cl.getResourceAsStream(file)) {
                 if (inputStream != null) {
-                    html = new BufferedReader(new InputStreamReader(inputStream)).lines()
+                    html = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
                             .collect(Collectors.joining("\n"));
                     htmlTemplates.put(template, html);
                 }
@@ -332,7 +334,7 @@ public class ShellyManagerPage {
             default:
                 statusIcon = ts.toString();
         }
-        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase());
+        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase(Locale.ROOT));
 
         return properties;
     }
@@ -489,15 +491,13 @@ public class ShellyManagerPage {
     }
 
     protected String httpRequest(HttpMethod method, String url) throws ShellyApiException {
-        ShellyApiResult apiResult = new ShellyApiResult();
-
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON);
             logger.trace("{}: HTTP {} {}", LOG_PREFIX, method, url);
             ContentResponse contentResponse = request.send();
-            apiResult = new ShellyApiResult(contentResponse);
+            ShellyApiResult apiResult = ShellyApiResult.builder(contentResponse).build();
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}", LOG_PREFIX, contentResponse.getStatus(), response);
 

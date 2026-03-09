@@ -48,16 +48,18 @@ public class WiFiNetworkDiagnosticsConverter extends GenericConverter<WiFiNetwor
 
     @Override
     public void pollCluster() {
-        // we only need to read a single attribute, not the whole cluster
-        handler.readAttribute(endpointNumber, initializingCluster.name, WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI)
-                .thenAccept(rssi -> {
-                    updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI,
-                            new QuantityType<>(Integer.parseInt(rssi), Units.DECIBEL_MILLIWATTS));
-                    updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, rssi);
-                }).exceptionally(e -> {
-                    logger.debug("Error polling wifi network diagnostics", e);
-                    return null;
-                });
+        if (isChannelLinked(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI)) {
+            // we only need to read a single attribute, not the whole cluster
+            handler.readAttribute(endpointNumber, initializingCluster.name,
+                    WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI).thenAccept(rssi -> {
+                        updateState(CHANNEL_ID_WIFINETWORKDIAGNOSTICS_RSSI,
+                                new QuantityType<>(Integer.parseInt(rssi), Units.DECIBEL_MILLIWATTS));
+                        updateThingAttributeProperty(WiFiNetworkDiagnosticsCluster.ATTRIBUTE_RSSI, rssi);
+                    }).exceptionally(e -> {
+                        logger.debug("Error polling wifi network diagnostics", e);
+                        return null;
+                    });
+        }
     }
 
     @Override
