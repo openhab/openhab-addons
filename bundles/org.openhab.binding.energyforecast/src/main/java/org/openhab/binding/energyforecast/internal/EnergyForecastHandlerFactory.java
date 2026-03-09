@@ -60,7 +60,7 @@ public class EnergyForecastHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_ENERGY_FORECAST.equals(thingTypeUID)) {
+        if (THING_TYPE_PRICE_FORECAST.equals(thingTypeUID)) {
             return new EnergyForecastHandler(thing, hcf.getCommonHttpClient(), storageService, tzp);
         }
 

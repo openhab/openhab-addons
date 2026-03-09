@@ -29,9 +29,9 @@ public class EnergyForecastBindingConstants {
     public static final String BINDING_ID = "energyforecast";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_ENERGY_FORECAST = new ThingTypeUID(BINDING_ID, "energyforecast");
+    public static final ThingTypeUID THING_TYPE_PRICE_FORECAST = new ThingTypeUID(BINDING_ID, "price-forecast");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGY_FORECAST);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRICE_FORECAST);
 
     public static final String ENERGY_FORECAST_URL = "https://www.energyforecast.de/api/v1/predictions/next_96_hours";
 

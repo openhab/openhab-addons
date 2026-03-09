@@ -4,9 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="energyforecast">
-		<label>Energy Forecast</label>
-		<description>Energy forecast information for prices and renewable shares</description>
+	<thing-type id="price-forecast">
+		<label>Price Forecast</label>
+		<description>AI based price forecast beyond day-ahead prices</description>
+		<category>WebService</category>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="price" typeId="price-group"/>
@@ -115,8 +117,13 @@
 	</channel-group-type>
 
 	<channel-type id="price">
-		<item-type unitHint="EUR/kWh">Number:EnergyPrice</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Energy Price</label>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
 		<state pattern="%.3f %unit%"/>
 	</channel-type>
 	<channel-type id="percent">

@@ -101,6 +101,10 @@ public class EnergyForecastHandler extends BaseThingHandler {
             configError("@text/thing-status.energyforecast.zone-empty");
             return false;
         }
+        if (config.refreshInterval < 15) {
+            configError("@text/thing-status.energyforecast.refresh-interval-too-low");
+            return false;
+        }
         return true;
     }
 
@@ -126,7 +130,7 @@ public class EnergyForecastHandler extends BaseThingHandler {
     }
 
     private void refreshData() {
-        if (!config.token.isEmpty()) {
+        if (!config.token.isBlank()) {
             if (fetchEnergyForecastPrices()) {
                 updatePriceChannels();
                 getPriceInfo().consolidate();
@@ -209,11 +213,16 @@ public class EnergyForecastHandler extends BaseThingHandler {
                 return true;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.toString());
+                return false;
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restore interrupt status
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return false;
+        } catch (ExecutionException | TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return false;
         }
-        return false;
     }
 
     private PriceInfo getPriceInfo() {

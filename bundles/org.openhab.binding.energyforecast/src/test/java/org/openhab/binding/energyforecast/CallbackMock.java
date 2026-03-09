@@ -89,7 +89,7 @@ public class CallbackMock implements ThingHandlerCallback {
                 try {
                     timeSeriesMap.wait(100);
                 } catch (InterruptedException e) {
-                    fail("Interruppted getting timeseries " + channel);
+                    fail("Interrupted getting timeseries " + channel);
                 }
                 check = Instant.now();
             }
@@ -121,7 +121,7 @@ public class CallbackMock implements ThingHandlerCallback {
                 try {
                     this.wait(1000);
                 } catch (InterruptedException e) {
-                    fail("Interruppted waiting for ONLINE");
+                    fail("Interrupted waiting for ONLINE");
                 }
                 check = Instant.now();
             }

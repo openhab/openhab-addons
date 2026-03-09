@@ -4,7 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>EnergyForecast Binding</name>
-	<description>This is the binding for EnergyForecast.</description>
-
+	<name>Energy Forecast Binding</name>
+	<description>Binding provides AI price forecast 48h / 96h beyond day-ahead pricing</description>
+	<connection>cloud</connection>
+	<countries>at,be,ch,cz,de,lu,dk,fr,hu,it,nl,no,pl,se,si</countries>
 </addon:addon>

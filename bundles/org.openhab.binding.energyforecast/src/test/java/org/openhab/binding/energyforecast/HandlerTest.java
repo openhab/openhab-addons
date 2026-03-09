@@ -15,7 +15,7 @@ package org.openhab.binding.energyforecast;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.energyforecast.internal.EnergyForecastBindingConstants.THING_TYPE_ENERGY_FORECAST;
+import static org.openhab.binding.energyforecast.internal.EnergyForecastBindingConstants.THING_TYPE_PRICE_FORECAST;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -92,7 +92,7 @@ class HandlerTest {
     }
 
     List<?> createHandler(@Nullable Configuration config) {
-        ThingImpl thing = new ThingImpl(THING_TYPE_ENERGY_FORECAST, "forecast_test");
+        ThingImpl thing = new ThingImpl(THING_TYPE_PRICE_FORECAST, "forecast_test");
         if (config != null) {
             thing.setConfiguration(config);
         }
@@ -148,7 +148,7 @@ class HandlerTest {
         Storage<String> store = storageService.getStorage(thing.getUID().getAsString());
         tester.initialize();
         callback.waitForOnline();
-        TimeSeries priceSeries = callback.getTimeSeries("energyforecast:energyforecast:forecast_test:price#series");
+        TimeSeries priceSeries = callback.getTimeSeries("energyforecast:price-forecast:forecast_test:price#series");
         assertNotNull(priceSeries);
         assertEquals(23 + 48, priceSeries.size());
 

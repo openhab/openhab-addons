@@ -1,12 +1,12 @@
 # Energy Forecast Binding
 
-Binding provides energy information & pricing from [Energy Forecast Provider](https://www.energyforecast.de/).
+Binding provides AI price forecast 48h / 96h beyond day-ahead pricing with [Energy Forecast Service](https://www.energyforecast.de/).
 Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/index.html) is supported.
 [Registration](https://www.energyforecast.de/users/sign_up) is mandatory!
 
 ## Binding Configuration
 
-### `energyforecast` Thing Configuration
+### `price-forecast` Thing Configuration
 
 | Name              | Type      | Description                                                                       | Default   | Required |
 |-------------------|-----------|-----------------------------------------------------------------------------------|-----------|----------|
@@ -18,14 +18,10 @@ Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/
 | refreshInterval   | integer   | Refresh interval in minutes. Check with service throttling                        | 180       | no       |
 | errorLimit        | integer   | Limit error percentage values for better visualization                            | 0         | no       |
 
-`token` needs to be generated after registration at [Energy Forecast Provider](https://www.energyforecast.de/api_keys).
-
+`token` needs to be generated after registration at [Energy Forecast Service](https://www.energyforecast.de/api_keys).
 `zone` from [API](https://www.energyforecast.de/api-docs/index.html) are given as options.
-
 `resolution` time resolution given as options. `PT15M` an `PT60M` are supported.
-
 `refreshInterval` given in minutes. Align this value with your [booked plan](https://www.energyforecast.de/pricing).
-
 `errorLimit` to avoid extraordinary error percentage values in `metric` group. Value `0` is no limit.
 
 ## Channels
@@ -42,8 +38,7 @@ If you don't have a database installed [InMemory persistence](https://www.openha
 | origin        | Number                | Originator of the price (market or forecast)      |
 
 `series` delivers price information from 48h up to 96h into the future depending on your [booked plan](https://www.energyforecast.de/pricing).
-
-`origin` shows for every price the originator
+`origin` shows for every price the originator.
 
 - 0: Market
 - 1: AI Forecast
@@ -65,39 +60,33 @@ To compare market and forecast prices this time is needed until a market price i
 | mean-abs          | Number:EnergyPrice    | Mean absolute error showing the average of absolute forecast errors               |
 | mean-abs-percent  | Number:Dimensionless  | Mean absolute percentage error showing the average of absolute percentage errors  |
   
-`forecast` timeseries contains only forecast prices, market prices are excluded
-
-`forecast-error` price difference between market and forecast price
-
+`forecast` timeseries contains only forecast prices, market prices are excluded.
+`forecast-error` price difference between market and forecast price.
 `percent-error` is the `forecast-error` in percent. 
 It can show extraordinary high values if market prices are around zero cost.
 If market price is 0.001 and forecast was 0.006 the percentage error is *high* while `forecast-error` is quite low.
 For visualization you can limit these values with configuration `errorLimit`.
 
 `mean-abs` shows the average of all absolute `forecast-error` calculations as one value.
-
 `mean-percent` shows the average of all absolute `percent-error` calculations as one value.
-
   
 ## Full Example
 
 ### `demo.things`
 
 ```java
-Thing energyforecast:energyforecast:UID "Energy Forecast" [zone="YOUR_BIDDING_ZONE", token="YOUR_TOKEN", fixCost=12.3, vat=19.0, resolution="PT15M", refreshInterval=180, errorLimit=0] 
+Thing energyforecast:price-forecast:UID "Energy Forecast" [zone="YOUR_BIDDING_ZONE", token="YOUR_TOKEN", fixCost=12.3, vat=19.0, resolution="PT15M", refreshInterval=180, errorLimit=0] 
 ```
 
 ### `demo.items`
 
 ```java
-Number:EnergyPrice      Energy_Forecast_Price_Series            "Price Series"              {channel="energyforecast:energyforecast:UID:price#series"}
-Number                  Energy_Forecast_Price_Origins           "Price Origin"              {channel="energyforecast:energyforecast:UID:price#origin"}
+Number:EnergyPrice      Energy_Forecast_Price_Series            "Price Series"              {channel="energyforecast:price-forecast:UID:price#series"}
+Number                  Energy_Forecast_Price_Origins           "Price Origin"              {channel="energyforecast:price-forecast:UID:price#origin"}
 
-Number:EnergyPrice      Energy_Forecast_Forecast                "Forecast"                  {channel="energyforecast:energyforecast:UID:metric#forecast"}
-Number:EnergyPrice      Energy_Forecast_Forecast_Error          "Forecast Error"            {channel="energyforecast:energyforecast:UID:metric#forecast-error"}
-Number:Dimensionless    Energy_Forecast_Percent_Error           "Percent Error"             {channel="energyforecast:energyforecast:UID:metric#percent-error"}
-Number:EnergyPrice      Energy_Forecast_Mean_Absolute           "Mean Absolute"             {channel="energyforecast:energyforecast:UID:metric#mean-abs"}
-Number:Dimensionless    Energy_Forecast_Mean_Absolute_Percent   "Mean Absolute Percent"     {channel="energyforecast:energyforecast:UID:metric#mean-abs-percent"}
+Number:EnergyPrice      Energy_Forecast_Forecast                "Forecast"                  {channel="energyforecast:price-forecast:UID:metric#forecast"}
+Number:EnergyPrice      Energy_Forecast_Forecast_Error          "Forecast Error"            {channel="energyforecast:price-forecast:UID:metric#forecast-error"}
+Number:Dimensionless    Energy_Forecast_Percent_Error           "Percent Error"             {channel="energyforecast:price-forecast:UID:metric#percent-error"}
+Number:EnergyPrice      Energy_Forecast_Mean_Absolute           "Mean Absolute"             {channel="energyforecast:price-forecast:UID:metric#mean-abs"}
+Number:Dimensionless    Energy_Forecast_Mean_Absolute_Percent   "Mean Absolute Percent"     {channel="energyforecast:price-forecastt:UID:metric#mean-abs-percent"}
 ```
-
-

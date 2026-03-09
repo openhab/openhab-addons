@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.energyforecast.internal.EnergyForecastBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class APICaller {
         try {
             httpClient.start();
             ContentResponse response = httpClient
-                    .GET("https://www.energyforecast.de/api/v1/predictions/next_96_hours?token=" + token);
+                    .GET(EnergyForecastBindingConstants.ENERGY_FORECAST_URL + "?token=" + token);
             logger.warn("Response status: {}", response.getStatus());
             logger.warn("{}", response.getContentAsString());
             httpClient.stop();
