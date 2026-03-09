@@ -49,7 +49,6 @@ public class GeneralDiagnosticsConverter extends GenericConverter<GeneralDiagnos
             case GeneralDiagnosticsCluster.ATTRIBUTE_NETWORK_INTERFACES:
                 updateThingAttributeProperty(message.path.attributeName,
                         message.value != null ? GSON.toJson(message.value) : null);
-
                 break;
         }
         super.onEvent(message);

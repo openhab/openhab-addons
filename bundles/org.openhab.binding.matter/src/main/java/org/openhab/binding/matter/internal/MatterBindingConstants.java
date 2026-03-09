@@ -602,7 +602,7 @@ public class MatterBindingConstants {
     public static final String CONFIG_DESC_DOORLOCK_DELETE_USER = "@text/thing-type.config.matter.node.doorlock_delete_user.description";
     public static final String CONFIG_DESC_DOORLOCK_EXTERNAL_FABRIC = "@text/thing-type.config.matter.node.doorlock_external_fabric.description";
 
-    // Firmware Update - Note theses are the raw i18n keys, not the translated strings
+    // Firmware Update - Note these are the raw i18n keys, not the translated strings
     public static final String OTA_FIRMWARE_UPDATE_FAILED = "ota.matter.firmwareUpdateFailed";
     public static final String OTA_FIRMWARE_UPDATE_FAILED_ROLLING_BACK = "ota.matter.firmwareUpdateFailedRollingBack";
     public static final String OTA_FIRMWARE_UPDATE_FAILED_DELAYED_ON_USER_CONSENT = "ota.matter.firmwareUpdateFailedDelayedOnUserConsent";

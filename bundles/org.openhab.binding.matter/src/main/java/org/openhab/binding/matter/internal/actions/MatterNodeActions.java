@@ -202,7 +202,6 @@ public class MatterNodeActions implements ThingActions {
                 logger.debug("Failed to check for firmware update for device {}", handler.getNodeId(), e);
                 return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
             }
-
         }
         return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
     }
