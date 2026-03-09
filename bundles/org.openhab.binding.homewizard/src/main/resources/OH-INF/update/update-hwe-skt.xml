@@ -3,35 +3,20 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
-	<thing-type uid="homewizard:hwe-bat">
+	<thing-type uid="homewizard:hwe-skt">
 
 		<instruction-set targetVersion="2">
-			<remove-channel id="voltage_l1" groupIds="energy">
-				<type>homewizard:hw-voltage</type>
-			</remove-channel>
-			<add-channel id="voltage" groupIds="energy">
-				<type>homewizard:hw-voltage</type>
-			</add-channel>
-
-		</instruction-set>
-
-		<instruction-set targetVersion="3">
 			<add-channel id="wifi_ssid" groupIds="system">
 				<type>homewizard:hw-wifi-ssid</type>
 			</add-channel>
 			<add-channel id="wifi_rssi" groupIds="system">
 				<type>homewizard:hw-wifi-rssi</type>
 			</add-channel>
-			<add-channel id="uptime" groupIds="system">
-				<type>homewizard:hw-uptime</type>
-			</add-channel>
 			<add-channel id="cloud_enabled" groupIds="system">
 				<type>homewizard:hw-cloud-enabled</type>
 			</add-channel>
-			<add-channel id="status_led_brightness" groupIds="system">
-				<type>homewizard:hw-status-led-brightness</type>
-			</add-channel>
 		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>
