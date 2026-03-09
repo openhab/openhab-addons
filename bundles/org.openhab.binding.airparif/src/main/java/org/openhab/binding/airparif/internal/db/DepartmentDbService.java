@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,8 +59,8 @@ public class DepartmentDbService {
     }
 
     private void loadDB() {
-        try (InputStream is = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("/db/departments.json");
+        ClassLoader cl = Objects.requireNonNull(getClass().getClassLoader());
+        try (InputStream is = cl.getResourceAsStream("/db/departments.json");
                 Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             departments = Arrays.asList(gson.fromJson(reader, Department[].class));
