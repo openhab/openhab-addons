@@ -47,6 +47,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescription;
 
+import com.google.gson.JsonArray;
+
 /**
  * A converter for translating {@link ThreadBorderRouterManagementCluster} events and attributes to openHAB channels and
  * back again.
@@ -170,7 +172,8 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
         activeDatasetPending.set(true);
         return handler.sendClusterCommand(endpointNumber, ThreadBorderRouterManagementCluster.CLUSTER_NAME,
                 ThreadBorderRouterManagementCluster.getActiveDatasetRequest()).thenApply(result -> {
-                    return result.getAsJsonObject().get("dataset").getAsString();
+                    JsonArray data = result.getAsJsonObject().getAsJsonObject("dataset").getAsJsonArray("data");
+                    return jsonArrayToHex(data);
                 }).exceptionally(e -> {
                     logger.debug("Error getting active dataset", e);
                     throw new CompletionException(e);
@@ -186,7 +189,8 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
         pendingDatasetPending.set(true);
         return handler.sendClusterCommand(endpointNumber, ThreadBorderRouterManagementCluster.CLUSTER_NAME,
                 ThreadBorderRouterManagementCluster.getPendingDatasetRequest()).thenApply(result -> {
-                    return result.getAsJsonObject().get("dataset").getAsString();
+                    JsonArray data = result.getAsJsonObject().getAsJsonObject("dataset").getAsJsonArray("data");
+                    return jsonArrayToHex(data);
                 }).exceptionally(e -> {
                     logger.debug("Error getting pending dataset", e);
                     throw new CompletionException(e);
@@ -550,5 +554,13 @@ public class ThreadBorderRouterManagementConverter extends GenericConverter<Thre
             dataset.setActiveTimestamp(ts);
         });
         return dataset;
+    }
+
+    private String jsonArrayToHex(JsonArray values) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < values.size(); i++) {
+            sb.append(String.format("%02X", values.get(i).getAsInt()));
+        }
+        return sb.toString();
     }
 }

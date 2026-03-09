@@ -32,9 +32,6 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0029;
     public static final String CLUSTER_NAME = "OtaSoftwareUpdateProvider";
     public static final String CLUSTER_PREFIX = "otaSoftwareUpdateProvider";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
-
-    public Integer clusterRevision; // 65533 ClusterRevision
 
     // Enums
     /**
@@ -191,7 +188,6 @@ public class OtaSoftwareUpdateProviderCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         return str;
     }
 }

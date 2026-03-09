@@ -32,13 +32,11 @@ public class ChannelCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0504;
     public static final String CLUSTER_NAME = "Channel";
     public static final String CLUSTER_PREFIX = "channel";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_CHANNEL_LIST = "channelList";
     public static final String ATTRIBUTE_LINEUP = "lineup";
     public static final String ATTRIBUTE_CURRENT_CHANNEL = "currentChannel";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * This attribute shall provide the list of supported channels.
@@ -540,6 +538,9 @@ public class ChannelCluster extends BaseCluster {
 
     /**
      * This command provides channel up and channel down functionality, but allows channel index jumps of size Count.
+     * Jumps are relative to the available list of channels. For example, when the current channel is 100.0 and the list
+     * of available channels is [100.0, 200.0, 201.0, 305.1], a SkipChannel command with jump value of 2 shall change
+     * the channel to 201.0.
      * When the value of the increase or decrease is larger than the number of channels remaining in the given
      * direction, then the behavior shall be to return to the beginning (or end) of the channel list and continue. For
      * example, if the current channel is at index 0 and count value of -1 is given, then the current channel should
@@ -632,7 +633,6 @@ public class ChannelCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "channelList : " + channelList + "\n";
         str += "lineup : " + lineup + "\n";

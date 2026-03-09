@@ -37,6 +37,16 @@ import com.google.gson.Gson;
     public int id;
     public String name;
 
+    // Global cluster attribute name constants
+{{#each globalAttributes}}
+    public static final String ATTRIBUTE_{{asUpperSnakeCase name}} = "{{asLowerCamelCase name}}";
+{{/each}}
+
+    // Global cluster attributes (present in all clusters per Matter spec)
+{{#each globalAttributes}}
+    public {{{mappedType}}} {{asLowerCamelCase name}}; // {{id}} {{type}}
+{{/each}}
+
     public interface MatterEnum {
         Integer getValue();
 

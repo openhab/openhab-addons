@@ -29,7 +29,6 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0037;
     public static final String CLUSTER_NAME = "EthernetNetworkDiagnostics";
     public static final String CLUSTER_PREFIX = "ethernetNetworkDiagnostics";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_PHY_RATE = "phyRate";
     public static final String ATTRIBUTE_FULL_DUPLEX = "fullDuplex";
@@ -41,53 +40,50 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
     public static final String ATTRIBUTE_CARRIER_DETECT = "carrierDetect";
     public static final String ATTRIBUTE_TIME_SINCE_RESET = "timeSinceReset";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
-     * The PHYRate attribute shall indicate the current nominal, usable speed at the top of the physical layer of the
-     * Node. A value of null shall indicate that the interface is not currently configured or operational.
+     * Indicates the current nominal, usable speed at the top of the physical layer of the Node. A value of null shall
+     * indicate that the interface is not currently configured or operational.
      */
     public PHYRateEnum phyRate; // 0 PHYRateEnum R V
     /**
-     * The FullDuplex attribute shall indicate if the Node is currently utilizing the full-duplex operating mode. A
-     * value of null shall indicate that the interface is not currently configured or operational.
+     * Indicates if the Node is currently utilizing the full-duplex operating mode. A value of null shall indicate that
+     * the interface is not currently configured or operational.
      */
     public Boolean fullDuplex; // 1 bool R V
     /**
-     * The PacketRxCount attribute shall indicate the number of packets that have been received on the ethernet network
-     * interface. The PacketRxCount attribute shall be reset to 0 upon a reboot of the Node.
+     * Indicates the number of packets that have been received on the ethernet network interface. The attribute shall be
+     * reset to 0 upon a reboot of the Node.
      */
     public BigInteger packetRxCount; // 2 uint64 R V
     /**
-     * The PacketTxCount attribute shall indicate the number of packets that have been successfully transferred on the
-     * ethernet network interface. The PacketTxCount attribute shall be reset to 0 upon a reboot of the Node.
+     * Indicates the number of packets that have been successfully transferred on the ethernet network interface. The
+     * attribute shall be reset to 0 upon a reboot of the Node.
      */
     public BigInteger packetTxCount; // 3 uint64 R V
     /**
-     * The TxErrCount attribute shall indicate the number of failed packet transmissions that have occurred on the
-     * ethernet network interface. The TxErrCount attribute shall be reset to 0 upon a reboot of the Node.
+     * Indicates the number of failed packet transmissions that have occurred on the ethernet network interface. The
+     * attribute shall be reset to 0 upon a reboot of the Node.
      */
     public BigInteger txErrCount; // 4 uint64 R V
     /**
-     * The CollisionCount attribute shall indicate the number of collisions that have occurred while attempting to
-     * transmit a packet on the ethernet network interface. The CollisionCount attribute shall be reset to 0 upon a
-     * reboot of the Node.
+     * Indicates the number of collisions that have occurred while attempting to transmit a packet on the ethernet
+     * network interface. The attribute shall be reset to 0 upon a reboot of the Node.
      */
     public BigInteger collisionCount; // 5 uint64 R V
     /**
-     * The OverrunCount attribute shall indicate the number of packets dropped either at ingress or egress, due to lack
-     * of buffer memory to retain all packets on the ethernet network interface. The OverrunCount attribute shall be
-     * reset to 0 upon a reboot of the Node.
+     * Indicates the number of packets dropped either at ingress or egress, due to lack of buffer memory to retain all
+     * packets on the ethernet network interface. The attribute shall be reset to 0 upon a reboot of the Node.
      */
     public BigInteger overrunCount; // 6 uint64 R V
     /**
-     * The CarrierDetect attribute shall indicate the value of the Carrier Detect control signal present on the ethernet
-     * network interface. A value of null shall indicate that the interface is not currently configured or operational.
+     * Indicates the value of the Carrier Detect control signal present on the ethernet network interface. A value of
+     * null shall indicate that the interface is not currently configured or operational.
      */
     public Boolean carrierDetect; // 7 bool R V
     /**
-     * The TimeSinceReset attribute shall indicate the duration of time, in minutes, that it has been since the ethernet
-     * network interface has reset for any reason.
+     * Indicates the duration of time, in minutes, that it has been since the ethernet network interface has reset for
+     * any reason.
      */
     public BigInteger timeSinceReset; // 8 uint64 R V
 
@@ -153,13 +149,13 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
 
     // commands
     /**
+     * This command is used to reset the count attributes.
      * Reception of this command shall reset the following attributes to 0:
-     * • PacketRxCount
-     * • PacketTxCount
-     * • TxErrCount
-     * • CollisionCount
-     * • OverrunCount
-     * This command has no associated data.
+     * - PacketRxCount
+     * - PacketTxCount
+     * - TxErrCount
+     * - CollisionCount
+     * - OverrunCount
      */
     public static ClusterCommand resetCounts() {
         return new ClusterCommand("resetCounts");
@@ -168,7 +164,6 @@ public class EthernetNetworkDiagnosticsCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "phyRate : " + phyRate + "\n";
         str += "fullDuplex : " + fullDuplex + "\n";
