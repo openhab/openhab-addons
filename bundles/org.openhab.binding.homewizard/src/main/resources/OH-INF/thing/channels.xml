@@ -76,7 +76,7 @@
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>SignalStrength</tag>
 		</tags>
 	</channel-type>
 
@@ -100,7 +100,8 @@
 			This channel provides the state of the cloud communication.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
 		</tags>
 	</channel-type>
 
@@ -111,7 +112,8 @@
 			This channel provides the brightness of the status LED in percent.
 		</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
 		</tags>
 	</channel-type>
 
