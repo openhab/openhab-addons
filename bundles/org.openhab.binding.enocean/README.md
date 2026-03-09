@@ -269,7 +269,7 @@ Otherwise `senderIdOffset` is used and direct `senderId` values are rejected dur
 |                                 | broadcastMessages |                             | true, false |
 |                                 | receivingEEPId    |                             | F6_02_01, F6_02_02 |
 |                                 | suppressRepeating |                             | true, false |
-| datagramInjector                | senderAddress     | Virtual sender address used by injector telegrams (RS485 only) | 8 hex chars |
+| datagramInjector                | senderId          | Virtual sender address used by injector telegrams (RS485 only) | 8 hex chars |
 |                                 | sendingProfileId  | Profile used for command encoding | FTK_D5_00_01, MOTION_A5_07_01 |
 |                                 | suppressRepeating | Suppress repeating of msg | true, false |
 
@@ -463,10 +463,10 @@ The `datagramInjector` thing is a send-only profile based injector for EnOcean t
 It can only be used when RS485 mode is enabled on the bridge.
 It supports the following profiles: `FTK_D5_00_01`, `MOTION_A5_07_01`.
 
-For profile `FTK_D5_00_01` the channel command is converted as follows:
+For profile `FTK_D5_00_01` the channel command is converted as follows (only `ON`/`OFF` are supported):
 
-- `CLOSED` or `ON` -> telegram payload `0x09`
-- `OPEN` or `OFF` -> telegram payload `0x08`
+- `ON`  -> telegram payload `0x09`
+- `OFF` -> telegram payload `0x08`
 
 For profile `MOTION_A5_07_01` the channel command is converted as follows:
 
@@ -479,7 +479,7 @@ Example Thing DSL definition:
 Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
   Thing datagramInjector ftkTx "FTK TX" [
     sendingProfileId="FTK_D5_00_01",
-    senderAddress="00AABBCC",
+    senderId="00AABBCC",
     suppressRepeating=false
   ]
 }

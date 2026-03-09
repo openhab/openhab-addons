@@ -30,7 +30,7 @@
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="0" unit="s">
 				<label>Polling Interval</label>
-				<description>Time in seconds after a refresh is triggerd, 0 to disable</description>
+				<description>Time in seconds after a refresh is triggered, 0 to disable</description>
 				<default>300</default>
 			</parameter>
 			<parameter name="sendingEEPId" type="text" required="true">
