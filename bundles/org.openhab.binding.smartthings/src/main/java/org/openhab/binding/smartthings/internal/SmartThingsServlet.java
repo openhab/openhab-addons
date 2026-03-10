@@ -146,7 +146,7 @@ public class SmartThingsServlet extends HttpServlet {
                 String query = exchange.getRequestURI().getQuery();
                 try (InputStream is = exchange.getRequestBody()) {
                     String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-                    logger.info("body:" + body);
+                    logger.debug("body: {}", body);
                 }
 
                 URI uri = exchange.getRequestURI();
