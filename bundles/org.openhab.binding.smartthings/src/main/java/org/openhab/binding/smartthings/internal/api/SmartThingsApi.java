@@ -448,7 +448,10 @@ public class SmartThingsApi {
 
         logger.info("Received: {}", event.readData());
         try {
-            final Event evt = gson.fromJson(data, Event.class);
+            final @Nullable Event evt = gson.fromJson(data, Event.class);
+            if (evt == null || evt.deviceEvent == null) {
+                return;
+            }
 
             String deviceId = evt.deviceEvent.deviceId;
             String componentId = evt.deviceEvent.componentId;

@@ -242,8 +242,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
     public void registerServlet() {
         try {
-            servlet = new SmartThingsServlet(this, authService, httpService);
-            servlet.activate();
+            SmartThingsServlet s = new SmartThingsServlet(this, authService, httpService);
+            s.activate();
+            servlet = s;
         } catch (Exception e) {
             logger.warn("Error during smartthings servlet startup", e);
         }
@@ -311,8 +312,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void dispose() {
-        if (servlet != null) {
-            servlet.desactivate();
+        SmartThingsServlet s = servlet;
+        if (s != null) {
+            s.desactivate();
         }
         super.dispose();
     }

@@ -366,7 +366,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             logger.trace("registerDeviceType: {} {}", deviceType, gson.toJson(device));
             generateThingsType(device.deviceId, device.label, deviceType, device);
         } catch (Exception ex) {
-            logger.error("wrong: {}" + ex.toString(), ex);
+            logger.error("wrong: {}", ex.toString(), ex);
         }
     }
 
@@ -458,18 +458,23 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             }
 
             SmartThingsAttribute attr = capa.attributes.get(attrKey);
+            if (attr == null) {
+                continue;
+            }
             SmartThingsSchema schema = attr.schema;
             Hashtable<String, SmartThingsProperty> propsMap = schema.properties;
+            @Nullable
             SmartThingsProperty prop = propsMap.get("value");
+            if (prop == null) {
+                continue;
+            }
             String propType = prop.type;
 
-            if (propType != null && propType.equals("object")) {
+            if ("object".equals(propType)) {
                 Hashtable<String, SmartThingsProperty> subPropList = prop.properties;
 
                 if (subPropList != null) {
                     for (String subPropKey : subPropList.keySet()) {
-
-                        SmartThingsProperty subProp = subPropList.get(subPropKey);
                         logger.info("");
 
                         Map<String, String> props = new Hashtable<String, String>();

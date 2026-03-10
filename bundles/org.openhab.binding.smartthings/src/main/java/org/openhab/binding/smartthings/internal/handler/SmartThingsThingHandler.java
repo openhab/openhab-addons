@@ -158,9 +158,12 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
             if (value instanceof Map<?, ?> map) {
                 for (Map.Entry<?, ?> entry : map.entrySet()) {
-                    String subKey = entry.getKey().toString();
+                    Object key = entry.getKey();
                     Object subValue = entry.getValue();
-                    refreshChannel(deviceType, componentId, namespace, capaKey, subKey, subValue);
+                    if (key != null && subValue != null) {
+                        String subKey = key.toString();
+                        refreshChannel(deviceType, componentId, namespace, capaKey, subKey, subValue);
+                    }
                 }
 
             } else {

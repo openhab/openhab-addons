@@ -333,6 +333,10 @@ public class SmartThingsServlet extends HttpServlet {
 
             LifeCycle resultObj = gson.fromJson(s, LifeCycle.class);
 
+            if (resultObj == null) {
+                return;
+            }
+
             String eventType = resultObj.getEventType();
 
             logger.trace("Callback called with eventType: {}", eventType);
