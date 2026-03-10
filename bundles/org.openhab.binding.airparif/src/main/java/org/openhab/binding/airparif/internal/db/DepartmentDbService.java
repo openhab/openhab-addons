@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.PointType;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -46,38 +45,50 @@ import com.google.gson.JsonSyntaxException;
 public class DepartmentDbService {
     private final Logger logger = LoggerFactory.getLogger(DepartmentDbService.class);
     private List<Department> departments = List.of();
+    private volatile boolean dbLoadAttempted;
 
     public record Department(String id, String name, double northestLat, double southestLat, double eastestLon,
             double westestLon) {
-    }
 
-    public List<Department> getBounding(PointType location) {
-        double latitude = location.getLatitude().doubleValue();
-        double longitude = location.getLongitude().doubleValue();
-        return getDeptStream().filter(dep -> dep.northestLat >= latitude && dep.southestLat <= latitude
-                && dep.westestLon <= longitude && dep.eastestLon >= longitude).toList();
+        boolean contains(double latitude, double longitude) {
+            return northestLat >= latitude && southestLat <= latitude && westestLon <= longitude
+                    && eastestLon >= longitude;
+        }
     }
 
     private void loadDB() {
         ClassLoader cl = Objects.requireNonNull(getClass().getClassLoader());
-        try (InputStream is = cl.getResourceAsStream("/db/departments.json");
-                Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
-            Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-            departments = Arrays.asList(gson.fromJson(reader, Department[].class));
-            logger.debug("Successfully loaded {} departments", departments.size());
+        InputStream is = cl.getResourceAsStream("/db/departments.json");
+        if (is == null) {
+            logger.warn("Unable to load departments list: resource /db/departments.json not found");
+            return;
+        }
+
+        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+        try (InputStream stream = is; Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            Department[] parsed = gson.fromJson(reader, Department[].class);
+            departments = Arrays.asList(parsed);
+            logger.debug("Loaded {} French departments", departments.size());
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             logger.warn("Unable to load departments list: {}", e.getMessage());
         }
     }
 
     private Stream<Department> getDeptStream() {
-        if (departments.isEmpty()) {
-            loadDB();
+        if (!dbLoadAttempted) {
+            synchronized (this) {
+                if (!dbLoadAttempted) {
+                    dbLoadAttempted = true;
+                    loadDB();
+                }
+            }
         }
         return departments.stream();
     }
 
-    public @Nullable Department getDept(String deptId) {
-        return getDeptStream().filter(dep -> dep.id.equalsIgnoreCase(deptId)).findFirst().orElse(null);
+    public List<Department> getBounding(PointType location) {
+        double latitude = location.getLatitude().doubleValue();
+        double longitude = location.getLongitude().doubleValue();
+        return getDeptStream().filter(dep -> dep.contains(latitude, longitude)).toList();
     }
 }
