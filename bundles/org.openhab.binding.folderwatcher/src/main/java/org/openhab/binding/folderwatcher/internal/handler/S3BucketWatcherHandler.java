@@ -72,20 +72,29 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(S3BucketWatcherConfiguration.class);
+        logger.debug(
+                "Initializing S3 Bucket Watcher handler for {} with bucket: {}, region: {}, anonymous: {}, path: {}, poll interval: {}s",
+                thing.getUID(), config.s3BucketName, config.awsRegion, config.s3Anonymous, config.s3Path,
+                config.pollIntervalS3);
         try {
             if (config.s3Anonymous) {
+                logger.debug("Creating S3 connection with anonymous access");
                 s3 = new S3Actions(httpClientFactory, config.s3BucketName, config.awsRegion);
             } else {
+                logger.debug("Creating S3 connection with AWS credentials");
                 s3 = new S3Actions(httpClientFactory, config.s3BucketName, config.awsRegion, config.awsKey,
                         config.awsSecret);
             }
         } catch (APIException e) {
+            logger.debug("S3 initialization error: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
             return;
         }
 
         try {
+            logger.debug("Initializing S3 listing file for bucket: {}", config.s3BucketName);
             previousS3Listing = WatcherCommon.initStorage(currentS3ListingFile, config.s3BucketName);
+            logger.debug("Loaded {} previous S3 files from storage", previousS3Listing.size());
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             logger.debug("Can't write file {}: {}", currentS3ListingFile, e.getMessage());
@@ -94,9 +103,11 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
 
         if (refreshS3BucketInformation()) {
             if (config.pollIntervalS3 > 0) {
+                logger.debug("Starting S3 bucket refresh with {} second interval", config.pollIntervalS3);
                 executionJob = scheduler.scheduleWithFixedDelay(this::refreshS3BucketInformation, config.pollIntervalS3,
                         config.pollIntervalS3, TimeUnit.SECONDS);
             } else {
+                logger.debug("Polling interval invalid: {}", config.pollIntervalS3);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Polling interval must be greater then 0 seconds");
                 return;
@@ -105,21 +116,30 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
     }
 
     private boolean refreshS3BucketInformation() {
+        logger.debug("Refreshing S3 bucket information for {} with path {}", config.s3BucketName, config.s3Path);
         List<String> currentS3Listing = new ArrayList<>();
         try {
             currentS3Listing = s3.listBucket(config.s3Path);
+            logger.debug("S3 bucket scan found {} total files", currentS3Listing.size());
             updateStatus(ThingStatus.ONLINE);
             List<String> difS3Listing = new ArrayList<>(currentS3Listing);
             difS3Listing.removeAll(previousS3Listing);
-            difS3Listing.forEach(file -> triggerChannel(CHANNEL_NEWFILE, file));
+            logger.debug("Detected {} new S3 files since last refresh", difS3Listing.size());
+            difS3Listing.forEach(file -> {
+                logger.debug("Triggering CHANNEL_NEWFILE with: {}", file);
+                triggerChannel(CHANNEL_NEWFILE, file);
+            });
 
             if (!difS3Listing.isEmpty()) {
+                logger.debug("Saving {} new files to listing file", difS3Listing.size());
                 WatcherCommon.saveNewListing(difS3Listing, currentS3ListingFile);
             }
+            logger.debug("S3 refresh completed, updated previous listing from {} to {} files", previousS3Listing.size(),
+                    currentS3Listing.size());
             previousS3Listing = new ArrayList<>(currentS3Listing);
         } catch (Exception e) {
+            logger.debug("Exception connecting to S3 bucket: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Can't connect to the bucket");
-            logger.debug("Can't connect to the bucket: {}", e.getMessage());
             return false;
         }
         return true;
@@ -127,10 +147,12 @@ public class S3BucketWatcherHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing S3 Bucket Watcher handler for {}", thing.getUID());
         ScheduledFuture<?> executionJob = this.executionJob;
         if (executionJob != null) {
             executionJob.cancel(true);
             this.executionJob = null;
+            logger.debug("Cancelled execution job");
         }
     }
 }
