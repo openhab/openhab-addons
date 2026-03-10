@@ -42,6 +42,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.websocket.common.OpCode;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2NotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
@@ -114,7 +115,9 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param interfacehandler
      */
     public synchronized void addMessageHandler(Shelly2RpctInterface interfacehandler) {
-        this.websocketHandler = interfacehandler;
+        synchronized (this) {
+            this.websocketHandler = interfacehandler;
+        }
     }
 
     /**
@@ -304,7 +307,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param receivedMessage Textual API message
      */
     @OnWebSocketMessage
-    public void onText(Session session, String receivedMessage) {
+    public void onMessage(Session session, String receivedMessage) {
         Shelly2RpctInterface handler;
         synchronized (this) {
             handler = websocketHandler;
@@ -321,7 +324,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                 if (message.method == null) {
                     message.method = SHELLYRPC_METHOD_NOTIFYFULLSTATUS;
                 }
-                switch (getString(message.method)) {
+                switch (message.method) {
                     case SHELLYRPC_METHOD_NOTIFYSTATUS:
                     case SHELLYRPC_METHOD_NOTIFYFULLSTATUS:
                         Shelly2RpcNotifyStatus status = fromJson(gson, receivedMessage, Shelly2RpcNotifyStatus.class);
@@ -362,7 +365,7 @@ public class Shelly2RpcSocket implements WriteCallback {
                         }
                         break;
                     default:
-                        handler.onMessage(receivedMessage);
+                        logger.warn("{}: WS Event with unknown method received: {}", thingName, message.method);
                 }
             } else {
                 if (logger.isDebugEnabled()) {
@@ -455,15 +458,15 @@ public class Shelly2RpcSocket implements WriteCallback {
     }
 
     @OnWebSocketFrame
-    public void onFrame(Session session, Frame frame) {
+    public void onFrame(Frame frame) {
         switch (frame.getOpCode()) {
-            case 0x09: // PING opcode
+            case OpCode.PING:
                 // Jetty auto-responds with PONG by default
                 if (logger.isTraceEnabled()) {
                     logger.trace("{}: WebSocket PING received", thingName);
                 }
                 break;
-            case 0x0A: // PING opcode (optional)
+            case OpCode.PONG:
                 if (logger.isTraceEnabled()) {
                     logger.trace("{}: WebSocket PONG received", thingName);
                 }

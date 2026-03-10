@@ -746,12 +746,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onMessage(String message) {
-        logger.debug("{}: Unexpected RPC message received: {}", thingName, message);
-        incProtErrors();
-    }
-
-    @Override
     public void onPong() {
         if (thing != null) {
             thing.restartWatchdog();
@@ -1381,7 +1375,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void close() {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket == null) {
-            logger.debug("{}: Cannot close RPC socket since it's null", thingName);
             initialized = false;
             return;
         }

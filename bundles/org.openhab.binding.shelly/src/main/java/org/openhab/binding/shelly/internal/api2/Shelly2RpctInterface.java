@@ -26,8 +26,6 @@ public interface Shelly2RpctInterface {
 
     void onConnect(String deviceIp, boolean connected);
 
-    void onMessage(String decodedmessage);
-
     void onNotifyStatus(Shelly2RpcNotifyStatus message) throws ShellyApiException;
 
     void onNotifyEvent(String json) throws ShellyApiException;
