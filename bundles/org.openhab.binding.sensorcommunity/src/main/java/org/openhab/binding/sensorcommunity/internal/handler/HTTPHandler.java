@@ -123,6 +123,11 @@ public class HTTPHandler {
         logger.warn("GSon: {}", json);
     }
 
+    public boolean isRadiation(@Nullable List<SensorDataValue> valueList) {
+        return valueList != null && valueList.stream().map(v -> v.getValueType())
+                .filter(t -> t.endsWith(RADIATION_CPM) || t.endsWith(RADIATION_CPM)).findAny().isPresent();
+    }
+
     public boolean isParticulate(@Nullable List<SensorDataValue> valueList) {
         return valueList != null && valueList.stream().map(v -> v.getValueType())
                 .filter(t -> t.endsWith(P1) || t.endsWith(P2)).findAny().isPresent();

@@ -73,6 +73,35 @@
 		</config-description>
 	</thing-type>
 
+	<thing-type id="radiation">
+		<label>Radiation Sensor</label>
+		<description>Sensor to measure radiation on location</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<channels>
+			<channel id="radiation" typeId="radiation"/>
+			<channel id="radiation-level" typeId="radiation-level"/>
+			<channel id="counts-per-minute" typeId="counts-per-minute"/>
+			<channel id="hv-pulses" typeId="hv-pulses"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text">
+				<context>network-address</context>
+				<label>Internal IP Address</label>
+				<description>Local IP address of your personal owned sensor</description>
+			</parameter>
+			<parameter name="sensorid" type="integer">
+				<label>External Sensor ID</label>
+				<description>Sensor ID from https://deutschland.maps.sensor.community/</description>
+			</parameter>
+			<parameter name="conversionFactor" type="decimal">
+				<label>Conversion Factor</label>
+				<description>Sensor specific conversion factor to transform counts per minute to Sievert</description>
+				<default>0.00136</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 	<channel-type id="pm25-channel">
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter category 2.5</label>
@@ -160,5 +189,35 @@
 			<tag>Noise</tag>
 		</tags>
 		<state pattern="%.1f dB" readOnly="true"/>
+	</channel-type>
+	<channel-type id="radiation">
+		<item-type unitHint="μSv/h">Number:RadiationDoseEffective</item-type>
+		<label>Radiation</label>
+		<description>Radiation measure in micro Sievert per hour</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="radiation-level">
+		<item-type>Number</item-type>
+		<label>Radiation Level</label>
+		<description>Severity level of radiation dose </description>
+		<state>
+			<options>
+				<option value="0">Normal</option>
+				<option value="1">Elevated</option>
+				<option value="2">High</option>
+				<option value="3">Action Level</option>
+				<option value="4">Dangerous</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="counts-per-minute">
+		<item-type>Number</item-type>
+		<label>Counts per Minute</label>
+		<description>Number of decay events in one minute</description>
+	</channel-type>
+	<channel-type id="hv-pulses">
+		<item-type>Number</item-type>
+		<label>HV Pulses</label>
+		<description>Number of high voltage pulses in measurement period</description>
 	</channel-type>
 </thing:thing-descriptions>
