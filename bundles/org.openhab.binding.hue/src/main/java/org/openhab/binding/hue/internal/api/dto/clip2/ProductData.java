@@ -29,7 +29,7 @@ public class ProductData {
     private @SerializedName("manufacturer_name") @NonNullByDefault({}) String manufacturerName;
     private @SerializedName("product_name") @NonNullByDefault({}) String productName;
     private @SerializedName("product_archetype") @NonNullByDefault({}) String productArchetype;
-    private Boolean certified;
+    private @Nullable Boolean certified;
     private @SerializedName("software_version") @NonNullByDefault({}) String softwareVersion;
     private @SerializedName("hardware_platform_type") @Nullable String hardwarePlatformType;
 
