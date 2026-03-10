@@ -138,7 +138,6 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 stateHandler.handleStateChange(channelUID, deviceType, componentId, state, this);
             }
         }
-
     }
 
     public void refreshDevice(String deviceType, String componentId, String capa, String attr, Object value) {
