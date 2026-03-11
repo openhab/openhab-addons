@@ -60,7 +60,8 @@ public class SmartthingsLocalCallbackListener {
                 logger.info("Started OAuth callback listener on port 61973");
                 while (!serverSocket.isClosed()) {
                     try (Socket socket = serverSocket.accept();
-                            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                            BufferedReader in = new BufferedReader(
+                                    new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                             OutputStream out = socket.getOutputStream()) {
                         String line = in.readLine();
                         if (line == null) {
@@ -84,10 +85,10 @@ public class SmartthingsLocalCallbackListener {
                         }
                         byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
 
-                        out.write("HTTP/1.1 200 OK\r\n".getBytes());
-                        out.write("Content-Type: text/html; charset=UTF-8\r\n".getBytes());
-                        out.write(("Content-Length: " + bytes.length + "\r\n").getBytes());
-                        out.write("\r\n".getBytes());
+                        write(out, "HTTP/1.1 200 OK\r\n");
+                        write(out, "Content-Type: text/html; charset=UTF-8\r\n");
+                        write(out, "Content-Length: " + bytes.length + "\r\n");
+                        write(out, "\r\n");
                         out.write(bytes);
                         out.flush();
                     } catch (Exception e) {
@@ -106,6 +107,10 @@ public class SmartthingsLocalCallbackListener {
         thread.setDaemon(true);
         thread.start();
         this.callbackThread = thread;
+    }
+
+    private void write(OutputStream out, String st) throws IOException {
+        out.write(st.getBytes(StandardCharsets.UTF_8));
     }
 
     public void stopCallbackListener() {
