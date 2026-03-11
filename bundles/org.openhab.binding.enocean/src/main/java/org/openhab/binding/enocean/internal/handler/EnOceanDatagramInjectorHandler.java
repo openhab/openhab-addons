@@ -36,6 +36,8 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -225,6 +227,10 @@ public class EnOceanDatagramInjectorHandler extends EnOceanBaseThingHandler {
         stopMotionRetriggerJob();
         motionRetriggerJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
+                if (!canSendMessages()) {
+                    logger.debug("Motion retrigger skipped: injector not operational");
+                    return;
+                }
                 sendMessage(profileType, channelId, channelTypeId, OnOffType.ON, channelConfig);
             } catch (Exception e) {
                 logger.debug("Motion retrigger send failed", e);
@@ -237,6 +243,28 @@ public class EnOceanDatagramInjectorHandler extends EnOceanBaseThingHandler {
         if (localJob != null) {
             localJob.cancel(true);
             motionRetriggerJob = null;
+        }
+    }
+
+    /**
+     * Check if the injector is operational and can send messages.
+     */
+    private boolean canSendMessages() {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            return false;
+        }
+        EnOceanBridgeHandler handler = getBridgeHandler();
+        if (handler == null) {
+            return false;
+        }
+        return handler.isRS485Enabled();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            stopMotionRetriggerJob();
         }
     }
 

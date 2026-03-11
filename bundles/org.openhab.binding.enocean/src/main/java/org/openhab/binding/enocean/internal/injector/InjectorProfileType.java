@@ -13,7 +13,6 @@
 package org.openhab.binding.enocean.internal.injector;
 
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_CONTACT;
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_GENERAL_SWITCHING;
 import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_MOTIONDETECTION;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,8 +23,8 @@ import org.openhab.binding.enocean.internal.eep.EEPType;
  */
 @NonNullByDefault
 public enum InjectorProfileType {
-    FTK_D5_00_01("FTK_D5_00_01", EEPType.ContactAndSwitch01, "switch", CHANNEL_GENERAL_SWITCHING),
-    MOTION_A5_07_01("MOTION_A5_07_01", EEPType.OCCUPANCYSENSOR_A5_07_01, "switch", CHANNEL_GENERAL_SWITCHING);
+    FTK_D5_00_01("FTK_D5_00_01", EEPType.ContactAndSwitch01, "switch", CHANNEL_CONTACT),
+    MOTION_A5_07_01("MOTION_A5_07_01", EEPType.OCCUPANCYSENSOR_A5_07_01, "switch", CHANNEL_MOTIONDETECTION);
 
     private final String id;
     private final EEPType sendingEEPType;
@@ -61,12 +60,7 @@ public enum InjectorProfileType {
     }
 
     public boolean isChannelSupported(String channelId, String channelTypeId) {
-        return switch (this) {
-            case FTK_D5_00_01 -> this.channelId.equals(channelId)
-                    && (this.channelTypeId.equals(channelTypeId) || CHANNEL_CONTACT.equals(channelTypeId));
-            case MOTION_A5_07_01 -> this.channelId.equals(channelId)
-                    && (this.channelTypeId.equals(channelTypeId) || CHANNEL_MOTIONDETECTION.equals(channelTypeId));
-        };
+        return this.channelId.equals(channelId) && this.channelTypeId.equals(channelTypeId);
     }
 
     public static InjectorProfileType getType(String id) {
