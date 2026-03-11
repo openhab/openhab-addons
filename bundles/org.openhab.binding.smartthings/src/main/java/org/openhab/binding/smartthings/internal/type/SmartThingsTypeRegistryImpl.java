@@ -511,7 +511,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
                     }
                 }
-
             } else {
                 Map<String, String> props = new Hashtable<String, String>();
 

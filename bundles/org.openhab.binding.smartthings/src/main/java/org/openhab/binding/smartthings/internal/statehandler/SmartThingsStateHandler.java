@@ -40,6 +40,7 @@ public abstract class SmartThingsStateHandler {
 
     public void handleStateChange(ChannelUID channelUID, String deviceType, String componentId, State state,
             SmartThingsThingHandler thingHandler) {
+        stateCache.put(channelUID.getId(), state);
     }
 
     protected PercentType convToPercentTypeIfNeed(State state) {

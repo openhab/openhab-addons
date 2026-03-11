@@ -114,6 +114,10 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
             enabled = false;
         }
         if ("Petrole".equals(label)) {
+            enabled = true;
+        }
+
+        if ("Bureau".equals(label)) {
             enabled = false;
         }
         if (label.contains("cuisson")) {
@@ -121,10 +125,10 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         }
 
         if (label.contains("Plug")) {
-            enabled = true;
+            enabled = false;
         }
 
-        enabled = true;
+        // enabled = false;
 
         if (!enabled) {
             return;

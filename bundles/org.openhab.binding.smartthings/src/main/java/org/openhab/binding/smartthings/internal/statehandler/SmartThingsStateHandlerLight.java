@@ -36,6 +36,7 @@ public class SmartThingsStateHandlerLight extends SmartThingsStateHandler {
     @Override
     public void handleStateChange(ChannelUID channelUID, String deviceType, String componentId, State state,
             SmartThingsThingHandler thingHandler) {
+        super.handleStateChange(channelUID, deviceType, componentId, state, thingHandler);
         State oldHueState = stateCache.get(SmartThingsBindingConstants.CHANNEL_NAME_HUE);
         State oldSaturationState = stateCache.get(SmartThingsBindingConstants.CHANNEL_NAME_SATURATION);
         State oldLevelState = stateCache.get(SmartThingsBindingConstants.CHANNEL_NAME_LEVEL);

@@ -23,6 +23,9 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsArgument;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsAttribute;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsCommand;
+import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandler;
+import org.openhab.binding.smartthings.internal.statehandler.SmartThingsStateHandlerFactory;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -46,10 +49,12 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * This "Converter" is assigned to a channel when a special converter is not needed.
@@ -175,7 +180,61 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                             continue;
                         }
 
-                        stack.push(value);
+                        if (arg.schema != null && "object".equals(arg.schema.type) && arg.schema.properties != null) {
+                            String jSonArgs = "";
+                            String deviceType = channelUid.getAsString().split(":")[1];
+                            String groupId = channelUid.getGroupId();
+                            SmartThingsStateHandler stateHandler = SmartThingsStateHandlerFactory
+                                    .getStateHandler(deviceType);
+
+                            for (Map.Entry<String, SmartThingsProperty> entry : arg.schema.properties.entrySet()) {
+                                String subAttr = entry.getKey();
+                                SmartThingsProperty subProp = entry.getValue();
+
+                                if (subAttr.equals("afterAction")) {
+                                    continue;
+                                }
+
+                                if (!("".equals(jSonArgs))) {
+                                    jSonArgs = jSonArgs + ",";
+                                }
+
+                                jSonArgs = jSonArgs + "\"" + subAttr + "\":";
+
+                                String cacheKey = groupId + "#" + subAttr;
+                                State state = stateHandler.getState(cacheKey);
+                                if (state instanceof StringType stateString) {
+                                    String stState = stateString.toFullString();
+                                    stState = stState.trim();
+                                    if (stState.contains(",")) {
+                                        if (stState.endsWith(",")) {
+                                            stState = stState.substring(0, stState.length() - 1);
+                                        }
+                                        stState = stState.replace(".0", "");
+                                        jSonArgs = jSonArgs + "[" + stState + "]";
+
+                                    } else {
+                                        jSonArgs = jSonArgs + state;
+
+                                    }
+                                } else if (state instanceof UnDefType) {
+                                    jSonArgs = jSonArgs + "\"WindDown\"";
+                                } else if (state instanceof DecimalType decimalType) {
+                                    jSonArgs = jSonArgs + decimalType.intValue();
+                                } else {
+                                    jSonArgs = jSonArgs + state;
+                                }
+
+                                logger.info("");
+                            }
+
+                            JsonObject elm = gson.fromJson("{" + jSonArgs + "}", JsonObject.class);
+                            if (elm != null) {
+                                stack.push(elm);
+                            }
+                        } else {
+                            stack.push(value);
+                        }
                     }
                     arguments = stack.toArray();
                 }
