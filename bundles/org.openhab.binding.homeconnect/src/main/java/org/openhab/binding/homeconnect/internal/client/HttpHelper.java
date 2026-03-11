@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -107,14 +108,16 @@ public class HttpHelper {
                     String lastToken = lastAccessToken;
                     if (lastToken == null) {
                         LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
-                                LocalDateTime.ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
+                                LocalDateTime
+                                        .ofInstant(Objects.requireNonNullElse(accessTokenResponse.getCreatedOn(),
+                                                Instant.now()), ZoneId.systemDefault())
                                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     } else if (!lastToken.equals(accessTokenResponse.getAccessToken())) {
                         LoggerFactory.getLogger(HttpHelper.class)
-                                .debug("The access token changed. New one created at {}",
-                                        LocalDateTime
-                                                .ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
-                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                                .debug("The access token changed. New one created at {}", LocalDateTime
+                                        .ofInstant(Objects.requireNonNullElse(accessTokenResponse.getCreatedOn(),
+                                                Instant.now()), ZoneId.systemDefault())
+                                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     }
                     lastAccessToken = accessTokenResponse.getAccessToken();
 
