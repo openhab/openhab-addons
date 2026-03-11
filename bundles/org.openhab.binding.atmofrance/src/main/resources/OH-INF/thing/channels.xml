@@ -15,13 +15,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="comment">
-		<item-type>String</item-type>
-		<label>Comment</label>
-		<category>text</category>
-		<state readOnly="true" pattern="%s"/>
-	</channel-type>
-
 	<channel-type id="concentration">
 		<item-type unitHint="gr/m³">Number:Density</item-type>
 		<label>Measure</label>
@@ -135,7 +128,6 @@
 				<option value="4">Very High</option>
 				<option value="5">Extremely High</option>
 				<option value="9">Absent</option>
-
 			</options>
 		</state>
 	</channel-type>
@@ -157,7 +149,6 @@
 				<option value="4">Very High</option>
 				<option value="5">Extremely High</option>
 				<option value="9">Absent</option>
-
 			</options>
 		</state>
 	</channel-type>
@@ -201,7 +192,6 @@
 				<option value="4">Very High</option>
 				<option value="5">Extremely High</option>
 				<option value="9">Absent</option>
-
 			</options>
 		</state>
 	</channel-type>
@@ -223,7 +213,6 @@
 				<option value="4">Very High</option>
 				<option value="5">Extremely High</option>
 				<option value="9">Absent</option>
-
 			</options>
 		</state>
 	</channel-type>
