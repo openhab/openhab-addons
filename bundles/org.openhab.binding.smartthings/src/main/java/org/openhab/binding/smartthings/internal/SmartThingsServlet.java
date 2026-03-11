@@ -16,11 +16,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Dictionary;
@@ -72,7 +67,8 @@ import com.google.gson.Gson;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class SmartThingsServlet extends HttpServlet {
+public class SmartThingsServlet extends HttpServlet
+        implements SmartthingsLocalCallbackListener.ResponseHandlerListener {
 
     private static final long serialVersionUID = -4719613645562518231L;
 
@@ -81,6 +77,7 @@ public class SmartThingsServlet extends HttpServlet {
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
     private final Logger logger = LoggerFactory.getLogger(SmartThingsServlet.class);
     private final SmartThingsAuthService smartthingsAuthService;
+    private final SmartthingsLocalCallbackListener smartthingsLocalCallbackListener;
 
     private final String indexTemplate;
     private final String step1Template;
@@ -107,14 +104,14 @@ public class SmartThingsServlet extends HttpServlet {
 
     protected final SmartThingsBridgeHandler bridgeHandler;
     protected final HttpService httpService;
-    private @Nullable ServerSocket callbackServerSocket;
-    private @Nullable Thread callbackThread;
 
     public SmartThingsServlet(SmartThingsBridgeHandler bridgeHandler, SmartThingsAuthService smartthingsAuthService,
             HttpService httpService) throws SmartThingsException {
         this.smartthingsAuthService = smartthingsAuthService;
         this.bridgeHandler = bridgeHandler;
         this.httpService = httpService;
+        this.smartthingsLocalCallbackListener = new SmartthingsLocalCallbackListener();
+        this.smartthingsLocalCallbackListener.setListener(this);
 
         try {
             indexTemplate = readTemplate("index-oauth.html");
@@ -131,85 +128,14 @@ public class SmartThingsServlet extends HttpServlet {
             logger.info("registerServlet:" + PATH);
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
             httpService.registerResources(PATH + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS, "img", null);
-            startCallbackListener();
+            smartthingsLocalCallbackListener.startCallbackListener();
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start SmartThings servlet service: {}", e.getMessage());
         }
     }
 
     public void desactivate() {
-        stopCallbackListener();
-    }
-
-    private void startCallbackListener() {
-        stopCallbackListener();
-        Thread thread = new Thread(() -> {
-            try (ServerSocket serverSocket = new ServerSocket(61973)) {
-                this.callbackServerSocket = serverSocket;
-                logger.info("Started OAuth callback listener on port 61973");
-                while (!serverSocket.isClosed()) {
-                    try (Socket socket = serverSocket.accept();
-                            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                            OutputStream out = socket.getOutputStream()) {
-
-                        String line = in.readLine();
-                        if (line == null) {
-                            continue;
-                        }
-
-                        // Simple HTTP parsing
-                        String[] parts = line.split(" ");
-                        if (parts.length < 2) {
-                            continue;
-                        }
-                        String url = parts[1];
-
-                        URI uri = new URI(url);
-                        String path = uri.getPath();
-                        String query = uri.getQuery();
-
-                        String responseBody = handleTemplate(path, query);
-                        byte[] bytes = responseBody.getBytes(StandardCharsets.UTF_8);
-
-                        out.write("HTTP/1.1 200 OK\r\n".getBytes());
-                        out.write("Content-Type: text/html; charset=UTF-8\r\n".getBytes());
-                        out.write(("Content-Length: " + bytes.length + "\r\n").getBytes());
-                        out.write("\r\n".getBytes());
-                        out.write(bytes);
-                        out.flush();
-                    } catch (Exception e) {
-                        if (serverSocket != null && !serverSocket.isClosed()) {
-                            logger.error("Error in OAuth callback listener", e);
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                if (callbackServerSocket != null) {
-                    logger.error("Failed to start OAuth callback listener", e);
-                }
-            }
-        });
-        thread.setName("SmartThings OAuth Callback Listener");
-        thread.setDaemon(true);
-        thread.start();
-        this.callbackThread = thread;
-    }
-
-    private void stopCallbackListener() {
-        ServerSocket serverSocket = callbackServerSocket;
-        if (serverSocket != null) {
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                logger.debug("Error closing callback server socket", e);
-            }
-            callbackServerSocket = null;
-        }
-        Thread thread = callbackThread;
-        if (thread != null) {
-            thread.interrupt();
-            callbackThread = null;
-        }
+        smartthingsLocalCallbackListener.stopCallbackListener();
     }
 
     public void deactivate(ComponentContext componentContext) {
@@ -246,6 +172,11 @@ public class SmartThingsServlet extends HttpServlet {
         resp.setContentType(CONTENT_TYPE);
         resp.getWriter().append(template);
         resp.getWriter().close();
+    }
+
+    @Override
+    public String handle(String path, String query) {
+        return handleTemplate(path, query);
     }
 
     private String handleTemplate(String requestUrl, @Nullable String queryString) {
