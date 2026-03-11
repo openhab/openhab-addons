@@ -189,9 +189,8 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
 
                             for (Map.Entry<String, SmartThingsProperty> entry : arg.schema.properties.entrySet()) {
                                 String subAttr = entry.getKey();
-                                SmartThingsProperty subProp = entry.getValue();
 
-                                if (subAttr.equals("afterAction")) {
+                                if ("afterAction".equals(subAttr)) {
                                     continue;
                                 }
 
@@ -212,10 +211,8 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                                         }
                                         stState = stState.replace(".0", "");
                                         jSonArgs = jSonArgs + "[" + stState + "]";
-
                                     } else {
                                         jSonArgs = jSonArgs + state;
-
                                     }
                                 } else if (state instanceof UnDefType) {
                                     jSonArgs = jSonArgs + "\"WindDown\"";
