@@ -50,6 +50,7 @@ public class AtmoFranceIconProvider implements IconProvider {
     private static final String NEUTRAL_COLOR = "#3d3c3c";
     private static final String DEFAULT_LABEL = "Atmo France Icons";
     private static final String AQ_ICON = "aq";
+    private static final String POLLEN_ICON = "pollen";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating air quality levels provided by Atmo France";
     private static final List<String> TAXON_ICONS = Taxon.AS_SET.stream().map(Taxon::name).map(String::toLowerCase)
             .toList();
@@ -85,7 +86,8 @@ public class AtmoFranceIconProvider implements IconProvider {
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
         return Format.SVG.equals(format) && iconSetId.equals(BINDING_ID)
-                && (category.equals(AQ_ICON) || TAXON_ICONS.contains(category)) ? 0 : null;
+                && (category.equals(AQ_ICON) || category.equals(POLLEN_ICON) || TAXON_ICONS.contains(category)) ? 0
+                        : null;
     }
 
     @Override
@@ -97,7 +99,7 @@ public class AtmoFranceIconProvider implements IconProvider {
         }
 
         String iconName = "icon/%s.svg".formatted(category);
-        if (category.equals(AQ_ICON) && ordinal != -1) {
+        if ((category.equals(POLLEN_ICON) || category.equals(AQ_ICON)) && ordinal != -1) {
             iconName = iconName.replace(".", "-%d.".formatted(ordinal));
         }
 

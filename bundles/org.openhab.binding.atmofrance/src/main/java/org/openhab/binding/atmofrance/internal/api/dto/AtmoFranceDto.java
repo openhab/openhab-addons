@@ -15,7 +15,16 @@ package org.openhab.binding.atmofrance.internal.api.dto;
 import java.time.Instant;
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
+import javax.measure.Unit;
+
+import org.openhab.core.library.dimension.Density;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+
+import tech.units.indriya.unit.ProductUnit;
 
 /**
  * {@link AtmoFranceDto} class defines DTO used to interact with server api
@@ -24,6 +33,9 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 public class AtmoFranceDto {
+    public static final Unit<Density> GRAIN_PER_CUBICMETER = new ProductUnit<>(
+            ImperialUnits.GRAIN.divide(tech.units.indriya.unit.Units.CUBIC_METRE));
+
     public record LoginResponse(String token) {
     }
 
@@ -49,68 +61,46 @@ public class AtmoFranceDto {
     }
 
     public class BaseProperties {
-        @SerializedName("aasqa")
         public String aasqa;
 
-        @SerializedName("date_maj")
         public Instant dateMaj;
-        @SerializedName("date_dif")
         public Instant dateDif;
-        @SerializedName("date_ech")
         public Instant dateEch;
 
-        @SerializedName("code_zone")
         public String codeZone;
-        @SerializedName("lib_zone")
         public String libZone;
-        @SerializedName("type_zone")
         public String typeZone;
 
-        @SerializedName("lib_qual")
         public String libQual;
-        @SerializedName("source")
         public String source;
     }
 
     public class PollensProperties extends BaseProperties {
-        @SerializedName("alerte")
         public boolean alerte;
 
-        @SerializedName("code_ambr")
         private int codeAmbr;
-        @SerializedName("code_arm")
         private int codeArm;
-        @SerializedName("code_aul")
         private int codeAul;
-        @SerializedName("code_boul")
         private int codeBoul;
-        @SerializedName("code_gram")
         private int codeGram;
-        @SerializedName("code_oliv")
         private int codeOliv;
 
-        @SerializedName("code_qual")
-        public PollenIndex codeQual;
+        private int codeQual;
 
-        @SerializedName("conc_ambr")
-        public double concAmbr;
-        @SerializedName("conc_arm")
-        public double concArm;
-        @SerializedName("conc_aul")
-        public double concAul;
-        @SerializedName("conc_boul")
-        public double concBoul;
-        @SerializedName("conc_gram")
-        public double concGram;
-        @SerializedName("conc_oliv")
-        public double concOliv;
+        private double concAmbr;
+        private double concArm;
+        private double concAul;
+        private double concBoul;
+        private double concGram;
+        private double concOliv;
 
-        @SerializedName("pollen_resp")
         public String pollenResp;
-        @SerializedName("name")
-        public Object name;
 
-        public PollenIndex getTaxon(Taxon taxon) {
+        public State getGlobal() {
+            return new DecimalType(PollenIndex.valueOf(codeQual).value);
+        }
+
+        public State getTaxonIndex(Taxon taxon) {
             int result = switch (taxon) {
                 case ALDER -> codeAul;
                 case BIRCH -> codeBoul;
@@ -120,38 +110,50 @@ public class AtmoFranceDto {
                 case RAGWEED -> codeAmbr;
                 default -> 9;
             };
-            return PollenIndex.valueOf(result);
+            return new DecimalType(PollenIndex.valueOf(result).value);
+        }
+
+        public State getTaxonConc(Taxon taxon) {
+            double result = switch (taxon) {
+                case ALDER -> concAul;
+                case BIRCH -> concBoul;
+                case OLIVE -> concOliv;
+                case GRASSES -> concGram;
+                case WORMWOOD -> concArm;
+                case RAGWEED -> concAmbr;
+                default -> -1;
+            };
+
+            return result != -1 ? new QuantityType<>(result, GRAIN_PER_CUBICMETER) : UnDefType.NULL;
         }
     }
 
     public class IndexProperties extends BaseProperties {
-        @SerializedName("code_no2")
-        public AtmoIndex no2;
-        @SerializedName("code_o3")
-        public AtmoIndex o3;
-        @SerializedName("code_pm10")
-        public AtmoIndex pm10;
-        @SerializedName("code_pm25")
-        public AtmoIndex pm25;
-        @SerializedName("code_so2")
-        public AtmoIndex so2;
+        private AtmoIndex codeNo2;
+        private AtmoIndex codeO3;
+        private AtmoIndex codePm10;
+        private AtmoIndex codePm25;
+        private AtmoIndex codeSo2;
 
-        @SerializedName("code_qual")
         public AtmoIndex codeQual;
-        @SerializedName("coul_qual")
         public String coulQual;
 
-        @SerializedName("epsg_reg")
         public String epsgReg;
-        @SerializedName("x_reg")
         public double xReg;
-        @SerializedName("x_wgs84")
         public double xWgs84;
-        @SerializedName("y_reg")
         public double yReg;
-        @SerializedName("y_wgs84")
         public double yWgs84;
-        @SerializedName("gml_id2")
-        public Object gmlId2;
+
+        public State getPollutantIndex(Pollutant pollutant) {
+            AtmoIndex result = switch (pollutant) {
+                case NO2 -> codeNo2;
+                case O3 -> codeO3;
+                case PM10 -> codePm10;
+                case PM25 -> codePm25;
+                case SO2 -> codeSo2;
+                default -> AtmoIndex.UNKNOWN;
+            };
+            return new DecimalType(result.value);
+        }
     }
 }

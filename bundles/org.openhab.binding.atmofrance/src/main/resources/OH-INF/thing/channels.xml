@@ -54,6 +54,27 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="pollen-index">
+		<item-type>Number</item-type>
+		<label>Pollen Index</label>
+		<category>oh:atmofrance:pollen</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="0">Very Low</option>
+				<option value="1">Low</option>
+				<option value="2">Moderate</option>
+				<option value="3">High</option>
+				<option value="4">Very High</option>
+				<option value="5">Extremely High</option>
+				<option value="9">Absent</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="index-adv" advanced="true">
 		<item-type>Number</item-type>
 		<label>Air Quality</label>

@@ -1,95 +1,45 @@
-# AtmoFrance Binding
+# Atmo France Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+This binding uses the [Atmo France service](https://www.atmo-france.org/) for providing air quality and pollens information in France.
+To use it, you first need to [register and get your credentials](https://admindata.atmo-france.org/inscription-api).
+You'll need your username and password.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+- `api`: bridge used to connect to the Atmo France service.
+- `city`: Presents the pollens and air quality information for a given location.
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+You can add multiple `city`, e.g. for gathering pollen or air quality data for different locations.
 
-## Discovery
-
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the AtmoFrance Binding
-#
-# Default secret key for the pairing of the AtmoFrance Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
+### `api` Thing Configuration
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Name            | Type    | Description                                    | Default | Required | Advanced |
+|-----------------|---------|------------------------------------------------|---------|----------|----------|
+| username        | text    | Username of your Atmo Data API portal account  | N/A     | yes      | no       |
+| password        | text    | Password of your Atmo Data API portal account  | N/A     | yes      | no       |
 
-### `sample` Thing Configuration
+### `city` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name            | Type    | Description               | Default | Required | Advanced |
+|-----------------|---------|---------------------------|---------|----------|----------|
+| codeInsee       | text    | Insee code of the city    | N/A     | yes      | no       |
 
-## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+## Provided icon set
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding has its own IconProvider and makes available the following list of icons
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
+| Icon Name              | Dynamic | Illustration                             |
+|------------------------|---------|------------------------------------------|
+| oh:atmofrance:aq       |   Yes   | ![Air Quality](doc/images/aq.svg)        |
+| oh:atmofrance:pollen   |   Yes   | ![Pollen](doc/images/pollen.svg)         |
+| oh:atmofrance:alder    |   Yes   | ![Alder](doc/images/alder.svg)           |
+| oh:atmofrance:birch    |   Yes   | ![Birch](doc/images/birch.svg)           |
+| oh:atmofrance:olive    |   Yes   | ![Olive](doc/images/olive.svg)           |
+| oh:atmofrance:grasses  |   Yes   | ![Grasses](doc/images/grasses.svg)       |
+| oh:atmofrance:ragweed  |   Yes   | ![Ragweed](doc/images/ragweed.svg)       |
+| oh:atmofrance:wormwood |   Yes   | ![Wormwood](doc/images/wormwood.svg)     |
 
-## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
-
-### Thing Configuration
-
-```java
-Example thing configuration goes here.
-```
-
-### Item Configuration
-
-```java
-Example item configuration goes here.
-```
-
-### Sitemap Configuration
-
-```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
-```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

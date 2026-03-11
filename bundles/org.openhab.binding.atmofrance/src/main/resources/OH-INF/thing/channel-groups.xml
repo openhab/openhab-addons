@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atmofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="aq">
+		<label>Air Quality Information</label>
+		<channels>
+			<channel id="index" typeId="index"/>
+			<channel id="no2-index" typeId="index-adv">
+				<label>NO₂</label>
+				<description>Dioxyde d'Azote</description>
+			</channel>
+			<channel id="so2-index" typeId="index-adv">
+				<label>SO₂</label>
+				<description>Dioxyde de Soufre</description>
+			</channel>
+			<channel id="o3-index" typeId="index-adv">
+				<label>O₃</label>
+				<description>Ozone</description>
+			</channel>
+			<channel id="pm10-index" typeId="index-adv">
+				<label>PM 10</label>
+				<description>Particules fines &lt; 10 µm</description>
+			</channel>
+			<channel id="pm25-index" typeId="index-adv">
+				<label>PM 2.5</label>
+				<description>Particules fines &lt; 2,5 µm</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="date-ech" typeId="timestamp">
+				<label>Date de Valeur</label>
+			</channel>
+			<channel id="date-dif" typeId="timestamp">
+				<label>Date de Publication</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pollens">
+		<label>Pollen Information</label>
+		<channels>
+			<channel id="index" typeId="pollen-index"/>
+			<channel id="alder-conc" typeId="concentration">
+				<label>Alder</label>
+				<description>Alder concentration</description>
+			</channel>
+			<channel id="alder-level" typeId="alder-level">
+				<label>Alder</label>
+				<description>Alder Index</description>
+			</channel>
+			<channel id="birch-conc" typeId="concentration">
+				<label>Birch</label>
+				<description>Birch concentration</description>
+			</channel>
+			<channel id="birch-level" typeId="birch-level">
+				<label>Birch</label>
+				<description>Birch Index</description>
+			</channel>
+			<channel id="grasses-conc" typeId="concentration">
+				<label>Grasses</label>
+				<description>Grasses concentration</description>
+			</channel>
+			<channel id="grasses-level" typeId="grasses-level">
+				<label>Grasses</label>
+				<description>Grasses Index</description>
+			</channel>
+			<channel id="olive-conc" typeId="concentration">
+				<label>Olive</label>
+				<description>Olive concentration</description>
+			</channel>
+			<channel id="olive-level" typeId="olive-level">
+				<label>Olive</label>
+				<description>Olive Index</description>
+			</channel>
+			<channel id="ragweed-conc" typeId="concentration">
+				<label>Ragweed</label>
+				<description>Ragweed concentration</description>
+			</channel>
+			<channel id="ragweed-level" typeId="ragweed-level">
+				<label>Ragweed</label>
+				<description>Ragweed Index</description>
+			</channel>
+			<channel id="wormwood-conc" typeId="concentration">
+				<label>Wormwood</label>
+				<description>Wormwood concentration</description>
+			</channel>
+			<channel id="wormwood-level" typeId="wormwood-level">
+				<label>Wormwood</label>
+				<description>Wormwood Index</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="date-ech" typeId="timestamp">
+				<label>Date de Valeur</label>
+			</channel>
+			<channel id="date-dif" typeId="timestamp">
+				<label>Date de Publication</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

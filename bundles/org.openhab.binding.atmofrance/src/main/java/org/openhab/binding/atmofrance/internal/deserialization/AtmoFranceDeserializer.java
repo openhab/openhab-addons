@@ -38,7 +38,7 @@ public class AtmoFranceDeserializer {
 
     @Activate
     public AtmoFranceDeserializer() {
-        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY)
+        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(Instant.class, (JsonDeserializer<Instant>) (json, type, context) -> {
                     String string = json.getAsJsonPrimitive().getAsString();
                     string += string.contains("+") ? "" : "T00:00:00+01:00";

@@ -117,17 +117,17 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         }
     }
 
-    public synchronized <T> T executeUri(URI uri, Class<T> clazz) throws AtmoFranceException {
+    private synchronized <T> T executeUri(URI uri, Class<T> clazz) throws AtmoFranceException {
         String content = executeUri(uri, HttpMethod.GET, null);
         return deserializer.deserialize(clazz, content);
     }
 
-    public synchronized <T> T executeUri(URI uri, Class<T> clazz, String payload) throws AtmoFranceException {
+    private synchronized <T> T executeUri(URI uri, Class<T> clazz, String payload) throws AtmoFranceException {
         String content = executeUri(uri, HttpMethod.POST, payload);
         return deserializer.deserialize(clazz, content);
     }
 
-    public synchronized String executeUri(URI uri, HttpMethod method, @Nullable String payload)
+    private synchronized String executeUri(URI uri, HttpMethod method, @Nullable String payload)
             throws AtmoFranceException {
         logger.debug("executeUrl: {} ", uri);
 
@@ -204,7 +204,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
+        logger.debug("This thing does not handle commands");
     }
 
     public @Nullable IndexProperties getAtmoIndex(String codeInsee) {

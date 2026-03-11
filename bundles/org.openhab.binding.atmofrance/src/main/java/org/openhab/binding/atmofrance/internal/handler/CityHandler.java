@@ -15,20 +15,23 @@ package org.openhab.binding.atmofrance.internal.handler;
 import static org.openhab.binding.atmofrance.internal.AtmoFranceBindingConstants.*;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.BaseProperties;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.IndexProperties;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.PollensProperties;
+import org.openhab.binding.atmofrance.internal.api.dto.Pollutant;
 import org.openhab.binding.atmofrance.internal.api.dto.Taxon;
 import org.openhab.binding.atmofrance.internal.configuration.CityConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,6 +39,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,10 +65,10 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
 
     @Override
     public void initialize() {
-        config = getConfigAs(CityConfiguration.class);
+        config = this.getConfigAs(CityConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-        schedule(AQ_JOB.formatted(config.codeInsee), this::getAtmoIndex, Duration.ofSeconds(2));
-        schedule(POLLENS_JOB.formatted(config.codeInsee), this::getPollens, Duration.ofSeconds(3));
+        schedule(AQ_JOB.formatted(thing.getUID()), this::getAtmoIndex, Duration.ofSeconds(2));
+        schedule(POLLENS_JOB.formatted(thing.getUID()), this::getPollens, Duration.ofSeconds(3));
     }
 
     @Override
@@ -80,25 +84,28 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
         if (apiHandler != null && local != null) {
             IndexProperties properties = apiHandler.getAtmoIndex(local.codeInsee);
             if (properties != null) {
-                updateState(CHANNEL_TIMESTAMP, new DateTimeType(properties.dateMaj));
-                updateState(CHANNEL_DATE_ECH, new DateTimeType(properties.dateEch));
-                updateState(CHANNEL_DATE_DIF, new DateTimeType(properties.dateDif));
-                updateState(CHANNEL_COMMENT, new StringType(properties.libQual));
-                updateState(CHANNEL_INDEX, new DecimalType(properties.codeQual.value));
-                updateState(CHANNEL_INDEX_NO2, new DecimalType(properties.no2.value));
-                updateState(CHANNEL_INDEX_SO2, new DecimalType(properties.so2.value));
-                updateState(CHANNEL_INDEX_O3, new DecimalType(properties.o3.value));
-                updateState(CHANNEL_INDEX_PM10, new DecimalType(properties.pm10.value));
-                updateState(CHANNEL_INDEX_PM25, new DecimalType(properties.pm25.value));
+                updateState(GROUP_AQ, CHANNEL_INDEX, properties.codeQual.value);
+                Pollutant.AS_SET.forEach(pollutant -> {
+                    String channelName = pollutant.name().toLowerCase(Locale.ROOT) + "-index";
+                    updateState(GROUP_AQ, channelName, properties.getPollutantIndex(pollutant));
+                });
+                updateCommon(properties, GROUP_AQ);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data provided !!");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Atmo data provided");
             }
-
         } else {
             delay = 10;
         }
-        schedule(AQ_JOB.formatted(local.codeInsee), this::getAtmoIndex, Duration.ofSeconds(delay));
+        schedule(AQ_JOB.formatted(thing.getUID()), this::getAtmoIndex, Duration.ofSeconds(delay));
+    }
+
+    private void updateCommon(BaseProperties properties, String group) {
+        updateState(group, CHANNEL_TIMESTAMP, properties.dateMaj);
+        updateState(group, CHANNEL_DATE_ECH, properties.dateEch);
+        updateState(group, CHANNEL_DATE_DIF, properties.dateDif);
+
+        thing.setProperty("%s source".formatted(group), properties.source);
     }
 
     private void getPollens() {
@@ -108,26 +115,36 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
         if (apiHandler != null && local != null) {
             PollensProperties properties = apiHandler.getPollens(local.codeInsee);
             if (properties != null) {
-                updateState(CHANNEL_ALDER_LVL, new DecimalType(properties.getTaxon(Taxon.ALDER).value));
-                updateState(CHANNEL_BIRCH_LVL, new DecimalType(properties.getTaxon(Taxon.BIRCH).value));
-                updateState(CHANNEL_OLIVE_LVL, new DecimalType(properties.getTaxon(Taxon.OLIVE).value));
-                updateState(CHANNEL_GRASSES_LVL, new DecimalType(properties.getTaxon(Taxon.GRASSES).value));
-                updateState(CHANNEL_WORMWOOD_LVL, new DecimalType(properties.getTaxon(Taxon.WORMWOOD).value));
-                updateState(CHANNEL_RAGWEED_LVL, new DecimalType(properties.getTaxon(Taxon.RAGWEED).value));
-                // updateState(CHANNEL_TIMESTAMP, new DateTimeType(properties.dateMaj));
-                // updateState(CHANNEL_DATE_ECH, new DateTimeType(properties.dateEch));
-                // updateState(CHANNEL_DATE_DIF, new DateTimeType(properties.dateDif));
-                // updateState(CHANNEL_COMMENT, new StringType(properties.libQual));
-                // updateState(CHANNEL_INDEX, new DecimalType(properties.codeQual.value));
+                updateState(GROUP_POLLENS, CHANNEL_INDEX, properties.getGlobal());
+                Taxon.AS_SET.forEach(taxon -> {
+                    String channelName = taxon.name().toLowerCase(Locale.ROOT) + "-";
+                    updateState(GROUP_POLLENS, channelName + "level", properties.getTaxonIndex(taxon));
+                    updateState(GROUP_POLLENS, channelName + "conc", properties.getTaxonConc(taxon));
+                });
+                updateCommon(properties, GROUP_POLLENS);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No data provided !!");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Pollens data provided");
             }
-
         } else {
             delay = 10;
         }
-        schedule(POLLENS_JOB.formatted(local.codeInsee), this::getAtmoIndex, Duration.ofSeconds(delay));
+        schedule(POLLENS_JOB.formatted(thing.getUID()), this::getAtmoIndex, Duration.ofSeconds(delay));
+    }
+
+    private void updateState(String group, String channel, int value) {
+        updateState(group, channel, new DecimalType(value));
+    }
+
+    private void updateState(String group, String channel, Instant date) {
+        updateState(group, channel, new DateTimeType(date));
+    }
+
+    private void updateState(String group, String channel, State state) {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), group, channel);
+        if (isLinked(channelUID)) {
+            updateState(channelUID, state);
+        }
     }
 
     @Override
