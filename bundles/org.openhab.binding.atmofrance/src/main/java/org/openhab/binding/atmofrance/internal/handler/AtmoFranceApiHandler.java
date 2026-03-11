@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -45,6 +46,7 @@ import org.openhab.binding.atmofrance.internal.AtmoFranceException;
 import org.openhab.binding.atmofrance.internal.api.AtmoFranceApi;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.AtmoResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.ErrorResponse;
+import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.Feature;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.IndexProperties;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.LoginResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.PollensProperties;
@@ -88,7 +90,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
 
     @Override
     public void initialize() {
-        logger.debug("Initializing AirParif bridge handler.");
+        logger.debug("Initializing Atmo France bridge handler.");
         var localConfig = getConfigAs(AtmoFranceConfiguration.class);
         ConfigurationLevel configLevel = localConfig.check();
 
@@ -211,7 +213,10 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         URI atmoUri = AtmoFranceApi.getAtmoUri(LocalDate.now(), codeInsee);
         try {
             AtmoResponse response = executeUri(atmoUri, AtmoResponse.class);
-            return response.features().getFirst().properties();
+            List<Feature<IndexProperties>> features = response.features();
+            if (!features.isEmpty()) {
+                return features.getFirst().properties();
+            }
         } catch (AtmoFranceException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -222,7 +227,10 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         URI atmoUri = AtmoFranceApi.getPollensUri(LocalDate.now(), codeInsee);
         try {
             PollensResponse response = executeUri(atmoUri, PollensResponse.class);
-            return response.features().getFirst().properties();
+            List<Feature<PollensProperties>> features = response.features();
+            if (!features.isEmpty()) {
+                return features.getFirst().properties();
+            }
         } catch (AtmoFranceException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

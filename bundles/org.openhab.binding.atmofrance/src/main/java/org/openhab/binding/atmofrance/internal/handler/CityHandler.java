@@ -129,7 +129,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
         } else {
             delay = 10;
         }
-        schedule(POLLENS_JOB.formatted(thing.getUID()), this::getAtmoIndex, Duration.ofSeconds(delay));
+        schedule(POLLENS_JOB.formatted(thing.getUID()), this::getPollens, Duration.ofSeconds(delay));
     }
 
     private void updateState(String group, String channel, int value) {
