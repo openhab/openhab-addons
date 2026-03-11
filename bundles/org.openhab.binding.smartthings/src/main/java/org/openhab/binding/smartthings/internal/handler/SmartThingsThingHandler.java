@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +53,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     private String smartthingsName;
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
-    private LocalDateTime lastRefresh = LocalDateTime.now();
+    private long lastRefresh = System.nanoTime();
 
     public SmartThingsThingHandler(Thing thing) {
         super(thing);
@@ -331,14 +329,12 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         if (cloudBridge != null) {
             int pollingTime = cloudBridge.getPollingTime();
             if (pollingTime != -1) {
-                LocalDateTime now = LocalDateTime.now();
-
-                if (Duration.between(lastRefresh, now).getSeconds() > pollingTime) {
+                long now = System.nanoTime();
+                if (now - lastRefresh > TimeUnit.SECONDS.toNanos(pollingTime)) {
                     refreshDevice();
                     lastRefresh = now;
                 }
             }
-
         }
     }
 
