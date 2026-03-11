@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
@@ -58,6 +57,7 @@ import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.util.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -205,12 +205,11 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     private String getChannelTypeName(SmartThingsCapability capa, String key, String subKey) {
         if ("".equals(subKey)) {
             return capa.id.replace(".", "_") + "_"
-                    + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')).toLowerCase(Locale.ROOT);
+                    + (String.join("-", StringUtils.splitByCharacterType(key))).toLowerCase(Locale.ROOT);
         } else {
             return capa.id.replace(".", "_") + "_"
-                    + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')).toLowerCase(Locale.ROOT)
-                    + "_" + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(subKey), '-'))
-                            .toLowerCase(Locale.ROOT);
+                    + (String.join("-", StringUtils.splitByCharacterType(key))).toLowerCase(Locale.ROOT) + "_"
+                    + (String.join("-", StringUtils.splitByCharacterType(subKey))).toLowerCase(Locale.ROOT);
         }
     }
 
@@ -241,8 +240,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         if (prop.enumeration != null) {
             for (String opt : prop.enumeration) {
                 String optValue = opt;
-                String optName = StringUtils.capitalize(
-                        StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(opt), StringUtils.SPACE));
+                String optName = StringUtils.capitalize(String.join(" ", StringUtils.splitByCharacterType(opt)));
 
                 StateOption option = new StateOption(optValue, optName);
                 options.add(option);
@@ -432,7 +430,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     }
 
     public static String getChannelName(String propKey) {
-        return (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(propKey), '-')).toLowerCase(Locale.ROOT);
+        return (String.join("-", StringUtils.splitByCharacterType(propKey))).toLowerCase(Locale.ROOT);
     }
 
     private void addChannels(String deviceType, List<ChannelGroupType> groupTypes, SmartThingsComponent component,
@@ -570,10 +568,13 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
             if (groupType == null) {
                 String groupLabel = StringUtils.capitalize(componentId + " " + namespace + " " + capaKey);
-                groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
-                        .withChannelDefinitions(channelDefinitions).withCategory("").build();
-                lcChannelGroupTypeProvider.addChannelGroupType(groupType);
-                groupTypes.add(groupType);
+
+                if (groupLabel != null) {
+                    groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, groupLabel)
+                            .withChannelDefinitions(channelDefinitions).withCategory("").build();
+                    lcChannelGroupTypeProvider.addChannelGroupType(groupType);
+                    groupTypes.add(groupType);
+                }
             }
         }
     }
