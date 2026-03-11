@@ -206,7 +206,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         if ("".equals(subKey)) {
             return capa.id.replace(".", "_") + "_"
                     + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')).toLowerCase(Locale.ROOT);
-
         } else {
             return capa.id.replace(".", "_") + "_"
                     + (StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(key), '-')).toLowerCase(Locale.ROOT)
@@ -463,11 +462,9 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             }
             SmartThingsSchema schema = attr.schema;
             Hashtable<String, SmartThingsProperty> propsMap = schema.properties;
-            @Nullable
+
             SmartThingsProperty prop = propsMap.get("value");
-            if (prop == null) {
-                continue;
-            }
+
             String propType = prop.type;
 
             if ("object".equals(propType)) {
@@ -518,12 +515,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                 }
 
             } else {
-
                 Map<String, String> props = new Hashtable<String, String>();
 
                 String channelName = getChannelName(attrKey);
                 String channelTypeName = capa.id.replace(".", "_") + "_" + channelName;
-
                 final String fChannelName = channelName;
 
                 logger.trace("addChannels: channelTypeName: {}", channelTypeName);

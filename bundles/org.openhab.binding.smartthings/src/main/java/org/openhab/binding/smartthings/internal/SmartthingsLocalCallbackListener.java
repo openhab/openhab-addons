@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.smartthings.internal;
 
 import java.io.BufferedReader;
@@ -14,6 +26,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link SmartthingsLocalCallbackListener} : implemts a callback listener simple http server to handle oauth
+ * callback request.
+ *
+ * @author Kai Kreuzer - Initial contribution
+ * @author Laurent Arnal - code adaptation
+ */
 @NonNullByDefault
 public class SmartthingsLocalCallbackListener {
 
@@ -43,7 +62,6 @@ public class SmartthingsLocalCallbackListener {
                     try (Socket socket = serverSocket.accept();
                             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                             OutputStream out = socket.getOutputStream()) {
-
                         String line = in.readLine();
                         if (line == null) {
                             continue;
@@ -73,7 +91,7 @@ public class SmartthingsLocalCallbackListener {
                         out.write(bytes);
                         out.flush();
                     } catch (Exception e) {
-                        if (serverSocket != null && !serverSocket.isClosed()) {
+                        if (!serverSocket.isClosed()) {
                             logger.error("Error in OAuth callback listener", e);
                         }
                     }

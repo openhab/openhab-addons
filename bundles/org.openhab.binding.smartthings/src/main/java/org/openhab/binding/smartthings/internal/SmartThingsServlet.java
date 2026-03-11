@@ -211,7 +211,6 @@ public class SmartThingsServlet extends HttpServlet
                 try {
                     if (!reqCode.isBlank()) {
                         if ("/finish".equals(requestUrl)) {
-
                             if ("step1".equals(reqState)) {
                                 template = step1Template;
 
@@ -243,7 +242,7 @@ public class SmartThingsServlet extends HttpServlet
                             }
                         }
                     } else {
-                        // Erreur à gérer
+                        // @todo: handle errors
                     }
                 } catch (SmartThingsException e) {
                     logger.debug("Exception during authorizaton: ", e);
