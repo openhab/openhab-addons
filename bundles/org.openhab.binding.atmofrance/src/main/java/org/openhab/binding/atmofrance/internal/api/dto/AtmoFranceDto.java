@@ -39,31 +39,31 @@ public class AtmoFranceDto {
             ImperialUnits.GRAIN.divide(tech.units.indriya.unit.Units.CUBIC_METRE));
     public static final ZoneId DEFAULT_TZ = ZoneId.of("Europe/Paris");
 
-    public record LoginResponse(String token) {
+    public static record LoginResponse(String token) {
     }
 
-    public record ErrorResponse(int code, String message) {
+    public static record ErrorResponse(int code, String message) {
     }
 
-    public record AtmoResponse(String type, String name, Crs crs, List<Feature<IndexProperties>> features) {
+    public static record AtmoResponse(String type, String name, Crs crs, List<Feature<IndexProperties>> features) {
     }
 
-    public record PollensResponse(String type, String name, Crs crs, List<Feature<PollensProperties>> features) {
+    public static record PollensResponse(String type, String name, Crs crs, List<Feature<PollensProperties>> features) {
     }
 
-    public record Crs(String type, Properties properties) {
+    public static record Crs(String type, Properties properties) {
     }
 
-    public record Properties(String name) {
+    public static record Properties(String name) {
     }
 
-    public record Feature<T extends BaseProperties> (String type, T properties, Geometry geometry) {
+    public static record Feature<T extends BaseProperties>(String type, T properties, Geometry geometry) {
     }
 
-    public record Geometry(String type, List<Double> coordinates) {
+    public static record Geometry(String type, List<Double> coordinates) {
     }
 
-    public class BaseProperties {
+    public static class BaseProperties {
         public String aasqa;
 
         public Instant dateMaj;
@@ -86,7 +86,7 @@ public class AtmoFranceDto {
         }
     }
 
-    public class PollensProperties extends BaseProperties {
+    public static class PollensProperties extends BaseProperties {
         public boolean alerte;
 
         private int codeAmbr;
@@ -139,7 +139,7 @@ public class AtmoFranceDto {
         }
     }
 
-    public class IndexProperties extends BaseProperties {
+    public static class IndexProperties extends BaseProperties {
         private AtmoIndex codeNo2;
         private AtmoIndex codeO3;
         private AtmoIndex codePm10;

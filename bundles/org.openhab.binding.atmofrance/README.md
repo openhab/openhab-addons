@@ -80,6 +80,7 @@ Pollen index values:
 | 3     | High            |
 | 4     | Very High       |
 | 5     | Extremely High  |
+| 9     | Absent          |
 
 
 ## Provided icon set

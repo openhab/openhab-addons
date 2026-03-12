@@ -162,7 +162,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
                 throw new AtmoFranceException(ThingStatusDetail.CONFIGURATION_ERROR,
                         "com-error-unauthorized [\"%s\"]".formatted(error.message()));
             }
-            throw new AtmoFranceException("Error '%s' requesting: %s", statusCode.getMessage(), uri.toString());
+            throw new AtmoFranceException("Error %d requesting: %s", response.getStatus(), uri.toString());
         } catch (TimeoutException | ExecutionException e) {
             throw new AtmoFranceException(e, "Exception while calling %s: %s", request.getURI(), e.getMessage());
         } catch (InterruptedException e) {
