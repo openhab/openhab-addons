@@ -38,16 +38,11 @@ public class AirParifApi {
     private static final UriBuilder INDICES_BUILDER = AIRPARIF_BUILDER.clone().path("indices").path("prevision");
     public static final URI PREV_BULLETIN_URI = INDICES_BUILDER.clone().path("bulletin").build();
 
-    private static final UriBuilder POLLENS_BUILDER = AIRPARIF_BUILDER.clone().path("pollens");
-    public static final URI POLLENS_URI = POLLENS_BUILDER.clone().path("bulletin").build();
-
     public static final String INTINERAIRES_REQUEST = "{\"itineraires\": [{\"date\": \"%s\",\"longlats\": [[%s,%s]]}],\"polluants\": [\"indice\",\"no2\",\"o3\",\"pm25\",\"pm10\"]}";
 
     public enum Scope {
         @SerializedName("Cartes et résultats Hor'Air")
         MAPS,
-        @SerializedName("Pollens")
-        POLLENS,
         @SerializedName("Épisodes")
         EVENTS,
         @SerializedName("Indices")
@@ -71,54 +66,5 @@ public class AirParifApi {
         }
 
         public static final EnumSet<Appreciation> AS_SET = EnumSet.allOf(Appreciation.class);
-    }
-
-    public enum Pollen {
-        @SerializedName("cypres")
-        CYPRESS("cypres"),
-        @SerializedName("noisetier")
-        HAZEL("noisetier"),
-        @SerializedName("aulne")
-        ALDER("aulne"),
-        @SerializedName("peuplier")
-        POPLAR("peuplier"),
-        @SerializedName("saule")
-        WILLOW("saule"),
-        @SerializedName("frene")
-        ASH("frene"),
-        @SerializedName("charme")
-        HORNBEAM("charme"),
-        @SerializedName("bouleau")
-        BIRCH("bouleau"),
-        @SerializedName("platane")
-        PLANE("platane"),
-        @SerializedName("chene")
-        OAK("chene"),
-        @SerializedName("olivier")
-        OLIVE("olivier"),
-        @SerializedName("tilleul")
-        LINDEN("tilleul"),
-        @SerializedName("chataignier")
-        CHESTNUT("chataignier"),
-        @SerializedName("rumex")
-        RUMEX("rumex"),
-        @SerializedName("graminees")
-        GRASSES("graminees"),
-        @SerializedName("plantain")
-        PLANTAIN("plantain"),
-        @SerializedName("urticacees")
-        URTICACEAE("urticacees"),
-        @SerializedName("armoises")
-        WORMWOOD("armoises"),
-        @SerializedName("ambroisies")
-        RAGWEED("ambroisies");
-
-        public final String apiName;
-
-        Pollen(String apiName) {
-            this.apiName = apiName;
-        }
-
-        public static final EnumSet<Pollen> AS_SET = EnumSet.allOf(Pollen.class);
     }
 }

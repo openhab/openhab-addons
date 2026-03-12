@@ -13,7 +13,6 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
-			<channel-group id="pollens" typeId="bridge-pollens"/>
 			<channel-group id="aq-bulletin" typeId="air-quality-bulletin">
 				<label>Today's Air Quality Bulletin</label>
 			</channel-group>
