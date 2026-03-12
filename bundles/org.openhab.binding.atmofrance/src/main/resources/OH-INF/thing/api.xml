@@ -13,11 +13,11 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
-			<parameter name="username" type="text">
+			<parameter name="username" type="text" required="true">
 				<label>Username</label>
 				<description>Username from Atmo Data API Account</description>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<description>Password from Atmo Data API Account</description>
 				<context>password</context>

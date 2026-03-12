@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link CityConfiguration} is the class used to match the
  * thing configuration.
  *
- * @author Gaël L"hopital - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class CityConfiguration {

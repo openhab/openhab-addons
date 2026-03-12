@@ -17,6 +17,7 @@ import static org.openhab.binding.atmofrance.internal.api.AtmoFranceApi.*;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +103,14 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         scheduler.execute(this::initiateConnexion);
     }
 
+    @Override
+    public void dispose() {
+        cleanJobs();
+        config = null;
+        bearer = null;
+        super.dispose();
+    }
+
     private void initiateConnexion() {
         try {
             LoginResponse login = executeUri(LOGIN_URI, LoginResponse.class,
@@ -113,7 +122,9 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             if (e.getStatusDetail() instanceof ThingStatusDetail statusDetail) {
                 updateStatus(ThingStatus.OFFLINE, statusDetail, e.getMessage());
             } else {
-                logger.warn("{} ", e.getMessage());
+                logger.warn("Error initiating connection to Atmo France: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                schedule("reconnect", this::initiateConnexion, Duration.ofHours(1));
             }
         }
     }

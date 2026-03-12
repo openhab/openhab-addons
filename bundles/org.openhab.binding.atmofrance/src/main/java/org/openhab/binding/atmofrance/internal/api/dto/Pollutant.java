@@ -17,7 +17,7 @@ import java.util.EnumSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Pollutant} enum lists all pollutants tracked by Atrmo France
+ * The {@link Pollutant} enum lists all pollutants tracked by Atmo France
  *
  * @author Gaël L'hopital - Initial contribution
  */
