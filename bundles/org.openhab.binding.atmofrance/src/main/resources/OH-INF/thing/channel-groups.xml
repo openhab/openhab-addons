@@ -10,11 +10,11 @@
 			<channel id="index" typeId="index"/>
 			<channel id="no2-index" typeId="index-adv">
 				<label>NO₂</label>
-				<description>Dioxyde d'Azote</description>
+				<description>Nitric Dioxide</description>
 			</channel>
 			<channel id="so2-index" typeId="index-adv">
 				<label>SO₂</label>
-				<description>Dioxyde de Soufre</description>
+				<description>Sulfur Dioxide</description>
 			</channel>
 			<channel id="o3-index" typeId="index-adv">
 				<label>O₃</label>
@@ -22,18 +22,18 @@
 			</channel>
 			<channel id="pm10-index" typeId="index-adv">
 				<label>PM 10</label>
-				<description>Particules fines &lt; 10 µm</description>
+				<description>Particulate Matter &lt; 10 µm</description>
 			</channel>
 			<channel id="pm25-index" typeId="index-adv">
 				<label>PM 2.5</label>
-				<description>Particules fines &lt; 2,5 µm</description>
+				<description>Particulate Matter &lt; 2,5 µm</description>
 			</channel>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="date-ech" typeId="localdate">
-				<label>Date de Valeur</label>
+				<label>Value Date</label>
 			</channel>
 			<channel id="date-dif" typeId="localdate">
-				<label>Date de Publication</label>
+				<label>Publication Date</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -92,10 +92,10 @@
 			</channel>
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="date-ech" typeId="localdate">
-				<label>Date de Valeur</label>
+				<label>Value Date</label>
 			</channel>
 			<channel id="date-dif" typeId="localdate">
-				<label>Date de Publication</label>
+				<label>Publication Date</label>
 			</channel>
 		</channels>
 	</channel-group-type>

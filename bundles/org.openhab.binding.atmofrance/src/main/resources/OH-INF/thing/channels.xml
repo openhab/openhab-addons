@@ -26,7 +26,7 @@
 		<state readOnly="true" pattern="%1$td/%1$tm"/>
 	</channel-type>
 
-	<channel-type id="concentration">
+	<channel-type id="concentration" advanced="true">
 		<item-type unitHint="gr/m³">Number:Density</item-type>
 		<label>Measure</label>
 		<tags>

@@ -57,7 +57,7 @@ public class AtmoFranceDto {
     public record Properties(String name) {
     }
 
-    public record Feature<T extends BaseProperties>(String type, T properties, Geometry geometry) {
+    public record Feature<T extends BaseProperties> (String type, T properties, Geometry geometry) {
     }
 
     public record Geometry(String type, List<Double> coordinates) {
