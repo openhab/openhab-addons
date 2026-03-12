@@ -153,12 +153,12 @@ public abstract class MSpaBaseAccount extends BaseBridgeHandler {
      */
     public String getToken() {
         if (MSpaUtils.isTokenValid(token)) {
-            return Objects.requireNonNullElse(token.getAccessToken(), "");
+            return Objects.requireNonNullElse(token.getAccessToken(), UNKNOWN);
         } else {
             requestToken();
             // token shall be fine now.
             if (MSpaUtils.isTokenValid(token)) {
-                return Objects.requireNonNullElse(token.getAccessToken(), "");
+                return Objects.requireNonNullElse(token.getAccessToken(), UNKNOWN);
             } // else fall through to UNKNOWN
         }
         return UNKNOWN;
