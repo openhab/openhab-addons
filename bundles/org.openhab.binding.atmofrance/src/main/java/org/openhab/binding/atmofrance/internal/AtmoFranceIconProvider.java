@@ -73,7 +73,7 @@ public class AtmoFranceIconProvider implements IconProvider {
     @Override
     public Set<IconSet> getIconSets(@Nullable Locale locale) {
         String label = getText("label", DEFAULT_LABEL, locale);
-        String description = getText("decription", DEFAULT_DESCRIPTION, locale);
+        String description = getText("description", DEFAULT_DESCRIPTION, locale);
 
         return Set.of(new IconSet(BINDING_ID, label, description, Set.of(Format.SVG)));
     }
@@ -99,7 +99,8 @@ public class AtmoFranceIconProvider implements IconProvider {
         }
 
         String iconName = "icon/%s.svg".formatted(category);
-        if ((category.equals(POLLEN_ICON) || category.equals(AQ_ICON)) && ordinal != -1) {
+        if ((category.equals(AQ_ICON) && ordinal >= 0 && ordinal <= 9 && ordinal != 8)
+                || (category.equals(POLLEN_ICON) && ordinal >= 0 && ordinal <= 5)) {
             iconName = iconName.replace(".", "-%d.".formatted(ordinal));
         }
 
@@ -116,6 +117,6 @@ public class AtmoFranceIconProvider implements IconProvider {
                 logger.warn("Unable to load ressource '{}': {}", iconResource.getPath(), e.getMessage());
             }
         }
-        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes());
+        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
     }
 }

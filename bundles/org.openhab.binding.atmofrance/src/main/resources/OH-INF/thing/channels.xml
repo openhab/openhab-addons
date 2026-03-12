@@ -48,7 +48,7 @@
 			<options>
 				<option value="0">Good</option>
 				<option value="1">Average</option>
-				<option value="2">Degrated</option>
+				<option value="2">Degraded</option>
 				<option value="3">Bad</option>
 				<option value="4">Very Bad</option>
 				<option value="5">Extremely Bad</option>
@@ -91,7 +91,7 @@
 			<options>
 				<option value="0">Good</option>
 				<option value="1">Average</option>
-				<option value="2">Degrated</option>
+				<option value="2">Degraded</option>
 				<option value="3">Bad</option>
 				<option value="4">Very Bad</option>
 				<option value="5">Extremely Bad</option>

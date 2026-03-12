@@ -37,7 +37,7 @@ import tech.units.indriya.unit.ProductUnit;
 public class AtmoFranceDto {
     public static final Unit<Density> GRAIN_PER_CUBICMETER = new ProductUnit<>(
             ImperialUnits.GRAIN.divide(tech.units.indriya.unit.Units.CUBIC_METRE));
-    private static final ZoneId DEFAULT_TZ = ZoneId.of("Europe/Paris");
+    public static final ZoneId DEFAULT_TZ = ZoneId.of("Europe/Paris");
 
     public record LoginResponse(String token) {
     }

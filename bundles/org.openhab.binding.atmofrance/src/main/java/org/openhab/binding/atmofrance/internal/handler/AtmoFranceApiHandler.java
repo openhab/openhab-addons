@@ -14,8 +14,6 @@ package org.openhab.binding.atmofrance.internal.handler;
 
 import static org.openhab.binding.atmofrance.internal.api.AtmoFranceApi.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -37,13 +35,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.atmofrance.internal.AtmoFranceException;
 import org.openhab.binding.atmofrance.internal.api.AtmoFranceApi;
+import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.AtmoResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.ErrorResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.Feature;
@@ -156,6 +155,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         } catch (TimeoutException | ExecutionException e) {
             throw new AtmoFranceException(e, "Exception while calling %s: %s", request.getURI(), e.getMessage());
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new AtmoFranceException(e, "Execution interrupted: %s", e.getMessage());
         }
     }
@@ -165,10 +165,9 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             return;
         }
 
-        InputStream stream = new ByteArrayInputStream(payload.getBytes(DEFAULT_CHARSET));
-        try (InputStreamContentProvider inputStreamContentProvider = new InputStreamContentProvider(stream)) {
-            request.content(inputStreamContentProvider, MediaType.APPLICATION_JSON);
-        }
+        StringContentProvider contentProvider = new StringContentProvider(MediaType.APPLICATION_JSON, payload,
+                DEFAULT_CHARSET);
+        request.content(contentProvider, MediaType.APPLICATION_JSON);
         logger.trace(" -with payload : {} ", payload);
     }
 
@@ -210,7 +209,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
     }
 
     public @Nullable IndexProperties getAtmoIndex(String codeInsee) {
-        URI atmoUri = AtmoFranceApi.getAtmoUri(LocalDate.now(), codeInsee);
+        URI atmoUri = AtmoFranceApi.getAtmoUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
         try {
             AtmoResponse response = executeUri(atmoUri, AtmoResponse.class);
             List<Feature<IndexProperties>> features = response.features();
@@ -224,7 +223,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
     }
 
     public @Nullable PollensProperties getPollens(String codeInsee) {
-        URI atmoUri = AtmoFranceApi.getPollensUri(LocalDate.now(), codeInsee);
+        URI atmoUri = AtmoFranceApi.getPollensUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
         try {
             PollensResponse response = executeUri(atmoUri, PollensResponse.class);
             List<Feature<PollensProperties>> features = response.features();
