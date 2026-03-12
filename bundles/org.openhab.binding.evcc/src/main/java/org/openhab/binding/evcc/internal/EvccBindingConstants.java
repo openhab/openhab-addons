@@ -60,6 +60,7 @@ public class EvccBindingConstants {
     public static final String PROPERTY_TYPE_VEHICLE = "vehicle";
 
     public static final String JSON_KEY_BATTERY = "battery";
+    public static final String JSON_KEY_DEVICES = "devices";
     public static final String JSON_KEY_CHARGE_CURRENT = "chargeCurrent";
     public static final String JSON_KEY_CHARGE_CURRENTS = "chargeCurrents";
     public static final String JSON_KEY_CHARGE_VOLTAGES = "chargeVoltages";
