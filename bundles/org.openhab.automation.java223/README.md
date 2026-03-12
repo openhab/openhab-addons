@@ -2,7 +2,7 @@
 
 Write openHAB scripts in Java as a JSR223 language.
 
-Features :
+Features:
 
 - full JSR 223 support (use in files, in GUI, transformations, inline rule action, etc...)
 - auto-injection of openHAB variable/preset for simplicity
@@ -124,10 +124,10 @@ See [example](#osgiinjectionexample)
 
 As a JSR223 openHAB language, you can define rules with the openHAB JSR223 DSL.
 All necessary classes and instances (SimpleRule, TriggerBuilder, automationManager instance, etc.) are, of course, exposed natively with this bundle.
-You can see an example of how to use it [here](https://www.openhab.org/docs/configuration/jsr223.html#example-rules-for-a-first-impression) (examples are written with other languages, but concepts and objects for Java223 are the same), or below in the [full-fledged example without helper library](#example-without-helper-library).
+You can see an example of how to [create a JSR223 rule here](https://www.openhab.org/docs/configuration/jsr223.html#example-rules-for-a-first-impression) (examples are written with other languages, but concepts and objects for Java223 are the same), or below in the [full-fledged example without helper library](#example-without-helper-library).
 
 **However**, keep in mind that there is a much more convenient way to do this.
-You can jump to the relevant section [here](#helperrules).
+You can jump to the relevant [helper section here](#helperrules).
 But the following sections also expose some prerequisites if you want to have a better comprehension before jumping in.
 
 <a id="library"></a>
@@ -191,7 +191,6 @@ Getting back to our example: As the library instantiation and injection with the
 Tip: The Java223 automation bundle recognizes a library by its type, so you don't have to worry about respecting a naming convention for the variable.
 Feel free to use anything.
 
-
 ## Helper library
 
 The helper library described here is totally optional, but you should seriously consider using it, as it will make your code experience much more streamlined.
@@ -205,7 +204,7 @@ Nothing (code, lib) will be generated/copied in the lib directory.
 The Java223 bundle generates some ready-to-use library .java file in the `automation\lib\java` directory.
 These classes are dynamic and contain detailed information about your openHAB setup.
 
-You will get several Java files in the package `helper.generated` :
+You will get several Java files in the package `helper.generated`:
 
 - Items.java: contains all your item names as static String and label as their Javadoc. Also contains methods to directly get the Item, cast to the right Class. (see [example](#itemsandthings))
 - Things.java: contains all your Thing UID as static String, with label as their Javadoc. Also contains methods to directly get the Thing. (see [example](#itemsandthings))
@@ -217,7 +216,7 @@ As these files are no more, no less, standard Java223 library files, you can use
 Be careful though, do not use the variable names `items`, `things`, or `actions`, as they are already reserved as openHAB input values for the ItemRegistry, ThingsRegistry, and ScriptThingActions respectively.
 As a reference or example, in the Java223Script helper abstract class, the following variables are used for them:  `_items`, `_things`, `_actions`.
 
-**Tip: all your scripts, *including libraries*, can extend the `Java223Script` class.
+**Tip: all your scripts, _including libraries_, can extend the `Java223Script` class.
 This way they will automatically obtain easy access to all openHAB inputs, to some shortcuts, etc.**
 
 <a id="helperrules"></a>
@@ -301,7 +300,7 @@ Here are all functionalities of the helper-lib:
 
 ### Share value between scripts
 
-To share value between different scripts, you can use the shared standard openHAB cache available in the `cache` preset. Auto-inject it with :
+To share value between different scripts, you can use the shared standard openHAB cache available in the `cache` preset. Auto-inject it with:
 
 ```java
     protected @InjectBinding(preset = "cache") ValueCache sharedCache;
@@ -428,10 +427,10 @@ If you enable the helper-lib, you will also have access to the following fields:
 
 This 'wrapping' will take place if nowhere in your code a trimmed line starts with `public class`.
 
-If you need to import some class, you can also do it. The import statements (lines starting with `import `) will be parsed and moved at the beginning of the resulting wrapper script, before the wrapping class and method.
+If you need to import some class, you can also do it. The import statements (lines starting with `import`) will be parsed and moved at the beginning of the resulting wrapper script, before the wrapping class and method.
 
 You can return a value.
-A line returning the value MUST begin with `return `, in order for the wrapping method to NOT insert a `return null` statement at the end.
+A line returning the value MUST begin with `return`, in order for the wrapping method to NOT insert a `return null` statement at the end.
 This is useful for Transformation.
 
 **Note that**, because your code is wrapped, the following functionalities are not available:
@@ -471,7 +470,7 @@ You can ask the Java223 bundle to add to this exported jar some classes by using
 
 ## Configure your project
 
-To use an IDE and write code with autocompletion, Javadoc, and all other syntax sugar, you only have to add to your project :
+To use an IDE and write code with autocompletion, Javadoc, and all other syntax sugar, you only have to add to your project:
 
 - **As a source directory**: the root directory of your scripts, under `automation/jsr223` (probably `automation/jsr223/java`, but you can use what you want)
 - **As a source directory**: the root directory reserved as the Java223 library location `automation/lib/java`
@@ -495,7 +494,7 @@ Tip: to access a remote openHAB installation scripts folder, you can copy, use W
 
 <a id="instantiationinnerworking"></a>
 
-### Advanced topic: inner working, and about instantiation
+## Advanced topic: inner working, and about instantiation
 
 To execute a script, the Java223 automation bundle (in conjunction with openHAB) has to instantiate the script class.
 The inner working is like this:
@@ -503,12 +502,12 @@ The inner working is like this:
 - it receives a .java script
 - the bundle compiles it (if not already done). openHAB will then store the compilation unit for further (and fastest) reuse.
 - then, when execution is needed and asked by openHAB:
-    - As the bundle needs an instance...:
-        - ...The engine will choose a constructor and instantiate the script with the `new` operator.
-          Auto-injection of openHAB values may occur in constructor parameters.
-        - **OR**
-        - ...The engine will reuse an existing instance
-    - the engine will then execute the relevant script methods (`main`, etc., and any `@RunScript` annotated methods) on the instance. Inherited methods/fields are also included and candidates for execution. Auto-injection will occur on fields and method parameters.
+  - As the bundle needs an instance...:
+    - ...The engine will choose a constructor and instantiate the script with the `new` operator.
+      Auto-injection of openHAB values may occur in constructor parameters.
+    - **OR**
+    - ...The engine will reuse an existing instance
+  - the engine will then execute the relevant script methods (`main`, etc., and any `@RunScript` annotated methods) on the instance. Inherited methods/fields are also included and candidates for execution. Auto-injection will occur on fields and method parameters.
 
 What is the right method for your use case?
 As you can imagine, instance reuse is handy if you have costly operations to run once, for example, when dealing with network connections or with an embedded SQLite database.
@@ -528,7 +527,7 @@ So instance reuse is not possible if something triggers a recompilation of your 
 
 <a id="injectioncontrol"></a>
 
-### Advanced topic: injection control
+## Advanced topic: injection control
 
 You can control the injection further (i.e. overriding default behavior, or directly injecting something from a preset) with the @InjectBinding annotation. See [example](#injectbinding).
 
@@ -565,7 +564,7 @@ And adding a plain, empty, `@InjectBinding` annotation with no parameter is equi
 @InjectBinding input; // <-- if input not available, your script will fail
 ```
 
-### Advanced topic: Concurrency
+## Advanced topic: Concurrency
 
 Regarding concurrency, openHAB has several peculiarities about the way rules are executed.
 If you think your code is at risk when being executed multiple times at the same moment, then you should read the main openHAB documentation about rules carefully.
@@ -575,7 +574,6 @@ As openHAB does not manage the instance, there is no protection against concurre
 The openHAB policy preventing a rule from running twice at the same time applies to ONE rule, so SEVERAL rules defined on the same script file will share state and can access the script instance concurrently.
 If different rules -triggered at the same time- access the same instance fields, you may have to synchronize read/write from/to your data.
 If this is a concern for you, and if you are new to Java, look online for some good tutorials about concurrency, thread safety, and locks.
-
 
 <a id="examples"></a>
 
@@ -598,7 +596,6 @@ It is an instance of the generated class containing all the items defined in you
 
 <a id="simplerule"></a>
 
-
 ## No boilerplate code
 
 A one-liner also works:
@@ -606,7 +603,6 @@ A one-liner also works:
 ```java
     _items.myitem().send(ON); // let there be light
 ```
-
 
 ## Create a simple rule
 
@@ -738,7 +734,7 @@ import org.openhab.core.automation.RuleManager;
 
 public class RunAnotherRule {
     public void main(RuleManager ruleManager) { // <-- Injection by the constructor. RuleManager is an OSGi service and so is available as a candidate for injection
-        // simple execution :
+        // simple execution:
         ruleManager.runNow("myruleid");
         // or execution with parameters in a key/value map:
         // and set the boolean parameter to true if you want to check conditions before execution (in case of a full rule)
@@ -791,11 +787,11 @@ import helper.rules.annotations.InjectBinding;
 
 public class InjectBindingExample {
 
-    // inject something from a preset :
+    // inject something from a preset:
     protected @InjectBinding(preset = "RuleSupport") ScriptedAutomationManager automationManager;
-    // disable injection even if the field name should trigger it :
+    // disable injection even if the field name should trigger it:
     protected @InjectBinding(disable = true) ItemRegistry itemRegistry;
-    // name your variable as you wish by using the 'named' parameter :
+    // name your variable as you wish by using the 'named' parameter:
     protected @InjectBinding(named = "itemRegistry") ItemRegistry otherVariableName;
     // make it mandatory (the script will not run if the value cannot be found).
     protected @InjectBinding(mandatory = true) ThingRegistry things;
@@ -810,7 +806,7 @@ public class InjectBindingExample {
 
 ## Preset advanced use and tricks
 
-Sometimes presets can collide with each other. Or they can provide unavailable class implementations. 
+Sometimes presets can collide with each other. Or they can provide unavailable class implementations.
 For instance, `itemRegistry` is offered in two different forms, by both the `default` and `provider` presets. You can use those tricks:
 
 - As the key is `itemRegistry` in both cases, you should take special care of your naming to avoid collision (use the `named` parameter)
@@ -835,7 +831,6 @@ public class PresetAdvancedUse {
 }
 ```
 
-
 <a id="libraryautoinjection"></a>
 
 ## Library use and auto-injection
@@ -856,7 +851,7 @@ public class MyGreatLibrary {
 ```
 
 Here is how to use it, with auto-injection of your script (in automation/jsr223/).
-For example, with field injection :
+For example, with field injection:
 
 ```java
 public class MyScript {
@@ -875,7 +870,7 @@ Tip: remember that all classes, including libraries, can extend Java223Script
 
 ## Items and Things helper libraries
 
-By extending the Java223Script class (optional, you can inject them the way you want), the variables _items and _things are directly accessible and expose the helper-generated classes.
+By extending the Java223Script class (optional, you can inject them the way you want), the variables \_items and \_things are directly accessible and expose the helper-generated classes.
 
 ```java
 import helper.generated.Java223Script;
@@ -896,6 +891,7 @@ public class ItemsAndThingAccessExample extends Java223Script { // <-- take the 
 ## Actions helper libraries
 
 With the auto generated `Actions` class (here referenced by the `_actions` variable), you can call a method to get strongly typed actions (and auto-completion within your IDE) linked to your Thing.
+Here, for example, we can use the `SMSModemActions` from the `smsmodem` scope (defined by the smsmodem binding).
 
 ```java
 import helper.generated.Java223Script;
@@ -911,6 +907,7 @@ public class ActionExample extends Java223Script { // <-- take the Java223Script
 ```
 
 <a id="example-without-helper-library"></a>
+
 ## Full-fledged example without the helper library
 
 **NOTE**: This is the HARD way of creating a rule. Use this only if you want full control or don't want to use the helper library.
@@ -994,7 +991,7 @@ actions:
                 org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("Bindings");
                 logger.error("Is things the same as bindings('things')? " + Boolean.valueOf(things == bindings.get("things"))); // true
                 logger.error("lastStateUpdate as reported by the trigger: " + bindings.get("lastStateUpdate") + " is of " + bindings.get("lastStateUpdate").getClass());
-                for (var e : bindings.entrySet()) // print all useful and not so useful injected context
+                for (var e: bindings.entrySet()) // print all useful and not so useful injected context
                     logger.error(e.getKey() + " -> " + e.getValue());
                 return null;
             }
