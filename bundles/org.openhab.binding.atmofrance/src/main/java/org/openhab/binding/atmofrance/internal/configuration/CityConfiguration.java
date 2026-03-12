@@ -23,4 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CityConfiguration {
     public String codeInsee = "";
+
+    public ConfigurationLevel check() {
+        if (codeInsee.isBlank()) {
+            return ConfigurationLevel.EMPTY_INSEE;
+        }
+        return ConfigurationLevel.COMPLETED;
+    }
 }

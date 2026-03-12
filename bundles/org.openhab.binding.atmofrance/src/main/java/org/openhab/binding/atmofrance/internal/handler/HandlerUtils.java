@@ -40,13 +40,12 @@ public interface HandlerUtils {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     default @Nullable <T extends BridgeHandler> T getBridgeHandler(Class<T> clazz) {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             if (bridge.getHandler() instanceof BridgeHandler bridgeHandler) {
-                if (bridgeHandler.getClass() == clazz) {
-                    return (T) bridgeHandler;
+                if (bridgeHandler.getClass().isInstance(clazz)) {
+                    return clazz.cast(bridgeHandler);
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
             } else {

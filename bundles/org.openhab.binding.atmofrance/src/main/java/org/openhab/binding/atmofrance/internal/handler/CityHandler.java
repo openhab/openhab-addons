@@ -30,6 +30,7 @@ import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.PollensProp
 import org.openhab.binding.atmofrance.internal.api.dto.Pollutant;
 import org.openhab.binding.atmofrance.internal.api.dto.Taxon;
 import org.openhab.binding.atmofrance.internal.configuration.CityConfiguration;
+import org.openhab.binding.atmofrance.internal.configuration.ConfigurationLevel;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.Bridge;
@@ -65,7 +66,16 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
 
     @Override
     public void initialize() {
-        config = this.getConfigAs(CityConfiguration.class);
+        var localConfig = getConfigAs(CityConfiguration.class);
+        ConfigurationLevel configLevel = localConfig.check();
+
+        if (configLevel != ConfigurationLevel.COMPLETED) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configLevel.message);
+            return;
+        }
+
+        config = localConfig;
+
         updateStatus(ThingStatus.UNKNOWN);
         schedule(AQ_JOB.formatted(thing.getUID()), this::getAtmoIndex, Duration.ofSeconds(2));
         schedule(POLLENS_JOB.formatted(thing.getUID()), this::getPollens, Duration.ofSeconds(3));
@@ -92,7 +102,13 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateCommon(properties, GROUP_AQ);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Atmo data provided");
+                if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Atmo data provided");
+                } else {
+                    // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
+                    return;
+                }
+
             }
         } else {
             delay = 10;
@@ -105,7 +121,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
         updateState(group, CHANNEL_DATE_ECH, properties.getEffectiveDate());
         updateState(group, CHANNEL_DATE_DIF, properties.getDiffusionDate());
 
-        thing.setProperty("%s source".formatted(group), properties.source);
+        thing.setProperty("%s-source".formatted(group), properties.source);
     }
 
     private void getPollens() {
@@ -124,7 +140,12 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateCommon(properties, GROUP_POLLENS);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Pollens data provided");
+                if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Pollens data provided");
+                } else {
+                    // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
+                    return;
+                }
             }
         } else {
             delay = 10;

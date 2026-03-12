@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum ConfigurationLevel {
     EMPTY_USERNAME("@text/conf-error-no-username"),
     EMPTY_PASSWORD("@text/conf-error-no-password"),
+    EMPTY_INSEE("@text/conf-error-no-insee"),
     COMPLETED("");
 
     public String message;
