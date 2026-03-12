@@ -781,12 +781,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             Clip2Bridge bridge = getClip2Bridge();
             for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES.get(motionAware)) {
                 ResourceType resourceType = reference.getType();
-                if (resourceType == ResourceType.MOTION_AREA_CONFIGURATION
-                        && thing.getProperties().get(Thing.PROPERTY_MODEL_ID) instanceof String modelId
-                        && "BSB002".equals(modelId)) {
-                    // BSB002 does not support MotionAware and it may cause HTTP 503 errors in the log
-                    continue;
-                }
                 List<Resource> resourceList = bridge.getResources(reference).getResources();
                 switch (resourceType) {
                     case ZONE:
