@@ -40,11 +40,12 @@ public class AtmoFranceDeserializer {
     public AtmoFranceDeserializer() {
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(Instant.class, (JsonDeserializer<Instant>) (json, type, context) -> {
-                    String string = json.getAsJsonPrimitive().getAsString();
-                    string += string.contains("+") ? "" : "T00:00:00+01:00";
+                    String string = json.getAsString();
+                    string += string.contains("+") ? "" : "Z";
                     return Instant.parse(string);
-                }).registerTypeAdapter(LocalDate.class, (JsonDeserializer<LocalDate>) (json, type, context) -> LocalDate
-                        .parse(json.getAsJsonPrimitive().getAsString()))
+                })
+                .registerTypeAdapter(LocalDate.class,
+                        (JsonDeserializer<LocalDate>) (json, type, context) -> LocalDate.parse(json.getAsString()))
                 .create();
     }
 

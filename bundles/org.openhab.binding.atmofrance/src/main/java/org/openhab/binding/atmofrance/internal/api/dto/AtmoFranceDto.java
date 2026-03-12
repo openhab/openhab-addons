@@ -13,6 +13,8 @@
 package org.openhab.binding.atmofrance.internal.api.dto;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import javax.measure.Unit;
@@ -35,6 +37,7 @@ import tech.units.indriya.unit.ProductUnit;
 public class AtmoFranceDto {
     public static final Unit<Density> GRAIN_PER_CUBICMETER = new ProductUnit<>(
             ImperialUnits.GRAIN.divide(tech.units.indriya.unit.Units.CUBIC_METRE));
+    private static final ZoneId DEFAULT_TZ = ZoneId.of("Europe/Paris");
 
     public record LoginResponse(String token) {
     }
@@ -54,7 +57,7 @@ public class AtmoFranceDto {
     public record Properties(String name) {
     }
 
-    public record Feature<T extends BaseProperties> (String type, T properties, Geometry geometry) {
+    public record Feature<T extends BaseProperties>(String type, T properties, Geometry geometry) {
     }
 
     public record Geometry(String type, List<Double> coordinates) {
@@ -64,8 +67,8 @@ public class AtmoFranceDto {
         public String aasqa;
 
         public Instant dateMaj;
-        public Instant dateDif;
-        public Instant dateEch;
+        private LocalDate dateDif;
+        private LocalDate dateEch;
 
         public String codeZone;
         public String libZone;
@@ -73,6 +76,14 @@ public class AtmoFranceDto {
 
         public String libQual;
         public String source;
+
+        public Instant getDiffusionDate() {
+            return dateDif.atStartOfDay(DEFAULT_TZ).toInstant();
+        }
+
+        public Instant getEffectiveDate() {
+            return dateEch.atStartOfDay(DEFAULT_TZ).toInstant();
+        }
     }
 
     public class PollensProperties extends BaseProperties {

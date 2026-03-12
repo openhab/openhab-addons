@@ -29,10 +29,10 @@
 				<description>Particules fines &lt; 2,5 µm</description>
 			</channel>
 			<channel id="timestamp" typeId="timestamp"/>
-			<channel id="date-ech" typeId="timestamp">
+			<channel id="date-ech" typeId="localdate">
 				<label>Date de Valeur</label>
 			</channel>
-			<channel id="date-dif" typeId="timestamp">
+			<channel id="date-dif" typeId="localdate">
 				<label>Date de Publication</label>
 			</channel>
 		</channels>
@@ -91,10 +91,10 @@
 				<description>Wormwood Index</description>
 			</channel>
 			<channel id="timestamp" typeId="timestamp"/>
-			<channel id="date-ech" typeId="timestamp">
+			<channel id="date-ech" typeId="localdate">
 				<label>Date de Valeur</label>
 			</channel>
-			<channel id="date-dif" typeId="timestamp">
+			<channel id="date-dif" typeId="localdate">
 				<label>Date de Publication</label>
 			</channel>
 		</channels>
