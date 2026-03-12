@@ -125,7 +125,7 @@ public class HTTPHandler {
 
     public boolean isRadiation(@Nullable List<SensorDataValue> valueList) {
         return valueList != null && valueList.stream().map(v -> v.getValueType())
-                .filter(t -> t.endsWith(RADIATION_CPM) || t.endsWith(RADIATION_CPM)).findAny().isPresent();
+                .filter(t -> t.endsWith(RADIATION_CPM) || t.endsWith(RADIATION_PULSES)).findAny().isPresent();
     }
 
     public boolean isParticulate(@Nullable List<SensorDataValue> valueList) {

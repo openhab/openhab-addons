@@ -96,7 +96,8 @@
 			</parameter>
 			<parameter name="conversionFactor" type="decimal">
 				<label>Conversion Factor</label>
-				<description>Sensor specific conversion factor to transform counts per minute to Sievert</description>
+				<description>Sensor specific conversion factor to transform counts per minute (CPM) to micro-Sievert per hour
+					(µSv/h)</description>
 				<default>0.00136</default>
 			</parameter>
 		</config-description>
@@ -191,16 +192,19 @@
 		<state pattern="%.1f dB" readOnly="true"/>
 	</channel-type>
 	<channel-type id="radiation">
-		<item-type unitHint="μSv/h">Number:RadiationDoseEffective</item-type>
+		<item-type unitHint="μSv">Number:RadiationDoseEffective</item-type>
 		<label>Radiation</label>
-		<description>Radiation measure in micro Sievert per hour</description>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<description>Radiation measure in micro-Sievert per hour</description>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.3f %unit%/h" readOnly="true"/>
 	</channel-type>
 	<channel-type id="radiation-level">
 		<item-type>Number</item-type>
 		<label>Radiation Level</label>
 		<description>Severity level of radiation dose </description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="0">Normal</option>
 				<option value="1">Elevated</option>
@@ -214,10 +218,12 @@
 		<item-type>Number</item-type>
 		<label>Counts per Minute</label>
 		<description>Number of decay events in one minute</description>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hv-pulses">
 		<item-type>Number</item-type>
 		<label>HV Pulses</label>
 		<description>Number of high voltage pulses in measurement period</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

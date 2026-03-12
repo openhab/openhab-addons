@@ -38,9 +38,7 @@ public class RadiationHandlerTest {
     @Test
     public void testValidUpdate() {
         ThingMock t = new ThingMock();
-
         HashMap<String, Object> properties = new HashMap<>();
-        // String sensorid taken from thing-types.xml
         properties.put("sensorid", 12345);
         t.setConfiguration(properties);
 

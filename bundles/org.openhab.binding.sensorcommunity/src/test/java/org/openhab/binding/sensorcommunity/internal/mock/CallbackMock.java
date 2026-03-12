@@ -105,7 +105,7 @@ public class CallbackMock implements ThingHandlerCallback {
                 try {
                     stateMap.wait(100);
                 } catch (InterruptedException e) {
-                    fail("Interruppted waiting for ONLINE");
+                    fail("Interrupted  waiting for ONLINE");
                 }
                 check = Instant.now();
             }

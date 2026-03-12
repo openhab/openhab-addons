@@ -17,14 +17,14 @@ import static org.openhab.binding.sensorcommunity.internal.utils.Constants.*;
 
 import java.util.List;
 
+import javax.measure.MetricPrefix;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensorcommunity.internal.config.RadiationConfiguration;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorDataValue;
-import org.openhab.binding.sensorcommunity.internal.utils.NumberUtils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
@@ -65,8 +65,7 @@ public class RadiationHandler extends BaseSensorHandler {
                         if (v.getValueType().equals(RADIATION_CPM)) {
                             int cpm = Integer.parseInt(v.getValue());
                             double microSievert = cpm * radiationConfig.conversionFactor;
-                            radiationCache = QuantityType.valueOf(NumberUtils.round(microSievert, 4),
-                                    MetricPrefix.MICRO(Units.SIEVERT));
+                            radiationCache = QuantityType.valueOf(microSievert, MetricPrefix.MICRO(Units.SIEVERT));
                             radiationCPMCache = new DecimalType(cpm);
                             radiationLevelCache = new DecimalType(getRadiationLevel(microSievert));
                             updateState(RADIATION_CHANNEL, radiationCache);
@@ -105,7 +104,7 @@ public class RadiationHandler extends BaseSensorHandler {
     @Override
     protected void updateFromCache() {
         updateState(RADIATION_CHANNEL, radiationCache);
-        updateState(RADIATION_CPM, radiationCPMCache);
+        updateState(RADIATION_CPM_CHANNEL, radiationCPMCache);
         updateState(RADIATION_LEVEL_CHANNEL, radiationLevelCache);
         updateState(RADIATION_PULSE_CHANNEL, radiationPulseCache);
     }
