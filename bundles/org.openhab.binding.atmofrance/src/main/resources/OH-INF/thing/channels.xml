@@ -14,17 +14,17 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	
-    <channel-type id="localdate">
-        <item-type>DateTime</item-type>
-        <label>Timestamp</label>
-        <category>time</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Timestamp</tag>
-        </tags>
-        <state readOnly="true" pattern="%1$td/%1$tm"/>
-    </channel-type>
+
+	<channel-type id="localdate">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$td/%1$tm"/>
+	</channel-type>
 
 	<channel-type id="concentration">
 		<item-type unitHint="gr/m³">Number:Density</item-type>
