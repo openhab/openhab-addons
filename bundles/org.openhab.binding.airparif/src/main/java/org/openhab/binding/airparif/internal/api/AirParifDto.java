@@ -12,26 +12,16 @@
  */
 package org.openhab.binding.airparif.internal.api;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Scope;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
@@ -49,6 +39,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class AirParifDto {
+    public static final ZoneId DEFAULT_TZ = ZoneId.of("Europe/Paris");
+
     public record Version(//
             String version) {
     }
@@ -101,7 +93,7 @@ public class AirParifDto {
         }
 
         public boolean isToday() {
-            return previsionDate.equals(LocalDate.now());
+            return previsionDate.equals(LocalDate.now(DEFAULT_TZ));
         }
     }
 
@@ -120,80 +112,6 @@ public class AirParifDto {
             Message message, //
             @SerializedName("jour") DailyEpisode today, //
             @SerializedName("demain") DailyEpisode tomorrow) {
-    }
-
-    public record Pollens(//
-            Pollen[] taxons, //
-            Map<String, PollenAlertLevel[]> valeurs, //
-            String commentaire, //
-            String periode) {
-    }
-
-    public class PollensResponse {
-        private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy");
-        private final static Pattern PATTERN = Pattern.compile("\\d{2}.\\d{2}.\\d{2}");
-        private final static ZoneId DEFAULT_ZONE = ZoneId.of("Europe/Paris");
-
-        private @Nullable List<Pollens> data;
-        private @Nullable Instant beginValidity;
-        private @Nullable Instant endValidity;
-
-        public Optional<Pollens> getData() {
-            List<Pollens> localData = data;
-            return Optional.ofNullable(localData == null || localData.isEmpty() ? null : localData.get(0));
-        }
-
-        private Set<Instant> getValidities() {
-            Set<Instant> validities = new TreeSet<>();
-            getData().ifPresent(pollens -> {
-                Matcher matcher = PATTERN.matcher(pollens.periode);
-                while (matcher.find()) {
-                    validities.add(LocalDate.parse(matcher.group(), FORMATTER).atStartOfDay(DEFAULT_ZONE).toInstant());
-                }
-            });
-
-            return validities;
-        }
-
-        public Optional<Instant> getBeginValidity() {
-            if (beginValidity == null) {
-                beginValidity = getValidities().stream().reduce((prev, next) -> prev).orElse(null);
-            }
-            return Optional.ofNullable(beginValidity);
-        }
-
-        public Optional<Instant> getEndValidity() {
-            if (endValidity == null) {
-                endValidity = getValidities().stream().reduce((prev, next) -> next).orElse(null);
-            }
-            return Optional.ofNullable(endValidity);
-        }
-
-        public Duration getValidityDuration() {
-            return Objects.requireNonNull(getEndValidity().map(end -> {
-                Duration duration = Duration.between(Instant.now(), end);
-                return duration.isNegative() ? Duration.ZERO : duration;
-            }).orElse(Duration.ZERO));
-        }
-
-        public Optional<String> getComment() {
-            return getData().map(pollens -> pollens.commentaire);
-        }
-
-        public Map<Pollen, PollenAlertLevel> getDepartment(String id) {
-            Map<Pollen, PollenAlertLevel> result = new HashMap<>();
-            Optional<Pollens> donnees = getData();
-            if (donnees.isPresent()) {
-                Pollens depts = donnees.get();
-                PollenAlertLevel[] valeurs = depts.valeurs.get(id);
-                if (valeurs != null) {
-                    for (int i = 0; i < valeurs.length; i++) {
-                        result.put(depts.taxons[i], valeurs[i]);
-                    }
-                }
-            }
-            return result;
-        }
     }
 
     public record Concentration(//
