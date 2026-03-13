@@ -2,9 +2,9 @@
 
 This binding integrates these telematics systems for connected vehicles:
 
-* Hyundai Bluelink (US, Canada, and EU)
-* Kia Connect (Canada and EU, also formerly known as UVO)
-* Genesis Connected Services (US, Canada, and EU)
+- Hyundai Bluelink (US, Canada, and EU)
+- Kia Connect (Canada and EU, also formerly known as UVO)
+- Genesis Connected Services (US, Canada, and EU)
 
 It allows you to monitor your vehicle's status and control various features remotely.
 
