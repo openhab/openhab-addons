@@ -178,10 +178,10 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     public void initialize() {
         super.initialize();
         /*
-         * If the Bridge was the result of a migration from an accessory Thing then mDNS re-discovery of
-         * accessory Things having the same id must be suppressed.
+         * If the Bridge was created from an accessory Thing then mDNS re-discovery of accessory Things having
+         * the same id must be suppressed.
          */
-        if (thing.getProperties().get(PROPERTY_MIGRATED) != null
+        if (thing.getProperties().get(PROPERTY_CONVERTED_FROM_ACCESSORY) != null
                 && thing.getConfiguration().getProperties().get(CONFIG_UNIQUE_ID) instanceof String uniqueId) {
             discoveryParticipant.suppressId(uniqueId, true);
         }

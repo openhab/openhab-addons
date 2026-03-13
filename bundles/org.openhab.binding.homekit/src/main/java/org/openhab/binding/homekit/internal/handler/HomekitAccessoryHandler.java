@@ -1188,8 +1188,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return false;
         }
 
-        // apply migrated property (value is irrelevant)
-        targetBridge.setProperty(PROPERTY_MIGRATED, CHECK_MARK);
+        // apply converted-from-accessory property (actual value is irrelevant, only absence or presence counts)
+        targetBridge.setProperty(PROPERTY_CONVERTED_FROM_ACCESSORY, CHECK_MARK);
 
         // create new bridged accessory #1 child Thing that will host the old Thing's channels
         Configuration targetConfiguration = new Configuration();
