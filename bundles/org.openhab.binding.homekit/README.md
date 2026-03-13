@@ -87,7 +87,7 @@ The architecture comprises three types of Things `accessory`, `bridge`, and `bri
 
 Case 1: Simple accessory device.
 
-```
+```text
 homekit:accessory (with Ethernet connection)
     |_channel 1
     |_..
@@ -96,7 +96,7 @@ homekit:accessory (with Ethernet connection)
 
 Case 2: Bridge accessory with external child accessories connected e.g. by Zigbee.
 
-```
+```text
 homekit:bridge (with Ethernet connection)
     |_ homekit:bridged-accessory (remote accessory connected by Zigbee)
         |_channel 1
@@ -111,7 +111,7 @@ homekit:bridge (with Ethernet connection)
 Case 2a: Bridge accessory with external child accessories connected e.g. by Zigbee, **AND** its own internal channels.
 In this case an extra 'virtual' `bridged-accessory` is created that hosts the device's own internal channels.
 
-```
+```text
 homekit:bridge (with Ethernet connection)
     |_ homekit:bridged-accessory ('virtual' accessory with device's own internal channels)
         |_channel 1
