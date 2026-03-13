@@ -108,7 +108,6 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                     // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
                     return;
                 }
-
             }
         } else {
             delay = 10;

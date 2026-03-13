@@ -101,7 +101,7 @@ public class AtmoFranceIconProvider implements IconProvider {
         String iconName = "icon/%s.svg".formatted(category);
         if ((category.equals(AQ_ICON) && ordinal >= 0 && ordinal <= 9 && ordinal != 8)
                 || (category.equals(POLLEN_ICON) && ordinal >= 0 && ordinal <= 5)) {
-            iconName = iconName.replace(".", "-%d.".formatted(ordinal));
+            iconName = iconName.replace(".svg", "-%d.svg".formatted(ordinal));
         }
 
         String result = "";

@@ -45,6 +45,8 @@ import org.openhab.binding.atmofrance.internal.AtmoFranceException;
 import org.openhab.binding.atmofrance.internal.api.AtmoFranceApi;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.AtmoResponse;
+import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.BaseProperties;
+import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.DataResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.ErrorResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.Feature;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.IndexProperties;
@@ -219,31 +221,33 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         logger.debug("This thing does not handle commands");
     }
 
-    public @Nullable IndexProperties getAtmoIndex(String codeInsee) {
-        URI atmoUri = AtmoFranceApi.getAtmoUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
+    private <P extends @Nullable BaseProperties, T extends DataResponse<P>> @Nullable P getFeatureProperties(URI uri,
+            Class<T> clazz) {
         try {
-            AtmoResponse response = executeUri(atmoUri, AtmoResponse.class);
-            List<Feature<IndexProperties>> features = response.features();
+            T response = executeUri(uri, clazz);
+            List<Feature<P>> features = response.features;
             if (!features.isEmpty()) {
                 return features.getFirst().properties();
             }
         } catch (AtmoFranceException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            ThingStatusDetail detail = e.getStatusDetail();
+            if (detail == null) {
+                detail = ThingStatusDetail.COMMUNICATION_ERROR;
+            }
+            updateStatus(ThingStatus.OFFLINE, detail, e.getMessage());
         }
         return null;
     }
 
+    @SuppressWarnings("null")
+    public @Nullable IndexProperties getAtmoIndex(String codeInsee) {
+        URI atmoUri = AtmoFranceApi.getAtmoUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
+        return getFeatureProperties(atmoUri, AtmoResponse.class);
+    }
+
+    @SuppressWarnings("null")
     public @Nullable PollensProperties getPollens(String codeInsee) {
-        URI atmoUri = AtmoFranceApi.getPollensUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
-        try {
-            PollensResponse response = executeUri(atmoUri, PollensResponse.class);
-            List<Feature<PollensProperties>> features = response.features();
-            if (!features.isEmpty()) {
-                return features.getFirst().properties();
-            }
-        } catch (AtmoFranceException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-        return null;
+        URI pollensUri = AtmoFranceApi.getPollensUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
+        return getFeatureProperties(pollensUri, PollensResponse.class);
     }
 }

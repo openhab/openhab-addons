@@ -45,10 +45,18 @@ public class AtmoFranceDto {
     public static record ErrorResponse(int code, String message) {
     }
 
-    public static record AtmoResponse(String type, String name, Crs crs, List<Feature<IndexProperties>> features) {
+    public static class DataResponse<T extends BaseProperties> {
+        String type;
+        String name;
+        Crs crs;
+        public List<Feature<T>> features;
     }
 
-    public static record PollensResponse(String type, String name, Crs crs, List<Feature<PollensProperties>> features) {
+    public static class AtmoResponse extends DataResponse<IndexProperties> {
+    }
+
+    public static class PollensResponse extends DataResponse<PollensProperties> {
+
     }
 
     public static record Crs(String type, Properties properties) {
@@ -57,7 +65,7 @@ public class AtmoFranceDto {
     public static record Properties(String name) {
     }
 
-    public static record Feature<T extends BaseProperties> (String type, T properties, Geometry geometry) {
+    public static record Feature<T extends BaseProperties>(String type, T properties, Geometry geometry) {
     }
 
     public static record Geometry(String type, List<Double> coordinates) {

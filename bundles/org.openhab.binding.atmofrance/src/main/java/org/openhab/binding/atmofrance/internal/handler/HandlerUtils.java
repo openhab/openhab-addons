@@ -44,13 +44,11 @@ public interface HandlerUtils {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             if (bridge.getHandler() instanceof BridgeHandler bridgeHandler) {
-                if (bridgeHandler.getClass().isInstance(clazz)) {
+                if (bridgeHandler.getClass() == clazz) {
                     return clazz.cast(bridgeHandler);
                 }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
             }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "");
         }
