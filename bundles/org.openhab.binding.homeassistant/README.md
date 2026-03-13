@@ -15,17 +15,18 @@ You can also manually create a Thing, and provide the individual component topic
 ### Things file
 
 ```java
+
 Bridge mqtt:broker:mybroker [ host="192.168.1.10", secure=false ] {
-	// 1) Single component configuration; channels won't be created until config is received from the MQTT broker
-	Thing homeassistant:device:kitchen_button [ topics="button/kitchen_button/restart" ]
+    // 1) Single component configuration; channels won't be created until config is received from the MQTT broker
+    Thing homeassistant:device:kitchen_button [ topics="button/kitchen_button/restart" ]
 
-	// 2) Device-level configuration topic; channels won't be created until config is received from the MQTT broker
-	Thing homeassistant:device:kitchen_device [ topics="device/kitchen" ]
+    // 2) Device-level configuration topic; channels won't be created until config is received from the MQTT broker
+    Thing homeassistant:device:kitchen_device [ topics="device/kitchen" ]
 
-	// 3) Device-level configuration with full JSON in deviceConfig
-	// Channels are restored from deviceConfig immediately, so the Thing is usable
-	// even before the retained MQTT discovery message is received from the broker.
-	Thing homeassistant:device:kitchen_cached [ topics="device/kitchen", deviceConfig="{\"dev\":{\"ids\":\"ea334450945afc\",\"name\":\"Kitchen\"},\"o\":{\"name\":\"bla2mqtt\",\"sw\":\"2.1\"},\"cmps\":{\"temperature\":{\"p\":\"sensor\",\"device_class\":\"temperature\",\"unit_of_measurement\":\"°C\",\"value_template\":\"{{ value_json.temperature}}\",\"unique_id\":\"temp01ae_t\"},\"humidity\":{\"p\":\"sensor\",\"device_class\":\"humidity\",\"unit_of_measurement\":\"%\",\"value_template\":\"{{ value_json.humidity}}\",\"unique_id\":\"temp01ae_h\"}},\"state_topic\":\"sensorKitchen/state\",\"qos\":2}" ]
+    // 3) Device-level configuration with full JSON in deviceConfig
+    // Channels are restored from deviceConfig immediately, so the Thing is usable
+    // even before the retained MQTT discovery message is received from the broker.
+    Thing homeassistant:device:kitchen_cached [ topics="device/kitchen", deviceConfig="{\"dev\":{\"ids\":\"ea334450945afc\",\"name\":\"Kitchen\"},\"o\":{\"name\":\"bla2mqtt\",\"sw\":\"2.1\"},\"cmps\":{\"temperature\":{\"p\":\"sensor\",\"device_class\":\"temperature\",\"unit_of_measurement\":\"°C\",\"value_template\":\"{{ value_json.temperature}}\",\"unique_id\":\"temp01ae_t\"},\"humidity\":{\"p\":\"sensor\",\"device_class\":\"humidity\",\"unit_of_measurement\":\"%\",\"value_template\":\"{{ value_json.humidity}}\",\"unique_id\":\"temp01ae_h\"}},\"state_topic\":\"sensorKitchen/state\",\"qos\":2}" ]
 }
 ```
 
@@ -226,9 +227,9 @@ The `json-attributes` channel for this component will always appear as part of c
 | Channel ID      | Type   | R/W | Description                                                                                                                                                                        |
 |-----------------|--------|-----|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | command         | String | WO  | Send a command to the vacuum. Inspect the command description for values supported by your device. Possible values are clean_spot, locate, pause, return_to_base, start, and stop. |
-| fan-speed       | String | R/W | Set the fan speed. Inspect the state description for allowed values.                                                                                                              |
+| fan-speed       | String | R/W | Set the fan speed. Inspect the state description for allowed values.                                                                                                               |
 | custom-command  | String | WO  | Send an arbitrary command to the vacuum. This may be a raw command, or JSON.                                                                                                       |
-| battery-level   | Dimmer | RO  | The vacuum's battery level.                                                                                                                                                       |
+| battery-level   | Dimmer | RO  | The vacuum's battery level.                                                                                                                                                        |
 | state           | String | RO  | The state of the vacuum. One of `cleaning`, `docked`, `paused`, `idle`, `returning`, or `error`.                                                                                   |
 | json-attributes | String | RO  | Additional attributes, as a serialized JSON string.                                                                                                                                |
 
