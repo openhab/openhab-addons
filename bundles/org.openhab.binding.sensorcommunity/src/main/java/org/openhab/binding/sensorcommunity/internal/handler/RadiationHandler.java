@@ -65,7 +65,8 @@ public class RadiationHandler extends BaseSensorHandler {
                         if (v.getValueType().equals(RADIATION_CPM)) {
                             int cpm = Integer.parseInt(v.getValue());
                             double microSievert = cpm * radiationConfig.conversionFactor;
-                            radiationCache = QuantityType.valueOf(microSievert, MetricPrefix.MICRO(Units.SIEVERT));
+                            radiationCache = QuantityType.valueOf(microSievert,
+                                    MetricPrefix.MICRO(Units.SIEVERT_PER_HOUR));
                             radiationCPMCache = new DecimalType(cpm);
                             radiationLevelCache = new DecimalType(getRadiationLevel(microSievert));
                             updateState(RADIATION_CHANNEL, radiationCache);

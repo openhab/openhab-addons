@@ -192,13 +192,13 @@
 		<state pattern="%.1f dB" readOnly="true"/>
 	</channel-type>
 	<channel-type id="radiation">
-		<item-type unitHint="μSv">Number:RadiationDoseEffective</item-type>
+		<item-type unitHint="μSv/h">Number:RadiationAirDose</item-type>
 		<label>Radiation</label>
 		<description>Radiation measure in micro-Sievert per hour</description>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state pattern="%.3f %unit%/h" readOnly="true"/>
+		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="radiation-level">
 		<item-type>Number</item-type>
