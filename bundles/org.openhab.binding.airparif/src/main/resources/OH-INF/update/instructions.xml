@@ -6,10 +6,10 @@
 	<thing-type uid="airparif:api">
 
 		<instruction-set targetVersion="1">
-            <remove-channel id="comment" groupIds="pollens"/>
-            <remove-channel id="begin-validity" groupIds="pollens"/>
-            <remove-channel id="end-validity" groupIds="pollens"/>
-        </instruction-set>
+			<remove-channel id="comment" groupIds="pollens"/>
+			<remove-channel id="begin-validity" groupIds="pollens"/>
+			<remove-channel id="end-validity" groupIds="pollens"/>
+		</instruction-set>
 
 	</thing-type>
 

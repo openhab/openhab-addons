@@ -28,10 +28,10 @@
 				<label>PM10 Concentration</label>
 			</channel-group>
 		</channel-groups>
-		        
-        <properties>
-            <property name="thingTypeVersion">1</property>
-        </properties>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>department</representation-property>
 
