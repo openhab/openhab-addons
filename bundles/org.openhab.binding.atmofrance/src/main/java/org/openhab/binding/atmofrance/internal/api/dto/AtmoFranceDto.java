@@ -19,6 +19,8 @@ import java.util.List;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -34,6 +36,7 @@ import tech.units.indriya.unit.ProductUnit;
  * @author Gaël L'hopital - Initial contribution
  *
  */
+@NonNullByDefault
 public class AtmoFranceDto {
     public static final Unit<Density> GRAIN_PER_CUBICMETER = new ProductUnit<>(
             ImperialUnits.GRAIN.divide(tech.units.indriya.unit.Units.CUBIC_METRE));
@@ -46,10 +49,17 @@ public class AtmoFranceDto {
     }
 
     public static class DataResponse<T extends BaseProperties> {
-        String type;
-        String name;
-        Crs crs;
-        public List<Feature<T>> features;
+        String type = "";
+        String name = "";
+        Crs crs = new Crs("", new Properties(""));
+        public List<Feature<T>> features = List.of();
+
+        public @Nullable T getProperties() {
+            if (!features.isEmpty()) {
+                return features.getFirst().properties;
+            }
+            return null;
+        }
     }
 
     public static class AtmoResponse extends DataResponse<IndexProperties> {
@@ -72,18 +82,18 @@ public class AtmoFranceDto {
     }
 
     public static class BaseProperties {
-        public String aasqa;
+        public String aasqa = "";
 
-        public Instant dateMaj;
-        private LocalDate dateDif;
-        private LocalDate dateEch;
+        public Instant dateMaj = Instant.EPOCH;
+        private LocalDate dateDif = LocalDate.EPOCH;
+        private LocalDate dateEch = LocalDate.EPOCH;
 
-        public String codeZone;
-        public String libZone;
-        public String typeZone;
+        public String codeZone = "";
+        public String libZone = "";
+        public String typeZone = "";
 
-        public String libQual;
-        public String source;
+        public String libQual = "";
+        public String source = "";
 
         public Instant getDiffusionDate() {
             return dateDif.atStartOfDay(DEFAULT_TZ).toInstant();
@@ -113,7 +123,7 @@ public class AtmoFranceDto {
         private double concGram;
         private double concOliv;
 
-        public String pollenResp;
+        public String pollenResp = "";
 
         public State getGlobal() {
             return new DecimalType(PollenIndex.valueOf(codeQual).value);
@@ -148,16 +158,16 @@ public class AtmoFranceDto {
     }
 
     public static class IndexProperties extends BaseProperties {
-        private AtmoIndex codeNo2;
-        private AtmoIndex codeO3;
-        private AtmoIndex codePm10;
-        private AtmoIndex codePm25;
-        private AtmoIndex codeSo2;
+        private AtmoIndex codeNo2 = AtmoIndex.UNKNOWN;
+        private AtmoIndex codeO3 = AtmoIndex.UNKNOWN;
+        private AtmoIndex codePm10 = AtmoIndex.UNKNOWN;
+        private AtmoIndex codePm25 = AtmoIndex.UNKNOWN;
+        private AtmoIndex codeSo2 = AtmoIndex.UNKNOWN;
 
-        public AtmoIndex codeQual;
-        public String coulQual;
+        public AtmoIndex codeQual = AtmoIndex.UNKNOWN;
+        public String coulQual = "";
 
-        public String epsgReg;
+        public String epsgReg = "";
         public double xReg;
         public double xWgs84;
         public double yReg;

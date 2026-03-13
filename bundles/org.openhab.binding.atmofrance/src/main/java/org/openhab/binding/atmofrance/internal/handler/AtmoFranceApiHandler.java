@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -48,7 +47,6 @@ import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.AtmoRespons
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.BaseProperties;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.DataResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.ErrorResponse;
-import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.Feature;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.IndexProperties;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.LoginResponse;
 import org.openhab.binding.atmofrance.internal.api.dto.AtmoFranceDto.PollensProperties;
@@ -221,14 +219,11 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         logger.debug("This thing does not handle commands");
     }
 
-    private <P extends @Nullable BaseProperties, T extends DataResponse<P>> @Nullable P getFeatureProperties(URI uri,
+    private <P extends BaseProperties, T extends DataResponse<P>> @Nullable P getFeatureProperties(URI uri,
             Class<T> clazz) {
         try {
             T response = executeUri(uri, clazz);
-            List<Feature<P>> features = response.features;
-            if (!features.isEmpty()) {
-                return features.getFirst().properties();
-            }
+            return response.getProperties();
         } catch (AtmoFranceException e) {
             ThingStatusDetail detail = e.getStatusDetail();
             if (detail == null) {
@@ -239,13 +234,11 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         return null;
     }
 
-    @SuppressWarnings("null")
     public @Nullable IndexProperties getAtmoIndex(String codeInsee) {
         URI atmoUri = AtmoFranceApi.getAtmoUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
         return getFeatureProperties(atmoUri, AtmoResponse.class);
     }
 
-    @SuppressWarnings("null")
     public @Nullable PollensProperties getPollens(String codeInsee) {
         URI pollensUri = AtmoFranceApi.getPollensUri(LocalDate.now(AtmoFranceDto.DEFAULT_TZ), codeInsee);
         return getFeatureProperties(pollensUri, PollensResponse.class);
