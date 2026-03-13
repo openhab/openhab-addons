@@ -57,9 +57,6 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
     private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
     private static final int DISCOVERY_INTERVAL_SECONDS = 600;
 
-    private static final Set<Archetype> IGNORED_DEVICES = Set.of(Archetype.UNKNOWN_ARCHETYPE, Archetype.BRIDGE_V2,
-            Archetype.BRIDGE_V3);
-
     /**
      * Two maps of resource types and respective thing types to be discovered for non- motion aware (v2) and motion
      * aware (v3+) bridges respectively.
@@ -111,8 +108,8 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                             .getResources()) {
 
                         MetaData metaData = resource.getMetaData();
-                        if (Objects.nonNull(metaData) && IGNORED_DEVICES.contains(metaData.getArchetype())) {
-                            // bridge device handled by bridge thing handler; other unknown devices ignored
+                        if (Objects.nonNull(metaData) && Archetype.IGNORED_DEVICES.contains(metaData.getArchetype())) {
+                            // bridge devices handled by bridge thing handler; other unknown devices ignored
                             continue;
                         }
 

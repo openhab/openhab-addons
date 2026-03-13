@@ -677,7 +677,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
         for (Resource device : getClip2Bridge().getResources(DEVICE).getResources()) {
             MetaData metaData = device.getMetaData();
-            if (Objects.nonNull(metaData) && metaData.getArchetype() == Archetype.BRIDGE_V2) {
+            if (Objects.nonNull(metaData) && Archetype.BRIDGES.contains(metaData.getArchetype())) {
                 // set resource properties
                 properties.put(PROPERTY_RESOURCE_ID, device.getId());
                 properties.put(PROPERTY_RESOURCE_TYPE, device.getType().toString());
@@ -708,7 +708,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
                     motionAware = !"BSB002".equals(productData.getModelId());
                 }
-                break; // we only needed the BRIDGE_V2 resource
+                break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
             }
         }
         thing.setProperties(properties);
