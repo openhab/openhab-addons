@@ -21,6 +21,10 @@
 			</channel-group>
 			<channel-group id="daily" typeId="daily"/>
 		</channel-groups>
+		
+        <properties>
+            <property name="thingTypeVersion">1</property>
+        </properties>
 
 		<config-description>
 			<parameter name="apikey" type="text" required="true">

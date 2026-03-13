@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="airparif:api">
+
+		<instruction-set targetVersion="1">
+            <remove-channel id="comment" groupIds="pollens"/>
+            <remove-channel id="begin-validity" groupIds="pollens"/>
+            <remove-channel id="end-validity" groupIds="pollens"/>
+        </instruction-set>
+
+	</thing-type>
+
+	<thing-type uid="airparif:location">
+
+		<instruction-set targetVersion="1">
+			<remove-channel id="cypress" groupIds="pollens"/>
+			<remove-channel id="hazel" groupIds="pollens"/>
+			<remove-channel id="alder" groupIds="pollens"/>
+			<remove-channel id="poplar" groupIds="pollens"/>
+			<remove-channel id="willow" groupIds="pollens"/>
+			<remove-channel id="ash" groupIds="pollens"/>
+			<remove-channel id="hornbeam" groupIds="pollens"/>
+			<remove-channel id="birch" groupIds="pollens"/>
+			<remove-channel id="plane" groupIds="pollens"/>
+			<remove-channel id="oak" groupIds="pollens"/>
+			<remove-channel id="olive" groupIds="pollens"/>
+			<remove-channel id="linden" groupIds="pollens"/>
+			<remove-channel id="chestnut" groupIds="pollens"/>
+			<remove-channel id="rumex" groupIds="pollens"/>
+			<remove-channel id="grasses" groupIds="pollens"/>
+			<remove-channel id="plantain" groupIds="pollens"/>
+			<remove-channel id="urticaceae" groupIds="pollens"/>
+			<remove-channel id="wormwood" groupIds="pollens"/>
+			<remove-channel id="ragweed" groupIds="pollens"/>
+		</instruction-set>
+
+	</thing-type>
+
+</update:update-descriptions>
