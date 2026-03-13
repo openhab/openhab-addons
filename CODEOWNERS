@@ -263,7 +263,6 @@
 /bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
 /bundles/org.openhab.binding.mspa/ @weymann
-/bundles/org.openhab.binding.mybmw/ @ntruchsess @mherwege @martingrassl
 /bundles/org.openhab.binding.mycroft/ @dalgwen
 /bundles/org.openhab.binding.mynice/ @clinique
 /bundles/org.openhab.binding.mystrom/ @pail23

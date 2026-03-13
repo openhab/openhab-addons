@@ -294,7 +294,6 @@
     <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.ruuvigateway</module>
     <module>org.openhab.binding.mspa</module>
-    <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.mystrom</module>
