@@ -155,15 +155,10 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
                     webSocketClient);
         }
 
-        if (handler != null) {
-            String uid = thing.getUID().getAsString();
-            thingTable.addThing(uid, handler);
-            logger.debug("Thing handler for uid {} added, total things = {}", uid, thingTable.size());
-            return handler;
+        if (handler == null) {
+            logger.warn("Unable to create Thing Handler instance for thing type uid {}!", thingTypeUID.toString());
         }
-
-        logger.debug("Unable to create Thing Handler instance!");
-        return null;
+        return handler;
     }
 
     /**

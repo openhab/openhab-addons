@@ -24,6 +24,9 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -60,8 +63,9 @@ import com.google.gson.Gson;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@WebSocket(maxIdleTime = 5 * 60 * 1000)
+@WebSocket(maxIdleTime = 7 * 60 * 1000)
 public class Shelly2RpcSocket implements WriteCallback {
+    private static final long PING_TASK_FREQUENCY_MIN = 2; // = 3 ping before timeout
     private final Logger logger = LoggerFactory.getLogger(Shelly2RpcSocket.class);
     private final Gson gson = new Gson();
 
@@ -80,20 +84,26 @@ public class Shelly2RpcSocket implements WriteCallback {
     private @Nullable Shelly2RpctInterface websocketHandler;
 
     private final WebSocketClient client;
+    private final ScheduledExecutorService scheduler;
+
+    // All access must be guarded by "this"
+    private @Nullable ScheduledFuture<?> pingTask;
 
     /**
      * Regular constructor for Thing and Discover handler
      *
-     * @param thingName Thing/Service name
-     * @param thingTable
-     * @param deviceIp IP address for the device
+     * @param thingName Thing/Service name.
+     * @param thingTable the {@link ShellyThingTable}.
+     * @param deviceIp IP address for the device.
+     * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
     public Shelly2RpcSocket(String thingName, ShellyThingTable thingTable, String deviceIp,
-            WebSocketClient webSocketClient) {
+            WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
         this.thingName = thingName;
         this.deviceIp = deviceIp;
         this.thingTable = thingTable;
         this.client = webSocketClient;
+        this.scheduler = scheduler;
         inbound = false;
     }
 
@@ -103,10 +113,12 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param thingTable
      * @param inbound
      */
-    public Shelly2RpcSocket(ShellyThingTable thingTable, boolean inbound, WebSocketClient webSocketClient) {
+    public Shelly2RpcSocket(ShellyThingTable thingTable, boolean inbound, WebSocketClient webSocketClient,
+            ScheduledExecutorService scheduler) {
         this.thingTable = thingTable;
         this.inbound = inbound;
         this.client = webSocketClient;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -115,9 +127,7 @@ public class Shelly2RpcSocket implements WriteCallback {
      * @param interfacehandler
      */
     public synchronized void addMessageHandler(Shelly2RpctInterface interfacehandler) {
-        synchronized (this) {
-            this.websocketHandler = interfacehandler;
-        }
+        this.websocketHandler = interfacehandler;
     }
 
     /**
@@ -192,7 +202,7 @@ public class Shelly2RpcSocket implements WriteCallback {
             thing = thingTable.getThing(deviceIp);
         } catch (IllegalArgumentException e) { // unknown thing
             logger.debug("{}: RPC connection error for {} (unknown/disabled thing? - {}), closing socket", thingName,
-                    deviceIp, e.getMessage());
+                    deviceIp, e.getMessage(), e);
             session.close(StatusCode.SHUTDOWN, "Thing not active");
             return;
         }
@@ -218,6 +228,7 @@ public class Shelly2RpcSocket implements WriteCallback {
             logger.debug("{}: WebSocket connected {}<-{}, Idle Timeout={}", thingName, session.getLocalAddress(),
                     session.getRemoteAddress(), session.getIdleTimeout());
         }
+        startPing(session);
         handler.onConnect(deviceIp, true);
 
         if (queue != null) {
@@ -395,6 +406,8 @@ public class Shelly2RpcSocket implements WriteCallback {
             logger.trace("{}: RPC connection closed abnormally: {} - {}", thingName, statusCode, getString(reason));
         }
 
+        stopPing();
+
         Shelly2RpctInterface handler;
         synchronized (this) {
             handler = this.websocketHandler;
@@ -420,6 +433,8 @@ public class Shelly2RpcSocket implements WriteCallback {
      */
     @OnWebSocketError
     public void onError(Throwable cause) {
+        stopPing();
+
         Shelly2RpctInterface websocketHandler;
         synchronized (this) {
             websocketHandler = this.websocketHandler;
@@ -438,22 +453,26 @@ public class Shelly2RpcSocket implements WriteCallback {
         }
     }
 
-    public void ping() {
-        Session session;
+    private void startPing(Session session) {
+        ScheduledFuture<?> oldTask;
         synchronized (this) {
-            session = this.session;
+            oldTask = this.pingTask;
+            this.pingTask = scheduler.scheduleWithFixedDelay(new PingTask(session), PING_TASK_FREQUENCY_MIN,
+                    PING_TASK_FREQUENCY_MIN, TimeUnit.MINUTES);
         }
-        if (session != null && session.isOpen()) {
-            RemoteEndpoint remote = session.getRemote();
-            String ipAddress = remote.getInetSocketAddress().getHostString();
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: Sending WebSocket PING to {}", thingName, ipAddress);
-            }
-            try {
-                remote.sendPing(ByteBuffer.allocate(0));
-            } catch (IOException e) {
-                logger.debug("{}: Failed to send WebSocket PING to {}", thingName, ipAddress, e);
-            }
+        if (oldTask != null) {
+            oldTask.cancel(false);
+        }
+    }
+
+    private void stopPing() {
+        ScheduledFuture<?> oldTask;
+        synchronized (this) {
+            oldTask = this.pingTask;
+            this.pingTask = null;
+        }
+        if (oldTask != null) {
+            oldTask.cancel(false);
         }
     }
 
@@ -533,5 +552,35 @@ public class Shelly2RpcSocket implements WriteCallback {
         client.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
         client.setStopTimeout(1000);
         return client;
+    }
+
+    private class PingTask implements Runnable {
+
+        private final Session session;
+
+        public PingTask(Session session) {
+            this.session = session;
+        }
+
+        @Override
+        public void run() {
+            Session session;
+            synchronized (this) {
+                session = this.session;
+            }
+            if (session.isOpen()) {
+                RemoteEndpoint remote = session.getRemote();
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Sending WebSocket ping to {}", remote.getInetSocketAddress().getHostString());
+                }
+                try {
+                    remote.sendPing(ByteBuffer.allocate(0));
+                } catch (IOException e) {
+                    logger.debug("Faied to send WebSocket ping to {}: {}",
+                            remote.getInetSocketAddress().getHostString(), e.getMessage());
+                    logger.trace("", e);
+                }
+            }
+        }
     }
 }

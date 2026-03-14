@@ -122,7 +122,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private String lastWakeupReason = "";
 
     // Scheduler
-    private double watchdog = now();
+    private volatile double watchdog = now();
     protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -160,9 +160,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
         gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
         if (blu) {
-            this.api = new ShellyBluApi(thingName, thingTable, this, webSocketClient);
+            this.api = new ShellyBluApi(thingName, thingTable, this, webSocketClient, scheduler);
         } else if (gen2) {
-            this.api = new Shelly2ApiRpc(thingName, thingTable, this, webSocketClient);
+            this.api = new Shelly2ApiRpc(thingName, thingTable, this, webSocketClient, scheduler);
         } else {
             this.api = new Shelly1HttpApi(thingName, this);
         }
@@ -190,7 +190,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             boolean start = false;
             try {
                 if (initializeThingConfig()) {
-                    logger.debug("{}: Config: {}", thingName, config);
+                    String uid = thing.getUID().getAsString();
+                    thingTable.addThing(uid, this);
+                    logger.debug("Thing handler for uid {} added, total things = {}", uid, thingTable.size());
                     start = initializeThing();
                 }
             } catch (ShellyApiException e) {
@@ -560,10 +562,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
-                if (profile.alwaysOn) {
-                    // For Gen2+: Keep WS connection alive
-                    api.sendPing();
-                }
 
                 ShellySettingsStatus status = api.getStatus();
                 boolean restarted = checkRestarted(status);
@@ -725,7 +723,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void restartWatchdog() {
-        watchdog = now();
+        synchronized (this) {
+            watchdog = now();
+        }
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_HEARTBEAT, getTimestamp());
         logger.trace("{}: Watchdog restarted (expires in {} sec)", thingName, profile.updatePeriod);
     }
@@ -1088,6 +1088,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         skipCount = config.updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
         logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, config.updateInterval, skipCount);
+
+        logger.debug("{}: Config: {}", thingName, config);
         return true;
     }
 

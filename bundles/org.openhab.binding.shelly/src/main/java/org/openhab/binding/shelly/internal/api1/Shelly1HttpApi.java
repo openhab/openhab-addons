@@ -161,11 +161,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
         return profile.initialized;
     }
 
-    @Override
-    public void sendPing() {
-        // not required for Gen1 http api
-    }
-
     /**
      * Get generic device settings/status. Json returned from API will be mapped to a Gson object
      *
