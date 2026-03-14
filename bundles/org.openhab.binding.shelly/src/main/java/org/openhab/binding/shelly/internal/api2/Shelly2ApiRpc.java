@@ -148,12 +148,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             rpcSocket.disconnect();
         }
 
-        synchronized (this) {
-            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
-            rpcSocket.addMessageHandler(this);
-            this.rpcSocket = rpcSocket;
-            initialized = true;
-        }
+        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
+        rpcSocket.addMessageHandler(this);
+        this.rpcSocket = rpcSocket;
+        initialized = true;
     }
 
     @Override
@@ -599,8 +597,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onConnect(String deviceIp, boolean connected) {
-        logger.debug("{}: Get thing from thingTable", thingName);
         thing = thingTable.getThing(deviceIp);
+        logger.debug("{}: Get thing from thingTable", thingName);
     }
 
     @Override
