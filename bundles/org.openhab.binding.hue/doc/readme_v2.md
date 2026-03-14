@@ -4,7 +4,7 @@
 
 ## Supported Things
 
-The binding supports `bridge-api2`, `device`, `room`, and `zone` thing types.
+The binding supports `bridge-api2`, `device`, `room`, `zone`, and in some cases `area` thing types.
 The `bridge-api2` thing type represents the Hue Bridge which is the server for all other things.
 The `device` thing type represents a piece of physical equipment in the home.
 Such `device` things may contain either a _light_, a _button_, or (one or more) _sensors_.
@@ -12,6 +12,7 @@ Lights can be of any type from a simple on/off light, through dimmable monochrom
 Buttons are devices having one or more push buttons.
 Sensors can be (for example) light level sensors, temperature sensors, or motion sensors.
 The `room` and `zone` thing type represents logical groupings of equipment in the home, either within a specific room, or a logical group of equipment.
+In addition, the Hue Bridge Pro supports an `area` thing type which represents the area covered by lights comprising a MotionAware™ area.
 
 ## Thing Configuration
 
@@ -105,6 +106,12 @@ Device things support some of the following channels:
 | security-contact-last-updated | DateTime           | The date and time when the security contact state was last updated. (Read Only) (Advanced)                          |
 | security-tamper               | Contact            | Indicates whether a security tamper contact has been triggered. `Open` means tampering detected. (Read Only)        |
 | security-tamper-last-updated  | DateTime           | The date and time when the security tamper contact state was last updated. (Read Only) (Advanced)                   |
+| alarm-sound                   | String             | Choice of names for a speaker alarm sound play request.                                                             |
+| alert-sound                   | String             | Choice of names for a speaker alert sound play request.                                                             |
+| chime-sound                   | String             | Choice of names for a speaker chime sound play request.                                                             |
+| volume                        | Dimmer             | Preset the sound volume to be played on the next `alarm-sound`, `alert-sound`, and `chime-sound` play request.      |
+| duration                      | Number:Time        | Preset the sound duration on the next `alarm-sound`play request.                                                    |
+| mute                          | Switch             | Channel to mute or un-mute the speaker output. Note: it is impossible to mute the `alarm-sound`.                    |
 
 The exact list of channels in a given device is determined at run time when the system is started.
 Each device reports its own live list of capabilities, and the respective list of channels is created accordingly.
@@ -156,6 +163,21 @@ They support the following channels:
 
 <sup>1)</sup> The scene and alert channels are optional.
 If the respective room or zone has no scenes or alerts associated with it, the respective channel will not be shown.
+
+### Channels for MotionAware™ Areas
+
+MotionAware™ `area` things are a kind of amalgam between physical `device` instances and pseudo `zone` instances.
+They use disturbances in the Zigbee RF signal fields of three or more lights to sense if a person is moving within the area encompassed by the lights.
+Such `area` things support two sensors -- namely a 'convenience' sensor for e.g. switching lights, plus a 'security' sensor for e.g. sounding an alarm.
+Therefore they have the following channels:
+
+| Channel ID                   | Item Type          | Description                                                                                    |
+|------------------------------|--------------------|------------------------------------------------------------------------------------------------|
+| motion-area-enabled          | Switch             | Supports enabling / disabling the entire MotionAware™ area. (Advanced)                         |
+| motion                       | Switch             | Shows if motion has been detected by the 'convenience' motion sensor. (Read Only)              |
+| motion-last-updated          | DateTime           | The date and time when the 'convenience' motion value was last updated. (Read Only) (Advanced) |
+| security-motion              | Switch             | Shows if motion has been detected by the 'security' motion sensor. (Read Only)                 |
+| security-motion-last-updated | DateTime           | The date and time when the 'security' motion value was last updated. (Read Only) (Advanced)    |
 
 ### The `dynamics` Channel
 
