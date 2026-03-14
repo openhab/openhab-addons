@@ -109,8 +109,8 @@ Device things support some of the following channels:
 | alarm-sound                   | String             | Choice of names for a speaker alarm sound play request.                                                             |
 | alert-sound                   | String             | Choice of names for a speaker alert sound play request.                                                             |
 | chime-sound                   | String             | Choice of names for a speaker chime sound play request.                                                             |
-| volume                        | Dimmer             | Preset the sound volume to be played on the next `alarm-sound`, `alert-sound`, or `chime-sound` play request.      |
-| duration                      | Number:Time        | Preset the sound duration on the next `alarm-sound` play request.                                                    |
+| volume                        | Dimmer             | Preset the sound volume to be played on the next `alarm-sound`, `alert-sound`, or `chime-sound` play request.       |
+| duration                      | Number:Time        | Preset the sound duration on the next `alarm-sound` play request.                                                   |
 | mute                          | Switch             | Channel to mute or un-mute the speaker output. Note: it is impossible to mute the `alarm-sound`.                    |
 
 The exact list of channels in a given device is determined at run time when the system is started.
