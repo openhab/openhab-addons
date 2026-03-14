@@ -75,7 +75,7 @@ So you can graph historical value using a chart like this one:
 
 ![doc/graphe.png](doc/graphe.png)
 
-```
+```yaml
 config:
   label: Vigicrues Graphes
   sidebar: true

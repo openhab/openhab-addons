@@ -22,9 +22,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -33,7 +30,6 @@ import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
-import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.CdStationHydro;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.InfoVigiCru;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.ObservationAnswer;
@@ -41,7 +37,6 @@ import org.openhab.binding.vigicrues.internal.dto.vigicrues.StaEntVigiCruAnswer;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.TerEntVigiCru;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.library.types.PointType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -86,8 +81,6 @@ public class ApiHandler {
     private static final String OBSERVATION_URL = BASE_URL
             + "observations.json/index.php?CdStationHydro=%s&FormatDate=iso&GrdSerie=%s";
 
-    private static final String MEASURES_URL = BASE_URL
-            + "https://public.opendatasoft.com/api/records/1.0/search/?dataset=vigicrues&sort=timestamp&q=%s";
     private static final String HUBEAU_URL = "https://hubeau.eaufrance.fr/api/v2/hydrometrie/referentiel/stations?format=json&size=2000";
 
     @Activate
@@ -96,10 +89,6 @@ public class ApiHandler {
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
 
         try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
-            sslContextFactory.setSslContext(sslContext);
-
             httpClient = httpClientFactory.createHttpClient(BINDING_ID, sslContextFactory);
             httpClient.setResponseBufferSize(20971520);
             httpClient.start();
@@ -137,7 +126,6 @@ public class ApiHandler {
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36");
                 req.header("Accept",
                         "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
-                req.header("Accept-Encoding", "gzip, deflate, br, zstd");
                 req.header("Accept-Language", "en-US,en;q=0.9,fr-FR;q=0.8,fr;q=0.7");
 
                 FutureResponseListener listener = new FutureResponseListener(req, 50 * 1024 * 1024);
@@ -156,7 +144,7 @@ public class ApiHandler {
                     return gson.fromJson(jsonResponse, responseType);
                 }
             }
-            return gson.fromJson(jsonResponse, responseType);
+            throw new VigiCruesException(("Request failed after 3 retry %s").formatted(url));
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new VigiCruesException(e);
         } catch (JsonSyntaxException e) {
@@ -186,10 +174,6 @@ public class ApiHandler {
 
     public CdStationHydro getStationDetails(String stationId) throws VigiCruesException {
         return execute(STATION_DETAILS_URL.formatted(stationId), CdStationHydro.class);
-    }
-
-    public OpenDatasoftResponse getMeasures(String stationId) throws VigiCruesException {
-        return execute(MEASURES_URL.formatted(stationId), OpenDatasoftResponse.class);
     }
 
     public HubEauResponse discoverStations(PointType location, int range) throws VigiCruesException {

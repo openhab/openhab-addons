@@ -184,12 +184,21 @@ public class VigiCruesHandler extends BaseThingHandler {
 
         try {
             StaEntVigiCruAnswer feeds = apiHandler.getStationFeeds(config.id);
-            String debit = feeds.listEntVigiCru.get(0).vigilanceCrues.fluxDonnees.observations.debits;
-            String hauteur = feeds.listEntVigiCru.get(0).vigilanceCrues.fluxDonnees.observations.hauteurs;
-            if (hauteur == null || hauteur.isBlank()) {
+            List<StaEntVigiCru> listEntVigiCru = feeds.listEntVigiCru;
+
+            if (listEntVigiCru != null && listEntVigiCru.isEmpty()) {
+                StaEntVigiCru station = listEntVigiCru.get(0);
+                String debit = station.vigilanceCrues.fluxDonnees.observations.debits;
+                String hauteur = station.vigilanceCrues.fluxDonnees.observations.hauteurs;
+                if (hauteur == null || hauteur.isBlank()) {
+                    channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
+                }
+                if (debit == null || debit.isBlank()) {
+                    channels.removeIf(channel -> (channel.getUID().getId().contains(FLOW)));
+                }
+            } else {
+                logger.info("Station {} has no feed entries; removing height and flow channels", config.id);
                 channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
-            }
-            if (debit == null || debit.isBlank()) {
                 channels.removeIf(channel -> (channel.getUID().getId().contains(FLOW)));
             }
         } catch (VigiCruesException e) {
@@ -224,26 +233,42 @@ public class VigiCruesHandler extends BaseThingHandler {
         StationConfiguration config = getConfigAs(StationConfiguration.class);
         try {
             ObservationAnswer heights = apiHandler.getHeights(config.id);
-            heights.serie.obssHydro.stream().sorted(Comparator.comparing((ObssHydro o) -> o.timestamp).reversed())
-                    .findFirst().ifPresent(observation -> {
-                        double height = observation.measure;
-                        if (height != -1) {
-                            updateQuantity(HEIGHT, height, SIUnits.METRE);
-                            updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
-                        }
-                        updateDate(OBSERVATION_TIME, observation.timestamp);
-                    });
-            updateTimeSeries(HEIGHT, heights.serie, SIUnits.METRE);
 
+            Optional<ObssHydro> latestHeightObservation = heights.serie.obssHydro.stream()
+                    .sorted(Comparator.comparing((ObssHydro o) -> o.timestamp).reversed()).findFirst();
+            latestHeightObservation.ifPresent(observation -> {
+                double height = observation.measure;
+                if (height != -1) {
+                    updateQuantity(HEIGHT, height, SIUnits.METRE);
+                    updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
+                }
+            });
+            updateTimeSeries(HEIGHT, heights.serie, SIUnits.METRE);
             ObservationAnswer flows = apiHandler.getFlows(config.id);
-            flows.serie.obssHydro.stream().sorted(Comparator.comparing((ObssHydro o) -> o.timestamp).reversed())
-                    .findFirst().map(m -> m.measure).ifPresent(flow -> {
-                        if (flow != -1) {
-                            updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
-                            updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
-                        }
-                    });
+            Optional<ObssHydro> latestFlowObservation = flows.serie.obssHydro.stream()
+                    .sorted(Comparator.comparing((ObssHydro o) -> o.timestamp).reversed()).findFirst();
+            latestFlowObservation.ifPresent(observation -> {
+                double flow = observation.measure;
+                if (flow != -1) {
+                    updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
+                    updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
+                }
+            });
             updateTimeSeries(FLOW, flows.serie, Units.CUBICMETRE_PER_SECOND);
+            @Nullable
+            ZonedDateTime latestTimestamp = null;
+            if (latestHeightObservation.isPresent()) {
+                latestTimestamp = latestHeightObservation.get().timestamp;
+            }
+            if (latestFlowObservation.isPresent()) {
+                ZonedDateTime flowTimestamp = latestFlowObservation.get().timestamp;
+                if (latestTimestamp == null || flowTimestamp.isAfter(latestTimestamp)) {
+                    latestTimestamp = flowTimestamp;
+                }
+            }
+            if (latestTimestamp != null) {
+                updateDate(OBSERVATION_TIME, latestTimestamp);
+            }
 
             String currentPortion = portion;
             if (currentPortion != null) {
@@ -299,10 +324,14 @@ public class VigiCruesHandler extends BaseThingHandler {
 
         for (ObssHydro obsHydro : serie.obssHydro) {
             try {
+                if (Double.compare(obsHydro.measure, -1d) == 0) {
+                    continue;
+                }
+
                 Instant timestamp = obsHydro.timestamp.toInstant();
                 timeSeries.add(timestamp, new QuantityType<>(obsHydro.measure, unit));
             } catch (Exception ex) {
-                logger.error("error occurs during updatePowerTimeSeries : {}", ex.getMessage(), ex);
+                logger.error("error occurs during updateTimeSeries : {}", ex.getMessage(), ex);
             }
         }
 
