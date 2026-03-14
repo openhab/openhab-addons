@@ -12,7 +12,7 @@ Lights can be of any type from a simple on/off light, through dimmable monochrom
 Buttons are devices having one or more push buttons.
 Sensors can be (for example) light level sensors, temperature sensors, or motion sensors.
 The `room` and `zone` thing type represents logical groupings of equipment in the home, either within a specific room, or a logical group of equipment.
-In addition, the Hue Bridge Pro supports an `area` thing type which represents the area covered by lights comprising a MotionAware™ area.
+In addition, the Hue Bridge Pro (or higher) supports an `area` thing type which represents the area covered by lights comprising a MotionAware™ area.
 
 ## Thing Configuration
 
@@ -41,7 +41,7 @@ Bridge hue:bridge-api2:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopa
 Apart from the Bridge, there are four other types of thing -- namely `device`, `room`, `zone`, and `area`.
 Device things represent physical hardware devices in the system, whereas `room` and `zone` things represent sets of physical lights, either in a room or a zone.
 In addition to regular rooms and zones, there is a 'super' `zone` that allows you to control all of the lights in the system.
-On Hue version 3 bridges and higher, there is a special `area` thing which represents specific groups of 'Motion Aware' lights which are able to act as virtual motion sensors.
+On Hue version 3 bridges (Hue Bridge Pro) and higher, there is a special `area` thing which represents specific groups of MotionAware™ lights which are able to act as virtual motion sensors.
 
 All things are identified by a unique Resource Identifier string that the Hue Bridge assigns to them e.g. `d1ae958e-8908-449a-9897-7f10f9b8d4c2`.
 Thus, all it needs for manual configuration is this single value, like:
