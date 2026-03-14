@@ -90,7 +90,7 @@ public class ShellyManagerServlet extends HttpServlet {
             Map<String, String[]> parameters = request.getParameterMap();
             logger.debug("{}: {} Request from {}:{}{}?{}", className, request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
-            if (!path.toLowerCase(Locale.ROOT).startsWith(SERVLET_URI)) {
+            if (!path.startsWith(SERVLET_URI)) {
                 logger.warn("{} received unknown request: path = {}", className, path);
                 return;
             }

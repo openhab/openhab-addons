@@ -110,11 +110,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final String AUTOMATION_CHANNEL_DESCRIPTION_KEY = "dynamic-channel.automation-enable.description";
 
     /**
-     * List of resource references that need to be mass down loaded.
+     * Two lists of resource references that need to be mass down loaded for non- motion aware (v2) and motion
+     * aware (v3+) bridges respectively.
      * NOTE: the SCENE resources must be mass down loaded first!
      */
-    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE,
-            AREA);
+    public static final Map<Boolean, List<ResourceReference>> MASS_DOWNLOAD_RESOURCE_REFERENCES = Map.of( //
+            false, List.of(SCENE, DEVICE, ROOM, ZONE), // non- motion aware v2 bridge
+            true, List.of(SCENE, DEVICE, ROOM, ZONE, AREA) // motion aware v3+ bridge
+    );
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -140,6 +143,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private boolean assetsLoaded;
     private int applKeyRetriesRemaining;
     private int connectRetriesRemaining;
+    private boolean motionAware; // true if the bridge is a v3+ model that supports the motion aware feature
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
             LocaleProvider localeProvider, TranslationProvider translationProvider) {
@@ -673,7 +677,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
         for (Resource device : getClip2Bridge().getResources(DEVICE).getResources()) {
             MetaData metaData = device.getMetaData();
-            if (Objects.nonNull(metaData) && metaData.getArchetype() == Archetype.BRIDGE_V2) {
+            if (Objects.nonNull(metaData) && Archetype.BRIDGES.contains(metaData.getArchetype())) {
                 // set resource properties
                 properties.put(PROPERTY_RESOURCE_ID, device.getId());
                 properties.put(PROPERTY_RESOURCE_TYPE, device.getType().toString());
@@ -701,8 +705,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     properties.put(PROPERTY_PRODUCT_NAME, productData.getProductName());
                     properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
                     properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
+
+                    motionAware = !"BSB002".equals(productData.getModelId());
                 }
-                break; // we only needed the BRIDGE_V2 resource
+                break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
             }
         }
         thing.setProperties(properties);
@@ -773,7 +779,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("updateThingsNow()");
         try {
             Clip2Bridge bridge = getClip2Bridge();
-            for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES) {
+            for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES.get(motionAware)) {
                 ResourceType resourceType = reference.getType();
                 List<Resource> resourceList = bridge.getResources(reference).getResources();
                 switch (resourceType) {
@@ -938,5 +944,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             }
         }
         return requireUpdateChannels;
+    }
+
+    /**
+     * Getter for whether the bridge is motion aware
+     * 
+     * @return
+     */
+    public boolean motionAware() {
+        return motionAware;
     }
 }

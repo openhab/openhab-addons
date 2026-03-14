@@ -491,15 +491,13 @@ public class ShellyManagerPage {
     }
 
     protected String httpRequest(HttpMethod method, String url) throws ShellyApiException {
-        ShellyApiResult apiResult = new ShellyApiResult();
-
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON);
             logger.trace("{}: HTTP {} {}", LOG_PREFIX, method, url);
             ContentResponse contentResponse = request.send();
-            apiResult = new ShellyApiResult(contentResponse);
+            ShellyApiResult apiResult = ShellyApiResult.builder(contentResponse).build();
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}", LOG_PREFIX, contentResponse.getStatus(), response);
 

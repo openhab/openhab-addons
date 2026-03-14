@@ -30,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.io.EofException;
+import org.openhab.binding.shelly.internal.api.ShellyApiResult.ShellyApiResultBuilder;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -43,15 +44,17 @@ import com.google.gson.JsonSyntaxException;
 public class ShellyApiException extends Exception {
     private static final long serialVersionUID = -5809459454769761821L;
 
-    private ShellyApiResult apiResult = new ShellyApiResult();
+    private final ShellyApiResult apiResult;
     private static final String NONE = "none";
 
     public ShellyApiException(Exception exception) {
         super(exception);
+        apiResult = new ShellyApiResultBuilder().build();
     }
 
     public ShellyApiException(String message) {
         super(message);
+        apiResult = new ShellyApiResultBuilder().build();
     }
 
     public ShellyApiException(ShellyApiResult res) {
@@ -61,6 +64,7 @@ public class ShellyApiException extends Exception {
 
     public ShellyApiException(String message, Exception exception) {
         super(message, exception);
+        apiResult = new ShellyApiResultBuilder().build();
     }
 
     public ShellyApiException(ShellyApiResult result, Exception exception) {

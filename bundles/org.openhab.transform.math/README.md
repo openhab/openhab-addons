@@ -2,7 +2,7 @@
 
 Transforms the input by applying simple math on it.
 
-The available transformations are 
+The available transformations are:
 
 - `MULTIPLY`: multiply the state by a value
 - `ADD`: add a value to the state

@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -218,7 +219,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        connectApi.setAccessToken(accessTokenResponse.getAccessToken(), accessTokenResponse.getScope());
+        connectApi.setAccessToken(accessTokenResponse.getAccessToken(),
+                Objects.requireNonNullElse(accessTokenResponse.getScope(), ""));
         return true;
     }
 
@@ -242,8 +244,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private void prepareReconnection(String message, Duration delay, @Nullable String code,
             @Nullable String redirectUri) {
         if (!ThingStatus.OFFLINE.equals(thing.getStatus())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Reconnection in %s: %s".formatted(delay, message));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
         }
         connectApi.dispose();
         freeConnectJob();

@@ -25,5 +25,12 @@ public class SonnenConfiguration {
     public String hostIP = "";
     public int refreshInterval = 30;
     public String authToken = "";
+
+    /**
+     * Deprecated: kept for backward compatibility with older configurations that used
+     * the chargingPower configuration parameter. New configurations should use the
+     * corresponding chargeRate channel instead.
+     */
+    @Deprecated
     public int chargingPower = -1;
 }

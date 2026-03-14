@@ -32,11 +32,9 @@ public class TargetNavigatorCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0505;
     public static final String CLUSTER_NAME = "TargetNavigator";
     public static final String CLUSTER_PREFIX = "targetNavigator";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_TARGET_LIST = "targetList";
     public static final String ATTRIBUTE_CURRENT_TARGET = "currentTarget";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates a list of targets that can be navigated to within the experience presented to the user by the Endpoint
      * (Video Player or Content App). The list shall NOT contain any entries with the same Identifier in the
@@ -138,7 +136,6 @@ public class TargetNavigatorCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "targetList : " + targetList + "\n";
         str += "currentTarget : " + currentTarget + "\n";
         return str;

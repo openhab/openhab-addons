@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.homewizard.internal.devices;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -39,24 +35,11 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class HomeWizardBatteriesSubHandler {
 
-    private final String BATTERIES_URL = "batteries";
+    protected final static Logger logger = LoggerFactory.getLogger(HomeWizardBatteriesSubHandler.class);
+    private final static Gson gson = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
-    protected final Logger logger = LoggerFactory.getLogger(HomeWizardBatteriesSubHandler.class);
-    private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create();
-
-    private HomeWizardDeviceHandler handler;
-
-    /**
-     * Constructor
-     *
-     * @param handler The device handler used to communicate with the HomeWizard device
-     */
-    public HomeWizardBatteriesSubHandler(HomeWizardDeviceHandler handler) {
-        this.handler = handler;
-    }
-
-    public void handleCommand(Command command) {
+    public static void handleCommand(Command command, HomeWizardDeviceHandler handler) {
         var mode = "";
         var permissions = "";
 
@@ -96,30 +79,19 @@ public class HomeWizardBatteriesSubHandler {
         }
         var cmd = String.format("{%s\"mode\": \"%s\"}", permissions, mode);
 
-        try {
-            var response = handler.putDataTo(handler.apiURL + BATTERIES_URL, cmd);
-            if (response.getStatus() == HttpStatus.OK_200) {
-                handleBatteriesData(response.getContentAsString());
-            } else {
-                logger.warn("Failed to send command {} to {}", command, handler.apiURL + BATTERIES_URL);
-            }
-        } catch (Exception ex) {
-            logger.warn("Failed to send command {} to {}", command, handler.apiURL + BATTERIES_URL);
-        }
+        handler.sendBatteriesCommand(cmd);
     }
 
     /**
      * Device specific handling of the returned batteries data.
      *
      * @param data The data obtained from the API call
+     * @throws JsonSyntaxException when the data cannot be parsed to the expected format
      */
-    public void handleBatteriesData(String data) {
+    public static void handleBatteriesData(String data, HomeWizardDeviceHandler handler) throws JsonSyntaxException {
         HomeWizardBatteriesPayload payload = null;
-        try {
-            payload = gson.fromJson(data, HomeWizardBatteriesPayload.class);
-        } catch (JsonSyntaxException ex) {
-            logger.warn("No Batteries data available");
-        }
+        payload = gson.fromJson(data, HomeWizardBatteriesPayload.class);
+
         if (payload != null) {
             var mode = payload.getMode();
             if (mode.equals(HomeWizardBindingConstants.BATTERIES_MODE_ZERO)) {
@@ -133,43 +105,22 @@ public class HomeWizardBatteriesSubHandler {
                     mode = HomeWizardBindingConstants.BATTERIES_MODE_STANDBY;
                 }
             }
-            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE, new StringType(mode));
-            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_COUNT, new DecimalType(payload.getBatteryCount()));
-            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_POWER,
                     new QuantityType<>(payload.getPower(), Units.WATT));
-            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_TARGET_POWER,
                     new QuantityType<>(payload.getTargetPower(), Units.WATT));
-            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_CONSUMPTION,
                     new QuantityType<>(payload.getMaxConsumption(), Units.WATT));
-            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+            handler.updateState(HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_PRODUCTION,
                     new QuantityType<>(payload.getMaxProduction(), Units.WATT));
-        }
-    }
-
-    public void retrieveBatteriesData() throws InterruptedException, TimeoutException, ExecutionException {
-        final String batteriesData;
-
-        batteriesData = getBatteriesData();
-        handleBatteriesData(batteriesData);
-    }
-
-    /**
-     * @return json response from the batteries api
-     * @throws InterruptedException, TimeoutException, ExecutionException
-     */
-    public String getBatteriesData() throws InterruptedException, TimeoutException, ExecutionException {
-        var response = handler.getResponseFrom(handler.apiURL + BATTERIES_URL);
-        if (response.getStatus() == HttpStatus.OK_200) {
-            return response.getContentAsString();
-        } else {
-            logger.warn("No Batteries data available");
-            return "";
         }
     }
 }

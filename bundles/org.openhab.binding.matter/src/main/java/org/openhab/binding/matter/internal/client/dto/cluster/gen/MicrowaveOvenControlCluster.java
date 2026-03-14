@@ -32,7 +32,6 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x005F;
     public static final String CLUSTER_NAME = "MicrowaveOvenControl";
     public static final String CLUSTER_PREFIX = "microwaveOvenControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_COOK_TIME = "cookTime";
     public static final String ATTRIBUTE_MAX_COOK_TIME = "maxCookTime";
@@ -44,7 +43,6 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_SELECTED_WATT_INDEX = "selectedWattIndex";
     public static final String ATTRIBUTE_WATT_RATING = "wattRating";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the total cook time associated with the operation of the device.
@@ -57,15 +55,15 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      */
     public Integer maxCookTime; // 1 elapsed-s R V
     /**
-     * Indicates the power level associated with the operation of the device. If the MinPower, MaxPower, and PowerStep
-     * attributes are not supported:
-     * • The minimum value of this attribute shall be 10,
-     * • The maximum value of this attribute shall be 100,
-     * • The value shall be in even multiples of 10,
-     * • The default value shall be 100.
+     * Indicates the power level associated with the operation of the device.
+     * If the MinPower, MaxPower, and PowerStep attributes are not supported:
+     * - The minimum value of this attribute shall be 10,
+     * - The maximum value of this attribute shall be 100,
+     * - The value shall be in even multiples of 10,
+     * - The default value shall be 100.
      * If the MinPower, MaxPower, and PowerStep attributes are supported:
-     * • The value of this attribute shall be between MinPower and MaxPower inclusive.
-     * • The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep &#x3D;&#x3D; 0
+     * - The value of this attribute shall be between MinPower and MaxPower inclusive.
+     * - The value of this attribute shall be such that (PowerSetting - MinPower) % PowerStep &#x3D;&#x3D; 0
      */
     public Integer powerSetting; // 2 uint8 R V
     /**
@@ -77,8 +75,8 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
      */
     public Integer maxPower; // 4 uint8 R V
     /**
-     * Indicates the increment of power that can be set on the server. The value of this attribute shall be between 1
-     * and MaxPower inclusive.
+     * Indicates the increment of power that can be set on the server.
+     * The value of this attribute shall be between 1 and MaxPower inclusive.
      * The value of this attribute shall be such that (MaxPower - MinPower) % PowerStep &#x3D;&#x3D; 0
      * For example, if MinPower is 1, MaxPower is 10, and PowerSetting can be set to any integer between MinPower and
      * MaxPower, PowerStep would be set to 1.
@@ -159,8 +157,8 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     }
 
     /**
-     * This command is used to add more time to the CookTime attribute of the server. This command supports these
-     * fields:
+     * This command is used to add more time to the CookTime attribute of the server.
+     * This command supports these fields:
      */
     public static ClusterCommand addMoreTime(Integer timeToAdd) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -173,7 +171,6 @@ public class MicrowaveOvenControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "cookTime : " + cookTime + "\n";
         str += "maxCookTime : " + maxCookTime + "\n";

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +27,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -105,8 +107,10 @@ class NodeJSRuntimeManager {
     }
 
     private void detectPlatformAndArch() {
-        String os = Optional.ofNullable(System.getProperty("os.name")).orElseGet(() -> "unknown").toLowerCase();
-        String arch = Optional.ofNullable(System.getProperty("os.arch")).orElseGet(() -> "unknown").toLowerCase();
+        String os = Optional.ofNullable(System.getProperty("os.name")).orElseGet(() -> "unknown")
+                .toLowerCase(Locale.ROOT);
+        String arch = Optional.ofNullable(System.getProperty("os.arch")).orElseGet(() -> "unknown")
+                .toLowerCase(Locale.ROOT);
 
         if (os.contains("win")) {
             platform = "win";
@@ -250,7 +254,8 @@ class NodeJSRuntimeManager {
     private boolean checkSystemInstalledVersion(String requiredVersion) {
         try {
             Process process = new ProcessBuilder(nodeExecutable, "--version").start();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                 String versionLine = reader.readLine();
                 if (versionLine == null || !versionLine.startsWith("v")) {
                     logger.debug("unexpected node output {}", versionLine);
