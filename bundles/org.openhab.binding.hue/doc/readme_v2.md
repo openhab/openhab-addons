@@ -12,7 +12,7 @@ Lights can be of any type from a simple on/off light, through dimmable monochrom
 Buttons are devices having one or more push buttons.
 Sensors can be (for example) light level sensors, temperature sensors, or motion sensors.
 The `room` and `zone` thing type represents logical groupings of equipment in the home, either within a specific room, or a logical group of equipment.
-In addition, the Hue Bridge Pro (or higher) supports an `area` thing type which represents the area covered by lights comprising a MotionAware™ area.
+In addition, third generation bridges (such as the  Hue Bridge Pro, or higher) support an `area` thing type which represents the area covered by lights comprising a MotionAware™ area.
 
 ## Thing Configuration
 
@@ -41,7 +41,7 @@ Bridge hue:bridge-api2:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopa
 Apart from the Bridge, there are four other types of thing -- namely `device`, `room`, `zone`, and `area`.
 Device things represent physical hardware devices in the system, whereas `room` and `zone` things represent sets of physical lights, either in a room or a zone.
 In addition to regular rooms and zones, there is a 'super' `zone` that allows you to control all of the lights in the system.
-On Hue version 3 bridges (Hue Bridge Pro) and higher, there is a special `area` thing which represents specific groups of MotionAware™ lights which are able to act as virtual motion sensors.
+On third generation bridges (such as the  Hue Bridge Pro, or higher) there is a special `area` thing which represents specific groups of MotionAware™ lights which are able to act as virtual motion sensors.
 
 All things are identified by a unique Resource Identifier string that the Hue Bridge assigns to them e.g. `d1ae958e-8908-449a-9897-7f10f9b8d4c2`.
 Thus, all it needs for manual configuration is this single value, like:
@@ -166,6 +166,7 @@ If the respective room or zone has no scenes or alerts associated with it, the r
 
 ### Channels for MotionAware™ Areas
 
+Third generation bridges (such as the  Hue Bridge Pro, or higher) support a feature called MotionAware™.
 MotionAware™ `area` things are a kind of amalgam between physical `device` instances and pseudo `zone` instances.
 They use disturbances in the Zigbee RF signal fields of three or more lights to sense if a person is moving within the area encompassed by the lights.
 Such `area` things support two sensors -- namely a 'convenience' sensor for e.g. switching lights, plus a 'security' sensor for e.g. sounding an alarm.
