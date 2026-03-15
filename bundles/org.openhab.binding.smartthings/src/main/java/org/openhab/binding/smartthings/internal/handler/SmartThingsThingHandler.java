@@ -50,14 +50,14 @@ public class SmartThingsThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsThingHandler.class);
 
-    private String smartthingsName;
+    private String smartThingsName;
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private long lastRefresh = System.nanoTime();
 
     public SmartThingsThingHandler(Thing thing) {
         super(thing);
-        smartthingsName = ""; // Initialize here so it can be NonNull but it should always get a value in initialize()
+        smartThingsName = ""; // Initialize here so it can be NonNull but it should always get a value in initialize()
     }
 
     /**
@@ -342,7 +342,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append("smartthingsName :").append(smartthingsName);
+        sb.append("smartthingsName :").append(smartThingsName);
         sb.append(", thing UID: ").append(thing.getUID());
         sb.append(", thing label: ").append(thing.getLabel());
         return sb.toString();
