@@ -32,9 +32,7 @@ public class SmartThingsBindingConstants {
     public static final String BINDING_ID = "smartthings";
 
     // List of Bridge Type UIDs
-    public static final ThingTypeUID THING_TYPE_SMARTTHINGS = new ThingTypeUID(BINDING_ID, "smartthings");
-
-    public static final ThingTypeUID THING_TYPE_SMARTTHINGSCLOUD = new ThingTypeUID(BINDING_ID, "smartthingscloud");
+    public static final ThingTypeUID THING_TYPE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
 
     // Authorization related Servlet and resources aliases.
     public static final String SMARTTHINGS_ALIAS = "/smartthings";
@@ -69,8 +67,7 @@ public class SmartThingsBindingConstants {
     // But the HandlerFactory wants to start checking on things before that code runs. So, back to a hard coded list
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(SmartThingsBindingConstants.THING_TYPE_SMARTTHINGS,
-                    SmartThingsBindingConstants.THING_TYPE_SMARTTHINGSCLOUD).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(SmartThingsBindingConstants.THING_TYPE_ACCOUNT).collect(Collectors.toSet()));
 
     public static final String THING_LIGHT = "light";
 

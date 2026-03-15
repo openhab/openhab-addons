@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_SMARTTHINGSCLOUD;
+import static org.openhab.binding.smartthings.internal.SmartThingsBindingConstants.THING_TYPE_ACCOUNT;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +22,8 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsAccountHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
-import org.openhab.binding.smartthings.internal.handler.SmartThingsCloudBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -89,7 +89,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SMARTTHINGSCLOUD)) {
+        if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
             // This binding only supports one bridge. If the user tries to add a second bridge register and error and
             // ignore
             if (bridgeHandler != null) {
@@ -99,15 +99,16 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
                 return bridgeHandler;
             }
 
-            bridgeHandler = new SmartThingsCloudBridgeHandler((Bridge) thing, this, authService, bundleContext,
-                    httpService, oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory);
+            bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, bundleContext, httpService,
+                    oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory);
 
-            SmartThingsAccountHandler accountHandler = bridgeHandler;
+            SmartThingsBridgeHandler accountHandler = bridgeHandler;
             authService.setSmartThingsAccountHandler(accountHandler);
             authService.initialize();
 
             bridgeUID = thing.getUID();
-            logger.debug("SmartThingsHandlerFactory created CloudBridgeHandler for {}", thingTypeUID.getAsString());
+            logger.debug("SmartThingsHandlerFactory created SmartThingsAccountHandler for {}",
+                    thingTypeUID.getAsString());
             return bridgeHandler;
         } else if (SmartThingsBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
             ThingUID bridgeUID = this.bridgeUID;

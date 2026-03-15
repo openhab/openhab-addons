@@ -4,30 +4,26 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- The Bridge Type -->
-	<bridge-type id="smartthingscloud">
-		<label>SmartThings Cloud Hub</label>
-		<description>SmartThings Cloud Hub</description>
+	<bridge-type id="account">
+		<label>SmartThings Account</label>
+		<description>The account at Samsung SmartThings</description>
 
 		<config-description>
 			<parameter name="appName" type="text" required="false">
 				<label>AppName</label>
-				<description>The samsung apps name</description>
-				<default></default>
+				<description>The Samsung apps name</description>
 			</parameter>
 			<parameter name="clientId" type="text" required="false">
 				<label>Client ID</label>
-				<description>The apps oauth client Id)</description>
-				<default></default>
+				<description>The app's OAuth Client ID</description>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="false">
 				<label>Client Secret</label>
-				<description>The apps oauth client Secret</description>
-				<default></default>
+				<description>The app's OAuth Client Secret</description>
 			</parameter>
 			<parameter name="pollingTime" type="integer" required="false">
 				<label>Polling Time</label>
-				<description>The Pooling time for refreshing device (-1 : disable)</description>
+				<description>The polling time for refreshing the device (-1 is disabled)</description>
 				<default>-1</default>
 			</parameter>
 		</config-description>

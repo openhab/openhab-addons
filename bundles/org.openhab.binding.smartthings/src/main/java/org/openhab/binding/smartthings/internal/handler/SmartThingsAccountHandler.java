@@ -45,10 +45,10 @@ import org.slf4j.LoggerFactory;
  * @author Bob Raker - Initial contribution
  */
 @NonNullByDefault
-public class SmartThingsCloudBridgeHandler extends SmartThingsBridgeHandler {
-    private final Logger logger = LoggerFactory.getLogger(SmartThingsCloudBridgeHandler.class);
+public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(SmartThingsAccountHandler.class);
 
-    public SmartThingsCloudBridgeHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
+    public SmartThingsAccountHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
             SmartThingsAuthService authService, BundleContext bundleContext, HttpService httpService,
             OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartThingsTypeRegistry typeRegistry,
             ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory) {

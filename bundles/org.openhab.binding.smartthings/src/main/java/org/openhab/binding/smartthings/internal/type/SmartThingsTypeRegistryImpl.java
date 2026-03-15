@@ -32,10 +32,10 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsComponent;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsDevice;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsProperty;
 import org.openhab.binding.smartthings.internal.dto.SmartThingsSchema;
+import org.openhab.binding.smartthings.internal.handler.SmartThingsAccountHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeChannelDefinitions.ChannelProperty;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
-import org.openhab.binding.smartthings.internal.handler.SmartThingsCloudBridgeHandler;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterGroup;
@@ -80,7 +80,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     private @Nullable SmartThingsChannelTypeProvider channelTypeProvider;
     private @Nullable SmartThingsChannelGroupTypeProvider channelGroupTypeProvider;
     private @Nullable SmartThingsConfigDescriptionProvider configDescriptionProvider;
-    private @Nullable SmartThingsCloudBridgeHandler bridgeHandler;
+    private @Nullable SmartThingsAccountHandler bridgeHandler;
     private Gson gson = new Gson();
 
     private HashMap<String, SmartThingsCapability> capabilitiesDict = new HashMap<String, SmartThingsCapability>();
@@ -119,7 +119,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     }
 
     @Override
-    public void setCloudBridgeHandler(SmartThingsCloudBridgeHandler bridgeHandler) {
+    public void setCloudBridgeHandler(SmartThingsAccountHandler bridgeHandler) {
         this.bridgeHandler = bridgeHandler;
     }
 
@@ -589,7 +589,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         logger.trace("createThingType: device:{} {}", device, label);
 
         List<String> supportedBridgeTypeUids = new ArrayList<>();
-        supportedBridgeTypeUids.add(SmartThingsBindingConstants.THING_TYPE_SMARTTHINGSCLOUD.toString());
+        supportedBridgeTypeUids.add(SmartThingsBindingConstants.THING_TYPE_ACCOUNT.toString());
 
         logger.trace("GenerateThingTypeUID: device:{}", device);
         ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);

@@ -78,9 +78,9 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        SmartThingsCloudBridgeHandler cloudBridge = (SmartThingsCloudBridgeHandler) bridge.getHandler();
+        SmartThingsAccountHandler accountHander = (SmartThingsAccountHandler) bridge.getHandler();
 
-        if (cloudBridge != null && cloudBridge.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+        if (accountHander != null && accountHander.getThing().getStatus().equals(ThingStatus.ONLINE)) {
             // channelUID
             SmartThingsConverter converter = SmartThingsConverterFactory.getConverter(channelUID.getIdWithoutGroup());
 
@@ -93,7 +93,7 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                         jsonMsg = converter.convertToSmartThings(thing, channelUID, command);
                     }
 
-                    SmartThingsApi api = cloudBridge.getSmartThingsApi();
+                    SmartThingsApi api = accountHander.getSmartThingsApi();
                     Map<String, String> properties = this.getThing().getProperties();
                     String deviceId = properties.get("deviceId");
 
@@ -185,11 +185,11 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        SmartThingsCloudBridgeHandler cloudBridge = (SmartThingsCloudBridgeHandler) bridge.getHandler();
-        if (cloudBridge == null) {
+        SmartThingsAccountHandler accountHandler = (SmartThingsAccountHandler) bridge.getHandler();
+        if (accountHandler == null) {
             return;
         }
-        SmartThingsApi api = cloudBridge.getSmartThingsApi();
+        SmartThingsApi api = accountHandler.getSmartThingsApi();
         Map<String, String> properties = getThing().getProperties();
 
         String deviceId = properties.get("deviceId");
@@ -246,12 +246,12 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
 
-        SmartThingsCloudBridgeHandler cloudBridge = (SmartThingsCloudBridgeHandler) bridge.getHandler();
-        if (cloudBridge == null) {
+        SmartThingsAccountHandler accountHandler = (SmartThingsAccountHandler) bridge.getHandler();
+        if (accountHandler == null) {
             return;
         }
 
-        SmartThingsTypeRegistry typeRegistry = cloudBridge.getSmartThingsTypeRegistry();
+        SmartThingsTypeRegistry typeRegistry = accountHandler.getSmartThingsTypeRegistry();
 
         SmartThingsConverterFactory.registerConverters(typeRegistry);
         SmartThingsStateHandlerFactory.registerStateHandler();
@@ -269,11 +269,11 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         if (bridge == null) {
             return;
         }
-        SmartThingsCloudBridgeHandler cloudBridge = (SmartThingsCloudBridgeHandler) bridge.getHandler();
-        if (cloudBridge == null) {
+        SmartThingsAccountHandler accountHandler = (SmartThingsAccountHandler) bridge.getHandler();
+        if (accountHandler == null) {
             return;
         }
-        SmartThingsApi api = cloudBridge.getSmartThingsApi();
+        SmartThingsApi api = accountHandler.getSmartThingsApi();
         String deviceId = "702C1F72-C35A-0000-0000-000000000000";
 
         String jsonMsg = "";
@@ -326,9 +326,9 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             }
         }
 
-        SmartThingsCloudBridgeHandler cloudBridge = (SmartThingsCloudBridgeHandler) lcBridge.getHandler();
-        if (cloudBridge != null) {
-            int pollingTime = cloudBridge.getPollingTime();
+        SmartThingsAccountHandler accountHandler = (SmartThingsAccountHandler) lcBridge.getHandler();
+        if (accountHandler != null) {
+            int pollingTime = accountHandler.getPollingTime();
             if (pollingTime != -1) {
                 long now = System.nanoTime();
                 if (now - lastRefresh > TimeUnit.SECONDS.toNanos(pollingTime)) {
