@@ -105,9 +105,12 @@ public class ValueUtils {
      * @param value the Matter measured value (0 = too low, 1-0xFFFE = encoded illuminance)
      * @return the {@link QuantityType} in lux
      */
-    public static QuantityType<Illuminance> valueToIlluminance(int value) {
+    public static @Nullable QuantityType<Illuminance> valueToIlluminance(int value) {
         if (value <= 0) {
             return new QuantityType<>(0, Units.LUX);
+        }
+        if (value > 0xFFFE) {
+            return null;
         }
         double illuminance = Math.pow(10, (value - 1) / 10000.0);
         return new QuantityType<>(illuminance, Units.LUX);
