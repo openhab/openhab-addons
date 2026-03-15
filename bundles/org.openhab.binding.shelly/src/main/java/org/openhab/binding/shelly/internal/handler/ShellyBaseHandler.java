@@ -122,7 +122,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private String lastWakeupReason = "";
 
     // Scheduler
-    private double watchdog = now();
+    private volatile double watchdog = now();
     protected int scheduledUpdates = 0;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
@@ -160,9 +160,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
         gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
         if (blu) {
-            this.api = new ShellyBluApi(thingName, thingTable, this, webSocketClient);
+            this.api = new ShellyBluApi(thingName, thingTable, this, webSocketClient, scheduler);
         } else if (gen2) {
-            this.api = new Shelly2ApiRpc(thingName, thingTable, this, webSocketClient);
+            this.api = new Shelly2ApiRpc(thingName, thingTable, this, webSocketClient, scheduler);
         } else {
             this.api = new Shelly1HttpApi(thingName, this);
         }
@@ -720,7 +720,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void restartWatchdog() {
-        watchdog = now();
+        synchronized (this) {
+            watchdog = now();
+        }
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_HEARTBEAT, getTimestamp());
         logger.trace("{}: Watchdog restarted (expires in {} sec)", thingName, profile.updatePeriod);
     }
@@ -1083,6 +1085,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         skipCount = config.updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
         logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, config.updateInterval, skipCount);
+
         return true;
     }
 
