@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="cm11a"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
@@ -8,6 +7,7 @@
 	<bridge-type id="cm11a">
 		<label>CM11a Controller for X10 Devices</label>
 		<description>CM11 is a device that allows control of X10 devices for a computer. </description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -32,6 +32,7 @@
 
 		<label>X10 Dimmer</label>
 		<description>Controls dimmable loads</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -53,6 +54,7 @@
 
 		<label>X10 Switch</label>
 		<description>On/off switch</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -71,6 +73,10 @@
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -79,6 +85,10 @@
 		<label>Switch State</label>
 		<description>On/off status of the switch</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

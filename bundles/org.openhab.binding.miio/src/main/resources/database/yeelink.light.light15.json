@@ -232,7 +232,7 @@
 				"property": "bg_bright",
 				"friendlyName": "Ambient Brightness",
 				"channel": "ambientBrightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [

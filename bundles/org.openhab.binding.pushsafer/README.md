@@ -1,13 +1,13 @@
 # Pushsafer Binding
 
-The Pushsafer binding allows you to notify mobile devices of a message using the [Pushsafer API](https://www.pushsafer.com/pushapi).
-To get started you first need to register (a free process) to get a Private Key.
-Initially you have to register a device with one of the [client apps](https://www.pushsafer.com/apps), to get a device id.
+This binding allows you to notify mobile devices using the [Pushsafer API](https://www.pushsafer.com/pushapi).
+To get started, first register (a free process) to get a Private Key.
+Initially, register a device with one of the [client apps](https://www.pushsafer.com/apps) to get a device ID.
 
 ## Supported Things
 
-There is only one Thing available - the `pushsafer-account`.
-You are able to create multiple instances of this Thing to broadcast to different devices or groups with push-notification content and setting.
+There is only one Thing available: `pushsafer-account`.
+You can create multiple instances of this Thing to broadcast to different devices or groups with push-notification content and settings.
 
 ## Thing Configuration
 
@@ -29,6 +29,8 @@ You are able to create multiple instances of this Thing to broadcast to differen
 | `confirm`               | integer | Integer 10-10800 (10s steps) Time in seconds after which a message should be sent again before it is confirmed. (default: `0`). **advanced**          |
 | `time2live`             | integer | Time in minutes, after a message automatically gets purged (default: `0`). **advanced**                                                               |
 | `answer`                | integer | 1 = enables reply to push notifications (default: `0`). **advanced**                                                                                  |
+| `answeroptions`         | text    |  specify predefined answer options divided by a pipe character, e.g. Yes\|No\|Maybe **advanced**                                                      |
+| `answerforce`           | integer | 1 = force an answer. The user will be prompted to answer, the message will be open directly. (default: `0`). **advanced**                             |
 
 The `retry` and `expire` parameters are only used for emergency-priority notifications.
 
@@ -38,8 +40,8 @@ Currently the binding does not support any Channels.
 
 ## Thing Actions
 
-All actions return a `Boolean` value to indicate if the message was sent successfully or not.
-The parameter `message` is **mandatory**, the `title` parameter defaults to whatever value you defined in the `title` related configuration parameter.
+All actions return a `Boolean` value to indicate if the message was sent successfully.
+The parameter `message` is **mandatory**; the `title` parameter defaults to whatever value you defined in the `title` configuration parameter.
 
 - `sendPushsaferMessage(String message, @Nullable String title)` - This method is used to send a plain text message.
 
@@ -57,7 +59,6 @@ The parameter `message` is **mandatory**, the `title` parameter defaults to what
 
 demo.rules
 
-```java
 ```java
 val actions = getActions("pushsafer", "pushsafer:pushsafer-account:account")
 // send message with attachment

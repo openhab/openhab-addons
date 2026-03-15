@@ -8,14 +8,18 @@
 		<label>KL135</label>
 		<description>TP-Link KL135 Kasa Smart Wi-Fi Bulb Multicolor</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>
-			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs3"/>
+			<channel id="colorTemperatureAbs" typeId="system.color-temperature-abs"/>
 			<channel id="power" typeId="power"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>deviceId</representation-property>
 

@@ -8,6 +8,7 @@
 	<thing-type id="fan">
 		<label>BigAssFan</label>
 		<description>Big Ass Fan</description>
+		<semantic-equipment-tag>Fan</semantic-equipment-tag>
 
 		<channels>
 			<!-- Channels related to fan functions -->
@@ -91,16 +92,28 @@
 		<label>Fan Power</label>
 		<description>Turn the fan on and off</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fan-speed">
 		<item-type>Dimmer</item-type>
 		<label>Fan Speed</label>
 		<description>Control the speed of the fan</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fan-direction">
 		<item-type>String</item-type>
 		<label>Fan Direction</label>
 		<description>Forward or reverse</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="FWD">Forward</option>
@@ -113,17 +126,29 @@
 		<label>Fan Auto Mode</label>
 		<description>Enable or disable fan auto mode</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fan-whoosh">
 		<item-type>Switch</item-type>
 		<label>Fan Whoosh Mode</label>
 		<description>Enable or disable fan whoosh mode</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fan-smartmode">
 		<item-type>String</item-type>
 		<label>Fan Smartmode</label>
 		<description>Set Smartmode to OFF, COOLING, or HEATING</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="OFF">OFF</option>
@@ -157,12 +182,20 @@
 		<label>Fan Winter Mode</label>
 		<description>Enable or disable fan winter mode</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fan-sleep">
 		<item-type>Switch</item-type>
 		<label>Sleep Mode</label>
 		<description>Enable or disable fan sleep mode</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="light-power">
 		<item-type>Switch</item-type>
@@ -229,6 +262,10 @@
 		<item-type>Switch</item-type>
 		<label>Motion Sensor</label>
 		<description>The fan's motion sensor has detected motion</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ON">Triggered</option>

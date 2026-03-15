@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="nikohomecontrol:energyMeterLive">
+		<instruction-set targetVersion="1">
+			<remove-channel id="energylast"/>
+			<add-channel id="measurementtime">
+				<type>nikohomecontrol:measurementtime</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="nikohomecontrol:energyMeter">
+		<instruction-set targetVersion="1">
+			<remove-channel id="energylast"/>
+			<add-channel id="measurementtime">
+				<type>nikohomecontrol:measurementtime</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="nikohomecontrol:gasMeter">
+		<instruction-set targetVersion="1">
+			<remove-channel id="gasLast"/>
+			<add-channel id="measurementtime">
+				<type>nikohomecontrol:measurementtime</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="nikohomecontrol:waterMeter">
+		<instruction-set targetVersion="1">
+			<remove-channel id="waterLast"/>
+			<add-channel id="measurementtime">
+				<type>nikohomecontrol:measurementtime</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

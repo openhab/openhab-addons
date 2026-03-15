@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,19 @@ package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import javax.measure.Unit;
 
@@ -34,6 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -78,19 +82,21 @@ public class ShellyUtils {
         if (classOfT.isInstance(json)) {
             return wrap(classOfT).cast(json);
         } else if (json.isEmpty()) { // update GSON might return null
-            throw new ShellyApiException(PRE + className + "from empty JSON");
+            throw new ShellyApiException(PRE + className + " from empty JSON");
         } else {
             try {
                 @Nullable
                 T obj = gson.fromJson(json, classOfT);
                 if ((obj == null) && exceptionOnNull) { // new in OH3: fromJson may return null
-                    throw new ShellyApiException(PRE + className + "from JSON: " + json);
+                    throw new ShellyApiException(PRE + className + " from JSON: " + json);
                 }
                 return obj;
             } catch (JsonSyntaxException e) {
-                throw new ShellyApiException(PRE + className + "from JSON (syntax/format error): " + json, e);
+                throw new ShellyApiException(
+                        PRE + className + " from JSON (syntax/format error: " + e.getMessage() + "): " + json, e);
             } catch (RuntimeException e) {
-                throw new ShellyApiException(PRE + className + "from JSON: " + json, e);
+                throw new ShellyApiException(
+                        PRE + className + " from JSON (" + getString(e.getMessage() + "), JSON=" + json), e);
             }
         }
     }
@@ -230,21 +236,28 @@ public class ShellyUtils {
     }
 
     public static Double getNumber(Command command) throws IllegalArgumentException {
-        if (command instanceof DecimalType) {
-            return ((DecimalType) command).doubleValue();
+        if (command instanceof QuantityType<?> quantityCommand) {
+            return quantityCommand.doubleValue();
         }
-        if (command instanceof QuantityType) {
-            return ((QuantityType<?>) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.doubleValue();
         }
-        throw new IllegalArgumentException("Unable to convert number");
+        if (command instanceof Number numberCommand) {
+            return numberCommand.doubleValue();
+        }
+        throw new IllegalArgumentException("Invalid Number type for conversion: " + command);
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
-        return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+        return OnOffType.from(value != null && value);
+    }
+
+    public static OpenClosedType getOpenClosed(@Nullable Boolean value) {
+        return (value != null && value ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
     }
 
     public static OnOffType getOnOff(int value) {
-        return value == 0 ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(value != 0);
     }
 
     public static State toQuantityType(@Nullable Double value, int digits, Unit<?> unit) {
@@ -270,34 +283,31 @@ public class ShellyUtils {
     }
 
     public static String urlEncode(String input) {
-        return URLEncoder.encode(input, StandardCharsets.UTF_8);
+        try {
+            return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            return input;
+        }
     }
 
-    public static Long now() {
-        return System.currentTimeMillis() / 1000L;
+    public static double now() {
+        return System.currentTimeMillis() / 1000.0;
     }
 
     public static DateTimeType getTimestamp() {
-        return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(now()), ZoneId.systemDefault()));
+        return new DateTimeType(Instant.now().truncatedTo(ChronoUnit.SECONDS));
     }
 
     public static DateTimeType getTimestamp(String zone, long timestamp) {
         try {
-            if (timestamp == 0) {
-                throw new IllegalArgumentException("Timestamp value 0 is invalid");
-            }
-            ZoneId zoneId = !zone.isEmpty() ? ZoneId.of(zone) : ZoneId.systemDefault();
-            ZonedDateTime zdt = LocalDateTime.now().atZone(zoneId);
-            int delta = zdt.getOffset().getTotalSeconds();
-            return new DateTimeType(ZonedDateTime.ofInstant(Instant.ofEpochSecond(timestamp - delta), zoneId));
+            ZoneId zoneId = zone.isEmpty() ? ZoneId.systemDefault() : ZoneId.of(zone);
+            Instant instant = Instant.ofEpochSecond(timestamp);
+            int delta = zoneId.getRules().getOffset(instant).getTotalSeconds();
+            return new DateTimeType(Instant.ofEpochSecond(timestamp - delta));
         } catch (DateTimeException e) {
             // Unable to convert device's timezone, use system one
             return getTimestamp();
         }
-    }
-
-    public static String getTimestamp(DateTimeType dt) {
-        return dt.getZonedDateTime().toString().replace('T', ' ').replace('-', '/');
     }
 
     public static String convertTimestamp(long ts) {
@@ -316,7 +326,7 @@ public class ShellyUtils {
     }
 
     public static String buildControlGroupName(ShellyDeviceProfile profile, Integer channelId) {
-        return profile.isBulb || profile.isDuo || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
+        return !profile.isRGBW2 || profile.inColor ? CHANNEL_GROUP_LIGHT_CONTROL
                 : CHANNEL_GROUP_LIGHT_CHANNEL + channelId.toString();
     }
 
@@ -339,5 +349,35 @@ public class ShellyUtils {
             strength = 0;
         }
         return new DecimalType(strength);
+    }
+
+    public static boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    public static char lastChar(String s) {
+        return s.length() > 1 ? s.charAt(s.length() - 1) : '*';
+    }
+
+    public static String sha256(String string) throws ShellyApiException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final byte[] hashbytes = digest.digest(string.getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(hashbytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new ShellyApiException("SHA256 can't be initialzed", e);
+        }
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder(2 * bytes.length);
+        for (int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xff & bytes[i]);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
     }
 }

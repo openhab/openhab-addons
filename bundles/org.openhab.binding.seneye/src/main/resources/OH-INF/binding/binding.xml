@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<binding:binding id="seneye" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
-
-	<name>Seneye Binding</name>
-	<description>The seneye binding polls the seneye API for your aquarium readings.</description>
-
-</binding:binding>

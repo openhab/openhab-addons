@@ -7,7 +7,7 @@
 	<thing-type id="controller">
 		<label>Leap Motion Controller</label>
 		<description>A Leap Motion Gesture Sensor</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="gesture" typeId="gesture"/>
 		</channels>

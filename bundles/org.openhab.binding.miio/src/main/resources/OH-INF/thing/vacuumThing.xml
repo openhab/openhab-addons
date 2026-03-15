@@ -6,6 +6,7 @@
 
 	<thing-type id="vacuum">
 		<label>Xiaomi Robot Vacuum</label>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="actions" typeId="actions"/>
@@ -87,6 +88,8 @@
 			<channel id="last_clean_duration" typeId="last_clean_duration"/>
 			<channel id="last_clean_error" typeId="last_clean_error"/>
 			<channel id="last_clean_finish" typeId="last_clean_finish"/>
+			<channel id="last_clean_finish_reason" typeId="last_clean_finish_reason"/>
+			<channel id="last_clean_dustcollection_status" typeId="last_clean_dustcollection_status"/>
 			<channel id="last_clean_record" typeId="last_clean_record"/>
 			<channel id="map" typeId="map"/>
 		</channels>
@@ -138,6 +141,10 @@
 	<channel-type id="fan_power">
 		<item-type>Number</item-type>
 		<label>Fan Power</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="in_cleaning" advanced="true">
@@ -178,7 +185,7 @@
 	</channel-type>
 	<channel-type id="led_status" advanced="true">
 		<item-type>Number</item-type>
-		<label>Led Status</label>
+		<label>LED Status</label>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 
@@ -187,6 +194,17 @@
 		<item-type>Number</item-type>
 		<label>Water Box Mode</label>
 		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="mop_mode">
+		<item-type>Number</item-type>
+		<label>Mop Mode</label>
+		<state min="300" max="303" step="1" pattern="%.0f%%" readOnly="false">
+			<options>
+				<option value="300">Standard</option>
+				<option value="301">Deep</option>
+				<option value="303">Deep+</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="water_box_status">
 		<item-type>Switch</item-type>
@@ -213,6 +231,40 @@
 		<label>Robot Locating</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="dock_state">
+		<item-type>String</item-type>
+		<label>Dock State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="dock_state_id">
+		<item-type>Number</item-type>
+		<label>Dock State ID</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="mop_drying_time">
+		<item-type>Number:Time</item-type>
+		<label>Mop Drying Time</label>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="is_mop_drying">
+		<item-type>Switch</item-type>
+		<label>Mop Drying Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="collect_dust">
+		<item-type>Switch</item-type>
+		<label>Start Collecting Dust</label>
+		<description>Once the vacuum cleaner is docked, you can start collecting the dust</description>
+	</channel-type>
+	<channel-type id="clean_mop_start">
+		<item-type>Switch</item-type>
+		<label>Start Mop Wash</label>
+		<description>Once the vacuum cleaner is docked, you can start washing the mop</description>
+	</channel-type>
+	<channel-type id="clean_mop_stop">
+		<item-type>Switch</item-type>
+		<label>Stop Mop Wash</label>
+	</channel-type>
 
 	<!-- Consumables channels -->
 	<channel-type id="main_brush_percent">
@@ -237,22 +289,22 @@
 	</channel-type>
 	<channel-type id="main_brush_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Main Brush Time till Replacement</label>
+		<label>Main Brush Time Until Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="side_brush_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Side Brush Time till Replacement</label>
+		<label>Side Brush Time Until Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="filter_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Filter Time till Replacement</label>
+		<label>Filter Time Until Replacement</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sensor_dirt_time" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>Sensor Dirt Time till Cleaning</label>
+		<label>Sensor Dirt Time Until Cleaning</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -272,6 +324,10 @@
 	<channel-type id="fan">
 		<item-type>Number</item-type>
 		<label>Control Fan Level</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="-1" max="105" step="1" readOnly="false">
 			<options>
 				<option value="38">Silent</option>
@@ -304,8 +360,8 @@
 		<state>
 			<options>
 				<option value="none">Select Consumable</option>
-				<option value="main_brush_work_time">Reset Mainbrush</option>
-				<option value="side_brush_work_time">Reset Sidebrush</option>
+				<option value="main_brush_work_time">Reset Main Brush</option>
+				<option value="side_brush_work_time">Reset Side Brush</option>
 				<option value="filter_work_time">Reset Filter</option>
 				<option value="sensor_dirty_time">Reset Sensors</option>
 			</options>
@@ -375,6 +431,16 @@
 	<channel-type id="last_clean_finish">
 		<item-type>Number</item-type>
 		<label>Cleaning Finished</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_finish_reason">
+		<item-type>Number</item-type>
+		<label>Cleaning Finished Reason</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="last_clean_dustcollection_status">
+		<item-type>Number</item-type>
+		<label>Dust Collection Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_record" advanced="true">

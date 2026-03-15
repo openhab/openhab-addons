@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,8 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMBPIRO));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_VMBPIRO, THING_TYPE_VMBPIRO_10, THING_TYPE_VMBPIRO_20));
 
     private ChannelUID illuminanceChannel;
 
@@ -73,10 +74,10 @@ public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        logger.trace("onPacketReceived() was called");
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -90,5 +91,7 @@ public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
                 updateState(illuminanceChannel, lightValueState);
             }
         }
+
+        return true;
     }
 }

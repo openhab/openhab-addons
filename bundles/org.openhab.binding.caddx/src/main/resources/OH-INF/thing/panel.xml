@@ -11,6 +11,7 @@
 
 		<label>Caddx Alarm Panel</label>
 		<description>The basic representation of the Caddx Alarm System.</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="panel_firmware_version" typeId="panel_text">

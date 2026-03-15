@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Temperature-Humidity-Barometric Sensor</label>
 		<description>A Temperature-Humidity-Barometric device.</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>

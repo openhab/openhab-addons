@@ -8,6 +8,7 @@
 	<thing-type id="rt09">
 		<label>RT-09 Tuner</label>
 		<description>Connection to the Rotel RT-09 tuner</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

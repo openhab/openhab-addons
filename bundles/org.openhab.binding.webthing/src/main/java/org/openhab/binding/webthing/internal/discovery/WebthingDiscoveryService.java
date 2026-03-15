@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -141,7 +141,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
 
     @Override
     protected synchronized void stopScan() {
-        removeOlderResults(Instant.now().minus(Duration.ofMinutes(10)).toEpochMilli());
+        removeOlderResults(Instant.now().minus(Duration.ofMinutes(10)));
 
         // stop running discovery tasks
         for (var future : runningDiscoveryTasks) {
@@ -229,7 +229,7 @@ public class WebthingDiscoveryService extends AbstractDiscoveryService implement
             // endpoints supporting multiple WebThings.
             //
             // In the routine below the enpoint will be checked for single WebThings first, than for multiple
-            // WebThings if a ingle WebTHing has not been found.
+            // WebThings if a single WebThing has not been found.
             // Furthermore, first it will be tried to connect the endpoint using https. If this fails, as fallback
             // plain http is used.
 

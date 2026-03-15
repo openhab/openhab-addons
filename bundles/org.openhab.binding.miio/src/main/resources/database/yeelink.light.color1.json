@@ -11,7 +11,8 @@
 			"yeelink.light.bslamp1",
 			"yeelink.light.bslamp2",
 			"yeelink.light.bslamp3",
-			"yeelink.light.colora"
+			"yeelink.light.colora",
+			"yeelink.light.colorb"
 		],
 		"maxProperties": 7,
 		"channels": [
@@ -121,7 +122,7 @@
 				"channel": "rgbColor",
 				"type": "Color",
 				"refresh": true,
-				"transformation": "addBrightToHSV",
+				"transformation": "addBrightToHSVPower",
 				"ChannelGroup": "actions",
 				"actions": [
 					{

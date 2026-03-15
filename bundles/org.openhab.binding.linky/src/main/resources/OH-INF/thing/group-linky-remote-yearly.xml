@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="yearly">
+		<label>Yearly Consumption</label>
+		<channels>
+			<channel id="thisYear" typeId="consumption">
+				<label>This Year Consumption</label>
+				<description>The energy consumption for the current Year</description>
+			</channel>
+			<channel id="lastYear" typeId="consumption">
+				<label>Last Year Consumption</label>
+				<description>The energy consumption for the previous Year</description>
+			</channel>
+			<channel id="year-2" typeId="consumption">
+				<label>Year -2 Consumption</label>
+				<description>The energy consumption for the Year -2</description>
+			</channel>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+				<description>The energy consumption</description>
+			</channel>
+			<channel id="max-power" typeId="power">
+				<label>Peak Value</label>
+				<description>Maximum power usage value</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

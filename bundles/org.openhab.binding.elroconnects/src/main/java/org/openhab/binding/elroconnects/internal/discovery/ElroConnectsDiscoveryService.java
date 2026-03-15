@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.elroconnects.internal.discovery;
 
 import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,12 +25,12 @@ import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants;
 import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.ElroDeviceType;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDevice;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,21 +39,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ElroConnectsDiscoveryService.class)
 @NonNullByDefault
-public class ElroConnectsDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class ElroConnectsDiscoveryService extends AbstractThingHandlerDiscoveryService<ElroConnectsBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(ElroConnectsDiscoveryService.class);
 
-    private @Nullable ElroConnectsBridgeHandler bridgeHandler;
-
-    private static final int TIMEOUT_SECONDS = 5;
-    private static final int REFRESH_INTERVAL_SECONDS = 60;
+    private static final int TIMEOUT_S = 5;
+    private static final int REFRESH_INTERVAL_S = 60;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     public ElroConnectsDiscoveryService() {
-        super(ElroConnectsBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SECONDS);
-        logger.debug("Bridge discovery service started");
+        super(ElroConnectsBridgeHandler.class, ElroConnectsBindingConstants.SUPPORTED_DEVICE_TYPES_UIDS, TIMEOUT_S);
+        logger.debug("Discovery service started");
     }
 
     @Override
@@ -62,28 +62,24 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
 
     private void discoverDevices() {
         logger.debug("Starting device discovery scan");
-        ElroConnectsBridgeHandler bridge = bridgeHandler;
-        if (bridge != null) {
-            Map<Integer, ElroConnectsDevice> devices = bridge.getDevices();
-            ThingUID bridgeUID = bridge.getThing().getUID();
-            devices.entrySet().forEach(e -> {
-                String deviceId = e.getKey().toString();
-                String deviceName = e.getValue().getDeviceName();
-                String deviceType = e.getValue().getDeviceType();
-                if (!deviceType.isEmpty()) {
-                    ElroDeviceType type = TYPE_MAP.get(deviceType);
-                    if (type != null) {
-                        ThingTypeUID thingTypeUID = THING_TYPE_MAP.get(type);
-                        if (thingTypeUID != null) {
-                            thingDiscovered(DiscoveryResultBuilder
-                                    .create(new ThingUID(thingTypeUID, bridgeUID, deviceId)).withLabel(deviceName)
-                                    .withBridge(bridgeUID).withProperty(CONFIG_DEVICE_ID, deviceId)
-                                    .withRepresentationProperty(CONFIG_DEVICE_ID).build());
-                        }
+        Map<Integer, ElroConnectsDevice> devices = thingHandler.getDevices();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        devices.entrySet().forEach(e -> {
+            String deviceId = e.getKey().toString();
+            String deviceName = e.getValue().getDeviceName();
+            String deviceType = e.getValue().getDeviceType();
+            if (!deviceType.isEmpty()) {
+                ElroDeviceType type = TYPE_MAP.get(deviceType);
+                if (type != null) {
+                    ThingTypeUID thingTypeUID = THING_TYPE_MAP.get(type);
+                    if (thingTypeUID != null) {
+                        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(thingTypeUID, bridgeUID, deviceId))
+                                .withLabel(deviceName).withBridge(bridgeUID).withProperty(CONFIG_DEVICE_ID, deviceId)
+                                .withRepresentationProperty(CONFIG_DEVICE_ID).build());
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     @Override
@@ -93,11 +89,11 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     }
 
     @Override
-    protected void startBackgroundDiscovery() {
+    public void startBackgroundDiscovery() {
         logger.debug("Start device background discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job == null || job.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 0, REFRESH_INTERVAL_SECONDS,
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 0, REFRESH_INTERVAL_S,
                     TimeUnit.SECONDS);
         }
     }
@@ -106,26 +102,21 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     protected void stopBackgroundDiscovery() {
         logger.debug("Stop device background discovery");
         ScheduledFuture<?> job = discoveryJob;
-        if (job != null) {
+        if (job != null && !job.isCancelled()) {
             job.cancel(true);
             discoveryJob = null;
         }
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now());
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ElroConnectsBridgeHandler) {
-            bridgeHandler = (ElroConnectsBridgeHandler) handler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 }

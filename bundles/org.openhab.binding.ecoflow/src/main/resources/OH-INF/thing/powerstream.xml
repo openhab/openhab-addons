@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecoflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="powerstream">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ecoflow-api"/>
+		</supported-bridge-type-refs>
+
+		<label>EcoFlow PowerStream</label>
+		<description>Represents an EcoFlow PowerStream micro inverter</description>
+
+		<channel-groups>
+			<channel-group id="inverter" typeId="ps-inverter"/>
+			<channel-group id="battery-input" typeId="ps-battery-input"/>
+			<channel-group id="pv1-input" typeId="ps-pv1-input"/>
+			<channel-group id="pv2-input" typeId="ps-pv2-input"/>
+		</channel-groups>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description-ref uri="thing-type:ecoflow:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

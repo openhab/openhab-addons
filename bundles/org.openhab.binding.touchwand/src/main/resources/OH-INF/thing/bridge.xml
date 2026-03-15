@@ -6,12 +6,13 @@
 	<bridge-type id="bridge">
 		<label>TouchWand Wanderfull Hub Bridge</label>
 		<description>Multifunctional Gateway - a bridge to units and scenarios</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">TouchWand</property>
 		</properties>
 
 		<config-description>
-			<parameter name="username" type="text">
+			<parameter name="username" type="text" required="true">
 				<label>Username</label>
 				<description>Username for TouchWand Wanderfull Hub</description>
 			</parameter>

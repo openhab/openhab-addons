@@ -1,0 +1,38 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.frenchgovtenergydata.internal.dto;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+/**
+ * The {@link BaseTariff} holds base price informations
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
+@NonNullByDefault
+public class BaseTariff extends Tariff {
+    public final double variableHT;
+    public final double variableTTC;
+
+    public static final int LEN_CONTROL = 7;
+
+    public BaseTariff(String line) {
+        super(line, LEN_CONTROL);
+        try {
+            this.variableHT = parseDouble(values[5]);
+            this.variableTTC = parseDouble(values[6]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Incorrect data in '%s'".formatted(line), e);
+        }
+    }
+}

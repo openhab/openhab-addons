@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DaliserverBridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(BRIDGE_TYPE);
 
     private final Logger logger = LoggerFactory.getLogger(DaliserverBridgeHandler.class);
     private static final int DALI_DEFAULT_TIMEOUT = 5000;
@@ -142,6 +141,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
                 } catch (Exception e) {
                     logger.warn("Unexpected exception while sending command to daliserver: {} Message: {}", frame,
                             e.getMessage());
+                    logger.trace("Stacktrace", e);
                     future.completeExceptionally(e);
                 }
             });
@@ -161,7 +161,7 @@ public class DaliserverBridgeHandler extends BaseBridgeHandler {
             }
             byte status = response[1], rval = response[2];
             if (status == 0) {
-                result.parse(null);
+                // No return value to process.
             } else if (status == 1) {
                 result.parse(new DaliBackwardFrame(rval));
             } else if (status == 255) {

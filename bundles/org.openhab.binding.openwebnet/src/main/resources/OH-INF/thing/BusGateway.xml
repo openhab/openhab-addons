@@ -7,9 +7,9 @@
 	<!-- OpenWebNet BUS gateway -->
 	<bridge-type id="bus_gateway">
 		<label>BUS Gateway</label>
-		<description>This thing allows to connect to a IP BUS/SCS gateway that supports the OpenWebNet protocol (models: F454,
-			MyHOMEServer1, F455, MH200N, F453, etc.)</description>
-
+		<description>This thing allows to connect to an IP BUS/SCS gateway that supports the OpenWebNet protocol (models:
+			F454, MyHOMEServer1, F455, MH200N, F453, etc.)</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">BTicino</property>
 			<property name="model">Unknown</property>
@@ -42,6 +42,12 @@
 			<parameter name="discoveryByActivation" type="boolean">
 				<label>Discovery By Activation</label>
 				<description>Discover BUS devices when they are activated (also when a device scan is not active) (default: false)</description>
+				<default>false</default>
+			</parameter>
+
+			<parameter name="dateTimeSynch" type="boolean">
+				<label>Date Time Synchronisation</label>
+				<description>Synchronise date and time of slave elements on the SCS BUS using openHAB timestamp (default: false)</description>
 				<default>false</default>
 			</parameter>
 

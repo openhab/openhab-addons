@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="general">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+		<label>Lambda General</label>
+		<description> Ambient and E-Manager sections connected through modbus</description>
+
+		<channel-groups>
+			<channel-group id="ambient-group" typeId="ambient"/>
+			<channel-group id="emanager-group" typeId="emanager"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="1" max="3600">
+				<label>Refresh Interval</label>
+				<description>Poll interval in seconds. Increase this if you encounter connection errors.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="maxTries" type="integer" min="1" max="10">
+				<label>Maximum Tries</label>
+				<description>Number of retries before giving up reading from this thing.</description>
+				<default>3</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="ambient">
+		<label>General Ambient</label>
+		<channels>
+			<channel id="ambient-error-number" typeId="ambient-error-number-channel"/>
+			<channel id="ambient-operating-state" typeId="ambient-operating-state-channel"/>
+			<channel id="actual-ambient-temperature" typeId="actual-ambient-temperature-channel"/>
+			<channel id="average-ambient-temperature" typeId="average-ambient-temperature-channel"/>
+			<channel id="calculated-ambient-temperature" typeId="calculated-ambient-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="emanager">
+		<label>General E-Manager</label>
+		<channels>
+			<channel id="emanager-error-number" typeId="emanager-error-number-channel"/>
+			<channel id="emanager-operating-state" typeId="emanager-operating-state-channel"/>
+			<channel id="emanager-actual-power" typeId="emanager-actual-power-channel"/>
+			<channel id="emanager-actual-power-signed" typeId="emanager-actual-power-signed-channel"/>
+			<channel id="emanager-actual-power-consumption" typeId="emanager-actual-power-consumption-channel"/>
+			<channel id="power-consumption-setpoint" typeId="emanager-power-consumption-setpoint-channel"/>
+		</channels>
+	</channel-group-type>
+
+
+	<channel-type id="ambient-error-number-channel">
+		<item-type>Number</item-type>
+		<label>Ambient Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ambient-operating-state-channel">
+		<item-type>Number</item-type>
+		<label>Ambient Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">AUTOMATIC</option>
+				<option value="2">MANUAL</option>
+				<option value="3">ERROR</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="actual-ambient-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Actual Ambient Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+
+	</channel-type>
+
+	<channel-type id="average-ambient-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Average Ambient Temperature 1h</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="calculated-ambient-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Calculated Ambient Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="emanager-error-number-channel">
+		<item-type>Number</item-type>
+		<label>E-Manager Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="emanager-operating-state-channel">
+		<item-type>Number</item-type>
+		<label>E-Manager Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">AUTOMATIC</option>
+				<option value="2">MANUAL</option>
+				<option value="3">ERROR</option>
+				<option value="4">OFFLINE</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="emanager-actual-power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power</label>
+		<state readOnly="false" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="emanager-actual-power-signed-channel">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power Signed (input or excess)</label>
+		<state readOnly="false" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="emanager-actual-power-consumption-channel">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power Consumption</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="emanager-power-consumption-setpoint-channel">
+		<item-type>Number:Power</item-type>
+		<label>Total Power Consumption</label>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

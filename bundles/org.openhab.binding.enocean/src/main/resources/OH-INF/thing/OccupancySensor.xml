@@ -11,7 +11,7 @@
 
 		<label>Occupancy Sensor</label>
 		<description>Sensor which sends light, supply voltage and occupancy data (EEP: A5-07)</description>
-
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

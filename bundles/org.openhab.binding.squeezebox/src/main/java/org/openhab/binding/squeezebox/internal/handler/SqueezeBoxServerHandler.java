@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,7 +40,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
+import org.openhab.binding.squeezebox.internal.discovery.SqueezeBoxPlayerDiscoveryService;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
 import org.openhab.binding.squeezebox.internal.dto.ButtonsDTO;
@@ -56,6 +60,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -81,11 +86,11 @@ import com.google.gson.JsonSyntaxException;
  * @author Mark Hilbush - Get favorites from LMS; update channel and send to players
  * @author Mark Hilbush - Add like/unlike functionality
  */
+@NonNullByDefault
 public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxServerHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SQUEEZEBOXSERVER_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SQUEEZEBOXSERVER_THING_TYPE);
 
     // time in seconds to try to reconnect
     private static final int RECONNECT_TIME = 60;
@@ -93,7 +98,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     // the value by which the volume is changed by each INCREASE or
     // DECREASE-Event
     private static final int VOLUME_CHANGE_SIZE = 5;
-    private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final @Nullable String NEW_LINE = System.getProperty("line.separator");
 
     private static final String CHANNEL_CONFIG_QUOTE_LIST = "quoteList";
 
@@ -105,24 +110,24 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     private Map<String, SqueezeBoxPlayer> players = Collections.synchronizedMap(new HashMap<>());
 
     // client socket and listener thread
-    private Socket clientSocket;
-    private SqueezeServerListener listener;
-    private Future<?> reconnectFuture;
+    private @Nullable Socket clientSocket;
+    private @Nullable SqueezeServerListener listener;
+    private @Nullable Future<?> reconnectFuture;
 
-    private String host;
+    private String host = "";
 
     private int cliport;
 
     private int webport;
 
-    private String userId;
+    private String userId = "";
 
-    private String password;
+    private String password = "";
 
     private final Gson gson = new GsonBuilder().registerTypeAdapter(ButtonDTO.class, new ButtonDTODeserializer())
             .create();
-    private String jsonRpcUrl;
-    private String basicAuthorization;
+    private @Nullable String jsonRpcUrl;
+    private @Nullable String basicAuthorization;
 
     public SqueezeBoxServerHandler(Bridge bridge) {
         super(bridge);
@@ -145,12 +150,18 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(SqueezeBoxPlayerDiscoveryService.class);
+    }
+
     /**
      * Checks if we have a connection to the Server
      *
      * @return
      */
     public synchronized boolean isConnected() {
+        Socket clientSocket = this.clientSocket;
         if (clientSocket == null) {
             return false;
         }
@@ -229,7 +240,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         addPlaylistItem(mac, url, null);
     }
 
-    public void addPlaylistItem(String mac, String url, String title) {
+    public void addPlaylistItem(String mac, String url, @Nullable String title) {
         StringBuilder playlistCommand = new StringBuilder();
         playlistCommand.append(mac).append(" playlist add ").append(url);
         if (title != null) {
@@ -262,7 +273,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         int newVolume = volume;
         newVolume = Math.min(100, newVolume);
         newVolume = Math.max(0, newVolume);
-        sendCommand(mac + " mixer volume " + String.valueOf(newVolume));
+        sendCommand(mac + " mixer volume " + newVolume);
     }
 
     public void showString(String mac, String line) {
@@ -270,7 +281,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void showString(String mac, String line, int duration) {
-        sendCommand(mac + " show line1:" + line + " duration:" + String.valueOf(duration));
+        sendCommand(mac + " show line1:" + line + " duration:" + duration);
     }
 
     public void showStringHuge(String mac, String line) {
@@ -278,7 +289,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void showStringHuge(String mac, String line, int duration) {
-        sendCommand(mac + " show line1:" + line + " font:huge duration:" + String.valueOf(duration));
+        sendCommand(mac + " show line1:" + line + " font:huge duration:" + duration);
     }
 
     public void showStrings(String mac, String line1, String line2) {
@@ -286,7 +297,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void showStrings(String mac, String line1, String line2, int duration) {
-        sendCommand(mac + " show line1:" + line1 + " line2:" + line2 + " duration:" + String.valueOf(duration));
+        sendCommand(mac + " show line1:" + line1 + " line2:" + line2 + " duration:" + duration);
     }
 
     public void playFavorite(String mac, String favorite) {
@@ -294,19 +305,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     }
 
     public void rate(String mac, String rateCommand) {
-        if (rateCommand != null) {
-            sendCommand(mac + " " + rateCommand);
-        }
+        sendCommand(mac + " " + rateCommand);
     }
 
     public void sleep(String mac, Duration sleepDuration) {
-        sendCommand(mac + " sleep " + String.valueOf(sleepDuration.toSeconds()));
+        sendCommand(mac + " sleep " + sleepDuration.toSeconds());
     }
 
     /**
      * Send a generic command to a given player
      *
-     * @param playerId
+     * @param mac
      * @param command
      */
     public void playerCommand(String mac, String command) {
@@ -349,8 +358,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (!isConnected()) {
-            logger.debug("no connection to squeeze server when trying to send command, returning...");
+        Socket clientSocket = this.clientSocket;
+        if (clientSocket == null || !isConnected()) {
+            logger.debug("No connection to squeeze server when trying to send command, returning...");
             return;
         }
 
@@ -367,7 +377,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
     /*
      * Remove password from login command to prevent it from being logged
      */
-    String sanitizeCommand(String command) {
+    private String sanitizeCommand(String command) {
         String sanitizedCommand = command;
         if (command.startsWith("login")) {
             sanitizedCommand = command.replace(password, "**********");
@@ -389,7 +399,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         this.password = config.password;
 
         if (host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "host is not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.host-not-set");
             return;
         }
         // Create URL for jsonrpc interface
@@ -405,7 +416,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         try {
-            listener = new SqueezeServerListener();
+            SqueezeServerListener listener = this.listener = new SqueezeServerListener();
             listener.start();
             logger.debug("listener connection started to server {}:{}", host, cliport);
         } catch (IllegalThreadStateException e) {
@@ -419,6 +430,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * Disconnects from a SqueezeBox Server
      */
     private void disconnect() {
+        SqueezeServerListener listener = this.listener;
+        Socket clientSocket = this.clientSocket;
         try {
             if (listener != null) {
                 listener.terminate();
@@ -430,8 +443,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             logger.trace("Error attempting to disconnect from Squeeze Server", e);
             return;
         } finally {
-            clientSocket = null;
-            listener = null;
+            this.clientSocket = null;
+            this.listener = null;
         }
         players.clear();
         logger.trace("Squeeze Server connection stopped.");
@@ -441,7 +454,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         private boolean terminate = false;
 
         public SqueezeServerListener() {
-            super("Squeeze Server Listener");
+            super(String.format("OH-binding-%s-%s", SqueezeBoxBindingConstants.BINDING_ID, "ServerListener"));
         }
 
         public void terminate() {
@@ -456,6 +469,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             ScheduledFuture<?> requestFavoritesJob = null;
 
             try {
+                Socket clientSocket = SqueezeBoxServerHandler.this.clientSocket;
+                if (clientSocket == null) {
+                    throw new IllegalStateException("Client socket is null");
+                }
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 login();
                 updateStatus(ThingStatus.ONLINE);
@@ -486,7 +503,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 }
             } catch (IOException e) {
                 if (!terminate) {
-                    logger.warn("failed to read line from squeeze server socket: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     scheduleReconnect();
                 }
@@ -503,9 +519,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
             // check for end of stream from readLine
             if (endOfStream && !terminate) {
-                logger.info("end of stream received from socket during readLine");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "end of stream on socket read");
+                        "@text/offline.comm-error.end-of-stream");
                 scheduleReconnect();
             }
             if (requestFavoritesJob != null && !requestFavoritesJob.isDone()) {
@@ -523,7 +538,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             return URLEncoder.encode(raw, StandardCharsets.UTF_8);
         }
 
-        @NonNullByDefault
         private class KeyValue {
             final String key;
             final String value;
@@ -532,19 +546,17 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 this.key = key;
                 this.value = value;
             }
-        };
+        }
 
         private List<KeyValue> decodeKeyValueResponse(String[] response) {
             final List<KeyValue> keysAndValues = new ArrayList<>();
-            if (response != null) {
-                for (String line : response) {
-                    final String decoded = decode(line);
-                    int colonPos = decoded.indexOf(":");
-                    if (colonPos < 0) {
-                        continue;
-                    }
-                    keysAndValues.add(new KeyValue(decoded.substring(0, colonPos), decoded.substring(colonPos + 1)));
+            for (String line : response) {
+                final String decoded = decode(line);
+                int colonPos = decoded.indexOf(":");
+                if (colonPos < 0) {
+                    continue;
                 }
+                keysAndValues.add(new KeyValue(decoded.substring(0, colonPos), decoded.substring(colonPos + 1)));
             }
             return keysAndValues;
         }
@@ -556,7 +568,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String[] playersList = message.split("playerindex\\S*\\s");
             for (String playerParams : playersList) {
                 // For each player, split out parameters and decode parameter
-                final Map<String, String> keysAndValues = decodeKeyValueResponse(playerParams.split("\\s")).stream()
+                String[] playParamsArray = playerParams.split("\\s");
+                final Map<String, String> keysAndValues = decodeKeyValueResponse(playParamsArray).stream()
                         .collect(Collectors.toMap(kv -> kv.key, kv -> kv.value));
                 final String macAddress = keysAndValues.get("playerid");
 
@@ -576,7 +589,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     players.put(macAddress, player);
                     updatePlayer(listener -> listener.playerAdded(player));
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjc");
+                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjcA");
                 }
             }
             for (final SqueezeBoxPlayer player : players.values()) {
@@ -648,8 +661,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     });
                     break;
                 default:
-                    logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
-
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Unhandled mixer message type '{}'", Arrays.toString(messageParts));
+                    }
             }
         }
 
@@ -666,7 +680,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             } else if ("disconnect".equals(action) || "forget".equals(action)) {
                 connected = false;
             } else {
-                logger.trace("Unhandled client message type '{}'", Arrays.toString(messageParts));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Unhandled client message type '{}'", Arrays.toString(messageParts));
+                }
                 return;
             }
 
@@ -674,94 +690,120 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleStatusMessage(final String mac, String[] messageParts) {
-            String remoteTitle = "", artist = "", album = "", genre = "", year = "";
+            String remoteTitle = "", artist = "", album = "", genre = "", year = "", albumArtist = "", trackArtist = "",
+                    band = "", composer = "", conductor = "";
             boolean coverart = false;
             String coverid = null;
             String artworkUrl = null;
 
             for (KeyValue entry : decodeKeyValueResponse(messageParts)) {
-                // Parameter Power
-                if ("power".equals(entry.key)) {
-                    final boolean power = "1".equals(entry.value);
-                    updatePlayer(listener -> listener.powerChangeEvent(mac, power));
-                }
-                // Parameter Volume
-                else if ("mixer volume".equals(entry.key)) {
-                    final int volume = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
-                }
-                // Parameter Mode
-                else if ("mode".equals(entry.key)) {
-                    updatePlayer(listener -> listener.modeChangeEvent(mac, entry.value));
-                }
-                // Parameter Playing Time
-                else if ("time".equals(entry.key)) {
-                    final int time = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
-                }
-                // Parameter duration
-                else if ("duration".equals(entry.key)) {
-                    final int duration = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.durationEvent(mac, duration));
-                }
-                // Parameter Playing Playlist Index
-                else if ("playlist_cur_index".equals(entry.key)) {
-                    final int index = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlaylistIndexEvent(mac, index));
-                }
-                // Parameter Playlist Number Tracks
-                else if ("playlist_tracks".equals(entry.key)) {
-                    final int track = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.numberPlaylistTracksEvent(mac, track));
-                }
-                // Parameter Playlist Repeat Mode
-                else if ("playlist repeat".equals(entry.key)) {
-                    final int repeat = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlaylistRepeatEvent(mac, repeat));
-                }
-                // Parameter Playlist Shuffle Mode
-                else if ("playlist shuffle".equals(entry.key)) {
-                    final int shuffle = (int) Double.parseDouble(entry.value);
-                    updatePlayer(listener -> listener.currentPlaylistShuffleEvent(mac, shuffle));
-                }
-                // Parameter Title
-                else if ("title".equals(entry.key)) {
-                    updatePlayer(listener -> listener.titleChangeEvent(mac, entry.value));
-                }
-                // Parameter Remote Title (radio)
-                else if ("remote_title".equals(entry.key)) {
-                    remoteTitle = entry.value;
-                }
-                // Parameter Artist
-                else if ("artist".equals(entry.key)) {
-                    artist = entry.value;
-                }
-                // Parameter Album
-                else if ("album".equals(entry.key)) {
-                    album = entry.value;
-                }
-                // Parameter Genre
-                else if ("genre".equals(entry.key)) {
-                    genre = entry.value;
-                }
-                // Parameter Year
-                else if ("year".equals(entry.key)) {
-                    year = entry.value;
-                }
-                // Parameter artwork_url contains url to cover art
-                else if ("artwork_url".equals(entry.key)) {
-                    artworkUrl = entry.value;
-                }
-                // When coverart is "1" coverid will contain a unique coverart id
-                else if ("coverart".equals(entry.key)) {
-                    coverart = "1".equals(entry.value);
-                }
-                // Id for covert art (only valid when coverart is "1")
-                else if ("coverid".equals(entry.key)) {
-                    coverid = entry.value;
-                } else {
-                    // Added to be able to see additional status message types
-                    logger.trace("Unhandled status message type '{}' (value '{}')", entry.key, entry.value);
+                try {
+                    // Parameter Power
+                    if ("power".equals(entry.key)) {
+                        final boolean power = "1".equals(entry.value);
+                        updatePlayer(listener -> listener.powerChangeEvent(mac, power));
+                    }
+                    // Parameter Volume
+                    else if ("mixer volume".equals(entry.key)) {
+                        final int volume = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
+                    }
+                    // Parameter Mode
+                    else if ("mode".equals(entry.key)) {
+                        updatePlayer(listener -> listener.modeChangeEvent(mac, entry.value));
+                    }
+                    // Parameter Playing Time
+                    else if ("time".equals(entry.key) && !"N/A".equals(entry.value)) {
+                        final int time = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlayingTimeEvent(mac, time));
+                    }
+                    // Parameter duration
+                    else if ("duration".equals(entry.key)) {
+                        final int duration = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.durationEvent(mac, duration));
+                    }
+                    // Parameter Playing Playlist Index
+                    else if ("playlist_cur_index".equals(entry.key)) {
+                        final int index = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlaylistIndexEvent(mac, index));
+                    }
+                    // Parameter Playlist Number Tracks
+                    else if ("playlist_tracks".equals(entry.key)) {
+                        final int track = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.numberPlaylistTracksEvent(mac, track));
+                    }
+                    // Parameter Playlist Repeat Mode
+                    else if ("playlist repeat".equals(entry.key)) {
+                        final int repeat = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlaylistRepeatEvent(mac, repeat));
+                    }
+                    // Parameter Playlist Shuffle Mode
+                    else if ("playlist shuffle".equals(entry.key)) {
+                        final int shuffle = (int) Double.parseDouble(entry.value);
+                        updatePlayer(listener -> listener.currentPlaylistShuffleEvent(mac, shuffle));
+                    }
+                    // Parameter Title
+                    else if ("title".equals(entry.key)) {
+                        updatePlayer(listener -> listener.titleChangeEvent(mac, entry.value));
+                    }
+                    // Parameter Remote Title (radio)
+                    else if ("remote_title".equals(entry.key)) {
+                        remoteTitle = entry.value;
+                    }
+                    // Parameter Artist
+                    else if ("artist".equals(entry.key)) {
+                        artist = entry.value;
+                    }
+                    // Parameter Album
+                    else if ("album".equals(entry.key)) {
+                        album = entry.value;
+                    }
+                    // Parameter Genre
+                    else if ("genre".equals(entry.key)) {
+                        genre = entry.value;
+                    }
+                    // Parameter Album Artist
+                    else if ("albumartist".equals(entry.key)) {
+                        albumArtist = entry.value;
+                    }
+                    // Parameter Track Artist
+                    else if ("trackartist".equals(entry.key)) {
+                        trackArtist = entry.value;
+                    }
+                    // Parameter Band
+                    else if ("band".equals(entry.key)) {
+                        band = entry.value;
+                    }
+                    // Parameter Composer
+                    else if ("composer".equals(entry.key)) {
+                        composer = entry.value;
+                    }
+                    // Parameter Conductor
+                    else if ("conductor".equals(entry.key)) {
+                        conductor = entry.value;
+                    }
+                    // Parameter Year
+                    else if ("year".equals(entry.key)) {
+                        year = entry.value;
+                    }
+                    // Parameter artwork_url contains url to cover art
+                    else if ("artwork_url".equals(entry.key)) {
+                        artworkUrl = entry.value;
+                    }
+                    // When coverart is "1" coverid will contain a unique coverart id
+                    else if ("coverart".equals(entry.key)) {
+                        coverart = "1".equals(entry.value);
+                    }
+                    // Id for covert art (only valid when coverart is "1")
+                    else if ("coverid".equals(entry.key)) {
+                        coverid = entry.value;
+                    } else {
+                        // Added to be able to see additional status message types
+                        logger.trace("Unhandled status message type '{}' (value '{}')", entry.key, entry.value);
+                    }
+                } catch (NumberFormatException e) {
+                    // Skip this key/value
+                    logger.debug("Cannot parse number in status message: key '{}', value '{}'", entry.key, entry.value);
                 }
             }
 
@@ -771,6 +813,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             final String finalAlbum = album;
             final String finalGenre = genre;
             final String finalYear = year;
+            final String finalAlbumArtist = albumArtist;
+            final String finalTrackArtist = trackArtist;
+            final String finalBand = band;
+            final String finalComposer = composer;
+            final String finalConductor = conductor;
 
             updatePlayer(listener -> {
                 listener.coverArtChangeEvent(mac, finalUrl);
@@ -779,10 +826,16 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 listener.albumChangeEvent(mac, finalAlbum);
                 listener.genreChangeEvent(mac, finalGenre);
                 listener.yearChangeEvent(mac, finalYear);
+                listener.albumArtistChangeEvent(mac, finalAlbumArtist);
+                listener.trackArtistChangeEvent(mac, finalTrackArtist);
+                listener.bandChangeEvent(mac, finalBand);
+                listener.composerChangeEvent(mac, finalComposer);
+                listener.conductorChangeEvent(mac, finalConductor);
             });
         }
 
-        private String constructCoverArtUrl(String mac, boolean coverart, String coverid, String artwork_url) {
+        private String constructCoverArtUrl(String mac, boolean coverart, @Nullable String coverid,
+                @Nullable String artworkUrl) {
             String hostAndPort;
             if (!userId.isEmpty()) {
                 hostAndPort = "http://" + encode(userId) + ":" + encode(password) + "@" + host + ":" + webport;
@@ -799,16 +852,16 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     // Typically is used to access cover art of local music files
                     url = hostAndPort + "/music/" + coverid + "/cover.jpg";
                 }
-            } else if (artwork_url != null) {
-                if (artwork_url.startsWith("http")) {
+            } else if (artworkUrl != null) {
+                if (artworkUrl.startsWith("http")) {
                     // Typically indicates that cover art is not local to LMS
-                    url = artwork_url;
-                } else if (artwork_url.startsWith("/")) {
+                    url = artworkUrl;
+                } else if (artworkUrl.startsWith("/")) {
                     // Typically used for default coverart for plugins (e.g. Pandora, etc.)
-                    url = hostAndPort + artwork_url;
+                    url = hostAndPort + artworkUrl;
                 } else {
                     // Another variation of default coverart for plugins (e.g. Pandora, etc.)
-                    url = hostAndPort + "/" + artwork_url;
+                    url = hostAndPort + "/" + artworkUrl;
                 }
             }
             return url;
@@ -820,18 +873,18 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
             String action = messageParts[2];
             String mode;
-            if (action.equals("newsong")) {
+            if ("newsong".equals(action)) {
                 mode = "play";
                 // Execute in separate thread to avoid delaying listener
                 scheduler.execute(() -> updateCustomButtons(mac));
                 // Set the track duration to 0
                 updatePlayer(listener -> listener.durationEvent(mac, 0));
-            } else if (action.equals("pause")) {
+            } else if ("pause".equals(action)) {
                 if (messageParts.length < 4) {
                     return;
                 }
-                mode = messageParts[3].equals("0") ? "play" : "pause";
-            } else if (action.equals("stop")) {
+                mode = "0".equals(messageParts[3]) ? "play" : "pause";
+            } else if ("stop".equals(action)) {
                 mode = "stop";
             } else if ("play".equals(action) && "playlist".equals(messageParts[1])) {
                 if (messageParts.length >= 4) {
@@ -840,7 +893,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 return;
             } else {
                 // Added so that actions (such as delete, index, jump, open) are not treated as "play"
-                logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Unhandled playlist message type '{}'", Arrays.toString(messageParts));
+                }
                 return;
             }
             final String value = mode;
@@ -848,7 +903,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void handleSourceChangeMessage(String mac, String rawSource) {
-            String source = URLDecoder.decode(rawSource);
+            String source = URLDecoder.decode(rawSource, StandardCharsets.UTF_8);
             updatePlayer(listener -> listener.sourceChangeEvent(mac, source));
         }
 
@@ -857,13 +912,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                 return;
             }
             // server prefsets
-            if (messageParts[2].equals("server")) {
+            if ("server".equals(messageParts[2])) {
                 String function = messageParts[3];
                 String value = messageParts[4];
-                if (function.equals("power")) {
-                    final boolean power = value.equals("1");
+                if ("power".equals(function)) {
+                    final boolean power = "1".equals(value);
                     updatePlayer(listener -> listener.powerChangeEvent(mac, power));
-                } else if (function.equals("volume")) {
+                } else if ("volume".equals(function)) {
                     final int volume = (int) Double.parseDouble(value);
                     updatePlayer(listener -> listener.absoluteVolumeChangeEvent(mac, volume));
                 }
@@ -893,7 +948,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     isTypePlaylist = false;
                 }
                 // Favorite name
-                else if ("name".equals(entry.key)) {
+                else if ("name".equals(entry.key) && f != null) {
                     f.name = entry.value;
                 } else if ("type".equals(entry.key) && "playlist".equals(entry.value)) {
                     isTypePlaylist = true;
@@ -903,7 +958,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     boolean hasitems = "1".equals(entry.value);
                     if (f != null) {
                         // Except for some favorites (e.g. Spotify) use hasitems:1 and type:playlist
-                        if (hasitems && isTypePlaylist == false) {
+                        if (hasitems && !isTypePlaylist) {
                             // Skip subfolders
                             favorites.remove(f);
                             f = null;
@@ -931,7 +986,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             String quote = includeQuotes.booleanValue() ? "\"" : "";
             StringBuilder sb = new StringBuilder();
             for (Favorite favorite : favorites) {
-                sb.append(favorite.shortId).append("=").append(quote).append(favorite.name.replaceAll(",", ""))
+                sb.append(favorite.shortId).append("=").append(quote).append(favorite.name.replace(",", ""))
                         .append(quote).append(",");
             }
 
@@ -952,6 +1007,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private void updateCustomButtons(final String mac) {
+            String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+            if (jsonRpcUrl == null) {
+                throw new IllegalStateException("JSON-RPC URL is not initialized");
+            }
             String response = executePost(jsonRpcUrl, JSONRPC_STATUS_REQUEST.replace("@@MAC@@", mac));
             if (response != null) {
                 logger.trace("Status response: {}", response);
@@ -978,7 +1037,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
             }
         }
 
-        private String executePost(String url, String content) {
+        private @Nullable String executePost(String url, String content) {
             // @formatter:off
             HttpRequestBuilder builder = HttpRequestBuilder.postTo(url)
                 .withTimeout(Duration.ofSeconds(5))
@@ -1027,8 +1086,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         List<Thing> things = bridge.getThings();
         for (Thing thing : things) {
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof SqueezeBoxPlayerEventListener && !squeezeBoxPlayerListeners.contains(handler)) {
-                event.updateListener((SqueezeBoxPlayerEventListener) handler);
+            if (handler instanceof SqueezeBoxPlayerEventListener playerEventListener
+                    && !squeezeBoxPlayerListeners.contains(playerEventListener)) {
+                event.updateListener(playerEventListener);
             }
         }
     }
@@ -1069,7 +1129,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * Schedule the server to try and reconnect
      */
     private void scheduleReconnect() {
-        logger.debug("scheduling squeeze server reconnect in {} seconds", RECONNECT_TIME);
+        logger.debug("Scheduling squeeze server reconnect in {} seconds", RECONNECT_TIME);
         cancelReconnect();
         reconnectFuture = scheduler.schedule(this::connect, RECONNECT_TIME, TimeUnit.SECONDS);
     }
@@ -1078,6 +1138,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
      * Clears our reconnect job if exists
      */
     private void cancelReconnect() {
+        Future<?> reconnectFuture = this.reconnectFuture;
         if (reconnectFuture != null) {
             reconnectFuture.cancel(true);
         }

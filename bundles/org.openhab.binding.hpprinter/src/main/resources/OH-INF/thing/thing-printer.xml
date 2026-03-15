@@ -7,6 +7,7 @@
 	<thing-type id="printer">
 		<label>HP Printer</label>
 		<description>An HP Printer.</description>
+		<semantic-equipment-tag>Printer</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group typeId="printerStatus" id="status"/>
 			<channel-group typeId="ink" id="ink"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants;
 import org.openhab.binding.globalcache.internal.GlobalCacheBindingConstants.CommandType;
 import org.openhab.binding.globalcache.internal.command.CommandGetstate;
 import org.openhab.binding.globalcache.internal.command.CommandGetversion;
@@ -105,8 +106,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
         logger.debug("Initializing thing {}", thingID());
         try {
             ifAddress = InetAddress.getByName(ipv4Address);
+            NetworkInterface netIF = NetworkInterface.getByInetAddress(ifAddress);
             logger.debug("Handler using address {} on network interface {}", ifAddress.getHostAddress(),
-                    NetworkInterface.getByInetAddress(ifAddress).getName());
+                    netIF != null ? netIF.getName() : "UNKNOWN");
         } catch (SocketException e) {
             logger.error("Handler got Socket exception creating multicast socket: {}", e.getMessage());
             markThingOfflineWithError(ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "No suitable network interface");
@@ -130,11 +132,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command == null) {
-            logger.warn("Command passed to handler for thing {} is null", thingID());
-            return;
-        }
-
         // Don't try to send command if the device is not online
         if (!isOnline()) {
             logger.debug("Can't handle command {} because handler for thing {} is not ONLINE", command, thingID());
@@ -314,7 +311,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             throw new HexCodeConversionException("Hex code is too short");
         }
 
-        if (!hexCodeArray[0].equals("0000")) {
+        if (!"0000".equals(hexCodeArray[0])) {
             throw new HexCodeConversionException("Illegal hex code element 0, should be 0000");
         }
 
@@ -448,15 +445,15 @@ public class GlobalCacheHandler extends BaseThingHandler {
         private Logger logger = LoggerFactory.getLogger(CommandProcessor.class);
 
         private boolean terminate = false;
-        private final String TERMINATE_COMMAND = "terminate";
+        private static final String TERMINATE_COMMAND = "terminate";
 
-        private final int SEND_QUEUE_MAX_DEPTH = 10;
-        private final int SEND_QUEUE_TIMEOUT = 2000;
+        private static final int SEND_QUEUE_MAX_DEPTH = 10;
+        private static final int SEND_QUEUE_TIMEOUT = 2000;
 
         private ConnectionManager connectionManager;
 
         public CommandProcessor() {
-            super("GlobalCache Command Processor");
+            super(String.format("OH-binding-%s-%s", GlobalCacheBindingConstants.BINDING_ID, "CommandProcessor"));
             sendQueue = new LinkedBlockingQueue<>(SEND_QUEUE_MAX_DEPTH);
             logger.debug("Processor for thing {} created request queue, depth={}", thingID(), SEND_QUEUE_MAX_DEPTH);
         }
@@ -538,12 +535,10 @@ public class GlobalCacheHandler extends BaseThingHandler {
          */
         private void writeCommandToDevice(RequestMessage requestMessage) throws IOException {
             logger.trace("Processor for thing {} writing command to device", thingID());
-
             if (connectionManager.getCommandOut() == null) {
                 logger.debug("Error writing to device because output stream object is null");
                 return;
             }
-
             byte[] deviceCommand = (requestMessage.getDeviceCommand() + '\r').getBytes();
             connectionManager.getCommandOut().write(deviceCommand);
             connectionManager.getCommandOut().flush();
@@ -554,14 +549,16 @@ public class GlobalCacheHandler extends BaseThingHandler {
          */
         private String readReplyFromDevice(RequestMessage requestMessage) throws IOException {
             logger.trace("Processor for thing {} reading reply from device", thingID());
-
             if (connectionManager.getCommandIn() == null) {
                 logger.debug("Error reading from device because input stream object is null");
                 return "ERROR: BufferedReader is null!";
             }
-
-            logger.trace("Processor for thing {} reading response from device", thingID());
-            return connectionManager.getCommandIn().readLine().trim();
+            String reply = connectionManager.getCommandIn().readLine();
+            if (reply == null) {
+                logger.debug("Read of reply from device returned null!");
+                return "ERROR: reply is null!";
+            }
+            return reply.trim();
         }
 
         /*
@@ -573,11 +570,9 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 logger.warn("Can't send serial command; output stream is null!");
                 return;
             }
-
             byte[] deviceCommand;
             deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), StandardCharsets.ISO_8859_1)
                     .getBytes(StandardCharsets.ISO_8859_1);
-
             logger.debug("Writing decoded deviceCommand byte array: {}", getAsHexString(deviceCommand));
             out.write(deviceCommand);
         }
@@ -601,19 +596,19 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
         private boolean deviceIsConnected;
 
-        private final String COMMAND_NAME = "command";
-        private final String SERIAL1_NAME = "serial-1";
-        private final String SERIAL2_NAME = "serial-2";
+        private static final String COMMAND_NAME = "command";
+        private static final String SERIAL1_NAME = "serial-1";
+        private static final String SERIAL2_NAME = "serial-2";
 
-        private final int COMMAND_PORT = 4998;
-        private final int SERIAL1_PORT = 4999;
-        private final int SERIAL2_PORT = 5000;
+        private static final int COMMAND_PORT = 4998;
+        private static final int SERIAL1_PORT = 4999;
+        private static final int SERIAL2_PORT = 5000;
 
-        private final int SOCKET_CONNECT_TIMEOUT = 1500;
+        private static final int SOCKET_CONNECT_TIMEOUT = 1500;
 
         private ScheduledFuture<?> connectionMonitorJob;
-        private final int CONNECTION_MONITOR_FREQUENCY = 60;
-        private final int CONNECTION_MONITOR_START_DELAY = 15;
+        private static final int CONNECTION_MONITOR_FREQUENCY = 60;
+        private static final int CONNECTION_MONITOR_START_DELAY = 15;
 
         private Runnable connectionMonitorRunnable = () -> {
             logger.trace("Performing connection check for thing {} at IP {}", thingID(), commandConnection.getIP());
@@ -851,10 +846,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
         }
 
         private boolean deviceSupportsSerialPort2() {
-            if (thing.getThingTypeUID().equals(THING_TYPE_GC_100_12)) {
-                return true;
-            }
-            return false;
+            return thing.getThingTypeUID().equals(THING_TYPE_GC_100_12);
         }
 
         /*

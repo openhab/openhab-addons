@@ -7,6 +7,7 @@
 	<thing-type id="pm2lan">
 		<label>EG-PM2-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="socket1" typeId="socket1"/>
@@ -22,6 +23,7 @@
 	<thing-type id="pmslan">
 		<label>EG-PMS-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="socket1" typeId="socket1"/>
@@ -37,6 +39,7 @@
 	<thing-type id="pms2lan">
 		<label>EG-PMS2-LAN</label>
 		<description>Energenie programmable power strip with LAN interface</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="socket1" typeId="socket1"/>
@@ -52,6 +55,7 @@
 	<thing-type id="pmswlan">
 		<label>EG-PMS-WLAN</label>
 		<description>Energenie programmable power strip with WLAN interface</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="socket1" typeId="socket1"/>
@@ -67,6 +71,7 @@
 	<thing-type id="pwmlan">
 		<label>EGM-PWM-LAN</label>
 		<description>Energenie energy meter with LAN interface</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="voltage" typeId="voltage"/>
@@ -83,30 +88,50 @@
 		<item-type>Switch</item-type>
 		<label>Socket 1 State</label>
 		<description>Channel representing the state of socket 1</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="socket2">
 		<item-type>Switch</item-type>
 		<label>Socket 2 State</label>
 		<description>Channel representing the state of socket 2</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="socket3">
 		<item-type>Switch</item-type>
 		<label>Socket 3 State</label>
 		<description>Channel representing the state of socket 3</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="socket4">
 		<item-type>Switch</item-type>
 		<label>Socket 4 State</label>
 		<description>Channel representing the state of socket 4</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Channel representing the voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -114,6 +139,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Channel representing the current</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -121,6 +150,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Channel representing the power consumption</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -128,6 +161,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<description>Channel representing the energy consumption</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 

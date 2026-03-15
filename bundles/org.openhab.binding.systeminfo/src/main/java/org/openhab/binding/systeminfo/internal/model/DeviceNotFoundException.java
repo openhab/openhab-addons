@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,15 +28,14 @@ public class DeviceNotFoundException extends IOException {
     private static final long serialVersionUID = -707507777792259512L;
 
     /**
-     * Constructs an {@code DeviceNotFoundException} with {@code null}
+     * Constructs a {@code DeviceNotFoundException} with {@code null}
      * as its error detail message.
      */
     public DeviceNotFoundException() {
-        super();
     }
 
     /**
-     * Constructs an {@code DeviceNotFoundException} with the specified detail message.
+     * Constructs a {@code DeviceNotFoundException} with the specified detail message.
      *
      *
      * @param message
@@ -48,7 +47,7 @@ public class DeviceNotFoundException extends IOException {
     }
 
     /**
-     * Constructs an {@code DeviceNotFoundException} with the specified detail message
+     * Constructs a {@code DeviceNotFoundException} with the specified detail message
      * and cause.
      *
      * <p>

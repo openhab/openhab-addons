@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bluetooth.ruuvitag.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -21,23 +22,35 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class RuuviTagBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BEACON = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
             "ruuvitag_beacon");
 
-    // Channel IDs
-    public static final String CHANNEL_ID_BATTERY = "batteryVoltage";
-    public static final String CHANNEL_ID_DATA_FORMAT = "dataFormat";
+    // Channel IDs - Environmental (RuuviTag)
     public static final String CHANNEL_ID_TEMPERATURE = "temperature";
     public static final String CHANNEL_ID_HUMIDITY = "humidity";
     public static final String CHANNEL_ID_PRESSURE = "pressure";
-    public static final String CHANNEL_ID_TX_POWER = "txPower";
-
     public static final String CHANNEL_ID_ACCELERATIONX = "accelerationx";
     public static final String CHANNEL_ID_ACCELERATIONY = "accelerationy";
     public static final String CHANNEL_ID_ACCELERATIONZ = "accelerationz";
-    public static final String CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER = "measurementSequenceNumber";
+    public static final String CHANNEL_ID_BATTERY = "batteryVoltage";
+    public static final String CHANNEL_ID_TX_POWER = "txPower";
     public static final String CHANNEL_ID_MOVEMENT_COUNTER = "movementCounter";
+    public static final String CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER = "measurementSequenceNumber";
+    public static final String CHANNEL_ID_DATA_FORMAT = "dataFormat";
+
+    // Channel IDs - Air Quality (Ruuvi Air Format 6+)
+    public static final String CHANNEL_ID_PM1 = "pm1";
+    public static final String CHANNEL_ID_PM25 = "pm25";
+    public static final String CHANNEL_ID_PM4 = "pm4";
+    public static final String CHANNEL_ID_PM10 = "pm10";
+    public static final String CHANNEL_ID_CO2 = "co2";
+    public static final String CHANNEL_ID_VOC_INDEX = "vocIndex";
+    public static final String CHANNEL_ID_NOX_INDEX = "noxIndex";
+    public static final String CHANNEL_ID_LUMINOSITY = "luminosity";
+    public static final String CHANNEL_ID_CALIBRATION_COMPLETED = "calibrationCompleted";
+    public static final String CHANNEL_ID_AIR_QUALITY_INDEX = "airQualityIndex";
 }

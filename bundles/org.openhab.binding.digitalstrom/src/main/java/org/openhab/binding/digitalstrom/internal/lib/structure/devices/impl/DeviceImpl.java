@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,7 +111,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     /*
      * Saves the refresh priorities and reading initialized flag of power sensors as
-     * an matrix. The first array fields are 0 = active power, 1 = output current, 2
+     * a matrix. The first array fields are 0 = active power, 1 = output current, 2
      * = electric meter, 3 = power consumption and in each field is a string array
      * with the fields 0 = refresh priority 1 = reading initial flag (true = reading
      * is initialized, otherwise false)
@@ -952,8 +952,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Device) {
-            Device device = (Device) obj;
+        if (obj instanceof Device device) {
             return device.getDSID().equals(this.getDSID());
         }
         return false;
@@ -1679,7 +1678,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
     }
 
     /**
-     * if an {@link DeviceStatusListener} is registered inform him about the new
+     * if a {@link DeviceStatusListener} is registered inform him about the new
      * state otherwise do nothing.
      *
      * @param deviceStateUpdate
@@ -1781,7 +1780,7 @@ public class DeviceImpl extends AbstractGeneralDeviceInformations implements Dev
         String[] scenes = propertries.split("\n");
         for (int i = 0; i < scenes.length; i++) {
             logger.debug("Find saved scene configuration for device with dSID {} and sceneID {}", dsid, i);
-            String[] sceneIdToConfig = scenes[i].replaceAll(" ", "").split("=");
+            String[] sceneIdToConfig = scenes[i].replace(" ", "").split("=");
             String[] sceneParm = sceneIdToConfig[1].split(",");
             JSONDeviceSceneSpecImpl sceneSpecNew = null;
             int sceneValue = -1;

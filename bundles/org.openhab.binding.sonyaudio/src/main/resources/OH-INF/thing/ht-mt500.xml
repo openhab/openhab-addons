@@ -9,6 +9,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="btaudio">Bluetooth Audio</option>
@@ -25,6 +29,10 @@
 		<item-type>String</item-type>
 		<label>Sound Field</label>
 		<description>Select the Sound Field for the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="clearAudio">ClearAudio+</option>
@@ -41,6 +49,7 @@
 	<thing-type id="HT-MT500">
 		<label>SONY Soundbar HT-MT500</label>
 		<description>SONY Soundbar HT-MT500</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-mt500"/>

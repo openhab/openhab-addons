@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meross"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="msg200">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Meross MSG200</label>
+		<description>Meross Triple Garage Door</description>
+
+		<channels>
+			<channel id="door-state-0" typeId="door-state"/>
+			<channel id="door-state-1" typeId="door-state"/>
+			<channel id="door-state-2" typeId="door-state"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:meross:device"/>
+	</thing-type>
+</thing:thing-descriptions>

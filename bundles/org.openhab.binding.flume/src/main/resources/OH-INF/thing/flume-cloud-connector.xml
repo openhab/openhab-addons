@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="flume"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cloud">
+		<label>Flume Cloud Connector</label>
+		<description>Flume cloud connector.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Flume Username</label>
+				<description>Flume cloud portal username</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Flume Password</label>
+				<context>password</context>
+				<description>Flume cloud portal password</description>
+			</parameter>
+			<parameter name="clientId" type="text" required="true">
+				<label>Flume Client ID</label>
+				<description>Visit Flume cloud portal to get client ID</description>
+			</parameter>
+			<parameter name="clientSecret" type="text" required="true">
+				<label>Flume Client Secret</label>
+				<context>password</context>
+				<description>Visit Flume cloud portal to get client secret</description>
+			</parameter>
+			<parameter name="refreshIntervalInstanteous" type="integer" min="1" step="1" unit="min" required="false">
+				<label>Instantaneous Refresh Interval</label>
+				<description>Minutes between fetching current flow rate from the cloud service (total cloud fetches is rate-limited
+					to 120/hour)</description>
+				<advanced>true</advanced>
+				<default>1</default>
+				<unitLabel>minutes</unitLabel>
+			</parameter>
+			<parameter name="refreshIntervalCumulative" type="integer" min="1" step="5" unit="min" required="false">
+				<label>Cumulative Refresh Interval</label>
+				<description>Minutes between fetching cumulative usage from the cloud service (total cloud fetches is rate-limited
+					to 120/hour)</description>
+				<advanced>true</advanced>
+				<default>5</default>
+				<unitLabel>minutes</unitLabel>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

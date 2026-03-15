@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
+import java.time.Instant;
 import java.util.Collection;
 
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +38,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.util.SameThreadExecutorService;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -46,6 +48,7 @@ import com.google.gson.JsonParser;
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
+ * @author Vivien Boistuaud - Added unit test for Air Purifier
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -66,7 +69,7 @@ public class TradfriDiscoveryServiceTest {
         }
 
         @Override
-        public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+        public Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                 Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
             return null;
         }
@@ -80,7 +83,7 @@ public class TradfriDiscoveryServiceTest {
     public void setUp() {
         when(handler.getThing()).thenReturn(BridgeBuilder.create(GATEWAY_TYPE_UID, "1").build());
 
-        discovery = new TradfriDiscoveryService();
+        discovery = new TradfriDiscoveryService(new SameThreadExecutorService());
         discovery.setThingHandler(handler);
         discovery.addDiscoveryListener(listener);
     }
@@ -92,7 +95,7 @@ public class TradfriDiscoveryServiceTest {
 
     @Test
     public void correctSupportedTypes() {
-        assertThat(discovery.getSupportedThingTypes().size(), is(9));
+        assertThat(discovery.getSupportedThingTypes().size(), is(10));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_DIMMABLE_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_COLOR_TEMP_LIGHT));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_COLOR_LIGHT));
@@ -102,6 +105,7 @@ public class TradfriDiscoveryServiceTest {
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_OPEN_CLOSE_REMOTE_CONTROL));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_ONOFF_PLUG));
         assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_BLINDS));
+        assertTrue(discovery.getSupportedThingTypes().contains(THING_TYPE_AIR_PURIFIER));
     }
 
     @Test
@@ -231,6 +235,22 @@ public class TradfriDiscoveryServiceTest {
         assertThat(discoveryResult.getThingTypeUID(), is(THING_TYPE_MOTION_SENSOR));
         assertThat(discoveryResult.getBridgeUID(), is(GATEWAY_THING_UID));
         assertThat(discoveryResult.getProperties().get(CONFIG_ID), is(65538));
+        assertThat(discoveryResult.getRepresentationProperty(), is(CONFIG_ID));
+    }
+
+    @Test
+    public void validDiscoveryResultAirPurifier() {
+        String json = "{\"3\":{\"0\":\"IKEAofSweden\",\"1\":\"STARKVINDAirpurifier\",\"2\":\"\",\"3\":\"1.0.033\",\"6\":1,\"7\":4364},\"5750\":10,\"9001\":\"Luftreiniger\",\"9002\":1633096623,\"9003\":65548,\"9019\":1,\"9020\":1633096633,\"9054\":0,\"15025\":[{\"5900\":1,\"5902\":2,\"5903\":0,\"5904\":259200,\"5905\":0,\"5906\":0,\"5907\":5,\"5908\":10,\"5909\":2,\"5910\":259198,\"9003\":0}]}";
+        JsonObject data = JsonParser.parseString(json).getAsJsonObject();
+
+        discovery.onUpdate("65548", data);
+
+        assertNotNull(discoveryResult);
+        assertThat(discoveryResult.getFlag(), is(DiscoveryResultFlag.NEW));
+        assertThat(discoveryResult.getThingUID(), is(new ThingUID("tradfri:0007:1:65548")));
+        assertThat(discoveryResult.getThingTypeUID(), is(THING_TYPE_AIR_PURIFIER));
+        assertThat(discoveryResult.getBridgeUID(), is(GATEWAY_THING_UID));
+        assertThat(discoveryResult.getProperties().get(CONFIG_ID), is(65548));
         assertThat(discoveryResult.getRepresentationProperty(), is(CONFIG_ID));
     }
 }

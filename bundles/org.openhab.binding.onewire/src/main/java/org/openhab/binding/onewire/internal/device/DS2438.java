@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link DS2438} class defines an DS2438 device
+ * The {@link DS2438} class defines a DS2438 device
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -91,7 +91,7 @@ public class DS2438 extends AbstractOwDevice {
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
             logger.trace("refresh of sensor {} started", sensorId);
-            double Vcc = 5.0;
+            double vcc = 5.0;
 
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
@@ -141,8 +141,8 @@ public class DS2438 extends AbstractOwDevice {
             if (enabledChannels.contains(CHANNEL_CURRENT)) {
                 if (currentSensorType == CurrentSensorType.IBUTTONLINK) {
                     State current = bridgeHandler.readDecimalType(sensorId, voltageParameter);
-                    if (current instanceof DecimalType) {
-                        double currentDouble = ((DecimalType) current).doubleValue();
+                    if (current instanceof DecimalType decimalCommand) {
+                        double currentDouble = decimalCommand.doubleValue();
                         if (currentDouble >= 0.1 || currentDouble <= 3.78) {
                             current = new QuantityType<>(currentDouble * 5.163 + 0.483, Units.AMPERE);
                         }
@@ -159,8 +159,8 @@ public class DS2438 extends AbstractOwDevice {
             }
 
             if (enabledChannels.contains(CHANNEL_SUPPLYVOLTAGE)) {
-                Vcc = ((DecimalType) bridgeHandler.readDecimalType(sensorId, supplyVoltageParameter)).doubleValue();
-                State supplyVoltage = new QuantityType<>(Vcc, Units.VOLT);
+                vcc = ((DecimalType) bridgeHandler.readDecimalType(sensorId, supplyVoltageParameter)).doubleValue();
+                State supplyVoltage = new QuantityType<>(vcc, Units.VOLT);
                 callback.postUpdate(CHANNEL_SUPPLYVOLTAGE, supplyVoltage);
             }
 
@@ -168,19 +168,17 @@ public class DS2438 extends AbstractOwDevice {
                 switch (lightSensorType) {
                     case ELABNET_V2:
                         State light = bridgeHandler.readDecimalType(sensorId, currentParamater);
-                        if (light instanceof DecimalType) {
+                        if (light instanceof DecimalType decimalCommand) {
                             light = new QuantityType<>(
-                                    Math.round(Math.pow(10, ((DecimalType) light).doubleValue() / 47 * 1000)),
-                                    Units.LUX);
+                                    Math.round(Math.pow(10, decimalCommand.doubleValue() / 47 * 1000)), Units.LUX);
                             callback.postUpdate(CHANNEL_LIGHT, light);
                         }
                         break;
                     case ELABNET_V1:
                         light = bridgeHandler.readDecimalType(sensorId, currentParamater);
-                        if (light instanceof DecimalType) {
-                            light = new QuantityType<>(Math.round(Math
-                                    .exp(1.059 * Math.log(1000000 * ((DecimalType) light).doubleValue() / (4096 * 390))
-                                            + 4.518)
+                        if (light instanceof DecimalType decimalCommand) {
+                            light = new QuantityType<>(Math.round(Math.exp(
+                                    1.059 * Math.log(1000000 * decimalCommand.doubleValue() / (4096 * 390)) + 4.518)
                                     * 20000), Units.LUX);
                             callback.postUpdate(CHANNEL_LIGHT, light);
                         }
@@ -192,7 +190,7 @@ public class DS2438 extends AbstractOwDevice {
                             // workaround bug in DS2438
                             light = new QuantityType<>(0, Units.LUX);
                         } else {
-                            light = new QuantityType<>(Math.pow(10, (65 / 7.5) - (47 / 7.5) * (Vcc / measured)),
+                            light = new QuantityType<>(Math.pow(10, (65 / 7.5) - (47 / 7.5) * (vcc / measured)),
                                     Units.LUX);
                         }
                         callback.postUpdate(CHANNEL_LIGHT, light);

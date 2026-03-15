@@ -1,6 +1,6 @@
 # Plugwise Binding
 
-The Plugwise binding adds support to openHAB for [Plugwise](https://www.plugwise.com) ZigBee devices using the Stick.
+The Plugwise binding adds support to openHAB for [Plugwise](https://www.plugwise.com) Zigbee devices using the Stick.
 
 Users should use the Plugwise Source software to define the network, reset devices or perform firmware upgrades.
 
@@ -14,16 +14,16 @@ The binding supports the following Plugwise devices:
 | Device Type | Description                                                                              | Thing Type |
 |-------------|------------------------------------------------------------------------------------------|------------|
 | Circle      | A power outlet plug that provides energy measurement and switching control of appliances | circle     |
-| Circle+     | A special Circle that coordinates the ZigBee network and acts as network gateway         | circleplus |
+| Circle+     | A special Circle that coordinates the Zigbee network and acts as network gateway         | circleplus |
 | Scan        | A wireless motion (PIR) and light sensor                                                 | scan       |
 | Sense       | A wireless temperature and humidity sensor                                               | sense      |
 | Stealth     | A Circle with a more compact form factor that can be built-in                            | stealth    |
-| Stick       | A ZigBee USB controller that openHAB uses to communicate with the Circle+                | stick      |
+| Stick       | A Zigbee USB controller that openHAB uses to communicate with the Circle+                | stick      |
 | Switch      | A wireless wall switch                                                                   | switch     |
 
 ## Discovery
 
-Automatic device discovery runs every 3 minutes which can be sped up by starting a manual discovery.
+Automatic device discovery runs every three minutes, which can be sped up by starting a manual discovery.
 All Circle, Circle+ and Stealth devices are discovered immediately after adding the Stick. Battery powered devices like the Scan, Sense and Switch are discovered when they are awake.
 The Scan and Sense can be woken by pressing the "Wake" button.
 The Switch is detected when it is awake after switching the left or right button.
@@ -37,14 +37,14 @@ The binding uses full MAC addresses i.e. also the fine print on the sticker.
 If you don't want to get off your chair, climb up ladders and unplug devices all across your home, causing all sorts of havoc; you can also find them in Source. Open `Settings > Appliances`. Then double click on an appliance.
 Click on the little Circle icon to the right of the short Address to see the details of a module and the full MAC address.
 
-Similarly the MAC addresses of the Scan, Sense and Switch can also be obtained from the Appliances screen by double clicking them in the `Sensors and other modules` list.
+Similarly, the MAC addresses of the Scan, Sense, and Switch can also be obtained from the Appliances screen by double-clicking them in the `Sensors and other modules` list.
 
 ### Stick
 
 | Configuration Parameter | Required | Default      | Description                                                                       |
 |-------------------------|----------|--------------|-----------------------------------------------------------------------------------|
 | serialPort              | X        | /dev/ttyUSB0 | The serial port of the Stick, e.g. "/dev/ttyUSB0" for Linux or "COM1" for Windows |
-| messageWaitTime         |          | 150          | The time to wait between messages sent on the ZigBee network (in ms)              |
+| messageWaitTime         |          | 150          | The time to wait between messages sent on the Zigbee network (in ms)              |
 
 To determine the serial port in Linux, insert the Stick, then execute the `dmesg` command.
 The last few lines of the output will contain the USB port of the Stick (e.g. `/dev/ttyUSB0`).
@@ -60,8 +60,7 @@ To access the serial port of the Stick on Linux, the user running openHAB needs 
 | powerStateChanging      |          | commandSwitching | Controls if the power state can be changed with commands or is always on/off (commandSwitching, alwaysOn or alwaysOff) |
 | suppliesPower           |          | false            | Enables power production measurements (true or false)                                                                  |
 | measurementInterval     |          | 60               | The energy measurement interval (in minutes) (5 to 60)                                                                 |
-| temporarilyNotInNetwork |          | false            | Stops searching for an unplugged device on the ZigBee network traffic (true or false)                                  |
-
+| temporarilyNotInNetwork |          | false            | Stops searching for an unplugged device on the Zigbee network traffic (true or false)                                  |
 
 ### Scan
 
@@ -73,7 +72,6 @@ To access the serial port of the Stick on Linux, the user running openHAB needs 
 | daylightOverride        |          | false   | Disables movement detection when there is daylight (true or false)                                               |
 | wakeupInterval          |          | 1440    | The interval in which the Scan wakes up at least once (in minutes) (5 to 1440)                                   |
 | wakeupDuration          |          | 10      | The number of seconds the Scan stays awake after it woke up (10 to 120)                                          |
-
 
 ### Sense
 
@@ -90,7 +88,6 @@ To access the serial port of the Stick on Linux, the user running openHAB needs 
 | wakeupInterval          |          | 1440            | The interval in which the Sense wakes up at least once (in minutes) (5 to 1440)                                            |
 | wakeupDuration          |          | 10              | The number of seconds the Sense stays awake after it woke up (10 to 120)                                                   |
 
-
 ### Switch
 
 | Configuration Parameter | Required | Default | Description                                                                      |
@@ -98,7 +95,6 @@ To access the serial port of the Stick on Linux, the user running openHAB needs 
 | macAddress              | X        |         | The full device MAC address e.g. "000D6F0000A1B2C3"                              |
 | wakeupInterval          |          | 1440    | The interval in which the Switch wakes up at least once (in minutes) (5 to 1440) |
 | wakeupDuration          |          | 10      | The number of seconds the Switch stays awake after it woke up (10 to 120)        |
-
 
 ## Channels
 
@@ -121,7 +117,7 @@ To access the serial port of the Stick on Linux, the user running openHAB needs 
 
 demo.things
 
-```
+```java
 Bridge plugwise:stick:demostick [ serialPort="/dev/ttyUSB0", messageWaitTime=150 ]
 
 Thing plugwise:circle:fan (plugwise:stick:demostick) [ macAddress="000D6F0000A1A1A1", measurementInterval=15 ]
@@ -150,7 +146,7 @@ Thing plugwise:switch:lightswitches (plugwise:stick:demostick) [ macAddress="000
 
 demo.items
 
-```
+```java
 /* Circle */
 Switch Fan_Switch "Switch" <switch> { channel="plugwise:circle:fan:state" }
 String Fan_Clock "Clock [%s]" <clock> { channel="plugwise:circle:fan:clock" }
@@ -194,7 +190,7 @@ DateTime Light_Switches_Last_Seen "Last seen [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$t
 
 demo.sitemap
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
 

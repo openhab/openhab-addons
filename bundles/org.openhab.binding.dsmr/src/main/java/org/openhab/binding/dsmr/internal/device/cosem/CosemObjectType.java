@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.openhab.core.library.unit.Units;
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Cosem subclasses made into factory classes and introduced quantity type
+ * @author Lennert Coopman - Added capacity tariff channels for Belgium: actual and current month
  */
 @NonNullByDefault
 public enum CosemObjectType {
@@ -54,7 +55,7 @@ public enum CosemObjectType {
     METER_VALVE_SWITCH_POSITION(new OBISIdentifier(0, 24, 4, 0), CosemDecimal.INSTANCE),
 
     /* Electricity Meter */
-    EMETER_EQUIPMENT_IDENTIFIER_V2_X(new OBISIdentifier(0, 42, 0, 0), CosemString.INSTANCE),
+    EMETER_EQUIPMENT_IDENTIFIER_V2_X(new OBISIdentifier(0, 42, 0, 0), CosemHexString.INSTANCE),
     EMETER_EQUIPMENT_IDENTIFIER(new OBISIdentifier(0, 96, 1, 1), CosemHexString.INSTANCE),
     EMETER_VALUE(new OBISIdentifier(0, 24, 2, 1, true), CosemDate.INSTANCE, CosemQuantity.KILO_WATT_HOUR),
     EMETER_DELIVERY_TARIFF0(new OBISIdentifier(1, 1, 8, 0), CosemQuantity.KILO_WATT_HOUR),
@@ -69,6 +70,8 @@ public enum CosemObjectType {
     EMETER_TARIFF_INDICATOR(new OBISIdentifier(0, 96, 14, 0), CosemString.INSTANCE),
     EMETER_ACTIVE_IMPORT_POWER(new OBISIdentifier(1, 15, 7, 0), CosemQuantity.WATT),
     EMETER_ACTUAL_DELIVERY(new OBISIdentifier(1, 1, 7, 0), CosemQuantity.KILO_WATT),
+    EMETER_ACTUAL_DEMAND(new OBISIdentifier(1, 1, 4, 0), CosemQuantity.KILO_WATT),
+    EMETER_MAXIMUM_DEMAND_CURRENT_MONTH(new OBISIdentifier(1, 1, 6, 0), CosemDate.INSTANCE, CosemQuantity.KILO_WATT),
     EMETER_ACTUAL_PRODUCTION(new OBISIdentifier(1, 2, 7, 0), CosemQuantity.KILO_WATT),
     EMETER_TRESHOLD_A_V2_1(new OBISIdentifier(1, 17, 0, 0), CosemQuantity.AMPERE),
     EMETER_TRESHOLD_A(new OBISIdentifier(0, 17, 0, 0, true), CosemQuantity.AMPERE),
@@ -102,7 +105,7 @@ public enum CosemObjectType {
     EMETER_INSTANT_VOLTAGE_L3(new OBISIdentifier(1, 72, 7, 0), CosemQuantity.VOLT),
 
     /* Gas Meter */
-    GMETER_EQUIPMENT_IDENTIFIER_V2(new OBISIdentifier(7, 0, 0, 0), CosemString.INSTANCE),
+    GMETER_EQUIPMENT_IDENTIFIER_V2(new OBISIdentifier(7, 0, 0, 0), CosemHexString.INSTANCE),
     GMETER_24H_DELIVERY_V2(new OBISIdentifier(7, 23, 1, 0), CosemQuantity.CUBIC_METRE, CosemDate.INSTANCE),
     GMETER_24H_DELIVERY_COMPENSATED_V2(new OBISIdentifier(7, 23, 2, 0), CosemQuantity.CUBIC_METRE, CosemDate.INSTANCE),
     GMETER_LAST_VALUE(new OBISIdentifier(0, 24, 2, 3), CosemDate.INSTANCE, CosemQuantity.CUBIC_METRE),
@@ -110,22 +113,22 @@ public enum CosemObjectType {
             new CosemString("val1"), // Specification is not clear what this value is
             new CosemDecimal("val2"), // Specification is not clear what this value is
             new CosemDecimal("val3"), // Specification is not clear what this value is
-            new CosemString("obisId"), // String containing a OBIS Identifier
+            new CosemString("obisId"), // String containing an OBIS Identifier
             new CosemString("unit"), // String containing the type (m3)
             CosemDecimal.INSTANCE),
     GMETER_VALVE_POSITION_V2_1(new OBISIdentifier(7, 96, 3, 10), CosemDecimal.INSTANCE),
     GMETER_VALVE_POSITION_V2_2(new OBISIdentifier(7, 24, 4, 0), CosemDecimal.INSTANCE),
 
     /* Heating Meter */
-    HMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(5, 0, 0, 0), CosemString.INSTANCE),
+    HMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(5, 0, 0, 0), CosemHexString.INSTANCE),
     HMETER_VALUE_V2(new OBISIdentifier(5, 1, 0, 0), CosemQuantity.GIGA_JOULE, CosemDate.INSTANCE),
 
     /* Cooling Meter */
-    CMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(6, 0, 0, 0), CosemString.INSTANCE),
+    CMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(6, 0, 0, 0), CosemHexString.INSTANCE),
     CMETER_VALUE_V2(new OBISIdentifier(6, 1, 0, 0), CosemQuantity.GIGA_JOULE, CosemDate.INSTANCE),
 
     /* Water Meter */
-    WMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(8, 0, 0, 0), CosemString.INSTANCE),
+    WMETER_EQUIPMENT_IDENTIFIER_V2_2(new OBISIdentifier(8, 0, 0, 0), CosemHexString.INSTANCE),
     WMETER_VALUE_V2(new OBISIdentifier(8, 1, 0, 0), CosemQuantity.CUBIC_METRE, CosemDate.INSTANCE),
     WMETER_VALUE_V3(new OBISIdentifier(0, 24, 3, 0, true), CosemQuantity.CUBIC_METRE),
 
@@ -206,7 +209,7 @@ public enum CosemObjectType {
      *
      * e.g. If the list contains 4 descriptors and the last 2 are repeating, idx=6 will return the 4th descriptor.
      *
-     * The idx is < 0 or outside a non-repeating descriptorslist size null is returned
+     * The idx {@code is < 0} or outside a non-repeating descriptorslist size null is returned
      *
      * @param idx the CosemValueDescriptor to return
      * @return the CosemValueDescriptor or null if not found.

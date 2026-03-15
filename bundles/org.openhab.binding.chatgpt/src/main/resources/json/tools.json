@@ -1,0 +1,27 @@
+[ 
+    {
+        "type": "function",
+        "function": {
+            "name": "items_control",
+            "description": "Use this function to control item in openHAB",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Item name in openHAB"
+                    },
+                    "type": {
+                        "type": "string",
+                        "description": "Item type"
+                    },
+                    "state": {
+                        "type": "string",
+                        "description": "New state for item"
+                    }
+                },
+                "required": ["type", "name", "state"]
+            }
+        }
+    }
+]

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a restartable socket connection to the underlying telnet session with an GRX-PRG/GRX-CI-PRG. Commands can
+ * Represents a restartable socket connection to the underlying telnet session with a GRX-PRG/GRX-CI-PRG. Commands can
  * be sent via {@link #sendCommand(String)} and responses will be received on the {@link SocketSessionCallback}
  *
  * @author Tim Roberts - Initial contribution
@@ -361,16 +361,16 @@ public class SocketSession {
                     final Object response = responsesQueue.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
-                        if (response instanceof String) {
+                        if (response instanceof String str) {
                             try {
                                 logger.debug("Dispatching response: {}", response);
-                                ssCallback.responseReceived((String) response);
+                                ssCallback.responseReceived(str);
                             } catch (Exception e) {
                                 logger.warn("Exception occurred processing the response '{}': ", response, e);
                             }
-                        } else if (response instanceof Exception) {
+                        } else if (response instanceof Exception exception) {
                             logger.debug("Dispatching exception: {}", response);
-                            ssCallback.responseException((Exception) response);
+                            ssCallback.responseException(exception);
                         } else {
                             logger.error("Unknown response class: {}", response);
                         }

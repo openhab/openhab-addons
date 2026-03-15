@@ -17,7 +17,7 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>WolfSmartset System</label>
-		<description>An WolfSmartset system</description>
+		<description>A WolfSmartset system</description>
 		<representation-property>systemId</representation-property>
 		<config-description-ref uri="thing-type:wolfsmartset:system"/>
 	</bridge-type>
@@ -28,7 +28,7 @@
 			<bridge-type-ref id="system"/>
 		</supported-bridge-type-refs>
 		<label>WolfSmartset Unit</label>
-		<description>An WolfSmartset remote unit</description>
+		<description>A WolfSmartset remote unit</description>
 
 		<representation-property>unitId</representation-property>
 		<config-description-ref uri="thing-type:wolfsmartset:unit"/>
@@ -49,6 +49,10 @@
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -67,6 +71,10 @@
 	<channel-type id="barometric-pressure">
 		<item-type>Number:Pressure</item-type>
 		<label>Pressure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

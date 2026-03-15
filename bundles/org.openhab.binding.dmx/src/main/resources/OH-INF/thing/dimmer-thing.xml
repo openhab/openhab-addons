@@ -11,6 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>DMX Dimmer</label>
 		<description>A single/multi-channel dimmer</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="switch" typeId="switch"/>

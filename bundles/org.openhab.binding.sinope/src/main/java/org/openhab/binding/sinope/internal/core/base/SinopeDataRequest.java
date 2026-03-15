@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,7 +58,6 @@ public abstract class SinopeDataRequest extends SinopeRequest {
      * @param appData the app data
      */
     public SinopeDataRequest(byte[] seq, byte[] dstDeviceId, SinopeAppData appData) {
-        super();
         this.seq = seq;
         this.requestType = 0;
         this.res1 = 0;
@@ -162,7 +161,7 @@ public abstract class SinopeDataRequest extends SinopeRequest {
     @Override
     protected byte[] getFrameData() {
         int appDataLen = getAppDataSize();
-        byte b[] = new byte[seq.length + 1 + 1 + 1 + res3.length + res4.length + dstDeviceId.length + 1 + appDataLen];
+        byte[] b = new byte[seq.length + 1 + 1 + 1 + res3.length + res4.length + dstDeviceId.length + 1 + appDataLen];
 
         ByteBuffer bb = ByteBuffer.wrap(b);
 

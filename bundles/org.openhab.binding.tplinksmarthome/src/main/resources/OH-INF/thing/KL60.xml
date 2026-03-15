@@ -8,7 +8,7 @@
 		<label>KL60</label>
 		<description>Kasa Filament Smart Bulb, Warm Amber</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="power" typeId="power"/>

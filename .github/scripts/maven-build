@@ -18,7 +18,7 @@ function mvnp() {
     set -o pipefail # exit build with error when pipes fail
     local reactor_size=$(find -name "pom.xml" | grep -vE '/src/|/target/' | wc -l)
     local padding=$(bc -l <<< "scale=0;2*(l($reactor_size)/l(10)+1)")
-    local command=(mvn $@)
+    local command=(./mvnw $@)
     exec "${command[@]}" 2>&1 | # execute, redirect stderr to stdout
         tee "$BUILD_LOG" | # write output to log
         stdbuf -oL grep -aE '^\[INFO\] Building .+ \[.+\]$' | # filter progress
@@ -30,7 +30,7 @@ function build_all() {
     echo
     echo "Building all projects"
     echo
-    echo "+ mvn $ARGUMENTS"
+    echo "+ ./mvnw $ARGUMENTS"
     echo
 
     mvnp $ARGUMENTS
@@ -66,7 +66,7 @@ function addon_projects() {
     local addon="$1"
 
     # include add-on projects
-    local projects=":$(find . -mindepth 2 -maxdepth 2 -type d -regextype egrep -regex "./(bundles|itests)/$addon(\..*)?$" | grep -Ev 'org.openhab.binding.mqtt.homeassistant.tests|org.openhab.binding.mqtt.homie.tests' | sort | sed -E 's#./(bundles|itests)/##g' | xargs | sed 's# #,:#g')"
+    local projects=":$(find . -mindepth 2 -maxdepth 2 -type d -regextype egrep -regex "./(bundles|itests)/$addon(\..*)?$" | sort | sed -E 's#./(bundles|itests)/##g' | xargs | sed 's# #,:#g')"
 
     # include BOMs
     projects="$projects,:org.openhab.addons.bom.openhab-core-index,:org.openhab.addons.bom.runtime-index,:org.openhab.addons.bom.test-index"
@@ -79,27 +79,30 @@ function addon_projects() {
 
 function build_addon() {
     local addon="$1"
-    local mvn_command="mvn $ARGUMENTS -am -amd -pl $(addon_projects $addon)"
+    local command="./mvnw $ARGUMENTS -am -amd -pl $(addon_projects $addon)"
 
     echo
     echo "Building add-on: $addon"
     echo
-    echo "+ $mvn_command"
+    echo "+ $command"
     echo
 
     set -o pipefail # exit build with error when pipes fail
-    $mvn_command 2>&1 | tee "$BUILD_LOG"
+    $command 2>&1 | tee "$BUILD_LOG"
     exit $?
 }
 
 function build_based_on_changes() {
     local changed_addon=$(changed_addons | xargs)
-    if [ $(echo $changed_addon | wc -w) -eq 1 ] && [ $(addon_unrelated_changed_files $changed_addon | wc -l) -eq 0 ]; then
+    if [ $(echo $changed_addon | wc -w) -eq 1 ] && \
+        [ $(addon_unrelated_changed_files $changed_addon | wc -l) -eq 0 ] && \
+        [ -d "./bundles/$changed_addon" ]
+    then
         build_addon $changed_addon
     else
         build_all
     fi
 }
 
-mvn -v
+./mvnw -v
 build_based_on_changes

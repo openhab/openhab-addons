@@ -7,6 +7,7 @@
 	<thing-type id="EcoMeterS">
 		<label>Proteus EcoMeter S</label>
 		<description>Sensor for measuring water level of a cistern. Connected via USB</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="Temperature"/>
@@ -21,7 +22,7 @@
 				<context>serial-port</context>
 				<limitToOptions>false</limitToOptions>
 				<label>USB Port</label>
-				<description>USB port the device is connected to i.e. /dev/ttyUSB0</description>
+				<description>USB port the device is connected to, for example /dev/ttyUSB0</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -30,6 +31,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature measured by the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -37,13 +42,21 @@
 		<item-type>Number:Length</item-type>
 		<label>Sensor Level</label>
 		<description>The distance between the sensor and the water surface</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="UsableLevel">
 		<item-type>Number:Volume</item-type>
-		<label>Usable Level in litre</label>
-		<description>The usable level in litre</description>
+		<label>Usable Level</label>
+		<description>The usable level in liters</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -51,6 +64,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Usable Level in percent</label>
 		<description>The usable level in percent</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 

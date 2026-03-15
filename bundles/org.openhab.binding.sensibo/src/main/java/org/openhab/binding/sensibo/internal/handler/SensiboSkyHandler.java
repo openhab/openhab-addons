@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,13 @@ import static org.openhab.binding.sensibo.internal.SensiboBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.measure.IncommensurableException;
@@ -31,10 +31,6 @@ import javax.measure.Unit;
 import javax.measure.UnitConverter;
 import javax.measure.quantity.Temperature;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensibo.internal.CallbackChannelsTypeProvider;
@@ -66,6 +62,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,24 +95,23 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     private static String beautify(final String camelCaseWording) {
         final StringBuilder b = new StringBuilder();
-        for (final String s : StringUtils.splitByCharacterTypeCamelCase(camelCaseWording)) {
+        for (final String s : StringUtils.splitByCharacterType(camelCaseWording)) {
             b.append(" ");
             b.append(s);
         }
         final StringBuilder bs = new StringBuilder();
-        for (final String t : StringUtils.splitByWholeSeparator(b.toString(), " _")) {
+        for (final String t : b.toString().split("[ ][_]")) {
             bs.append(" ");
             bs.append(t);
         }
 
-        return WordUtils.capitalizeFully(bs.toString()).trim();
+        return StringUtils.capitalizeByUnderscore(bs.toString()).trim();
     }
 
     private String getMacAddress() {
-        if (config.isPresent()) {
-            return config.get().macAddress;
-        }
-        throw new IllegalArgumentException("No configuration present");
+        return config.flatMap(config -> Optional.ofNullable(config.macAddress))
+                .map(macAddress -> macAddress.replaceAll("[^0-9A-Fa-f]", "").toUpperCase())
+                .orElseThrow(() -> new IllegalArgumentException("No configuration present"));
     }
 
     @Override
@@ -192,8 +188,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof DecimalType) {
-            final DecimalType newValue = (DecimalType) command;
+        } else if (command instanceof DecimalType newValue) {
             updateTimer(newValue.intValue());
         } else {
             updateTimer(null);
@@ -207,8 +202,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof StringType) {
-            final StringType newValue = (StringType) command;
+        } else if (command instanceof StringType newValue) {
             updateAcState(sensiboSky, FAN_LEVEL_PROPERTY, newValue.toString());
         }
     }
@@ -220,8 +214,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof StringType) {
-            final StringType newValue = (StringType) command;
+        } else if (command instanceof StringType newValue) {
             updateAcState(sensiboSky, SWING_PROPERTY, newValue.toString());
         }
     }
@@ -233,8 +226,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             } else {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof StringType) {
-            final StringType newValue = (StringType) command;
+        } else if (command instanceof StringType newValue) {
             updateAcState(sensiboSky, MODE_PROPERTY, newValue.toString());
             addDynamicChannelsAndProperties(sensiboSky);
         }
@@ -251,11 +243,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     updateState(channelUID, UnDefType.UNDEF);
                 }
             });
-            if (!sensiboSky.getAcState().isPresent()) {
+            if (sensiboSky.getAcState().isEmpty()) {
                 updateState(channelUID, UnDefType.UNDEF);
             }
-        } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> newValue = (QuantityType<?>) command;
+        } else if (command instanceof QuantityType<?> newValue) {
             if (!Objects.equals(sensiboSky.getTemperatureUnit(), newValue.getUnit())) {
                 // If quantity is given in celsius when fahrenheit is used or opposite
                 try {
@@ -298,15 +289,17 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(CallbackChannelsTypeProvider.class);
+        return Set.of(CallbackChannelsTypeProvider.class);
     }
 
     @Override
     public void initialize() {
         config = Optional.ofNullable(getConfigAs(SensiboSkyConfiguration.class));
         logger.debug("Initializing SensiboSky using config {}", config);
-        getSensiboModel().findSensiboSkyByMacAddress(getMacAddress()).ifPresent(pod -> {
+        Optional<SensiboSky> optionalDevice = getSensiboModel().findSensiboSkyByMacAddress(getMacAddress());
 
+        if (optionalDevice.isPresent()) {
+            SensiboSky pod = optionalDevice.get();
             if (pod.isAlive()) {
                 addDynamicChannelsAndProperties(pod);
                 updateStatus(ThingStatus.ONLINE);
@@ -314,7 +307,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unreachable by Sensibo servers");
             }
-        });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("Device with mac address %s not found", getMacAddress()));
+        }
     }
 
     private boolean isDynamicChannel(final ChannelTypeUID uid) {
@@ -366,7 +362,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
         final ChannelTypeUID targetTemperatureChannelType = addChannelType(
                 SensiboBindingConstants.CHANNEL_TYPE_TARGET_TEMPERATURE, TARGET_TEMPERATURE_LABEL,
-                ITEM_TYPE_NUMBER_TEMPERATURE, sensiboSky.getTargetTemperatures(), "%d %unit%", "TargetTemperature");
+                ITEM_TYPE_NUMBER_TEMPERATURE, sensiboSky.getTargetTemperatures(), "%d %unit%",
+                Set.of("Setpoint", "Temperature"));
         newChannels.add(ChannelBuilder
                 .create(new ChannelUID(getThing().getUID(), SensiboBindingConstants.CHANNEL_TARGET_TEMPERATURE),
                         ITEM_TYPE_NUMBER_TEMPERATURE)
@@ -376,11 +373,11 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     }
 
     private ChannelTypeUID addChannelType(final String channelTypePrefix, final String label, final String itemType,
-            final Collection<?> options, @Nullable final String pattern, @Nullable final String tag) {
+            final Collection<?> options, @Nullable final String pattern, @Nullable final Set<String> tags) {
         final ChannelTypeUID channelTypeUID = new ChannelTypeUID(SensiboBindingConstants.BINDING_ID,
                 channelTypePrefix + getThing().getUID().getId());
         final List<StateOption> stateOptions = options.stream()
-                .map(e -> new StateOption(e.toString(), e instanceof String ? beautify((String) e) : e.toString()))
+                .map(e -> new StateOption(e.toString(), e instanceof String s ? beautify(s) : e.toString()))
                 .collect(Collectors.toList());
 
         StateDescriptionFragmentBuilder stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)
@@ -390,8 +387,8 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         }
         final StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
                 .withStateDescriptionFragment(stateDescription.build());
-        if (tag != null) {
-            builder.withTag(tag);
+        if (tags != null && !tags.isEmpty()) {
+            builder.withTags(tags);
         }
         final ChannelType channelType = builder.build();
 
@@ -427,24 +424,22 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     if (!validTemperatures.validValues.contains(rawValue.intValue())) {
                         stateChange.addError(String.format(
                                 "Cannot change targetTemperature to '%d', valid targetTemperatures are one of %s",
-                                rawValue.intValue(), ToStringBuilder.reflectionToString(
-                                        validTemperatures.validValues.toArray(), ToStringStyle.SIMPLE_STYLE)));
+                                rawValue.intValue(),
+                                String.join(",", validTemperatures.validValues.stream().map(Object::toString)
+                                        .collect(Collectors.toUnmodifiableList()).toArray(new String[0]))));
                     }
                     break;
                 case MODE_PROPERTY:
                     if (!sensiboSky.getRemoteCapabilities().containsKey(newPropertyValue)) {
-                        stateChange.addError(
-                                String.format("Cannot change mode to %s, valid modes are %s", newPropertyValue,
-                                        ToStringBuilder.reflectionToString(
-                                                sensiboSky.getRemoteCapabilities().keySet().toArray(),
-                                                ToStringStyle.SIMPLE_STYLE)));
+                        stateChange.addError(String.format("Cannot change mode to %s, valid modes are %s",
+                                newPropertyValue, String.join(",", sensiboSky.getRemoteCapabilities().keySet())));
                     }
                     break;
                 case FAN_LEVEL_PROPERTY:
                     if (!currentModeCapabilities.fanLevels.contains(newPropertyValue)) {
-                        stateChange.addError(String.format("Cannot change fanLevel to %s, valid fanLevels are %s",
-                                newPropertyValue, ToStringBuilder.reflectionToString(
-                                        currentModeCapabilities.fanLevels.toArray(), ToStringStyle.SIMPLE_STYLE)));
+                        stateChange.addError(
+                                String.format("Cannot change fanLevel to %s, valid fanLevels are %s", newPropertyValue,
+                                        String.join(",", currentModeCapabilities.fanLevels.toArray(new String[0]))));
                     }
                     break;
                 case MASTER_SWITCH_PROPERTY:
@@ -452,9 +447,9 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                     break;
                 case SWING_PROPERTY:
                     if (!currentModeCapabilities.swingModes.contains(newPropertyValue)) {
-                        stateChange.addError(String.format("Cannot change swing to %s, valid swings are %s",
-                                newPropertyValue, ToStringBuilder.reflectionToString(
-                                        currentModeCapabilities.swingModes.toArray(), ToStringStyle.SIMPLE_STYLE)));
+                        stateChange.addError(
+                                String.format("Cannot change swing to %s, valid swings are %s", newPropertyValue,
+                                        String.join(",", currentModeCapabilities.swingModes.toArray(new String[0]))));
                     }
                     break;
                 default:

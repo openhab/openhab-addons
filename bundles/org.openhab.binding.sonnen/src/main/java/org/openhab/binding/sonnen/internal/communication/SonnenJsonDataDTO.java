@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link SonnenJsonDataDTO} is the Java class used to map the JSON
- * response to a Oven request.
+ * response to an Object.
  *
  * @author Christian Feininger - Initial contribution
  */
@@ -47,6 +47,10 @@ public class SonnenJsonDataDTO {
     boolean flowProductionGrid;
     @SerializedName("Pac_total_W")
     int batteryCurrent;
+    @SerializedName("EM_OperatingMode")
+    String emoperatingMode;
+    @SerializedName("OperatingMode")
+    private int operatingMode;
 
     /**
      * @return the batteryCurrent
@@ -137,5 +141,28 @@ public class SonnenJsonDataDTO {
      */
     public boolean isFlowProductionGrid() {
         return flowProductionGrid;
+    }
+
+    /**
+     * @return the em_operatingMode
+     */
+    public String emgetOperationMode() {
+        return emoperatingMode;
+    }
+
+    /**
+     * @return the operatingMode
+     */
+    public boolean isInAutomaticMode() {
+        // 2 for automatic mode
+        if (operatingMode == 2) {
+            return true;
+            // 1 for MANUAL mode
+        } else if (operatingMode == 1) {
+            return false;
+        }
+        // in case of Serialization problem return true, as automatic is the normal state of the battery on most
+        // cases.
+        return true;
     }
 }

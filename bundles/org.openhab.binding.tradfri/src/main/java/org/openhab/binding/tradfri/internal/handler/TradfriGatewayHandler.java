@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -31,8 +30,9 @@ import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.network.CoapEndpoint;
 import org.eclipse.californium.elements.exception.ConnectorException;
 import org.eclipse.californium.scandium.DTLSConnector;
+import org.eclipse.californium.scandium.config.DtlsConfig;
 import org.eclipse.californium.scandium.config.DtlsConnectorConfig;
-import org.eclipse.californium.scandium.dtls.pskstore.StaticPskStore;
+import org.eclipse.californium.scandium.dtls.pskstore.AdvancedSinglePskStore;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tradfri.internal.CoapCallback;
@@ -71,7 +71,10 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCallback {
-
+    static {
+        // register configurations before Configuration.getStandard() is used
+        DtlsConfig.register();
+    }
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final TradfriVersion MIN_SUPPORTED_VERSION = new TradfriVersion("1.2.42");
@@ -137,7 +140,7 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(TradfriDiscoveryService.class);
+        return Set.of(TradfriDiscoveryService.class);
     }
 
     private void establishConnection() {
@@ -155,10 +158,12 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
             return;
         }
 
-        DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder();
-        builder.setPskStore(new StaticPskStore(configuration.identity, configuration.preSharedKey.getBytes()));
-        builder.setMaxConnections(100);
-        builder.setStaleConnectionThreshold(60);
+        DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder(
+                org.eclipse.californium.elements.config.Configuration.getStandard()
+                        .set(DtlsConfig.DTLS_MAX_CONNECTIONS, 100)
+                        .set(DtlsConfig.DTLS_STALE_CONNECTION_THRESHOLD, 60, TimeUnit.SECONDS));
+        builder.setAdvancedPskStore(
+                new AdvancedSinglePskStore(configuration.identity, configuration.preSharedKey.getBytes()));
         dtlsConnector = new DTLSConnector(builder.build());
         endPoint = new CoapEndpoint.Builder().setConnector(dtlsConnector).build();
         deviceClient.setEndpoint(endPoint);
@@ -185,8 +190,9 @@ public class TradfriGatewayHandler extends BaseBridgeHandler implements CoapCall
         String authUrl = null;
         String responseText = null;
         try {
-            DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder();
-            builder.setPskStore(new StaticPskStore("Client_identity", configuration.code.getBytes()));
+            DtlsConnectorConfig.Builder builder = new DtlsConnectorConfig.Builder(
+                    org.eclipse.californium.elements.config.Configuration.getStandard());
+            builder.setAdvancedPskStore(new AdvancedSinglePskStore("Client_identity", configuration.code.getBytes()));
 
             DTLSConnector dtlsConnector = new DTLSConnector(builder.build());
             CoapEndpoint.Builder authEndpointBuilder = new CoapEndpoint.Builder();

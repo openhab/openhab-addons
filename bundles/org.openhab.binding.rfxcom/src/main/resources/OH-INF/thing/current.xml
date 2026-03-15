@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Current Sensor</label>
 		<description>A Current sensing device.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="channel1Amps" typeId="instantamp"/>

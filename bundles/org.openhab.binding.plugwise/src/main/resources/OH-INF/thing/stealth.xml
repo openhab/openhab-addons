@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Plugwise Stealth</label>
 		<description>A Circle with a more compact form factor that can be built-in</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="clock" typeId="clock"/>
 			<channel id="energy" typeId="energy"/>

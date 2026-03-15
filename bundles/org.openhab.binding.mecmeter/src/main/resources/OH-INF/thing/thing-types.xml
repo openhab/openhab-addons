@@ -7,7 +7,7 @@
 	<thing-type id="meter">
 		<label>mecMeter</label>
 		<description>Power Meter from MEC</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="general_group" typeId="general_group"/>
 			<channel-group id="voltage_group" typeId="voltage_group"/>
@@ -362,6 +362,10 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Main Frequency</label>
 		<description>Frequency in Hertz</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="temperature" advanced="true">
@@ -382,6 +386,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Average Voltage</label>
 		<description>Average N – Phase Voltage in Volt</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="voltage" advanced="true">
@@ -425,6 +433,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Active Power</label>
 		<description>Active power consumed</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -462,6 +474,10 @@
 		<label>Forward Active Energy</label>
 		<description>Forward Active Energy in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="fwd_active_energy" advanced="true">
@@ -476,6 +492,10 @@
 		<label>Forward Active Energy</label>
 		<description>Forward Active Energy all phase in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -509,6 +529,10 @@
 		<label>Reverse Active Energy</label>
 		<description>Reverse Active Energy in kWh</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="rev_active_energy" advanced="true">

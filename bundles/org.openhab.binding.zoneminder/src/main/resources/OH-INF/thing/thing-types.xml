@@ -7,22 +7,31 @@
 	<bridge-type id="server">
 		<label>ZoneMinder Server</label>
 		<description>Represents a ZoneMinder server</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<channels>
 			<channel id="imageMonitorId" typeId="id">
-				<label>Image Monitor Id</label>
-				<description>Monitor ID for Image URL Channel</description>
+				<label>Image Monitor ID</label>
+				<description>Monitor ID to use for selecting an image URL. Sending an OFF command to this channel will reset the
+					monitor ID and URL to UNDEF.</description>
 			</channel>
 			<channel id="imageUrl" typeId="url">
 				<label>Image URL</label>
 			</channel>
 			<channel id="videoMonitorId" typeId="id">
-				<label>Video Monitor Id</label>
-				<description>Monitor ID for Video URL Channel</description>
+				<label>Video Monitor ID</label>
+				<description>Monitor ID to use for selecting a video URL. Sending an OFF command to this channel will reset the
+					monitor ID and URL to UNDEF.</description>
 			</channel>
 			<channel id="videoUrl" typeId="url">
 				<label>Video URL</label>
 			</channel>
+			<channel id="runState" typeId="runState"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:zoneminder:server"/>
 	</bridge-type>
 
@@ -33,6 +42,7 @@
 
 		<label>ZoneMinder Monitor</label>
 		<description>Represents a ZoneMinder monitor</description>
+		<semantic-equipment-tag>Display</semantic-equipment-tag>
 		<channels>
 			<channel id="id" typeId="id"/>
 			<channel id="name" typeId="name"/>
@@ -101,6 +111,10 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Enable or disable monitor</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="ON">Enable</option>
@@ -111,7 +125,7 @@
 	<channel-type id="function">
 		<item-type>String</item-type>
 		<label>Function</label>
-		<description>State of the monitor (e.g. Nodect, Record)</description>
+		<description>State of the monitor (e.g., Nodect, Record)</description>
 		<state pattern="%s">
 			<options>
 				<option value="None">None</option>
@@ -127,6 +141,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<description>Monitor alarm status</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="state">
@@ -164,8 +181,8 @@
 	</channel-type>
 	<channel-type id="eventId">
 		<item-type>String</item-type>
-		<label>Event Id</label>
-		<description>Id of the event</description>
+		<label>Event ID</label>
+		<description>ID of the event</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="eventName">
@@ -202,19 +219,25 @@
 		<item-type>Number</item-type>
 		<label>Event Frames</label>
 		<description>Number of frames in the event</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="eventAlarmFrames">
 		<item-type>Number</item-type>
 		<label>Event Alarm Frames</label>
 		<description>Number of alarm frames in the event</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="eventLength">
 		<item-type>Number:Time</item-type>
 		<label>Event Length</label>
 		<description>Length of the event in seconds</description>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+	<channel-type id="runState">
+		<item-type>String</item-type>
+		<label>Run State</label>
+		<description>The currently executing run state</description>
+		<state readOnly="false" pattern="%s"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

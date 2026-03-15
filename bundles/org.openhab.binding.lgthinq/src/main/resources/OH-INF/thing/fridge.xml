@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="lgthinq"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type relative to Air Conditioners -->
+	<thing-type id="fridge-101">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud-account"/>
+		</supported-bridge-type-refs>
+
+		<label>Fridge</label>
+		<description>LG ThinQ Fridge</description>
+		<semantic-equipment-tag>Refrigerator</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="dashboard" typeId="fr-dashboard"/>
+			<channel-group id="extended-information" typeId="fr-extra-info"/>
+		</channel-groups>
+	</thing-type>
+
+	<channel-group-type id="fr-dashboard">
+		<label>Dashboard</label>
+		<description>This is the Displayed Information.</description>
+		<channels>
+			<channel id="door-open" typeId="door-open"/>
+			<channel id="freezer-temperature" typeId="freezer-temperature"/>
+			<channel id="fridge-temperature" typeId="fridge-temperature"/>
+			<channel id="temp-unit" typeId="temp-unit"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="fr-extra-info">
+		<label>More Info</label>
+		<description>Show more information about the device.</description>
+		<channels>
+			<channel id="fresh-air-filter" typeId="fresh-air-filter"/>
+			<channel id="water-filter" typeId="water-filter"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

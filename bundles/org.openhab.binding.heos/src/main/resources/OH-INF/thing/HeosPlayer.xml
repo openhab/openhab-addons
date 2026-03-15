@@ -11,6 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>HEOS Player</label>
 		<description>A HEOS Player of the HEOS Network</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 
 		<channels>
 			<channel id="Control" typeId="system.media-control"/>

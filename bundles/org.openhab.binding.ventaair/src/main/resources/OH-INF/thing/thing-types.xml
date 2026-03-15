@@ -7,7 +7,7 @@
 	<thing-type id="lw60t">
 		<label>LW60-T VentaAir Humidifier</label>
 		<description>Thing for Venta Air LW60-T Humidifiers</description>
-
+		<semantic-equipment-tag>Humidifier</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="fanSpeed" typeId="fanSpeed"/>
@@ -37,7 +37,7 @@
 	<thing-type id="generic">
 		<label>Generic Humidifier/Cleaner</label>
 		<description>Thing for Venta Air Humidifiers/Cleaners</description>
-
+		<semantic-equipment-tag>Humidifier</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="fanSpeed" typeId="fanSpeed"/>

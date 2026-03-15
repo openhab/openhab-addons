@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,14 +67,14 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
 
         super.initialize();
         if (bridgeHandler != null) {
-            updateAreaProperties(bridgeHandler);
+            updateAreaProperties();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     "Received null bridge while initializing Area!");
         }
     }
 
-    private void updateAreaProperties(OmnilinkBridgeHandler bridgeHandler) {
+    private void updateAreaProperties() {
         final List<AreaProperties> areas = getAreaProperties();
         if (areas != null) {
             for (AreaProperties areaProperties : areas) {
@@ -99,13 +99,10 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
             return;
         }
 
-        switch (channelUID.getId()) {
-            case CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY:
-                handleKeypadEmergency(channelUID, command);
-                break;
-            default:
-                handleSecurityMode(channelUID, command);
-                break;
+        if (channelUID.getId().equals(CHANNEL_AREA_ACTIVATE_KEYPAD_EMERGENCY)) {
+            handleKeypadEmergency(command);
+        } else {
+            handleSecurityMode(channelUID, command);
         }
     }
 
@@ -176,12 +173,12 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
      */
     protected abstract EnumSet<AreaAlarm> getAlarms();
 
-    private void handleKeypadEmergency(ChannelUID channelUID, Command command) {
-        if (command instanceof DecimalType) {
+    private void handleKeypadEmergency(Command command) {
+        if (command instanceof DecimalType decimalCommand) {
             try {
                 final OmnilinkBridgeHandler bridge = getOmnilinkBridgeHandler();
                 if (bridge != null) {
-                    bridge.activateKeypadEmergency(thingID, ((DecimalType) command).intValue());
+                    bridge.activateKeypadEmergency(thingID, decimalCommand.intValue());
                 } else {
                     logger.debug("Received null bridge while sending Keypad Emergency command!");
                 }
@@ -199,7 +196,7 @@ public abstract class AbstractAreaHandler extends AbstractOmnilinkStatusHandler<
                 status.getAlarms(), status.getEntryTimer(), status.getExitTimer());
 
         /*
-         * According to the specification, if the 3rd bit is set on a area mode, then that mode is in a delayed state.
+         * According to the specification, if the 3rd bit is set on an area mode, then that mode is in a delayed state.
          * Unfortunately, this is not the case, but we can fix that by looking to see if the exit timer
          * is set and do this manually.
          */

@@ -7,7 +7,7 @@
 	<thing-type id="receiver">
 		<label>MagentaTV Media Receiver</label>
 		<description>Represents a Telekom Media Receiver for MagentaTV</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="control">
 				<label>Control</label>
@@ -92,6 +92,10 @@
 		<item-type>Number</item-type>
 		<label>Channel</label>
 		<description>Send channel number to switch program</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state min="1" max="999" step="1"></state>
 	</channel-type>
 	<channel-type id="channelCode" advanced="true">
@@ -119,6 +123,10 @@
 		<item-type>String</item-type>
 		<label>Program</label>
 		<description>Running program</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -126,6 +134,10 @@
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Some info on the running program</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 		</state>
 	</channel-type>
@@ -133,6 +145,10 @@
 		<item-type>DateTime</item-type>
 		<label>Start</label>
 		<description>Program start time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -140,6 +156,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Duration</label>
 		<description>Duration of the program</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -147,6 +167,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Play Position</label>
 		<description>Play Position since program started</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true">
 		</state>
 	</channel-type>

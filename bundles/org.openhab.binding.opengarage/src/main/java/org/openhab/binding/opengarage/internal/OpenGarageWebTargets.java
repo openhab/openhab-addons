@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.opengarage.internal;
 
 import java.io.IOException;
 
-import org.openhab.binding.opengarage.internal.api.ControllerVariables;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.opengarage.internal.api.Enums.OpenGarageCommand;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -26,22 +26,24 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Initial Contribution
  *
  */
+@NonNullByDefault
 public class OpenGarageWebTargets {
-    private static final int TIMEOUT_MS = 30000;
+    public static final int DEFAULT_TIMEOUT_MS = 30000;
 
     private String getControllerVariablesUri;
     private String changeControllerVariablesUri;
     private final Logger logger = LoggerFactory.getLogger(OpenGarageWebTargets.class);
+    private int timeoutMs;
 
-    public OpenGarageWebTargets(String ipAddress, long port, String password) {
+    public OpenGarageWebTargets(String ipAddress, long port, String password, int timeoutMs) {
         String baseUri = "http://" + ipAddress + ":" + port + "/";
-        getControllerVariablesUri = baseUri + "jc";
-        changeControllerVariablesUri = baseUri + "cc?dkey=" + password;
+        this.timeoutMs = timeoutMs;
+        this.getControllerVariablesUri = baseUri + "jc";
+        this.changeControllerVariablesUri = baseUri + "cc?dkey=" + password;
     }
 
-    public ControllerVariables getControllerVariables() throws OpenGarageCommunicationException {
-        String response = invoke(getControllerVariablesUri);
-        return ControllerVariables.parse(response);
+    public String getControllerVariables() throws OpenGarageCommunicationException {
+        return invoke(getControllerVariablesUri);
     }
 
     public void setControllerVariables(OpenGarageCommand request) throws OpenGarageCommunicationException {
@@ -73,7 +75,7 @@ public class OpenGarageWebTargets {
         String response;
         synchronized (this) {
             try {
-                response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
+                response = HttpUtil.executeUrl("GET", uriWithParams, this.timeoutMs);
             } catch (IOException ex) {
                 logger.debug("{}", ex.getLocalizedMessage(), ex);
                 // Response will also be set to null if parsing in executeUrl fails so we use null here to make the

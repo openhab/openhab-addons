@@ -1,0 +1,95 @@
+#* @vtlvariable name="connection" type="org.openhab.binding.amazonechocontrol.internal.connection.Connection" *#
+#* @vtlvariable name="accountPath" type="java.lang.String" *#
+#* @vtlvariable name="servletPath" type="java.lang.String" *#
+#* @vtlvariable name="account" type="org.openhab.binding.amazonechocontrol.internal.handler.AccountHandler" *#
+#* @vtlvariable name="devices" type="java.util.List<org.openhab.binding.amazonechocontrol.internal.dto.DeviceTO>" *#
+#* @vtlvariable name="DEVICE_TYPES" type="java.util.Map<java.lang.String, java.lang.String>" *#
+
+<html lang="en-US">
+<head>
+    <title>AmazonEchoControl - Account details</title>
+    <link rel="stylesheet" href="$servletPath/static/default.css">
+</head>
+<body>
+<h3>
+    <a href="${accountPath}logout">Logout</a>
+    <a href="${accountPath}newdevice">Logout and Re-register</a>
+    <a href="$servletPath">Binding Overview</a>
+</h3>
+<h1>
+    Account "$account.thing.label"
+    (<code>$account.thing.UID</code>)
+    <span class="status $account.thing.status">$account.thing.status</span>
+</h1>
+
+<table class="table-bordered">
+    <tr>
+        <td>App Name</td>
+        <td>$connection.loginData.deviceName</td>
+    </tr>
+    <tr>
+        <td>Customer Name</td>
+        <td>$connection.customerName</td>
+    </tr>
+    <tr>
+        <td>Customer Id</td>
+        <td>$connection.loginData.accountCustomerId</td>
+    </tr>
+    <tr>
+        <td>Connected to</td>
+        <td>$connection.alexaServer</td>
+    </tr>
+    <tr>
+        <td>Logged in since</td>
+        <td>$connection.loginData.loginTime</td>
+    </tr>
+</table>
+
+<h2>Connected Devices</h2>
+
+    #if($devices.isEmpty())
+    <p>No devices in account.</p>
+    #else
+    <table class="table-bordered">
+        <tr>
+            <th>Name</th>
+            <th>Thing</th>
+            <th>Serialnumber</th>
+            <th>Device Type</th>
+            <th>Family</th>
+        </tr>
+        #foreach($device in $devices)
+            #set($thing = $account.getThingBySerialNumber($device.serialNumber))
+            #if($device.online)
+                #set($deviceStatus = "ONLINE")
+            #else
+                #set($deviceStatus = "OFFLINE")
+            #end
+            <tr>
+                <td>
+                    <span>$device.accountName</span>
+                    <span class="status $deviceStatus">$deviceStatus</span>
+                </td>
+                <td>
+                    #if($thing)
+                        <a href="${accountPath}ids?serialNumber=$device.serialNumber">$thing.label</a>
+                        <span class="status $thing.status">$thing.status</span>
+                    #else
+                        <span class="status UNKNOWN">NONE</span>
+                    #end
+                </td>
+                <td>$device.serialNumber</td>
+                <td>
+                    #if($device.deviceType)
+                        $DEVICE_TYPES.getOrDefault($device.deviceType, $device.deviceType)
+                    #else
+                        unknown
+                    #end
+                </td>
+                <td>$device.deviceFamily</td>
+            </tr>
+        #end
+    </table>
+    #end
+</body>
+</html>

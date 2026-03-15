@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import io.socket.emitter.Emitter;
  */
 public class AmbientWeatherEventListener {
     // URL used to get the realtime event stream
-    private static final String REALTIME_URL = "https://api.ambientweather.net/?api=1&applicationKey=%APPKEY%";
+    private static final String REALTIME_URL = "https://rt2.ambientweather.net/?api=1&applicationKey=%APPKEY%";
 
     // JSON used to subscribe or unsubscribe from weather data events
     private static final String SUB_UNSUB_JSON = "{ apiKeys: [ '%APIKEY%' ] }";
@@ -263,11 +263,10 @@ public class AmbientWeatherEventListener {
     private void handleError(String event, Object... args) {
         String reason = "Unknown";
         if (args.length > 0) {
-            if (args[0] instanceof String) {
-                reason = (String) args[0];
-            } else if (args[0] instanceof Exception) {
-                reason = String.format("Exception=%s Message=%s", args[0].getClass(),
-                        ((Exception) args[0]).getMessage());
+            if (args[0] instanceof String stringArg) {
+                reason = stringArg;
+            } else if (args[0] instanceof Exception exception) {
+                reason = String.format("Exception=%s Message=%s", args[0].getClass(), exception.getMessage());
             }
         }
         logger.debug("Listener: Received socket event: {}, Reason: {}", event, reason);

@@ -8,7 +8,7 @@
 	<bridge-type id="bridge">
 		<label>Bridge</label>
 		<description>Bridge enabling communication with devices through a cloud portal</description>
-
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="bridge-type:somfytahoma:bridge"/>
 	</bridge-type>
 

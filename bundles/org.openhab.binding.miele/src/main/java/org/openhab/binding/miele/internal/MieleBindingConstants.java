@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link MieleBinding} class defines common constants, which are
+ * The {@link MieleBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Karel Goderis - Initial contribution
- * @author Martin Lepsy - added constants for support of WiFi devices & protocol
+ * @author Martin Lepsy - added constants for support of WiFi devices and protocol
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 @NonNullByDefault
@@ -42,6 +42,8 @@ public class MieleBindingConstants {
     public static final String PROGRAM_ID_PROPERTY_NAME = "programId";
     public static final String PHASE_PROPERTY_NAME = "phase";
     public static final String RAW_PHASE_PROPERTY_NAME = "rawPhase";
+    public static final String START_TIME_PROPERTY_NAME = "startTime";
+    public static final String FINISH_TIME_PROPERTY_NAME = "finishTime";
 
     // Shared Channel ID's
     public static final String STATE_TEXT_CHANNEL_ID = "state";
@@ -52,8 +54,13 @@ public class MieleBindingConstants {
     public static final String PHASE_CHANNEL_ID = "rawPhase";
     public static final String SUPERCOOL_CHANNEL_ID = "supercool";
     public static final String SUPERFREEZE_CHANNEL_ID = "superfreeze";
-    public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
+    public static final String SWITCH_CHANNEL_ID = "switch";
+    public static final String START_CHANNEL_ID = "start";
+    public static final String END_CHANNEL_ID = "end";
+    public static final String FINISH_CHANNEL_ID = "finish";
+    public static final String ENERGY_CONSUMPTION_CHANNEL_ID = "energyConsumption";
     public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
+    public static final String LAUNDRY_WEIGHT_CHANNEL_ID = "laundryWeight";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_XGW3000 = new ThingTypeUID(BINDING_ID, "xgw3000");
@@ -112,7 +119,6 @@ public class MieleBindingConstants {
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
-    public static final String INTERFACE = "interface";
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
     public static final String LANGUAGE = "language";

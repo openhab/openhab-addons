@@ -13,6 +13,7 @@
 
 		<label>DSC Alarm Partition</label>
 		<description>Represents a controllable area within a DSC Alarm System.</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 
 		<channels>
 			<channel id="partition_status" typeId="message">

@@ -8,7 +8,7 @@
 	<thing-type id="Arc" listed="false">
 		<label>Arc</label>
 		<description>Represents SONOS Arc soundbar</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

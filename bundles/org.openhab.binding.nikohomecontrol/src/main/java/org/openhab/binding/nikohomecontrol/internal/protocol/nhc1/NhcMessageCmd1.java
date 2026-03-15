@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Class {@link NhcMessageCmd1} used as input to gson to send commands to Niko Home Control. Extends
@@ -26,13 +27,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 class NhcMessageCmd1 extends NhcMessageBase1 {
 
-    private int id;
-    private int value1;
-    private int value2;
-    private int value3;
-    private int mode;
-    private int overrule;
-    private String overruletime = "";
+    private @Nullable Integer id;
+    private @Nullable Integer value1;
+    private @Nullable Integer value2;
+    private @Nullable Integer value3;
+
+    // thermostat
+    private @Nullable Integer mode;
+    private @Nullable Integer overrule;
+    private @Nullable String overruletime;
+
+    // energy
+    private @Nullable Integer channel;
+    private @Nullable String start;
+    private @Nullable String end;
 
     NhcMessageCmd1(String cmd) {
         super.setCmd(cmd);
@@ -66,6 +74,17 @@ class NhcMessageCmd1 extends NhcMessageBase1 {
 
     NhcMessageCmd1 withOverruletime(String overruletime) {
         this.overruletime = overruletime;
+        return this;
+    }
+
+    NhcMessageCmd1 withChannel(int channel) {
+        this.channel = channel;
+        return this;
+    }
+
+    NhcMessageCmd1 withInterval(String start, String end) {
+        this.start = start;
+        this.end = end;
         return this;
     }
 }

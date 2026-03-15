@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import tuwien.auto.calimero.GroupAddress;
-import tuwien.auto.calimero.IndividualAddress;
+import io.calimero.GroupAddress;
+import io.calimero.IndividualAddress;
 
 /**
  * Callback interface for KNX bus messages
@@ -28,28 +28,30 @@ public interface BusMessageListener {
     /**
      * Called when the KNX bridge receives a group write telegram
      *
-     * @param bridge
+     * @param client
+     * @param source
      * @param destination
      * @param asdu
      */
-    public void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    void onGroupWrite(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      * Called when the KNX bridge receives a group read telegram
      *
-     * @param bridge
+     * @param client
+     * @param source
      * @param destination
      * @param asdu
      */
-    public void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
+    void onGroupRead(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 
     /**
      * Called when the KNX bridge receives a group read response telegram
      *
-     * @param bridge
+     * @param client
+     * @param source
      * @param destination
      * @param asdu
      */
-    public void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination,
-            byte[] asdu);
+    void onGroupReadResponse(AbstractKNXClient client, IndividualAddress source, GroupAddress destination, byte[] asdu);
 }

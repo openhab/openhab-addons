@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,16 +14,15 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +32,7 @@ import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.events.ItemCommandEvent;
 import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -93,6 +93,7 @@ public class LightsAndGroupsTests {
         item.setCategory("Light");
         itemRegistry.add(item);
         HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
     }
@@ -103,6 +104,7 @@ public class LightsAndGroupsTests {
         item.addTag("Switchable");
         itemRegistry.add(item);
         HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
     }
@@ -122,6 +124,7 @@ public class LightsAndGroupsTests {
         item.addTag("Switchable");
         itemRegistry.add(item);
         HueGroupEntry device = cs.ds.groups.get(cs.mapItemUIDtoHueID(item));
+        assertNotNull(device);
         assertThat(device.groupItem, is(item));
         assertThat(device.action, is(instanceOf(HueStatePlug.class)));
     }
@@ -133,6 +136,7 @@ public class LightsAndGroupsTests {
         item.addTag("Huelight");
         itemRegistry.add(item);
         HueLightEntry device = cs.ds.lights.get(cs.mapItemUIDtoHueID(item));
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
     }
@@ -145,9 +149,10 @@ public class LightsAndGroupsTests {
         itemRegistry.add(item);
 
         HueGroupEntry device = cs.ds.groups.get(cs.mapItemUIDtoHueID(item));
+        assertNotNull(device);
         assertThat(device.groupItem, is(item));
         assertThat(device.action, is(instanceOf(HueStatePlug.class)));
-        assertThat(cs.ds.groups.get(cs.mapItemUIDtoHueID(item)).groupItem, is(item));
+        assertThat(device.groupItem, is(item));
     }
 
     @Test
@@ -166,6 +171,21 @@ public class LightsAndGroupsTests {
     }
 
     @Test
+    public void removeGroupNoLongerGroup() {
+        String groupName = "group1";
+        GroupItem item = new GroupItem(groupName, null);
+        item.addTag("Switchable");
+        itemRegistry.add(item);
+
+        String hueID = cs.mapItemUIDtoHueID(item);
+        assertThat(cs.ds.groups.get(hueID), notNullValue());
+
+        subject.updated(item, new StringItem(groupName));
+
+        assertThat(cs.ds.groups.get(hueID), nullValue());
+    }
+
+    @Test
     public void updateSwitchable() {
         SwitchItem item = new SwitchItem("switch1");
         item.setLabel("labelOld");
@@ -173,6 +193,7 @@ public class LightsAndGroupsTests {
         itemRegistry.add(item);
         String hueID = cs.mapItemUIDtoHueID(item);
         HueLightEntry device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
         assertThat(device.item, is(item));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
         assertThat(device.name, is("labelOld"));
@@ -182,29 +203,71 @@ public class LightsAndGroupsTests {
         newitem.addTag("Switchable");
         subject.updated(item, newitem);
         device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
         assertThat(device.item, is(newitem));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
         assertThat(device.name, is("labelNew"));
+    }
+
+    @Test
+    public void updateSwitchableNoTags() {
+        SwitchItem item = new SwitchItem("switch1");
+        item.setLabel("labelOld");
+        item.addTag("Switchable");
+        itemRegistry.add(item);
+        String hueID = cs.mapItemUIDtoHueID(item);
+        HueLightEntry device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(device.name, is("labelOld"));
 
         // Update with an item that has no tags anymore -> should be removed
-        SwitchItem newitemWithoutTag = new SwitchItem("switch1");
-        newitemWithoutTag.setLabel("labelNew2");
-        subject.updated(newitem, newitemWithoutTag);
+        SwitchItem newitem = new SwitchItem("switch1");
+        newitem.setLabel("labelNew");
+        subject.updated(item, newitem);
 
         device = cs.ds.lights.get(hueID);
         assertThat(device, nullValue());
     }
 
     @Test
-    public void changeSwitchState() {
-        assertThat(((HueStatePlug) cs.ds.lights.get("1").state).on, is(false));
+    public void updateSwitchableUnsupportedItemType() {
+        SwitchItem item = new SwitchItem("switch1");
+        item.setLabel("label");
+        item.addTag("Switchable");
+        itemRegistry.add(item);
+        String hueID = cs.mapItemUIDtoHueID(item);
+        HueLightEntry device = cs.ds.lights.get(hueID);
+        assertNotNull(device);
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(device.name, is("label"));
+
+        // Update with an item where item type is not supported anymore -> should be removed
+        StringItem newitem = new StringItem("switch1");
+        newitem.setLabel("label");
+        newitem.addTag("Switchable");
+        subject.updated(item, newitem);
+        device = cs.ds.lights.get(hueID);
+        assertThat(device, nullValue());
+    }
+
+    @Test
+    public void changeSwitchState() throws Exception {
+        HueLightEntry hueLightEntry = cs.ds.lights.get("1");
+        assertNotNull(hueLightEntry);
+        HueStatePlug statePlug = assertInstanceOf(HueStatePlug.class, hueLightEntry.state);
+        assertThat(statePlug.on, is(false));
 
         String body = "{'on':true}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/1/state").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
-        assertThat(((HueStatePlug) cs.ds.lights.get("1").state).on, is(true));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/1/state", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("success"));
+        hueLightEntry = cs.ds.lights.get("1");
+        assertNotNull(hueLightEntry);
+        statePlug = assertInstanceOf(HueStatePlug.class, hueLightEntry.state);
+        assertThat(statePlug.on, is(true));
         verify(commonSetup.eventPublisher).post(argThat((Event t) -> {
             assertThat(t.getPayload(), is("{\"type\":\"OnOff\",\"value\":\"ON\"}"));
             return true;
@@ -212,15 +275,20 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeGroupItemSwitchState() {
-        assertThat(((HueStatePlug) cs.ds.groups.get("10").action).on, is(false));
+    public void changeGroupItemSwitchState() throws Exception {
+        HueGroupEntry hueGroupEntry = cs.ds.groups.get("10");
+        assertNotNull(hueGroupEntry);
+        HueStatePlug statePlug = assertInstanceOf(HueStatePlug.class, hueGroupEntry.action);
+        assertThat(statePlug.on, is(false));
 
         String body = "{'on':true}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/groups/10/action").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
-        assertThat(((HueStatePlug) cs.ds.groups.get("10").action).on, is(true));
+        ContentResponse response = commonSetup.sendPut("/testuser/groups/10/action", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("success"));
+        hueGroupEntry = cs.ds.groups.get("10");
+        assertNotNull(hueGroupEntry);
+        statePlug = assertInstanceOf(HueStatePlug.class, hueGroupEntry.action);
+        assertThat(statePlug.on, is(true));
         verify(commonSetup.eventPublisher).post(argThat((Event t) -> {
             assertThat(t.getPayload(), is("{\"type\":\"OnOff\",\"value\":\"ON\"}"));
             return true;
@@ -228,46 +296,59 @@ public class LightsAndGroupsTests {
     }
 
     @Test
-    public void changeOnValue() {
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
+    public void changeOnValue() throws Exception {
+        HueLightEntry hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        HueStateColorBulb stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(false));
 
         String body = "{'on':true}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        String entity = response.readEntity(String.class);
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
+        assertThat(response.getStatus(), is(200));
+        String entity = response.getContentAsString();
         assertThat(entity, is("[{\"success\":{\"/lights/2/state/on\":true}}]"));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
+        hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(true));
     }
 
     @Test
-    public void changeOnAndBriValues() {
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
+    public void changeOnAndBriValues() throws Exception {
+        HueLightEntry hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        HueStateColorBulb stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(false));
+        assertThat(stateColorBulb.bri, is(1));
 
         String body = "{'on':true,'bri':200}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(200));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("success"));
+        hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(true));
+        assertThat(stateColorBulb.bri, is(200));
     }
 
     @Test
-    public void changeHueSatValues() {
-        HueLightEntry hueDevice = cs.ds.lights.get("2");
-        hueDevice.item.setState(OnOffType.ON);
-        hueDevice.state.as(HueStateColorBulb.class).on = true;
+    public void changeHueSatValues() throws Exception {
+        HueLightEntry hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        hueLightEntry.item.setState(OnOffType.ON);
+        hueLightEntry.state.as(HueStateColorBulb.class).on = true;
 
         String body = "{'hue':1000,'sat':50}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).hue, is(1000));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).sat, is(50));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("success"));
+        hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        HueStateColorBulb stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(true));
+        assertThat(stateColorBulb.hue, is(1000));
+        assertThat(stateColorBulb.sat, is(50));
 
         verify(commonSetup.eventPublisher).post(argThat(ce -> assertHueValue((ItemCommandEvent) ce, 1000)));
     }
@@ -276,63 +357,70 @@ public class LightsAndGroupsTests {
      * Amazon echos are setting ct only, if commanded to turn a light white.
      */
     @Test
-    public void changeCtValue() {
-        HueLightEntry hueDevice = cs.ds.lights.get("2");
-        hueDevice.item.setState(OnOffType.ON);
-        hueDevice.state.as(HueStateColorBulb.class).on = true;
+    public void changeCtValue() throws Exception {
+        HueLightEntry hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        hueLightEntry.item.setState(OnOffType.ON);
+        hueLightEntry.state.as(HueStateColorBulb.class).on = true;
 
         String body = "{'ct':500}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        body = response.readEntity(String.class);
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
+        assertThat(response.getStatus(), is(200));
+        body = response.getContentAsString();
         assertThat(body, containsString("success"));
         assertThat(body, containsString("ct"));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).ct, is(500));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).sat, is(0));
+        hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        HueStateColorBulb stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(true));
+        assertThat(stateColorBulb.ct, is(500));
+        assertThat(stateColorBulb.sat, is(0));
 
         // Saturation is expected to be 0 -> white light
         verify(commonSetup.eventPublisher).post(argThat(ce -> assertSatValue((ItemCommandEvent) ce, 0)));
     }
 
     @Test
-    public void switchOnWithXY() {
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(false));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(1));
+    public void switchOnWithXY() throws Exception {
+        HueLightEntry hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        HueStateColorBulb stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(false));
+        assertThat(stateColorBulb.bri, is(1));
 
         String body = "{'on':true,'bri':200,'xy':[0.5119,0.4147]}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2/state").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
-        assertThat(response.readEntity(String.class), containsString("xy"));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).on, is(true));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).bri, is(200));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).xy[0], is(0.5119));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).xy[1], is(0.4147));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).colormode, is(HueStateColorBulb.ColorMode.xy));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).toHSBType().getHue().intValue(),
-                is((int) 27.47722590981918));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).toHSBType().getSaturation().intValue(), is(88));
-        assertThat(((HueStateColorBulb) cs.ds.lights.get("2").state).toHSBType().getBrightness().intValue(), is(78));
+        ContentResponse response = commonSetup.sendPut("/testuser/lights/2/state", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("success"));
+        assertThat(response.getContentAsString(), containsString("xy"));
+        hueLightEntry = cs.ds.lights.get("2");
+        assertNotNull(hueLightEntry);
+        stateColorBulb = assertInstanceOf(HueStateColorBulb.class, hueLightEntry.state);
+        assertThat(stateColorBulb.on, is(true));
+        assertThat(stateColorBulb.bri, is(200));
+        assertThat(stateColorBulb.xy[0], is(0.5119));
+        assertThat(stateColorBulb.xy[1], is(0.4147));
+        assertThat(stateColorBulb.colormode, is(HueStateColorBulb.ColorMode.xy));
+        assertThat(stateColorBulb.toHSBType().getHue().intValue(), is((int) 27.47722590981918));
+        assertThat(stateColorBulb.toHSBType().getSaturation().intValue(), is(88));
+        assertThat(stateColorBulb.toHSBType().getBrightness().intValue(), is(78));
     }
 
     @Test
-    public void allLightsAndSingleLight() {
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights").request().get();
-        assertEquals(200, response.getStatus());
+    public void allLightsAndSingleLight() throws Exception {
+        ContentResponse response = commonSetup.sendGet("/testuser/lights");
+        assertThat(response.getStatus(), is(200));
 
-        String body = response.readEntity(String.class);
+        String body = response.getContentAsString();
 
         assertThat(body, containsString("switch"));
         assertThat(body, containsString("color"));
         assertThat(body, containsString("white"));
 
         // Single light access test
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/lights/2").request().get();
-        assertEquals(200, response.getStatus());
-        body = response.readEntity(String.class);
+        response = commonSetup.sendGet("/testuser/lights/2");
+        assertThat(response.getStatus(), is(200));
+        body = response.getContentAsString();
         assertThat(body, containsString("color"));
     }
 

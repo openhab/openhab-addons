@@ -4,7 +4,6 @@
 
 	<feature name="openhab-binding-network" description="Network Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab-core-model-script</feature>
 		<feature dependency="true">openhab.tp-commons-net</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.network/${project.version}</bundle>
 	</feature>

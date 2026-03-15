@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,11 @@ package org.openhab.binding.tellstick.internal.local;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -52,11 +55,11 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLocalDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusLocalDeviceController.class);
     private long lastSend = 0;
     public static final long DEFAULT_INTERVAL_BETWEEN_SEND_SEC = 250;
-    static final int REQUEST_TIMEOUT_MS = 5000;
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private String localApiUrl;
@@ -70,6 +73,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     static final String HTTP_LOCAL_API_DEVICE_TURNOFF = HTTP_LOCAL_API + "device/turnOff?id=%d";
     static final String HTTP_LOCAL_DEVICE_TURNON = HTTP_LOCAL_API + "device/turnOn?id=%d";
     private static final int MAX_RETRIES = 3;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     public TelldusLocalDeviceController(TelldusLocalConfiguration configuration, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -91,10 +95,10 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
                     turnOn(device);
                 } else if (command == OnOffType.OFF) {
                     turnOff(device);
-                } else if (command instanceof PercentType) {
-                    dim(device, (PercentType) command);
-                } else if (command instanceof IncreaseDecreaseType) {
-                    increaseDecrease(device, ((IncreaseDecreaseType) command));
+                } else if (command instanceof PercentType percentCommand) {
+                    dim(device, percentCommand);
+                } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    increaseDecrease(device, increaseDecreaseCommand);
                 }
             } else if (device instanceof SwitchableDevice) {
                 if (command == OnOffType.ON) {
@@ -138,51 +142,51 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
             turnOff(dev);
         } else if (value == 100 && dev instanceof TellstickLocalDeviceDTO) {
             turnOn(dev);
-        } else if (dev instanceof TellstickLocalDeviceDTO
-                && (((TellstickLocalDeviceDTO) dev).getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
+        } else if (dev instanceof TellstickLocalDeviceDTO device
+                && (device.getMethods() & JNA.CLibrary.TELLSTICK_DIM) > 0) {
             long tdVal = Math.round((value / 100) * 255);
             TelldusLocalResponseDTO response = callRestMethod(
                     String.format(HTTP_LOCAL_API_DEVICE_DIM, dev.getId(), tdVal), TelldusLocalResponseDTO.class);
-            handleResponse((TellstickLocalDeviceDTO) dev, response);
+            handleResponse(device, response);
         } else {
             throw new TelldusBindingException("Cannot send DIM to " + dev);
         }
     }
 
     private void turnOff(Device dev) throws TellstickException, InterruptedException {
-        if (dev instanceof TellstickLocalDeviceDTO) {
+        if (dev instanceof TellstickLocalDeviceDTO device) {
             TelldusLocalResponseDTO response = callRestMethod(String.format(HTTP_LOCAL_API_DEVICE_TURNOFF, dev.getId()),
                     TelldusLocalResponseDTO.class);
-            handleResponse((TellstickLocalDeviceDTO) dev, response);
+            handleResponse(device, response);
         } else {
             throw new TelldusBindingException("Cannot send OFF to " + dev);
         }
     }
 
-    private void handleResponse(TellstickLocalDeviceDTO device, TelldusLocalResponseDTO response)
+    private void handleResponse(TellstickLocalDeviceDTO device, @Nullable TelldusLocalResponseDTO response)
             throws TellstickException {
         if (response == null || (response.getStatus() == null && response.getError() == null)) {
             throw new TelldusBindingException("No response " + response);
         } else if (response.getError() != null) {
             device.setUpdated(true);
             throw new TelldusBindingException("Error " + response.getError());
-        } else if (!response.getStatus().trim().equals("success")) {
+        } else if (!"success".equals(response.getStatus().trim())) {
             throw new TelldusBindingException("Response " + response.getStatus());
         }
     }
 
     private void turnOn(Device dev) throws TellstickException, InterruptedException {
-        if (dev instanceof TellstickLocalDeviceDTO) {
+        if (dev instanceof TellstickLocalDeviceDTO device) {
             TelldusLocalResponseDTO response = callRestMethod(String.format(HTTP_LOCAL_DEVICE_TURNON, dev.getId()),
                     TelldusLocalResponseDTO.class);
-            handleResponse((TellstickLocalDeviceDTO) dev, response);
+            handleResponse(device, response);
         } else {
             throw new TelldusBindingException("Cannot send ON to " + dev);
         }
     }
 
     @Override
-    public State calcState(Device dev) {
+    public @Nullable State calcState(Device dev) {
         TellstickLocalDeviceDTO device = (TellstickLocalDeviceDTO) dev;
         State st = null;
 
@@ -239,16 +243,17 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     }
 
     @Override
-    public void onRequest(TellstickSensorEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickSensorEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
     @Override
-    public void onRequest(TellstickDeviceEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickDeviceEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
-    <T> T callRestMethod(String uri, Class<T> response) throws TelldusLocalException, InterruptedException {
+    <T> @Nullable T callRestMethod(String uri, Class<T> response) throws TelldusLocalException, InterruptedException {
+        @Nullable
         T resultObj = null;
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
@@ -271,7 +276,8 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
             throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
         logger.trace("HTTP GET: {}", uri);
 
-        Request request = httpClient.newRequest(uri).method(HttpMethod.GET);
+        Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         request.header("Authorization", authorizationHeader);
 
         ContentResponse response = request.send();

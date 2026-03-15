@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,13 +16,22 @@ package org.openhab.binding.automower.internal.rest.api.automowerconnect.dto;
  * @author Markus Pfleger - Initial contribution
  */
 public class MowerCommandAttributes {
-    private long duration;
+    private Long duration;
+    private Long workAreaId;
 
-    public long getDuration() {
+    public Long getDuration() {
         return duration;
     }
 
-    public void setDuration(long duration) {
+    public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    public Long getWorkAreaId() {
+        return workAreaId;
+    }
+
+    public void setWorkAreaId(Long workAreaId) {
+        this.workAreaId = workAreaId;
     }
 }

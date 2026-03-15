@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -99,5 +100,29 @@ public class ActionsTest {
 
         // then:
         assertEquals(Arrays.asList(1, 2, 3, 4), actions.getProgramId());
+    }
+
+    @Test
+    public void processActionContainsSingleEntryWhenThereIsOneProcessAction() {
+        // given:
+        String json = "{ \"processAction\": [1] }";
+
+        // when:
+        Actions actions = new Gson().fromJson(json, Actions.class);
+
+        // then:
+        assertEquals(List.of(ProcessAction.START), actions.getProcessAction());
+    }
+
+    @Test
+    public void processActionContainsTwoEntriesWhenThereAreTwoProcessActions() {
+        // given:
+        String json = "{ \"processAction\": [1,2] }";
+
+        // when:
+        Actions actions = new Gson().fromJson(json, Actions.class);
+
+        // then:
+        assertEquals(List.of(ProcessAction.START, ProcessAction.STOP), actions.getProcessAction());
     }
 }

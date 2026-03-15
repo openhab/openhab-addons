@@ -13,6 +13,8 @@
 
 		<label>Enocean PTM 215B Rocker</label>
 		<description>An Enocean BLE Rocker (PTM 215B)</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
+
 
 		<channels>
 			<channel id="rocker1" typeId="system.rawrocker"/>

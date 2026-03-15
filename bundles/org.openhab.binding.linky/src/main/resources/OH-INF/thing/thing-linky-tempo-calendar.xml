@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="tempo-calendar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="my-electrical-data"/>
+		</supported-bridge-type-refs>
+
+		<label>Tempo Calendar</label>
+		<description>Provides tempo calendar</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group typeId="tempo-calendar" id="tempo-calendar"/>
+		</channel-groups>
+	</thing-type>
+</thing:thing-descriptions>

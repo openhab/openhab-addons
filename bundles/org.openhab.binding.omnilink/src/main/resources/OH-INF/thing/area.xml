@@ -46,7 +46,7 @@
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
 		<label>Lumina Area</label>
-		<description>An Lumina area configured in the controller.</description>
+		<description>A Lumina area configured in the controller.</description>
 		<channels>
 			<channel id="mode" typeId="lumina_area_mode"/>
 			<channel id="home" typeId="area_command"/>
@@ -109,6 +109,9 @@
 		<label>Security Command</label>
 		<description>Sends a 4 digit user code to activate the area command.</description>
 		<category>Alarm</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="omni_activate_keypad_emergency">

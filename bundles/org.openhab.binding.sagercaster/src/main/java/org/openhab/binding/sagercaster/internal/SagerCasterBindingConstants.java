@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class SagerCasterBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SAGERCASTER = new ThingTypeUID(BINDING_ID, "sagercaster");
-
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAGERCASTER);
     // Configuration elements
     public static final String CONFIG_LOCATION = "location";
     public static final String CONFIG_PERIOD = "observation-period";
@@ -49,6 +49,7 @@ public class SagerCasterBindingConstants {
     public static final String CHANNEL_PRESSURETREND = "pressure-trend";
     public static final String CHANNEL_TEMPERATURETREND = "temperature-trend";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
+    public static final String CHANNEL_RELIABILITY = "reliability";
 
     // Input channel ids
     public static final String CHANNEL_CLOUDINESS = "cloudiness";
@@ -60,6 +61,6 @@ public class SagerCasterBindingConstants {
     public static final String CHANNEL_WIND_ANGLE = "wind-angle";
 
     // Some algorythms constants
-    public final static String FORECAST_PENDING = "0";
-    public final static Set<String> SHOWERS = Set.of("G", "K", "L", "R", "S", "T", "U", "W");
+    public static final String FORECAST_PENDING = "0";
+    public static final Set<String> SHOWERS = Set.of("G", "K", "L", "R", "S", "T", "U", "W");
 }

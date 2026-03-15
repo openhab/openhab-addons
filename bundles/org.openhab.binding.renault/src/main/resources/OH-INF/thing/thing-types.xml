@@ -7,14 +7,17 @@
 	<thing-type id="car">
 
 		<label>Renault Car</label>
-		<description>A MyRenault registered car.</description>
+		<description>A MyRenault-registered car.</description>
+		<semantic-equipment-tag>Vehicle</semantic-equipment-tag>
 
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
 			<channel id="batteryavailableenergy" typeId="batteryavailableenergy"/>
+			<channel id="batterystatusupdated" typeId="batterystatusupdated"/>
 			<channel id="plugstatus" typeId="plugstatus"/>
 			<channel id="chargingstatus" typeId="chargingstatus"/>
 			<channel id="chargingmode" typeId="chargingmode"/>
+			<channel id="pause" typeId="pause"/>
 			<channel id="chargingremainingtime" typeId="chargingremainingtime"/>
 			<channel id="estimatedrange" typeId="estimatedrange"/>
 			<channel id="odometer" typeId="odometer"/>
@@ -24,9 +27,22 @@
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
 			<channel id="locationupdated" typeId="locationupdated"/>
+			<channel id="locked" typeId="locked"/>
 		</channels>
-		<config-description>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description>
+			<parameter name="accountType" type="text">
+				<label>Account Type</label>
+				<options>
+					<option value="MYDACIA">MyDacia</option>
+					<option value="MYRENAULT">MyRenault</option>
+				</options>
+				<default>MYRENAULT</default>
+			</parameter>
 			<parameter name="myRenaultUsername" type="text" required="true">
 				<label>MyRenault Username</label>
 			</parameter>
@@ -80,8 +96,13 @@
 			</parameter>
 			<parameter name="updateDelay" type="integer" unit="s" min="5" max="120">
 				<label>Update Delay</label>
-				<description>How long to wait for commands to reach car and update to server in seconds.</description>
+				<description>How long to wait for commands to reach the car and update to server in seconds.</description>
 				<default>30</default>
+			</parameter>
+			<parameter name="kamereonApiKey" type="text">
+				<label>Kamereon API Key</label>
+				<description>Access code for MyRenault Services.</description>
+				<default>YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -89,12 +110,28 @@
 	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batterystatusupdated">
+		<item-type>DateTime</item-type>
+		<label>Battery Status Updated</label>
+		<description>Timestamp of the last battery status update</description>
+		<category>Time</category>
+		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
 		<label>Plug Status</label>
-		<description>Status of charging plug.</description>
+		<description>Status of the charging plug.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="UNPLUGGED">Unplugged</option>
@@ -108,6 +145,10 @@
 	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
 		<label>Charging Status</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NOT_IN_CHARGE">Not charging</option>
@@ -125,6 +166,10 @@
 	<channel-type id="chargingmode">
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="UNKNOWN">Unknown</option>
@@ -132,6 +177,16 @@
 				<option value="ALWAYS_CHARGING">Instant charge</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="pause">
+		<item-type>Switch</item-type>
+		<label>Pause Charge</label>
+		<description>Pause or resume the charge.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>
@@ -154,6 +209,10 @@
 	<channel-type id="hvacstatus">
 		<item-type>String</item-type>
 		<label>HVAC Status (ON | OFF | PENDING)</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Airconditioning</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="ON">On</option>
@@ -167,13 +226,21 @@
 		<label>HVAC Target Temperature</label>
 		<description>HVAC target temperature (19 to 21)</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="externaltemperature" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
-		<description>Temperature outside of the car</description>
+		<description>Temperature outside of the car.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="image">
@@ -184,9 +251,21 @@
 	</channel-type>
 	<channel-type id="locationupdated">
 		<item-type>DateTime</item-type>
-		<label>Location Update</label>
+		<label>Location Updated</label>
 		<description>Timestamp of the last location update</description>
+		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Locked status of the car</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

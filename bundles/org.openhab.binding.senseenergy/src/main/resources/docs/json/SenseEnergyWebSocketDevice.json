@@ -1,0 +1,65 @@
+// SenseEnergyWebSocketDevice
+
+{
+ "id":"solar",
+ "name":"Solar",
+ "icon":"solar_alt",
+ "tags":{
+    "DefaultUserDeviceType":"Solar",
+    "DeviceListAllowed":"false",
+    "TimelineAllowed":"false",
+    "UserDeleted":"false",
+    "UserDeviceType":"Solar",
+    "UserDeviceTypeDisplayString":"Solar",
+    "UserEditable":"false",
+    "UserMergeable":"false"
+ },
+ "attrs":[
+
+ ],
+ "w":6104.5957
+},
+{
+    "id": "SgA3CQgg",
+    "name": "Garage Freezer",
+    "icon": "plug",
+    "tags": {
+        "Alertable": "true",
+        "ControlCapabilities": [
+            "OnOff",
+            "StandbyThreshold"
+        ],
+        "DateCreated": "2024-12-02T00:03:45.000Z",
+        "DefaultUserDeviceType": "SmartPlug",
+        "DeviceListAllowed": "true",
+        "DUID": "D8:44:89:30:81:D9",
+        "IntegratedDeviceType": "IntegratedSmartPlug",
+        "IntegrationType": "TPLink",
+        "name_useredit": "false",
+        "OriginalName": "Garage Freezer",
+        "Revoked": "false",
+        "SmartPlugModel": "TP-Link Kasa KP115",
+        "SSIEnabled": "true",
+        "SSIModel": "SelfReporting",
+        "TimelineAllowed": "true",
+        "TimelineDefault": "true",
+        "UserDeletable": "false",
+        "UserDeviceType": "SmartPlug",
+        "UserDeviceTypeDisplayString": "Smart Plug",
+        "UserEditable": "true",
+        "UserEditableMeta": "true",
+        "UserMergeable": "false",
+        "UserShowInDeviceList": "true",
+        "UserVisibleDeviceId": "D8:44:89:30:81:D9"
+    },
+    "attrs": [],
+    "w": 37.227,
+    "sd": {
+        "w": 37.227,
+        "i": 0.574,
+        "v": 121.507,
+        "e": 4.396
+    },
+    "ao_w": 1.0,
+    "ao_st": false
+}

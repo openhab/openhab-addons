@@ -7,6 +7,7 @@
 	<bridge-type id="hub">
 		<label>Harmony Hub</label>
 		<description>A Logitech Harmony Hub</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="currentActivity" typeId="currentActivity"/>
 			<channel id="activityStarting" typeId="eventTrigger">
@@ -67,12 +68,16 @@
 		<item-type>String</item-type>
 		<label>Current Activity</label>
 		<description>The label/name of the current activity of a Harmony Hub</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="eventTrigger">
 		<kind>trigger</kind>
 		<label>Harmony Hub Event Trigger</label>
-		<description>Triggered when Harmony Hub sent an event with activity status</description>
+		<description>Triggered when the Harmony Hub sends an event with activity status.</description>
 	</channel-type>
 
 	<channel-type id="buttonPress">
@@ -84,8 +89,13 @@
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Player Control</label>
-		<description>Send player commands (Rewind,FastForward,Play,Pause,SkipForward,SkipBackwards) to the device associated
-			with the current running activity.</description>
+		<description>Send player commands (Rewind, FastForward, Play, Pause, SkipForward, SkipBackward) to the device
+			associated
+			with the currently running activity.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="tplinksmarthome:kb130">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:kl120">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:kl125">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:kl130">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:kl135">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:kl400">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:kl430">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:lb120">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:lb130">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="tplinksmarthome:lb230">
+		<instruction-set targetVersion="1">
+			<update-channel id="colorTemperatureAbs">
+				<type>system:color-temperature-abs</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

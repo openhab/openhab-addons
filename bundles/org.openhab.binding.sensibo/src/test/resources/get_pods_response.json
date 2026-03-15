@@ -2,7 +2,520 @@
     "status": "success",
     "result": [
         {
-            "id": "PODID"
+            "isGeofenceOnEnterEnabledForThisUser": false,
+            "isClimateReactGeofenceOnEnterEnabledForThisUser": false,
+            "isMotionGeofenceOnEnterEnabled": false,
+            "isOwner": true,
+            "minimumCoolingTemperature": null,
+            "maximumHeatingTemperature": null,
+            "restrictedMode": false,
+            "shareDevice": true,
+            "id": "PODID",
+            "qrId": "PODID",
+            "temperatureUnit": "C",
+            "room": {
+                "uid": "KSs8CMdH",
+                "name": "TEST room",
+                "icon": "Diningroom",
+                "pureBoostConfig": null
+            },
+            "acState": {
+                "timestamp": {
+                    "time": "2024-07-17T12:49:06.289306Z",
+                    "secondsAgo": 0
+                },
+                "on": true,
+                "mode": "cool",
+                "targetTemperature": 24,
+                "temperatureUnit": "C",
+                "fanLevel": "strong",
+                "swing": "stopped"
+            },
+            "lastStateChange": {
+                "time": "2024-07-17T07:58:13Z",
+                "secondsAgo": 17453
+            },
+            "lastStateChangeToOn": {
+                "time": "2024-07-17T07:57:55Z",
+                "secondsAgo": 17471
+            },
+            "lastStateChangeToOff": {
+                "time": "2024-07-15T16:24:42Z",
+                "secondsAgo": 159864
+            },
+            "location": {
+                "id": "AFGjHQoDGb",
+                "name": "K82",
+                "latLon": [
+                    0.5047875,
+                    90.0679856
+                ],
+                "address": [
+                    "TEST",
+                    "TEST"
+                ],
+                "country": "USA",
+                "countryAlpha2": "US",
+                "city": "TEST",
+                "createTime": {
+                    "time": "2018-07-16T18:44:05Z",
+                    "secondsAgo": 189453901
+                },
+                "updateTime": {
+                    "time": "2021-03-30T07:55:16Z",
+                    "secondsAgo": 104129630
+                },
+                "features": [],
+                "geofenceTriggerRadius": 200,
+                "subscription": null,
+                "technician": null,
+                "shareAnalytics": false,
+                "tariff": null,
+                "currency": "",
+                "occupancy": "n/a"
+            },
+            "connectionStatus": {
+                "isAlive": true,
+                "lastSeen": {
+                    "time": "2024-07-17T12:48:58.643540Z",
+                    "secondsAgo": 7
+                }
+            },
+            "firmwareVersion": "SKY30046",
+            "firmwareType": "esp8266ex",
+            "productModel": "skyv2",
+            "configGroup": "stable46",
+            "currentlyAvailableFirmwareVersion": "SKY30046",
+            "cleanFiltersNotificationEnabled": false,
+            "shouldShowFilterCleaningNotification": false,
+            "isGeofenceOnExitEnabled": false,
+            "isClimateReactGeofenceOnExitEnabled": false,
+            "isMotionGeofenceOnExitEnabled": false,
+            "isCalibrating": false,
+            "serial": "221804411",
+            "sensorsCalibration": {
+                "temperature": 0.0,
+                "humidity": 0.0
+            },
+            "motionSensors": [],
+            "tags": [],
+            "timer": {
+                "id": "Na2yueHNnv",
+                "isEnabled": false,
+                "acState": {
+                    "on": false
+                },
+                "createTime": "2019-12-20T04:46:15",
+                "createTimeSecondsAgo": 144403371,
+                "targetTime": "2019-12-20T05:16:15",
+                "targetTimeSecondsFromNow": -144401571
+            },
+            "schedules": [
+                {
+                    "id": "5Au8BQrsHJ",
+                    "isEnabled": false,
+                    "acState": {
+                        "on": true,
+                        "targetTemperature": 24,
+                        "temperatureUnit": "C",
+                        "mode": "heat",
+                        "fanLevel": "quiet"
+                    },
+                    "createTime": "2020-01-28T12:00:24",
+                    "createTimeSecondsAgo": 141007722,
+                    "name": null,
+                    "recurringDays": [],
+                    "targetTimeLocal": "17:00",
+                    "timezone": "Europe/Madrid",
+                    "podUid": "637uWtxr",
+                    "nextTime": "2024-07-17T15:00:00",
+                    "nextTimeSecondsFromNow": 7853
+                },
+                {
+                    "id": "PLyt93ZVvU",
+                    "isEnabled": false,
+                    "acState": {
+                        "on": false,
+                        "targetTemperature": 27,
+                        "temperatureUnit": "C",
+                        "mode": "heat",
+                        "fanLevel": "high"
+                    },
+                    "createTime": "2019-12-08T19:45:28",
+                    "createTimeSecondsAgo": 145386218,
+                    "name": null,
+                    "recurringDays": [],
+                    "targetTimeLocal": "06:30",
+                    "timezone": "Europe/Paris",
+                    "podUid": "637uWtxr",
+                    "nextTime": "2024-07-18T04:30:00",
+                    "nextTimeSecondsFromNow": 56453
+                },
+                {
+                    "id": "XqEBM7YXmd",
+                    "isEnabled": false,
+                    "acState": {
+                        "on": true,
+                        "targetTemperature": 22,
+                        "temperatureUnit": "C",
+                        "mode": "cool",
+                        "fanLevel": "high",
+                        "swing": "rangeFull",
+                        "extra": {
+                            "scheduler": {
+                                "climate_react": null,
+                                "motion": null,
+                                "on": true,
+                                "climate_react_settings": null,
+                                "pure_boost": null
+                            }
+                        }
+                    },
+                    "createTime": "2019-12-08T19:45:06",
+                    "createTimeSecondsAgo": 145386240,
+                    "name": null,
+                    "recurringDays": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday"
+                    ],
+                    "targetTimeLocal": "04:30",
+                    "timezone": "Europe/Athens",
+                    "podUid": "637uWtxr",
+                    "nextTime": "2024-07-18T02:30:00",
+                    "nextTimeSecondsFromNow": 49253
+                }
+            ],
+            "motionConfig": null,
+            "doorConfig": null,
+            "filtersCleaning": {
+                "acOnSecondsSinceLastFiltersClean": 7736243,
+                "filtersCleanSecondsThreshold": 1080000,
+                "lastFiltersCleanTime": {
+                    "time": "2022-07-01T05:43:40Z",
+                    "secondsAgo": 64566326
+                },
+                "shouldCleanFilters": true
+            },
+            "serviceSubscriptions": [],
+            "roomIsOccupied": null,
+            "mainMeasurementsSensor": null,
+            "pureBoostConfig": null,
+            "warrantyEligible": "no",
+            "warrantyEligibleUntil": {
+                "time": "2018-08-13T18:43:08Z",
+                "secondsAgo": 187034758
+            },
+            "features": [
+                "showPlus"
+            ],
+            "lastHealthcheck": null,
+            "homekitSupported": false,
+            "remoteCapabilities": {
+                "modes": {
+                    "cool": {
+                        "temperatures": {
+                            "F": {
+                                "isNative": false,
+                                "values": [
+                                    61,
+                                    63,
+                                    64,
+                                    66,
+                                    68,
+                                    70,
+                                    72,
+                                    73,
+                                    75,
+                                    77,
+                                    79,
+                                    81,
+                                    82,
+                                    84,
+                                    86
+                                ]
+                            },
+                            "C": {
+                                "isNative": true,
+                                "values": [
+                                    16,
+                                    17,
+                                    18,
+                                    19,
+                                    20,
+                                    21,
+                                    22,
+                                    23,
+                                    24,
+                                    25,
+                                    26,
+                                    27,
+                                    28,
+                                    29,
+                                    30
+                                ]
+                            }
+                        },
+                        "fanLevels": [
+                            "quiet",
+                            "low",
+                            "medium",
+                            "high",
+                            "auto",
+                            "strong"
+                        ],
+                        "swing": [
+                            "stopped",
+                            "rangeFull",
+                            "horizontal",
+                            "both"
+                        ]
+                    },
+                    "heat": {
+                        "temperatures": {
+                            "F": {
+                                "isNative": false,
+                                "values": [
+                                    50,
+                                    61,
+                                    63,
+                                    64,
+                                    66,
+                                    68,
+                                    70,
+                                    72,
+                                    73,
+                                    75,
+                                    77,
+                                    79,
+                                    81,
+                                    82,
+                                    84,
+                                    86
+                                ]
+                            },
+                            "C": {
+                                "isNative": true,
+                                "values": [
+                                    10,
+                                    16,
+                                    17,
+                                    18,
+                                    19,
+                                    20,
+                                    21,
+                                    22,
+                                    23,
+                                    24,
+                                    25,
+                                    26,
+                                    27,
+                                    28,
+                                    29,
+                                    30
+                                ]
+                            }
+                        },
+                        "fanLevels": [
+                            "quiet",
+                            "low",
+                            "medium",
+                            "high",
+                            "auto",
+                            "strong"
+                        ],
+                        "swing": [
+                            "stopped",
+                            "rangeFull",
+                            "horizontal",
+                            "both"
+                        ]
+                    },
+                    "fan": {
+                        "temperatures": {},
+                        "fanLevels": [
+                            "quiet",
+                            "low",
+                            "medium",
+                            "high",
+                            "auto",
+                            "strong"
+                        ],
+                        "swing": [
+                            "stopped",
+                            "rangeFull",
+                            "horizontal",
+                            "both"
+                        ]
+                    },
+                    "dry": {
+                        "temperatures": {
+                            "F": {
+                                "isNative": false,
+                                "values": [
+                                    61,
+                                    63,
+                                    64,
+                                    66,
+                                    68,
+                                    70,
+                                    72,
+                                    73,
+                                    75,
+                                    77,
+                                    79,
+                                    81,
+                                    82,
+                                    84,
+                                    86
+                                ]
+                            },
+                            "C": {
+                                "isNative": true,
+                                "values": [
+                                    16,
+                                    17,
+                                    18,
+                                    19,
+                                    20,
+                                    21,
+                                    22,
+                                    23,
+                                    24,
+                                    25,
+                                    26,
+                                    27,
+                                    28,
+                                    29,
+                                    30
+                                ]
+                            }
+                        },
+                        "fanLevels": [
+                            "quiet",
+                            "low",
+                            "medium",
+                            "high",
+                            "auto",
+                            "strong"
+                        ],
+                        "swing": [
+                            "stopped",
+                            "rangeFull",
+                            "horizontal",
+                            "both"
+                        ]
+                    },
+                    "auto": {
+                        "temperatures": {
+                            "F": {
+                                "isNative": false,
+                                "values": [
+                                    61,
+                                    63,
+                                    64,
+                                    66,
+                                    68,
+                                    70,
+                                    72,
+                                    73,
+                                    75,
+                                    77,
+                                    79,
+                                    81,
+                                    82,
+                                    84,
+                                    86
+                                ]
+                            },
+                            "C": {
+                                "isNative": true,
+                                "values": [
+                                    16,
+                                    17,
+                                    18,
+                                    19,
+                                    20,
+                                    21,
+                                    22,
+                                    23,
+                                    24,
+                                    25,
+                                    26,
+                                    27,
+                                    28,
+                                    29,
+                                    30
+                                ]
+                            }
+                        },
+                        "fanLevels": [
+                            "quiet",
+                            "low",
+                            "medium",
+                            "high",
+                            "auto",
+                            "strong"
+                        ],
+                        "swing": [
+                            "stopped",
+                            "rangeFull",
+                            "horizontal",
+                            "both"
+                        ]
+                    }
+                }
+            },
+            "remote": {
+                "toggle": false,
+                "window": false
+            },
+            "remoteFlavor": "Singing Wombat",
+            "remoteAlternatives": [
+                "_fujitsu1_different_swing2",
+                "_fujitsu1_selector1",
+                "_fujitsu1_different_swing",
+                "_fujitsu1_swing_reversed",
+                "_fujitsu1_power_toggle3",
+                "_fujitsu1_power_toggle2",
+                "_fujitsu1b",
+                "_fujitsu1b_for_pod",
+                "_fujitsu1_power_toggle",
+                "_fujitsu1b_different_swing",
+                "_fujitsu1_airclean",
+                "_fujitsu1_fahrenheit"
+            ],
+            "sensiboRemote": null,
+            "smartMode": null,
+            "measurements": {
+                "time": {
+                    "time": "2024-07-17T12:48:58.643540Z",
+                    "secondsAgo": 7
+                },
+                "temperature": 25.1,
+                "humidity": 60.7,
+                "feelsLike": 25.1,
+                "rssi": -81
+            },
+            "accessPoint": {
+                "ssid": "SENSIBO-I-21458",
+                "password": null
+            },
+            "macAddress": "ec:fa:bc:1d:c8:3e",
+            "autoOffMinutes": null,
+            "autoOffEnabled": false,
+            "antiMoldTimer": null,
+            "antiMoldConfig": null,
+            "powerConsumption": null,
+            "acType": null,
+            "lastRunEnergyConsumption": null,
+            "acUsage": null,
+            "optimusEnabled": true,
+            "optimusInsights": null,
+            "organization": null,
+            "hasPolicy": false
         }
     ]
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,21 @@ public class RRMapFileParser {
     public static final int CARPET_MAP = 17;
     public static final int MOP_PATH = 18;
     public static final int CARPET_FORBIDDEN_AREA = 19;
-
+    public static final int SMART_ZONES_PATH_TYPE = 20;
+    public static final int SMART_ZONES = 21;
+    public static final int CUSTOM_CARPET = 22;
+    public static final int CL_FORBIDDEN_ZONES = 23;
+    public static final int FLOOR_MAP = 24;
+    public static final int FURNITURES = 25;
+    public static final int DOCK_TYPE = 26;
+    public static final int ENEMIES = 27;
+    public static final int DOOR_ZONES = 28;
+    public static final int STUCK_POINTS = 29;
+    public static final int CLIFF_ZONES = 30;
+    public static final int SMARTDS = 31;
+    public static final int FLDIREC = 32;
+    public static final int MAP_DATE = 33;
+    public static final int NONCE_DATA = 34;
     public static final int DIGEST = 1024;
     public static final int HEADER = 0x7272;
 
@@ -144,8 +158,8 @@ public class RRMapFileParser {
                 case PATH:
                 case GOTO_PATH:
                 case GOTO_PREDICTED_PATH:
-                    ArrayList<float[]> path = new ArrayList<float[]>();
-                    Map<String, Integer> detail = new HashMap<String, Integer>();
+                    ArrayList<float[]> path = new ArrayList<>();
+                    Map<String, Integer> detail = new HashMap<>();
                     int pairs = getUInt32LE(header, 0x04) / 4;
                     detail.put(PATH_POINT_LENGTH, getUInt32LE(header, 0x08));
                     detail.put(PATH_POINT_SIZE, getUInt32LE(header, 0x0C));
@@ -189,7 +203,7 @@ public class RRMapFileParser {
                 case MOB_FORBIDDEN_AREA:
                 case CARPET_FORBIDDEN_AREA:
                     int areaPairs = getUInt16(header, 0x08);
-                    ArrayList<float[]> area = new ArrayList<float[]>();
+                    ArrayList<float[]> area = new ArrayList<>();
                     for (int areaPair = 0; areaPair < areaPairs; areaPair++) {
                         float x0 = (getUInt16(raw, blockDataStart + areaPair * 16));
                         float y0 = getUInt16(raw, blockDataStart + areaPair * 16 + 2);
@@ -271,6 +285,23 @@ public class RRMapFileParser {
                 case BLOCKS:
                     int blocksPairs = getUInt16(header, 0x08);
                     blocks = getBytes(data, 0, blocksPairs);
+                    break;
+                case SMART_ZONES_PATH_TYPE:
+                case SMART_ZONES:
+                case CUSTOM_CARPET:
+                case CL_FORBIDDEN_ZONES:
+                case FLOOR_MAP:
+                case FURNITURES:
+                case DOCK_TYPE:
+                case ENEMIES:
+                case DOOR_ZONES:
+                case STUCK_POINTS:
+                case CLIFF_ZONES:
+                case SMARTDS:
+                case FLDIREC:
+                case MAP_DATE:
+                case NONCE_DATA:
+                    // new blocktypes not yet decoded
                     break;
                 default:
                     logger.info("Unknown blocktype {} (pls report to author)", blocktype);

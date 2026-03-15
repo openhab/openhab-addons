@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -50,10 +51,13 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.vosk.LibVosk;
+import org.vosk.LogLevel;
 import org.vosk.Model;
 import org.vosk.Recognizer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jna.NativeLibrary;
 
 /**
  * The {@link VoskSTTService} class is a service implementation to use Vosk-API for Speech-to-Text.
@@ -89,7 +93,18 @@ public class VoskSTTService implements STTService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        configChange(config);
+        try {
+            String osName = System.getProperty("os.name", "generic").toLowerCase();
+            String osArch = System.getProperty("os.arch", "").toLowerCase();
+            if (osName.contains("linux") && ("arm".equals(osArch) || "armv7l".equals(osArch))) {
+                // workaround for loading required shared libraries
+                loadSharedLibrariesArmv7l();
+            }
+            LibVosk.setLogLevel(LogLevel.WARNINGS);
+            configChange(config);
+        } catch (LinkageError e) {
+            logger.warn("LinkageError, service will not work: {}", e.getMessage());
+        }
     }
 
     @Modified
@@ -113,6 +128,8 @@ public class VoskSTTService implements STTService {
                 loadModel();
             } catch (IOException e) {
                 logger.warn("IOException loading model: {}", e.getMessage());
+            } catch (UnsatisfiedLinkError e) {
+                logger.warn("Missing native dependency: {}", e.getMessage());
             }
         } else {
             try {
@@ -143,6 +160,7 @@ public class VoskSTTService implements STTService {
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return Set.of(
+                new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, 16000L),
                 new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, null, null, 16000L));
     }
 
@@ -151,9 +169,13 @@ public class VoskSTTService implements STTService {
             throws STTException {
         AtomicBoolean aborted = new AtomicBoolean(false);
         try {
-            var frequency = audioStream.getFormat().getFrequency();
+            AudioFormat format = audioStream.getFormat();
+            var frequency = format.getFrequency();
             if (frequency == null) {
                 throw new IOException("missing audio stream frequency");
+            }
+            if (AudioFormat.CONTAINER_WAVE.equals(format.getContainer())) {
+                AudioWaveUtils.removeFMT(audioStream);
             }
             backgroundRecognize(sttListener, audioStream, frequency, aborted);
         } catch (IOException e) {
@@ -164,7 +186,7 @@ public class VoskSTTService implements STTService {
         };
     }
 
-    private Model getModel() throws IOException {
+    private Model getModel() throws IOException, UnsatisfiedLinkError {
         var model = this.model;
         if (model != null) {
             return model;
@@ -172,7 +194,7 @@ public class VoskSTTService implements STTService {
         return loadModel();
     }
 
-    private Model loadModel() throws IOException {
+    private Model loadModel() throws IOException, UnsatisfiedLinkError {
         unloadModel();
         var modelFile = new File(MODEL_PATH);
         if (!modelFile.exists() || !modelFile.isDirectory()) {
@@ -249,20 +271,15 @@ public class VoskSTTService implements STTService {
                     if (!transcript.isBlank()) {
                         sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, 1F));
                     } else {
-                        if (!config.noResultsMessage.isBlank()) {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
-                        } else {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
-                        }
+                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                     }
                 }
             } catch (IOException e) {
                 logger.warn("Error running speech to text: {}", e.getMessage());
-                if (config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                }
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+            } catch (UnsatisfiedLinkError e) {
+                logger.warn("Missing native dependency: {}", e.getMessage());
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             } finally {
                 if (recognizer != null) {
                     recognizer.close();
@@ -288,5 +305,23 @@ public class VoskSTTService implements STTService {
 
     private boolean isExpiredInterval(long interval, long referenceTime) {
         return System.currentTimeMillis() - referenceTime > interval;
+    }
+
+    private void loadSharedLibrariesArmv7l() {
+        logger.debug("loading required shared libraries for linux arm");
+        var libatomicArmLibPath = Path.of("/usr/lib/arm-linux-gnueabihf/libatomic.so.1");
+        if (libatomicArmLibPath.toFile().exists()) {
+            var libatomicArmLibFolderPath = libatomicArmLibPath.getParent().toAbsolutePath();
+            String libraryPath = System.getProperty("jna.library.path", System.getProperty("java.library.path"));
+            if (!libraryPath.contains(libatomicArmLibFolderPath.toString())) {
+                libraryPath = libatomicArmLibFolderPath + "/:" + libraryPath;
+                System.setProperty("jna.library.path", libraryPath);
+                logger.debug("jna library path updated: {}", libraryPath);
+            }
+            NativeLibrary.getInstance("libatomic");
+            logger.debug("loaded libatomic shared library");
+        } else {
+            throw new LinkageError("Required shared library libatomic is missing");
+        }
     }
 }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homie"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker" bindingId="mqtt"/>
+		</supported-bridge-type-refs>
+		<label>Homie MQTT Device</label>
+		<description>You need a configured Broker first. This Thing represents an MQTT device, that follows the Homie
+			Convention.</description>
+		<properties>
+			<property name="homieversion"/>
+		</properties>
+		<config-description>
+			<parameter name="deviceid" type="text" required="true">
+				<label>Device ID</label>
+				<description>Homie device ID. This is part of the MQTT topic (e.g., homie/deviceid/$homie).</description>
+			</parameter>
+			<parameter name="basetopic" type="text" required="true">
+				<label>MQTT Base Prefix</label>
+				<description>MQTT base prefix</description>
+				<default>homie</default>
+			</parameter>
+			<parameter name="removetopics" type="boolean">
+				<label>Remove Retained Topics</label>
+				<description>Remove retained topics when the Thing is deleted</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

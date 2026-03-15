@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.openhab.core.library.unit.Units.*;
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,15 +49,22 @@ import fr.bmartel.speedtest.model.SpeedTestError;
  * measurements at a given interval and for given file / size
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Ravi Nadahar - Made class thread-safe
  */
 @NonNullByDefault
 public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestListener {
     private final Logger logger = LoggerFactory.getLogger(SpeedTestHandler.class);
+
+    /* All access must be guarded by "this" */
     private @Nullable SpeedTestSocket speedTestSocket;
-    private @NonNullByDefault({}) ScheduledFuture<?> refreshTask;
-    private @NonNullByDefault({}) SpeedTestConfiguration configuration;
+
+    /* All access must be guarded by "this" */
+    private @Nullable ScheduledFuture<?> refreshTask;
+
+    /* All access must be guarded by "this" */
     private State bufferedProgress = UnDefType.UNDEF;
-    private int timeouts;
+
+    private final AtomicInteger timeouts = new AtomicInteger();
 
     public SpeedTestHandler(Thing thing) {
         super(thing);
@@ -64,44 +72,52 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
 
     @Override
     public void initialize() {
-        configuration = getConfigAs(SpeedTestConfiguration.class);
         startRefreshTask();
     }
 
-    private synchronized void startSpeedTest() {
-        String url = configuration.getDownloadURL();
-        if (speedTestSocket == null && url != null) {
-            logger.debug("Network speedtest started");
-            final SpeedTestSocket socket = new SpeedTestSocket(1500);
-            speedTestSocket = socket;
-            socket.addSpeedTestListener(this);
-            updateState(CHANNEL_TEST_ISRUNNING, OnOffType.ON);
-            updateState(CHANNEL_TEST_START, new DateTimeType());
-            updateState(CHANNEL_TEST_END, UnDefType.NULL);
-            updateProgress(new QuantityType<>(0, Units.PERCENT));
-            socket.startDownload(url);
-        } else {
-            logger.info("A speedtest is already in progress, will retry on next refresh");
+    private void startSpeedTest() {
+        SpeedTestConfiguration config = getConfigAs(SpeedTestConfiguration.class);
+        String url = config.getDownloadURL();
+        if (url == null || url.isBlank()) {
+            logger.warn("Failed to start speedtest because the URL is blank");
+            return;
+        }
+        synchronized (this) {
+            if (speedTestSocket == null) {
+                logger.debug("Network speedtest started");
+                final SpeedTestSocket socket = new SpeedTestSocket(1500);
+                speedTestSocket = socket;
+                socket.addSpeedTestListener(this);
+                updateState(CHANNEL_TEST_ISRUNNING, OnOffType.ON);
+                updateState(CHANNEL_TEST_START, new DateTimeType());
+                updateState(CHANNEL_TEST_END, UnDefType.NULL);
+                updateProgress(new QuantityType<>(0, Units.PERCENT));
+                socket.startDownload(url);
+            } else {
+                logger.info("A speedtest is already in progress, will retry on next refresh");
+            }
         }
     }
 
-    private synchronized void stopSpeedTest() {
+    private void stopSpeedTest() {
         updateState(CHANNEL_TEST_ISRUNNING, OnOffType.OFF);
         updateProgress(UnDefType.NULL);
         updateState(CHANNEL_TEST_END, new DateTimeType());
-        if (speedTestSocket != null) {
-            SpeedTestSocket socket = speedTestSocket;
-            socket.closeSocket();
-            socket.removeSpeedTestListener(this);
-            socket = null;
-            speedTestSocket = null;
-            logger.debug("Network speedtest finished");
+        synchronized (this) {
+            if (speedTestSocket != null) {
+                SpeedTestSocket socket = speedTestSocket;
+                socket.closeSocket();
+                socket.removeSpeedTestListener(this);
+                speedTestSocket = null;
+                logger.debug("Network speedtest finished");
+            }
         }
     }
 
     @Override
     public void onCompletion(final @Nullable SpeedTestReport testReport) {
-        timeouts = configuration.maxTimeout;
+        SpeedTestConfiguration config = getConfigAs(SpeedTestConfiguration.class);
+        timeouts.set(config.maxTimeout);
         if (testReport != null) {
             BigDecimal rate = testReport.getTransferRateBit();
             QuantityType<DataTransferRate> quantity = new QuantityType<>(rate, BIT_PER_SECOND)
@@ -110,9 +126,11 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
                 switch (testReport.getSpeedTestMode()) {
                     case DOWNLOAD:
                         updateState(CHANNEL_RATE_DOWN, quantity);
-                        String url = configuration.getUploadURL();
-                        if (speedTestSocket != null && url != null) {
-                            speedTestSocket.startUpload(configuration.getUploadURL(), configuration.uploadSize);
+                        String url = config.getUploadURL();
+                        synchronized (this) {
+                            if (speedTestSocket != null && url != null) {
+                                speedTestSocket.startUpload(config.getUploadURL(), config.uploadSize);
+                            }
                         }
                         break;
                     case UPLOAD:
@@ -131,22 +149,19 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
         if (SpeedTestError.UNSUPPORTED_PROTOCOL.equals(testError) || SpeedTestError.MALFORMED_URI.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
             freeRefreshTask();
-            return;
         } else if (SpeedTestError.SOCKET_TIMEOUT.equals(testError)) {
-            timeouts--;
-            if (timeouts <= 0) {
+            int count = timeouts.decrementAndGet();
+            if (count <= 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Max timeout count reached");
                 freeRefreshTask();
             } else {
-                logger.warn("Speedtest timed out, {} attempts left. Message '{}'", timeouts, errorMessage);
+                logger.warn("Speedtest timed out, {} attempts left. Message '{}'", count, errorMessage);
                 stopSpeedTest();
             }
-            return;
         } else if (SpeedTestError.SOCKET_ERROR.equals(testError)
                 || SpeedTestError.INVALID_HTTP_RESPONSE.equals(testError)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
             freeRefreshTask();
-            return;
         } else {
             stopSpeedTest();
             logger.warn("Speedtest failed: {}", errorMessage);
@@ -159,9 +174,15 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     }
 
     private void updateProgress(State state) {
-        if (!state.toString().equals(bufferedProgress.toString())) {
-            bufferedProgress = state;
-            updateState(CHANNEL_TEST_PROGRESS, bufferedProgress);
+        boolean isNew = false;
+        synchronized (this) {
+            if (!state.toString().equals(bufferedProgress.toString())) {
+                bufferedProgress = state;
+                isNew = true;
+            }
+        }
+        if (isNew) {
+            updateState(CHANNEL_TEST_PROGRESS, state);
         }
     }
 
@@ -190,19 +211,25 @@ public class SpeedTestHandler extends BaseThingHandler implements ISpeedTestList
     }
 
     private void freeRefreshTask() {
-        stopSpeedTest();
-        if (refreshTask != null) {
-            refreshTask.cancel(true);
-            refreshTask = null;
+        synchronized (this) {
+            ScheduledFuture<?> task = refreshTask;
+            if (task != null) {
+                task.cancel(true);
+                refreshTask = null;
+            }
         }
+        stopSpeedTest();
     }
 
     private void startRefreshTask() {
-        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes", configuration.initialDelay,
-                configuration.refreshInterval);
-        refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, configuration.initialDelay,
-                configuration.refreshInterval, TimeUnit.MINUTES);
-        timeouts = configuration.maxTimeout;
+        SpeedTestConfiguration config = getConfigAs(SpeedTestConfiguration.class);
+        logger.info("Speedtests starts in {} minutes, then refreshes every {} minutes", config.initialDelay,
+                config.refreshInterval);
+        synchronized (this) {
+            refreshTask = scheduler.scheduleWithFixedDelay(this::startSpeedTest, config.initialDelay,
+                    config.refreshInterval, TimeUnit.MINUTES);
+        }
+        timeouts.set(config.maxTimeout);
         updateStatus(ThingStatus.ONLINE);
     }
 }

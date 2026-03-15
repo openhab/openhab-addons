@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,9 @@ package org.openhab.binding.serial.internal.handler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -22,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.serial.internal.channel.ChannelConfig;
 import org.openhab.binding.serial.internal.channel.DeviceChannel;
 import org.openhab.binding.serial.internal.channel.DeviceChannelFactory;
-import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -41,11 +43,10 @@ import org.openhab.core.types.RefreshType;
  * sent to one of the channels.
  *
  * @author Mike Major - Initial contribution
+ * @author Roland Tapken - Added channel refresh
  */
 @NonNullByDefault
 public class SerialDeviceHandler extends BaseThingHandler {
-
-    private final ValueTransformationProvider valueTransformationProvider;
 
     private @Nullable Pattern devicePattern;
 
@@ -53,31 +54,25 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     private final Map<ChannelUID, DeviceChannel> channels = new HashMap<>();
 
-    public SerialDeviceHandler(final Thing thing, final ValueTransformationProvider valueTransformationProvider) {
+    private final Map<ChannelUID, ScheduledFuture<?>> futures = new HashMap<>();
+
+    public SerialDeviceHandler(final Thing thing) {
         super(thing);
-        this.valueTransformationProvider = valueTransformationProvider;
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
-            final String lastValue = this.lastValue;
-
-            if (lastValue != null) {
-                final DeviceChannel channel = channels.get(channelUID);
-                if (channel != null) {
-                    refresh(channelUID, channel, lastValue);
-                }
+            final DeviceChannel channel = channels.get(channelUID);
+            if (channel != null) {
+                refresh(channelUID, channel);
             }
         } else {
             final DeviceChannel channel = channels.get(channelUID);
             if (channel != null) {
-                final Bridge bridge = getBridge();
-                if (bridge != null) {
-                    final SerialBridgeHandler handler = (SerialBridgeHandler) bridge.getHandler();
-                    if (handler != null) {
-                        channel.mapCommand(command).ifPresent(value -> handler.writeString(value));
-                    }
+                if (getBridge() instanceof Bridge bridge
+                        && bridge.getHandler() instanceof CommonBridgeHandler handler) {
+                    channel.mapCommand(command).ifPresent(handler::writeString);
                 }
             }
         }
@@ -100,10 +95,17 @@ public class SerialDeviceHandler extends BaseThingHandler {
             if (type != null) {
                 final ChannelConfig channelConfig = c.getConfiguration().as(ChannelConfig.class);
                 try {
-                    final DeviceChannel deviceChannel = DeviceChannelFactory
-                            .createDeviceChannel(valueTransformationProvider, channelConfig, type.getId());
+                    final DeviceChannel deviceChannel = DeviceChannelFactory.createDeviceChannel(channelConfig,
+                            type.getId());
                     if (deviceChannel != null) {
                         channels.put(c.getUID(), deviceChannel);
+
+                        int delay = deviceChannel.getRefreshInterval();
+                        if (delay > 0) {
+                            ScheduledFuture<?> future = scheduler.scheduleWithFixedDelay(
+                                    () -> refresh(c.getUID(), deviceChannel), delay, delay, TimeUnit.SECONDS);
+                            futures.put(c.getUID(), future);
+                        }
                     }
                 } catch (final IllegalArgumentException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -122,6 +124,9 @@ public class SerialDeviceHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        for (ScheduledFuture<?> future : this.futures.values()) {
+            future.cancel(true);
+        }
         channels.clear();
         lastValue = null;
         super.dispose();
@@ -136,7 +141,11 @@ public class SerialDeviceHandler extends BaseThingHandler {
         final Pattern devicePattern = this.devicePattern;
 
         if (devicePattern != null && devicePattern.matcher(data).matches()) {
-            channels.forEach((channelUID, channel) -> refresh(channelUID, channel, data));
+            channels.forEach((channelUID, channel) -> {
+                if (isLinked(channelUID)) {
+                    channel.transformData(data).ifPresent(value -> updateState(channelUID, new StringType(value)));
+                }
+            });
             this.lastValue = data;
         }
     }
@@ -156,13 +165,27 @@ public class SerialDeviceHandler extends BaseThingHandler {
     /**
      * Refreshes the channel with the last received data
      *
-     * @param channelId the channel to refresh
+     * @param channelUID the channel to refresh
      */
-    private void refresh(final ChannelUID channelUID, final DeviceChannel channel, final String data) {
+    private void refresh(final ChannelUID channelUID, final DeviceChannel channel) {
+        final String data = this.lastValue;
         if (!isLinked(channelUID)) {
             return;
         }
 
-        channel.transformData(data).ifPresent(value -> updateState(channelUID, new StringType(value)));
+        if (!channel.getRefreshValue().isBlank()) {
+            if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof CommonBridgeHandler handler) {
+                Optional<String> value = channel.transformCommand(channel.getRefreshValue());
+                if (value.isPresent()) {
+                    handler.writeString(value.get());
+                    return;
+                }
+            }
+        }
+
+        // Use last result line
+        if (data != null) {
+            channel.transformData(data).ifPresent(value -> updateState(channelUID, new StringType(value)));
+        }
     }
 }

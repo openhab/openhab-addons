@@ -8,6 +8,7 @@
 	<thing-type id="ventilation">
 		<label>HeliosVentilation (KWL)</label>
 		<description>A domestic ventilation system (KWL) from Helios.</description>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 
 		<channels>
 			<channel id="outsideTemp" typeId="outside_temperature"/>
@@ -60,6 +61,10 @@
 		<label>Outside Temperature</label>
 		<description>Temperature measured in the outdoor air flow.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -68,6 +73,10 @@
 		<label>Extract Temperature</label>
 		<description>Temperature measured in the extract (indoor, room temperature) air flow.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -76,6 +85,10 @@
 		<label>Supply Temperature</label>
 		<description>Temperature measured in the supply (incoming) air flow.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -84,6 +97,10 @@
 		<label>Outgoing Temperature</label>
 		<description>Temperature measured in the outgoing air flow.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -93,6 +110,10 @@
 		<label>Temperature</label>
 		<description>Set temperature for the supply air. Not used in all ventilation systems.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -100,6 +121,10 @@
 		<item-type>Number</item-type>
 		<label>Fanspeed</label>
 		<category>HVAC</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="1" max="8" pattern="%d" readOnly="false"/>
 	</channel-type>
 
@@ -123,6 +148,10 @@
 		<description>Bypass temperature to disable the bypass function if outside temperature is below this threshold even if
 			ventilation system is in summer mode.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -131,6 +160,10 @@
 		<label>Supply Stop Temperature</label>
 		<description>Stop the supply fan if outside temperature is below this threshold.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -139,6 +172,10 @@
 		<label>Preheat Temperature</label>
 		<description>Set temperature for preheater.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
@@ -147,6 +184,10 @@
 		<label>RH Limit</label>
 		<description>Limit for relative humidity sensor.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state pattern="%f %unit%" min="0" max="100" readOnly="false"/>
 	</channel-type>
 
@@ -155,6 +196,10 @@
 		<label>Supply Fan</label>
 		<description>Speed of the supply air fan (incoming air).</description>
 		<category>HVAC</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%f %unit%" min="0" max="100" readOnly="false"/>
 	</channel-type>
 
@@ -163,6 +208,10 @@
 		<label>Extract Fan</label>
 		<description>Speed of the extract air fan (outgoing air).</description>
 		<category>HVAC</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state pattern="%f %unit%" min="0" max="100" readOnly="false"/>
 	</channel-type>
 
@@ -177,18 +226,30 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>State of the ventilation system.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="co2_state" advanced="false">
 		<item-type>Switch</item-type>
 		<label>CO2 Control</label>
 		<description>Control the ventilation system by CO2 sensor.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rh_state" advanced="false">
 		<item-type>Switch</item-type>
 		<label>Humidity Control</label>
 		<description>Control the ventilation system by humidity sensor.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="winter_state" advanced="false">

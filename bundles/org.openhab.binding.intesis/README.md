@@ -2,11 +2,9 @@
 
 This binding connects to WiFi [IntesisHome](https://www.intesis.com/products/cloud-solutions/ac-cloud-control) devices using their local REST Api and to [IntesisBox](https://www.intesis.com/products/ac-interfaces/wifi-gateways) devices using TCP connection.
 
-
-
 ## Supported Things
 
-This binding only supports one thing type:
+This binding only supports one Thing type:
 
 | Thing       | Thing Type | Description                                 |
 |-------------|------------|---------------------------------------------|
@@ -21,12 +19,12 @@ Intesis devices do not support auto discovery.
 
 The binding uses the following configuration parameters.
 
-| Parameter | Valid for ThingType | Description                                                    |
-|-----------|---------------------|----------------------------------------------------------------|
-| ipAddress | Both                | IP-Address of the device                                       |
-| password  | IntesisHome         | Password to login to the local webserver of IntesisHome device |
-| port      | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
-
+| Parameter        | Valid for ThingType | Description                                                    |
+|------------------|---------------------|----------------------------------------------------------------|
+| ipAddress        | Both                | IP-Address of the device                                       |
+| password         | IntesisHome         | Password to login to the local webserver of IntesisHome device |
+| port             | IntesisBox          | TCP port to connect to IntesisBox device, defaults to 3310     |
+| pollingInterval  | Both                | Interval to retrieve updates from the connected devices        |
 
 ## Channels
 
@@ -42,12 +40,12 @@ The binding uses the following configuration parameters.
 | outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature (if applicable) |                                                         |
 | errorStatus        | String             | (Readonly) The error status of the device              | OK,ERR                                                  |
 | errorCode          | String             | (Readonly) The error code if an error encountered      | not documented                                          |
-| wifiSignal         | Number             | (Readonly) WiFi signal strength (IntesisBox only)      | 4=excellent, 3=very good, 2=good, 1=acceptable, 0=low   |
+| wifiSignal         | Number             | (Readonly) WiFi signal strength                        | 4=excellent, 3=very good, 2=good, 1=acceptable, 0=low   |
 
 Note that individual A/C units may not support all channels, or all possible values for those channels.
 
-The binding will add all supported channels and possible values on first thing initialization and list them as thing properties.
-If new channels or values might be supported after firmware upgrades, deleting the thing and re-adding is necessary.
+The binding will add all supported channels and possible values on first Thing initialization and list them as Thing properties.
+If new channels or values might be supported after firmware upgrades, deleting the Thing and re-adding is necessary.
 For example, not all A/C units have controllable vanes or fan speed may be limited to 1-4, instead of all of 1-9.
 The target temperature is also limited to a device specific range. For target temperature, sending an invalid value
 will cause it to choose the minimum/maximum allowable value as appropriate. The device will also round it to
@@ -58,16 +56,16 @@ IntesisBox firmware 1.3.3 reports temperatures by full degrees only (e.g. 23.0) 
 
 The binding can be fully setup from the UI but if you decide to use files here is a full example:
 
-**Things**
+### Things
 
-```
+```java
 Thing intesis:intesisHome:acOffice "AC Unit Adapter" @ "AC" [ipAddress="192.168.1.100", password="xxxxx"]
 Thing intesis:intesisBox:acOffice  "AC Unit Adapter" @ "AC" [ipAddress="192.168.1.100", port=3310]
 ```
 
-**Items**
+### Items
 
-```intesishome.items
+```java
 Switch              ac               "Power"                                        { channel="intesis:intesisHome:acOffice:power" }
 String              acMode           "Mode"                                         { channel="intesis:intesisHome:acOffice:mode" }
 String              acFanSpeed       "Fan Speed"             <fan>                  { channel="intesis:intesisHome:acOffice:fanSpeed" }
@@ -81,9 +79,9 @@ String              acErrorCode      "Errorcode"                                
 String              acWifiSignal     "Wifi Signal Quality"   <qualityofservice>     { channel="intesis:intesisBox:acOffice:wifiSignal" }
 ```
 
-**Sitemap**
+### Sitemap
 
-```intesisHome.sitemap
+```perl
 sitemap intesishome label="My AC control" {
 
     Frame label="Climate" {
@@ -93,12 +91,12 @@ sitemap intesishome label="My AC control" {
           Switch item=acVanesUpDown    icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
           Switch item=acVanesLeftRight icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
           Setpoint item=acSetPoint     icon="temperature"      minValue=16 maxValue=28 step=1
-          Text item=acAmbientTemp      icon="temperature" 
+          Text item=acAmbientTemp      icon="temperature"
           Text item=acOutdoorTemp      icon="temperature"
           Text item=acErrorStatus
           Text item=acErrorCode
           Text item=acWifiSignal       icon="qualityofservice"
-           
+
     }
 }
 ```

@@ -10,7 +10,8 @@
 		</supported-bridge-type-refs>
 
 		<label>Switch Module</label>
-		<description>Nikobus Switch module</description>
+		<description>Nikobus switch module</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 
 		<channels>
 			<channel id="output-1" typeId="switch-output">
@@ -58,6 +59,10 @@
 		<item-type>Switch</item-type>
 		<label>Output</label>
 		<description>Switch Module's Output</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

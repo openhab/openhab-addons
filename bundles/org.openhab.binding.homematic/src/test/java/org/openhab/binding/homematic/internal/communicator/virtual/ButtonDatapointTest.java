@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,10 +70,22 @@ public class ButtonDatapointTest extends JavaTest {
         HmDatapoint contPressDp = createPressDatapointFrom(longPressDp, "PRESS_CONT", Boolean.TRUE);
         mockEventReceiver.eventReceived(contPressDp);
         assertThat(buttonVirtualDatapoint.getValue(), is("LONG_REPEATED"));
+        assertThat(buttonVirtualDatapoint.getPreviousValue(), nullValue());
+
+        // Receiving another LONG event during the long press should be ignored
+        mockEventReceiver.eventReceived(longPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), is("LONG_REPEATED"));
+        assertThat(buttonVirtualDatapoint.getPreviousValue(), is("LONG_REPEATED"));
 
         HmDatapoint releaseDp = createPressDatapointFrom(longPressDp, "PRESS_LONG_RELEASE", Boolean.TRUE);
         mockEventReceiver.eventReceived(releaseDp);
         assertThat(buttonVirtualDatapoint.getValue(), is("LONG_RELEASED"));
+
+        // A CONT event right after a SHORT event should not trigger another SHORT_PRESSED event
+        HmDatapoint shortPressDp = createPressDatapointFrom(longPressDp, "PRESS_SHORT", Boolean.TRUE);
+        mockEventReceiver.eventReceived(shortPressDp);
+        mockEventReceiver.eventReceived(contPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), nullValue());
     }
 
     @Test
@@ -87,10 +99,17 @@ public class ButtonDatapointTest extends JavaTest {
         HmDatapoint contPressDp = createPressDatapointFrom(longPressDp, "PRESS_LONG", Boolean.TRUE);
         mockEventReceiver.eventReceived(contPressDp);
         assertThat(buttonVirtualDatapoint.getValue(), is("LONG_REPEATED"));
+        assertThat(buttonVirtualDatapoint.getPreviousValue(), nullValue());
 
         HmDatapoint releaseDp = createPressDatapointFrom(longPressDp, "PRESS_LONG_RELEASE", Boolean.TRUE);
         mockEventReceiver.eventReceived(releaseDp);
         assertThat(buttonVirtualDatapoint.getValue(), is("LONG_RELEASED"));
+
+        // A LONG event right after a SHORT event should not trigger another SHORT_PRESSED event
+        HmDatapoint shortPressDp = createPressDatapointFrom(longPressDp, "PRESS_SHORT", Boolean.TRUE);
+        mockEventReceiver.eventReceived(shortPressDp);
+        mockEventReceiver.eventReceived(contPressDp);
+        assertThat(buttonVirtualDatapoint.getValue(), nullValue());
     }
 
     @Test

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>5.2.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.automation.pythonscripting</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
+
+  <properties>
+    <helperlib.version>1.0.18</helperlib.version>
+  </properties>
+
+  <dependencies>
+    <!-- Graal Polyglot Framework -->
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.polyglot.polyglot</artifactId>
+      <version>${graalvm.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>write-project-properties</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <outputFile>${project.build.outputDirectory}/build.properties</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <version>2.2.1</version>
+        <configuration>
+          <providerImplementations>
+            <git>jgit</git>
+          </providerImplementations>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-jgit</artifactId>
+            <version>2.2.1</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>checkout-openhab-python</id>
+            <goals>
+              <goal>checkout</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <connectionUrl>scm:git:https://github.com/openhab/openhab-python</connectionUrl>
+              <checkoutDirectory>${project.build.directory}/python</checkoutDirectory>
+              <scmVersion>${helperlib.version}</scmVersion>
+              <scmVersionType>tag</scmVersionType>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>copy-openhab-python</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes/lib/openhab/</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/python/src/</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- run SAT -->
+      <plugin>
+        <groupId>org.openhab.tools.sat</groupId>
+        <artifactId>sat-plugin</artifactId>
+        <configuration>
+          <pmdFilter>${project.basedir}/suppressions.properties</pmdFilter>
+        </configuration>
+      </plugin>
+      <!-- workaround for failing clean of checked out git repo breaking the Windows build, #19250 -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <force>true</force>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

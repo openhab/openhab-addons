@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,14 +14,11 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +38,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.io.hueemulation.internal.ConfigStore;
+import org.openhab.io.hueemulation.internal.dto.HueSensorEntry;
 import org.openhab.io.hueemulation.internal.rest.mocks.DummyItemRegistry;
 
 /**
@@ -54,6 +52,8 @@ public class SensorTests {
     protected @NonNullByDefault({}) ItemRegistry itemRegistry;
     protected @NonNullByDefault({}) ConfigStore cs;
 
+    private @NonNullByDefault({}) HttpClient httpClient;
+
     Sensors subject = new Sensors();
 
     private void addItemToReg(GenericItem item, State state, String label) {
@@ -63,7 +63,7 @@ public class SensorTests {
     }
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
         commonSetup = new CommonSetup(false);
         itemRegistry = new DummyItemRegistry();
 
@@ -73,6 +73,9 @@ public class SensorTests {
         subject.userManagement = commonSetup.userManagement;
         subject.itemRegistry = itemRegistry;
         subject.activate();
+
+        httpClient = new HttpClient();
+        httpClient.start();
 
         // Add simulated sensor items
         addItemToReg(new SwitchItem("switch1"), OnOffType.ON, "name1");
@@ -91,34 +94,39 @@ public class SensorTests {
     }
 
     @Test
-    public void renameSensor() {
-        assertThat(cs.ds.sensors.get("switch1").name, is("name1"));
+    public void renameSensor() throws Exception {
+        HueSensorEntry sensorEntry = cs.ds.sensors.get("switch1");
+        assertNotNull(sensorEntry);
+        assertThat(sensorEntry.name, is("name1"));
 
         String body = "{'name':'name2'}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/sensors/switch1").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        body = response.readEntity(String.class);
+        ContentResponse response = commonSetup.sendPut("/testuser/sensors/switch1", body);
+        assertThat(response.getStatus(), is(200));
+
+        body = response.getContentAsString();
+
         assertThat(body, containsString("success"));
         assertThat(body, containsString("name"));
-        assertThat(cs.ds.sensors.get("switch1").name, is("name2"));
+        sensorEntry = cs.ds.sensors.get("switch1");
+        assertNotNull(sensorEntry);
+        assertThat(sensorEntry.name, is("name2"));
     }
 
     @Test
-    public void allAndSingleSensor() {
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/sensors").request().get();
-        assertEquals(200, response.getStatus());
+    public void allAndSingleSensor() throws Exception {
+        ContentResponse response = commonSetup.sendGet("/testuser/sensors");
+        assertThat(response.getStatus(), is(200));
 
-        String body = response.readEntity(String.class);
+        String body = response.getContentAsString();
 
         assertThat(body, containsString("switch1"));
         assertThat(body, containsString("color1"));
         assertThat(body, containsString("white1"));
 
         // Single light access test
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/sensors/switch1").request().get();
-        assertEquals(200, response.getStatus());
-        body = response.readEntity(String.class);
+        response = commonSetup.sendGet("/testuser/sensors/switch1");
+        assertThat(response.getStatus(), is(200));
+        body = response.getContentAsString();
         assertThat(body, containsString("CLIPGenericFlag"));
     }
 }

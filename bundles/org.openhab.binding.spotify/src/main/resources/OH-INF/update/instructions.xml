@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="spotify:player">
+		<instruction-set targetVersion="1">
+			<update-channel id="trackDurationMs">
+				<type>spotify:currentlyPlayedTrackDurationMs</type>
+			</update-channel>
+
+			<update-channel id="trackProgressMs">
+				<type>spotify:currentlyPlayedTrackProgressMs</type>
+			</update-channel>
+
+			<update-channel id="trackDuration">
+				<type>spotify:currentlyPlayedTrackDuration</type>
+			</update-channel>
+
+			<update-channel id="trackProgress">
+				<type>spotify:currentlyPlayedTrackProgress</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

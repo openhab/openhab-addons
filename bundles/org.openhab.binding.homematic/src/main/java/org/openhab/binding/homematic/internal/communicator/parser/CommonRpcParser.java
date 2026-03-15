@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -42,7 +43,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
     }
 
     /**
-     * Converts the object to a integer.
+     * Converts the object to an integer.
      */
     protected Integer toInteger(Object object) {
         if (object == null || object instanceof Integer) {
@@ -105,8 +106,7 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Converts the object to a string array.
      */
     protected String[] toOptionList(Object optionList) {
-        if (optionList != null && optionList instanceof Object[]) {
-            Object[] vl = (Object[]) optionList;
+        if (optionList != null && optionList instanceof Object[] vl) {
             String[] stringArray = new String[vl.length];
             for (int i = 0; i < vl.length; i++) {
                 stringArray[i] = vl[i].toString();
@@ -168,8 +168,8 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Assembles a datapoint with the given parameters.
      */
     protected HmDatapoint assembleDatapoint(String name, String unit, String type, String[] options, Object min,
-            Object max, Integer operations, Object defaultValue, HmParamsetType paramsetType, boolean isHmIpDevice)
-            throws IOException {
+            Object max, Integer operations, Object defaultValue, Map<String, Number> specialValues,
+            HmParamsetType paramsetType, boolean isHmIpDevice) throws IOException {
         HmDatapoint dp = new HmDatapoint();
         dp.setName(name);
         dp.setDescription(name);
@@ -221,6 +221,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         } else {
             dp.setDefaultValue(convertToType(dp, defaultValue));
         }
+        if (dp.isNumberType() && specialValues != null) {
+            dp.setSpecialValues(specialValues);
+        }
         dp.setValue(dp.getDefaultValue());
         return dp;
     }
@@ -232,9 +235,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
         if (value == null || value.isBlank()) {
             return null;
         }
-        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("on")) {
+        if ("true".equalsIgnoreCase(value) || "on".equalsIgnoreCase(value)) {
             return (Boolean.TRUE);
-        } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("off")) {
+        } else if ("false".equalsIgnoreCase(value) || "off".equalsIgnoreCase(value)) {
             return (Boolean.FALSE);
         } else if (value.matches("(-|\\+)?[0-9]+")) {
             return (Integer.valueOf(value));

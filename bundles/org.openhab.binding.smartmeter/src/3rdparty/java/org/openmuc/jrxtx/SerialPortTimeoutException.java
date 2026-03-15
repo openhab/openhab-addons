@@ -10,7 +10,6 @@ public class SerialPortTimeoutException extends InterruptedIOException {
     private static final long serialVersionUID = -5808479011360793837L;
 
     public SerialPortTimeoutException() {
-        super();
     }
 
     /**

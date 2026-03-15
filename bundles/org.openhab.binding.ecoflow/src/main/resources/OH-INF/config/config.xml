@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:ecoflow:ecoflow-api">
+		<parameter name="accessKey" type="text" required="true">
+			<label>Access Key</label>
+		</parameter>
+		<parameter name="secretKey" type="text" required="true">
+			<label>Secret Key</label>
+			<context>password</context>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:ecoflow:device">
+		<parameter name="serialNumber" type="text" required="true">
+			<label>Device Serial Number</label>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

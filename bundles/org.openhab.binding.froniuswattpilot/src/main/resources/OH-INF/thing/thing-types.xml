@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="froniuswattpilot"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing Types -->
+	<thing-type id="wattpilot">
+		<label>Fronius Wattpilot</label>
+		<description>Fronius Wattpilot wallbox</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="control" typeId="control"/>
+			<channel-group id="status" typeId="status"/>
+			<channel-group id="metrics" typeId="metrics"/>
+		</channel-groups>
+
+		<properties>
+			<property name="serialNumber"/>
+			<property name="firmwareVersion"/>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
+		<representation-property>hostname</representation-property>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device (the same password as required by the Solar.Wattpilot app)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Group Types -->
+	<channel-group-type id="control">
+		<label>Charging Control</label>
+		<channels>
+			<channel id="charging-allowed" typeId="charging-allowed"/>
+			<channel id="charging-mode" typeId="charging-mode"/>
+			<channel id="charging-current" typeId="charging-current"/>
+			<channel id="pv-surplus-threshold" typeId="pv-surplus-threshold"/>
+			<channel id="pv-surplus-soc" typeId="pv-surplus-soc"/>
+			<channel id="boost-enabled" typeId="boost-enabled"/>
+			<channel id="boost-soc" typeId="boost-soc"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="status">
+		<label>Charging Status</label>
+		<channels>
+			<channel id="charging-state" typeId="charging-state"/>
+			<channel id="charging-possible" typeId="charging-possible"/>
+			<channel id="single-phase" typeId="charging-single-phase"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="metrics">
+		<label>Charging Metrics</label>
+		<channels>
+			<channel id="power" typeId="system.electric-power">
+				<label>Total Power</label>
+				<description>Total charging power</description>
+			</channel>
+			<channel id="energy-session" typeId="system.electric-energy">
+				<label>Charged Energy</label>
+				<description>Energy charged in the current/last session</description>
+			</channel>
+			<channel id="energy-total" typeId="system.electric-energy">
+				<label>Total Charged Energy</label>
+				<description>Energy charged in total</description>
+			</channel>
+			<channel id="l1-power" typeId="system.electric-power">
+				<label>Phase 1 Power</label>
+				<description>Charging power on phase 1</description>
+			</channel>
+			<channel id="l2-power" typeId="system.electric-power">
+				<label>Phase 2 Power</label>
+				<description>Charging power on phase 2</description>
+			</channel>
+			<channel id="l3-power" typeId="system.electric-power">
+				<label>Phase 3 Power</label>
+				<description>Charging power on phase 3</description>
+			</channel>
+			<channel id="l1-voltage" typeId="system.electric-voltage">
+				<label>Phase 1 Voltage</label>
+				<description>Current voltage on phase 1</description>
+			</channel>
+			<channel id="l2-voltage" typeId="system.electric-voltage">
+				<label>Phase 2 Voltage</label>
+				<description>Current voltage on phase 2</description>
+			</channel>
+			<channel id="l3-voltage" typeId="system.electric-voltage">
+				<label>Phase 3 Voltage</label>
+				<description>Current voltage on phase 3</description>
+			</channel>
+			<channel id="l1-current" typeId="system.electric-current">
+				<label>Phase 1 Current</label>
+				<description>Charging current on phase 1</description>
+			</channel>
+			<channel id="l2-current" typeId="system.electric-current">
+				<label>Phase 2 Current</label>
+				<description>Charging current on phase 2</description>
+			</channel>
+			<channel id="l3-current" typeId="system.electric-current">
+				<label>Phase 3 Current</label>
+				<description>Charging current on phase 3</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<!-- Control Channel Types -->
+	<channel-type id="charging-allowed">
+		<item-type>Switch</item-type>
+		<label>Charging Allowed</label>
+		<description>Allow or forbid charging</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="ON">Allow charging</option>
+				<option value="OFF">Forbid charging</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="charging-mode">
+		<item-type>String</item-type>
+		<label>Charging Mode</label>
+		<description>The mode of charging</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="DEFAULT">Default</option>
+				<option value="ECO">Eco</option>
+				<option value="NEXT_TRIP">Next Trip</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="charging-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Charging Current</label>
+		<description>The current to charge with</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%d A" min="6" max="32" step="1"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="pv-surplus-threshold">
+		<item-type>Number:Power</item-type>
+		<label>PV Surplus Power Threshold</label>
+		<description>The PV Surplus power at which surplus charging starts</description>
+		<category>SolarPlant</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Power</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="pv-surplus-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>PV Surplus SoC Threshold</label>
+		<description>The battery SoC at which PV surplus charging starts</description>
+		<category>SolarPlant</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="boost-enabled">
+		<item-type>Switch</item-type>
+		<label>Boost Mode</label>
+		<description>Boost charging in Eco or Next Trip mode by using power from the battery</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="ON">Boost enabled</option>
+				<option value="OFF">Boost disabled</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="boost-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Boost SoC Limit</label>
+		<description>Limit SoC to discharge the battery to when boost is enabled</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<!-- Status Channel Types -->
+	<channel-type id="charging-state">
+		<item-type>String</item-type>
+		<label>Charging State</label>
+		<description>Charging State of the wallbox</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="NO_CAR">No car connected</option>
+				<option value="CHARGING">Charging</option>
+				<option value="READY">Ready to charge</option>
+				<option value="COMPLETE">Charging completed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charging-possible">
+		<item-type>Switch</item-type>
+		<label>Charging Possible</label>
+		<description>Whether charging is currently possible, e.g. when using ECO mode, too low PV surplus can block charging</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Possible</option>
+				<option value="OFF">Not Possible</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charging-single-phase">
+		<item-type>Switch</item-type>
+		<label>Single Phase Charging</label>
+		<description>Whether the wallbox is charging single phase only</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Single Phase</option>
+				<option value="OFF">Three Phases</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

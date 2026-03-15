@@ -1,7 +1,5 @@
 # macOS Text-to-Speech
 
-## Overview
-
 The macOS Text-to-Speech (TTS) service uses the macOS "say" command for producing spoken text.
 
 Obviously, this service only works on a host that is running macOS.
@@ -14,7 +12,7 @@ There is no need to configure anything for this service.
 
 It automatically scans all available voices and registers them, see e.g.
 
-```
+```shell
 > voice voices
 mactts:Alex Alex (en_US)
 mactts:Ioana Ioana (ro_RO)
@@ -41,14 +39,14 @@ mactts:Yuna Yuna (ko_KR)
 
 You can setup your preferred default Text-to-Speech and default voice in the UI:
 
-* Go to **Settings**.
-* Edit **System Services - Voice**.
-* Set **macOS TTS** as **Default Text-to-Speech**.
-* Choose your preferred **Default Voice** for your setup.
+- Go to **Settings**.
+- Edit **System Services - Voice**.
+- Set **macOS TTS** as **Default Text-to-Speech**.
+- Choose your preferred **Default Voice** for your setup.
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```
+```ini
 org.openhab.voice:defaultTTS=mactts
 org.openhab.voice:defaultVoice=mactts:Alex
 ```
@@ -56,3 +54,7 @@ org.openhab.voice:defaultVoice=mactts:Alex
 ## Supported Audio Formats
 
 The MacTTS service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth and 44.1kHz frequency.
+
+## Caching
+
+The macOS TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.

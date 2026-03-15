@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -150,7 +151,7 @@ public class KM200DataHandler {
             }
             switch (type) {
                 case DATA_TYPE_STRING_VALUE: /* Check whether the type is a single value containing a string value */
-                    logger.debug("parseJSONData type string value: {} Type: {}", nodeRoot, itemType.toString());
+                    logger.debug("parseJSONData type string value: {} Type: {}", nodeRoot, itemType);
                     String sVal = nodeRoot.get("value").getAsString();
                     object.setValue(sVal);
                     /* Switch Binding */
@@ -259,7 +260,7 @@ public class KM200DataHandler {
                         }
                     }
                     return null;
-                case DATA_TYPE_ERROR_LIST: /* Check whether the type is a errorList */
+                case DATA_TYPE_ERROR_LIST: /* Check whether the type is an errorList */
                     KM200ErrorServiceHandler eService = null;
                     logger.trace("state of type errorList: {}", nodeRoot);
                     if (null != parent) {
@@ -302,11 +303,11 @@ public class KM200DataHandler {
                     logger.info("state of: type systeminfo is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
-                case DATA_TYPE_ARRAY_DATA: /* Check whether the type is a arrayData */
+                case DATA_TYPE_ARRAY_DATA: /* Check whether the type is an arrayData */
                     logger.info("state of: type arrayData is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
-                case DATA_TYPE_E_MONITORING_LIST: /* Check whether the type is a eMonitoringList */
+                case DATA_TYPE_E_MONITORING_LIST: /* Check whether the type is an eMonitoringList */
                     logger.info("state of: type eMonitoringList is not supported yet: {}", nodeRoot);
                     /* have to be completed */
                     break;
@@ -506,7 +507,7 @@ public class KM200DataHandler {
                     /* A switchProgram as NumberItem is always virtual */
                     newObject = sendVirtualState(object, service, command, itemType);
                 } else if (DATA_TYPE_ERROR_LIST.equals(type) && object.getVirtual() == 1) {
-                    /* A errorList as NumberItem is always virtual */
+                    /* An errorList as NumberItem is always virtual */
                     newObject = sendVirtualState(object, service, command, itemType);
                 } else {
                     logger.info("Not supported type for numberItem: {}", type);
@@ -675,7 +676,7 @@ public class KM200DataHandler {
                             break;
                     }
                 } else if (CoreItemFactory.DATETIME.equals(itemType)) {
-                    ZonedDateTime swTime = ((DateTimeType) command).getZonedDateTime();
+                    ZonedDateTime swTime = ((DateTimeType) command).getZonedDateTime(ZoneId.systemDefault());
                     KM200SwitchProgramServiceHandler sPService = ((KM200SwitchProgramServiceHandler) objParent
                             .getValueParameter());
                     if (null != sPService) {

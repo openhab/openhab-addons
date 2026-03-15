@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,14 @@
 package org.openhab.binding.tellstick.internal.local;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tellstick.internal.conf.TelldusLocalConfiguration;
 import org.openhab.binding.tellstick.internal.handler.DeviceStatusListener;
@@ -50,18 +52,19 @@ import org.tellstick.device.iface.Device;
  * to the framework. All {@link TelldusDevicesHandler}s use the
  * {@link TelldusLocalDeviceController} to execute the actual commands.
  *
- * @author Jan Gustafsson- Initial contribution
+ * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements TelldusBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TelldusLocalBridgeHandler.class);
 
-    private TellstickLocalDevicesDTO deviceList = null;
-    private TellstickLocalSensorsDTO sensorList = null;
-    private TelldusLocalDeviceController controller = null;
-    private List<DeviceStatusListener> deviceStatusListeners = Collections.synchronizedList(new ArrayList<>());
+    private @Nullable TellstickLocalDevicesDTO deviceList;
+    private @Nullable TellstickLocalSensorsDTO sensorList;
+    private @Nullable TelldusLocalDeviceController controller;
+    private Set<DeviceStatusListener> deviceStatusListeners = ConcurrentHashMap.newKeySet();
     private final HttpClient httpClient;
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
     /**
      * Use cache for refresh command to not update again when call is made within 10 seconds of previous call.
      */
@@ -84,11 +87,13 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
-        if (this.controller != null) {
-            this.controller.dispose();
+        TelldusDeviceController controller = this.controller;
+        if (controller != null) {
+            controller.dispose();
         }
         deviceList = null;
         sensorList = null;
@@ -107,11 +112,11 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
         return false;
     }
 
-    private synchronized void updateDevices(TellstickLocalDevicesDTO previouslist)
+    private synchronized void updateDevices(@Nullable TellstickLocalDevicesDTO previouslist)
             throws TellstickException, InterruptedException {
         TellstickLocalDevicesDTO newList = controller
                 .callRestMethod(TelldusLocalDeviceController.HTTP_LOCAL_API_DEVICES, TellstickLocalDevicesDTO.class);
-        if (newList.getDevices() != null) {
+        if (newList != null && newList.getDevices() != null) {
             logger.debug("Device list {}", newList.getDevices());
             if (previouslist == null) {
                 for (TellstickLocalDeviceDTO device : newList.getDevices()) {
@@ -163,12 +168,12 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
         }
     }
 
-    private synchronized void updateSensors(TellstickLocalSensorsDTO previouslist)
+    private synchronized void updateSensors(@Nullable TellstickLocalSensorsDTO previouslist)
             throws TellstickException, InterruptedException {
         TellstickLocalSensorsDTO newList = controller
                 .callRestMethod(TelldusLocalDeviceController.HTTP_LOCAL_API_SENSORS, TellstickLocalSensorsDTO.class);
-        logger.debug("Updated sensors:{}", newList.getSensors());
-        if (newList.getSensors() != null) {
+        if (newList != null && newList.getSensors() != null) {
+            logger.debug("Updated sensors:{}", newList.getSensors());
             if (previouslist == null) {
                 this.sensorList = newList;
                 for (TellstickLocalSensorDTO sensor : sensorList.getSensors()) {
@@ -227,7 +232,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
     }
 
     @Override
-    public boolean registerDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
+    public boolean registerDeviceStatusListener(@Nullable DeviceStatusListener deviceStatusListener) {
         if (deviceStatusListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null deviceStatusListener.");
         }
@@ -239,7 +244,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
         return deviceStatusListeners.remove(deviceStatusListener);
     }
 
-    private Device getDevice(String id, List<TellstickLocalDeviceDTO> devices) {
+    private @Nullable Device getDevice(String id, List<TellstickLocalDeviceDTO> devices) {
         for (Device device : devices) {
             if (device.getId() == Integer.valueOf(id)) {
                 return device;
@@ -248,7 +253,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
         return null;
     }
 
-    private Device getSensor(String id, List<TellstickLocalSensorDTO> sensors) {
+    private @Nullable Device getSensor(String id, List<TellstickLocalSensorDTO> sensors) {
         for (Device sensor : sensors) {
             if (sensor.getId() == Integer.valueOf(id)) {
                 return sensor;
@@ -258,7 +263,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
     }
 
     @Override
-    public Device getDevice(String serialNumber) {
+    public @Nullable Device getDevice(String serialNumber) {
         return getDevice(serialNumber, getDevices());
     }
 
@@ -270,7 +275,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
     }
 
     @Override
-    public Device getSensor(String deviceUUId) {
+    public @Nullable Device getSensor(String deviceUUId) {
         Device result = null;
         if (sensorList != null) {
             result = getSensor(deviceUUId, sensorList.getSensors());
@@ -286,7 +291,7 @@ public class TelldusLocalBridgeHandler extends BaseBridgeHandler implements Tell
     }
 
     @Override
-    public TelldusDeviceController getController() {
+    public @Nullable TelldusDeviceController getController() {
         return controller;
     }
 }

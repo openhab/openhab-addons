@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<features name="org.openhab.binding.electroluxair-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
-	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
-
-	<feature name="openhab-binding-electroluxair" description="ElectroluxAir Binding" version="${project.version}">
-		<feature>openhab-runtime-base</feature>
-		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.electroluxair/${project.version}</bundle>
-	</feature>
-</features>

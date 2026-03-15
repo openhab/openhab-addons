@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.benqprojector.internal.connector;
 
+import static org.openhab.binding.benqprojector.internal.BenqProjectorBindingConstants.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.benqprojector.internal.BenqProjectorCommandException;
 import org.openhab.binding.benqprojector.internal.BenqProjectorException;
 
 /**
@@ -28,11 +31,14 @@ import org.openhab.binding.benqprojector.internal.BenqProjectorException;
  */
 @NonNullByDefault
 public interface BenqProjectorConnector {
-    public static final int TIMEOUT_MS = 5 * 1000;
+    static final int TIMEOUT_MS = 5 * 1000;
 
-    public static final String START = "\r*";
-    public static final String END = "#\r";
-    public static final String BLANK = "";
+    static final String START = "\r*";
+    static final String END = "#\r";
+    static final String BLANK = "";
+
+    static final String BLOCK_ITM = "Block item";
+    static final String ILLEGAL_FMT = "Illegal format";
 
     /**
      * Procedure for connecting to projector.
@@ -55,8 +61,9 @@ public interface BenqProjectorConnector {
      *            Message to send.
      *
      * @throws BenqProjectorException
+     * @throws BenqProjectorCommandException
      */
-    String sendMessage(String data) throws BenqProjectorException;
+    String sendMessage(String data) throws BenqProjectorException, BenqProjectorCommandException;
 
     /**
      * Common method called by the Serial or Tcp connector to send the message to the projector, wait for a response and
@@ -70,9 +77,10 @@ public interface BenqProjectorConnector {
      *            The connector's output stream.
      *
      * @throws BenqProjectorException
+     * @throws BenqProjectorCommandException
      */
     default String sendMsgReadResp(String data, @Nullable InputStream in, @Nullable OutputStream out)
-            throws IOException, BenqProjectorException {
+            throws IOException, BenqProjectorException, BenqProjectorCommandException {
         String resp = BLANK;
 
         if (in != null && out != null) {
@@ -88,8 +96,24 @@ public interface BenqProjectorConnector {
                     byte[] tmpData = new byte[availableBytes];
                     int readBytes = in.read(tmpData, 0, availableBytes);
                     resp = resp.concat(new String(tmpData, 0, readBytes, StandardCharsets.US_ASCII));
-                    if (resp.contains(END)) {
-                        return resp.replaceAll("[\\r\\n*#>]", BLANK).replace(data, BLANK);
+
+                    if (resp.contains(UNSUPPORTED_ITM)) {
+                        return resp;
+                    }
+
+                    if (resp.contains(BLOCK_ITM)) {
+                        throw new BenqProjectorCommandException("Block Item received for command: " + data);
+                    }
+
+                    if (resp.contains(ILLEGAL_FMT)) {
+                        throw new BenqProjectorCommandException(
+                                "Illegal Format response received for command: " + data);
+                    }
+
+                    // The response is fully received when the second '#' arrives
+                    // example: *pow=?# *POW=ON#
+                    if (resp.chars().filter(ch -> ch == '#').count() >= 2) {
+                        return resp.replaceAll("[\\s\\r\\n*#>]", BLANK).replace(data, BLANK);
                     }
                 } else {
                     try {

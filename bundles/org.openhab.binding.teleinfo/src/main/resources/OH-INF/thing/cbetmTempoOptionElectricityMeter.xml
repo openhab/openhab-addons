@@ -12,7 +12,7 @@
 		<label>CBETM TEMPO</label>
 		<description>Three-phase Electricity meter with TEMPO option - CBETM (aka "Compteur Bleu Electronique Triphasé
 			Multitarif")</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="frameType" typeId="frameTypeType"/>
 			<channel id="isousc" typeId="isouscType"/>

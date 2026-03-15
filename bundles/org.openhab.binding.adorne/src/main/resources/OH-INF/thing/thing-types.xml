@@ -11,6 +11,7 @@
 
 		<label>Adorne Switch</label>
 		<description>Controls an Adorne switch or outlet.</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -30,6 +31,7 @@
 
 		<label>Adorne Dimmer Switch</label>
 		<description>Controls an Adorne dimmer switch.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

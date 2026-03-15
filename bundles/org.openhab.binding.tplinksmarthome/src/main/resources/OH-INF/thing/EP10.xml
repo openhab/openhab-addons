@@ -8,7 +8,7 @@
 		<label>EP10</label>
 		<description>TP-Link EP10 Kasa Smart Wi-Fi Plug Mini</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="led" typeId="led"/>

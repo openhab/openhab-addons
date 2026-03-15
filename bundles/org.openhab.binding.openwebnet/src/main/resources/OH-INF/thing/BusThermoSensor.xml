@@ -10,9 +10,9 @@
 			<bridge-type-ref id="bus_gateway"/>
 		</supported-bridge-type-refs>
 		<label>Thermo Sensor</label>
-		<description>A OpenWebNet BUS/SCS thermo sensor (probe) for measuring temperature in a zone. BTicino models:
+		<description>An OpenWebNet BUS/SCS thermo sensor (probe) for measuring temperature in a zone. BTicino models:
 			L/N/NT4577 etc.</description>
-
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 		</channels>
@@ -28,7 +28,7 @@
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
-				<description>Example: sensor 3 of zone 2 --> where=302. Sensor 5 of external zone 00 --> where=500</description>
+				<description>Example: sensor 3 of zone 2 --> where="302". Sensor 5 of external zone 00 --> where="500"</description>
 			</parameter>
 		</config-description>
 

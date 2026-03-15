@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +72,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     protected @Nullable ScheduledFuture<?> future = null;
 
     protected @Nullable ExpiringCache<JablotronDataUpdateResponse> dataCache;
-    protected ExpiringCache<List<JablotronHistoryDataEvent>> eventCache;
+    protected ExpiringCache<JablotronHistoryDataEvent> eventCache;
 
     public JablotronAlarmHandler(Thing thing, String alarmName) {
         super(thing);
@@ -186,20 +186,19 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
             logger.debug("Error during alarm status update: {}", dataUpdate.getErrorMessage());
         }
 
-        List<JablotronHistoryDataEvent> events = sendGetEventHistory();
-        if (events != null && !events.isEmpty()) {
-            JablotronHistoryDataEvent event = events.get(0);
+        JablotronHistoryDataEvent event = sendGetEventHistory();
+        if (event != null) {
             updateLastEvent(event);
         }
 
         return true;
     }
 
-    protected @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory() {
+    protected @Nullable JablotronHistoryDataEvent sendGetEventHistory() {
         return sendGetEventHistory(alarmName);
     }
 
-    private @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(String alarm) {
+    private @Nullable JablotronHistoryDataEvent sendGetEventHistory(String alarm) {
         JablotronBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             return handler.sendGetEventHistory(getThing(), alarm);
@@ -208,7 +207,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected void updateLastEvent(JablotronHistoryDataEvent event) {
-        updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(getZonedDateTime(event.getDate())));
+        updateLastEventTime(event);
         updateState(CHANNEL_LAST_EVENT, new StringType(event.getEventText()));
         updateState(CHANNEL_LAST_EVENT_CLASS, new StringType(event.getIconType()));
         updateState(CHANNEL_LAST_EVENT_INVOKER, new StringType(event.getInvokerName()));
@@ -220,12 +219,11 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected void updateEventChannel(String channel) {
-        List<JablotronHistoryDataEvent> events = eventCache.getValue();
-        if (events != null && !events.isEmpty()) {
-            JablotronHistoryDataEvent event = events.get(0);
+        JablotronHistoryDataEvent event = eventCache.getValue();
+        if (event != null) {
             switch (channel) {
                 case CHANNEL_LAST_EVENT_TIME:
-                    updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(getZonedDateTime(event.getDate())));
+                    updateLastEventTime(event);
                     break;
                 case CHANNEL_LAST_EVENT:
                     updateState(CHANNEL_LAST_EVENT, new StringType(event.getEventText()));
@@ -243,9 +241,17 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         }
     }
 
-    public ZonedDateTime getZonedDateTime(String date) {
-        return ZonedDateTime.parse(date.substring(0, 22) + ":" + date.substring(22, 24),
-                DateTimeFormatter.ISO_DATE_TIME);
+    private void updateLastEventTime(JablotronHistoryDataEvent event) {
+        String date = event.getDate();
+        if (date.isBlank()) {
+            logger.debug("Received empty event date for alarm {}", getThing().getUID());
+            return;
+        }
+        try {
+            updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(Instant.parse(date)));
+        } catch (DateTimeParseException e) {
+            logger.warn("Unable to parse event date '{}' for alarm {}", date, getThing().getUID());
+        }
     }
 
     protected @Nullable JablotronControlResponse sendUserCode(String section, String key, String status, String code) {

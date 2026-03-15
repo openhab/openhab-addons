@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class ModelParserTest {
 
     @Test
     public void shouldParseCorrectStatusModelWithHealth() {
-        String correctModel = "{ \"successful\": true, \"name\": \"Rosenlund Automower\", \"status\": { \"status\": 4, \"stopped\": false, \"duration\": 47493, \"mode\": 0, \"battery\": 20, \"hours\": 991 }, \"timer\": { \"status\": 2, \"next\": { \"date\": \"30.07.2017\", \"time\": \"13:00:00\", \"unix\": 1501419600 } }, \"wlan\": { \"signal\": -66 }, \"health\": { \"temperature\": 28, \"humidity\": 32 } }";
+        String correctModel = "{ \"successful\": true, \"name\": \"Rosenlund Automower\", \"status\": { \"status\": 4, \"stopped\": false, \"duration\": 47493, \"mode\": 0, \"battery\": 20, \"hours\": 991 }, \"timer\": { \"status\": 2, \"next\": { \"date\": \"30.07.2017\", \"time\": \"13:00:00\", \"unix\": 1501419600 } }, \"blades\": {\"quality\": 9, \"hours\": 183, \"days\": 76}, \"wlan\": { \"signal\": -66 }, \"health\": { \"temperature\": 28, \"humidity\": 32 } }";
         MowerInfo mowerInfo = subject.parse(correctModel, MowerInfo.class);
         assertTrue(mowerInfo.isSuccessful());
         assertEquals("Rosenlund Automower", mowerInfo.getName());
@@ -98,6 +98,9 @@ public class ModelParserTest {
         assertNotNull(mowerInfo.getHealth());
         assertEquals(28, mowerInfo.getHealth().getTemperature());
         assertEquals(32, mowerInfo.getHealth().getHumidity());
+        assertEquals(9, mowerInfo.getBlades().getQuality());
+        assertEquals(76, mowerInfo.getBlades().getDays());
+        assertEquals(183, mowerInfo.getBlades().getHours());
         // "health": { "temperature": 28, "humidity": 32 }
     }
 
@@ -183,14 +186,40 @@ public class ModelParserTest {
 
     @Test
     public void shouldParseVersionInfoV1betaToNA() {
-        String versionResponse = "{\n" + "mower: {\n" + "hardware: {\n" + "serial: 170602001,\n"
-                + "production: \"2017-02-07 15:12:00\"\n" + "},\n" + "msw: {\n" + "title: \"420\",\n"
-                + "version: \"7.10.00\",\n" + "compiled: \"2016-11-29 08:44:06\"\n" + "},\n" + "sub: {\n"
-                + "version: \"6.01.00\"\n" + "}\n" + "},\n" + "serial: \"05D80037-39355548-43163930\",\n"
-                + "bootloader: {\n" + "version: \"V0.4\",\n" + "compiled: \"2016-10-22 01:12:00\",\n"
-                + "comment: \"\"\n" + "},\n" + "wlan: {\n" + "at-version: \"V1.4.0\",\n" + "sdk-version: \"V2.1.0\"\n"
-                + "},\n" + "application: {\n" + "version: \"V1.0\",\n" + "compiled: \"2018-03-12 21:01:00\",\n"
-                + "comment: \"Release V1.0 Beta2\"\n" + "},\n" + "successful: true\n" + "}";
+        String versionResponse = """
+                {
+                mower: {
+                hardware: {
+                serial: 170602001,
+                production: "2017-02-07 15:12:00"
+                },
+                msw: {
+                title: "420",
+                version: "7.10.00",
+                compiled: "2016-11-29 08:44:06"
+                },
+                sub: {
+                version: "6.01.00"
+                }
+                },
+                serial: "05D80037-39355548-43163930",
+                bootloader: {
+                version: "V0.4",
+                compiled: "2016-10-22 01:12:00",
+                comment: ""
+                },
+                wlan: {
+                at-version: "V1.4.0",
+                sdk-version: "V2.1.0"
+                },
+                application: {
+                version: "V1.0",
+                compiled: "2018-03-12 21:01:00",
+                comment: "Release V1.0 Beta2"
+                },
+                successful: true
+                }\
+                """;
         VersionInfo versionInfo = subject.parse(versionResponse, VersionInfo.class);
         assertTrue(versionInfo.isSuccessful());
         assertEquals("n/a", versionInfo.getRobonect().getSerial());

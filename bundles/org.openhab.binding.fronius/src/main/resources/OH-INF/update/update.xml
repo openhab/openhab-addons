@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="fronius:powerinverter">
+		<instruction-set targetVersion="1">
+			<add-channel id="powerflowinverterpower">
+				<type>fronius:inverterPower</type>
+			</add-channel>
+			<add-channel id="powerflowinvertersoc">
+				<type>fronius:inverterSoc</type>
+			</add-channel>
+			<update-channel id="powerflowinverter1power">
+				<type>fronius:inverter1Power</type>
+				<label>Inverter 1 Power (DEPRECATED)</label>
+				<description>Inverter 1 Power - DEPRECATED. Please use inverterPower channel instead.</description>
+			</update-channel>
+			<update-channel id="powerflowinverter1soc">
+				<type>fronius:inverter1Soc</type>
+				<label>Inverter 1 State of Charge (DEPRECATED)</label>
+				<description>Inverter 1 State of Charge - DEPRECATED. Please use inverterSoc channel instead</description>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

@@ -1,0 +1,23 @@
+{
+    "errors": [],
+    "data": [
+        {
+            "id": "00000000-0000-0000-0000-000000000004",
+            "id_v1": "/sensors/5",
+            "owner": {
+                "rid": "00000000-0000-0000-0000-000000000000",
+                "rtype": "device"
+            },
+            "enabled": true,
+            "temperature": {
+                "temperature": 23.35,
+                "temperature_valid": true,
+                "temperature_report": {
+                    "changed": "2023-09-06T18:22:07.016Z",
+                    "temperature": 23.34
+                }
+            },
+            "type": "temperature"
+        }
+    ]
+}

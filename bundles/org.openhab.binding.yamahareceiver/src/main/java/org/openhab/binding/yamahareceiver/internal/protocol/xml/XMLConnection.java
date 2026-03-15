@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
@@ -47,6 +48,7 @@ public class XMLConnection extends AbstractConnection {
     private static final String HEADER_CHARSET_PART = "charset=";
 
     private static final int CONNECTION_TIMEOUT_MS = 5000;
+    private static final int READ_TIMEOUT_MS = 3000;
 
     public XMLConnection(String host) {
         super(host);
@@ -77,6 +79,7 @@ public class XMLConnection extends AbstractConnection {
 
             // Set a timeout in case the device is not reachable (went offline)
             connection.setConnectTimeout(CONNECTION_TIMEOUT_MS);
+            connection.setReadTimeout(READ_TIMEOUT_MS);
 
             connection.setUseCaches(false);
             connection.setDoInput(true);
@@ -93,7 +96,6 @@ public class XMLConnection extends AbstractConnection {
             }
 
             return responseConsumer.apply(connection);
-
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -104,7 +106,7 @@ public class XMLConnection extends AbstractConnection {
     /**
      * Post the given xml message
      *
-     * @param message XML formatted message excluding < ?xml > or <YAMAHA_AV> tags.
+     * @param message XML formatted message excluding {@code <?xml>} or {@code <YAMAHA_AV>} tags.
      * @throws IOException
      */
     @Override
@@ -115,7 +117,7 @@ public class XMLConnection extends AbstractConnection {
     /**
      * Post the given xml message and return the response as string.
      *
-     * @param message XML formatted message excluding <?xml> or <YAMAHA_AV> tags.
+     * @param message XML formatted message excluding {@code <?xml>} or {@code <YAMAHA_AV>} tags.
      * @return Return the response as text or throws an exception if the connection failed.
      * @throws IOException
      */
@@ -211,6 +213,6 @@ public class XMLConnection extends AbstractConnection {
      * @throws MalformedURLException
      */
     private URL createBaseUrl(String path) throws MalformedURLException {
-        return new URL("http://" + host + path);
+        return URI.create("http://" + host + path).toURL();
     }
 }

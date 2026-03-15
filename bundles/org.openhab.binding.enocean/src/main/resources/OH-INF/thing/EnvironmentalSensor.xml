@@ -11,7 +11,7 @@
 
 		<label>Environmental Sensor</label>
 		<description>Sensor for different environmental sensors like a weather station (EEP: A5-13)</description>
-
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

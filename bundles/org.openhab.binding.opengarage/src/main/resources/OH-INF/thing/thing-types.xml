@@ -7,7 +7,7 @@
 	<thing-type id="opengarage">
 		<label>OpenGarage</label>
 		<description>OpenGarage Controller</description>
-
+		<semantic-equipment-tag>GarageDoor</semantic-equipment-tag>
 		<channels>
 			<channel id="distance" typeId="opengarage-distance"/>
 			<channel id="status" typeId="opengarage-status"/>
@@ -16,7 +16,12 @@
 			<channel id="status-rollershutter" typeId="opengarage-status-rollershutter"/>
 			<channel id="vehicle" typeId="opengarage-vehicle"/>
 			<channel id="vehicle-status" typeId="opengarage-vehicle-status"/>
+			<channel id="status-text" typeId="opengarage-status-text"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -34,20 +39,49 @@
 				<context>password</context>
 				<default>opendoor</default>
 			</parameter>
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="doorTransitionTimeSeconds" type="integer" unit="s">
+				<label>Door Transition Time</label>
+				<description>Specifies number of seconds that it takes for the garage door to fully open / close, including the time
+					it takes for OpenGarage to emit beeps. Round up.</description>
+				<default>17</default>
+			</parameter>
+			<parameter name="doorOpeningState" type="text">
+				<label>Door Opening State</label>
+				<description>Text state to report when garage is opening</description>
+				<default>OPENING</default>
+			</parameter>
+			<parameter name="doorOpenState" type="text">
+				<label>Door Open State</label>
+				<description>Text state to report when garage is open (and not in transition)</description>
+				<default>OPEN</default>
+			</parameter>
+			<parameter name="doorClosingState" type="text">
+				<label>Door Closing State</label>
+				<description>Text state to report when garage is closing</description>
+				<default>CLOSING</default>
+			</parameter>
+			<parameter name="doorClosedState" type="text">
+				<label>Door Closed State</label>
+				<description>Text state to report when garage is closed (and not in transition)</description>
+				<default>CLOSED</default>
+			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<channel-type id="opengarage-distance">
 		<item-type>Number:Length</item-type>
 		<label>Distance</label>
 		<description>Distance Reading from the OG unit</description>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Opening</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="opengarage-status" advanced="true">
 		<item-type>Switch</item-type>
@@ -70,6 +104,10 @@
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<description>On/Off Status of the OG unit</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<config-description>
 			<parameter name="invert" type="boolean">
 				<label>Invert Switch</label>
@@ -87,12 +125,20 @@
 		<item-type>Contact</item-type>
 		<label>Contact Status</label>
 		<description>Contact Status of the OG unit</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="opengarage-status-rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Status</label>
 		<description>Roller Shutter Status of the OG unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="opengarage-vehicle" advanced="true">
 		<item-type>String</item-type>
@@ -104,12 +150,28 @@
 		<item-type>Number</item-type>
 		<label>Vehicle Presence</label>
 		<description>Vehicle presence detection</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">No vehicle detected</option>
 				<option value="1">Vehicle detected</option>
 				<option value="2">Vehicle status unknown</option>
+				<option value="3">Vehicle status not available</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="opengarage-status-text">
+		<item-type>String</item-type>
+		<label>Text status</label>
+		<description>Text status of the current door state, including transition, using values from configuration:
+			doorOpeningState, doorOpenState, doorClosingState, doorClosedState.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

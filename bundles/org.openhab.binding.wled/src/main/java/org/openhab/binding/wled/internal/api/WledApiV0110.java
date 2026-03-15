@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedHandler;
 import org.openhab.binding.wled.internal.WledState.PresetState;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 
@@ -31,7 +32,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link WledApiV0130} is the json Api methods for firmware version 0.11.0 and newer
+ * The {@link WledApiV0110} is the json Api methods for firmware version 0.11.0 and newer
  * as newer firmwares come out with breaking changes, extend this class into a newer firmware version class.
  *
  * @author Matthew Skinner - Initial contribution
@@ -39,7 +40,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class WledApiV0110 extends WledApiV084 {
 
-    public WledApiV0110(WLedHandler handler, HttpClient httpClient) {
+    public WledApiV0110(WLedBridgeHandler handler, HttpClient httpClient) {
         super(handler, httpClient);
     }
 
@@ -62,10 +63,10 @@ public class WledApiV0110 extends WledApiV084 {
             logger.trace("Preset:{} json:{}", presetEntry.getKey(), presetEntry.getValue());
             PresetState preset = gson.fromJson(presetEntry.getValue(), PresetState.class);
             if (preset != null && counter > 0) {
-                if (preset.bri == 0) {
-                    playlistsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                if (presetEntry.getValue().toString().contains("playlist")) {
+                    playlistsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
                 } else {
-                    presetsOptions.add(new StateOption(Integer.toString(counter), preset.n));
+                    presetsOptions.add(new StateOption(presetEntry.getKey(), preset.n));
                 }
             }
             counter++;
@@ -88,5 +89,15 @@ public class WledApiV0110 extends WledApiV084 {
             name = "Preset " + position;
         }
         postState("{\"psave\":" + position + ",\"n\":\"" + name + "\",\"ib\":true,\"sb\":true}");
+    }
+
+    @Override
+    public void setSleepMode(String value) throws ApiException {
+        postState("{\"nl\":{\"mode\":" + value + "}}");
+    }
+
+    @Override
+    public void setLegacyWhite(String whiteChannel, PercentType brightness, int segmentIndex) throws ApiException {
+        sendGetRequest(whiteChannel + brightness.toBigDecimal().multiply(BIG_DECIMAL_2_55) + "&SS=" + segmentIndex);
     }
 }

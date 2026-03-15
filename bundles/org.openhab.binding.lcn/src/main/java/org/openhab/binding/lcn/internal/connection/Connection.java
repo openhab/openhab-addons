@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class represents a configured connection to one LCN-PCHK.
- * It uses a {@link AsynchronousSocketChannel} to connect to LCN-PCHK.
+ * It uses an {@link AsynchronousSocketChannel} to connect to LCN-PCHK.
  * Included logic:
  * <ul>
  * <li>Reconnection on connection loss
@@ -251,7 +251,7 @@ public class Connection {
 
                                     writeInProgress = false;
 
-                                    if (sendQueue.size() > 0) {
+                                    if (!sendQueue.isEmpty()) {
                                         /**
                                          * This could lead to stack overflows, since the CompletionHandler may run in
                                          * the same Thread as triggerWriteToSocket() is invoked (see
@@ -407,7 +407,7 @@ public class Connection {
     /**
      * Gets the SocketChannel of the Connection.
      *
-     * @returnthe socket channel
+     * @return the socket channel
      */
     @Nullable
     public Channel getSocketChannel() {

@@ -6,8 +6,9 @@
 
 	<!-- AT-UHD-PRO3-44M -->
 	<thing-type id="pro3-44m">
-		<label>Atlona Pro3 4x4 HDBaseT Matrix</label>
-		<description>Atlona Pro3 4x4 HDBaseT Matrix (Model AT-UHD-PRO3-44M)</description>
+		<label>Atlona PRO3 4x4 HDBaseT Matrix</label>
+		<description>Atlona PRO3 4x4 HDBaseT Matrix (Model AT-UHD-PRO3-44M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -54,8 +55,9 @@
 
 	<!-- AT-UHD-PRO3-66M -->
 	<thing-type id="pro3-66m">
-		<label>Atlona Pro3 6x6 HDBaseT Matrix</label>
-		<description>Atlona Pro3 6x6 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<label>Atlona PRO3 6x6 HDBaseT Matrix</label>
+		<description>Atlona PRO3 6x6 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -122,8 +124,9 @@
 
 	<!-- AT-UHD-PRO3-88M -->
 	<thing-type id="pro3-88m">
-		<label>Atlona Pro3 8x8 HDBaseT Matrix</label>
-		<description>Atlona Pro3 8x8 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<label>Atlona PRO3 8x8 HDBaseT Matrix</label>
+		<description>Atlona PRO3 8x8 HDBaseT Matrix (Model AT-UHD-PRO3-66M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -206,8 +209,9 @@
 
 	<!-- AT-UHD-PRO3-1616M -->
 	<thing-type id="pro3-1616m">
-		<label>Atlona Pro3 16x16 HDBaseT Matrix</label>
-		<description>Atlona Pro3 16x16 HDBaseT Matrix (Model AT-UHD-PRO3-1616M)</description>
+		<label>Atlona PRO3 16x16 HDBaseT Matrix</label>
+		<description>Atlona PRO3 16x16 HDBaseT Matrix (Model AT-UHD-PRO3-1616M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -360,10 +364,40 @@
 		<config-description-ref uri="thing-type:atlona:hdmimatrix"/>
 	</thing-type>
 
+	<!-- AT-PRO3HD44M -->
+	<thing-type id="pro3-hd44m">
+		<label>Atlona PRO3 HD 4x4 HDBaseT Matrix</label>
+		<description>Atlona PRO3 HD 4x4 HDBaseT Matrix (Model AT-PRO3HD44M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="primary" typeId="primarygroup"/>
+			<channel-group id="port1" typeId="hd-portgroup">
+				<label>Port 1</label>
+				<description>Output Port 1 Channels</description>
+			</channel-group>
+			<channel-group id="port2" typeId="hd-portgroup">
+				<label>Port 2</label>
+				<description>Output Port 2 Channels</description>
+			</channel-group>
+			<channel-group id="port3" typeId="hd-portgroup">
+				<label>Port 3</label>
+				<description>Output Port 3 Channels</description>
+			</channel-group>
+			<channel-group id="port4" typeId="hd-portgroup">
+				<label>Port 4</label>
+				<description>Output Port 4 Channels</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:atlona:hdmimatrix"/>
+	</thing-type>
+
 	<!-- AT-PRO3HD66M -->
 	<thing-type id="pro3-hd66m">
-		<label>Atlona Pro3 HD 6x6 HDBaseT Matrix</label>
-		<description>Atlona Pro3 6x6 HDBaseT Matrix (Model AT-PRO3HD66M)</description>
+		<label>Atlona PRO3 HD 6x6 HDBaseT Matrix</label>
+		<description>Atlona PRO3 HD 6x6 HDBaseT Matrix (Model AT-PRO3HD66M)</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="primary" typeId="primarygroup"/>
@@ -449,6 +483,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Whether the matrix is on or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="panellock" advanced="true">
 		<item-type>Switch</item-type>
@@ -464,11 +502,13 @@
 		<item-type>String</item-type>
 		<label>Preset Command</label>
 		<description>Send a preset command ("saveX", "recallX", "clearX")</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="matrixcmd" advanced="true">
 		<item-type>String</item-type>
 		<label>Matrix Command</label>
 		<description>Send a matrix command ("resetmatrix", "resetports", "allportsX")</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="portpower" advanced="true">
 		<item-type>Switch</item-type>
@@ -489,6 +529,10 @@
 		<item-type>Switch</item-type>
 		<label>Mirror Enabled</label>
 		<description>Whether the HDMI port mirroring is enabled or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volume">
 		<item-type>Number</item-type>
@@ -500,5 +544,9 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Sets the output to muted or not</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

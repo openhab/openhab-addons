@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:shelly:blubattery">
+		<parameter name="deviceAddress" type="text" required="true">
+			<context>mac-address</context>
+			<label>MAC Address</label>
+			<description>MAC Address of the Shelly device</description>
+		</parameter>
+		<parameter name="lowBattery" type="integer" required="false">
+			<label>Low Battery Threshold (%)</label>
+			<description>An alarm is triggered when the device reports a battery charge lower than this threshold. Default: 20%</description>
+			<default>20</default>
+			<unitLabel>%</unitLabel>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:shelly:blugw">
+		<parameter name="deviceIp" type="text" required="true">
+			<label>IP Address</label>
+			<description>IP Address of the Shelly device</description>
+			<context>network-address</context>
+		</parameter>
+
+		<parameter name="enableBluGateway" type="boolean" required="false">
+			<label>Enable BLU Gateway Support</label>
+			<description>Enables BLU Gateway support including auto-upload of the required script</description>
+			<default>true</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ import com.google.gson.Gson;
 
 /**
  * The implementation of the client-side Webthing representation. This is based on HTTP. Bindings to alternative
- * application protocols such as CoAP may be defined in the future (which may be implemented by a another class)
+ * application protocols such as CoAP may be defined in the future (which may be implemented by another class)
  *
  * @author Gregor Roth - Initial contribution
  */
@@ -121,7 +121,7 @@ public class ConsumedThingImpl implements ConsumedThing {
         if (optionalProperty.isPresent()) {
             var propertyDescription = optionalProperty.get();
             for (var link : propertyDescription.links) {
-                if ((link.rel != null) && (link.href != null) && link.rel.equals("property")) {
+                if ((link.rel != null) && (link.href != null) && "property".equals(link.rel)) {
                     return Optional.of(webThingURI.resolve(link.href));
                 }
             }

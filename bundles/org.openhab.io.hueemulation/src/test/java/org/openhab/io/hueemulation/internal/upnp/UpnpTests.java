@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.hueemulation.internal.upnp;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -26,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.core.Response;
 
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.grizzly.osgi.httpservice.HttpServiceImpl;
 import org.glassfish.grizzly.osgi.httpservice.OSGiMainHandler;
 import org.glassfish.grizzly.osgi.httpservice.util.Logger;
@@ -102,9 +101,9 @@ public class UpnpTests {
     }
 
     @Test
-    public void descriptionWithoutAddress() {
-        Response response = commonSetup.client.target(descriptionPath).request().get();
-        assertEquals(404, response.getStatus());
+    public void descriptionWithoutAddress() throws Exception {
+        ContentResponse response = commonSetup.client.newRequest(descriptionPath).send();
+        assertThat(response.getStatus(), is(404));
     }
 
     @Test
@@ -113,9 +112,9 @@ public class UpnpTests {
         HueEmulationConfigWithRuntime r = subject.createConfiguration(null);
         r = subject.performAddressTest(r);
         subject.applyConfiguration(r);
-        Response response = commonSetup.client.target(descriptionPath).request().get();
-        assertEquals(200, response.getStatus());
-        String body = response.readEntity(String.class);
+        ContentResponse response = commonSetup.client.newRequest(descriptionPath).send();
+        assertThat(response.getStatus(), is(200));
+        String body = response.getContentAsString();
         assertThat(body, is(subject.xmlDocWithAddress));
 
         if (r == null) {
@@ -136,7 +135,7 @@ public class UpnpTests {
             sendSocket.receive(p);
             String received = new String(buffer);
             assertThat(received, CoreMatchers.startsWith("HTTP/1.1 200 OK"));
-            assertThat(received, CoreMatchers.containsString("hue-bridgeid: DEMOUUID"));
+            assertThat(received, CoreMatchers.containsString("hue-bridgeid: A668DC9B7172"));
         }
 
         r.dispose();

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airparif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="air-quality-bulletin">
+		<label>Air Quality Bulletin</label>
+		<channels>
+			<channel id="comment" typeId="comment">
+				<label>Message</label>
+				<description>General message for the air quality bulletin</description>
+			</channel>
+			<channel id="no2-min" typeId="mpc-value">
+				<label>NO2 Min</label>
+				<description>Minimum level of NO2 concentration</description>
+			</channel>
+			<channel id="no2-max" typeId="mpc-value">
+				<label>NO2 Max</label>
+				<description>Maximum level of NO2 concentration</description>
+			</channel>
+			<channel id="o3-min" typeId="mpc-value">
+				<label>O3 Min</label>
+				<description>Minimum level of O3 concentration</description>
+			</channel>
+			<channel id="o3-max" typeId="mpc-value">
+				<label>O3 Max</label>
+				<description>Maximum level of O3 concentration</description>
+			</channel>
+			<channel id="pm10-min" typeId="mpc-value">
+				<label>PM 10 Min</label>
+				<description>Minimum level of PM 10 concentration</description>
+			</channel>
+			<channel id="pm10-max" typeId="mpc-value">
+				<label>PM 10 Max</label>
+				<description>Maximum level of PM 10 concentration</description>
+			</channel>
+			<channel id="pm25-min" typeId="mpc-value">
+				<label>PM 2.5 Min</label>
+				<description>Minimum level of PM 2.5 concentration</description>
+			</channel>
+			<channel id="pm25-max" typeId="mpc-value">
+				<label>PM 2.5 Max</label>
+				<description>Maximum level of PM 2.5 concentration</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pollutant-mpc">
+		<label>Pollutant Concentration Information</label>
+		<channels>
+			<channel id="message" typeId="comment">
+				<label>Message</label>
+				<description>Polllutant concentration alert message</description>
+			</channel>
+			<channel id="value" typeId="mpc-value">
+				<label>Concentration</label>
+				<description>Concentration of the given pollutant</description>
+			</channel>
+			<channel id="alert" typeId="appreciation">
+				<label>Alert Level</label>
+				<description>Alert Level associated to pollutant concentration</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="pollutant-ndx">
+		<label>ATMO Index</label>
+		<channels>
+			<channel id="message" typeId="comment">
+				<label>Message</label>
+				<description>Alert message associated to the value of the index</description>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Timestamp</label>
+				<description>Timestamp of the evaluation</description>
+			</channel>
+			<channel id="alert" typeId="appreciation">
+				<label>Index</label>
+				<description>ATMO Index associated to highest pollutant concentration</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="daily">
+		<label>Daily Region Information</label>
+		<channels>
+			<channel id="message" typeId="comment">
+				<label>Message</label>
+				<description>Today's daily general information</description>
+			</channel>
+			<channel id="tomorrow" typeId="comment">
+				<label>Tomorrow</label>
+				<description>Tomorrow's daily general information</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

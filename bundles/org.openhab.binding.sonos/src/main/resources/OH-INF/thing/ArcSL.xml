@@ -6,9 +6,9 @@
 
 	<!-- Soundbar Arc SL Thing Type -->
 	<thing-type id="ArcSL" listed="false">
-		<label>Arc</label>
+		<label>Arc SL</label>
 		<description>Represents SONOS Arc SL soundbar</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

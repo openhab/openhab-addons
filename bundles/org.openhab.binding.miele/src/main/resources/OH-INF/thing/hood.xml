@@ -12,6 +12,7 @@
 
 		<label>Hood</label>
 		<description>This is a Miele@home compatible hood</description>
+		<semantic-equipment-tag>KitchenHood</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>

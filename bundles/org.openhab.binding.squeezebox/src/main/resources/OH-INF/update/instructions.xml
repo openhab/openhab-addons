@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+	<thing-type uid="squeezebox:squeezeboxplayer">
+		<instruction-set targetVersion="1">
+			<update-channel id="currentPlayingTime">
+				<type>squeezebox:currentPlayingTime</type>
+			</update-channel>
+			<update-channel id="duration">
+				<type>squeezebox:duration</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

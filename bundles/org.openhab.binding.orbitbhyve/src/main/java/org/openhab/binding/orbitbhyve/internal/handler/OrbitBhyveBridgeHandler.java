@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -37,6 +38,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.orbitbhyve.internal.OrbitBhyveConfiguration;
 import org.openhab.binding.orbitbhyve.internal.discovery.OrbitBhyveDiscoveryService;
@@ -55,12 +57,14 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link OrbitBhyveBridgeHandler} is responsible for handling commands, which are
@@ -107,13 +111,12 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OrbitBhyveDiscoveryService.class);
+        return Set.of(OrbitBhyveDiscoveryService.class);
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(OrbitBhyveConfiguration.class);
-        httpClient.setFollowRedirects(false);
 
         scheduler.execute(() -> {
             login();
@@ -183,7 +186,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                     updateAllStatuses();
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error sending ping to a web socket");
+                            "Error sending ping (IOException on web socket)");
+                } catch (WebSocketException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            String.format("Error sending ping (WebSocketException: %s)", e.getMessage()));
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Web socket creation error");
@@ -204,6 +210,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Get devices returned response status: " + response.getStatus());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception parsing devices json: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing devices json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting devices");
         } catch (InterruptedException e) {
@@ -225,13 +234,15 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Device response: {}", response.getContentAsString());
                 }
-                OrbitBhyveDevice device = gson.fromJson(response.getContentAsString(), OrbitBhyveDevice.class);
-                return device;
+                return gson.fromJson(response.getContentAsString(), OrbitBhyveDevice.class);
             } else {
                 logger.debug("Returned status: {}", response.getStatus());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Returned status: " + response.getStatus());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception parsing device json: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing device json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error during getting device info: " + deviceId);
@@ -245,7 +256,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     public synchronized void processStatusResponse(String content) {
         updateStatus(ThingStatus.ONLINE);
-        logger.trace("Got message: {}", content);
+        logger.trace("Processing message: {}", content);
         OrbitBhyveSocketEvent event = gson.fromJson(content, OrbitBhyveSocketEvent.class);
         if (event != null) {
             processEvent(event);
@@ -283,7 +294,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 ch = getThingChannel(event.getDeviceId(), CHANNEL_CONTROL);
                 if (ch != null) {
-                    updateState(ch.getUID(), "off".equals(event.getMode()) ? OnOffType.OFF : OnOffType.ON);
+                    updateState(ch.getUID(), OnOffType.from(!"off".equals(event.getMode())));
                 }
                 updateDeviceStatus(event.getDeviceId());
                 break;
@@ -308,11 +319,15 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     private void updateAllStatuses() {
         List<OrbitBhyveDevice> devices = getDevices();
         for (Thing th : getThing().getThings()) {
-            String deviceId = th.getUID().getId();
-            OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
-            for (OrbitBhyveDevice device : devices) {
-                if (deviceId.equals(th.getUID().getId())) {
-                    updateDeviceStatus(device, handler);
+            if (th.isEnabled()) {
+                ThingHandler handler = th.getHandler();
+                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                    String deviceId = sprinklerHandler.getSprinklerId();
+                    for (OrbitBhyveDevice device : devices) {
+                        if (deviceId.equals(device.getId())) {
+                            updateDeviceStatus(device, sprinklerHandler);
+                        }
+                    }
                 }
             }
         }
@@ -329,10 +344,12 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateDeviceStatus(String deviceId) {
         for (Thing th : getThing().getThings()) {
-            if (deviceId.equals(th.getUID().getId())) {
-                OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
-                OrbitBhyveDevice device = getDevice(deviceId);
-                updateDeviceStatus(device, handler);
+            ThingHandler handler = th.getHandler();
+            if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                if (deviceId.equals(sprinklerHandler.getSprinklerId())) {
+                    OrbitBhyveDevice device = getDevice(deviceId);
+                    updateDeviceStatus(device, sprinklerHandler);
+                }
             }
         }
     }
@@ -340,9 +357,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
     private void updateDeviceProgramStatus(OrbitBhyveProgram program) {
         for (Thing th : getThing().getThings()) {
             if (program.getDeviceId().equals(th.getUID().getId())) {
-                OrbitBhyveSprinklerHandler handler = (OrbitBhyveSprinklerHandler) th.getHandler();
-                if (handler != null) {
-                    handler.updateProgram(program);
+                ThingHandler handler = th.getHandler();
+                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                    sprinklerHandler.updateProgram(program);
                 }
             }
         }
@@ -424,7 +441,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 localSession.getRemote().sendString(msg);
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Cannot send hello string to web socket!");
+                        "Error sending hello string (IOException on web socket)");
+            } catch (WebSocketException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("Error sending hello string (WebSocketException: %s)", e.getMessage()));
             }
         }
     }
@@ -464,7 +484,10 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error during program watering execution");
+                    "Error sending program watering execution (IOException on web socket)");
+        } catch (WebSocketException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error sending program watering execution (WebSocketException: %s)", e.getMessage()));
         }
     }
 
@@ -503,7 +526,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         + "\",\"delay\":" + delay + ",\"timestamp\":\"" + dateTime + "\"}");
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during rain delay setting");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error setting rain delay (IOException on web socket)");
+        } catch (WebSocketException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error setting rain delay (WebSocketException: %s)", e.getMessage()));
         }
     }
 
@@ -517,7 +544,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         + "\",\"timestamp\":\"" + dateTime + "\",\"mode\":\"manual\",\"stations\":[]}");
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during watering stopping");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error sending stop watering (IOException on web socket)");
+        } catch (WebSocketException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error sending stop watering (WebSocketException: %s)", e.getMessage()));
         }
     }
 
@@ -553,7 +584,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                         + "\",\"device_id\":\"" + deviceId + "\",\"timestamp\":\"" + dateTime + "\"}");
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during setting run mode");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error setting run mode (IOException on web socket)");
+        } catch (WebSocketException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    String.format("Error setting run mode (WebSocketException: %s)", e.getMessage()));
         }
     }
 

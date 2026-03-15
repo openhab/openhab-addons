@@ -4,26 +4,60 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="p1_wifi_meter">
+	<thing-type id="p1_wifi_meter" listed="false">
 		<label>HomeWizard Wi-Fi P1 Meter</label>
 		<description>This thing provides the measurement data that is available through the http interface of the HomeWizard
 			Wi-Fi P1 Meter.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
-			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
-			<channel id="total_energy_import_t2" typeId="total_energy_import_t2"/>
-			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
-			<channel id="total_energy_export_t2" typeId="total_energy_export_t2"/>
+			<channel id="active_current" typeId="system.electric-current">
+				<label>Current</label>
+				<description>The sum of the current for all phases</description>
+			</channel>
+			<channel id="active_current_l1" typeId="system.electric-current">
+				<label>Current L1</label>
+			</channel>
+			<channel id="active_current_l2" typeId="system.electric-current">
+				<label>Current L2</label>
+			</channel>
+			<channel id="active_current_l3" typeId="system.electric-current">
+				<label>Current L3</label>
+			</channel>
 			<channel id="active_power" typeId="active_power"/>
 			<channel id="active_power_l1" typeId="active_power_l1"/>
 			<channel id="active_power_l2" typeId="active_power_l2"/>
 			<channel id="active_power_l3" typeId="active_power_l3"/>
+			<channel id="active_voltage" typeId="system.electric-voltage">
+				<label>Active Voltage</label>
+			</channel>
+			<channel id="active_voltage_l1" typeId="system.electric-voltage">
+				<label>Active Voltage L1</label>
+			</channel>
+			<channel id="active_voltage_l2" typeId="system.electric-voltage">
+				<label>Active Voltage L2</label>
+			</channel>
+			<channel id="active_voltage_l3" typeId="system.electric-voltage">
+				<label>Active Voltage L3</label>
+			</channel>
+
+			<channel id="power_failures" typeId="power_failures"/>
+			<channel id="long_power_failures" typeId="power_failures">
+				<label>Long Power Failures</label>
+				<description>This channel provides the count of long power failures.</description>
+			</channel>
+
+			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
+			<channel id="total_energy_import_t2" typeId="total_energy_import_t2"/>
+			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
+			<channel id="total_energy_export_t2" typeId="total_energy_export_t2"/>
+
 			<channel id="total_gas" typeId="total_gas"/>
 			<channel id="gas_timestamp" typeId="gas_timestamp"/>
 		</channels>
 
 		<properties>
 			<property name="meterModel">Unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>
@@ -41,11 +75,79 @@
 
 	</thing-type>
 
+
+	<thing-type id="energy_socket" listed="false">
+		<label>HomeWizard Energysocket</label>
+		<description>This thing provides the measurement data that is available through the http interface of a HomeWizard
+			Energysocket.</description>
+
+		<channels>
+			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
+			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
+			<channel id="active_voltage" typeId="active_voltage"/>
+			<channel id="active_power" typeId="active_power"/>
+			<channel id="power_switch" typeId="power_switch"/>
+			<channel id="power_lock" typeId="power_lock"/>
+			<channel id="ring_brightness" typeId="ring_brightness"/>
+
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Network Address</label>
+				<description>The IP or host name of the Energysocket.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="refreshDelay" type="integer" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in seconds for polling the Energysocket.</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="watermeter" listed="false">
+		<label>HomeWizard Wi-Fi Watermeter</label>
+		<description>This thing provides the measurement data that is available through the http interface of a HomeWizard
+			Watermeter.</description>
+
+		<channels>
+			<channel id="total_water" typeId="total_water"/>
+			<channel id="current_water" typeId="current_water"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Network Address</label>
+				<description>The IP or host name of the Watermeter.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="refreshDelay" type="integer" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>The refresh interval in seconds for polling the Watermeter.</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+
+	<channel-type id="power_failures">
+		<item-type>Number</item-type>
+		<label>Power Failures</label>
+		<description>This channel provides the count of any type of power failure.</description>
+	</channel-type>
+
 	<channel-type id="total_energy_import_t1">
 		<item-type>Number:Energy</item-type>
 		<label>Total Imported Energy Counter 1</label>
 		<description>This channel provides the most recently reported total imported energy in kWh by counter 1, most commonly
 			used for import during the night or weekend.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_import_t2">
@@ -55,6 +157,10 @@
 			This channel provides the most recently reported total imported energy in kWh by counter 2, most commonly
 			used for import during the day.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_export_t1">
@@ -64,6 +170,10 @@
 			This channel provides the most recently reported total exported energy in kWh by counter 1, most commonly
 			used for export during the night or weekend.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_energy_export_t2">
@@ -73,6 +183,22 @@
 			This channel provides the most recently reported total exported energy in kWh by counter 2, most commonly
 			used for export during the day.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="active_voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Current Grid Voltage</label>
+		<description>
+			This channel provides the current grid voltage.
+		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_power">
@@ -82,6 +208,11 @@
 			This channel provides the current net total power in W. It will be below 0 if power is currently being
 			exported.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="active_power_l1">
@@ -91,6 +222,10 @@
 			This channel provides the current net phase 1 power in W. It will be below 0 if power is currently being
 			exported.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_power_l2">
@@ -100,6 +235,10 @@
 			This channel provides the current net phase 2 power in W. It will be below 0 if power is currently being
 			exported. It will be 0 for single phase systems.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active_power_l3">
@@ -109,6 +248,10 @@
 			This channel provides the current net phase 3 power in W. It will be below 0 if power is currently being
 			exported. It will be 0 for single phase systems.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="total_gas">
@@ -119,6 +262,10 @@
 			frequently as the data in the other channels, the gas_timestamp channel provides the time stamp of the most recent
 			update.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="gas_timestamp">
@@ -127,6 +274,58 @@
 		<description>
 			This channel provides the time stamp of the total_gas measurement.
 		</description>
+	</channel-type>
+
+	<channel-type id="total_water">
+		<item-type>Number:Volume</item-type>
+		<label>Total Imported Water</label>
+		<description>
+			This channel provides the most recently reported total imported water in m^3.
+		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+
+	<channel-type id="current_water">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Current Water Rate</label>
+		<description>
+			This channel provides the most recently reported current water usage in liters per minute.
+		</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="power_switch">
+		<item-type>Switch</item-type>
+		<label>Power Switch</label>
+		<description>
+			This channel provides access to the power switch of the Energysocket
+		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="power_lock">
+		<item-type>Switch</item-type>
+		<label>Power Lock</label>
+		<description>
+			This channel provides access to the power lock of the Energysocket
+		</description>
+	</channel-type>
+
+	<channel-type id="ring_brightness">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Ring Brightness</label>
+		<description>
+			This channel provides access to the brightness of the ring of the Energysocket
+		</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

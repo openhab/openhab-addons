@@ -7,7 +7,7 @@
 	<bridge-type id="smartyBridge">
 		<label>Smarty Meter</label>
 		<description>The Luxembourgian Smart Meter 'Smarty'</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:dsmr:smartybridgesettings"/>
 	</bridge-type>
 

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.network.internal.utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -25,18 +23,24 @@ import java.net.NetworkInterface;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,6 +58,49 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class NetworkUtils {
+
+    /**
+     * Nanos per millisecond and microsecond.
+     */
+    private static final long NANOS_PER_MILLI = 1000_000L;
+    private static final long NANOS_PER_MICRO = 1000L;
+
+    /**
+     * Converts a {@link Duration} to milliseconds.
+     * <p>
+     * The result has a greater than millisecond precision compared to {@link Duration#toMillis()} which drops excess
+     * precision information.
+     *
+     * @param duration the {@link Duration} to be converted
+     * @return the equivalent milliseconds of the given {@link Duration}
+     */
+    public static double durationToMillis(Duration duration) {
+        return (double) duration.toNanos() / NANOS_PER_MILLI;
+    }
+
+    /**
+     * Converts a double representing milliseconds to a {@link Duration} instance.
+     * <p>
+     * The result has a greater than millisecond precision compared to {@link Duration#ofMillis(long)}.
+     *
+     * @param millis the milliseconds to be converted
+     * @return a {@link Duration} instance representing the given milliseconds
+     */
+    public static Duration millisToDuration(double millis) {
+        return Duration.ofNanos((long) (millis * NANOS_PER_MILLI));
+    }
+
+    /**
+     * Converts a double representing microseconds to a {@link Duration} instance.
+     * <p>
+     *
+     * @param micros the microseconds to be converted
+     * @return a {@link Duration} instance representing the given microseconds
+     */
+    public static Duration microsToDuration(double micros) {
+        return Duration.ofNanos((long) (micros * NANOS_PER_MICRO));
+    }
+
     private final Logger logger = LoggerFactory.getLogger(NetworkUtils.class);
 
     private LatencyParser latencyParser = new LatencyParser();
@@ -93,7 +140,7 @@ public class NetworkUtils {
                 result.add(InetAddress.getByAddress(segments).getHostAddress());
             }
         } catch (UnknownHostException e) {
-            logger.debug("Could not build net ip address.", e);
+            logger.trace("Could not build net IP address.", e);
         }
         return result;
     }
@@ -107,15 +154,14 @@ public class NetworkUtils {
         Set<String> result = new HashSet<>();
 
         try {
-            // For each interface ...
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface networkInterface = en.nextElement();
-                if (!networkInterface.isLoopback()) {
+                if (networkInterface.isUp() && !networkInterface.isLoopback()) {
                     result.add(networkInterface.getName());
                 }
             }
-        } catch (SocketException ignored) {
-            // If we are not allowed to enumerate, we return an empty result set.
+        } catch (SocketException e) {
+            logger.trace("Could not get network interfaces", e);
         }
 
         return result;
@@ -132,14 +178,49 @@ public class NetworkUtils {
     }
 
     /**
+     * Retrieves a map of network interface names to their associated IP addresses.
+     *
+     * @return A map where the key is the name of the network interface and the value is a set of CidrAddress objects
+     *         representing the IP addresses and network prefix lengths for that interface.
+     */
+    public Map<String, Set<CidrAddress>> getNetworkIPsPerInterface() {
+        Map<String, Set<CidrAddress>> outputMap = new HashMap<>();
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface networkInterface = en.nextElement();
+                if (!networkInterface.isUp() || networkInterface.isLoopback()) {
+                    logger.trace("Network interface: {} is excluded in the search", networkInterface.getName());
+                    continue;
+                }
+
+                Set<CidrAddress> addresses = networkInterface.getInterfaceAddresses().stream()
+                        .map(m -> new CidrAddress(m.getAddress(), m.getNetworkPrefixLength()))
+                        .filter(cidr -> !cidr.getAddress().isLoopbackAddress()) // (127.x.x.x, ::1)
+                        .filter(cidr -> !cidr.getAddress().isLinkLocalAddress())// (169.254.x.x or fe80::/10)
+                        .collect(Collectors.toSet());
+
+                if (!addresses.isEmpty()) {
+                    logger.trace("Network interface: {} is included in the search", networkInterface.getName());
+                    outputMap.put(networkInterface.getName(), addresses);
+                } else {
+                    logger.trace("Network interface: {} has no usable addresses", networkInterface.getName());
+                }
+            }
+        } catch (SocketException e) {
+            logger.trace("Could not get network interfaces", e);
+        }
+        return outputMap;
+    }
+
+    /**
      * Takes the interfaceIPs and fetches every IP which can be assigned on their network
      *
      * @param interfaceIPs The IPs which are assigned to the Network Interfaces
      * @param maximumPerInterface The maximum of IP addresses per interface or 0 to get all.
      * @return Every single IP which can be assigned on the Networks the computer is connected to
      */
-    private Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
-        LinkedHashSet<String> networkIPs = new LinkedHashSet<>();
+    public Set<String> getNetworkIPs(Set<CidrAddress> interfaceIPs, int maximumPerInterface) {
+        Set<String> networkIPs = new LinkedHashSet<>();
 
         short minCidrPrefixLength = 8; // historic Class A network, addresses = 16777214
         if (maximumPerInterface != 0) {
@@ -176,25 +257,24 @@ public class NetworkUtils {
     }
 
     /**
-     * Try to establish a tcp connection to the given port. Returns false if a timeout occurred
-     * or the connection was denied.
+     * Try to establish a TCP connection to the given port.
      *
-     * @param host The IP or hostname
-     * @param port The tcp port. Must be not 0.
-     * @param timeout Timeout in ms
-     * @return Ping result information. Optional is empty if ping command was not executed.
-     * @throws IOException
+     * @param host the IP or hostname
+     * @param port the TCP port. Must be not 0.
+     * @param timeout the timeout before the call aborts
+     * @return the {@link PingResult} of connecting to the given port
+     * @throws IOException if an error occurs during the connection
      */
-    public Optional<PingResult> servicePing(String host, int port, int timeout) throws IOException {
-        double execStartTimeInMS = System.currentTimeMillis();
-
-        SocketAddress socketAddress = new InetSocketAddress(host, port);
+    public PingResult servicePing(String host, int port, Duration timeout) throws IOException {
+        Instant execStartTime = Instant.now();
+        boolean success = false;
         try (Socket socket = new Socket()) {
-            socket.connect(socketAddress, timeout);
-            return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
-        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException ignored) {
-            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
+            socket.connect(new InetSocketAddress(host, port), (int) timeout.toMillis());
+            success = true;
+        } catch (ConnectException | SocketTimeoutException | NoRouteToHostException e) {
+            logger.trace("Could not connect to {}:{} {}", host, port, e.getMessage());
         }
+        return new PingResult(success, Duration.between(execStartTime, Instant.now()));
     }
 
     /**
@@ -208,11 +288,11 @@ public class NetworkUtils {
             return IpPingMethodEnum.JAVA_PING;
         } else {
             os = os.toLowerCase();
-            if (os.indexOf("win") >= 0) {
+            if (os.contains("win")) {
                 method = IpPingMethodEnum.WINDOWS_PING;
-            } else if (os.indexOf("mac") >= 0) {
+            } else if (os.contains("mac")) {
                 method = IpPingMethodEnum.MAC_OS_PING;
-            } else if (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0 || os.indexOf("aix") >= 0) {
+            } else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
                 method = IpPingMethodEnum.IPUTILS_LINUX_PING;
             } else {
                 // We cannot estimate the command line for any other operating system and just return false
@@ -221,23 +301,25 @@ public class NetworkUtils {
         }
 
         try {
-            Optional<PingResult> pingResult = nativePing(method, "127.0.0.1", 1000);
-            if (pingResult.isPresent() && pingResult.get().isSuccess()) {
+            PingResult pingResult = nativePing(method, "127.0.0.1", Duration.ofSeconds(1));
+            if (pingResult != null && pingResult.isSuccess()) {
                 return method;
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            logger.trace("Native ping to 127.0.0.1 failed", e);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Reset interrupt flag
+            Thread.currentThread().interrupt();
         }
         return IpPingMethodEnum.JAVA_PING;
     }
 
     /**
-     * Return true if the external arp ping utility (arping) is available and executable on the given path.
+     * Return true if the external ARP ping utility (arping) is available and executable on the given path.
      */
-    public ArpPingUtilEnum determineNativeARPpingMethod(String arpToolPath) {
+    public ArpPingUtilEnum determineNativeArpPingMethod(String arpToolPath) {
         String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(100), arpToolPath, "--help");
         if (result == null || result.isBlank()) {
+            logger.trace("The command did not return a response due to an error or timeout");
             return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
         } else if (result.contains("Thomas Habets")) {
             if (result.matches("(?s)(.*)w sec Specify a timeout(.*)")) {
@@ -249,11 +331,14 @@ public class NetworkUtils {
             return ArpPingUtilEnum.IPUTILS_ARPING;
         } else if (result.contains("Usage: arp-ping.exe")) {
             return ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS;
+        } else {
+            logger.trace("The command output did not match any known output");
+            return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
         }
-        return ArpPingUtilEnum.DISABLED_UNKNOWN_TOOL;
     }
 
     public enum IpPingMethodEnum {
+        DISABLED,
         JAVA_PING,
         WINDOWS_PING,
         IPUTILS_LINUX_PING,
@@ -264,35 +349,70 @@ public class NetworkUtils {
      * Use the native ping utility of the operating system to detect device presence.
      *
      * @param hostname The DNS name, IPv4 or IPv6 address. Must not be null.
-     * @param timeoutInMS Timeout in milliseconds. Be aware that DNS resolution is not part of this timeout.
-     * @return Ping result information. Optional is empty if ping command was not executed.
+     * @param timeout the timeout before the call aborts. Be aware that DNS resolution is not part of this timeout.
+     * @return Ping result information. <code>null</code> if ping command was not executed.
      * @throws IOException The ping command could probably not be found
      */
-    public Optional<PingResult> nativePing(@Nullable IpPingMethodEnum method, String hostname, int timeoutInMS)
+    public @Nullable PingResult nativePing(@Nullable IpPingMethodEnum method, String hostname, Duration timeout)
             throws IOException, InterruptedException {
-        double execStartTimeInMS = System.currentTimeMillis();
+        Instant execStartTime = Instant.now();
 
         Process proc;
         if (method == null) {
-            return Optional.empty();
+            return null;
         }
         // Yes, all supported operating systems have their own ping utility with a different command line
         switch (method) {
             case IPUTILS_LINUX_PING:
-                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
-                        .start();
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout.toSeconds()), "-c", "1", hostname)
+                        .redirectErrorStream(true).start();
                 break;
             case MAC_OS_PING:
-                proc = new ProcessBuilder("ping", "-t", String.valueOf(timeoutInMS / 1000), "-c", "1", hostname)
-                        .start();
+                proc = new ProcessBuilder("ping", "-t", String.valueOf(timeout.toSeconds()), "-c", "1", hostname)
+                        .redirectErrorStream(true).start();
                 break;
             case WINDOWS_PING:
-                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeoutInMS), "-n", "1", hostname).start();
+                proc = new ProcessBuilder("ping", "-w", String.valueOf(timeout.toMillis()), "-n", "1", hostname)
+                        .redirectErrorStream(true).start();
                 break;
             case JAVA_PING:
             default:
-                // We cannot estimate the command line for any other operating system and just return false
-                return Optional.empty();
+                // We cannot estimate the command line for any other operating system and just return null
+                return null;
+        }
+
+        // Consume the output while the process runs
+        FutureTask<List<String>> consumer = OutputConsumptionUtil.consumeText(proc.getInputStream(),
+                StandardCharsets.UTF_8);
+
+        if (!proc.waitFor(timeout.toMillis() * 10L, TimeUnit.MILLISECONDS)) {
+            logger.warn("Timed out while waiting for the ping process to execute");
+            proc.destroy();
+            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+        }
+        int result = proc.exitValue();
+        Instant execStopTime = Instant.now();
+        List<String> output;
+        try {
+            if (Thread.currentThread().isInterrupted()) {
+                consumer.cancel(true);
+                output = List.of();
+            }
+            output = consumer.get(5, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            output = List.of();
+            logger.warn("An exception occurred while consuming ping process output: {}", e.getMessage());
+            logger.trace("", e);
+        } catch (TimeoutException e) {
+            // This should never happen, since the output should be available as soon as the process has finished
+            output = List.of();
+            logger.warn("Timed out while retrieving ping process output");
+            logger.trace("", e);
+        }
+        if (logger.isTraceEnabled()) {
+            for (String line : output) {
+                logger.trace("Network [ping output]: '{}'", line);
+            }
         }
 
         // The return code is 0 for a successful ping, 1 if device didn't
@@ -300,30 +420,24 @@ public class NetworkUtils {
         // not ready.
         // Exception: return code is also 0 in Windows for all requests on the local subnet.
         // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
-
-        int result = proc.waitFor();
         if (result != 0) {
-            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
+            return new PingResult(false, Duration.between(execStartTime, execStopTime));
         }
 
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(proc.getInputStream()))) {
-            String line = r.readLine();
-            if (line == null) {
-                throw new IOException("Received no output from ping process.");
+        if (output.isEmpty()) {
+            throw new IOException("Received no output from ping process.");
+        }
+
+        for (String line : output) {
+            // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
+            // this specific string is contained in the output
+            if (line.contains("TTL=") || line.contains("ttl=")) {
+                PingResult pingResult = new PingResult(true, Duration.between(execStartTime, execStopTime));
+                pingResult.setResponseTime(latencyParser.parseLatency(line, null));
+                return pingResult;
             }
-            do {
-                // Because of the Windows issue, we need to check this. We assume that the ping was successful whenever
-                // this specific string is contained in the output
-                if (line.contains("TTL=") || line.contains("ttl=")) {
-                    PingResult pingResult = new PingResult(true, System.currentTimeMillis() - execStartTimeInMS);
-                    latencyParser.parseLatency(line).ifPresent(pingResult::setResponseTimeInMS);
-                    return Optional.of(pingResult);
-                }
-                line = r.readLine();
-            } while (line != null);
-
-            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
         }
+        return new PingResult(false, Duration.between(execStartTime, execStopTime));
     }
 
     public enum ArpPingUtilEnum {
@@ -346,76 +460,131 @@ public class NetworkUtils {
 
     /**
      * Execute the arping tool to perform an ARP ping (only for IPv4 addresses).
-     * There exist two different arping utils with the same name unfortunatelly.
-     * * iputils arping which is sometimes preinstalled on fedora/ubuntu and the
-     * * https://github.com/ThomasHabets/arping which also works on Windows and MacOS.
+     * There exist two different arping utils with the same name unfortunately.
+     * <ul>
+     * <li>iputils arping which is sometimes preinstalled on Fedora/Ubuntu and the
+     * <li>https://github.com/ThomasHabets/arping which also works on Windows and macOS.
+     * </ul>
      *
      * @param arpUtilPath The arping absolute path including filename. Example: "arping" or "/usr/bin/arping" or
      *            "C:\something\arping.exe" or "arp-ping.exe"
      * @param interfaceName An interface name, on linux for example "wlp58s0", shown by ifconfig. Must not be null.
      * @param ipV4address The ipV4 address. Must not be null.
-     * @param timeoutInMS A timeout in milliseconds
-     * @return Ping result information. Optional is empty if ping command was not executed.
+     * @param timeout the timeout before the call aborts
+     * @return Ping result information. <code>null</code> if ping command was not executed.
      * @throws IOException The ping command could probably not be found
      */
-    public Optional<PingResult> nativeARPPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
-            String interfaceName, String ipV4address, int timeoutInMS) throws IOException, InterruptedException {
-        double execStartTimeInMS = System.currentTimeMillis();
-
+    public @Nullable PingResult nativeArpPing(@Nullable ArpPingUtilEnum arpingTool, @Nullable String arpUtilPath,
+            String interfaceName, String ipV4address, Duration timeout) throws IOException, InterruptedException {
         if (arpUtilPath == null || arpingTool == null || !arpingTool.canProceed) {
-            return Optional.empty();
+            return null;
         }
+        Instant execStartTime = Instant.now();
         Process proc;
         if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING_WITHOUT_TIMEOUT) {
-            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-c", "1", "-i", interfaceName, ipV4address)
+                    .redirectErrorStream(true).start();
         } else if (arpingTool == ArpPingUtilEnum.THOMAS_HABERT_ARPING) {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-C", "1", "-i",
-                    interfaceName, ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toSeconds()), "-C", "1", "-i",
+                    interfaceName, ipV4address).redirectErrorStream(true).start();
         } else if (arpingTool == ArpPingUtilEnum.ELI_FULKERSON_ARP_PING_FOR_WINDOWS) {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS), "-x", ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toMillis()), "-x", ipV4address)
+                    .redirectErrorStream(true).start();
         } else {
-            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeoutInMS / 1000), "-c", "1", "-I",
-                    interfaceName, ipV4address).start();
+            proc = new ProcessBuilder(arpUtilPath, "-w", String.valueOf(timeout.toSeconds()), "-c", "1", "-I",
+                    interfaceName, ipV4address).redirectErrorStream(true).start();
+        }
+
+        // Consume the output while the process runs
+        FutureTask<List<String>> consumer = OutputConsumptionUtil.consumeText(proc.getInputStream(),
+                StandardCharsets.UTF_8);
+
+        if (!proc.waitFor(timeout.toMillis() * 10L, TimeUnit.MILLISECONDS)) {
+            logger.warn("Timed out while waiting for the arping process to execute");
+            proc.destroy();
+            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+        }
+        int result = proc.exitValue();
+        Instant execStopTime = Instant.now();
+        List<String> output;
+        try {
+            if (Thread.currentThread().isInterrupted()) {
+                consumer.cancel(true);
+                output = List.of();
+            }
+            output = consumer.get(5, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            output = List.of();
+            logger.warn("An exception occurred while consuming arping process output: {}", e.getMessage());
+            logger.trace("", e);
+        } catch (TimeoutException e) {
+            // This should never happen, since the output should be available as soon as the process has finished
+            output = List.of();
+            logger.warn("Timed out while retrieving arping process output");
+            logger.trace("", e);
+        }
+        if (logger.isTraceEnabled()) {
+            for (String line : output) {
+                logger.trace("Network [arping output]: '{}'", line);
+            }
         }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
-        return Optional.of(new PingResult(proc.waitFor() == 0, System.currentTimeMillis() - execStartTimeInMS));
+        if (result != 0) {
+            return new PingResult(false, Duration.between(execStartTime, execStopTime));
+        }
+
+        PingResult pingResult = new PingResult(true, Duration.between(execStartTime, execStopTime));
+        Duration responseTime;
+        for (String line : output) {
+            if (!line.isBlank()) {
+                responseTime = latencyParser.parseLatency(line, arpingTool);
+                if (responseTime != null) {
+                    pingResult.setResponseTime(responseTime);
+                    return pingResult;
+                }
+            }
+        }
+
+        return pingResult;
     }
 
     /**
      * Execute a Java ping.
      *
-     * @param timeoutInMS A timeout in milliseconds
+     * @param timeout the timeout before the call aborts
      * @param destinationAddress The address to check
-     * @return Ping result information. Optional is empty if ping command was not executed.
+     * @return Ping result information
      */
-    public Optional<PingResult> javaPing(int timeoutInMS, InetAddress destinationAddress) {
-        double execStartTimeInMS = System.currentTimeMillis();
-
+    public PingResult javaPing(Duration timeout, InetAddress destinationAddress) {
+        Instant execStartTime = Instant.now();
+        boolean success = false;
         try {
-            if (destinationAddress.isReachable(timeoutInMS)) {
-                return Optional.of(new PingResult(true, System.currentTimeMillis() - execStartTimeInMS));
-            } else {
-                return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
+            if (destinationAddress.isReachable((int) timeout.toMillis())) {
+                success = true;
             }
         } catch (IOException e) {
-            return Optional.of(new PingResult(false, System.currentTimeMillis() - execStartTimeInMS));
+            logger.trace("Could not connect to {}", destinationAddress, e);
         }
+        return new PingResult(success, Duration.between(execStartTime, Instant.now()));
     }
 
     /**
      * iOS devices are in a deep sleep mode, where they only listen to UDP traffic on port 5353 (Bonjour service
      * discovery). A packet on port 5353 will wake up the network stack to respond to ARP pings at least.
      *
-     * @throws IOException
+     * @throws IOException if an error occurs during the connection
      */
     public void wakeUpIOS(InetAddress address) throws IOException {
+        int port = 5353;
         try (DatagramSocket s = new DatagramSocket()) {
-            byte[] buffer = new byte[0];
-            s.send(new DatagramPacket(buffer, buffer.length, address, 5353));
-        } catch (PortUnreachableException ignored) {
-            // We ignore the port unreachable error
+            // Send a valid mDNS packet (12 bytes of zeroes)
+            byte[] buffer = new byte[12];
+            s.send(new DatagramPacket(buffer, buffer.length, address, port));
+            logger.trace("Sent packet to {}:{} to wake up iOS device", address, port);
+        } catch (PortUnreachableException e) {
+            logger.trace("Unable to send packet to wake up iOS device at {}:{}", address, port, e);
         }
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,8 +81,9 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 handler.stopWatering(deviceId);
                 return;
             }
-            if (CHANNEL_WATERING_TIME.equals(channelUID.getId()) && command instanceof QuantityType) {
-                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+            if (CHANNEL_WATERING_TIME.equals(channelUID.getId())
+                    && command instanceof QuantityType<?> quantityCommand) {
+                final QuantityType<?> value = quantityCommand.toUnit(Units.MINUTE);
                 if (value != null) {
                     wateringTime = value.intValue();
                 }
@@ -110,17 +111,21 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
                 }
                 return;
             }
-            if (CHANNEL_RAIN_DELAY.equals(channelUID.getId()) && command instanceof DecimalType) {
-                final QuantityType<?> value = ((QuantityType<?>) command).toUnit(Units.HOUR);
-                if (value != null) {
-                    handler.setRainDelay(deviceId, value.intValue());
+            if (CHANNEL_RAIN_DELAY.equals(channelUID.getId())) {
+                if (command instanceof QuantityType<?> quantityCommand) {
+                    final QuantityType<?> value = quantityCommand.toUnit(Units.HOUR);
+                    if (value != null) {
+                        handler.setRainDelay(deviceId, value.intValue());
+                    }
+                } else if (command instanceof DecimalType decimalCommand) {
+                    handler.setRainDelay(deviceId, decimalCommand.intValue());
                 }
 
             }
         }
     }
 
-    private String getSprinklerId() {
+    public String getSprinklerId() {
         return getThing().getConfiguration().get("id") != null ? getThing().getConfiguration().get("id").toString()
                 : "";
     }
@@ -190,14 +195,14 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
     public void updateDeviceStatus(OrbitBhyveDeviceStatus status) {
         if (!status.getMode().isEmpty()) {
             updateState(CHANNEL_MODE, new StringType(status.getMode()));
-            updateState(CHANNEL_CONTROL, "off".equals(status.getMode()) ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_CONTROL, OnOffType.from(!"off".equals(status.getMode())));
         }
         if (!status.getNextStartTime().isEmpty()) {
             DateTimeType dt = new DateTimeType(status.getNextStartTime());
             updateState(CHANNEL_NEXT_START, dt);
             logger.debug("Next start time: {}", status.getNextStartTime());
         }
-        updateState(CHANNEL_RAIN_DELAY, new DecimalType(status.getDelay()));
+        updateState(CHANNEL_RAIN_DELAY, new QuantityType<>(status.getDelay(), Units.HOUR));
     }
 
     private void createProgram(OrbitBhyveProgram program) {
@@ -214,7 +219,7 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
         }
         Channel ch = thing.getChannel(enableChannelName);
         if (ch != null) {
-            updateState(ch.getUID(), program.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+            updateState(ch.getUID(), OnOffType.from(program.isEnabled()));
         }
     }
 
@@ -259,11 +264,11 @@ public class OrbitBhyveSprinklerHandler extends BaseThingHandler {
         String enableChannelName = "enable_program_" + program.getProgram();
         Channel ch = thing.getChannel(enableChannelName);
         if (ch != null) {
-            updateState(ch.getUID(), program.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+            updateState(ch.getUID(), OnOffType.from(program.isEnabled()));
         }
     }
 
     public void updateSmartWatering(String senseMode) {
-        updateState(CHANNEL_SMART_WATERING, ("auto".equals(senseMode)) ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_SMART_WATERING, OnOffType.from("auto".equals(senseMode)));
     }
 }

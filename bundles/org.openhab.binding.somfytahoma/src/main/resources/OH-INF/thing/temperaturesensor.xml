@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Temperature Sensor</label>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"></channel>
 		</channels>

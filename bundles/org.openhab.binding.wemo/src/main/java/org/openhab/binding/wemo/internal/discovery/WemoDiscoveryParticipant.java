@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,6 +83,12 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                     if (device.getDetails().getModelDetails().getModelName() != null) {
                         if (device.getDetails().getModelDetails().getModelName().toLowerCase().startsWith("socket")) {
                             logger.debug("Discovered a WeMo Socket thing with UDN '{}'",
+                                    device.getIdentity().getUdn().getIdentifierString());
+                            return new ThingUID(THING_TYPE_SOCKET, device.getIdentity().getUdn().getIdentifierString());
+                        }
+                        if (device.getDetails().getModelDetails().getModelName().toLowerCase()
+                                .startsWith("outdoorplug")) {
+                            logger.debug("Discovered a WeMo Outdoor Plug thing with UDN '{}'",
                                     device.getIdentity().getUdn().getIdentifierString());
                             return new ThingUID(THING_TYPE_SOCKET, device.getIdentity().getUdn().getIdentifierString());
                         }

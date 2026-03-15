@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,12 @@ package org.openhab.binding.folding.internal.handler;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.folding.internal.dto.SlotInfo;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -33,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marius Bjørnstad - Initial contribution
  */
+@NonNullByDefault
 public class SlotHandler extends BaseThingHandler implements SlotUpdateListener {
 
     private Logger logger = LoggerFactory.getLogger(SlotHandler.class);
@@ -46,8 +51,11 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         getBridgeHandler().registerSlot(myId(), this);
     }
 
-    private FoldingClientHandler getBridgeHandler() {
-        return (FoldingClientHandler) super.getBridge().getHandler();
+    private @Nullable FoldingClientHandler getBridgeHandler() {
+        if (super.getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof FoldingClientHandler handler) {
+            return handler;
+        }
+        return null;
     }
 
     private String myId() {
@@ -57,13 +65,13 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals("run")) {
+            if ("run".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("unpause " + myId());
                 } else if (command == OnOffType.OFF) {
                     getBridgeHandler().sendCommand("pause " + myId());
                 }
-            } else if (channelUID.getId().equals("finish")) {
+            } else if ("finish".equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
                     getBridgeHandler().sendCommand("finish " + myId());
                 } else if (command == OnOffType.OFF) {
@@ -83,8 +91,8 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
         updateState(getThing().getChannel("status").getUID(), new StringType(si.status));
         boolean finishing = "FINISHING".equals(si.status);
         boolean run = finishing || "READY".equals(si.status) || "RUNNING".equals(si.status);
-        updateState(getThing().getChannel("finish").getUID(), finishing ? OnOffType.ON : OnOffType.OFF);
-        updateState(getThing().getChannel("run").getUID(), run ? OnOffType.ON : OnOffType.OFF);
+        updateState(getThing().getChannel("finish").getUID(), OnOffType.from(finishing));
+        updateState(getThing().getChannel("run").getUID(), OnOffType.from(run));
         updateState(getThing().getChannel("description").getUID(), new StringType(si.description));
     }
 }

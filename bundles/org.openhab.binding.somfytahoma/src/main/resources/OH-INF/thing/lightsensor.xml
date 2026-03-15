@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Light Sensor</label>
+		<semantic-equipment-tag>IlluminanceSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="luminance" typeId="luminance"></channel>
 			<channel id="sensor_defect" typeId="sensor_defect"></channel>

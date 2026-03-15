@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.wemo.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link WemoBinding} class defines common constants, which are
+ * The {@link WemoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Hans-Jörg Merk - Initial contribution
@@ -113,9 +110,8 @@ public class WemoBindingConstants {
     public static final String DEVICE_ID = "deviceID";
     public static final String POLLING_INTERVAL = "pollingInterval";
     public static final int DEFAULT_REFRESH_INTERVAL_SECONDS = 60;
-    public static final int SUBSCRIPTION_DURATION_SECONDS = 600;
+    public static final int SUBSCRIPTION_DURATION_SECONDS = 1800;
     public static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
-    public static final String HTTP_CALL_CONTENT_HEADER = "text/xml; charset=utf-8";
 
     public static final String BASICACTION = "basicevent";
     public static final String BASICEVENT = "basicevent1";
@@ -126,14 +122,12 @@ public class WemoBindingConstants {
     public static final String INSIGHTACTION = "insight";
     public static final String INSIGHTEVENT = "insight1";
 
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_THING_TYPES = Collections.singleton(THING_TYPE_MZ100);
+    public static final Set<ThingTypeUID> SUPPORTED_LIGHT_THING_TYPES = Set.of(THING_TYPE_MZ100);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
-            .unmodifiableSet(Stream
-                    .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION,
-                            THING_TYPE_BRIDGE, THING_TYPE_MZ100, THING_TYPE_MAKER, THING_TYPE_COFFEE, THING_TYPE_DIMMER,
-                            THING_TYPE_CROCKPOT, THING_TYPE_PURIFIER, THING_TYPE_HUMIDIFIER, THING_TYPE_HEATER)
-                    .collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT,
+            THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION, THING_TYPE_BRIDGE, THING_TYPE_MZ100, THING_TYPE_MAKER,
+            THING_TYPE_COFFEE, THING_TYPE_DIMMER, THING_TYPE_CROCKPOT, THING_TYPE_PURIFIER, THING_TYPE_HUMIDIFIER,
+            THING_TYPE_HEATER);
 }

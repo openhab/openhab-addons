@@ -1,7 +1,7 @@
 # WiFi LED Binding
 
-This binding is used to control LED strips connected by WiFi.
-These devices are sold with different names, i.e. Magic Home LED, UFO LED, LED NET controller, etc.  
+This binding is used to control LED strips connected via Wi‑Fi.
+These devices are sold under different names, for example Magic Home LED, UFO LED, LED NET controller, etc.
 
 ## Supported Things
 
@@ -19,13 +19,13 @@ Other LD*** devices might work but probably need some small adaptations.
 
 ## Discovery
 
-The LED WiFi Controllers can be auto discovered.
-Your device needs to be connected to your local network (i.e. by using the WiFi PBC connection method or the native App shipped with the device).
+The Wi‑Fi LED controllers can be auto-discovered.
+Your device needs to be connected to your local network (for example by using the Wi‑Fi PBC connection method or the native app shipped with the device).
 Read the device manual for more information about how to connect your device to your network.
 
 ## Binding Configuration
 
-No binding configuration required.
+No binding configuration is required.
 
 ## Thing Configuration
 
@@ -39,24 +39,24 @@ You can choose between two drivers with different functionality:
 | Driver  | Supports Color Fading | Supports Programs | Polls LED State |
 |---------|:---------------------:|:-----------------:|:---------------:|
 | CLASSIC |                       |         ✓         |        ✓        |
-| FADING  |            ✓          |                   |                 |
+| FADING  |           ✓           |                   |                 |
 
-While the CLASSIC driver lets you choose and run device internal programs (e.g. alternating blue),
+While the CLASSIC driver lets you choose and run device-internal programs (e.g., alternating blue),
 all normal operations (e.g. turn on or off, switch color, etc.) are performed immediately and
 without any fading effect.
 
-If you prefer to switch colors smoothly and to turn your light on and off by slightly increasing/decreasing the brightness, you should try the FADING driver.
+If you prefer to switch colors smoothly and to turn your light on and off by slightly increasing/decreasing the brightness, try the FADING driver.
 If selected, you can also set the number of fading steps and the fading duration in the Thing configuration.
 Each fading step will at least take 10 ms to be processed.
 This limit comes from the speed of the LED controller and your network speed.
 Thus a color fading with a configured fading duration of 0s might still take some time; count on more than 1 second for 100 steps.
 If the FADING driver is chosen, the program and the programSpeed channels will not have any effect.
 
-The polling period is a parameter only used by the CLASSIC driver and specifies the time in seconds after the LED state is refreshed in openHAB.
+The polling period is a parameter used only by the CLASSIC driver and specifies the time in seconds after which the LED state is refreshed in openHAB.
 
 ### Device Discovery
 
-If the automatic discovery fails, you have to set the IP address and the port of your device manually.
+If automatic discovery fails, set the IP address and the port of your device manually.
 Make sure that the device protocol matches your device type.
 
 ## Channels
@@ -77,13 +77,13 @@ However, here is an example.
 
 wifiled.things:
 
-```
+```java
 Thing wifiled:wifiled:F0FE6B19CB2A [ ip="192.168.178.91", port=5577, pollingPeriod=3000, protocol="LD686", driver="CLASSIC", fadeDurationInMs=1000, fadeSteps=100 ]
 ```
 
 wifiled.items:
 
-```
+```java
 Switch MyWiFiLight_power "Power"     (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:power"}
 Dimmer MyWiFiLight_white "White"     (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:white"}
 Color  MyWiFiLight_color "Color"     (Light) {channel="wifiled:wifiled:F0FE6B19CB2A:color"}
@@ -106,10 +106,10 @@ Switch LED_1_preset_12    "CrossFade - Blue/Green" <flow>         (LEDPresets1) 
 Switch LED_1_preset_13    "Fade"                   <colorlight>   (LEDPresets1)     // Mode: 37
 Switch LED_1_preset_14    "Fade - White"           <colorlight>   (LEDPresets1)     // Mode: 44
 Switch LED_1_preset_15    "Fade - Green"           <colorlight>   (LEDPresets1)     // Mode: 39
-Switch LED_1_preset_16    "Fade - DarkBlue"        <colorlight>   (LEDPresets1)     // Mode: 40
-Switch LED_1_preset_17    "Fade - Giallo"          <colorlight>   (LEDPresets1)     // Mode: 41
+Switch LED_1_preset_16    "Fade - Dark Blue"       <colorlight>   (LEDPresets1)     // Mode: 40
+Switch LED_1_preset_17    "Fade - Yellow"          <colorlight>   (LEDPresets1)     // Mode: 41
 Switch LED_1_preset_18    "Fade - Red"             <colorlight>   (LEDPresets1)     // Mode: 38
-Switch LED_1_preset_19    "Fade - LightBlue"       <colorlight>   (LEDPresets1)     // Mode: 42
+Switch LED_1_preset_19    "Fade - Light Blue"      <colorlight>   (LEDPresets1)     // Mode: 42
 Switch LED_1_preset_20    "Fade - Purple"          <colorlight>   (LEDPresets1)     // Mode: 43
 Switch LED_1_preset_21    "Fade - R/G/B"           <colorlight>   (LEDPresets1)     // Mode: 45
 Switch LED_1_preset_22    "Jump"                   <chart>        (LEDPresets1)     // Mode: 56
@@ -118,9 +118,9 @@ Switch LED_1_preset_23    "Jump - R/G/B"           <chart>        (LEDPresets1) 
 
 wifiled.sitemap
 
-```
-sitemap wifiled label="LED Sitemap" 
-{ 
+```perl
+sitemap wifiled label="LED Sitemap"
+{
 
     Frame {
         Switch item=MyWiFiLight_power
@@ -129,7 +129,7 @@ sitemap wifiled label="LED Sitemap"
         Slider item=MyWiFiLight_speed      visibility=[MyWiFiLight_power==ON]
 
         Selection item=LED_1_program  visibility=[MyWiFiLight_power==ON]
-  
+
         Switch item=LED_1_preset_0   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_1   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_2   visibility=[MyWiFiLight_power==ON]
@@ -153,14 +153,14 @@ sitemap wifiled label="LED Sitemap"
         Switch item=LED_1_preset_20   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_21   visibility=[MyWiFiLight_power==ON]
         Switch item=LED_1_preset_22   visibility=[MyWiFiLight_power==ON]
-        Switch item=LED_1_preset_23   visibility=[MyWiFiLight_power==ON]  
+        Switch item=LED_1_preset_23   visibility=[MyWiFiLight_power==ON]
     }
 }
 ```
 
 led_program.map
 
-```
+```text
 -=Undefined
 NULL=Undefined
 48=Strobe
@@ -196,172 +196,172 @@ NULL=Undefined
 
 wifiled.rules
 
-```
+```java
 rule "Program - Strobe"
 when Item LED_1_preset_0 received command ON
 then
-	LED_1_program.sendCommand(48)
-	LED_1_preset_0.sendCommand(OFF)
+    LED_1_program.sendCommand(48)
+    LED_1_preset_0.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Custom 1"
 when Item LED_1_preset_1 received command ON
 then
-	LED_1_program.sendCommand(96)
-	LED_1_preset_1.sendCommand(OFF)
+    LED_1_program.sendCommand(96)
+    LED_1_preset_1.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Red"
 when Item LED_1_preset_2 received command ON
 then
-	LED_1_program.sendCommand(49)
-	LED_1_preset_2.sendCommand(OFF)
+    LED_1_program.sendCommand(49)
+    LED_1_preset_2.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Green"
 when Item LED_1_preset_3 received command ON
 then
-	LED_1_program.sendCommand(50)
-	LED_1_preset_3.sendCommand(OFF)
+    LED_1_program.sendCommand(50)
+    LED_1_preset_3.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Blue"
 when Item LED_1_preset_4 received command ON
 then
-	LED_1_program.sendCommand(51)
-	LED_1_preset_4.sendCommand(OFF)
+    LED_1_program.sendCommand(51)
+    LED_1_preset_4.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Cyan"
 when Item LED_1_preset_5 received command ON
 then
-	LED_1_program.sendCommand(53)
-	LED_1_preset_5.sendCommand(OFF)
+    LED_1_program.sendCommand(53)
+    LED_1_preset_5.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Purple"
 when Item LED_1_preset_6 received command ON
 then
-	LED_1_program.sendCommand(54)
-	LED_1_preset_6.sendCommand(OFF)
+    LED_1_program.sendCommand(54)
+    LED_1_preset_6.sendCommand(OFF)
 end
 
 rule "Program - Strobe - Yellow"
 when Item LED_1_preset_7 received command ON
 then
-	LED_1_program.sendCommand(52)
-	LED_1_preset_7.sendCommand(OFF)
+    LED_1_program.sendCommand(52)
+    LED_1_preset_7.sendCommand(OFF)
 end
 
 rule "Program - Strobe - White"
 when Item LED_1_preset_8 received command ON
 then
-	LED_1_program.sendCommand(55)
-	LED_1_preset_8.sendCommand(OFF)
+    LED_1_program.sendCommand(55)
+    LED_1_preset_8.sendCommand(OFF)
 end
 
 rule "Program - Strobe - R/G/B"
 when Item LED_1_preset_9 received command ON
 then
-	LED_1_program.sendCommand(57)
-	LED_1_preset_9.sendCommand(OFF)
+    LED_1_program.sendCommand(57)
+    LED_1_preset_9.sendCommand(OFF)
 end
 
 rule "Program - CrossFade - Red/Green"
 when Item LED_1_preset_10 received command ON
 then
-	LED_1_program.sendCommand(45)
-	LED_1_preset_10.sendCommand(OFF)
+    LED_1_program.sendCommand(45)
+    LED_1_preset_10.sendCommand(OFF)
 end
 
 rule "Program - CrossFade - Red/Blue"
 when Item LED_1_preset_11 received command ON
 then
-	LED_1_program.sendCommand(46)
-	LED_1_preset_11.sendCommand(OFF)
+    LED_1_program.sendCommand(46)
+    LED_1_preset_11.sendCommand(OFF)
 end
 
 rule "Program - CrossFade - Blue/Green"
 when Item LED_1_preset_12 received command ON
 then
-	LED_1_program.sendCommand(47)
-	LED_1_preset_12.sendCommand(OFF)
+    LED_1_program.sendCommand(47)
+    LED_1_preset_12.sendCommand(OFF)
 end
 
 rule "Program - Fade"
 when Item LED_1_preset_13 received command ON
 then
-	LED_1_program.sendCommand(37)
-	LED_1_preset_13.sendCommand(OFF)
+    LED_1_program.sendCommand(37)
+    LED_1_preset_13.sendCommand(OFF)
 end
 
 rule "Program - Fade - White"
 when Item LED_1_preset_14 received command ON
 then
-	LED_1_program.sendCommand(44)
-	LED_1_preset_14.sendCommand(OFF)
+    LED_1_program.sendCommand(44)
+    LED_1_preset_14.sendCommand(OFF)
 end
 
 rule "Program - Fade - Green"
 when Item LED_1_preset_15 received command ON
 then
-	LED_1_program.sendCommand(39)
-	LED_1_preset_15.sendCommand(OFF)
+    LED_1_program.sendCommand(39)
+    LED_1_preset_15.sendCommand(OFF)
 end
 
 rule "Program - Fade - DarkBlue"
 when Item LED_1_preset_16 received command ON
 then
-	LED_1_program.sendCommand(40)
-	LED_1_preset_16.sendCommand(OFF)
+    LED_1_program.sendCommand(40)
+    LED_1_preset_16.sendCommand(OFF)
 end
 
 rule "Program - Fade - Yellow"
 when Item LED_1_preset_17 received command ON
 then
-	LED_1_program.sendCommand(41)
-	LED_1_preset_17.sendCommand(OFF)
+    LED_1_program.sendCommand(41)
+    LED_1_preset_17.sendCommand(OFF)
 end
 
 rule "Program - Fade - Red"
 when Item LED_1_preset_18 received command ON
 then
-	LED_1_program.sendCommand(38)
-	LED_1_preset_18.sendCommand(OFF)
+    LED_1_program.sendCommand(38)
+    LED_1_preset_18.sendCommand(OFF)
 end
 
 rule "Program - Fade - LightBlue"
 when Item LED_1_preset_19 received command ON
 then
-	LED_1_program.sendCommand(42)
-	LED_1_preset_19.sendCommand(OFF)
+    LED_1_program.sendCommand(42)
+    LED_1_preset_19.sendCommand(OFF)
 end
 
 rule "Program - Fade - Purple"
 when Item LED_1_preset_20 received command ON
 then
-	LED_1_program.sendCommand(43)
-	LED_1_preset_20.sendCommand(OFF)
+    LED_1_program.sendCommand(43)
+    LED_1_preset_20.sendCommand(OFF)
 end
 
 rule "Program - Fade - R/G/B"
 when Item LED_1_preset_21 received command ON
 then
-	LED_1_program.sendCommand(45)
-	LED_1_preset_21.sendCommand(OFF)
+    LED_1_program.sendCommand(45)
+    LED_1_preset_21.sendCommand(OFF)
 end
 
 rule "Program - Jump"
 when Item LED_1_preset_22 received command ON
 then
-	LED_1_program.sendCommand(56)
-	LED_1_preset_22.sendCommand(OFF)
+    LED_1_program.sendCommand(56)
+    LED_1_preset_22.sendCommand(OFF)
 end
 
 rule "Program - Jump - R/G/B"
 when Item LED_1_preset_23 received command ON
 then
-	LED_1_program.sendCommand(99)
-	LED_1_preset_23.sendCommand(OFF)
+    LED_1_program.sendCommand(99)
+    LED_1_preset_23.sendCommand(OFF)
 end
 ```

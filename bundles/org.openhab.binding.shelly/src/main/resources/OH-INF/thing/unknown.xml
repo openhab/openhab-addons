@@ -6,26 +6,25 @@
 
 	<thing-type id="shellydevice">
 		<label>Shelly Device</label>
-		<description>A password protected or unknown device.</description>
+		<description>A password protected or unknown device</description>
 
-		<representation-property>deviceName</representation-property>
+		<representation-property>serviceName</representation-property>
 		<config-description>
-			<parameter name="userId" type="text" required="true">
-				<label>UserID</label>
-				<description>User ID for API access.</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<description>Password for API access.</description>
-				<context>password</context>
-			</parameter>
 			<parameter name="deviceIp" type="text" required="true">
 				<label>IP Address</label>
-				<description>IP Address of the Shelly device.</description>
+				<description>IP Address of the Shelly device</description>
 				<context>network-address</context>
 			</parameter>
+			<parameter name="userId" type="text" required="false">
+				<label>User ID</label>
+				<description>User ID for API access</description>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>Password</label>
+				<description>Password for API access</description>
+				<context>password</context>
+			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<thing-type id="shellyunknown">

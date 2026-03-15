@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon xmlns:addon="https://openhab.org/schemas/addon/v1.0.0" id="siemenshvac"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<type>binding</type>
+	<name>SiemensHvac Binding</name>
+	<description>This is the binding for SiemensHvac.</description>
+	<connection>local</connection>
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>Siemens.*</regex>
+				</match-property>
+				<match-property>
+					<name>modelName</name>
+					<regex>Web Server OZW.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+</addon:addon>

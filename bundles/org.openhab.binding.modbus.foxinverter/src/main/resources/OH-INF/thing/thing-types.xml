@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mq2200-inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>FoxESS MQ-2200 Inverter</label>
+		<description>FoxESS MQ-2200 / Solakon ONE, Avocado 22 Pro inverter connected via Modbus TCP.</description>
+		<category>Inverter</category>
+		<channel-groups>
+			<channel-group id="fi-overview" typeId="fi-overview"/>
+			<channel-group id="fi-mppt-information" typeId="fi-mppt-information"/>
+			<channel-group id="fi-battery-information" typeId="fi-battery-information"/>
+			<channel-group id="fi-grid-information" typeId="fi-grid-information"/>
+			<channel-group id="fi-emergency-power-supply" typeId="fi-emergency-power-supply"/>
+		</channel-groups>
+		<config-description-ref uri="thing-type:foxinverter:mq2200-inverter"/>
+	</thing-type>
+
+	<channel-group-type id="fi-overview">
+		<label>Overview</label>
+		<channels>
+			<channel id="fi-inverter-power" typeId="fi-inverter-power"/>
+			<channel id="fi-home-import-power" typeId="fi-home-import-power"/>
+			<channel id="fi-daily-pv-generation" typeId="fi-daily-pv-generation"/>
+			<channel id="fi-total-pv-generation" typeId="fi-total-pv-generation"/>
+			<channel id="fi-internal-temperature" typeId="fi-internal-temperature"/>
+			<channel id="fi-meter-connected" typeId="fi-meter-connected"/>
+			<channel id="fi-status-alarm" typeId="fi-status-alarm"/>
+			<channel id="fi-status-operation" typeId="fi-status-operation"/>
+			<channel id="fi-status-standby" typeId="fi-status-standby"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fi-mppt-information">
+		<label>MPPT Information</label>
+		<channels>
+			<channel id="fi-pv-power" typeId="fi-pv-power"/>
+			<channel id="fi-mppt1-voltage" typeId="fi-mppt1-voltage"/>
+			<channel id="fi-mppt1-current" typeId="fi-mppt1-current"/>
+			<channel id="fi-mppt1-power" typeId="fi-mppt1-power"/>
+			<channel id="fi-mppt2-voltage" typeId="fi-mppt2-voltage"/>
+			<channel id="fi-mppt2-current" typeId="fi-mppt2-current"/>
+			<channel id="fi-mppt2-power" typeId="fi-mppt2-power"/>
+			<channel id="fi-mppt3-voltage" typeId="fi-mppt3-voltage"/>
+			<channel id="fi-mppt3-current" typeId="fi-mppt3-current"/>
+			<channel id="fi-mppt3-power" typeId="fi-mppt3-power"/>
+			<channel id="fi-mppt4-voltage" typeId="fi-mppt4-voltage"/>
+			<channel id="fi-mppt4-current" typeId="fi-mppt4-current"/>
+			<channel id="fi-mppt4-power" typeId="fi-mppt4-power"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fi-battery-information">
+		<label>Battery Information</label>
+		<category>Battery</category>
+		<channels>
+			<channel id="fi-battery-voltage" typeId="fi-battery-voltage"/>
+			<channel id="fi-battery-current" typeId="fi-battery-current"/>
+			<channel id="fi-battery-level" typeId="fi-battery-level"/>
+			<channel id="fi-battery-charging-power" typeId="fi-battery-charging-power"/>
+			<channel id="fi-battery-temperature" typeId="fi-battery-temperature"/>
+			<channel id="fi-battery-minimum-soc" typeId="fi-battery-minimum-soc"/>
+			<channel id="fi-battery-maximum-soc" typeId="fi-battery-maximum-soc"/>
+			<channel id="fi-battery-minimum-soc-on-grid" typeId="fi-battery-minimum-soc-on-grid"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fi-grid-information">
+		<label>Grid Information</label>
+		<channels>
+			<channel id="fi-phase-a-voltage" typeId="fi-phase-a-voltage"/>
+			<channel id="fi-phase-b-voltage" typeId="fi-phase-b-voltage"/>
+			<channel id="fi-phase-c-voltage" typeId="fi-phase-c-voltage"/>
+			<channel id="fi-grid-frequency" typeId="fi-grid-frequency"/>
+			<channel id="fi-grid-export-power" typeId="fi-grid-export-power"/>
+			<channel id="fi-status-on-grid" typeId="fi-status-on-grid"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="fi-emergency-power-supply">
+		<label>EPS Information</label>
+		<channels>
+			<channel id="fi-eps-output" typeId="fi-eps-output"/>
+			<channel id="fi-eps-export-power" typeId="fi-eps-export-power"/>
+		</channels>
+	</channel-group-type>
+	<channel-type id="fi-inverter-power">
+		<item-type>Number:Power</item-type>
+		<label>Inverter Power</label>
+		<description>Inverter active power output. Always positive.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-home-import-power">
+		<item-type>Number:Power</item-type>
+		<label>Home Import Power</label>
+		<description>Power flow with home network. Negative when feeding home, positive when drawing from grid.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-daily-pv-generation">
+		<item-type>Number:Energy</item-type>
+		<label>Daily PV Generation</label>
+		<category>Line</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-total-pv-generation">
+		<item-type>Number:Energy</item-type>
+		<label>Total PV Generation</label>
+		<category>Line</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-internal-temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Internal Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-meter-connected" advanced="true">
+		<item-type>Contact</item-type>
+		<label>Meter Connected</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-status-alarm" advanced="false">
+		<item-type>Contact</item-type>
+		<label>System Status: Alarm</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-status-operation" advanced="false">
+		<item-type>Contact</item-type>
+		<label>System Status: Operation</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-status-standby" advanced="true">
+		<item-type>Contact</item-type>
+		<label>System Status: Standby</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fi-pv-power">
+		<item-type>Number:Power</item-type>
+		<label>PV Power</label>
+		<description>Current solar power generation from PV panels. Always positive.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt1-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT1 Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt1-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT1 Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt1-power" advanced="false">
+		<item-type>Number:Power</item-type>
+		<label>MPPT1 Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt2-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT2 Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt2-power" advanced="false">
+		<item-type>Number:Power</item-type>
+		<label>MPPT2 Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt2-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT2 Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt3-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT3 Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt3-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT3 Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt3-power" advanced="false">
+		<item-type>Number:Power</item-type>
+		<label>MPPT3 Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt4-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>MPPT4 Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt4-power" advanced="false">
+		<item-type>Number:Power</item-type>
+		<label>MPPT4 Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-mppt4-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>MPPT4 Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fi-phase-a-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase A Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-phase-b-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase B Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-phase-c-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase C Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-grid-frequency" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Frequency</label>
+		<category>Line</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-grid-export-power">
+		<item-type>Number:Power</item-type>
+		<label>Grid Export Power</label>
+		<description>Power flow with public grid. Positive values indicate export to grid, negative values indicate import
+			from grid.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-status-on-grid" advanced="true">
+		<item-type>Contact</item-type>
+		<label>On Grid</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fi-battery-voltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-battery-current" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Battery Current</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-battery-charging-power">
+		<item-type>Number:Power</item-type>
+		<label>Battery Charging Power</label>
+		<description>Battery power flow. Positive values indicate charging, negative values indicate discharging.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-battery-level">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Level</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-battery-temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-battery-minimum-soc" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery minimum state of charge</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="fi-battery-maximum-soc" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery maximum state of charge</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="fi-battery-minimum-soc-on-grid" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery minimum state of charge (on grid)</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="fi-eps-output">
+		<item-type>Switch</item-type>
+		<label>EPS Enabled</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="fi-eps-export-power">
+		<item-type>Number:Power</item-type>
+		<label>EPS Export Power</label>
+		<description>Emergency power supply socket power. Positive values indicate supplying connected devices, negative
+			values indicate receiving power from external source.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

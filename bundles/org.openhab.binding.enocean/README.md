@@ -35,67 +35,70 @@ This number can be chosen manually or the next free/unused number can be determi
 
 This binding is developed on and tested with the following devices
 
- * USB300 and EnOceanPi gateways
- * The following Eltako actuators:
-    * FSR14 (light switch)
-    * FSB14 (rollershutter)
-    * FUD14 (dimmer)
-    * FSSA-230V (smart plug)
-    * FWZ12-65A (energy meter)
-    * FTKE (window / door contact)
-    * FPE-1 & FPE-2 (window / door contact)
-    * TF-FGB (window handle)
-    * TF-FKB (window contact)
-    * TF-AHDSB (outdoor brightness sensor)
-    * FAFT60 (outdoor temperature & humidity sensor)
- * The following Opus actuators:
-    * GN-A-R12V-SR-4 (light)
-    * GN-A-R12V-MF-2 (light)
-    * GN-A-R12V-LZ/UD (dimmer)
-    * GN-A-R12V-JRG-2 (rollershutter)
-    * GN-A-U230V-JRG (rollershutter)
-    * OPUS-FUNK PLUS Jalousieaktor 1fach UP (rollershutter)
-    * OPUS-Funk PLUS Steckdosenleiste (smart multiple socket)
- * NodOn: 
-    * Smart Plug (ASP-2-1-10)
-    * In Wall Switch (SIN-2-2-00, SIN-2-1-0x)
-    * In Wall Rollershutter (SIN-2-RS-01)
-    * Temperature & humidity sensor (STPH-2-1-05)
- * Permundo 
-    * PSC234 (smart plug with metering) = Afriso APR234
-    * PSC132 (smart switch actor with metering)
-    * PSC152 (smart blinds control)
- * Thermokon SR04 room control
- * Hoppe SecuSignal window handles
- * Rocker switches (NodOn, Eltako FT55 etc)
- * Siegenia Senso Secure window sensors
- * Soda window handles
+- USB300 and EnOceanPi gateways
+- The following Eltako actuators:
+  - FSR14 (light switch)
+  - FSB14, FJ62 (rollershutter)
+  - FUD14 (dimmer)
+  - FSSA-230V (smart plug)
+  - FWZ12-65A (energy meter)
+  - FTKE (window / door contact)
+  - FPE-1 & FPE-2 (window / door contact)
+  - TF-FGB (window handle)
+  - TF-FKB (window contact)
+  - TF-AHDSB (outdoor brightness sensor)
+  - FAFT60 (outdoor temperature & humidity sensor)
+  - FLGTF55 (air quality & temperature & humidity sensor)
+- The following Opus actuators:
+  - GN-A-R12V-SR-4 (light)
+  - GN-A-R12V-MF-2 (light)
+  - GN-A-R12V-LZ/UD (dimmer)
+  - GN-A-R12V-JRG-2 (rollershutter)
+  - GN-A-U230V-JRG (rollershutter)
+  - OPUS-FUNK PLUS Jalousieaktor 1fach UP (rollershutter)
+  - OPUS-Funk PLUS Steckdosenleiste (smart multiple socket)
+- NodOn:
+  - Smart Plug (ASP-2-1-10)
+  - In Wall Switch (SIN-2-2-00, SIN-2-1-0x)
+  - In Wall Rollershutter (SIN-2-RS-01)
+  - Temperature & humidity sensor (STPH-2-1-05)
+- Permundo
+  - PSC234 (smart plug with metering) = Afriso APR234
+  - PSC132 (smart switch actor with metering)
+  - PSC152 (smart blinds control)
+- Thermokon SR04 room control
+- Hoppe SecuSignal window handles
+- Rocker switches (NodOn, Eltako FT55 etc)
+- Siegenia Senso Secure window sensors
+- Soda window handles
+- Nexelec INSAFE+ Carbon
 
 However, because of the standardized EnOcean protocol it is more important which EEP this binding supports.
 Hence if your device supports one of the following EEPs the chances are good that your device is also supported by this binding.
 
-|Thing type                       | EEP family  | EEP Types     | Channels¹                    |  Devices²                      | Pairing   |
-|---------------------------------|-------------|---------------|------------------------------|--------------------------------|-----------|
-| bridge                          | -           | -             | repeaterMode, setBaseId      | USB300, EnOceanPi              | -         |
-| pushButton                      | F6-01/D2-03 | 0x01/0x0A     | pushButton, doublePress,<br/>longPress, batteryLevel | NodOn soft button | Manually/Discovery  |
-| rockerSwitch                    | F6-02       | 0x01-02       | rockerswitchA, rockerswitchB,<br/>rockerSwitchAction | Eltako FT55                    | Discovery |
-| mechanicalHandle                | F6-10/D2-06 | 0x00-01/0x01    | windowHandleState, contact and a lot more for soda handles³   | Hoppe SecuSignal handles, Eltako TF-FGB, Soda handles | Discovery |
-| contact                         | D5-00       | 0x01          | contact                      | Eltako FTK(E) & TF-FKB            | Discovery |
-| temperatureSensor               | A5-02       | 0x01-30       | temperature                  | Thermokon SR65                 | Discovery |
-| temperatureHumiditySensor       | A5-04       | 0x01-03       | humidity, temperature        | Eltako FTSB                    | Discovery |
-| occupancySensor                 | A5-07       | 0x01-03       | illumination, batteryVoltage,<br/>motionDetection | NodON PIR-2-1-01 | Discovery |
-| lightTemperatureOccupancySensor | A5-08       | 0x01-03       | illumination, temperature,<br/>occupancy, motionDetection | Eltako FABH | Discovery |
-| lightSensor                     | A5-06       | 0x01          | illumination                 | Eltako TF-AHDSB                | Discovery |
-| roomOperatingPanel              | A5-10       | 0x01-23       | temperature, setPoint, fanSpeedStage,<br/>occupancy           | Thermokon SR04 | Discovery |
-| automatedMeterSensor            | A5-12       | 0x00-03       | counter, currentNumber, instantpower,<br/>totalusage, amrLitre, amrCubicMetre | FWZ12 | Discovery |
-| environmentalSensor             | A5-13       | 0x01-02       | temperature, windspeed, illumination,<br/>rainStatus | FWS61 | Discovery |
-| centralCommand                  | A5-38       | 0x08          | dimmer, generalSwitch        | Eltako FUD14, FSR14            | Teach-in |
-| rollershutter                   | A5-3F/D2-05/A5-38 | 0x7F/00/08 | rollershutter             | Eltako FSB14, NodOn SIN-2-RS-01| Teach-in/Discovery |
-| measurementSwitch               | D2-01       | 0x00-0F,11,12 | generalSwitch(/A/B), instantpower,<br/>totalusage, repeaterMode | NodOn In Wall Switch | Discovery |
-| windowSashHandleSensor          | D2-06       | 0x50          | windowHandleState, windowSashState, batteryLevel, batteryLow, windowBreachEvent, windowCalibrationState, windowCalibrationStep | Siegenia Senso Secure | Discovery |
-| multiFunctionSmokeDetector      | D2-14/F6-05 | 0x30/02       | smokeDetection, batteryLow   | Insafe+, Afriso ASD | Discovery |
-| heatRecoveryVentilation         | D2-50       | 0x00,01,10,11 | a lot of different state channels | Dimplex DL WE2 | Discovery |
-| classicDevice                   | F6-02       | 0x01-02       | virtualRockerswitchA, virtualRockerswitchB | - | Teach-in |
+|Thing type                       | EEP family        | EEP Types               | Channels¹                                                   |  Devices²               | Pairing   |
+|---------------------------------|-------------------|-------------------------|-------------------------------------------------------------|-------------------------|-----------|
+| bridge                          | -                 | -                       | repeaterMode, setBaseId                                     | USB300, EnOceanPi       | -         |
+| pushButton                      | F6-01/D2-03       | 0x01/0x0A               | pushButton, doublePress, longPress, batteryLevel            | NodOn soft button       | Manually/Discovery  |
+| rockerSwitch                    | F6-02             | 0x01-02                 | rockerswitchA, rockerswitchB, rockerSwitchAction            | Eltako FT55             | Discovery |
+| mechanicalHandle                | F6-10/D2-06       | 0x00-01/0x01            | windowHandleState, contact and a lot more for soda handles³ | Hoppe SecuSignal handles, Eltako TF-FGB, Soda handles | Discovery |
+| contact                         | D5-00             | 0x01                    | contact                                                     | Eltako FTK(E) & TF-FKB  | Discovery |
+| temperatureSensor               | A5-02             | 0x01-30                 | temperature                                                 | Thermokon SR65          | Discovery |
+| temperatureHumiditySensor       | A5-04             | 0x01-03                 | humidity, temperature                                       | Eltako FTSB             | Discovery |
+| gasSensor                       | A5-09             | 0x02,04,05, 08,09,0C,0D | co, co2, totalVolatileOrganicCompounds, volatileOrganicCompounds, volatileOrganicCompoundsId, humidity, temperature | Nexelec, Eltako FLGTF55 | Discovery |
+| occupancySensor                 | A5-07             | 0x01-03                 | illumination, batteryVoltage, motionDetection               | NodON PIR-2-1-01        | Discovery |
+| lightTemperatureOccupancySensor | A5-08             | 0x01-03                 | illumination, temperature, occupancy, motionDetection       | Eltako FABH             | Discovery |
+| lightSensor                     | A5-06             | 0x01                    | illumination                                                | Eltako TF-AHDSB         | Discovery |
+| roomOperatingPanel              | A5-10             | 0x01-23                 | temperature, setPoint, fanSpeedStage, occupancy, dayNightModeState, conntact, humidity, illumination, batteryLevel, batteryLow             | Thermokon SR04          | Discovery |
+| automatedMeterSensor            | A5-12             | 0x00-03                 | counter, currentNumber, instantpower, totalusage, amrLitre, amrCubicMetre | FWZ12     | Discovery |
+| environmentalSensor             | A5-13             | 0x01-02                 | temperature, windspeed, illumination, rainStatus            | FWS61                   | Discovery |
+| centralCommand                  | A5-38             | 0x08                    | dimmer, generalSwitch                                       | Eltako FUD14, FSR14     | Teach-in  |
+| rollershutter                   | A5-3F/D2-05/A5-38 | 0x7F/00/08              | rollershutter                                               | Eltako FSB14 / FJ62, NodOn SIN-2-RS-01| Teach-in/Discovery |
+| measurementSwitch               | D2-01             | 0x00-0F,11,12           | generalSwitch(/A/B), dimmer, pilotWire, instantpower, totalusage, repeaterMode | NodOn In Wall Switch    | Discovery |
+| windowSashHandleSensor          | D2-06             | 0x50                    | windowHandleState, windowSashState, batteryLevel, batteryLow, windowBreachEvent, windowCalibrationState, windowCalibrationStep | Siegenia Senso Secure | Discovery |
+| multiFunctionSmokeDetector      | D2-14/F6-05       | 0x30/02                 | smokeDetection, batteryLow                                  | Insafe+, Afriso ASD     | Discovery |
+| heatRecoveryVentilation         | D2-50             | 0x00,01,10,11           | a lot of different state channels                           | Dimplex DL WE2          | Discovery |
+| classicDevice                   | F6-02             | 0x01-02                 | virtualRockerswitchA, virtualRockerswitchB                  | -                       | Teach-in  |
 
 ¹ Not all channels are supported by all devices, it depends which specific EEP type is used by the device, all thing types additionally support `rssi`, `repeatCount` and `lastReceived` channels
 
@@ -104,7 +107,7 @@ Hence if your device supports one of the following EEPs the chances are good tha
 ³ Note that the soda handles potentially contain a wide range of different sensors and buttons.
 However the amount of built-in sensors and buttons may vary between different models.
 In case your particular device does not contain one of the potentially supported features the corresponding channel will never trigger an update.
-Please see the manual of your particular model to check which channels should be supported before opening an issue.  
+Please see the manual of your particular model to check which channels should be supported before opening an issue.
 
 Furthermore following supporting EEP family is available too: A5-11, types 0x03 (rollershutter position status), 0x04 (extended light status) and D0-06 (battery level indication).
 
@@ -131,10 +134,10 @@ To pair a sensor with its thing, you first have to start the discovery scan for 
 Then press the "teach-in" button of the sensor.
 The sensor sends a teach-in message which contains the information about the EEP and the EnOceanId of the sensor.
 If the EEP is known by this binding the thing representation of the device is created.
-The corresponding channels are created dynamically, too. 
+The corresponding channels are created dynamically, too.
 
 ### Actuators
- 
+
 If the actuator supports UTE teach-in, the corresponding thing can be created and paired automatically.
 First you have to **start the discovery scan for a gateway**.
 Then press the teach-in button of the actuator.
@@ -180,9 +183,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |Thing type                       | Parameter         | Meaning                     | Possible Values |
 |---------------------------------|-------------------|-----------------------------|---|
 | bridge                          | path              | Path to the EnOcean Gateway | COM3, /dev/ttyAMA0, rfc2217://x.x.x.x:3001 |
-|                                 | nextSenderId      | Set SenderId of next created thing.<br/>If omitted, the next unused SenderId is taken | 1-127 |
+|                                 | nextSenderId      | Set SenderId of next created thing. If omitted, the next unused SenderId is taken | 1-127 |
 |                                 | espVersion        | ESP Version of gateway | ESP3, ESP2 |
-|                                 | rs485             | If gateway is directly connected to a RS485 bus the BaseId is set to 0x00 | true, false
+|                                 | rs485             | If gateway is directly connected to a RS485 bus the BaseId is set to 0x00 | true, false |
 |                                 | rs485BaseId       | Override BaseId 0x00 if your bus contains a telegram duplicator (FTD14 for ex) | 4 byte hex value |
 |                                 | enableSmack       | Enables SMACK pairing and handling of SMACK messages | true, false |
 |                                 | sendTeachOuts     | Defines if a repeated teach in request should be answered with a learned in or teach out response | true, false |
@@ -202,6 +205,9 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | temperatureHumiditySensor       | receivingEEPId    |                             | A5_04_01-03 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
+| gasSensor                       | receivingEEPId    |                             | A5_09_02, A5_09_04, A5_09_05, A5_09_08, A5_09_09, A5_09_0C, A5_09_0D |
+|                                 | enoceanId         | | |
+|                                 | receivingSIGEEP   | | |
 | occupancySensor                 | receivingEEPId    |                             | A5_07_01-03 |
 |                                 | enoceanId         | | |
 |                                 | receivingSIGEEP   | | |
@@ -217,7 +223,7 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | | |
 | environmentalSensor             | receivingEEPId    |                             | A5_13_01 |
 |                                 | enoceanId         | | |
-| centralCommand                  | senderIdOffset    | SenderId used for sending msg.<br/>If omitted, nextSenderId of bridge is used | 1-127 |
+| centralCommand                  | senderIdOffset    | SenderId used for sending msg. If omitted, nextSenderId of bridge is used | 1-127 |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      | EEP used for sending msg    | A5_38_08_01, A5_38_08_02 |
 |                                 | broadcastMessages | Send broadcast or addressed msg | true, false |
@@ -227,13 +233,13 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00_NODON |
 |                                 | broadcastMessages |                             | true, false |
-|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_11_03, D2_05_00_NODON |
+|                                 | receivingEEPId¹   |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, F6_00_00_EltakoFJ62, A5_11_03, D2_05_00_NODON |
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |
 |                                 | enoceanId         | | |
-|                                 | sendingEEPId      |                             | D2_01_00-0F, D2_01_11, D2_01_12,<br/>D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON |
-|                                 | receivingEEPId¹   |                             | D2_01_00-0F, D2_01_11, D2_01_12,<br/>D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON,<br/> A5_12_01 |
+|                                 | sendingEEPId      |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON |
+|                                 | receivingEEPId¹   |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON, A5_12_01 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | pollingInterval   |                             | Integer |
 |                                 | suppressRepeating |                             | true, false |
@@ -243,8 +249,8 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | enoceanId         | | |
 | heatRecoveryVentilation         | senderIdOffset    |                             | 1-127 |
 |                                 | enoceanId         | | |
-|                                 | sendingEEPId      |                             | D2_50_00, D2_50_01,<br/>D2_50_10, D2_50_11 |
-|                                 | receivingEEPId    |                             | D2_50_00, D2_50_01,<br/>D2_50_10, D2_50_11 |
+|                                 | sendingEEPId      |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
+|                                 | receivingEEPId    |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | suppressRepeating |                             | true, false |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
@@ -258,88 +264,94 @@ If you want to receive messages of your EnOcean devices you have to set **the en
 
 ## Channels
 
-The channels of a thing are determined automatically based on the chosen EEP. 
+The channels of a thing are determined automatically based on the chosen EEP.
 
-|Channel              | Item               | Description |
-|---------------------|--------------------|---------------------------------|
-| repeaterMode        | String             | Set repeater level to 1, 2 or disable |
-| setBaseId           | String             | Changes the BaseId of your gateway. This can only be done 10 times! So use it with care. |
-| pushButton          | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
-| pushButton2         | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
-| doublePress         | Trigger            | Channel type system:rawbutton, emits PRESSED |
-| longPress           | Trigger            | Channel type system:rawbutton, emits PRESSED and RELEASED events |
-| rockerswitchA/B     | Trigger            | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
-| rockerSwitchAction  | Trigger            | Emits combined rocker switch actions for channel A and B and RELEASED events |
-| windowHandleState   | String             | Textual representation of handle position (UP, DOWN, LEFT, RIGHT for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
-| windowSashState     | String             | Textual representation of sash position (TILTED or NOT TILTED for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
-| windowCalibrationState | String             | Textual representation of the calibration state (OK, ERROR, INVALID) |
-| windowCalibrationStep | String             | Textual representation of the next step that must be performed for calibrating the device (e.g. NONE, SASH CLOSED HANDLE CLOSED, SASH CLOSED HANDLE OPEN, SASH OPEN HANDLE TILTED, and so on) |
-| contact             | Contact            | State OPEN/CLOSED (tilted handle => OPEN) |
-| temperature         | Number:Temperature | Temperature in degree Celsius |
-| humidity            | Number             | Relative humidity level in percentages |
-| illumination        | Number:Illuminance | Illumination in lux |
-| illuminationWest    | Number:Illuminance | Illumination in lux |
-| illuminationSouthNorth| Number:Illuminance | Illumination in lux |
-| illuminationEast    | Number:Illuminance | Illumination in lux |
-| rainStatus          | Switch             | Rain indicator |
-| windspeed           | Number:Speed       | windspeed in m/s |
-| occupancy           | Switch             | Occupancy button pressed (ON) or released (OFF) |
-| motionDetection     | Switch             | On=Motion detected, Off=not |
-| setPoint            | Number             | linear set point |
-| fanSpeedStage       | String             | Fan speed: -1 (Auto), 0, 1, 2, 3 |
-| dimmer              | Dimmer             | Dimmer value in percent |
-| generalSwitch(/A/B) | Switch             | Switch something (channel A/B) ON/OFF |
-| rollershutter       | Rollershutter      | Shut time (shutTime) in seconds can be configured |
-| angle               | Number:Angle       | The angle for blinds |
-| instantpower        | Number:Power       | Instant power consumption in Watts |
-| totalusage          | Number:Energy      | Used energy in Kilowatt hours |
-| teachInCMD          | Switch             | Sends a teach-in msg, content can configured with parameter teachInMSG |
-| virtualSwitchA      | Switch             | Used to convert switch item commands into rocker switch messages (channel A used)<br/>Time in ms between sending a pressed and release message can be defined with channel parameter duration.<br/>The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2) |
-| virtualRollershutterA | Rollershutter      | Used to convert rollershutter item commands into rocker switch messages (channel A used) |
-| rockerswitchListenerSwitch | Switch        | Used to convert rocker switch messages into switch item state updates |
-| rockerswitchListenerRollershutter | Rollershutter | Used to convert rocker switch messages into rollershutter item state updates |
-| virtualRockerswitchB | String             | Used to send plain rocker switch messages (channel B used) |
-| batteryVoltage       | Number:ElectricPotential | Battery voltage for things with battery |
-| energyStorage        | Number:ElectricPotential | Energy storage, don't know what this means... |
-| batterLevel          | Number             | Battery level in percent |
-| batterLow            | Switch             | Battery low indicator |
-| smokeDetection       | Switch             | Smoke detected |
-| sensorFault          | Switch             | Smoke sensor fault |
-| timeSinceLastMaintenance | Number:Time    | Time since last maintenance |
-| remainingPLT         | Number:Time        | Remaining product life time |
-| hygroComfortIndex    | String             | Hygrothermal Comfort Index |
-| indoorAirAnalysis    | String             | Indoor Air Analysis |
-| ventilationOperationMode | String         | Direct Operation Mode Control |
-| fireplaceSafetyMode  | Switch             | Fireplace Safety Mode |
-| heatExchangerBypassStatus | Contact       | Heat Exchanger Bypass Status |
-| supplyAirFlapStatus  | Contact            | Supply Air Flap Position |
-| exhaustAirFlapStatus | Contact            | Exhaust Air Flap Position |
-| defrostMode          | Switch             | Defrost Mode |
-| coolingProtectionMode | Switch            | Cooling Protection Mode |
-| outdoorAirHeaterStatus | Switch           | Outdoor Air Heater Status |
-| supplyAirHeaterStatus | Switch            | Supply Air Heater Status |
-| drainHeaterStatus    | Switch             | Drain Heater Status |
-| timerOperationMode   | Switch             | Timer Operation Mode |
-| weeklyTimerProgramStatus | Switch         | Weekly Timer Program Status |
-| roomTemperatureControlStatus | Switch     | Room Temperature Control Status |
-| airQualityValue1     | Number:Dimensionless | Air Quality Value in percent |
-| airQualityValue2     | Number:Dimensionless | Air Quality Value in percent |
-| outdoorAirTemperature | Number:Temperature | Outdoor Temperature |
-| supplyAirTemperature | Number:Temperature | Supply Air Temperature |
-| indoorAirTemperature | Number:Temperature | Indoor Temperature |
-| exhaustAirTemperature | Number:Temperature | Exhaust Air Temperature |
-| supplyAirFanAirFlowRate | Number:VolumetricFlowRate | Supply Air Fan Air Flow Rate |
-| exhaustAirFanAirFlowRate | Number:VolumetricFlowRate | Exhaust Air Fan Air Flow Rate |
-| supplyFanSpeed       | Number:Dimensionless | Supply Fan Speed in rpm |
-| exhaustFanSpeed      | Number:Dimensionless | Exhaust Fan Speed |
-| rssi                 | Number                   | Received Signal Strength Indication (dBm) of last received message |
-| repeatCount          | Number                   | Number of repeaters involved in the transmission of the telegram |
-| lastReceived         | DateTime                 | Date and time the last telegram was received |
-| statusRequestEvent   | Trigger                  | Emits event 'requestAnswer' | 
-| windowBreachEvent    | Trigger                  | Emits event 'ALARM' |
-| protectionPlusEvent  | Trigger                  | Emits event 'ALARM' |
-| vacationModeToggleEvent | Trigger               | Emits events 'ACTIVATED', 'DEACTIVATED' |
-
+|Channel                            | Item                      | Description |
+|-----------------------------------|---------------------------|---------------------------------|
+| repeaterMode                      | String                    | Set repeater level to 1, 2 or disable |
+| setBaseId                         | String                    | Changes the BaseId of your gateway. This can only be done 10 times! So use it with care. |
+| pushButton                        | Trigger                   | Channel type system:rawbutton, emits PRESSED and RELEASED events |
+| pushButton2                       | Trigger                   | Channel type system:rawbutton, emits PRESSED and RELEASED events |
+| doublePress                       | Trigger                   | Channel type system:rawbutton, emits PRESSED |
+| longPress                         | Trigger                   | Channel type system:rawbutton, emits PRESSED and RELEASED events |
+| rockerswitchA/B                   | Trigger                   | Channel type system:rawrocker, emits DIR1_PRESSED, DIR1_RELEASED, DIR2_PRESSED, DIR2_RELEASED events |
+| rockerSwitchAction                | Trigger                   | Emits combined rocker switch actions for channel A and B and RELEASED events |
+| windowHandleState                 | String                    | Textual representation of handle position (UP, DOWN, LEFT, RIGHT for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
+| windowSashState                   | String                    | Textual representation of sash position (TILTED or NOT TILTED for the D2_06_01 EEP and OPEN, CLOSED, TILTED for all others) |
+| windowCalibrationState            | String                    | Textual representation of the calibration state (OK, ERROR, INVALID) |
+| windowCalibrationStep             | String                    | Textual representation of the next step that must be performed for calibrating the device (e.g. NONE, SASH CLOSED HANDLE CLOSED, SASH CLOSED HANDLE OPEN, SASH OPEN HANDLE TILTED, and so on) |
+| contact                           | Contact                   | State OPEN/CLOSED (tilted handle => OPEN) |
+| temperature                       | Number:Temperature        | Temperature in degree Celsius |
+| humidity                          | Number                    | Relative humidity level in percentages |
+| co                                | Number:Dimensionless      | Carbonmonoxide level in ppm |
+| co2                               | Number:Dimensionless      | Carbondioxide level in ppm |
+| totalVolatileOrganicCompounds     | Number:Dimensionless      | Total volatile organic compounds in ppb |
+| volatileOrganicCompounds          | Number:Dimensionless      | VOC level |
+| volatileOrganicCompoundsId        | String                    | VOC Identification |
+| illumination                      | Number:Illuminance        | Illumination in lux |
+| illuminationWest                  | Number:Illuminance        | Illumination in lux |
+| illuminationSouthNorth            | Number:Illuminance        | Illumination in lux |
+| illuminationEast                  | Number:Illuminance        | Illumination in lux |
+| rainStatus                        | Switch                    | Rain indicator |
+| windspeed                         | Number:Speed              | windspeed in m/s |
+| occupancy                         | Switch                    | Occupancy button pressed (ON) or released (OFF) |
+| motionDetection                   | Switch                    | On=Motion detected, Off=not |
+| setPoint                          | Number                    | linear set point |
+| fanSpeedStage                     | Number                    | Fan speed: -1 (Auto), 0, 1, 2, 3, 4, 5, 6 |
+| dimmer                            | Dimmer                    | Dimmer value in percent |
+| generalSwitch(/A/B)               | Switch                    | Switch something (channel A/B) ON/OFF |
+| rollershutter                     | Rollershutter             | Shut time (shutTime) in seconds can be configured |
+| angle                             | Number:Angle              | The angle for blinds |
+| pilotWire                         | Number                    | Device mode: 1 - Off, 2 - Comfort, 3 - Eco, 4 - Anti-freeze, 5 - Comfort1, 6 - Comfort2 |
+| instantpower                      | Number:Power              | Instant power consumption in Watts |
+| totalusage                        | Number:Energy             | Used energy in Kilowatt hours |
+| teachInCMD                        | Switch                    | Sends a teach-in msg, content can configured with parameter teachInMSG |
+| virtualSwitchA                    | Switch                    | Used to convert switch item commands into rocker switch messages (channel A used). Time in ms between sending a pressed and release message can be defined with channel parameter duration. The switch mode (rocker switch: use DIR1 and DIR2, toggle: use just one DIR) can be set with channel parameter switchMode (rockerSwitch, toggleButtonDir1, toggleButtonDir2) |
+| virtualRollershutterA             | Rollershutter             | Used to convert rollershutter item commands into rocker switch messages (channel A used) |
+| rockerswitchListenerSwitch        | Switch                    | Used to convert rocker switch messages into switch item state updates |
+| rockerswitchListenerRollershutter | Rollershutter             | Used to convert rocker switch messages into rollershutter item state updates |
+| virtualRockerswitchB              | String                    | Used to send plain rocker switch messages (channel B used) |
+| batteryVoltage                    | Number:ElectricPotential  | Battery voltage for things with battery |
+| energyStorage                     | Number:ElectricPotential  | Energy storage, don't know what this means... |
+| batterLevel                       | Number                    | Battery level in percent |
+| batterLow                         | Switch                    | Battery low indicator |
+| smokeDetection                    | Switch                    | Smoke detected |
+| sensorFault                       | Switch                    | Smoke sensor fault |
+| timeSinceLastMaintenance          | Number:Time               | Time since last maintenance |
+| remainingPLT                      | Number:Time               | Remaining product life time |
+| hygroComfortIndex                 | String                    | Hygrothermal Comfort Index |
+| indoorAirAnalysis                 | String                    | Indoor Air Analysis |
+| ventilationOperationMode          | String                    | Direct Operation Mode Control |
+| fireplaceSafetyMode               | Switch                    | Fireplace Safety Mode |
+| heatExchangerBypassStatus         | Contact                   | Heat Exchanger Bypass Status |
+| supplyAirFlapStatus               | Contact                   | Supply Air Flap Position |
+| exhaustAirFlapStatus              | Contact                   | Exhaust Air Flap Position |
+| defrostMode                       | Switch                    | Defrost Mode |
+| coolingProtectionMode             | Switch                    | Cooling Protection Mode |
+| outdoorAirHeaterStatus            | Switch                    | Outdoor Air Heater Status |
+| supplyAirHeaterStatus             | Switch                    | Supply Air Heater Status |
+| drainHeaterStatus                 | Switch                    | Drain Heater Status |
+| timerOperationMode                | Switch                    | Timer Operation Mode |
+| weeklyTimerProgramStatus          | Switch                    | Weekly Timer Program Status |
+| roomTemperatureControlStatus      | Switch                    | Room Temperature Control Status |
+| airQualityValue1                  | Number:Dimensionless      | Air Quality Value in percent |
+| airQualityValue2                  | Number:Dimensionless      | Air Quality Value in percent |
+| outdoorAirTemperature             | Number:Temperature        | Outdoor Temperature |
+| supplyAirTemperature              | Number:Temperature        | Supply Air Temperature |
+| indoorAirTemperature              | Number:Temperature        | Indoor Temperature |
+| exhaustAirTemperature             | Number:Temperature        | Exhaust Air Temperature |
+| supplyAirFanAirFlowRate           | Number:VolumetricFlowRate | Supply Air Fan Air Flow Rate |
+| exhaustAirFanAirFlowRate          | Number:VolumetricFlowRate | Exhaust Air Fan Air Flow Rate |
+| supplyFanSpeed                    | Number:Dimensionless      | Supply Fan Speed in rpm |
+| exhaustFanSpeed                   | Number:Dimensionless      | Exhaust Fan Speed |
+| rssi                              | Number                    | Received Signal Strength Indication (dBm) of last received message |
+| repeatCount                       | Number                    | Number of repeaters involved in the transmission of the telegram |
+| lastReceived                      | DateTime                  | Date and time the last telegram was received |
+| statusRequestEvent                | Trigger                   | Emits event 'requestAnswer' |
+| windowBreachEvent                 | Trigger                   | Emits event 'ALARM' |
+| protectionPlusEvent               | Trigger                   | Emits event 'ALARM' |
+| vacationModeToggleEvent           | Trigger                   | Emits events 'ACTIVATED', 'DEACTIVATED' |
+| dayNightModeState                 | Number                    | 0 = Night mode on, 1 = day mode on |
 
 Items linked to bi-directional actuators (actuator sends status messages back) should always disable the `autoupdate`.
 This is especially true for Eltako rollershutter, as their position is calculated out of the current position and the moving time.
@@ -373,7 +385,7 @@ Thing centralCommand 11223344 "Light" @ "Living room" [ enoceanId="11223344", se
 ## Rules and Profiles
 
 The rockerSwitch things use _system:rawrocker_ channel types.
-So they trigger _DIR1[/2]_\__PRESSED_ and DIR1[/2]_\__RELEASED_ events.
+So they trigger _DIR1[/2]\___PRESSED_ and _DIR1[/2]\___RELEASED_ events.
 These channels can be directly linked to simple items like Switch, Dimmer or Player with the help of _profiles_.
 If you want to do more advanced stuff, you have to implement rules which react to these events
 
@@ -405,12 +417,12 @@ Bridge enocean:bridge:gtwy "EnOcean Gateway" [ path="/dev/ttyAMA0" ] {
    Thing centralCommand cc02 "Dimmer" @ "Living room" [ enoceanId="aabbcc05", senderIdOffset=2, sendingEEPId="A5_38_08_02", receivingEEPId="A5_38_08_02", broadcastMessages=true, suppressRepeating=false ]
    Thing rollershutter r01 "Rollershutter" @ "Kitchen" [ enoceanId="aabbcc06", senderIdOffset=3, sendingEEPId="A5_3F_7F_EltakoFSB", receivingEEPId="A5_3F_7F_EltakoFSB", broadcastMessages=true, suppressRepeating=false ] {Channels: Type rollershutter:rollershutter [shutTime=25]}
    Thing measurementSwitch ms01 "TV Smart Plug" @ "Living room" [ enoceanId="aabbcc07", senderIdOffset=4, sendingEEPId="D2_01_09", broadcastMessages=false, receivingEEPId="D2_01_09","A5_12_01", suppressRepeating=false, pollingInterval=300]
-   Thing classicDevice cd01 "Garage_Light" @ "Garage" [ 
-        senderIdOffset=5, 
-        sendingEEPId="F6_02_01", 
-        broadcastMessages=true, 
+   Thing classicDevice cd01 "Garage_Light" @ "Garage" [
+        senderIdOffset=5,
+        sendingEEPId="F6_02_01",
+        broadcastMessages=true,
         receivingEEPId="F6_02_01",
-        suppressRepeating=false 
+        suppressRepeating=false
    ] {
         Type virtualSwitchA             : virtualSwitchA              [duration=300, switchMode="rockerSwitch"]
         Type rockerswitchListenerSwitch : Listener1 "Schalter links"  [enoceanId="aabbcc08", channel="channelA", switchMode="toggleButtonDir1"]
@@ -425,8 +437,8 @@ Switch Light_Switch { channel="enocean:rockerSwitch:gtwy:rs01:rockerSwitchAction
 Dimmer Kitchen_Hue "Hue" <light> {channel="enocean:rockerSwitch:gtwy:rs01:rockerswitchB" [profile="system:rawrocker-to-dimmer"], channel="hue:0220:0017884f6626:9:brightness"}
 Rollershutter Kitchen_Rollershutter "Roller shutter" <blinds> (Kitchen) {channel="enocean:rollershutter:gtwy:r01:rollershutter", autoupdate="false"}
 Switch Garage_Light "Switch" {
-        channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA", 
-        channel="enocean:classicDevice:gtwy:cd01:Listener1", 
+        channel="enocean:classicDevice:gtwy:cd01:virtualRockerswitchA",
+        channel="enocean:classicDevice:gtwy:cd01:Listener1",
         channel="enocean:classicDevice:gtwy:cd01:Listener2"
 }
 ```
@@ -448,13 +460,13 @@ These conversion functions can be defined with the help of transformation functi
 |                                 | suppressRepeating |                            | true, false |
 
 Supported channels: genericSwitch, genericRollershutter, genericDimmer, genericNumber, genericString, genericColor, genericTeachInCMD.
-You have to define the transformationType (e.g. MAP) and transformationFunction (e.g. for MAP: file name of mapping file) for each of these channels. 
+You have to define the transformationType (e.g. MAP) and transformationFunction (e.g. for MAP: file name of mapping file) for each of these channels.
 
 For an inbound transformation (EnOcean message => openHAB state) you receive the channel id and the EnOcean data in hex separated by a pipe.
 Your transformation function has to return the openHAB State type and value separated by a pipe.
 If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP F6_FF_FF:
 
-```
+```text
 ChannelId|EnoceanData(Hex)=openHABState|Value
 genericSwitch|70=OnOffType|ON
 genericSwitch|50=OnOffType|OFF
@@ -467,7 +479,7 @@ Your transformation function has to return the payload of the EnOcean message.
 You do not have to worry about CRC and header data.
 If you want to use a mapping transformation, your mapping file has to look like this for a genericThing using EEP A5_FF_FF:
 
-```
+```text
 ChannelId|openHABCommand=EnoceanData(Hex)
 genericSwitch|ON=01000009
 genericSwitch|OFF=01000008

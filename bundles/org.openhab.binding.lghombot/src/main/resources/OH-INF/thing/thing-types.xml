@@ -8,7 +8,7 @@
 		<label>LG HomBot</label>
 		<description>HomBot vacuum robot.</description>
 		<category>CleaningRobot</category>
-
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="stateType"/>
 			<channel id="battery" typeId="batteryType"/>
@@ -90,6 +90,10 @@
 		<label>Battery</label>
 		<description>Current battery charge.</description>
 		<category>BatteryLevel</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d%%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="cpuLoadType" advanced="true">
@@ -108,16 +112,28 @@
 		<item-type>Switch</item-type>
 		<label>Clean</label>
 		<description>Start cleaning / return home.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="startType">
 		<item-type>Switch</item-type>
 		<label>Start</label>
 		<description>Start cleaning.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="homeType">
 		<item-type>Switch</item-type>
 		<label>Home</label>
 		<description>Return home.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="pauseType" advanced="true">
 		<item-type>Switch</item-type>
@@ -128,16 +144,28 @@
 		<item-type>Switch</item-type>
 		<label>Turbo</label>
 		<description>Turbo mode ON, OFF.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="repeatType">
 		<item-type>Switch</item-type>
 		<label>Repeat</label>
 		<description>Repeat cleaning ON, OFF.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="modeType">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Cleaning mode.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ZZ">Zigzag mode</option>
@@ -182,6 +210,10 @@
 		<item-type>DateTime</item-type>
 		<label>Last Clean</label>
 		<description>Last time the HomBot cleaned.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
 	<channel-type id="mapType" advanced="true">

@@ -1,33 +1,32 @@
 # MELCloud Binding
 
-This is an openHAB binding for Mitsubishi MELCloud (https://www.melcloud.com/). 
+This is an openHAB binding for [Mitsubishi MELCloud](https://www.melcloud.com/).
 Installing this binding you can control your Mitsubishi devices from openHAB without accessing the MELCloud App and benefiting from all openHAB automations.
 
 ## Supported Things
 
-Supported thing types
+Supported Thing types
 
-* melcloudaccount (bridge)
-* acdevice
-* heatpumpdevice
+- melcloudaccount (bridge)
+- acdevice
+- heatpumpdevice
 
 A bridge is required to connect to your MELCloud account.
-
 
 ## Discovery
 
 Discovery is used _after_ a bridge has been created and configured with your login information.
 
 1. Add the binding
-2. Add a new thing of type melcloudaccount and configure with username and password
-3. Go to Inbox and start discovery devices using MELCloud Binding
-4. Supported devices (A.C. Device, Heatpump Device) should appear in your inbox
+1. Add a new Thing of type melcloudaccount and configure with username and password
+1. Go to Inbox and start discovery devices using MELCloud Binding
+1. Supported devices (A.C. Device, Heatpump Device) should appear in your inbox
 
-Binding support also manual thing configuration by thing files.
+Binding support also manual Thing configuration by Thing files.
 
 ## Thing Configuration
 
-In order to manually create a thing file and not use the discovery routine you will need to know device MELCloud device ID.
+In order to manually create a Thing file and not use the discovery routine you will need to know device MELCloud device ID.
 This is a bit difficult to get. The easiest way of getting this is enable debug level logging of the binding or discovery devices by the binding (discovered device can be removed afterwards).
 
 MELCloud account configuration:
@@ -67,16 +66,13 @@ MELCloud account configuration:
 | 24          | Romanian          |
 | 25          | Slovenian         |
 
-
 A.C. device and Heatpump device configuration:
 
 | Config          | Mandatory | Description                                                                           |
 |-----------------|-----------|---------------------------------------------------------------------------------------|
 | deviceID        | x         | MELCloud device ID.                                                                   |
 | buildingID      |           | MELCloud building ID. If not defined, binding tries to find matching id by device ID. |
-| pollingInterval |           | Refresh time interval in seconds for updates from MELCloud.  Defaults to 60 seconds.  |
-
-
+| pollingInterval |           | Refresh time interval in seconds for updates from MELCloud. Minimum is 180, defaults to 360 seconds. Mitsubishi Electric introduced limits on their API so changing default value may cause excessive traffic and lock you out for several hours. |
 
 ## Channels
 
@@ -112,18 +108,18 @@ Heatpump device channels
 
 ## Full Example for items configuration
 
-**melcloud.things**
+### melcloud.things
 
-```
+```java
 Bridge melcloud:melcloudaccount:myaccount "My MELCloud account" [ username="user.name@example.com", password="xxxxxx", language="0" ] {
-	Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=60 ]
-	Thing heatpumpdevice attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=60 ]
+ Thing acdevice livingroom "Livingroom A.C. device" [ deviceID=123456, pollingInterval=360 ]
+ Thing heatpumpdevice attic "Attic Heatpump device" [ deviceID=789012, pollingInterval=360 ]
 }
 ```
 
-**melcloud.items**
+### melcloud.items
 
-```
+```java
 Switch      power               { channel="melcloud:acdevice:myaccount:livingroom:power" }
 String      operationMode       { channel="melcloud:acdevice:myaccount:livingroom:operationMode" }
 Number      setTemperature      { channel="melcloud:acdevice:myaccount:livingroom:setTemperature" }

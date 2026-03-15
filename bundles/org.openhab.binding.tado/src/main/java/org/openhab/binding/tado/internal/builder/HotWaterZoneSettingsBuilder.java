@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,25 +16,27 @@ import static org.openhab.binding.tado.internal.api.TadoApiTypeUtils.temperature
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanLevel;
 import org.openhab.binding.tado.internal.TadoBindingConstants.FanSpeed;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HorizontalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
-import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
-import org.openhab.binding.tado.internal.api.model.HotWaterCapabilities;
-import org.openhab.binding.tado.internal.api.model.HotWaterZoneSetting;
-import org.openhab.binding.tado.internal.api.model.Power;
-import org.openhab.binding.tado.internal.api.model.TadoSystemType;
-import org.openhab.binding.tado.internal.api.model.TemperatureObject;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.HotWaterCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.HotWaterZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.Power;
+import org.openhab.binding.tado.swagger.codegen.api.model.TadoSystemType;
+import org.openhab.binding.tado.swagger.codegen.api.model.TemperatureObject;
 
 /**
  * Builder for incremental creation of hot water zone settings.
  *
  * @author Dennis Frommknecht - Initial contribution
  */
+@NonNullByDefault
 public class HotWaterZoneSettingsBuilder extends ZoneSettingsBuilder {
     private static final float DEFAULT_TEMPERATURE_C = 50.0f;
     private static final float DEFAULT_TEMPERATURE_F = 122.0f;
@@ -78,6 +80,7 @@ public class HotWaterZoneSettingsBuilder extends ZoneSettingsBuilder {
 
         HotWaterZoneSetting setting = hotWaterSetting(true);
 
+        Float temperature = this.temperature;
         if (temperature != null) {
             setting.setTemperature(temperature(temperature, temperatureUnit));
         }

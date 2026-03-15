@@ -7,6 +7,7 @@
 	<thing-type id="wateralert">
 		<label>Alert</label>
 		<description>Water Alert Levels for New Zealand water supply.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="alertlevel" typeId="alertlevel"/>

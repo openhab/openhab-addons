@@ -44,7 +44,7 @@ For the Maximum Error channels just add `_maxerr` to the channel names.
 The rw column is empty if the channel is only readable, w if the channel can be written and rw if it allows both to be read and written.
 
 | channel                   | type                 | rw | description                                                         |
-|---------------------------|----------------------|--------------------------------------------------------------------------|
+|---------------------------|----------------------|----|---------------------------------------------------------------------|
 | status                    | String               |    | Status of the sensors (usually "OK")                                |
 | avgFineDustSize           | Number:Length        |    | Average size of Fine Dust [experimental]                            |
 | fineDustCnt00_3           | Number:Dimensionless |    | Fine Dust >0,3 µm                                                   |
@@ -53,29 +53,34 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | fineDustCnt02_5           | Number:Dimensionless |    | Fine Dust >2,5 µm                                                   |
 | fineDustCnt05             | Number:Dimensionless |    | Fine Dust >5 µm                                                     |
 | fineDustCnt10             | Number:Dimensionless |    | Fine Dust >10 µm                                                    |
-| co                        | Number               |    | CO concentration                                                    |
-| co2                       | Number:Dimensionless |    | CO₂ concentration                                                   |
+| co                        | Number:Density       |    | Carbon monoxide (CO) concentration                                  |
+| co2                       | Number:Dimensionless |    | Carbon dioxide (CO₂) concentration                                  |
 | dCO2dt                    | Number               |    | Change of CO₂ concentration                                         |
 | dHdt                      | Number               |    | Change of Humidity                                                  |
 | dewpt                     | Number:Temperature   |    | Dew Point                                                           |
 | doorEvent                 | Number               |    | Door Event (experimental, might not work reliably)                  |
+| h2s                       | Number:Density       |    | Hydrogen sulfide (H₂S)                                              |
+| healthIndex               | Number:Dimensionless |    | Health Index in percent                                             |
 | health                    | Number:Dimensionless |    | Health Index (0 to 1000, -200 for gas alarm, -800 for fire alarm)   |
 | humidityRelative          | Number:Dimensionless |    | Humidity in percent                                                 |
-| humidityAbsolute          | Number               |    | Absolute Humidity                                                   |
+| humidityAbsolute          | Number:Density       |    | Absolute Humidity                                                   |
 | measureTime               | Number:Time          |    | Milliseconds needed for measurement                                 |
-| no2                       | Number               |    | NO₂ concentration                                                   |
-| o3                        | Number               |    | Ozone (O₃) concentration                                            |
+| no2                       | Number:Density       |    | Nitrogen Dioxide (NO₂) concentration                                |
+| o3                        | Number:Density       |    | Ozone (O₃) concentration                                            |
 | o2                        | Number:Dimensionless |    | Oxygen (O₂) concentration                                           |
+| performanceIndex          | Number:Dimensionless |    | Performance Index in percent                                        |
 | performance               | Number:Dimensionless |    | Performance Index (0 to 1000)                                       |
 | fineDustConc01            | Number               |    | Fine Dust concentration >1 µm                                       |
 | fineDustConc02_5          | Number               |    | Fine Dust concentration >2.5 µm                                     |
-| fineDustConc10            | Number               |    | Fine Dust concentration >10 µm             fni                      |
-| pressure                  | Number:Pressure      |    | Pressure                                                            |
-| so2                       | Number               |    | SO₂ concentration                                                   |
+| fineDustConc10            | Number               |    | Fine Dust concentration >10 µm                                      |
+| pressure                  | Number:Pressure      |    | Barometric Pressure                                                 |
+| so2                       | Number               |    | Sulfur dioxide (SO₂) concentration                                  |
 | sound                     | Number:Dimensionless |    | Noise                                                               |
 | temperature               | Number:Temperature   |    | Temperature                                                         |
 | timestamp                 | DateTime             |    | Timestamp of measurement                                            |
 | tvoc                      | Number:Dimensionless |    | VOC concentration                                                   |
+| virus_free                | Number:Dimensionless | r  | Virus-Free index in percent; the lower the index, the higher the potential virus risk. |
+| mold_free                 | Number:Dimensionless | r  | Mold-Free index in percent; the lower the index, the higher the potential mold risk. |
 | uptime                    | Number:Time          |    | uptime in seconds                                                   |
 | wifi                      | Switch               |    | WLAN on or off                                                      |
 | ssid                      | String               |    | WLAN SSID                                                           |
@@ -116,17 +121,23 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | errorBars                 | Switch               | rw | Calculate Maximum Errors                                            |
 | warmupPhase               | Switch               | rw | Output data as Warmup Phase                                         |
 
+## Usage with Docker
+
+This binding requires the JVM cryptographic strength policy to be set to "unlimited".
+Otherwise the connection to the device will fail.
+See the [openHAB Docker image documentation](https://github.com/openhab/openhab-docker/blob/main/README.md#java-cryptographic-strength-policy) for details.
+
 ## Example
 
 ### air-Q.things
 
-```
+```java
 Thing airq:airq:1 "air-Q" [ ipAddress="192.168.0.68", password="myAirQPassword" ]
 ```
 
 ### air-Q.items
 
-```
+```java
 String                airQ_status                 "Status of Sensors"                     {channel="airq:airq:1:status"}
 Number:Length         airQ_avgFineDustSize        "Average Size of Fine Dust"             {channel="airq:airq:1:avgFineDustSize"}
 Number:Dimensionless  airQ_fineDustCnt00_3        "Fine Dust >0,3 µm"                     {channel="airq:airq:1:fineDustCnt00_3"}
@@ -159,6 +170,8 @@ Number:Temperature    airQ_temperature            "Temperature"                 
 DateTime              airQ_timestamp              "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                            {channel="airq:airq:1:timestamp"}
 Number:Dimensionless  airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:tvoc"}
 Number:Time           airQ_uptime                 "Uptime"                                {channel="airq:airq:1:uptime"}
+Number:Dimensionless  airQ_Virus_free             "Virus-Free index"                      {unit="%",channel="airq:airq:1:virus_free"}
+Number:Dimensionless  airQ_Mold_free              "Mold-Free index"                       {unit="%",channel="airq:airq:1:mold_free"}
 
 Number:Dimensionless  airQ_cnt03_maxerr        "Maximum error of Fine Dust >0,3 µm"             {channel="airq:airq:1:cnt0_3_maxerr"}
 Number:Dimensionless  airQ_cnt05_maxerr        "Maximum error of Fine Dust >0,5 µm"             {channel="airq:airq:1:cnt0_5_maxerr"}
@@ -181,6 +194,8 @@ Number:Dimensionless  airQ_so2_maxerr          "Maximum error of SO2 concentrati
 Number:Dimensionless  airQ_sound_maxerr        "Maximum error of Noise"                         {channel="airq:airq:1:sound_maxerr"}
 Number:Dimensionless  airQ_temperature_maxerr  "Maximum error of Temperature"                   {channel="airq:airq:1:temperature_maxerr"}
 Number:Dimensionless  airQ_voc_maxerr          "Maximum error of VOC concentration"             {channel="airq:airq:1:tvoc_maxerr"}
+Number:Dimensionless  airQ_virus_free_maxerr   "Maximum error of Virus-Free"                    {unit="%",channel="airq:airq:1:virus_free_maxerr"}
+Number:Dimensionless  airQ_mold_free_maxerr    "Maximum error of Mold-Free"                     {unit="%",channel="airq:airq:1:mold_free_maxerr"}
 
 Switch airQ_wifi                    "WLAN on or off"                                 {channel="airq:airq:1:wifi"}
 String airQ_SSID                    "WLAN SSID"                                      {channel="airq:airq:1:ssid"}

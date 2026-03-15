@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="entsoe"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="day-ahead">
+
+		<label>Day-ahead prices</label>
+		<description>Hourly spot prices of the electricity market from European Network of Transmission System Operators
+			(ENTSO-E)</description>
+		<category>WebService</category>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channels>
+			<channel id="spot-price" typeId="spot-price"/>
+			<channel id="prices-received" typeId="trigger-prices-received"/>
+		</channels>
+
+		<config-description>
+			<parameter name="securityToken" type="text" required="true">
+				<context>password</context>
+				<label>Security Token</label>
+				<description>Security token for ENTSO-E API</description>
+			</parameter>
+			<parameter name="area" type="text" required="true">
+				<label>Area</label>
+				<description>Choose from list or enter custom EIC area. See
+					https://transparency.entsoe.eu/
+					and
+					https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/ (Area Y, Bidding Zone)</description>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<!--
+						url: https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/
+						filter:
+						EIC Type Code: Area Y
+						Function: Bidding Zone
+					-->
+					<option value="10Y1001A1001A39I">EE Estonia</option>
+					<option value="10Y1001A1001A44P">SE1 Swedish Elspot Area 1</option>
+					<option value="10Y1001A1001A45N">SE2 Swedish Elspot Area 2</option>
+					<option value="10Y1001A1001A46L">SE3 Swedish Elspot Area 3</option>
+					<option value="10Y1001A1001A47J">SE4 Swedish Elspot Area 4</option>
+					<option value="10Y1001A1001A70O">IT-CENTRE_NORTH Italy Centre-North</option>
+					<option value="10Y1001A1001A71M">IT-CENTRE_SOUTH Italy Centre-South</option>
+					<option value="10Y1001A1001A73I">IT-NORTH Italy North</option>
+					<option value="10Y1001A1001A74G">IT-SARDINIA Italy Sardinia</option>
+					<option value="10Y1001A1001A75E">IT-SICILY Italy Sicily</option>
+					<option value="10Y1001A1001A788">IT-SOUTH Italy South</option>
+					<option value="10Y1001A1001A82H">DE_LU Germany_Luxemburg</option>
+					<option value="10Y1001A1001A885">IT-SACO_AC Italy Saco_AC</option>
+					<option value="10Y1001A1001A893">IT-SACODC Italy Saco_DC</option>
+					<option value="10Y1001C--000182">UA-IPS Ukraine IPS</option>
+					<option value="10Y1001C--00096J">IT-CALABRIA Italy Calabria</option>
+					<option value="10YAT-APG------L">AT Austria</option>
+					<option value="10YBE----------2">BE Belgium</option>
+					<option value="10YCA-BULGARIA-R">BG Bulgaria</option>
+					<option value="10YCH-SWISSGRIDZ">CH Switzerland</option>
+					<option value="10YCS-CG-TSO---S">ME Montenegro</option>
+					<option value="10YCZ-CEPS-----N">CZ Czech Republic</option>
+					<option value="10YDK-1--------W">DK1 Denmark DK1</option>
+					<option value="10YDK-2--------M">DK2 Denmark DK2</option>
+					<option value="10YES-REE------0">ES Spain</option>
+					<option value="10YFI-1--------U">FI Finland</option>
+					<option value="10YFR-RTE------C">FR France</option>
+					<option value="10YGR-HTSO-----Y">GR Greece</option>
+					<option value="10YHR-HEP------M">HR Croatia</option>
+					<option value="10YHU-MAVIR----U">HU Hungary</option>
+					<option value="10YLT-1001A0008Q">LT Lithuania</option>
+					<option value="10YLV-1001A00074">LV Latvia</option>
+					<option value="10YMK-MEPSO----8">MK FYROM</option>
+					<option value="10YNL----------L">NL Netherlands</option>
+					<option value="10YNO-1--------2">NO1 Norwegian Area Elspot Area 1</option>
+					<option value="10YNO-2--------T">NO2 Norwegian Area Elspot Area 2</option>
+					<option value="10YNO-3--------J">NO3 Norwegian Area Elspot Area 3</option>
+					<option value="10YNO-4--------9">NO4 Norwegian Area Elspot Area 4</option>
+					<option value="10Y1001A1001A48H">NO5 Norwegian Area Elspot Area 5</option>
+					<option value="10YPL-AREA-----S">PL Poland</option>
+					<option value="10YPT-REN------W">PT Portugal</option>
+					<option value="10YRO-TEL------P">RO Romania</option>
+					<option value="10YSI-ELES-----O">SI Slovenia</option>
+					<option value="10YSK-SEPS-----K">SK Slovak Republic</option>
+					<option value="50Y0JVU59B4JWQCU">NO_NO2NSL Virtual Bidding Zone NO2NSL</option>
+				</options>
+			</parameter>
+			<parameter name="historicDays" type="integer" min="0" max="30" required="false">
+				<label>Historic Data</label>
+				<default>0</default>
+				<description>Specify number of days to download historic data of energy spot prices (historic data will get exchange
+					rate of today)</description>
+			</parameter>
+			<parameter name="resolution" type="text" required="false">
+				<label>Resolution</label>
+				<description>Data resolution</description>
+				<limitToOptions>false</limitToOptions>
+				<options>
+					<option value="">Auto detect</option>
+					<option value="PT15M">15 minutes</option>
+					<option value="PT30M">30 minutes</option>
+					<option value="PT60M">60 minutes</option>
+				</options>
+			</parameter>
+			<parameter name="spotPricesAvailableCetHour" type="integer" min="0" max="23" required="false">
+				<label>Publish Hour</label>
+				<default>13</default>
+				<description>CET hour spot prices will get published on ENTSO-E. Usually at 13 CET.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="requestTimeout" type="integer" min="10" max="300" required="false">
+				<label>Request Timeout</label>
+				<default>30</default>
+				<description>Request timeout value in seconds</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="spot-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Spot Price</label>
+		<category>Price</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Price</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="trigger-prices-received">
+		<kind>trigger</kind>
+		<label>Trigger Prices Received</label>
+	</channel-type>
+
+</thing:thing-descriptions>

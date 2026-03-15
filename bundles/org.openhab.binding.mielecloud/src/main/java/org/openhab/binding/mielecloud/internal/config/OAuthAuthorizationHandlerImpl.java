@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,8 +76,8 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
             throw new OngoingAuthorizationException("There is already an ongoing authorization!", timerExpiryTimestamp);
         }
 
-        this.oauthClientService = oauthFactory.createOAuthClientService(email, TOKEN_URL, AUTHORIZATION_URL, clientId,
-                clientSecret, null, false);
+        this.oauthClientService = oauthFactory.createOAuthClientService(bridgeUid.getAsString(), TOKEN_URL,
+                AUTHORIZATION_URL, clientId, clientSecret, null, false);
         this.bridgeUid = bridgeUid;
         this.email = email;
         redirectUri = null;
@@ -136,6 +136,12 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
 
             // Although this method is called "get" it actually fetches and stores the token response as a side effect.
             oauthClientService.getAccessTokenResponseByAuthorizationCode(authorizationCode, redirectUri);
+
+            // Remove any legacy OAuth service handle.
+            String email = this.email;
+            if (email != null) {
+                oauthFactory.deleteServiceAndAccessToken(email);
+            }
         } catch (IOException e) {
             throw new OAuthException("Network error while retrieving token response: " + e.getMessage(), e);
         } catch (OAuthResponseException e) {
@@ -197,7 +203,11 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
                 throw new OAuthException(
                         "There is no access token in the persistent storage or it already expired and could not be refreshed");
             } else {
-                return response.getAccessToken();
+                String accessToken = response.getAccessToken();
+                if (accessToken == null) {
+                    throw new OAuthException("Unable to authenticate, no access token available");
+                }
+                return accessToken;
             }
         } catch (org.openhab.core.auth.client.oauth2.OAuthException e) {
             throw new OAuthException("Failed to read access token from persistent storage: " + e.getMessage(), e);

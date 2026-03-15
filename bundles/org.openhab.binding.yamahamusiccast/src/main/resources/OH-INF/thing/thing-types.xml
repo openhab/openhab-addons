@@ -11,7 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>Yamaha MusicCast Model</label>
 		<description>Your Yamaha model with MusicCast functionality</description>
-
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="main" typeId="mainControls"/>
 			<channel-group id="zone2" typeId="zone2Controls"/>
@@ -28,12 +28,12 @@
 			</parameter>
 			<parameter name="syncVolume" type="boolean">
 				<label>Sync Volume</label>
-				<description>Sync Volume across linked Music Cast models</description>
+				<description>Sync volume across linked MusicCast models.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="defaultAfterMCLink" type="text">
 				<label>MC Link Default Value</label>
-				<description>Default value for client when MC Link is broken</description>
+				<description>Default input value for the client when MC Link is broken.</description>
 				<default>net_radio</default>
 				<options>
 					<option value="none">None</option>
@@ -92,35 +92,61 @@
 	<channel-type id="volumeAbs">
 		<item-type>Number</item-type>
 		<label>Volume</label>
-		<description>Volume channel - Absolute value</description>
+		<description>Volume level - Absolute value</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volumeDB">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Volume in dB</label>
-		<description>Volume channel - in decibel (dB) (-90 dB if not available)</description>
+		<description>Volume level - decibel (dB)</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="-80" max="12" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="input">
 		<item-type>String</item-type>
 		<label>Input</label>
-		<description>Input channel</description>
+		<description>Input source</description>
 	</channel-type>
 	<channel-type id="soundProgram">
 		<item-type>String</item-type>
 		<label>Sound Program</label>
-		<description>SoundProgram channel</description>
+		<description>Sound program</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="selectPreset">
 		<item-type>String</item-type>
 		<label>NetRadio/USB Preset</label>
-		<description>Select Net Radio/USB Preset channel</description>
+		<description>Select Net Radio/USB Preset</description>
+	</channel-type>
+	<channel-type id="selectPresetDAB">
+		<item-type>String</item-type>
+		<label>DAB Tuner Preset</label>
+		<description>Select DAB Preset</description>
+	</channel-type>
+	<channel-type id="selectPresetFM">
+		<item-type>String</item-type>
+		<label>FM Tuner Preset</label>
+		<description>Select FM Preset</description>
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>NetRadio/USB Player</label>
-		<description>Player for Net Radio/USB channel</description>
+		<description>Player for Net Radio/USB</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="sleep">
 		<item-type>Number</item-type>
@@ -157,16 +183,28 @@
 		<item-type>String</item-type>
 		<label>Artist</label>
 		<description>Artist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="track">
 		<item-type>String</item-type>
 		<label>Track</label>
 		<description>Track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Album</label>
 		<description>Album</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="albumArt">
 		<item-type>Image</item-type>
@@ -177,6 +215,10 @@
 		<item-type>String</item-type>
 		<label>Repeat</label>
 		<description>Repeat mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -189,6 +231,10 @@
 		<item-type>String</item-type>
 		<label>Shuffle</label>
 		<description>Shuffle mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -200,17 +246,25 @@
 	</channel-type>
 	<channel-type id="mclinkStatus">
 		<item-type>String</item-type>
-		<label>Status MusicCast</label>
-		<description>MusicCast Status</description>
+		<label>MusicCast Link Status</label>
+		<description>Status of the MusicCast link</description>
 	</channel-type>
 	<channel-type id="playTime">
 		<item-type>Number:Time</item-type>
 		<label>Play Time</label>
 		<description>Play Time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="totalTime">
 		<item-type>String</item-type>
 		<label>Total Time</label>
 		<description>Total Time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

@@ -10,7 +10,6 @@ Following thing types are supported by this extension:
 |---------------|-------------------------------|
 | am43          | AM43 Blind Drive Motor        |
 
-
 ## Discovery
 
 As any other Bluetooth device, AM43 Blind Drive Motors are discovered automatically by the corresponding bridge.
@@ -48,13 +47,13 @@ Following channels are supported for `AM43 Blind Drive Motor` thing:
 
 am43.things (assuming you have a Bluetooth bridge with the ID `bluetooth:bluegiga:adapter1`:
 
-```
+```java
 bluetooth:am43:adapter1:motor1  "AM43 Blind Drive Motor 1" (bluetooth:bluegiga:adapter1) [ address="12:34:56:78:9A:BC", refreshInterval=300, invertPosition=false ]
 ```
 
 am43.items:
 
-```
+```java
 String                  direction       "Direction [%s]"            { channel="bluetooth:am43:adapter1:motor1:direction" }
 Switch                  topLimitSet     "Top Limit Set"             { channel="bluetooth:am43:adapter1:motor1:topLimitSet" }
 Switch                  bottomLimitSet  "Bottom Limit Set"          { channel="bluetooth:am43:adapter1:motor1:bottomLimitSet" }
@@ -68,6 +67,3 @@ Number:Dimensionless    type            "Type [%.0f]"               { channel="b
 Number:Dimensionless    light_level     "Light Level [%.0f]"        { channel="bluetooth:am43:adapter1:motor1:lightLevel" }
 Number:Dimensionless    battery_level   "Battery Level [%.0f %%]"   { channel="bluetooth:am43:adapter1:motor1:electric" }
 ```
-
-
-

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="solarlog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Solar-Log Binding</name>
+	<description>This is the binding for the Solar-Log product range developed and sold by Solare Datensysteme GmbH. The
+		Solar-Log devices allow monitoring of Photovoltaic (PV) installations and provide a JSON API to extract data. This
+		includes information about current energy production and use, and other vital parameters of a PV installation. This
+		binding makes this data accessible to openHAB from where it can be persistently stored, used to trigger actions or be
+		displayed for information.</description>
+	<connection>local</connection>
+
+</addon:addon>

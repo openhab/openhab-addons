@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="xcenter-state-values">
+		<label>Status</label>
+		<description>Basic Information and State of your Kermi Heatpump X-Center</description>
+		<channels>
+			<channel id="global-state-id" typeId="global-state-id-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

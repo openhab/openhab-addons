@@ -7,6 +7,7 @@
 	<thing-type id="TX-NR809">
 		<label>Onkyo TX-NR809 AV Receiver</label>
 		<description>Network enabled Onkyo AV Receivers</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="zone1Controls" id="zone1"/>

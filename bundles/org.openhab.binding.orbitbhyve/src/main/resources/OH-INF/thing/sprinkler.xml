@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Sprinkler</label>
 		<description>Orbit B-hyve Sprinkler</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="control"/>
 			<channel id="mode" typeId="mode"/>

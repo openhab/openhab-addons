@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.wemo.internal.exception.MissingHostException;
+import org.openhab.binding.wemo.internal.exception.WemoException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
@@ -63,7 +65,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHolmesHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PURIFIER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PURIFIER);
 
     private static final int FILTER_LIFE_DAYS = 330;
     private static final int FILTER_LIFE_MINS = FILTER_LIFE_DAYS * 24 * 60;
@@ -74,8 +76,8 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, upnpIOService, wemoHttpCaller);
+    public WemoHolmesHandler(final Thing thing, final UpnpIOService upnpIOService, final HttpClient httpClient) {
+        super(thing, upnpIOService, httpClient);
 
         logger.debug("Creating a WemoHolmesHandler for thing '{}'", getThing().getUID());
     }
@@ -99,11 +101,9 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WemoHolmesHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
         }
         this.pollingJob = null;
         super.dispose();
@@ -111,33 +111,20 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private void poll() {
         synchronized (jobLock) {
-            if (pollingJob == null) {
+            logger.debug("Polling job for thing {}", getThing().getUID());
+            // Check if the Wemo device is set in the UPnP service registry
+            if (!isUpnpDeviceRegistered()) {
+                logger.debug("UPnP device {} not yet registered", getUDN());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                        "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                 return;
             }
-            try {
-                logger.debug("Polling job");
-                // Check if the Wemo device is set in the UPnP service registry
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    return;
-                }
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
-            }
+            updateWemoState();
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String wemoURL = getWemoURL(DEVICEACTION);
-        if (wemoURL == null) {
-            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
-                    getThing().getUID());
-            return;
-        }
         String attribute = null;
         String value = null;
 
@@ -237,18 +224,26 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             attribute = "SetTemperature";
             value = command.toString();
         }
+
         try {
             String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:SetAttributes xmlns:u=\"urn:Belkin:service:deviceevent:1\">"
-                    + "<attributeList>&lt;attribute&gt;&lt;name&gt;" + attribute + "&lt;/name&gt;&lt;value&gt;" + value
+            String content = """
+                    <?xml version="1.0"?>\
+                    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                    <s:Body>\
+                    <u:SetAttributes xmlns:u="urn:Belkin:service:deviceevent:1">\
+                    <attributeList>&lt;attribute&gt;&lt;name&gt;\
+                    """
+                    + attribute + "&lt;/name&gt;&lt;value&gt;" + value
                     + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
                     + "</s:Envelope>";
-            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            probeAndExecuteCall(DEVICEACTION, soapHeader, content);
             updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
-            logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (WemoException e) {
+            logger.warn("Failed to send command '{}' for thing '{}':", command, getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -256,7 +251,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
     @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
-                this.getThing().getUID());
+                getThing().getUID());
 
         updateStatus(ThingStatus.ONLINE);
         if (variable != null && value != null) {
@@ -271,23 +266,18 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
      */
     protected void updateWemoState() {
         String actionService = DEVICEACTION;
-        String wemoURL = getWemoURL(actionService);
-        if (wemoURL == null) {
-            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            return;
-        }
         try {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = probeAndExecuteCall(actionService, soapHeader, content);
             String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 
             // Due to Belkins bad response formatting, we need to run this twice.
             stringParser = unescapeXml(stringParser);
             stringParser = unescapeXml(stringParser);
 
-            logger.trace("AirPurifier response '{}' for device '{}' received", stringParser, getThing().getUID());
+            logger.trace("AirPurifier response '{}' for thing '{}' received", stringParser, getThing().getUID());
 
             stringParser = "<data>" + stringParser + "</data>";
 
@@ -482,8 +472,11 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                 }
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
-            logger.debug("Failed to get actual state for device '{}':", getThing().getUID(), e);
+        } catch (MissingHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+        } catch (RuntimeException | ParserConfigurationException | SAXException | IOException | WemoException e) {
+            logger.debug("Failed to get actual state for thing '{}':", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

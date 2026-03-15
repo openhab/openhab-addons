@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.tacmi.internal.schema;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,14 +28,15 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public class ApiPageEntry {
 
-    static enum Type {
+    enum Type {
         READ_ONLY_SWITCH(true),
         READ_ONLY_NUMERIC(true),
         NUMERIC_FORM(false),
         SWITCH_BUTTON(false),
         SWITCH_FORM(false),
         READ_ONLY_STATE(true),
-        STATE_FORM(false);
+        STATE_FORM(false),
+        TIME_PERIOD(false);
 
         public final boolean readOnly;
 
@@ -51,6 +54,11 @@ public class ApiPageEntry {
      * The channel for this entry
      */
     public final Channel channel;
+
+    /**
+     * Unit for this channel
+     */
+    public final @Nullable Unit<?> unit;
 
     /**
      * internal address for this channel
@@ -73,10 +81,11 @@ public class ApiPageEntry {
      */
     private long lastCommandTS;
 
-    protected ApiPageEntry(final Type type, final Channel channel, @Nullable final String address,
-            @Nullable ChangerX2Entry changerX2Entry, State lastState) {
+    protected ApiPageEntry(final Type type, final Channel channel, @Nullable final Unit<?> unit,
+            @Nullable final String address, @Nullable ChangerX2Entry changerX2Entry, State lastState) {
         this.type = type;
         this.channel = channel;
+        this.unit = unit;
         this.address = address;
         this.changerX2Entry = changerX2Entry;
         this.lastState = lastState;

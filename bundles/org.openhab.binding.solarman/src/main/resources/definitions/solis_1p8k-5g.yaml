@@ -1,0 +1,204 @@
+# Solis Single Phase Inverter
+# 1P8K-5G
+# Modbus information derived by test and comparing to Solis Cloud
+# Gedger V.0.1 May 2022
+#
+requests:
+  - start: 2999
+    end:  3024
+    mb_functioncode: 0x04
+  - start: 3035
+    end:  3043
+    mb_functioncode: 0x04
+  - start: 3071
+    end:  3071
+    mb_functioncode: 0x04
+
+parameters:
+ - group: InverterStatus
+   items:
+    - name: "Inverter Status"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 6
+      registers: [3043]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Operating Status"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 6
+      registers: [3071]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Inverter Temperature"
+      class: "temperature"
+      state_class: "measurement"
+      uom: "°C"
+      scale: 0.1
+      rule: 2
+      registers: [3041]
+      icon: 'mdi:thermometer'
+
+#    - name: "Inverter ID"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 5
+#      registers: [33004,33005,33006,33007,33008,33009,33010,33011,33012,33013,33014,33015,33016,33017,33018,33019]
+#      isstr: true
+
+    - name: "Product Model"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 6
+      registers: [2999]
+      isstr: true
+
+    - name: "DSP Software Version"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 6
+      registers: [3000]
+      isstr: true
+
+    - name: "LCD Software Version"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 6
+      registers: [3001]
+      isstr: true
+
+ - group: InverterDC
+   items:
+    - name: "PV1 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3021]
+      icon: 'mdi:solar-power'
+
+    - name: "PV2 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3023]
+      icon: 'mdi:solar-power'
+
+    - name: "PV1 Current"
+      class: "current"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3022]
+      icon: 'mdi:current-dc'
+
+    - name: "PV2 Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3024]
+      icon: 'mdi:current-dc'
+
+    - name: "Total DC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "kW"
+      scale: 0.001
+      rule: 3
+      registers: [3007, 3006]
+      icon: 'mdi:solar-power'
+
+ - group: InverterAC
+   items:
+    - name: "Inverter AC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "kW"
+      scale: 0.001
+      rule: 3
+      registers: [3005, 3004]
+      icon: 'mdi:solar-power'
+
+    - name: "Inverter Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3035]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Inverter Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3038]
+      icon: 'mdi:current-ac'
+
+    - name: "Inverter Frequency"
+      class: "frequency"
+      state_class: "measurement"
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [3042]
+      icon: 'mdi:sine-wave'
+
+ - group: Generation
+   items:
+    - name: "Daily Generation"
+      class: "energy"
+      state_class: "measurement"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [3014]
+      icon: 'mdi:solar-power'
+
+    - name: "Monthly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3011, 3010]
+      icon: 'mdi:solar-power'
+
+    - name: "Yearly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3017, 3016]
+      icon: 'mdi:solar-power'
+
+    - name: "Total Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3009, 3008]
+      icon: 'mdi:solar-power'
+

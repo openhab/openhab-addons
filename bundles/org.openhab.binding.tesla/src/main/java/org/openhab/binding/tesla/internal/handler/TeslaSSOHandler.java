@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.tesla.internal.handler;
 import static org.openhab.binding.tesla.internal.TeslaBindingConstants.*;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -26,8 +28,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.tesla.internal.protocol.sso.RefreshTokenRequest;
-import org.openhab.binding.tesla.internal.protocol.sso.TokenResponse;
+import org.openhab.binding.tesla.internal.protocol.dto.sso.RefreshTokenRequest;
+import org.openhab.binding.tesla.internal.protocol.dto.sso.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +46,8 @@ public class TeslaSSOHandler {
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(TeslaSSOHandler.class);
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            .withZone(ZoneId.systemDefault());
 
     public TeslaSSOHandler(HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -68,8 +72,10 @@ public class TeslaSSOHandler {
             String refreshTokenResponse = refreshResponse.getContentAsString();
             TokenResponse tokenResponse = gson.fromJson(refreshTokenResponse.trim(), TokenResponse.class);
 
-            if (tokenResponse != null && tokenResponse.access_token != null && !tokenResponse.access_token.isEmpty()) {
-                tokenResponse.created_at = Instant.now().getEpochSecond();
+            if (tokenResponse != null && tokenResponse.accessToken != null && !tokenResponse.accessToken.isEmpty()) {
+                tokenResponse.createdAt = Instant.now().getEpochSecond();
+                logger.debug("Access token expires in {} seconds at {}", tokenResponse.expiresIn, DATE_FORMATTER
+                        .format(Instant.ofEpochMilli((tokenResponse.createdAt + tokenResponse.expiresIn) * 1000)));
                 return tokenResponse;
             } else {
                 logger.debug("An error occurred while exchanging SSO auth token for API access token.");

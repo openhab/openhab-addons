@@ -8,6 +8,7 @@
 		<label>Roomba</label>
 		<description>A Roomba vacuum robot</description>
 		<category>CleaningRobot</category>
+		<semantic-equipment-tag>CleaningRobot</semantic-equipment-tag>
 
 		<channels>
 			<channel id="command" typeId="command"/>
@@ -113,6 +114,10 @@
 		<item-type>Number</item-type>
 		<label>Battery</label>
 		<description>Battery charge percentage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="bin">
@@ -207,6 +212,10 @@
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<description>Wi-Fi signal strength</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="snr" advanced="true">

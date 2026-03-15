@@ -7,24 +7,40 @@
 	<channel-type id="Upv0">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PV Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV current Channel Type -->
 	<channel-type id="Ipv0">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>PV Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV Power Channel Type -->
 	<channel-type id="Ppv0">
 		<item-type>Number:Power</item-type>
 		<label>PV Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Production PV in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed0">
 		<item-type>Number:Energy</item-type>
 		<label>PV Current Day Production</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV operating mode Channel Type -->
@@ -51,24 +67,40 @@
 	<channel-type id="Upv1">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PV1 Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV1 current Channel Type -->
 	<channel-type id="Ipv1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>PV1 Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV1 Power Channel Type -->
 	<channel-type id="Ppv1">
 		<item-type>Number:Power</item-type>
 		<label>PV1 Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Production PV1 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed1">
 		<item-type>Number:Energy</item-type>
 		<label>PV1 Current Day Production</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV1 operating mode Channel Type -->
@@ -95,30 +127,50 @@
 	<channel-type id="Upv2">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>PV2 Voltage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV2 current Channel Type -->
 	<channel-type id="Ipv2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>PV2 Current</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV2 Power Channel Type -->
 	<channel-type id="Ppv2">
 		<item-type>Number:Power</item-type>
 		<label>PV2 Power</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Production PV2 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed2">
 		<item-type>Number:Energy</item-type>
 		<label>PV2 Current Day Production</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV operating mode Channel Type -->
 	<channel-type id="Mod2">
 		<item-type>String</item-type>
 		<label>PV2 Operating State</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NIGHT">Night</option>

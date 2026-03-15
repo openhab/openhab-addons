@@ -12,6 +12,7 @@
 
 		<label>Coffee Machine</label>
 		<description>This is a Miele@home compatible coffee machine</description>
+		<semantic-equipment-tag>CoffeeMaker</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>
@@ -22,8 +23,14 @@
 			<channel id="phase" typeId="phase"/>
 			<channel id="rawPhase" typeId="rawPhase"/>
 			<channel id="door" typeId="door"/>
+			<channel id="info" typeId="info"/>
+			<channel id="failure" typeId="failure"/>
 			<channel id="switch" typeId="switch"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>uid</representation-property>
 

@@ -25,7 +25,7 @@ The Thing needs a Modbus serial slave Bridge to operate.
 
 One of the following serial settings need to be configured in the Bridge:
 
-- 9600 baud, 2 stop bit, no parity 
+- 9600 baud, 2 stop bit, no parity
 - 9600 baud, 1 stop bit, even parity
 - 9600 baud, 1 stop bit, odd parity
 
@@ -48,7 +48,7 @@ The following Channels apply to `ald1Unidirectional` and `ald1Bidirectional` if 
 
 ### .items
 
-```
+```java
 Number:Energy ALD1_Total_Energy "[%.2f %unit%]"        {channel="modbus:ald1Bidirectional:8b6e85623b:total_energy"}
 Number:Energy ALD1_Feeding_Back_Energy "[%.2f %unit%]" {channel="modbus:ald1Bidirectional:8b6e85623b:feeding_back_energy"}
 Number:ElectricPotential ALD1_Voltage "[%d %unit%]"    {channel="modbus:ald1Bidirectional:8b6e85623b:voltage"}
@@ -60,7 +60,7 @@ Number:Dimensionless ALD1_Power_Factor "[%.2f]"        {channel="modbus:ald1Bidi
 
 ### .sitemap
 
-```
+```perl
 sitemap ald1 label="ALD1 Energy Meter"
 {
     Default item=ALD1_Total_Energy label="Total Energy"

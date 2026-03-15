@@ -1,0 +1,22 @@
+{
+	"e": "changed",
+	"id": "11",
+	"r": "lights",
+	"state": {
+		"alert": "none",
+		"bri": 254,
+		"colormode": "hs",
+        "ct": 250,
+        "effect": "none",
+        "hue": 0,
+        "on": true,
+        "reachable": true,
+        "sat": 125,
+        "xy": [
+            0.6981,
+            0.298
+        ]
+	},
+	"t": "event",
+	"uniqueid": "a4:c1:38:89:fb:f3:c5:a3-0b"
+}

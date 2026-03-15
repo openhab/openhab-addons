@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="teslascope:vehicle">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="charge-port-latch">
+				<type>teslascope:charge-port-latch</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="charge-amps">
+				<type>teslascope:charge-amps</type>
+			</add-channel>
+			<add-channel id="charge-current-request">
+				<type>teslascope:charge-current-request</type>
+			</add-channel>
+			<add-channel id="charge-current-request-max">
+				<type>teslascope:charge-current-request-max</type>
+			</add-channel>
+			<add-channel id="charge-limit-soc">
+				<type>teslascope:charge-limit-soc</type>
+			</add-channel>
+			<add-channel id="charge-limit-soc-min">
+				<type>teslascope:charge-limit-soc-min</type>
+			</add-channel>
+			<add-channel id="charge-limit-soc-max">
+				<type>teslascope:charge-limit-soc-max</type>
+			</add-channel>
+			<add-channel id="located-at-home">
+				<type>teslascope:located-at-home</type>
+			</add-channel>
+			<add-channel id="located-at-work">
+				<type>teslascope:located-at-work</type>
+			</add-channel>
+			<add-channel id="located-at-favorite">
+				<type>teslascope:located-at-favorite</type>
+			</add-channel>
+			<update-channel id="charge-limit-soc-std">
+				<type>teslascope:charge-limit-soc-std</type>
+			</update-channel>
+		</instruction-set>
+
+	</thing-type>
+
+</update:update-descriptions>

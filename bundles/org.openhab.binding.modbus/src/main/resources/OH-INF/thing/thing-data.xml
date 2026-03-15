@@ -40,14 +40,15 @@
 				]]>
 				</description>
 			</parameter>
-			<parameter name="readTransform" type="text">
+			<parameter name="readTransform" type="text" multiple="true">
 				<label>Read Transform</label>
 				<description><![CDATA[Transformation to apply to polled data, after it has been converted to number using readValueType
 	<br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.
 	<br />Use SERVICENAME(ARG) or SERVICENAME:ARG to use transformation service.
 	<br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled
 		value is ignored.
-	<br />You can chain many transformations with ∩, for example SERVICE1:ARG1∩SERVICE2:ARG2]]></description>
+	<br />Multiple transformations can be chained by listing each transformation on a separate line,
+	or by concatenating them with "∩", for example SERVICE1(ARG1)∩SERVICE2(ARG2)]]></description>
 				<default>default</default>
 			</parameter>
 			<parameter name="readValueType" type="text">
@@ -82,7 +83,7 @@
 				<label>Write Address</label>
 				<description><![CDATA[Start address of the first holding register or coil in the write. Use empty for read-only things.
 				<br />Use zero based address, e.g. in place of 400001 (first holding register), use the address 0. This address is passed to data frame as is.
-				<br />One can write individual bits of an register using X.Y format where X is the register and Y is the bit (0 refers to least significant bit).
+				<br />One can write individual bits of a register using X.Y format where X is the register and Y is the bit (0 refers to least significant bit).
 				]]></description>
 			</parameter>
 			<parameter name="writeType" type="text">
@@ -96,14 +97,15 @@
 					<option value="holding">holding register</option>
 				</options>
 			</parameter>
-			<parameter name="writeTransform" type="text">
+			<parameter name="writeTransform" type="text" multiple="true">
 				<label>Write Transform</label>
 				<description><![CDATA[Transformation to apply to received commands.
 	<br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.
 	<br />Use SERVICENAME(ARG) or SERVICENAME:ARG to use transformation service.
 	<br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command
-	<br />You can chain many transformations with ∩, for example SERVICE1:ARG1∩SERVICE2:ARG2
-	value is ignored.]]></description>
+	value is ignored.
+	<br />Multiple transformations can be chained by listing each transformation on a separate line,
+	or by concatenating them with "∩", for example SERVICE1(ARG1)∩SERVICE2(ARG2)]]></description>
 				<default>default</default>
 			</parameter>
 			<parameter name="writeValueType" type="text">

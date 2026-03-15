@@ -59,9 +59,9 @@
 				<default>true</default>
 			</parameter>
 			<parameter name="tlsVersion" type="text" required="false">
-				<label>TLS version</label>
+				<label>TLS Version</label>
 				<description>TLS version used for controller communication. Choose TLSv1 for older firmware versions and TLSv1.2 for
-					never versions (since fall 2021). Auto mode try to recognize correct version.</description>
+					newer versions (since fall 2021). Auto mode try to recognize correct version.</description>
 				<default>TLSv1</default>
 				<options>
 					<option value="TLSv1">TLSv1</option>

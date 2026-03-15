@@ -1,0 +1,788 @@
+{
+    "name": "Elements AB01",
+    "serialNo": "12345",
+    "manufacturer": "Nanoleaf",
+    "firmwareVersion": "6.5.1",
+    "hardwareVersion": "1.1-0",
+    "model": "NL52",
+    "discovery": {},
+    "effects": {
+        "effectsList": [
+            "Bloom",
+            "Calming Waterfall",
+            "Clouds",
+            "Ember",
+            "Fireflies",
+            "Glimmer",
+            "Sahara Night",
+            "Slow Glimmer",
+            "Splash",
+            "Sunbeam",
+            "Warm Waves"
+        ],
+        "select": "Slow Glimmer"
+    },
+    "firmwareUpgrade": {},
+    "panelLayout": {
+        "globalOrientation": {
+            "value": 235,
+            "max": 360,
+            "min": 0
+        },
+        "layout": {
+            "numPanels": 103,
+            "sideLength": 67,
+            "positionData": [
+                {
+                    "panelId": 26651,
+                    "x": 159,
+                    "y": 224,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 63706,
+                    "x": 134,
+                    "y": 181,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 51864,
+                    "x": 84,
+                    "y": 181,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 23129,
+                    "x": 59,
+                    "y": 224,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 43801,
+                    "x": 84,
+                    "y": 268,
+                    "o": 120,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 15320,
+                    "x": 134,
+                    "y": 268,
+                    "o": 60,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 62298,
+                    "x": 185,
+                    "y": 210,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 25499,
+                    "x": 235,
+                    "y": 210,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 37595,
+                    "x": 260,
+                    "y": 166,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 538,
+                    "x": 235,
+                    "y": 123,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 12376,
+                    "x": 185,
+                    "y": 123,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 41113,
+                    "x": 159,
+                    "y": 166,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 41368,
+                    "x": 285,
+                    "y": 181,
+                    "o": 600,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 37850,
+                    "x": 260,
+                    "y": 224,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 795,
+                    "x": 285,
+                    "y": 268,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 62043,
+                    "x": 335,
+                    "y": 268,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 25242,
+                    "x": 360,
+                    "y": 224,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 38623,
+                    "x": 335,
+                    "y": 181,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 45271,
+                    "x": 360,
+                    "y": 282,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 8214,
+                    "x": 386,
+                    "y": 326,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 53590,
+                    "x": 436,
+                    "y": 326,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 16791,
+                    "x": 461,
+                    "y": 282,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 31199,
+                    "x": 436,
+                    "y": 239,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 59678,
+                    "x": 386,
+                    "y": 239,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 778,
+                    "x": 386,
+                    "y": 355,
+                    "o": 600,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 37835,
+                    "x": 360,
+                    "y": 398,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 25227,
+                    "x": 386,
+                    "y": 442,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 62026,
+                    "x": 436,
+                    "y": 442,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 1551,
+                    "x": 461,
+                    "y": 398,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 38606,
+                    "x": 436,
+                    "y": 355,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 11722,
+                    "x": 335,
+                    "y": 413,
+                    "o": 660,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 48395,
+                    "x": 285,
+                    "y": 413,
+                    "o": 600,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 19531,
+                    "x": 260,
+                    "y": 456,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 56458,
+                    "x": 285,
+                    "y": 500,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 61128,
+                    "x": 335,
+                    "y": 500,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 32265,
+                    "x": 360,
+                    "y": 456,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 63667,
+                    "x": 185,
+                    "y": 558,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 26738,
+                    "x": 235,
+                    "y": 558,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 39218,
+                    "x": 260,
+                    "y": 514,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 2547,
+                    "x": 235,
+                    "y": 471,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 15281,
+                    "x": 185,
+                    "y": 471,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 43888,
+                    "x": 159,
+                    "y": 514,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 2795,
+                    "x": 185,
+                    "y": 587,
+                    "o": 600,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 64427,
+                    "x": 159,
+                    "y": 630,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 27498,
+                    "x": 185,
+                    "y": 674,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 22824,
+                    "x": 235,
+                    "y": 674,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 51689,
+                    "x": 260,
+                    "y": 630,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 14505,
+                    "x": 235,
+                    "y": 587,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 32057,
+                    "x": 360,
+                    "y": 514,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 35961,
+                    "x": 386,
+                    "y": 558,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 7352,
+                    "x": 436,
+                    "y": 558,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 12026,
+                    "x": 461,
+                    "y": 514,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 48699,
+                    "x": 436,
+                    "y": 471,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 20347,
+                    "x": 386,
+                    "y": 471,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 17188,
+                    "x": 436,
+                    "y": 674,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 31596,
+                    "x": 461,
+                    "y": 630,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 60333,
+                    "x": 436,
+                    "y": 587,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 6893,
+                    "x": 386,
+                    "y": 587,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 35372,
+                    "x": 360,
+                    "y": 630,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 47214,
+                    "x": 386,
+                    "y": 674,
+                    "o": 120,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 4006,
+                    "x": 285,
+                    "y": 732,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 40807,
+                    "x": 335,
+                    "y": 732,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 44325,
+                    "x": 360,
+                    "y": 688,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 15844,
+                    "x": 335,
+                    "y": 645,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 52388,
+                    "x": 285,
+                    "y": 645,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 23653,
+                    "x": 260,
+                    "y": 688,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 31275,
+                    "x": 461,
+                    "y": 688,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 18537,
+                    "x": 486,
+                    "y": 732,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 55464,
+                    "x": 536,
+                    "y": 732,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 10728,
+                    "x": 561,
+                    "y": 688,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 47401,
+                    "x": 536,
+                    "y": 645,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 22904,
+                    "x": 486,
+                    "y": 645,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 48871,
+                    "x": 461,
+                    "y": 805,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 19106,
+                    "x": 486,
+                    "y": 848,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 55907,
+                    "x": 536,
+                    "y": 848,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 11043,
+                    "x": 561,
+                    "y": 805,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 48098,
+                    "x": 536,
+                    "y": 761,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 35232,
+                    "x": 486,
+                    "y": 761,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 57198,
+                    "x": 561,
+                    "y": 921,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 20399,
+                    "x": 536,
+                    "y": 877,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 32237,
+                    "x": 486,
+                    "y": 877,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 60716,
+                    "x": 461,
+                    "y": 921,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 7276,
+                    "x": 486,
+                    "y": 964,
+                    "o": 120,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 36013,
+                    "x": 536,
+                    "y": 964,
+                    "o": 60,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 7941,
+                    "x": 486,
+                    "y": 1080,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 36804,
+                    "x": 536,
+                    "y": 1080,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 32388,
+                    "x": 561,
+                    "y": 1037,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 60997,
+                    "x": 536,
+                    "y": 993,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 56327,
+                    "x": 486,
+                    "y": 993,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 19654,
+                    "x": 461,
+                    "y": 1037,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 23647,
+                    "x": 587,
+                    "y": 1051,
+                    "o": 600,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 28189,
+                    "x": 561,
+                    "y": 1095,
+                    "o": 540,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 65244,
+                    "x": 587,
+                    "y": 1138,
+                    "o": 480,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 3996,
+                    "x": 637,
+                    "y": 1138,
+                    "o": 420,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 40797,
+                    "x": 662,
+                    "y": 1095,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 27416,
+                    "x": 637,
+                    "y": 1051,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 9035,
+                    "x": 260,
+                    "y": 50,
+                    "o": 360,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 53771,
+                    "x": 235,
+                    "y": 7,
+                    "o": 300,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 17098,
+                    "x": 185,
+                    "y": 7,
+                    "o": 240,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 28808,
+                    "x": 159,
+                    "y": 50,
+                    "o": 180,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 57417,
+                    "x": 185,
+                    "y": 94,
+                    "o": 120,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 4361,
+                    "x": 235,
+                    "y": 94,
+                    "o": 60,
+                    "shapeType": 15
+                },
+                {
+                    "panelId": 0,
+                    "x": 50,
+                    "y": 190,
+                    "o": 120,
+                    "shapeType": 12
+                }
+            ]
+        }
+    },
+    "qkihnokomhartlnp": {},
+    "schedules": {},
+    "state": {
+        "brightness": {
+            "value": 36,
+            "max": 100,
+            "min": 0
+        },
+        "colorMode": "effect",
+        "ct": {
+            "value": 3803,
+            "max": 4000,
+            "min": 1500
+        },
+        "hue": {
+            "value": 0,
+            "max": 360,
+            "min": 0
+        },
+        "on": {
+            "value": true
+        },
+        "sat": {
+            "value": 0,
+            "max": 100,
+            "min": 0
+        }
+    }
+}

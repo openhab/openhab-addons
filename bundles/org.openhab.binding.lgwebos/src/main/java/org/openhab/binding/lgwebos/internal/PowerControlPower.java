@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
         final State state = handler.getSocket().getState();
         if (RefreshType.REFRESH == command) {
-            handler.postUpdate(channelId, state == State.REGISTERED ? OnOffType.ON : OnOffType.OFF);
+            handler.postUpdate(channelId, OnOffType.from(state == State.REGISTERED));
         } else if (OnOffType.ON == command) {
             switch (state) {
                 case CONNECTING:
@@ -63,16 +63,26 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
                 case DISCONNECTING: // WOL will not stop the shutdown process, but we must not update the state to ON
                 case DISCONNECTED:
                     String macAddress = configProvider.getMacAddress();
+                    String broadcastAddress = configProvider.getBroadcastAddress();
                     if (macAddress.isEmpty()) {
-                        logger.debug("Received ON - Turning TV on via API is not supported by LG WebOS TVs. "
-                                + "You may succeed using wake on lan (WOL). "
-                                + "Please set the macAddress config value in Thing configuration to enable this.");
+                        logger.debug("""
+                                Received ON - Turning TV on via API is not supported by LG WebOS TVs. \
+                                You may succeed using wake on lan (WOL). \
+                                Please set the macAddress config value in Thing configuration to enable this.\
+                                """);
                         handler.postUpdate(channelId, OnOffType.OFF);
                     } else {
                         for (int i = 0; i < WOL_PACKET_RETRY_COUNT; i++) {
                             scheduler.schedule(() -> {
                                 try {
-                                    WakeOnLanUtility.sendWOLPacket(macAddress);
+                                    if (broadcastAddress.isEmpty()) {
+                                        logger.debug("Sending WOL packet to {} without broadcast address.", macAddress);
+                                        WakeOnLanUtility.sendWOLPacket(macAddress);
+                                    } else {
+                                        logger.debug("Sending WOL packet to {} with broadcast address {}.", macAddress,
+                                                broadcastAddress);
+                                        WakeOnLanUtility.sendWOLPacket(macAddress, broadcastAddress);
+                                    }
                                 } catch (IllegalArgumentException e) {
                                     logger.debug("Failed to send WOL packet: {}", e.getMessage());
                                 }
@@ -113,5 +123,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
 
     public interface ConfigProvider {
         String getMacAddress();
+
+        String getBroadcastAddress();
     }
 }

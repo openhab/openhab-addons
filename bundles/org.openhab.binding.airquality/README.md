@@ -24,12 +24,11 @@ You will created a Bridge with your apiKey.
 
 ## Bridge Configuration
 
-The bridge configuration only holds the api key : 
+The bridge configuration only holds the api key :
 
 | Parameter | Description                                                             |
 |-----------|-------------------------------------------------------------------------|
 | apiKey    | Data-platform token to access the AQIcn.org service. Mandatory.         |
-
 
 ## Thing Configuration
 
@@ -51,16 +50,15 @@ For the location parameter, the following syntax is allowed (comma separated lat
 If you always want to receive data from specific station and you know its unique ID, you can enter it instead of the coordinates.
 
 This `stationId` can be found by using the following link:
-https://api.waqi.info/search/?token=TOKEN&keyword=NAME, replacing TOKEN by your apiKey and NAME by the station you are looking for.
+`https://api.waqi.info/search/?token=TOKEN&keyword=NAME`, replacing TOKEN by your apiKey and NAME by the station you are looking for.
 
 ### Thing properties
 
-Once created, at first execution, the station's properties will be filled with informations gathered from the web service :
+Once created, at first execution, the station's properties will be filled with information gathered from the web service:
 
 - Nearest measuring station location
 - Measuring station ID
 - Latitude/longitude of measuring station
-
 
 ## Channels
 
@@ -90,7 +88,7 @@ The AirQuality information that is retrieved for a given is available as these c
 ### Pollutants Channels Group
 
 For each pollutant (PM25, PM10, O3, NO2, CO, SO2) , depending upon availability of the station,
-you will be provided with the following informations
+you will be provided with the following information.
 
 | Channel ID      | Item Type            | Description                                  |
 |-----------------|----------------------|----------------------------------------------|
@@ -98,8 +96,7 @@ you will be provided with the following informations
 | index           | Number               | AQI Index of the single pollutant            |
 | alert-level     | Number               | Alert level associate to the index           |
 
-
-(*) The alert level is described by a color : 
+(*) The alert level is described by a color:
 
 | Code | Color  | Description                    |
 |------|--------|--------------------------------|
@@ -110,9 +107,7 @@ you will be provided with the following informations
 | 4    | Purple | Very Unhealthy                 |
 | 5    | Maroon | Hazardous                      |
 
-
 ## Full Example
-
 
 airquality.things:
 

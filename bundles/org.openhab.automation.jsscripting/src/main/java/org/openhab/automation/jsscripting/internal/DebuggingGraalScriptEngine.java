@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,15 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.automation.jsscripting.internal;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
+import static org.openhab.core.automation.module.script.ScriptEngineFactory.CONTEXT_KEY_ENGINE_IDENTIFIER;
+import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
+
+import javax.script.Compilable;
+import javax.script.Invocable;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.PolyglotException;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,23 +36,119 @@ import org.slf4j.LoggerFactory;
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
-        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
+class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable & Lock>
+        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> implements Lock {
 
-    private static final Logger STACK_LOGGER = LoggerFactory
-            .getLogger("org.openhab.automation.script.javascript.stack");
+    private static final int STACK_TRACE_LENGTH = 5;
+
+    private @Nullable Logger logger;
 
     public DebuggingGraalScriptEngine(T delegate) {
         super(delegate);
     }
 
     @Override
-    public ScriptException afterThrowsInvocation(ScriptException se) {
-        Throwable cause = se.getCause();
-        if (cause instanceof PolyglotException) {
-            STACK_LOGGER.error("Failed to execute script:", cause);
+    protected void beforeInvocation() {
+        super.beforeInvocation();
+        // OpenhabGraalJSScriptEngine::beforeInvocation will be executed after
+        // DebuggingGraalScriptEngine::beforeInvocation, because GraalJSScriptEngineFactory::createScriptEngine returns
+        // a DebuggingGraalScriptEngine instance.
+        // We therefore need to synchronize logger setup here and cannot rely on the synchronization in
+        // OpenhabGraalJSScriptEngine.
+        delegate.lock();
+        try {
+            if (logger == null) {
+                initializeLogger();
+            }
+        } finally { // Make sure that Lock is unlocked regardless of an exception being thrown or not to avoid deadlocks
+            delegate.unlock();
         }
-        return se;
+    }
+
+    @Override
+    public Exception afterThrowsInvocation(Exception e) {
+        Throwable cause = e.getCause();
+        // OPS4J Pax Logging holds a reference to the exception, which causes the OpenhabGraalJSScriptEngine to not be
+        // removed from heap by garbage collection and causing a memory leak.
+        // Therefore, don't pass the exceptions itself to the logger, but only their message!
+        if (cause instanceof IllegalArgumentException || cause instanceof PolyglotException) {
+            String strT = stringifyThrowable(cause);
+            logger.error("Failed to execute script: {}", strT);
+        }
+        return e;
+    }
+
+    @Override
+    public void close() {
+        try {
+            super.close();
+        } catch (Exception e) {
+            logger.warn("Ignorable exception during close: {}", stringifyThrowable(e));
+        }
+    }
+
+    private String stringifyThrowable(Throwable throwable) {
+        String message = throwable.getMessage();
+        StackTraceElement[] stackTraceElements = throwable.getStackTrace();
+        String stackTrace = Arrays.stream(stackTraceElements).limit(STACK_TRACE_LENGTH)
+                .map(t -> "        at " + t.toString()).collect(Collectors.joining(System.lineSeparator()))
+                + System.lineSeparator() + "        ... " + stackTraceElements.length + " more";
+        return (message != null) ? message + System.lineSeparator() + stackTrace : stackTrace;
+    }
+
+    /**
+     * Initializes the logger.
+     * This cannot be done on script engine creation because the context variables are not yet initialized.
+     * Therefore, the logger needs to be initialized on the first use after script engine creation.
+     */
+    private void initializeLogger() {
+        ScriptContext ctx = delegate.getContext();
+        Object fileName = ctx.getAttribute("javax.script.filename");
+        Object ruleUID = ctx.getAttribute("ruleUID");
+        Object ohEngineIdentifier = ctx.getAttribute(CONTEXT_KEY_ENGINE_IDENTIFIER);
+
+        String identifier = "stack";
+        if (fileName != null) {
+            identifier = "file." + fileName.toString().replaceAll("^.*[/\\\\]", "");
+        } else if (ruleUID != null) {
+            identifier = "rule." + ruleUID;
+        } else if (ohEngineIdentifier != null
+                && ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
+            identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
+        }
+
+        logger = LoggerFactory.getLogger("org.openhab.automation.jsscripting." + identifier);
+    }
+
+    @Override
+    public void lock() {
+        delegate.lock();
+    }
+
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
+        delegate.lockInterruptibly();
+    }
+
+    @Override
+    public boolean tryLock() {
+        return delegate.tryLock();
+    }
+
+    @Override
+    public boolean tryLock(long l, TimeUnit timeUnit) throws InterruptedException {
+        return delegate.tryLock(l, timeUnit);
+    }
+
+    @Override
+    public void unlock() {
+        delegate.unlock();
+    }
+
+    @Override
+    public Condition newCondition() {
+        return delegate.newCondition();
     }
 }

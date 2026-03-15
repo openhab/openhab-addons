@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+	<thing-type uid="easee:mastercharger">
+		<instruction-set targetVersion="1">
+			<add-channel id="energyPerHour" groupIds="state">
+				<type>easee:type-energy</type>
+				<label>Energy per Hour</label>
+				<description>Energy transferred per hour.</description>
+			</add-channel>
+			<add-channel id="wiFiRSSI" groupIds="state">
+				<type>easee:type-rssi</type>
+				<label>Wi-Fi RSSI</label>
+				<description>Wi-Fi signal quality.</description>
+			</add-channel>
+			<add-channel id="cellRSSI" groupIds="state">
+				<type>easee:type-rssi</type>
+				<label>Cell RSSI</label>
+				<description>Cell signal quality.</description>
+			</add-channel>
+			<add-channel id="inCurrentT2" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T2</label>
+				<description>Input Current on phase T2</description>
+			</add-channel>
+			<add-channel id="inCurrentT3" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T3</label>
+				<description>Input Current on phase T3</description>
+			</add-channel>
+			<add-channel id="inCurrentT4" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T4</label>
+				<description>Input Current on phase T4</description>
+			</add-channel>
+			<add-channel id="inCurrentT5" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T5</label>
+				<description>Input Current on phase T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T2" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T2</label>
+				<description>Input voltage between phase T1 and T2</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T3" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T3</label>
+				<description>Input Voltage between phase T1 and T3</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T4" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T4</label>
+				<description>Input Voltage between phase T1 and T4</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T5</label>
+				<description>Input Voltage between phase T1 and T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT2T3" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T2T3</label>
+				<description>Input Voltage between phase T2 and T3</description>
+			</add-channel>
+			<add-channel id="inVoltageT2T4" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T2T4</label>
+				<description>Input Voltage between phase T2 and T4</description>
+			</add-channel>
+			<add-channel id="inVoltageT2T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T2T5</label>
+				<description>Input Voltage between phase T2 and T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT3T4" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T3T4</label>
+				<description>Input Voltage between phase T3 and T4</description>
+			</add-channel>
+			<add-channel id="inVoltageT3T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T3T5</label>
+				<description>Input Voltage between phase T3 and T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT4T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T4T5</label>
+				<description>Input Voltage between phase T4 and T5</description>
+			</add-channel>
+			<add-channel id="ledMode" groupIds="state">
+				<type>easee:type-integer</type>
+				<label>Led Mode</label>
+				<description>Led Mode.</description>
+			</add-channel>
+			<add-channel id="cableRating" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Cable Rating</label>
+				<description>Rating of the connected cable.</description>
+			</add-channel>
+			<add-channel id="connectedToCloud" groupIds="state">
+				<type>easee:type-switch</type>
+				<label>Connected to Cloud</label>
+				<description>Cloud connection status of the wallbox.</description>
+			</add-channel>
+			<remove-channel id="latestFirmware" groupIds="state"/>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="easee:charger">
+		<instruction-set targetVersion="1">
+			<add-channel id="energyPerHour" groupIds="state">
+				<type>easee:type-energy</type>
+				<label>Energy per Hour</label>
+				<description>Energy transferred per hour.</description>
+			</add-channel>
+			<add-channel id="wiFiRSSI" groupIds="state">
+				<type>easee:type-rssi</type>
+				<label>Wi-Fi RSSI</label>
+				<description>Wi-Fi signal quality.</description>
+			</add-channel>
+			<add-channel id="cellRSSI" groupIds="state">
+				<type>easee:type-rssi</type>
+				<label>Cell RSSI</label>
+				<description>Cell signal quality.</description>
+			</add-channel>
+			<add-channel id="inCurrentT2" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T2</label>
+				<description>Input Current on phase T2</description>
+			</add-channel>
+			<add-channel id="inCurrentT3" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T3</label>
+				<description>Input Current on phase T3</description>
+			</add-channel>
+			<add-channel id="inCurrentT4" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T4</label>
+				<description>Input Current on phase T4</description>
+			</add-channel>
+			<add-channel id="inCurrentT5" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Input Current T5</label>
+				<description>Input Current on phase T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T2" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T2</label>
+				<description>Input voltage between phase T1 and T2</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T3" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T3</label>
+				<description>Input Voltage between phase T1 and T3</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T4" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T4</label>
+				<description>Input Voltage between phase T1 and T4</description>
+			</add-channel>
+			<add-channel id="inVoltageT1T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T1T5</label>
+				<description>Input Voltage between phase T1 and T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT2T3" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T2T3</label>
+				<description>Input Voltage between phase T2 and T3</description>
+			</add-channel>
+			<add-channel id="inVoltageT2T4" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T2T4</label>
+				<description>Input Voltage between phase T2 and T4</description>
+			</add-channel>
+			<add-channel id="inVoltageT2T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T2T5</label>
+				<description>Input Voltage between phase T2 and T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT3T4" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T3T4</label>
+				<description>Input Voltage between phase T3 and T4</description>
+			</add-channel>
+			<add-channel id="inVoltageT3T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T3T5</label>
+				<description>Input Voltage between phase T3 and T5</description>
+			</add-channel>
+			<add-channel id="inVoltageT4T5" groupIds="state">
+				<type>easee:type-volt</type>
+				<label>Input Voltage T4T5</label>
+				<description>Input Voltage between phase T4 and T5</description>
+			</add-channel>
+			<add-channel id="ledMode" groupIds="state">
+				<type>easee:type-integer</type>
+				<label>Led Mode</label>
+				<description>Led Mode.</description>
+			</add-channel>
+			<add-channel id="cableRating" groupIds="state">
+				<type>easee:type-current</type>
+				<label>Cable Rating</label>
+				<description>Rating of the connected cable.</description>
+			</add-channel>
+			<add-channel id="connectedToCloud" groupIds="state">
+				<type>easee:type-switch</type>
+				<label>Connected to Cloud</label>
+				<description>Cloud connection status of the wallbox.</description>
+			</add-channel>
+			<remove-channel id="latestFirmware" groupIds="state"/>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

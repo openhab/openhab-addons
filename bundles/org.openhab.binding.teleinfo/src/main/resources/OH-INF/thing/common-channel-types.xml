@@ -9,6 +9,10 @@
 		<label>ISOUSC</label>
 		<description>Subscribed electric current</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%d A" readOnly="true"/>
 	</channel-type>
 
@@ -17,6 +21,10 @@
 		<label>PTEC</label>
 		<description>Current pricing period</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="TH">TH</option>
@@ -39,6 +47,10 @@
 		<label>HHPHC</label>
 		<description>Pricing schedule group</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="A">A</option>

@@ -9,18 +9,30 @@
 		<label>Volume</label>
 		<description>Volume level of the TV.</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="mute">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mute state of the TV.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Brightness of the TV picture.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="contrast" advanced="true">
@@ -54,6 +66,10 @@
 		<item-type>Number</item-type>
 		<label>Source ID</label>
 		<description>Id of the current source.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -61,12 +77,20 @@
 		<item-type>Number</item-type>
 		<label>Channel</label>
 		<description>Selected TV channel number.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="programtitle">
 		<item-type>String</item-type>
 		<label>Program Title</label>
 		<description>Program title of the current channel.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -74,6 +98,10 @@
 		<item-type>String</item-type>
 		<label>Channel Name</label>
 		<description>Name of the current TV channel.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -95,12 +123,72 @@
 		<description>TV power. Some of the Samsung TV models doesn't allow to set
 			Power ON remotely.
 		</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="artmode">
 		<item-type>Switch</item-type>
 		<label>Art Mode</label>
 		<description>TV Art Mode.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="setartmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Set Art Mode</label>
+		<description>Set ArtMode ON/OFF from an external source (needed for >=2022 Frame TV's)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="artwork" advanced="true">
+		<item-type>Image</item-type>
+		<label>Art Selected</label>
+		<description>Set/get Artwork that will be displayed in artMode</description>
+	</channel-type>
+
+	<channel-type id="artworklabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Artwork Label</label>
+		<description>Set/get label of the artwork to be displayed</description>
+	</channel-type>
+
+	<channel-type id="artworkjson" advanced="true">
+		<item-type>String</item-type>
+		<label>Artwork Json</label>
+		<description>Send and receive JSON from the TV Art channel</description>
+	</channel-type>
+
+	<channel-type id="artworkbrightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Artwork Brightness</label>
+		<description>Set/get brightness of the artwork displayed</description>
+	</channel-type>
+
+	<channel-type id="artworkcolortemperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>Artwork Color Temperature</label>
+		<description>Set/get color temperature of the artwork displayed. Minimum value is -5 and
+			maximum 5.</description>
+		<state min="-5" max="5"/>
+	</channel-type>
+
+	<channel-type id="artworkorientation">
+		<item-type>Switch</item-type>
+		<label>Artwork Orientation</label>
+		<description>TV orientation, Landcape or Portrait</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="sourceapp" advanced="true">
@@ -135,6 +223,7 @@
 				<option value="KEY_AD">KEY_AD</option>
 				<option value="KEY_ADDDEL">KEY_ADDDEL</option>
 				<option value="KEY_ALT_MHP">KEY_ALT_MHP</option>
+				<option value="KEY_AMBIENT">KEY_AMBIENT</option>
 				<option value="KEY_ANGLE">KEY_ANGLE</option>
 				<option value="KEY_ANTENA">KEY_ANTENA</option>
 				<option value="KEY_ANYNET">KEY_ANYNET</option>
@@ -175,6 +264,7 @@
 				<option value="KEY_AV3">KEY_AV3</option>
 				<option value="KEY_BACK_MHP">KEY_BACK_MHP</option>
 				<option value="KEY_BOOKMARK">KEY_BOOKMARK</option>
+				<option value="KEY_BT_VOICE">KEY_BT_VOICE</option>
 				<option value="KEY_CALLER_ID">KEY_CALLER_ID</option>
 				<option value="KEY_CAPTION">KEY_CAPTION</option>
 				<option value="KEY_CATV_MODE">KEY_CATV_MODE</option>
@@ -283,6 +373,7 @@
 				<option value="KEY_MOVIE1">KEY_MOVIE1</option>
 				<option value="KEY_MS">KEY_MS</option>
 				<option value="KEY_MTS">KEY_MTS</option>
+				<option value="KEY_MULTI_VIEW">KEY_MULTI_VIEW</option>
 				<option value="KEY_MUTE">KEY_MUTE</option>
 				<option value="KEY_NINE_SEPERATE">KEY_NINE_SEPERATE</option>
 				<option value="KEY_OPEN">KEY_OPEN</option>

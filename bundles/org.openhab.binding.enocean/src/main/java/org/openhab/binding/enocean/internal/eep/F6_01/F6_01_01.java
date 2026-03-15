@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.enocean.internal.eep.F6_01;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._RPSMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -21,10 +23,10 @@ import org.openhab.core.thing.CommonTriggerEvents;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class F6_01_01 extends _RPSMessage {
 
     public F6_01_01() {
-        super();
     }
 
     public F6_01_01(ERP1Message packet) {
@@ -32,9 +34,8 @@ public class F6_01_01 extends _RPSMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
-
         return getBit(bytes[0], 4) ? CommonTriggerEvents.PRESSED : CommonTriggerEvents.RELEASED;
     }
 

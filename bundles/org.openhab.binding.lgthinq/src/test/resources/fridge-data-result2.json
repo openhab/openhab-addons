@@ -1,0 +1,125 @@
+{
+  "resultCode": "0000",
+  "result": {
+    "appType": "NUTS",
+    "modelCountryCode": "WW",
+    "countryCode": "NO",
+    "modelName": "2REB1GLTL1__2",
+    "deviceType": 101,
+    "deviceCode": "KI0104",
+    "alias": "My fridge",
+    "deviceId": "UUID",
+    "fwVer": "",
+    "imageFileName": "home_appliances_img_fridge.png",
+    "ssid": "WifiSSID",
+    "softapId": "",
+    "softapPass": "",
+    "macAddress": "",
+    "networkType": "02",
+    "timezoneCode": "Europe/Oslo",
+    "timezoneCodeAlias": "Europe/Oslo",
+    "utcOffset": 1,
+    "utcOffsetDisplay": "+01:00",
+    "dstOffset": 2,
+    "dstOffsetDisplay": "+02:00",
+    "curOffset": 1,
+    "curOffsetDisplay": "+01:00",
+    "sdsGuide": "{\"deviceCode\":\"KI01\"}",
+    "newRegYn": "N",
+    "remoteControlType": "",
+    "userNo": "NO00000000000",
+    "tftYn": "N",
+    "deviceState": "E",
+    "snapshot": {
+      "fwUpgradeInfo": {
+        "upgSched": {
+          "upgUtc": "0",
+          "cmd": "none"
+        }
+      },
+      "static": {
+        "deviceType": "101",
+        "countryCode": "NO"
+      },
+      "meta": {
+        "allDeviceInfoUpdate": false,
+        "messageId": "yOfRuCbKRqyBQfll-PbaoA"
+      },
+      "mid": 1.291752295E9,
+      "online": true,
+      "refState": {
+        "dispenserCapacity": 255.0,
+        "dispenserUnit": "IGNORE",
+        "freezerTemp": 255.0,
+        "sabbathMode": "IGNORE",
+        "tempUnit": "CELSIUS",
+        "ecoFriendly": "OFF",
+        "activeSaving": "IGNORE",
+        "voiceMode": "IGNORE",
+        "smartSavingRun": "IGNORE",
+        "atLeastOneDoorOpen": "CLOSE",
+        "expressMode": "IGNORE",
+        "freshAirFilter": "IGNORE",
+        "convertibleTemp": 255.0,
+        "waterFilter": "IGNORE",
+        "dispenserMode": "NOT_DEFINE_VALUE value:255",
+        "displayLock": "UNLOCK",
+        "expressFridge": "OFF",
+        "selfCareMode": "IGNORE",
+        "drawerMode": "IGNORE",
+        "fridgeTemp": 6.0,
+        "pantryMode": "IGNORE",
+        "craftIceMode": "IGNORE",
+        "dualFridgeMode": "IGNORE",
+        "monStatus": "NORMAL",
+        "smartSavingMode": "IGNORE",
+        "smartCareV2": "ON"
+      },
+      "timestamp": 1.676202376697E12
+    },
+    "online": true,
+    "platformType": "thinq2",
+    "area": 254946,
+    "regDt": 2.0221216190446E13,
+    "blackboxYn": "Y",
+    "modelProtocol": "STANDARD",
+    "receipeVersion": 0,
+    "activeSaving": "IGNORE",
+    "smartCareV2": "ON",
+    "order": 0,
+    "nlpAlias": "none",
+    "drServiceYn": "N",
+    "fwInfoList": [
+      {
+        "checksum": "0000AC5B",
+        "order": 2.0,
+        "partNumber": "SAA42468501"
+      },
+      {
+        "checksum": "0000D2B2",
+        "order": 1.0,
+        "partNumber": "SAA42473902"
+      }
+    ],
+    "regDtUtc": "20221216170446",
+    "regIndex": 0,
+    "groupableYn": "N",
+    "controllableYn": "N",
+    "combinedProductYn": "N",
+    "masterYn": "Y",
+    "initDevice": false,
+    "firebaseLogKey": "FIREBASE:LOG:KEY:BLABLA",
+    "manufacture": {
+      "inventoryOrg": "CP3",
+      "macAddress": "00:00:00:00:00:00",
+      "manufactureModel": "GC-B411EQAF.AMCQEUR",
+      "manufacturedAt": "2022-06-16T01:06:21+00:00",
+      "registeredAt": "2022-06-27T04:18:34.022045+00:00",
+      "salesModel": "GLM71MCCSF.AMCQEUR",
+      "serialNo": "SerialNumber"
+    },
+    "upgradableYn": "N",
+    "autoFwDownloadYn": "N",
+    "tclcount": 0
+  }
+}

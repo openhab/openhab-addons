@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,31 +16,40 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
+import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
 import org.openhab.automation.jsscripting.internal.threading.ThreadsafeWrappingScriptedAutomationManagerDelegate;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAutomationManager;
 
 /**
- * Class providing script extensions via CommonJS modules.
+ * Class providing script extensions via CommonJS modules (with module name `@runtime`).
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Florian Hotze - Pass in a lock object for multi-thread synchronisation
+ * @author Florian Hotze - Switch to {@link Lock} for multi-thread synchronisation
+ * @author Florian Hotze - Overwrite lifecycleTracker with our own implementation
  */
-
 @NonNullByDefault
 public class ScriptExtensionModuleProvider {
 
     private static final String RUNTIME_MODULE_PREFIX = "@runtime";
     private static final String DEFAULT_MODULE_NAME = "Defaults";
+    private final Lock lock;
+    private final LifecycleTracker lifecycleTracker;
 
     private final ScriptExtensionAccessor scriptExtensionAccessor;
 
-    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor) {
+    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Lock lock,
+            LifecycleTracker lifecycleTracker) {
         this.scriptExtensionAccessor = scriptExtensionAccessor;
+        this.lock = lock;
+        this.lifecycleTracker = lifecycleTracker;
     }
 
     public ModuleLocator locatorFor(Context ctx, String engineIdentifier) {
@@ -63,6 +72,7 @@ public class ScriptExtensionModuleProvider {
 
         if (DEFAULT_MODULE_NAME.equals(name)) {
             symbols = scriptExtensionAccessor.findDefaultPresets(scriptIdentifier);
+            symbols.put("lifecycleTracker", lifecycleTracker);
         } else {
             symbols = scriptExtensionAccessor.findPreset(name, scriptIdentifier);
         }
@@ -73,10 +83,15 @@ public class ScriptExtensionModuleProvider {
     private Value toValue(Context ctx, Map<String, Object> map) {
         try {
             return ctx.eval(Source.newBuilder( // convert to Map to JS Object
-                    "js",
-                    "(function (mapOfValues) {\n" + "let rv = {};\n" + "for (var key in mapOfValues) {\n"
-                            + "    rv[key] = mapOfValues.get(key);\n" + "}\n" + "return rv;\n" + "})",
-                    "<generated>").build()).execute(map);
+                    "js", """
+                            (function (mapOfValues) {
+                            let rv = {};
+                            for (var key in mapOfValues) {
+                                rv[key] = mapOfValues.get(key);
+                            }
+                            return rv;
+                            })\
+                            """, "<generated>").build()).execute(map);
         } catch (IOException e) {
             throw new IllegalArgumentException("Failed to generate exports", e);
         }
@@ -92,9 +107,9 @@ public class ScriptExtensionModuleProvider {
         Map<String, Object> rv = new HashMap<>(values);
 
         for (Map.Entry<String, Object> entry : rv.entrySet()) {
-            if (entry.getValue() instanceof ScriptedAutomationManager) {
-                entry.setValue(new ThreadsafeWrappingScriptedAutomationManagerDelegate(
-                        (ScriptedAutomationManager) entry.getValue()));
+            if (entry.getValue() instanceof ScriptedAutomationManager scriptedAutomationManager) {
+                entry.setValue(
+                        new ThreadsafeWrappingScriptedAutomationManagerDelegate(scriptedAutomationManager, lock));
             }
         }
 

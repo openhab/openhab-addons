@@ -8,7 +8,7 @@
 		<label>KB100</label>
 		<description>TP-Link KB100 Kasa Smart Light Bulb</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="rssi" typeId="rssi"/>

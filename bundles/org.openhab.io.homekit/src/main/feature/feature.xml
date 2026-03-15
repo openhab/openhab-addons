@@ -4,7 +4,6 @@
 
 	<feature name="openhab-misc-homekit" description="HomeKit Integration" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab-transport-mdns</feature>
 		<feature>openhab.tp-netty</feature>
 		<bundle dependency="true">mvn:org.glassfish/javax.json/1.0.4</bundle>
 		<bundle dependency="true">mvn:javax.json/javax.json-api/1.0</bundle>

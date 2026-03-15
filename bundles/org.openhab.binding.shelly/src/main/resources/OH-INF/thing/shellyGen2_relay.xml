@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="shelly"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="shellyplus1">
+		<label>ShellyPlus 1</label>
+		<description>Shelly Plus 1 (Single Relay Switch)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplus1pm">
+		<label>ShellyPlus 1PM</label>
+		<description>Shelly Plus 1PM - Single Relay Switch with Power Meter</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplus1l">
+		<label>ShellyPlus 1L</label>
+		<description>Shelly Plus 1L (Single Relay Switch)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+
+	<thing-type id="shellyplus2pm-relay">
+		<label>ShellyPlus 2PM Relay</label>
+		<description>Shelly Plus 2PM - Dual Relay Switch with Power Meter</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplus2pm-roller">
+		<label>ShellyPlus 2PM Roller</label>
+		<description>Shelly Plus 2PM - Roller Control with Power Meter</description>
+		<category>Rollershutter</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:roller-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplus2l">
+		<label>ShellyPlus 2L</label>
+		<description>Shelly Plus 2L - Dual Relay Switch</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusshutter">
+		<label>ShellyPlus Shutter</label>
+		<description>Shelly Shutter - Roller/Cover</description>
+		<category>Rollershutter</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:roller-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusplug">
+		<label>ShellyPlus Plug</label>
+		<description>Shelly Plus Plug S/IT/UK. Outlet with Power Meter</description>
+		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusplugus">
+		<label>ShellyPlus Plug US</label>
+		<description>Shelly Plus Plug US. Outlet with Power Meter</description>
+		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannelPlug"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusstrip">
+		<label>ShellyPlus Power Strip</label>
+		<description>Shelly Plus Power Strip 4</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="relay3" typeId="relayChannel">
+				<label>Relay 3</label>
+			</channel-group>
+			<channel-group id="relay4" typeId="relayChannel">
+				<label>Relay 4</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusi4">
+		<label>ShellyPlus i4</label>
+		<description>Shelly Plus i4 - 4xInput Device</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="status1" typeId="ixChannel">
+				<label>Input 1</label>
+			</channel-group>
+			<channel-group id="status2" typeId="ixChannel">
+				<label>Input 2</label>
+			</channel-group>
+			<channel-group id="status3" typeId="ixChannel">
+				<label>Input 3</label>
+			</channel-group>
+			<channel-group id="status4" typeId="ixChannel">
+				<label>Input 4</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusi4dc">
+		<label>ShellyPlus i4DC</label>
+		<description>Shelly Plus i4DC - 4xDC Input Device</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="status1" typeId="ixChannel">
+				<label>Input 1</label>
+			</channel-group>
+			<channel-group id="status2" typeId="ixChannel">
+				<label>Input 2</label>
+			</channel-group>
+			<channel-group id="status3" typeId="ixChannel">
+				<label>Input 3</label>
+			</channel-group>
+			<channel-group id="status4" typeId="ixChannel">
+				<label>Input 4</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusuni">
+		<label>Shelly Plus UNI</label>
+		<description>Shelly Plus UNI - Universal Module</description>
+
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shelly1mini">
+		<label>ShellyPlus 1 Mini</label>
+		<description>Shelly Plus Mini 1 - Single Relay Switch</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+
+	<thing-type id="shellypmmini">
+		<label>ShellyPlus PM Mini</label>
+		<description>Shelly Plus Mini PM - Power Meter</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyemmini">
+		<label>ShellyPlus EM Mini</label>
+		<description>Shelly Plus Mini EM (with integrated Power Meter)</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shelly1pmmini">
+		<label>ShellyPlus 1PM Mini</label>
+		<description>Shelly Plus Mini 1PM - Single Relay Switch with Power Meter</description>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+
+	<thing-type id="shellypro1">
+		<label>ShellyPro 1</label>
+		<description>Shelly Pro 1 - Single Relay Switch</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypro1pm">
+		<label>ShellyPro 1PM</label>
+		<description>Shelly Pro 1PM - Single Relay Switch with Power Meter</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="sensors" typeId="externalSensors"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypro1cb">
+		<label>ShellyPro 1CB</label>
+		<description>Shelly Pro 1CB - Single Circuit Breaker with Voltmeter</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypro2">
+		<label>Shelly Pro 2</label>
+		<description>Shelly Pro 2 - Dual Relay Switch</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypro2pm-relay">
+		<label>ShellyPro 2PM Relay</label>
+		<description>Shelly Pro 2PM - Dual Relay Switch with Power Meter</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypro2pm-roller">
+		<label>ShellyPro 2PM Roller</label>
+		<description>Shelly Pro 2PM - Roller Control with Power Meter</description>
+		<category>Rollershutter</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="roller" typeId="rollerControl"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:roller-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypro3">
+		<label>ShellyPro 3</label>
+		<description>Shelly Pro 3 - 3xRelay Switch</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="relay3" typeId="relayChannel">
+				<label>Relay 3</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypro3em">
+		<label>Shelly Pro 3EM</label>
+		<description>DIN rail mountable 3-phase power consumption meter with Wi-Fi, Bluetooth, and LAN connectivity</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>Power Meter 3</label>
+			</channel-group>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyproem50">
+		<label>Shelly Pro EM-50</label>
+		<description>Shelly Pro EM-50 - DIN rail mountable two-channel, single-phase energy meter (2xPower Meter + 1xOutput)</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellypro3em3ct63">
+		<label>Shelly Pro 3EM-3CT63</label>
+		<description>DIN rail mountable single or 3-phase energy meter with a combined 63A, 3-phase current transformer</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>Power Meter 3</label>
+			</channel-group>
+			<channel-group id="nmeter" typeId="nmeter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellypro3em400">
+		<label>Shelly Pro 3EM-400</label>
+		<description>DIN rail mountable 3-phase Energy Meter with LAN, Wi-Fi and Bluetooth. Monitor the consumption of any
+			home appliance</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>Power Meter 3</label>
+			</channel-group>
+			<channel-group id="nmeter" typeId="nmeter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellypro4pm">
+		<label>ShellyPro 4PM</label>
+		<description>Shelly Pro 4PM - DIN rail mountable four-channel smart switch with power measurement capabilities
+			(4xRelay Switch with Power Meter)</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay1" typeId="relayChannel">
+				<label>Relay 1</label>
+			</channel-group>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="relay2" typeId="relayChannel">
+				<label>Relay 2</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="relay3" typeId="relayChannel">
+				<label>Relay 3</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>Power Meter 3</label>
+			</channel-group>
+			<channel-group id="relay4" typeId="relayChannel">
+				<label>Relay 4</label>
+			</channel-group>
+			<channel-group id="meter4" typeId="meter">
+				<label>Power Meter 4</label>
+			</channel-group>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellypluswdus">
+		<label>Shelly Plus Dimmer US</label>
+		<description>Shelly Wall Dimmer US Device</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplus10v">
+		<label>Shelly Plus Dimmer 10V</label>
+		<description>Shelly Plus Dimmer 10V</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplusem">
+		<label>Shelly Plus EM</label>
+		<description>Shelly Plus EM Power Meter</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="nmeter" typeId="nmeter"/>
+			<channel-group id="relay" typeId="relayChannel"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+	<thing-type id="shellyplusdimmer">
+		<label>Shelly Plus Dimmer</label>
+		<description>Shelly Plus Dimmer</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="relay" typeId="dimmerChannel"/>
+			<channel-group id="meter" typeId="meter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:dimmer-gen2"/>
+	</thing-type>
+
+	<thing-type id="shellyplus3em63">
+		<label>Shelly Plus 3EM-63</label>
+		<description>Shelly Plus 3EM-63 - 3 Phase Power Meter, 63 Amp</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="meter1" typeId="meter">
+				<label>Power Meter 1</label>
+			</channel-group>
+			<channel-group id="meter2" typeId="meter">
+				<label>Power Meter 2</label>
+			</channel-group>
+			<channel-group id="meter3" typeId="meter">
+				<label>Power Meter 3</label>
+			</channel-group>
+			<channel-group id="nmeter" typeId="nmeter"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:relay"/>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>Velbus Serial Bridge</label>
+		<description>This bridge represents a Velbus Serial-interface</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="bridgeClockAlarm" typeId="bridgeClockAlarm"/>
+		</channel-groups>
+		<config-description-ref uri="bridge-type:velbus:bridge"/>
+	</bridge-type>
+
+	<bridge-type id="networkbridge">
+		<label>Velbus Network Bridge</label>
+		<description>This bridge represents a Velbus connection over TCP/IP</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="bridgeClockAlarm" typeId="bridgeClockAlarm"/>
+		</channel-groups>
+		<config-description-ref uri="bridge-type:velbus:networkbridge"/>
+	</bridge-type>
+
+</thing:thing-descriptions>

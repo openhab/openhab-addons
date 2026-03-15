@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -400,9 +400,8 @@ public class RemoteopenhabRestClient {
             connected = true;
             listeners.forEach(listener -> listener.onConnected());
         }
-
         if (!"message".equals(name)) {
-            logger.debug("Received unhandled event with name '{}' and data '{}'", name, data);
+            // Ignore silently all events which are not "message" events. This includes the "alive" events.
             return;
         }
 
@@ -622,12 +621,10 @@ public class RemoteopenhabRestClient {
                     String statusLine = statusCode + " " + response.getReason();
                     throw new RemoteopenhabException("@text/exception.http-call-failed", statusLine);
                 }
-                String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
+                String encoding = response.getEncoding() != null ? response.getEncoding().replace("\"", "").trim()
                         : StandardCharsets.UTF_8.name();
                 return new String(response.getContent(), encoding);
             }
-        } catch (RemoteopenhabException e) {
-            throw e;
         } catch (ExecutionException e) {
             // After a long network outage, the first HTTP request will fail with an EOFException exception.
             // We retry the request a second time in this case.

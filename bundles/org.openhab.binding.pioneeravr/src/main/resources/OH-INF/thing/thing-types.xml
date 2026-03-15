@@ -11,6 +11,7 @@
 			VSX-2021, VSA-LX55, VSX-52, VSX-1126, VSX-1121, VSX-51, VSX-1021, VSX-1026, VSA-1021, VSX-50, VSX-926, VSX-921,
 			VSA-921, VSX-922) over IP
 		</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="displayInformationGroup" id="displayInformation"/>
@@ -645,6 +646,10 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power ON/OFF the AVR</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="volumeChannelDimmer">
@@ -652,6 +657,10 @@
 		<label>Volume</label>
 		<description>Increase/Decrease the volume (%) and mute/un-mute</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -660,6 +669,10 @@
 		<label>Volume</label>
 		<description>Set the volume level (dB)</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="-80" max="12" step="0.5" pattern="%.1f dB"></state>
 	</channel-type>
 
@@ -667,12 +680,20 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Enable/Disable Mute on the AVR</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="setInputSourceChannel">
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -704,6 +725,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -740,6 +765,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -774,6 +803,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -808,6 +841,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -842,6 +879,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -876,6 +917,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -910,6 +955,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -944,6 +993,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -969,6 +1022,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -994,6 +1051,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -1020,6 +1081,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -1046,6 +1111,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -1072,6 +1141,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -1098,6 +1171,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="04">DVD</option>
@@ -1124,6 +1201,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -1147,6 +1228,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -1175,6 +1260,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -1204,6 +1293,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -1233,6 +1326,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -1262,6 +1359,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -1291,6 +1392,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the AVR</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="25">BD</option>
@@ -1327,6 +1432,10 @@
 		<item-type>String</item-type>
 		<label>Listening Mode</label>
 		<description>Set the listening mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0001">STEREO (cyclic)</option>
@@ -1392,6 +1501,10 @@
 		<item-type>String</item-type>
 		<label>Playing Listening Mode</label>
 		<description>Display the effective listening mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

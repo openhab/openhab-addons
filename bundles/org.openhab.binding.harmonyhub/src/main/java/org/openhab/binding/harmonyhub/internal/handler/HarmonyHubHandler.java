@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,16 +22,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.harmonyhub.internal.HarmonyHubHandlerFactory;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.harmonyhub.internal.HarmonyHubDynamicTypeProvider;
 import org.openhab.binding.harmonyhub.internal.config.HarmonyHubConfig;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RewindFastforwardType;
@@ -75,7 +75,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     private final Logger logger = LoggerFactory.getLogger(HarmonyHubHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_HUB_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(HARMONY_HUB_THING_TYPE);
 
     private static final Comparator<Activity> ACTIVITY_COMPERATOR = Comparator.comparing(Activity::getActivityOrder,
             Comparator.nullsFirst(Integer::compareTo));
@@ -84,8 +84,8 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     private static final int HEARTBEAT_INTERVAL = 30;
     // Websocket will timeout after 60 seconds, pick a sensible max under this,
     private static final int HEARTBEAT_INTERVAL_MAX = 50;
-    private List<HubStatusListener> listeners = new CopyOnWriteArrayList<>();
-    private final HarmonyHubHandlerFactory factory;
+    private Set<HubStatusListener> listeners = ConcurrentHashMap.newKeySet();
+    private final HarmonyHubDynamicTypeProvider typeProvider;
     private @NonNullByDefault({}) HarmonyHubConfig config;
     private final HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
@@ -94,10 +94,10 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     private int heartBeatInterval;
 
-    public HarmonyHubHandler(Bridge bridge, HarmonyHubHandlerFactory factory) {
+    public HarmonyHubHandler(Bridge bridge, HarmonyHubDynamicTypeProvider typeProvider, HttpClient httpClient) {
         super(bridge);
-        this.factory = factory;
-        client = new HarmonyClient(factory.getHttpClient());
+        this.typeProvider = typeProvider;
+        client = new HarmonyClient(httpClient);
         client.addListener(this);
     }
 
@@ -125,26 +125,20 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
         switch (channel.getUID().getId()) {
             case CHANNEL_CURRENT_ACTIVITY:
-                if (command instanceof DecimalType) {
+                try {
                     try {
-                        client.startActivity(((DecimalType) command).intValue());
-                    } catch (Exception e) {
-                        logger.warn("Could not start activity", e);
+                        // try starting by ID
+                        client.startActivity(command.toString());
+                    } catch (IllegalArgumentException ignored) {
+                        // if that fails, try starting by name
+                        client.startActivityByName(command.toString());
                     }
-                } else {
-                    try {
-                        try {
-                            int actId = Integer.parseInt(command.toString());
-                            client.startActivity(actId);
-                        } catch (NumberFormatException ignored) {
-                            client.startActivityByName(command.toString());
-                        }
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
-                    } catch (Exception e) {
-                        logger.warn("Could not start activity", e);
-                    }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
+                } catch (Exception e) {
+                    logger.warn("Could not start activity", e);
                 }
+
                 break;
             case CHANNEL_BUTTON_PRESS:
                 client.pressButtonCurrentActivity(command.toString());
@@ -184,7 +178,6 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     @Override
     public void initialize() {
         config = getConfigAs(HarmonyHubConfig.class);
-        cancelRetry();
         updateStatus(ThingStatus.UNKNOWN);
         scheduleRetry(0);
     }
@@ -194,7 +187,12 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         listeners.clear();
         cancelRetry();
         disconnectFromHub();
-        factory.removeChannelTypesForThing(getThing().getUID());
+    }
+
+    @Override
+    public void handleRemoval() {
+        typeProvider.removeChannelTypesForThing(getThing().getUID());
+        super.handleRemoval();
     }
 
     @Override
@@ -294,29 +292,31 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     }
 
     private void disconnectFromHub() {
-        ScheduledFuture<?> localHeartBeatJob = heartBeatJob;
-        if (localHeartBeatJob != null && !localHeartBeatJob.isDone()) {
-            localHeartBeatJob.cancel(false);
+        ScheduledFuture<?> heartBeatJob = this.heartBeatJob;
+        if (heartBeatJob != null) {
+            heartBeatJob.cancel(true);
+            this.heartBeatJob = null;
         }
         client.disconnect();
     }
 
     private void setOfflineAndReconnect(String error) {
         disconnectFromHub();
-        scheduleRetry(RETRY_TIME);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+        scheduleRetry(RETRY_TIME);
     }
 
     private void cancelRetry() {
-        ScheduledFuture<?> localRetryJob = retryJob;
-        if (localRetryJob != null && !localRetryJob.isDone()) {
-            localRetryJob.cancel(false);
+        ScheduledFuture<?> retryJob = this.retryJob;
+        if (retryJob != null) {
+            retryJob.cancel(true);
+            this.retryJob = null;
         }
     }
 
-    private synchronized void scheduleRetry(int retrySeconds) {
+    private synchronized void scheduleRetry(int delaySeconds) {
         cancelRetry();
-        retryJob = scheduler.schedule(this::connect, retrySeconds, TimeUnit.SECONDS);
+        retryJob = scheduler.schedule(this::connect, delaySeconds, TimeUnit.SECONDS);
     }
 
     private void updateState(@Nullable Activity activity) {
@@ -351,7 +351,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                 // trigger of power-off activity (with ID=-1)
                 getConfigFuture().thenAccept(config -> {
                     if (config != null) {
-                        Activity powerOff = config.getActivityById(-1);
+                        Activity powerOff = config.getActivityById("-1");
                         if (powerOff != null) {
                             triggerChannel(CHANNEL_ACTIVITY_STARTING_TRIGGER, getEventName(powerOff));
                         }
@@ -399,7 +399,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                         .withReadOnly(false).withOptions(states).build())
                 .build();
 
-        factory.addChannelType(channelType);
+        typeProvider.putChannelType(channelType);
 
         Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), CHANNEL_CURRENT_ACTIVITY), "String")
                 .withType(channelTypeUID).build();

@@ -23,11 +23,11 @@ The discovery process is able to automatically discover all devices associated w
 
 Bridge has the following configuration parameters:
 
-| Parameter        | Description                                           | Required
-|------------------|-------------------------------------------------------|----------
-| apikey           | API Key from https://api.foobot.io/apidoc/index.html  | Mandatory
-| username         | The e-mail address used to log into the Foobot App    | Mandatory
-| refreshInterval  | Refresh interval in minutes, minimal 5 minutes        | Optional, the default value is 8 minutes.
+| Parameter        | Description                                            | Required
+|------------------|--------------------------------------------------------|----------
+| apikey           | API Key from <https://api.foobot.io/apidoc/index.html> | Mandatory
+| username         | The e-mail address used to log into the Foobot App     | Mandatory
+| refreshInterval  | Refresh interval in minutes, minimal 5 minutes         | Optional, the default value is 8 minutes.
 
 The minimal refresh rate is 5 minutes because the device only sends data every 5 minutes.
 The default is 8 minutes. This will get you through the day with the default rate limit of 200 calls per day.
@@ -39,7 +39,6 @@ The bridge has one channel:
 | Channel ID           | Item Type | Description
 |----------------------|-----------|-----------------------------------------------
 | apiKeyLimitRemaining | Number    | The remaining number of API requests for today
-
 
 The AirQuality sensors information that is retrieved is available as these channels:
 
@@ -57,7 +56,7 @@ The AirQuality sensors information that is retrieved is available as these chann
 
 demo.things:
 
-```
+```java
 // Bridge configuration:
 Bridge foobot:account:myfoobotaccount "Foobot Account" [apiKey="XXXXXX", username="XXXXXX", refreshInterval=8] {
   Things:
@@ -66,6 +65,6 @@ Bridge foobot:account:myfoobotaccount "Foobot Account" [apiKey="XXXXXX", usernam
 
 demo.items:
 
-```
+```java
 Number:Temperature Temperature "Temperature" <temperature> { channel="foobot:myfoobotaccount:device:myfoobot:temperature" }
 ```

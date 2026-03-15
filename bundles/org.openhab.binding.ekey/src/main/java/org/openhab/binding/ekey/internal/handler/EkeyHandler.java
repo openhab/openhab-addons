@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Hans-Jörg Merk - Initial contribution
+ * @author Robert Delbrück - Add natIp
  */
 @NonNullByDefault
 public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener {
@@ -80,10 +82,10 @@ public class EkeyHandler extends BaseThingHandler implements EkeyPacketListener 
 
             scheduler.submit(() -> {
                 populateChannels(config.protocol);
-                String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
 
-                EkeyUdpPacketReceiver localReceiver = receiver = new EkeyUdpPacketReceiver(config.ipAddress,
-                        config.port, readerThreadName);
+                EkeyUdpPacketReceiver localReceiver = receiver = new EkeyUdpPacketReceiver(
+                        Objects.requireNonNullElse(config.natIp, config.ipAddress), config.port,
+                        "OH-binding-" + getThing().getUID());
                 localReceiver.addEkeyPacketListener(this);
                 try {
                     localReceiver.openConnection();

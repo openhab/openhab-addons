@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,10 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial contribution
  */
 public class MiscUtils {
-    private static final Logger logger = LoggerFactory.getLogger(MiscUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MiscUtils.class);
 
     /**
-     * Replaces invalid characters of the text to fit into a openHAB UID.
+     * Replaces invalid characters of the text to fit into an openHAB UID.
      */
     public static String validateCharacters(String text, String textType, String replaceChar) {
         if (text == null) {
@@ -32,7 +32,7 @@ public class MiscUtils {
         }
         String cleanedText = text.replaceAll("[^A-Za-z0-9_-]", replaceChar);
         if (!text.equals(cleanedText)) {
-            logger.info("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
+            LOGGER.debug("{} '{}' contains invalid characters, new {} '{}'", textType, text, textType, cleanedText);
         }
         return cleanedText;
     }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,6 +87,7 @@ public class ConfigStore {
     protected @NonNullByDefault({}) ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> pairingOffFuture;
     private @Nullable ScheduledFuture<?> writeUUIDFuture;
+    private Set<ConfigurationListener> configurationListeners = Collections.synchronizedSet(new LinkedHashSet<>());
 
     /**
      * This is the main gson instance, to be obtained by all components that operate on the dto data fields
@@ -97,7 +98,7 @@ public class ConfigStore {
             .registerTypeAdapter(HueAuthorizedConfig.class, new HueAuthorizedConfig.Serializer())
             .registerTypeAdapter(HueSuccessGeneric.class, new HueSuccessGeneric.Serializer())
             .registerTypeAdapter(HueSuccessResponseStateChanged.class, new HueSuccessResponseStateChanged.Serializer())
-            .registerTypeAdapter(HueGroupEntry.class, new HueGroupEntry.Serializer(this)).create();
+            .registerTypeAdapter(HueGroupEntry.class, new HueGroupEntry.Serializer()).create();
 
     @Reference
     protected @NonNullByDefault({}) ConfigurationAdmin configAdmin;
@@ -115,14 +116,13 @@ public class ConfigStore {
     private Set<InetAddress> discoveryIps = Collections.emptySet();
     protected volatile @NonNullByDefault({}) HueEmulationConfig config;
 
+    public boolean useSemanticModel = false;
     public Set<String> switchFilter = Collections.emptySet();
     public Set<String> colorFilter = Collections.emptySet();
     public Set<String> whiteFilter = Collections.emptySet();
     public Set<String> ignoreItemsFilter = Collections.emptySet();
 
     private int highestAssignedHueID = 1;
-
-    private String hueIDPrefix = "";
 
     public ConfigStore() {
         scheduler = ThreadPoolManager.getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
@@ -161,6 +161,14 @@ public class ConfigStore {
         }
     }
 
+    public void addConfigurationListener(ConfigurationListener listener) {
+        configurationListeners.add(listener);
+    }
+
+    public void removeConfigurationListener(ConfigurationListener listener) {
+        configurationListeners.remove(listener);
+    }
+
     private @Nullable InetAddress byName(@Nullable String address) {
         if (address == null) {
             return null;
@@ -176,6 +184,8 @@ public class ConfigStore {
     @Modified
     public void modified(Map<String, Object> properties) {
         this.config = new Configuration(properties).as(HueEmulationConfig.class);
+
+        useSemanticModel = config.useSemanticModel;
 
         switchFilter = Collections.unmodifiableSet(
                 Stream.of(config.restrictToTagsSwitches.split(",")).map(String::trim).collect(Collectors.toSet()));
@@ -193,8 +203,9 @@ public class ConfigStore {
         InetAddress configuredAddress = null;
         int networkPrefixLength = 24; // Default for most networks: 255.255.255.0
 
-        if (config.discoveryIp != null) {
-            discoveryIps = Collections.unmodifiableSet(Stream.of(config.discoveryIp.split(",")).map(String::trim)
+        String discoveryIp = config.discoveryIp;
+        if (discoveryIp != null) {
+            discoveryIps = Collections.unmodifiableSet(Stream.of(discoveryIp.split(",")).map(String::trim)
                     .map(this::byName).filter(e -> e != null).collect(Collectors.toSet()));
         } else {
             discoveryIps = new LinkedHashSet<>();
@@ -236,8 +247,6 @@ public class ConfigStore {
             ds.config.bridgeid = ds.config.bridgeid.substring(0, 12);
         }
 
-        hueIDPrefix = getHueIDPrefixFromUUID(config.uuid);
-
         if (config.permanentV1bridge) {
             ds.config.makeV1bridge();
         }
@@ -251,6 +260,10 @@ public class ConfigStore {
         if (eventAdmin != null) {
             eventAdmin.postEvent(new Event(EVENT_ADDRESS_CHANGED, Collections.emptyMap()));
         }
+
+        for (ConfigurationListener listener : configurationListeners) {
+            listener.bindingConfigurationChanged();
+        }
     }
 
     private String getConfiguredHostAddress(InetAddress configuredAddress) {
@@ -261,32 +274,6 @@ public class ConfigStore {
         } else {
             return hostAddress;
         }
-    }
-
-    /**
-     * Get the prefix used to create a unique id
-     *
-     * @param uuid The uuid
-     * @return The prefix in the format of AA:BB:CC:DD:EE:FF:00:11 if uuid is a valid UUID, otherwise uuid is returned.
-     */
-    private String getHueIDPrefixFromUUID(final String uuid) {
-        // Hue API example of a unique id is AA:BB:CC:DD:EE:FF:00:11-XX
-        // XX is generated from the item.
-        String prefix = uuid;
-        try {
-            // Generate prefix if uuid is a randomly generated UUID
-            if (UUID.fromString(uuid).version() == 4) {
-                final StringBuilder sb = new StringBuilder(23);
-                sb.append(uuid, 0, 2).append(":").append(uuid, 2, 4).append(":").append(uuid, 4, 6).append(":")
-                        .append(uuid, 6, 8).append(":").append(uuid, 9, 11).append(":").append(uuid, 11, 13).append(":")
-                        .append(uuid, 14, 16).append(":").append(uuid, 16, 18);
-                prefix = sb.toString().toUpperCase();
-            }
-        } catch (final IllegalArgumentException e) {
-            // uuid is not a valid UUID
-        }
-
-        return prefix;
     }
 
     @Deactivate
@@ -352,14 +339,29 @@ public class ConfigStore {
      * @return The unique id
      */
     public String getHueUniqueId(final String hueId) {
-        String unique = hueId;
+        // From the Hue API:
+        // Format: AA:BB:CC:DD:EE:FF:00:11-XX
+        // Content: Device MAC + unique endpoint id
+        // Example: 00:17:88:01:00:bd:c7:b9-0b
+        // Using the item's hueID for every three octets ensures both the MAC and
+        // endpoint are unique for each item which seems important for Alexa discovery.
+        String unique;
+
         try {
-            unique = String.format("%02X", Integer.valueOf(hueId));
+            final String id = String.format("%06x", Integer.valueOf(hueId));
+            final StringBuilder sb = new StringBuilder(26);
+
+            sb.append(id, 0, 2).append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":")//
+                    .append(id, 0, 2).append(":").append(id, 2, 4).append(":").append(id, 4, 6).append(":")//
+                    .append(id, 0, 2).append(":").append(id, 2, 4).append("-").append(id, 4, 6);
+
+            unique = sb.toString();
         } catch (final NumberFormatException | IllegalFormatException e) {
             // Use the hueId as is
+            unique = hueId;
         }
 
-        return hueIDPrefix + "-" + unique;
+        return unique;
     }
 
     public boolean isReady() {

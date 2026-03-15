@@ -6,19 +6,32 @@
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="channel-type:robonect:jobType">
-		<parameter name="remoteStart" type="text" pattern="^STANDARD|REMOTE_1|REMOTE_2$">
+		<parameter name="remoteStart" type="text">
 			<label>Remote Start</label>
 			<description>The location to start the mowing job from.</description>
+			<options>
+				<option value="STANDARD">Standard</option>
+				<option value="REMOTE_1">Remote 1</option>
+				<option value="REMOTE_2">Remote 2</option>
+			</options>
+
 		</parameter>
-		<parameter name="duration" type="integer" min="0" max="60" unit="m">
+		<parameter name="duration" type="integer" min="0" max="720" unit="m">
 			<context>time</context>
 			<label>Job Duration</label>
 			<description>The duration of the job.</description>
 			<default>0</default>
+
 		</parameter>
-		<parameter name="afterMode" type="text" pattern="^AUTO|HOME|EOD$">
+		<parameter name="afterMode" type="text">
 			<label>After Job Mode</label>
 			<description>The Mode to put the mower into after the job is done.</description>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="HOME">Home</option>
+				<option value="EOD">End of day</option>
+			</options>
+
 		</parameter>
 	</config-description>
 

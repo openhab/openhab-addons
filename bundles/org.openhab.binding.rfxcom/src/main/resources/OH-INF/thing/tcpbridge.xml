@@ -7,6 +7,7 @@
 	<bridge-type id="tcpbridge">
 		<label>RFXCOM USB Transceiver over TCP/IP</label>
 		<description>This is universal RFXCOM transceiver bridge for using RFXCOM devices over a TCP/IP connection.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">

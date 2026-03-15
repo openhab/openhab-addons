@@ -8,6 +8,7 @@
 	<thing-type id="ra1572">
 		<label>RA-1572 Integrated Amplifier</label>
 		<description>Connection to the Rotel RA-1572 or RA-1572MKII integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -22,6 +23,7 @@
 			<channel id="balance" typeId="balance"/>
 			<channel id="speakera" typeId="speakera"/>
 			<channel id="speakerb" typeId="speakerb"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<config-description-ref uri="thing-type:rotel:serialandipandprotocol"/>

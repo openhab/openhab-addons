@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,9 +20,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Dictionary;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +30,7 @@ import org.mockito.Mockito;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.HueEmulationConfig;
 import org.openhab.io.hueemulation.internal.dto.HueUnauthorizedConfig;
+import org.openhab.io.hueemulation.internal.dto.HueUserAuth;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
 import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseCreateUser;
 import org.openhab.io.hueemulation.internal.rest.mocks.ConfigStoreWithoutMetadata;
@@ -44,11 +44,12 @@ import com.google.gson.JsonParser;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class UsersAndConfigTests {
 
     ConfigurationAccess configurationAccess = new ConfigurationAccess();
 
-    CommonSetup commonSetup;
+    private @NonNullByDefault({}) CommonSetup commonSetup;
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -94,47 +95,46 @@ public class UsersAndConfigTests {
     }
 
     @Test
-    public void addUser() {
+    public void addUser() throws Exception {
         // GET should fail
-        assertEquals(405, commonSetup.client.target(commonSetup.basePath).request().get().getStatus());
+        assertThat(commonSetup.sendGet().getStatus(), is(405));
 
         String body = "{'username':'testuser','devicetype':'app#device'}";
 
-        Response response;
-        HueResponse[] r;
-
         // Post should create a user, except: if linkbutton not enabled
-        response = commonSetup.client.target(commonSetup.basePath).request().post(Entity.json(body));
+        ContentResponse response = commonSetup.sendPost(body);
         assertThat(response.getStatus(), is(200));
-        r = commonSetup.cs.gson.fromJson(response.readEntity(String.class), HueResponse[].class);
+        HueResponse[] r = commonSetup.cs.gson.fromJson(response.getContentAsString(), HueResponse[].class);
+        assertNotNull(r);
         assertNotNull(r[0].error);
 
         // Post should create a user
         commonSetup.cs.ds.config.linkbutton = true;
-        response = commonSetup.client.target(commonSetup.basePath).request().post(Entity.json(body));
+        response = commonSetup.sendPost(body);
         assertThat(response.getStatus(), is(200));
 
-        JsonElement e = JsonParser.parseString(response.readEntity(String.class)).getAsJsonArray().get(0);
+        JsonElement e = JsonParser.parseString(response.getContentAsString()).getAsJsonArray().get(0);
         e = e.getAsJsonObject().get("success");
         HueSuccessResponseCreateUser rc = commonSetup.cs.gson.fromJson(e, HueSuccessResponseCreateUser.class);
         assertNotNull(rc);
-        assertThat(commonSetup.cs.ds.config.whitelist.get(rc.username).name, is("app#device"));
+        HueUserAuth userAuth = commonSetup.cs.ds.config.whitelist.get(rc.username);
+        assertNotNull(userAuth);
+        assertThat(userAuth.name, is("app#device"));
     }
 
     @Test
-    public void UnauthorizedAccessTest() {
+    public void unauthorizedAccessTest() throws Exception {
         // Unauthorized config
-        Response response;
-        response = commonSetup.client.target(commonSetup.basePath + "/config").request().get();
+        ContentResponse response = commonSetup.sendGet("/config");
         assertThat(response.getStatus(), is(200));
-        HueUnauthorizedConfig config = new Gson().fromJson(response.readEntity(String.class),
-                HueUnauthorizedConfig.class);
+        HueUnauthorizedConfig config = new Gson().fromJson(response.getContentAsString(), HueUnauthorizedConfig.class);
+        assertNotNull(config);
         assertThat(config.bridgeid, is(commonSetup.cs.ds.config.bridgeid));
         assertThat(config.name, is(commonSetup.cs.ds.config.name));
 
         // Invalid user name
-        response = commonSetup.client.target(commonSetup.basePath + "/invalid/config").request().get();
+        response = commonSetup.sendGet("/invalid/config");
         assertThat(response.getStatus(), is(403));
-        assertThat(response.readEntity(String.class), containsString("error"));
+        assertThat(response.getContentAsString(), containsString("error"));
     }
 }

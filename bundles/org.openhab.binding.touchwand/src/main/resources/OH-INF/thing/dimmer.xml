@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Dimmer Unit</label>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness">
 				<description>light brightness control</description>

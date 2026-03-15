@@ -11,7 +11,7 @@
 
 		<label>Light Sensor</label>
 		<description>Sensor which sends light data (EEP: A5-06)</description>
-
+		<semantic-equipment-tag>IlluminanceSensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

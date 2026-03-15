@@ -19,31 +19,31 @@
 			<description>The hourly forecasts to display</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
-				<option value="0">Current hour</option>
-				<option value="1">Next hour</option>
-				<option value="2">2 hours from now</option>
-				<option value="3">3 hours from now</option>
-				<option value="4">4 hours from now</option>
-				<option value="5">5 hours from now</option>
-				<option value="6">6 hours from now</option>
-				<option value="7">7 hours from now</option>
-				<option value="8">8 hours from now</option>
-				<option value="9">9 hours from now</option>
-				<option value="10">10 hours from now</option>
-				<option value="11">11 hours from now</option>
-				<option value="12">12 hours from now</option>
-				<option value="13">13 hours from now</option>
-				<option value="14">14 hours from now</option>
-				<option value="15">15 hours from now</option>
-				<option value="16">16 hours from now</option>
-				<option value="17">17 hours from now</option>
-				<option value="18">18 hours from now</option>
-				<option value="19">19 hours from now</option>
-				<option value="20">20 hours from now</option>
-				<option value="21">21 hours from now</option>
-				<option value="22">22 hours from now</option>
-				<option value="23">23 hours from now</option>
-				<option value="24">24 hours from now</option>
+				<option value="0">@text/thing-type.smhi.forecast.group.hour_0.label</option>
+				<option value="1">@text/thing-type.smhi.forecast.group.hour_1.label</option>
+				<option value="2">@text/thing-type.smhi.forecast.group.hour_2.label</option>
+				<option value="3">@text/thing-type.smhi.forecast.group.hour_3.label</option>
+				<option value="4">@text/thing-type.smhi.forecast.group.hour_4.label</option>
+				<option value="5">@text/thing-type.smhi.forecast.group.hour_5.label</option>
+				<option value="6">@text/thing-type.smhi.forecast.group.hour_6.label</option>
+				<option value="7">@text/thing-type.smhi.forecast.group.hour_7.label</option>
+				<option value="8">@text/thing-type.smhi.forecast.group.hour_8.label</option>
+				<option value="9">@text/thing-type.smhi.forecast.group.hour_9.label</option>
+				<option value="10">@text/thing-type.smhi.forecast.group.hour_10.label</option>
+				<option value="11">@text/thing-type.smhi.forecast.group.hour_11.label</option>
+				<option value="12">@text/thing-type.smhi.forecast.group.hour_12.label</option>
+				<option value="13">@text/thing-type.smhi.forecast.group.hour_13.label</option>
+				<option value="14">@text/thing-type.smhi.forecast.group.hour_14.label</option>
+				<option value="15">@text/thing-type.smhi.forecast.group.hour_15.label</option>
+				<option value="16">@text/thing-type.smhi.forecast.group.hour_16.label</option>
+				<option value="17">@text/thing-type.smhi.forecast.group.hour_17.label</option>
+				<option value="18">@text/thing-type.smhi.forecast.group.hour_18.label</option>
+				<option value="19">@text/thing-type.smhi.forecast.group.hour_19.label</option>
+				<option value="20">@text/thing-type.smhi.forecast.group.hour_20.label</option>
+				<option value="21">@text/thing-type.smhi.forecast.group.hour_21.label</option>
+				<option value="22">@text/thing-type.smhi.forecast.group.hour_22.label</option>
+				<option value="23">@text/thing-type.smhi.forecast.group.hour_23.label</option>
+				<option value="24">@text/thing-type.smhi.forecast.group.hour_24.label</option>
 			</options>
 		</parameter>
 		<parameter name="dailyForecasts" type="integer" multiple="true">
@@ -51,16 +51,16 @@
 			<description>The daily forecasts to display</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
-				<option value="0">Today</option>
-				<option value="1">Tomorrow</option>
-				<option value="2">2 days from now</option>
-				<option value="3">3 days from now</option>
-				<option value="4">4 days from now</option>
-				<option value="5">5 days from now</option>
-				<option value="6">6 days from now</option>
-				<option value="7">7 days from now</option>
-				<option value="8">8 days from now</option>
-				<option value="9">9 days from now</option>
+				<option value="0">@text/thing-type.smhi.forecast.group.day_0.label</option>
+				<option value="1">@text/thing-type.smhi.forecast.group.day_1.label</option>
+				<option value="2">@text/thing-type.smhi.forecast.group.day_2.label</option>
+				<option value="3">@text/thing-type.smhi.forecast.group.day_3.label</option>
+				<option value="4">@text/thing-type.smhi.forecast.group.day_4.label</option>
+				<option value="5">@text/thing-type.smhi.forecast.group.day_5.label</option>
+				<option value="6">@text/thing-type.smhi.forecast.group.day_6.label</option>
+				<option value="7">@text/thing-type.smhi.forecast.group.day_7.label</option>
+				<option value="8">@text/thing-type.smhi.forecast.group.day_8.label</option>
+				<option value="9">@text/thing-type.smhi.forecast.group.day_9.label</option>
 			</options>
 		</parameter>
 	</config-description>

@@ -1,0 +1,136 @@
+{
+    "id": "TapoStrip_6Dy0Nc45vlhFPEzG021Pe9",
+    "name": "Candy Cane",
+    "brightness": 100,
+    "display_colors": [
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ]
+    ],
+    "enable": 1,
+    "bAdjusted": null,
+    "brightness_range": [],
+    "backgrounds": [],
+    "custom": 0,
+    "direction": 1,
+    "duration": 700,
+    "expansion_strategy": 1,
+    "fadeoff": null,
+    "hue_range": null,
+    "init_states": [],
+    "random_seed": null,
+    "repeat_times": 0,
+    "saturation_range": null,
+    "segment_length": null,
+    "segments": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "sequence": [
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ],
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ],
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ],
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        0,
+        0,
+        100
+      ],
+      [
+        360,
+        81,
+        100
+      ]
+    ],
+    "spread": 1,
+    "transition": 500,
+    "transition_range": null,
+    "type": "sequence"
+  }

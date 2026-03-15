@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -207,7 +209,7 @@ public class LxWebSocket {
     }
 
     @OnWebSocketMessage
-    public void onBinaryMessage(byte data[], int msgOffset, int msgLength) {
+    public void onBinaryMessage(byte[] data, int msgOffset, int msgLength) {
         int offset = msgOffset;
         int length = msgLength;
         if (logger.isTraceEnabled()) {
@@ -393,7 +395,8 @@ public class LxWebSocket {
     public String httpGet(String request) {
         HttpURLConnection con = null;
         try {
-            URL url = new URL("http", host.getHostAddress(), port, request.startsWith("/") ? request : "/" + request);
+            URL url = new URI("http", null, host.getHostAddress(), port,
+                    request.startsWith("/") ? request : "/" + request, null, null).toURL();
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             StringBuilder result = new StringBuilder();
@@ -404,7 +407,8 @@ public class LxWebSocket {
                 }
                 return result.toString();
             }
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
+            logger.debug("Error sending HTTP request: {}", e.getMessage());
             return null;
         } finally {
             if (con != null) {
@@ -631,7 +635,7 @@ public class LxWebSocket {
      * This method sends a request to receive Miniserver configuration.
      */
     private void authenticated() {
-        logger.debug("[{}] Websocket authentication successfull.", debugId);
+        logger.debug("[{}] Websocket authentication successful.", debugId);
         webSocketLock.lock();
         try {
             awaitingConfiguration = true;
@@ -650,6 +654,6 @@ public class LxWebSocket {
      */
     private void responseTimeout() {
         logger.debug("[{}] Miniserver response timeout", debugId);
-        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occured");
+        disconnect(LxErrorCode.COMMUNICATION_ERROR, "Miniserver response timeout occurred");
     }
 }

@@ -16,7 +16,7 @@ This binding support 6 different things types
 | ecoswitch      | Thing  | MAX! Ecoswitch.                                                                                                    |
 | shuttercontact | Thing  | MAX! Shuttercontact / Window Contact.                                                                              |
 
-Generally one does not have to worry about the thing types as they are automatically defined.
+Generally one does not have to worry about the Thing types as they are automatically defined.
 If for any reason you need to manually define the Things and you are not exactly sure what type of thermostat you have, you can choose `thermostat` for both the thermostat and thermostat+, this will not affect their working.
 
 ## Discovery
@@ -33,7 +33,7 @@ There are no binding wide settings as all configuration settings are now per MAX
 ## Thing Configuration
 
 All the things are identified by their serial number, hence this is mandatory.
-The Cube (`bridge` thing) also requires the IP address to be defined.
+The Cube (`bridge` Thing) also requires the IP address to be defined.
 All other configuration is optional.
 
 Note that several configuration options are automatically populated.
@@ -42,9 +42,9 @@ These properties can be found in the `Device Settings` section of parameters.
 
 ## Channels
 
-Depending on the thing it supports different Channels
+Depending on the Thing it supports different Channels
 
-| Channel Type ID | Item Type          | Description                                                                                                                                                                                                                                               | Available on thing                                                    |
+| Channel Type ID | Item Type          | Description                                                                                                                                                                                                                                               | Available on Thing                                                    |
 |-----------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 | mode            | String             | This channel indicates the mode of a thermostat (AUTOMATIC/MANUAL/BOOST/VACATION).                                                                                                                                                                        | thermostat, thermostatplus, wallthermostat                            |
 | battery_low     | Switch             | This channel indicates if the device battery is low (ON/OFF).                                                                                                                                                                                             | thermostat, thermostatplus, wallthermostat, ecoswitch, shuttercontact |
@@ -74,7 +74,7 @@ Bridge max:bridge:KEQ0565026 [ ipAddress="192.168.3.9", serialNumber="KEQ0565026
 max.items:
 
 ```java
-Group gMAX 			"MAX Heating" 	<temperature>	[ "home-group" ]
+Group gMAX    "MAX Heating"  <temperature> [ "home-group" ]
 
 Switch maxBattery "Battery Low" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:battery_low"}
 String maxMode "Thermostat Mode Setting" (gMAX) {channel="max:thermostat:KEQ0565026:KEQ0648949:mode"}
@@ -117,24 +117,24 @@ During this time, holding the _boost_ button on your device will link it to the 
 In the _Configuration Parameters_ section of the device Things you can update some of the device configuration parameters.
 Currently the following parameters can be updated:
 
-*   _name_ Name of the thermostat stored in the Cube (also used by the eQ-3 software).
+- _name_ Name of the thermostat stored in the Cube (also used by the eQ-3 software).
 
-_Cube device configurable parameters_
+### Cube device configurable parameters
 
-*   _ntpServer1_ The hostname for NTP Server 1 used by the Cube to get the time
-*   _ntpServer2_ The hostname for NTP Server 2 used by the Cube to get the time
+- _ntpServer1_ The hostname for NTP Server 1 used by the Cube to get the time
+- _ntpServer2_ The hostname for NTP Server 2 used by the Cube to get the time
 
 ## Thing Actions
 
 Several Thing Actions are available to trigger special actions on the MAX! Cube
 
-*   `reset()`: _Reset Cube Configuration_ resets the MAX! Cube room and device information. Devices will need to be included again!
+- `reset()`: _Reset Cube Configuration_ resets the MAX! Cube room and device information. Devices will need to be included again!
 
-*   `reboot()`: _Restart Cube_ triggers the reboot of a Cube. This can be used if a Cube became unresponsive to commands or no connection can be made. (e.g. if you tried to connect to the Cube with multiple applications at the same time)
+- `reboot()`: _Restart Cube_ triggers the reboot of a Cube. This can be used if a Cube became unresponsive to commands or no connection can be made. (e.g. if you tried to connect to the Cube with multiple applications at the same time)
 
 On the MAX! devices you can trigger the following action
 
-*   `deleteFromCube()`: _Delete Device from Cube_ deletes the device from the MAX! Cube. Device will need to be included again!
+- `deleteFromCube()`: _Delete Device from Cube_ deletes the device from the MAX! Cube. Device will need to be included again!
 
 ### Example Rule
 

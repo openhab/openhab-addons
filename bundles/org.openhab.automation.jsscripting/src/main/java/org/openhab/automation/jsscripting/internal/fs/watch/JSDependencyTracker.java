@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,39 +12,47 @@
  */
 package org.openhab.automation.jsscripting.internal.fs.watch;
 
-import java.io.File;
-
-import org.openhab.core.OpenHAB;
-import org.openhab.core.automation.module.script.rulesupport.loader.DependencyTracker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.automation.jsscripting.internal.GraalJSScriptEngineFactory;
+import org.openhab.core.automation.module.script.ScriptDependencyTracker;
+import org.openhab.core.automation.module.script.rulesupport.loader.AbstractScriptDependencyTracker;
+import org.openhab.core.service.WatchService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
  * Tracks JS module dependencies
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Jan N. Klug - Refactored to new WatchService
  */
-public class JSDependencyTracker extends DependencyTracker {
+@Component(service = JSDependencyTracker.class)
+@NonNullByDefault
+public class JSDependencyTracker extends AbstractScriptDependencyTracker {
 
-    private final Logger logger = LoggerFactory.getLogger(JSDependencyTracker.class);
-
-    public static final String LIB_PATH = String.join(File.separator, OpenHAB.getConfigFolder(), "automation", "js",
-            "node_modules");
-
-    public JSDependencyTracker() {
-        super(LIB_PATH);
+    @Activate
+    public JSDependencyTracker(@Reference(target = WatchService.CONFIG_WATCHER_FILTER) WatchService watchService) {
+        super(watchService, GraalJSScriptEngineFactory.JS_LIB_PATH.toString());
     }
 
-    public void activate() {
-        File directory = new File(LIB_PATH);
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                logger.warn("Failed to create watched directory: {}", LIB_PATH);
-            }
-        } else if (directory.isFile()) {
-            logger.warn("Trying to watch directory {}, however it is a file", LIB_PATH);
-        }
+    @Deactivate
+    @Override
+    public void deactivate() {
+        super.deactivate();
+    }
 
-        super.activate();
+    @Override
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC, unbind = "removeChangeTracker")
+    public void addChangeTracker(ScriptDependencyTracker.Listener listener) {
+        super.addChangeTracker(listener);
+    }
+
+    @Override
+    public void removeChangeTracker(ScriptDependencyTracker.Listener listener) {
+        super.removeChangeTracker(listener);
     }
 }

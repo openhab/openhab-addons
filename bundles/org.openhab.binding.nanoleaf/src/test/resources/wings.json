@@ -1,0 +1,143 @@
+{
+    "name": "Winds",
+    "serialNo": "S123456789",
+    "manufacturer": "Nanoleaf",
+    "firmwareVersion": "6.5.1",
+    "hardwareVersion": "1.6-0",
+    "model": "NL42",
+    "discovery": {},
+    "effects": {
+        "effectsList": [
+            "Beatdrop",
+            "Blaze",
+            "Cocoa Beach",
+            "Cotton Candy",
+            "Date Night",
+            "Hip Hop",
+            "Hot Sauce",
+            "Jungle",
+            "Lightscape",
+            "Morning Sky",
+            "Northern Lights",
+            "Pop Rocks",
+            "Prism",
+            "Starlight",
+            "Sundown",
+            "Waterfall",
+            "Falling Whites"
+        ],
+        "select": "*Solid*"
+    },
+    "firmwareUpgrade": {},
+    "panelLayout": {
+        "globalOrientation": {
+            "value": 299,
+            "max": 360,
+            "min": 0
+        },
+        "layout": {
+            "numPanels": 10,
+            "sideLength": 134,
+            "positionData": [
+                {
+                    "panelId": 1837,
+                    "x": 268,
+                    "y": 437,
+                    "o": 0,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 37923,
+                    "x": 234,
+                    "y": 534,
+                    "o": 180,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 59975,
+                    "x": 167,
+                    "y": 611,
+                    "o": 240,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 20510,
+                    "x": 100,
+                    "y": 650,
+                    "o": 300,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 31270,
+                    "x": 0,
+                    "y": 669,
+                    "o": 120,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 25862,
+                    "x": 335,
+                    "y": 359,
+                    "o": 60,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 24968,
+                    "x": 368,
+                    "y": 263,
+                    "o": 0,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 923,
+                    "x": 368,
+                    "y": 185,
+                    "o": 60,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 34168,
+                    "x": 335,
+                    "y": 89,
+                    "o": 120,
+                    "shapeType": 8
+                },
+                {
+                    "panelId": 0,
+                    "x": 234,
+                    "y": 388,
+                    "o": 180,
+                    "shapeType": 12
+                }
+            ]
+        }
+    },
+    "qkihnokomhartlnp": {},
+    "schedules": {},
+    "state": {
+        "brightness": {
+            "value": 100,
+            "max": 100,
+            "min": 0
+        },
+        "colorMode": "hs",
+        "ct": {
+            "value": 2700,
+            "max": 6500,
+            "min": 1200
+        },
+        "hue": {
+            "value": 45,
+            "max": 360,
+            "min": 0
+        },
+        "on": {
+            "value": false
+        },
+        "sat": {
+            "value": 80,
+            "max": 100,
+            "min": 0
+        }
+    }
+}

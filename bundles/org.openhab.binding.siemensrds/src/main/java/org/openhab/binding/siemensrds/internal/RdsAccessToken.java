@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -61,7 +63,7 @@ public class RdsAccessToken {
 
     private @Nullable Date expDate = null;
 
-    /*
+    /**
      * public static method: execute the HTTP POST on the server
      */
     public static String httpGetTokenJson(String apiKey, String payload) throws RdsCloudException, IOException {
@@ -70,7 +72,7 @@ public class RdsAccessToken {
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        URL url = new URL(URL_TOKEN);
+        URL url = URI.create(URL_TOKEN).toURL();
 
         HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
@@ -105,14 +107,14 @@ public class RdsAccessToken {
         }
     }
 
-    /*
+    /**
      * public method: parse the JSON, and create a class that encapsulates the data
      */
     public static @Nullable RdsAccessToken createFromJson(String json) {
         return GSON.fromJson(json, RdsAccessToken.class);
     }
 
-    /*
+    /**
      * public method: return the access token
      */
     public String getToken() throws RdsCloudException {
@@ -123,14 +125,14 @@ public class RdsAccessToken {
         throw new RdsCloudException("no access token");
     }
 
-    /*
+    /**
      * public method: check if the token has expired
      */
     public boolean isExpired() {
         Date expDate = this.expDate;
         if (expDate == null) {
             try {
-                expDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z").parse(expires);
+                expDate = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH).parse(expires);
             } catch (ParseException e) {
                 logger.debug("isExpired: expiry date parsing exception");
 

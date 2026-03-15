@@ -11,6 +11,7 @@
 
 		<label>Nest Doorbell</label>
 		<description>A Nest Doorbell registered with your SDM account</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="chime_event" typeId="SDMChimeEvent"/>

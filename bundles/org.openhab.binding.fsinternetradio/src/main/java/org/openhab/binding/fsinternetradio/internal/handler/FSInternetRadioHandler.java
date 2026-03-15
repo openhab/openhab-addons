@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import static org.openhab.binding.fsinternetradio.internal.FSInternetRadioBindin
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 import org.openhab.core.library.types.DecimalType;
@@ -45,20 +47,27 @@ import org.slf4j.LoggerFactory;
  * @author Mihaela Memova - removed the unused boolean parameter, changed the check for the PIN
  * @author Svilen Valkanov - changed handler initialization
  */
+@NonNullByDefault
 public class FSInternetRadioHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioHandler.class);
 
+    @Nullable
     FrontierSiliconRadio radio;
     private final HttpClient httpClient;
 
     /** Job that runs {@link #updateRunnable}. */
-    private ScheduledFuture<?> updateJob;
+    private @Nullable ScheduledFuture<?> updateJob;
 
     /** Runnable for job {@link #updateJob} for periodic refresh. */
     private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
+            FrontierSiliconRadio radio = FSInternetRadioHandler.this.radio;
+            if (radio == null) {
+                logger.warn("Radio is not initialized, cannot update channels.");
+                return;
+            }
             if (!radio.isLoggedIn()) {
                 // radio is not set, so set all channels to 'undefined'
                 for (Channel channel : getThing().getChannels()) {
@@ -78,7 +87,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         // update all channels that are linked
                         switch (channel.getUID().getId()) {
                             case CHANNEL_POWER:
-                                updateState(channel.getUID(), radioOn ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radioOn));
                                 break;
                             case CHANNEL_VOLUME_ABSOLUTE:
                                 updateState(channel.getUID(),
@@ -92,7 +101,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                                 updateState(channel.getUID(), DecimalType.valueOf(String.valueOf(radio.getMode())));
                                 break;
                             case CHANNEL_MUTE:
-                                updateState(channel.getUID(), radio.getMuted() ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radio.getMuted()));
                                 break;
                             case CHANNEL_PRESET:
                                 // preset is write-only, ignore
@@ -167,15 +176,17 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> updateJob = this.updateJob;
         if (updateJob != null) {
             updateJob.cancel(true);
         }
-        updateJob = null;
+        this.updateJob = null;
         radio = null;
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        FrontierSiliconRadio radio = this.radio;
         if (!radio.isLoggedIn()) {
             // connection to radio is not initialized, log ignored command and set status, if it is not already offline
             logger.debug("Ignoring command {} = {} because device is offline.", channelUID.getId(), command);
@@ -200,8 +211,8 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof PercentType) {
-                        radio.setVolumePercent(((PercentType) command).intValue());
+                    } else if (command instanceof PercentType percentCommand) {
+                        radio.setVolumePercent(percentCommand.intValue());
                     }
                     // absolute value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
@@ -211,20 +222,20 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         radio.increaseVolumeAbsolute();
                     } else if (IncreaseDecreaseType.DECREASE.equals(command) || UpDownType.DOWN.equals(command)) {
                         radio.decreaseVolumeAbsolute();
-                    } else if (command instanceof DecimalType) {
-                        radio.setVolumeAbsolute(((DecimalType) command).intValue());
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        radio.setVolumeAbsolute(decimalCommand.intValue());
                     }
                     // percent value should also be updated now, so let's update all items
                     scheduler.schedule(updateRunnable, 1, SECONDS);
                     break;
                 case CHANNEL_MODE:
-                    if (command instanceof DecimalType) {
-                        radio.setMode(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setMode(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_PRESET:
-                    if (command instanceof DecimalType) {
-                        radio.setPreset(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        radio.setPreset(decimalCommand.intValue());
                     }
                     break;
                 case CHANNEL_MUTE:

@@ -13,6 +13,7 @@
 
 		<label>DSC Alarm Zone</label>
 		<description>Represents a physical device such as a door, window, or motion sensor.</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 
 		<channels>
 			<channel id="zone_status" typeId="zone_status">
@@ -43,7 +44,15 @@
 				<label>Zone Tripped</label>
 				<description>Zone Tripped</description>
 			</channel>
+			<channel id="zone_battery_low" typeId="status">
+				<label>Zone Battery Low</label>
+				<description>Wireless zone low battery indicator</description>
+			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="partitionNumber" type="integer" min="1" max="8">

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,23 @@
  */
 package org.openhab.binding.xmppclient.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.java7.XmppHostnameVerifier;
+import org.jivesoftware.smack.provider.ProviderManager;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.util.DNSUtil;
+import org.jivesoftware.smack.util.dns.javax.JavaxResolver;
+import org.jivesoftware.smack.util.stringencoder.Base64;
+import org.jivesoftware.smack.util.stringencoder.Base64UrlSafeEncoder;
+import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64Encoder;
+import org.jivesoftware.smack.util.stringencoder.java7.Java7Base64UrlSafeEncoder;
+import org.jivesoftware.smackx.disco.provider.DiscoverInfoProvider;
+import org.jivesoftware.smackx.disco.provider.DiscoverItemsProvider;
+import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -22,6 +36,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -30,10 +46,11 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Pavel Gololobov - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.xmppclient", service = ThingHandlerFactory.class)
 public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -41,12 +58,25 @@ public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP)) {
             return new XMPPClientHandler((Bridge) thing);
         }
         return null;
+    }
+
+    @Activate
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Roster.setRosterLoadedAtLoginDefault(false);
+        DNSUtil.setDNSResolver(JavaxResolver.getInstance());
+        SmackConfiguration.setDefaultHostnameVerifier(new XmppHostnameVerifier());
+        Base64.setEncoder(Java7Base64Encoder.getInstance());
+        Base64UrlSafeEncoder.setEncoder(Java7Base64UrlSafeEncoder.getInstance());
+        ProviderManager.addIQProvider("query", "http://jabber.org/protocol/disco#info", new DiscoverInfoProvider());
+        ProviderManager.addIQProvider("query", "http://jabber.org/protocol/disco#items", new DiscoverItemsProvider());
+        ProviderManager.addExtensionProvider("x", "jabber:x:data", new DataFormProvider());
     }
 }

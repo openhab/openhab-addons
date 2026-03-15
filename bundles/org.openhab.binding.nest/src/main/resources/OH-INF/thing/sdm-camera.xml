@@ -11,6 +11,7 @@
 
 		<label>Nest Camera</label>
 		<description>A Nest Camera registered with your SDM account</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="motion_event" typeId="SDMMotionEvent"/>

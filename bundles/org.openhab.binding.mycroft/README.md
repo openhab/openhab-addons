@@ -12,28 +12,24 @@ Possibilies include:
 - React to all the aforementioned events ...
 - ... and send/receive any other kind of messages on the message bus
 
-
 ## Supported Things
 
-The only thing managed by this binding is a Mycroft instance
+The only Thing managed by this binding is a Mycroft instance
 
 |   Thing Type ID    |            Description                                                     |
 |--------------------|----------------------------------------------------------------------------|
 |   mycroft          |    A Mark I/II, a Picroft, or any other variant exposing the message bus   |
 
-
-
 ## Discovery
 
 There is no discovery service, as Mycroft doesn't announce itself on the network.
-
 
 ## Thing Configuration
 
 The configuration is simple, as you just need to give the IP/hostname of the Mycroft instance accessible on the network.
 The default port is 8181, which can be changed.
 
-```
+```java
 Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.X"]
 ```
 
@@ -43,11 +39,9 @@ Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.
 | port                     | integer                | Port to reach Mycroft (default 8181)                             |   No      |
 | volume_restoration_level | integer                | When unmuted, force Mycroft to restore volume to this value      |   No      |
 
-
 ## Channels
 
-A Mycroft thing has the following channels:
-
+A Mycroft Thing has the following channels:
 
 | channel type id              | Item type | description                                                                                    |
 |------------------------------|-----------|------------------------------------------------------------------------------------------------|
@@ -56,9 +50,8 @@ A Mycroft thing has the following channels:
 | utterance                    | String    | The last utterance Mycroft receive                                                             |
 | player                       | Player    | The music player Mycroft is currently controlling                                              |
 | volume_mute                  | Switch    | Mute the Mycroft speaker                                                                       |
-| volume                       | Dimmer    | The volume of the Mycroft speaker. (Note : Value unreliable until a volume change occured)     |
+| volume                       | Dimmer    | The volume of the Mycroft speaker. (Note: Value unreliable until a volume change occurred)     |
 | full_message                 | String    | The last message (full json) seen on the Mycroft Bus. Filtered by the messageTypes properties  |
-
 
 The channel 'full_message' has the following configuration available:
 
@@ -66,13 +59,12 @@ The channel 'full_message' has the following configuration available:
 |---------------|---------------------------------|-------------------------------------------------------------------------|-----------|
 | messageTypes  | List of string, comma separated | Only these message types will be forwarded to the Full Message Channel  |   No      |
 
-
 ## Full Example
 
 A manual setup through a `things/mycroft.things` file could look like this:
 
 ```java
-Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.X", port=8181] { 
+Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.X", port=8181] {
     Channels:
         Type full-message-channel : Text [
             messageTypes="message.type.1,message.type.4"
@@ -98,7 +90,7 @@ String myMycroft_fullmessage           "Full JSON message"         { channel="my
 
 A `demo.sitemap` file:
 
-```
+```perl
 sitemap demo label="myMycroft"
 {
     Frame label="myMycroft" {
@@ -112,7 +104,6 @@ sitemap demo label="myMycroft"
     }
 }
 ```
-
 
 ### Ask Mycroft to say something
 

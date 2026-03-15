@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,21 +42,21 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
-        if (unitData instanceof TouchWandBSensorUnitData) {
+        if (unitData instanceof TouchWandBSensorUnitData bSensorUnitData) {
             if (isFirstUpdateTouchWandUnitState) {
-                removeUnsupportedChannels((TouchWandBSensorUnitData) unitData);
+                removeUnsupportedChannels(bSensorUnitData);
                 isFirstUpdateTouchWandUnitState = false;
             }
-            String sensorSubType = ((TouchWandBSensorUnitData) unitData).getIdData().getSubType();
+            String sensorSubType = bSensorUnitData.getIdData().getSubType();
             switch (sensorSubType) {
                 case BSENSOR_SUBTYPE_DOORWINDOW:
-                    updateChannelDoorWindow((TouchWandBSensorUnitData) unitData);
+                    updateChannelDoorWindow(bSensorUnitData);
                     break;
                 case BSENSOR_SUBTYPE_MOTION:
-                    updateChannelMotion((TouchWandBSensorUnitData) unitData);
+                    updateChannelMotion(bSensorUnitData);
                     break;
                 case BSENSOR_SUBTYPE_SMOKE:
-                    updateChannelSmoke((TouchWandBSensorUnitData) unitData);
+                    updateChannelSmoke(bSensorUnitData);
                     break;
                 default:
             }
@@ -72,7 +72,7 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
     void updateChannelDoorWindow(TouchWandBSensorUnitData unitData) {
         OpenClosedType myOpenClose;
         String isOpen = unitData.getCurrStatus();
-        logger.debug("recieved status {} from door unit {} ", isOpen, unitData.getName());
+        logger.debug("received status {} from door unit {} ", isOpen, unitData.getName());
         if (isOpen.equals(BSENSOR_STATUS_OPEN)) {
             myOpenClose = OpenClosedType.OPEN;
         } else if (isOpen.equals(BSENSOR_STATUS_CLOSE)) {
@@ -86,7 +86,7 @@ public class TouchWandBSensorHandler extends TouchWandBaseUnitHandler {
 
     void updateChannelMotion(TouchWandBSensorUnitData unitData) {
         String motion = unitData.getCurrStatus();
-        logger.debug("recieved status {} from motion unit {} ", motion, unitData.getName());
+        logger.debug("received status {} from motion unit {} ", motion, unitData.getName());
         OnOffType status;
         if (motion.equals(BSENSOR_STATUS_OPEN)) {
             status = OnOffType.ON;

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.avmfritz.internal.dto.templates;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -21,7 +20,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * See {@ TemplateModel}.
+ * See {@link TemplateModel}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -34,7 +33,7 @@ public class DeviceListModel {
 
     public List<DeviceModel> getDevices() {
         if (devices == null) {
-            devices = Collections.emptyList();
+            devices = List.of();
         }
         return devices;
     }

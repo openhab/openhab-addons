@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,6 +88,7 @@ public enum DSCAlarmCode {
     ZoneRestored("610", "Zone Restored", "610: General status of the zone - restored."),
     EnvisalinkZoneTimerDump("615", "Envisalink Zone Timer Dump",
             "615: The raw zone timers used inside the Envisalink."),
+    BypassedZonesBitfield("616", "Bypassed Zones Bitfield", "616: Bypassed zones bitfield."),
     DuressAlarm("620", "Duress Alarm", "620: A duress code has been entered on a system keypad."),
     FireKeyAlarm("621", "Fire Key Alarm", "621: A Fire key alarm has been activated."),
     FireKeyRestored("622", "Fire Key Alarm Restore", "622: A Fire key alarm has been restored."),
@@ -137,10 +138,10 @@ public enum DSCAlarmCode {
     SystemBellTrouble("806", "System Bell Trouble",
             "806: An open circuit has been detected across the bell terminals."),
     SystemBellTroubleRestore("807", "System Bell Trouble Restore", "807: The bell trouble has been restored."),
-    TLMLine1Trouble("810", "TML Line 1 Trouble", "810: The phone line is a open or shorted condition."),
+    TLMLine1Trouble("810", "TML Line 1 Trouble", "810: The phone line is an open or shorted condition."),
     TLMLine1TroubleRestore("811", "TML Line 1 Trouble Restore",
             "811: The phone line trouble condition has been restored."),
-    TLMLine2Trouble("812", "TML Line 2 Trouble", "812: The phone line is a open or shorted condition."),
+    TLMLine2Trouble("812", "TML Line 2 Trouble", "812: The phone line is an open or shorted condition."),
     TLMLine2TroubleRestore("813", "TML Line 2 Trouble Restore",
             "813: The phone line trouble condition has been restored."),
     FTCTrouble("814", "FTC Trouble",
@@ -163,6 +164,8 @@ public enum DSCAlarmCode {
     HomeAutomationTrouble("831", "Home Automation Trouble", "831: Escort 5580 module trouble."),
     HomeAutomationTroubleRestore("832", "Home Automation Trouble Restore",
             "832: Escort 5580 module trouble has been restored."),
+    WirelessSensorLowBatteryRestore("833", "Wireless Sensor Low Battery Restore",
+            "833: The wireless sensor zone low battery state has restored"),
     TroubleLEDOn("840", "Trouble LED ON", "840: The trouble LED on a keypad is ON."),
     TroubleLEDOff("841", "Trouble LED OFF", "841: The trouble LED on a keypad is OFF."),
     FireTroubleAlarm("842", "Fire Trouble Alarm", "842: Fire trouble alarm."),

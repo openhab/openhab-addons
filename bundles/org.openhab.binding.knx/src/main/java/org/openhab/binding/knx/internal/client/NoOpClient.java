@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.knx.internal.handler.GroupAddressListener;
 
-import tuwien.auto.calimero.IndividualAddress;
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.datapoint.Datapoint;
+import io.calimero.IndividualAddress;
+import io.calimero.KNXException;
+import io.calimero.datapoint.Datapoint;
 
 /**
  *
@@ -49,13 +49,11 @@ public class NoOpClient implements KNXClient {
     }
 
     @Override
-    public boolean registerGroupAddressListener(GroupAddressListener listener) {
-        return false;
+    public void registerGroupAddressListener(GroupAddressListener listener) {
     }
 
     @Override
-    public boolean unregisterGroupAddressListener(GroupAddressListener listener) {
-        return false;
+    public void unregisterGroupAddressListener(GroupAddressListener listener) {
     }
 
     @Override

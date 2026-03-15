@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,19 +12,30 @@
  */
 package org.openhab.binding.shelly.internal.api;
 
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
+
+import java.io.EOFException;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.NoRouteToHostException;
+import java.net.PortUnreachableException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.io.EofException;
+import org.openhab.binding.shelly.internal.api.ShellyApiResult.ShellyApiResultBuilder;
 
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link CarNetException} implements an extension to the standard Exception class. This allows to keep also the
+ * The {@link ShellyApiException} implements an extension to the standard Exception class. This allows to keep also the
  * result of the last API call (e.g. including the http status code in the message).
  *
  * @author Markus Michels - Initial contribution
@@ -33,15 +44,17 @@ import com.google.gson.JsonSyntaxException;
 public class ShellyApiException extends Exception {
     private static final long serialVersionUID = -5809459454769761821L;
 
-    private ShellyApiResult apiResult = new ShellyApiResult();
+    private final ShellyApiResult apiResult;
     private static final String NONE = "none";
 
     public ShellyApiException(Exception exception) {
         super(exception);
+        apiResult = new ShellyApiResultBuilder().build();
     }
 
     public ShellyApiException(String message) {
         super(message);
+        apiResult = new ShellyApiResultBuilder().build();
     }
 
     public ShellyApiException(ShellyApiResult res) {
@@ -51,6 +64,7 @@ public class ShellyApiException extends Exception {
 
     public ShellyApiException(String message, Exception exception) {
         super(message, exception);
+        apiResult = new ShellyApiResultBuilder().build();
     }
 
     public ShellyApiException(ShellyApiResult result, Exception exception) {
@@ -65,24 +79,32 @@ public class ShellyApiException extends Exception {
 
     @Override
     public String toString() {
-        String message = nonNullString(super.getMessage());
+        String message = nonNullString(super.getMessage()).replace("java.util.concurrent.ExecutionException: ", "")
+                .replace("java.net.", "");
         String cause = getCauseClass().toString();
+        String url = apiResult.getUrl();
         if (!isEmpty()) {
             if (isUnknownHost()) {
                 String[] string = message.split(": "); // java.net.UnknownHostException: api.rach.io
                 message = MessageFormat.format("Unable to connect to {0} (Unknown host / Network down / Low signal)",
                         string[1]);
             } else if (isMalformedURL()) {
-                message = MessageFormat.format("Invalid URL: {0}", apiResult.getUrl());
+                message = "Invalid URL: " + url;
+            } else if (isJsonError()) {
+                message = getString(getMessage());
             } else if (isTimeout()) {
-                message = MessageFormat.format("Device unreachable or API Timeout ({0})", apiResult.getUrl());
-            } else {
-                message = MessageFormat.format("{0} ({1})", message, cause);
+                message = "API Timeout for " + url;
+            } else if (!isConnectionError()) {
+                message = message + "(" + cause + ")";
             }
         } else {
             message = apiResult.toString();
         }
         return message;
+    }
+
+    public boolean isJsonError() {
+        return getString(getMessage()).startsWith("Unable to create object of type");
     }
 
     public boolean isApiException() {
@@ -91,21 +113,33 @@ public class ShellyApiException extends Exception {
 
     public boolean isTimeout() {
         Class<?> extype = !isEmpty() ? getCauseClass() : null;
-        return (extype != null) && ((extype == TimeoutException.class) || (extype == ExecutionException.class)
-                || (extype == InterruptedException.class)
-                || nonNullString(getMessage()).toLowerCase().contains("timeout"));
+        return (extype != null) && ((extype == TimeoutException.class) || extype == InterruptedException.class
+                || extype == SocketTimeoutException.class
+                || nonNullString(getMessage()).toLowerCase(Locale.ROOT).contains("timeout"));
+    }
+
+    public boolean isConnectionError() {
+        Class<?> exType = getCauseClass();
+        return isUnknownHost() || isMalformedURL() || exType == ConnectException.class
+                || exType == SocketException.class || exType == PortUnreachableException.class
+                || exType == NoRouteToHostException.class || exType == EofException.class
+                || exType == EOFException.class;
+    }
+
+    public boolean isNoRouteToHost() {
+        return getCauseClass() == NoRouteToHostException.class;
+    }
+
+    public boolean isUnknownHost() {
+        return getCauseClass() == UnknownHostException.class;
+    }
+
+    public boolean isMalformedURL() {
+        return getCauseClass() == MalformedURLException.class;
     }
 
     public boolean isHttpAccessUnauthorized() {
         return apiResult.isHttpAccessUnauthorized();
-    }
-
-    public boolean isUnknownHost() {
-        return getCauseClass() == MalformedURLException.class;
-    }
-
-    public boolean isMalformedURL() {
-        return getCauseClass() == UnknownHostException.class;
     }
 
     public boolean isJSONException() {
@@ -126,6 +160,9 @@ public class ShellyApiException extends Exception {
 
     private Class<?> getCauseClass() {
         Throwable cause = getCause();
+        if (cause != null && cause.getClass() == ExecutionException.class) {
+            cause = cause.getCause();
+        }
         if (cause != null) {
             return cause.getClass();
         }

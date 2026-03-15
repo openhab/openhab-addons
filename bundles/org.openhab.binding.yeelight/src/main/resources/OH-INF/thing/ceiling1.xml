@@ -7,7 +7,7 @@
 	<thing-type id="ceiling1">
 		<label>Yeelight LED Ceiling (v1)</label>
 		<description>Yeelight LED Ceiling lamp with Night Mode</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="colorTemperature" typeId="colorTemperature"/>

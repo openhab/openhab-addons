@@ -11,7 +11,7 @@
 
 		<label>Single Input Contact</label>
 		<description>Single input contact sensor (EEP: D5-00)</description>
-
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

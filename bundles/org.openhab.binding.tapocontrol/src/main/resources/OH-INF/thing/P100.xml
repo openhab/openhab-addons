@@ -12,6 +12,7 @@
 
 		<label>P100 SmartPlug</label>
 		<description>Tapo Smart Wifi Plug</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="smartPlug"/>
 			<channel-group id="device" typeId="deviceState"/>

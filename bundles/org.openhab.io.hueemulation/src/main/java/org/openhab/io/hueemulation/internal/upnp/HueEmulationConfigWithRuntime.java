@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.Selector;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -34,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
-class HueEmulationConfigWithRuntime extends Thread implements Runnable {
+class HueEmulationConfigWithRuntime extends Thread {
 
     private final Logger logger = LoggerFactory.getLogger(HueEmulationConfigWithRuntime.class);
 
@@ -53,7 +54,7 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
 
     HueEmulationConfigWithRuntime(Consumer<HueEmulationConfigWithRuntime> r, HueEmulationConfig config,
             String addrString, InetAddress MULTI_ADDR_IPV4, InetAddress MULTI_ADDR_IPV6) throws UnknownHostException {
-        super("HueEmulation UPNP Server");
+        super("OH-io-hueemulation-UPNPServer");
         this.r = r;
         this.config = config;
 
@@ -66,13 +67,14 @@ class HueEmulationConfigWithRuntime extends Thread implements Runnable {
             multicastAddress = MULTI_ADDR_IPV4;
         }
 
-        port = config.discoveryHttpPort == 0 ? Integer.getInteger("org.osgi.service.http.port", 8080)
+        port = config.discoveryHttpPort == 0
+                ? Objects.requireNonNull(Integer.getInteger("org.osgi.service.http.port", 8080))
                 : config.discoveryHttpPort;
     }
 
     HueEmulationConfigWithRuntime(Consumer<HueEmulationConfigWithRuntime> r, @Nullable HueEmulationConfig config,
             InetAddress MULTI_ADDR_IPV4, InetAddress MULTI_ADDR_IPV6) throws UnknownHostException {
-        super("HueEmulation UPNP Server");
+        super("OH-io-hueemulation-UPNPServer");
         this.r = r;
         this.config = config;
 

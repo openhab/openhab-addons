@@ -10,14 +10,14 @@
 		<channels>
 			<channel id="alarm" typeId="alarmTrigger"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="uptime" typeId="uptime"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="alarmTrigger">
 		<kind>trigger</kind>
 		<label>Alarm</label>
-		<description>Alarm Trigger, e.g. weak WiFi Signal detected or over heating.</description>
+		<description>Alarm Trigger, e.g. weak WiFi Signal detected or over heating</description>
+		<category>Alarm</category>
 		<event>
 			<options>
 				<option value="NONE">None</option>
@@ -30,6 +30,7 @@
 				<option value="LOW_BATTERY">Low battery</option>
 				<option value="BATTERY">Wakeup by battery</option>
 				<option value="POWERON">Device was powered on</option>
+				<option value="EXT_POWER">External power supply was connected</option>
 				<option value="BUTTON">Button was pressed</option>
 				<option value="SENSOR">Sensor data updated</option>
 			</options>
@@ -38,7 +39,7 @@
 	<channel-type id="sensorWakeup" advanced="true">
 		<item-type>String</item-type>
 		<label>Wakeup Reason</label>
-		<description>Last reason, which woke up the device</description>
+		<description>Last reason which woke up the device (button/battery/perodic/poweron/sensor/alarm/ext_power)</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="button">Button</option>
@@ -51,24 +52,40 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="deviceName">
+	<channel-type id="deviceName" advanced="true">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.deviceName.label</label>
-		<description>@text/channel-type.shelly.deviceName.description</description>
+		<label>Device Name</label>
+		<description>Symbolic Device Name as configured in the Shelly App</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="gatewayDevice" advanced="true">
+		<item-type>String</item-type>
+		<label>Gateway Device</label>
+		<description>Last Shelly Device, which forwarded the event</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
+	<channel-type id="calibrated" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Calibrated</label>
+		<description>ON: The device/sensor is calibrated</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="charger" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Charger Connected</label>
-		<description>ON: Device is charging, OFF: No charger connected</description>
+		<label>External Power</label>
+		<description>ON: External power is connected</description>
+		<category>Battery</category>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="externalPower" advanced="true">
 		<item-type>Switch</item-type>
 		<label>External Power</label>
-		<description>ON: External power is connected</description>
+		<description>ON: Device is charging, OFF: No charger connected</description>
+		<category>Status</category>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -76,6 +93,7 @@
 		<item-type>Number:Time</item-type>
 		<label>Uptime</label>
 		<description>Number of seconds since the device was powered up</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -83,14 +101,20 @@
 		<item-type>DateTime</item-type>
 		<label>Last Heartbeat</label>
 		<description>Last time we received a signal from the device (API result or sensor report), This indicates that device
-			communication works on the network layer (WiFi + IP).</description>
+			communication works on the network layer (WiFi + IP)</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="updateAvailable" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Update available</label>
-		<description>ON: A firmware update is available (use Shelly App to perform update)</description>
+		<description>ON: A firmware update is available (use the Shelly App to perform update)</description>
+		<category>Status</category>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -106,6 +130,17 @@
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
+	<channel-type id="supplyVoltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Supply Voltage</label>
+		<description>External voltage supplied to the device</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
 	<channel-type id="selfTest">
 		<item-type>String</item-type>
 		<label>Self Test</label>
@@ -116,8 +151,16 @@
 				<option value="completed">Completed</option>
 				<option value="running">Running</option>
 				<option value="pending">Pending</option>
+				<option value="unknown">Unknown</option>
 			</options>
 		</state>
 	</channel-type>
 
+	<channel-type id="deviceFirmware" advanced="true">
+		<item-type>String</item-type>
+		<label>Device Firmware</label>
+		<description>Current firmware version of the device</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

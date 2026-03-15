@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Contains the resource meta data within a browse response result
- * "<r:resMD>..</r:resMD>". This is used for SONOS favorites.
+ * {@code "<r:resMD>..</r:resMD>"}. This is used for SONOS favorites.
  *
  * @author Dan Cunningham - Initial contribution
  *
@@ -35,7 +35,6 @@ public class SonosResourceMetaData implements Serializable {
     String desc;
 
     public SonosResourceMetaData(String id, String parentId, String title, String upnpClass, String desc) {
-        super();
         this.id = id;
         this.parentId = parentId;
         this.title = title;

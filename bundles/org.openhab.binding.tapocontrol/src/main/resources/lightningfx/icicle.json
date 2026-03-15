@@ -1,0 +1,61 @@
+ {
+  "id": "TapoStrip_7UcYLeJbiaxVIXCxr21tpx",
+  "name": "Icicle",
+  "brightness": 100,
+  "display_colors": [
+    [
+      190,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": 4,
+  "duration": 0,
+  "expansion_strategy": 1,
+  "fadeoff": null,
+  "hue_range": null,
+  "init_states": [],
+  "random_seed": null,
+  "repeat_times": 0,
+  "saturation_range": null,
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": [
+    [
+      190,
+      100,
+      70
+    ],
+    [
+      190,
+      100,
+      70
+    ],
+    [
+      190,
+      30,
+      50
+    ],
+    [
+      190,
+      100,
+      70
+    ],
+    [
+      190,
+      100,
+      70
+    ]
+  ],
+  "spread": 3,
+  "transition": 400,
+  "transition_range": null,
+  "type": "sequence"
+}

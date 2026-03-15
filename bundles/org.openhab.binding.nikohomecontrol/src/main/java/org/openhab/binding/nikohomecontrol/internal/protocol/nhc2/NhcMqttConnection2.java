@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,33 +12,24 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nikohomecontrol.internal.SslContextProvider;
 import org.openhab.core.io.transport.mqtt.MqttActionCallback;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.io.transport.mqtt.reconnect.AbstractReconnectStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +49,11 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     private volatile @Nullable CompletableFuture<Boolean> subscribedFuture;
     private volatile @Nullable CompletableFuture<Boolean> stoppedFuture;
 
-    private MqttMessageSubscriber messageSubscriber;
-    private MqttConnectionObserver connectionObserver;
+    private final MqttMessageSubscriber messageSubscriber;
+    private final MqttConnectionObserver connectionObserver;
 
-    private TrustManager trustManagers[];
-    private String clientId;
+    private TrustManager[] trustManagers;
+    private final String clientId;
 
     private volatile String cocoAddress = "";
     private volatile int port;
@@ -71,40 +62,10 @@ public class NhcMqttConnection2 implements MqttActionCallback {
 
     NhcMqttConnection2(String clientId, MqttMessageSubscriber messageSubscriber,
             MqttConnectionObserver connectionObserver) throws CertificateException {
-        trustManagers = getTrustManagers();
+        trustManagers = SslContextProvider.getTrustManagers();
         this.clientId = clientId;
         this.messageSubscriber = messageSubscriber;
         this.connectionObserver = connectionObserver;
-    }
-
-    private TrustManager[] getTrustManagers() throws CertificateException {
-        ResourceBundle certificatesBundle = ResourceBundle.getBundle("nikohomecontrol/certificates");
-
-        try {
-            // Load server public certificates into key store
-            CertificateFactory cf = CertificateFactory.getInstance("X509");
-            InputStream certificateStream;
-            final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null, null);
-            for (String certName : certificatesBundle.keySet()) {
-                certificateStream = new ByteArrayInputStream(
-                        certificatesBundle.getString(certName).getBytes(StandardCharsets.UTF_8));
-                X509Certificate certificate = (X509Certificate) cf.generateCertificate(certificateStream);
-                keyStore.setCertificateEntry(certName, certificate);
-            }
-
-            ResourceBundle.clearCache();
-
-            // Create trust managers used to validate server
-            TrustManagerFactory tmFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmFactory.init(keyStore);
-            return tmFactory.getTrustManagers();
-        } catch (CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
-            logger.debug("error with SSL context creation: {} ", e.getMessage());
-            throw new CertificateException("SSL context creation exception", e);
-        } finally {
-            ResourceBundle.clearCache();
-        }
     }
 
     /**
@@ -162,6 +123,13 @@ public class NhcMqttConnection2 implements MqttActionCallback {
         connection.setTrustManagers(trustManagers);
         connection.setCredentials(profile, token);
         connection.setQos(1);
+
+        // Don't use the transport periodic reconnect strategy. It doesn't restart the initialization when the
+        // connection is lost and creates extra threads that do not get cleaned up. Just stop it.
+        AbstractReconnectStrategy reconnectStrategy = connection.getReconnectStrategy();
+        if (reconnectStrategy != null) {
+            reconnectStrategy.stop();
+        }
         return connection;
     }
 

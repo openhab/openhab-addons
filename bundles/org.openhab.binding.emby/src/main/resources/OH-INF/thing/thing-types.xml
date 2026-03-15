@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="emby"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Sample Thing Type -->
+	<bridge-type id="controller">
+		<label>EMBY Server</label>
+		<description>This is the Bridge to an instance of an EMBY server you want to connect to.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
+		<config-description>
+			<parameter name="api" type="text" required="true">
+				<label>API Key</label>
+				<description>This is the API key generated from EMBY used for Authorization.</description>
+			</parameter>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Server Host</label>
+				<description>IP address or hostname of the EMBY server.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Server Port</label>
+				<description>Port number for the EMBY server.</description>
+				<default>8096</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1000">
+				<label>Refresh Interval</label>
+				<description>Polling interval for play-state updates.</description>
+				<default>10000</default>
+			</parameter>
+			<parameter name="discovery" type="boolean">
+				<label>Auto Discover</label>
+				<description>Enable or disable automatic device discovery.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>EMBY Device</label>
+		<description>This is a player device which connects to an EMBY server.</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
+		<channels>
+			<channel id="control" typeId="control"/>
+			<channel id="stop" typeId="stop"/>
+			<channel id="title" typeId="title"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="show-title" typeId="show-title"/>
+			<channel id="image-url" typeId="image-url"/>
+			<channel id="current-time" typeId="current-time"/>
+			<channel id="duration" typeId="duration"/>
+			<channel id="media-type" typeId="media-type"/>
+		</channels>
+		<config-description>
+			<parameter name="deviceID" type="text" required="true">
+				<label>DeviceID</label>
+				<description>This is the deviceId you want to connect to.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-type id="title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Title of the current song</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="show-title">
+		<item-type>String</item-type>
+		<label>Show Title</label>
+		<description>Title of the current show</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control the Emby Player, e.g. start/stop/next/previous/ffward/rewind</description>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stops the player. ON if the player is stopped.</description>
+	</channel-type>
+
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mute/unmute your device</description>
+	</channel-type>
+
+	<channel-type id="current-time">
+		<item-type>Number:Time</item-type>
+		<label>Current Time</label>
+		<description>Current time of currently playing media</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="duration">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Length of currently playing media</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="media-type">
+		<item-type>String</item-type>
+		<label>Media Type</label>
+		<description>Media type of the current file</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="image-url">
+		<item-type>String</item-type>
+		<label>image url</label>
+		<description>The url of the playing media</description>
+		<state readOnly="true" pattern="%s"/>
+		<config-description>
+			<parameter name="imageUrlType" type="text">
+				<default>Primary</default>
+				<options>
+					<option value="Primary">Primary</option>
+					<option value="Art">Art</option>
+					<option value="Backdrop">Backdrop</option>
+					<option value="Banner">Banner</option>
+					<option value="Logo">Logo</option>
+					<option value="Thumb">Thumb</option>
+					<option value="Disc">Disc</option>
+					<option value="Box">Box</option>
+					<option value="Screenshot">Screenshot</option>
+					<option value="Menu">Menu</option>
+					<option value="Chapter">Chapter</option>
+				</options>
+			</parameter>
+			<parameter name="imageUrlMaxHeight" type="text">
+				<label>Image Max Height</label>
+				<description>The maximum height of the image that will be retrieved.</description>
+			</parameter>
+			<parameter name="imageUrlMaxWidth" type="text">
+				<label>Image Max Width</label>
+				<description>The maximum width of the image that will be retrieved.</description>
+			</parameter>
+			<parameter name="imageUrlPercentPlayed" type="boolean">
+				<label>Show Percent Played Overlay</label>
+				<description>If set to true, a percent played overlay will be added to the image. For example, using
+					PercentPlayed=47 will overlay a 47% progress indicator. Default is false.</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

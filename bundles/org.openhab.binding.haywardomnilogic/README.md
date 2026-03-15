@@ -1,25 +1,25 @@
-# Hayward Omnilogic Binding
+# Hayward OmniLogic Binding
 
-The Hayward Omnilogic binding integrates the Omnilogic pool controller using the Hayward API.
+The Hayward OmniLogic binding integrates the OmniLogic pool controller using the Hayward API.
 
-The Hayward Omnilogic API interacts with Hayward's cloud server requiring a connection with the Internet for sending and receiving information.
+The Hayward OmniLogic API interacts with Hayward's cloud servers and requires an Internet connection for sending and receiving information.
 
 ## Supported Things
 
-The table below lists the Hayward OmniLogic binding thing types:
+The table below lists the Hayward OmniLogic binding Thing types:
 
 | Things                       | Description                                                                     | Thing Type    |
 |------------------------------|---------------------------------------------------------------------------------|---------------|
-| Hayward OmniLogix Connection | Connection to Hayward's Server                                                  | bridge        |
+| Hayward OmniLogic Connection | Connection to Hayward's server                                                  | bridge        |
 | Backyard                     | Backyard                                                                        | backyard      |
 | Body of Water                | Body of Water                                                                   | bow           |
 | Chlorinator                  | Chlorinator                                                                     | chlorinator   |
 | Colorlogic Light             | Colorlogic Light                                                                | colorlogic    |
 | Filter                       | Filter control                                                                  | filter        |
 | Heater Equipment             | Actual heater (i.e. gas, solar, electric)                                       | heater        |
-| Pump                         | Auxillary pump control (i.e. spillover)                                         | pump          |
+| Pump                         | Auxiliary pump control (i.e., spillover)                                        | pump          |
 | Relay                        | Accessory relay control (deck jet sprinklers, lights, etc.)                     | relay         |
-| Virtaul Heater               | A Virtual Heater that can control all of the heater equipment based on priority | virtualHeater |
+| Virtual Heater               | A virtual heater that can control all heater equipment based on priority        | virtualHeater |
 
 ## Discovery
 
@@ -29,13 +29,13 @@ The binding will automatically discover the Omnilogic pool things from the cloud
 
 Hayward OmniLogic Connection Parameters:
 
-| Property             | Default                                                        | Required | Description                                  |
-|----------------------|----------------------------------------------------------------|----------|----------------------------------------------|
-| Host Name            | https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ash | Yes      | Host name of the Hayward API server          |
-| User Name            | None                                                           | Yes      | Your Hayward User Name (not email address)   |
-| Password             | None                                                           | Yes      | Your Hayward User Password                   |
-| Telemetry Poll Delay | 12                                                             | Yes      | Telemetry Poll Delay (10-60 seconds)         |
-| Alarm Poll Delay     | 60                                                             | Yes      | Alarm Poll Delay (0-120 seconds, 0 disabled) |
+| Property             | Default                                                          | Required | Description                                  |
+|----------------------|------------------------------------------------------------------|----------|----------------------------------------------|
+| Host Name            | <https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ash> | Yes      | Host name of the Hayward API server          |
+| User Name            | None                                                             | Yes      | Your Hayward User Name (not email address)   |
+| Password             | None                                                             | Yes      | Your Hayward User Password                   |
+| Telemetry Poll Delay | 3                                                                | Yes      | Telemetry Poll Delay (2-60 seconds)          |
+| Alarm Poll Delay     | 10                                                               | Yes      | Alarm Poll Delay (0-120 seconds, 0 disabled) |
 
 ## Channels
 
@@ -63,16 +63,55 @@ Hayward OmniLogic Connection Parameters:
 
 | Channel Type ID       | Item Type            | Description                                              | Read Write |
 |-----------------------|----------------------|----------------------------------------------------------|:----------:|
-| chlorEnable           | Switch               | Chlorinator enable                                       |     R/W    |
-| chlorOperatingMode    | String               | Chlorinator operating mode                               |      R     |
-| chlorTimedPercent     | Number:Dimensionless | Chlorinator timed percent                                |     R/W    |
-| chlorOperatingState   | Number               | Chlorinator operating state                              |      R     |
-| chlorScMode           | String               | Chlorinator super chlorinate mode                        |      R     |
-| chlorError            | Number               | Chlorinator error                                        |      R     |
-| chlorAlert            | String               | Chlorinator alert                                        |      R     |
-| chlorAvgSaltLevel     | Number:Dimensionless | Chlorinator average salt level in Part per Million (ppm) |      R     |
-| chlorInstantSaltLevel | Number:Dimensionless | Chlorinator instant salt level in Part per Million (ppm) |      R     |
-| chlorStatus           | Number               | Chlorinator K1/K2 relay status                           |      R     |
+| chlorEnable           | Switch               | Chlorinator enable                                       |    R/W     |
+| chlorOperatingMode    | String               | Chlorinator operating mode                               |     R      |
+| chlorTimedPercent     | Number:Dimensionless | Chlorinator salt output (%)                              |    R/W     |
+| chlorOperatingState   | Number               | Chlorinator operating state                              |     R      |
+| chlorScMode           | String               | Chlorinator super chlorinate mode                        |     R      |
+| chlorError            | String               | Chlorinator error bit array                              |     R      |
+| chlorAlert            | String               | Chlorinator alert bit array                              |     R      |
+| chlorAvgSaltLevel     | Number:Dimensionless | Chlorinator average salt level in Part per Million (ppm) |     R      |
+| chlorInstantSaltLevel | Number:Dimensionless | Chlorinator instant salt level in Part per Million (ppm) |     R      |
+| chlorStatus           | String               | Chlorinator status bit array                             |     R      |
+
+### Chlorinator Error Bit Array
+
+| Bits  | Value                                                   | Description        |
+|-------|---------------------------------------------------------|--------------------|
+| 1:0   | 00 = OK, 01 = Short, 10 = Open                          | Current Sensor     |
+| 3:2   | 00 = OK, 01 = Short, 10 = Open                          | Voltage Sensor     |
+| 5:4   | 00 = OK, 01 = Short, 10 = Open                          | Cell Temp Sensor   |
+| 7:6   | 00 = OK, 01 = Short, 10 = Open                          | Board Temp Sensor  |
+| 9:8   | 00 = OK, 01 = Short, 10 = Open                          | K1 Relay           |
+| 11:10 | 00 = OK, 01 = Short, 10 = Open                          | K2 Relay           |
+| 13:12 | 00 = OK, 01 = Type, 10 = Authentication, 11 = Comm Loss | Cell Errors        |
+| 14    | 0                                                       | Aquarite PCB Error |
+
+### Chlorinator Alert Bit Array
+
+| Bits  | Value                                        | Description           |
+|-------|----------------------------------------------|-----------------------|
+| 1:0   | 00 = OK, 01 = Salt Low, 10 = Salt too Low    | Low salt              |
+| 2     | 0 = OK, 1 = High                             | High Current          |
+| 3     | 0 = OK, 1 = Low                              | Low Voltage           |
+| 5:4   | 00 = OK, 01 = Low, 10 = Scaleback, 11 = High | Cell Water Temp       |
+| 7:6   | 00 = OK, 01 = High, 10 = Clearing            | Board Temp            |
+| 8     | 0                                            | Not Used              |
+| 10:9  | 0                                            | Not Used              |
+| 12:11 | 00 = OK, 01 = Clean                          | Cell Cleaning/Runtime |
+
+### Chlorinator Status Bit Array
+
+|Bits  |Value                                                         |Description                    |
+|------|--------------------------------------------------------------|-------------------------------|
+|0     |0 = OK, 1 = Error Present                                     |Error Present                  |
+|1     |0 = OK, 1 = Alert Present                                     |Alert Present                  |
+|2     |0 = Standy, 1 = Generating                                    |Generating                     |
+|3     |0 = Not Paused, 1 = Paused                                    |Paused                         |
+|4     |0 = Local Not Paused, 1 = Local Paused                        |Local Pause                    |
+|5     |0 = Not Authenticated, 1 = Authenticated                      |T-Cell Authenticated           |
+|6     |0 = K1 Relay Off, 1 = K1 Relay On                             |K1 Relay Active                |
+|7     |0 = K2 Relay Off, 1 = K2 Relay On                             |K2 Relay Active                |
 
 ### Colorlogic Light Channels
 
@@ -81,6 +120,10 @@ Hayward OmniLogic Connection Parameters:
 | colorLogicLightEnable      | Switch    | Colorlogic Light enable       |     R/W    |
 | colorLogicLightState       | String    | Colorlogic Light state        |      R     |
 | colorLogicLightCurrentShow | String    | Colorlogic Light current show |     R/W    |
+| colorLogicLightBrightness  | String    | Colorlogic Light brightness   |     R/W    |
+| colorLogicLightSpeed       | String    | Colorlogic Light speed        |     R/W    |
+
+**Note:** Brightness and speed channels only available on Hayward V2 lights
 
 ### Filter Channels
 
@@ -88,11 +131,11 @@ Hayward OmniLogic Connection Parameters:
 |---------------------|----------------------|------------------------|:----------:|
 | filterEnable        | Switch               | Filter enable          |     R/W    |
 | filterValvePosition | String               | Filter valve position  |      R     |
-| filterSpeedPercent  | Number:Dimensionless | Filter speed in %      |     R/W    |
-| filterSpeedRpm      | Number               | Filter speed in RPM    |     R/W    |
+| filterSpeedPercent  | Number:Dimensionless | Filter speed (%)       |     R/W    |
+| filterSpeedRpm      | Number:Frequency     | Filter speed (rpm)     |     R/W    |
 | filterSpeedSelect   | String               | Filter speed presets   |     R/W    |
 | filterState         | String               | Filter state           |      R     |
-| filterLastSpeed     | Number:Dimensionless | Filter last speed in % |      R     |
+| filterLastSpeed     | Number:Dimensionless | Filter last speed (%)  |      R     |
 
 ### Heater Channels
 
@@ -106,11 +149,11 @@ Hayward OmniLogic Connection Parameters:
 | Channel Type ID  | Item Type            | Description          | Read Write |
 |------------------|----------------------|----------------------|:----------:|
 | pumpEnable       | Switch               | Pump enable          |     R/W    |
-| pumpSpeedPercent | Number:Dimensionless | Pump speed in %      |     R/W    |
-| pumpSpeedRpm     | Number               | Pump speed in RPM    |     R/W    |
+| pumpSpeedPercent | Number:Dimensionless | Pump speed (%)       |     R/W    |
+| pumpSpeedRpm     | Number:Frequency     | Pump speed in RPM    |     R/W    |
 | pumpSpeedSelect  | String               | Pump speed presets   |     R/W    |
 | pumpState        | String               | Pump state           |      R     |
-| pumpLastSpeed    | Number:Dimensionless | Pump last speed in % |      R     |
+| pumpLastSpeed    | Number:Dimensionless | Pump last speed (%)  |      R     |
 
 ### Relay Channels
 
@@ -125,8 +168,10 @@ Hayward OmniLogic Connection Parameters:
 | heaterEnable          | Switch             | Heater enable           |      R     |
 | heaterCurrentSetpoint | Number:Temperature | Heater Current Setpoint |     R/W    |
 
+Note: Item types such as Number:Dimensionless should have their units (e.g., %, ppm) defined in the unit metadata.
+
 ## Full Example
 
-After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.
-All pool items can be automatically discovered by scanning the bridge.  
-Goto the inbox and add the things.
+After installing the binding, manually add the Hayward Connection Thing and enter your credentials.
+All pool items can be automatically discovered by scanning the bridge.
+Go to the Inbox and add the things.

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,11 +30,14 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzPowerMeterDeviceHandler;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaGetEnergyStatsCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetBlindTargetCallback.BlindCommand;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetColorTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetLevelPercentageCallback;
@@ -53,6 +56,7 @@ import org.slf4j.LoggerFactory;
  *         DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Christoph Sommer - Added support for color temperature
  */
 @NonNullByDefault
 public class FritzAhaWebInterface {
@@ -218,7 +222,7 @@ public class FritzAhaWebInterface {
      * Constructs an URL from the stored information, a specified path and a specified argument string
      *
      * @param path Path to include in URL
-     * @param args String of arguments, in standard HTTP format (arg1=value1&arg2=value2&...)
+     * @param args String of arguments, in standard HTTP format ({@code arg1=value1&arg2=value2&...})
      * @return URL
      */
     public String getURL(String path, String args) {
@@ -300,6 +304,11 @@ public class FritzAhaWebInterface {
         return asyncGet(callback);
     }
 
+    public FritzAhaContentExchange getEnergyStats(AVMFritzPowerMeterDeviceHandler handler, long deviceId) {
+        FritzAhaGetEnergyStatsCallback callback = new FritzAhaGetEnergyStatsCallback(this, handler, deviceId);
+        return asyncGet(callback);
+    }
+
     public FritzAhaContentExchange setSwitch(String ain, boolean switchOn) {
         FritzAhaSetSwitchCallback callback = new FritzAhaSetSwitchCallback(this, ain, switchOn);
         return asyncGet(callback);
@@ -330,8 +339,19 @@ public class FritzAhaWebInterface {
         return asyncGet(callback);
     }
 
-    public FritzAhaContentExchange setHueAndSaturation(String ain, int hue, int saturation, int duration) {
+    public FritzAhaContentExchange setMappedHueAndSaturation(String ain, int hue, int saturation, int duration) {
         FritzAhaSetColorCallback callback = new FritzAhaSetColorCallback(this, ain, hue, saturation, duration);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setUnmappedHueAndSaturation(String ain, int hue, int saturation, int duration) {
+        FritzAhaSetColorCallback callback = new FritzAhaSetColorCallback(this, ain, hue, saturation, duration, false);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setColorTemperature(String ain, int temperature, int duration) {
+        FritzAhaSetColorTemperatureCallback callback = new FritzAhaSetColorTemperatureCallback(this, ain, temperature,
+                duration);
         return asyncGet(callback);
     }
 

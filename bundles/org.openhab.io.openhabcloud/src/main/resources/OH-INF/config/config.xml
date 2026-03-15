@@ -7,7 +7,7 @@
 	<config-description uri="io:openhabcloud">
 		<parameter name="mode" type="text" required="true">
 			<label>Mode</label>
-			<description>What features of the openHAB Cloud service should be used.</description>
+			<description>Features of the openHAB Cloud service that should be used.</description>
 			<options>
 				<option value="notification">Notifications</option>
 				<option value="remote">Notifications &amp; Remote Access</option>
@@ -16,13 +16,16 @@
 		</parameter>
 		<parameter name="expose" type="text" required="false" multiple="true">
 			<label>Items to Expose</label>
-			<description>List of items that are made accessible to IFTTT and similar services.</description>
+			<description>List of items that are made accessible to IFTTT and similar services. Only supported on private cloud
+				installations.</description>
 			<context>item</context>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="baseURL" type="text" required="false">
 			<label>Base URL</label>
 			<description>Base URL for the openHAB Cloud server.</description>
 			<default>https://myopenhab.org/</default>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

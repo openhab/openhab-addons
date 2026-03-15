@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,16 +26,20 @@ import org.openhab.binding.dbquery.internal.domain.QueryResult;
 import org.openhab.binding.dbquery.internal.domain.ResultRow;
 import org.openhab.binding.dbquery.internal.error.UnnexpectedCondition;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Joan Pujol - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = DBQueryActions.class)
 @ThingActionsScope(name = "dbquery")
 @NonNullByDefault
 public class DBQueryActions implements IDBQueryActions, ThingActions {
@@ -46,8 +50,10 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
 
     @Override
     @RuleAction(label = "Execute query", description = "Execute query synchronously (use with care)")
-    public ActionQueryResult executeQuery(String query, Map<String, @Nullable Object> parameters,
-            int timeoutInSeconds) {
+    public @ActionOutput(label = "Result", type = "org.openhab.binding.dbquery.action.ActionQueryResult") ActionQueryResult executeQuery(
+            @ActionInput(name = "query") String query,
+            @ActionInput(name = "parameters") Map<String, @Nullable Object> parameters,
+            @ActionInput(name = "timeoutInSeconds") int timeoutInSeconds) {
         logger.debug("executeQuery from action {} params={}", query, parameters);
         var currentDatabaseBridgeHandler = databaseBridgeHandler;
         if (currentDatabaseBridgeHandler != null) {
@@ -78,9 +84,9 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
     @RuleAction(label = "Set query parameters", description = "Set query parameters for a query")
     public void setQueryParameters(@ActionInput(name = "parameters") Map<String, @Nullable Object> parameters) {
         logger.debug("setQueryParameters {}", parameters);
-        var queryHandler = getThingHandler();
-        if (queryHandler instanceof QueryHandler) {
-            ((QueryHandler) queryHandler).setParameters(parameters);
+        var thingHandler = getThingHandler();
+        if (thingHandler instanceof QueryHandler queryHandler) {
+            queryHandler.setParameters(parameters);
         } else {
             logger.warn("setQueryParameters called on wrong Thing, it must be a Query Thing");
         }
@@ -88,7 +94,7 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
 
     @Override
     @RuleAction(label = "Get last query result", description = "Get last result from a query")
-    public ActionQueryResult getLastQueryResult() {
+    public @ActionOutput(label = "Result", type = "org.openhab.binding.dbquery.action.ActionQueryResult") ActionQueryResult getLastQueryResult() {
         var currentQueryHandler = queryHandler;
         if (currentQueryHandler != null) {
             return queryResult2ActionQueryResult(queryHandler.getLastQueryResult());
@@ -98,12 +104,25 @@ public class DBQueryActions implements IDBQueryActions, ThingActions {
         }
     }
 
+    public static ActionQueryResult executeQuery(ThingActions actions, String query,
+            Map<String, @Nullable Object> parameters, int timeoutInSeconds) {
+        return ((DBQueryActions) actions).executeQuery(query, parameters, timeoutInSeconds);
+    }
+
+    public static void setQueryParameters(ThingActions actions, Map<String, @Nullable Object> parameters) {
+        ((DBQueryActions) actions).setQueryParameters(parameters);
+    }
+
+    public static ActionQueryResult getLastQueryResult(ThingActions actions) {
+        return ((DBQueryActions) actions).getLastQueryResult();
+    }
+
     @Override
     public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof QueryHandler) {
-            this.queryHandler = ((QueryHandler) thingHandler);
-        } else if (thingHandler instanceof DatabaseBridgeHandler) {
-            this.databaseBridgeHandler = ((DatabaseBridgeHandler) thingHandler);
+        if (thingHandler instanceof QueryHandler queryHandler) {
+            this.queryHandler = queryHandler;
+        } else if (thingHandler instanceof DatabaseBridgeHandler databaseBridgeHandler) {
+            this.databaseBridgeHandler = databaseBridgeHandler;
         } else {
             throw new UnnexpectedCondition("Not expected thing handler " + thingHandler);
         }

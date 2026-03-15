@@ -18,6 +18,10 @@
 				<label>@text/icloud.account-thing.parameter.password.label</label>
 				<description>@text/icloud.account-thing.parameter.password.description</description>
 			</parameter>
+			<parameter name="code" type="text" required="false">
+				<label>@text/icloud.account-thing.parameter.code.label</label>
+				<description>@text/icloud.account-thing.parameter.code.description</description>
+			</parameter>
 			<parameter name="refreshTimeInMinutes" type="integer" min="5" max="65535" unit="min">
 				<label>@text/icloud.account-thing.parameter.refresh.label</label>
 				<description>@text/icloud.account-thing.parameter.refresh.description</description>
@@ -57,6 +61,10 @@
 	<channel-type id="BatteryStatus">
 		<item-type>String</item-type>
 		<label>@text/icloud.device-thing.channel.battery-status.label</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NotCharging">@text/icloud.device-thing.channel.battery-status.state.not-charging</option>
@@ -73,6 +81,10 @@
 	<channel-type id="Location">
 		<item-type>Location</item-type>
 		<label>@text/icloud.device-thing.channel.location.label</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="LocationAccuracy" advanced="true">

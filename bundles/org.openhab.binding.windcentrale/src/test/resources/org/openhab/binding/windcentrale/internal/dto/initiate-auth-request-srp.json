@@ -1,0 +1,8 @@
+{
+  "AuthFlow": "USER_SRP_AUTH",
+  "ClientId": "clientId123",
+  "AuthParameters": {
+    "SRP_A": "srpA789",
+    "USERNAME": "username456"
+  }
+}

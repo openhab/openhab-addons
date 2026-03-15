@@ -1,0 +1,265 @@
+# Solis 4G Three Phase Inverter
+# Solis-3P(5-10)K-4G
+# refering to https://ginlongsolis.freshdesk.com/support/solutions/articles/36000340158-modbus-communication-for-solis-inverters
+# agirilovich June 2023
+#
+requests:
+  - start: 2999
+    end:  3044
+    mb_functioncode: 0x04
+
+
+parameters:
+ - group: Inverter
+   items:
+    - name: "Working Mode"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [3040]
+      icon: 'mdi:home-lightning-bolt'
+      lookup:
+          - key: 0
+            value: "No response mode"
+          - key: 1
+            value: "Volt–watt default"
+          - key: 2
+            value: "Volt–var"
+          - key: 3
+            value: "Fixed power factor"
+          - key: 4
+            value: "Fix reactive power"
+          - key: 5
+            value: "Power-PF"
+          - key: 6
+            value: "Rule21Volt–watt"
+
+    - name: "Inverter Temperature"
+      class: "temperature"
+      state_class: "measurement"
+      uom: "°C"
+      scale: 0.1
+      rule: 1
+      registers: [3041]
+      icon: 'mdi:thermometer'
+
+    - name: "Product Model"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [2999]
+      isstr: true
+
+    - name: "DSP Software Version"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [3000]
+      isstr: true
+
+    - name: "LCD Software Version"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [3001]
+      isstr: true
+
+    - name: "Inverter Status"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [3043]
+      icon: 'mdi:list-status'
+      isstr: true
+      lookup:
+        - key: 0
+          value: "Waiting"
+        - key: 1
+          value: "OpenRun"
+        - key: 2
+          value: "SoftRun"
+        - key: 3
+          value: "Generating"
+        - key: 1004
+          value: "Grid off"
+        - key: 2011
+          value: "Fail Safe"
+
+ - group: InverterDC
+   items:
+    - name: "DC Voltage 1"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3021]
+      icon: 'mdi:solar-power'
+
+    - name: "DC Voltage 2"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3023]
+      icon: 'mdi:solar-power'
+
+    - name: "DC Current 1"
+      class: "current"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3022]
+      icon: 'mdi:current-dc'
+
+    - name: "DC Current 2"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3024]
+      icon: 'mdi:current-dc'
+
+    - name: "Total DC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "kW"
+      scale: 0.001
+      rule: 3
+      registers: [3007, 3006]
+      icon: 'mdi:solar-power'
+
+ - group: InverterAC
+   items:
+    - name: "Active power"
+      class: "power"
+      state_class: "measurement"
+      uom: "kW"
+      scale: 0.001
+      rule: 3
+      registers: [3005, 3004]
+      icon: 'mdi:solar-power'
+
+   
+    - name: "Inverter AC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "kW"
+      scale: 0.001
+      rule: 3
+      registers: [3005, 3004]
+      icon: 'mdi:solar-power'
+
+    - name: "A phase voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3033]
+      icon: 'mdi:transmission-tower'
+
+    - name: "B phase voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3034]
+      icon: 'mdi:transmission-tower'
+
+    - name: "C phase voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3035]
+      icon: 'mdi:transmission-tower'
+
+    - name: "A phase current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3036]
+      icon: 'mdi:current-ac'
+
+    - name: "B phase current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3037]
+      icon: 'mdi:current-ac'
+
+    - name: "C phase current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3038]
+      icon: 'mdi:current-ac'
+
+
+    - name: "Inverter Frequency"
+      class: "frequency"
+      state_class: "measurement"
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [3042]
+      icon: 'mdi:sine-wave'
+
+ - group: Generation
+   items:
+    - name: "Daily Generation"
+      class: "energy"
+      state_class: "measurement"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [3014]
+      icon: 'mdi:solar-power'
+
+    - name: "Monthly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3011, 3010]
+      icon: 'mdi:solar-power'
+
+    - name: "Yearly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3017, 3016]
+      icon: 'mdi:solar-power'
+
+    - name: "Total Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3009, 3008]
+      icon: 'mdi:solar-power'

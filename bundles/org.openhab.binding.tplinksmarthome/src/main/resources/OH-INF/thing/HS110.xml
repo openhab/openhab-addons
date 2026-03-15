@@ -8,7 +8,7 @@
 		<label>HS110</label>
 		<description>TP-Link HS110 Smart Wi-Fi Plug with Energy Monitoring</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="led" typeId="led"/>

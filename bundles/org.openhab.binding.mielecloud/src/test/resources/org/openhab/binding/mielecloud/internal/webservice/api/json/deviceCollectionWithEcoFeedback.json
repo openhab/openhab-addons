@@ -1,0 +1,142 @@
+{
+    "000124430017": {
+        "ident": {
+            "type": {
+                "key_localized": "Device type",
+                "value_raw": 2,
+                "value_localized": "Tumble dryer"
+            },
+            "deviceName": "TWH780WP",
+            "protocolVersion": 4,
+            "deviceIdentLabel": {
+                "fabNumber": "000124430017",
+                "fabIndex": "44",
+                "techType": "TWH780WP",
+                "matNumber": "11219891",
+                "swids": [
+                    "5678",
+                    "25359",
+                    "25360",
+                    "20559",
+                    "25277",
+                    "5136",
+                    "20445",
+                    "25234",
+                    "4657"
+                ]
+            },
+            "xkmIdentLabel": {
+                "techType": "EK057",
+                "releaseVersion": "08.10"
+            }
+        },
+        "state": {
+            "ProgramID": {
+                "value_raw": 2,
+                "value_localized": "Cottons",
+                "key_localized": "Program name"
+            },
+            "status": {
+                "value_raw": 5,
+                "value_localized": "In use",
+                "key_localized": "status"
+            },
+            "programType": {
+                "value_raw": 3,
+                "value_localized": "Cleaning/Care programme",
+                "key_localized": "Program type"
+            },
+            "programPhase": {
+                "value_raw": 514,
+                "value_localized": "Drying",
+                "key_localized": "Program phase"
+            },
+            "remainingTime": [
+                2,
+                7
+            ],
+            "startTime": [
+                0,
+                0
+            ],
+            "targetTemperature": [
+                {
+                    "value_raw": -32768,
+                    "value_localized": null,
+                    "unit": "Celsius"
+                },
+                {
+                    "value_raw": -32768,
+                    "value_localized": null,
+                    "unit": "Celsius"
+                },
+                {
+                    "value_raw": -32768,
+                    "value_localized": null,
+                    "unit": "Celsius"
+                }
+            ],
+            "temperature": [
+                {
+                    "value_raw": -32768,
+                    "value_localized": null,
+                    "unit": "Celsius"
+                },
+                {
+                    "value_raw": -32768,
+                    "value_localized": null,
+                    "unit": "Celsius"
+                },
+                {
+                    "value_raw": -32768,
+                    "value_localized": null,
+                    "unit": "Celsius"
+                }
+            ],
+            "signalInfo": false,
+            "signalFailure": false,
+            "signalDoor": false,
+            "remoteEnable": {
+                "fullRemoteControl": true,
+                "smartGrid": false,
+                "mobileStart": false
+            },
+            "ambientLight": null,
+            "light": null,
+            "elapsedTime": [
+                1,
+                9
+            ],
+            "spinningSpeed": {
+                "unit": "rpm",
+                "value_raw": null,
+                "value_localized": null,
+                "key_localized": "Spin speed"
+            },
+            "dryingStep": {
+                "value_raw": 0,
+                "value_localized": "Extra dry",
+                "key_localized": "Drying level"
+            },
+            "ventilationStep": {
+                "value_raw": null,
+                "value_localized": "",
+                "key_localized": "Fan level"
+            },
+            "plateStep": [],
+            "ecoFeedback": {
+                "currentWaterConsumption": {
+                    "unit": "l",
+                    "value": 0
+                },
+                "currentEnergyConsumption": {
+                    "unit": "kWh",
+                    "value": 0.5
+                },
+                "waterForecast": 0,
+                "energyForecast": 0.6
+            },
+            "batteryLevel": null
+        }
+    }
+}

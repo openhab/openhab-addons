@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="lgthinq"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type for DishWasher -->
+	<thing-type id="dishwasher-204">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud-account"/>
+		</supported-bridge-type-refs>
+
+		<label>Dish Washer</label>
+		<description>LG ThinQ Dish Washer</description>
+		<semantic-equipment-tag>Dishwasher</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="dashboard" typeId="dw-dashboard"/>
+		</channel-groups>
+		<config-description>
+			<parameter-group name="Settings">
+				<label>Polling</label>
+				<description>Settings required to optimize the polling behaviour.</description>
+				<advanced>true</advanced>
+			</parameter-group>
+			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true" groupName="Settings">
+				<label>Polling When Off</label>
+				<description>Seconds to wait to the next polling when device is off. Useful to save up
+					i/o and cpu when your
+					device is
+					not working. If you use only this binding to control the
+					device, you can put higher values here.
+				</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="pollingPeriodPowerOnSeconds" type="integer" min="10" required="true" groupName="Settings">
+				<label>Polling When On</label>
+				<description>Seconds to wait to the next polling for device state (dashboard channels)
+				</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="dw-dashboard">
+		<label>Dashboard</label>
+		<description>This is the Displayed Information.</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="state" typeId="washer-state"/>
+			<channel id="process-state" typeId="washerdryer-process-state"/>
+			<channel id="course" typeId="washerdryer-course"/>
+			<channel id="door-lock" typeId="washerdryer-door-lock"/>
+			<channel id="remain-time" typeId="washerdryer-remain-time"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

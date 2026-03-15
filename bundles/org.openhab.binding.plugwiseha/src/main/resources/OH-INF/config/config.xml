@@ -23,11 +23,11 @@
 			<label>Smile ID</label>
 			<description>The Smile ID is the 8 letter code on the sticker on the back of the Adam boiler gateway</description>
 		</parameter>
-		<parameter name="refresh" type="integer" min="1" max="120" required="true" unit="s">
+		<parameter name="refresh" type="integer" min="3" max="300" required="true" unit="s">
 			<label>Refresh Interval</label>
 			<unitLabel>seconds</unitLabel>
 			<description>Refresh interval in seconds</description>
-			<default>5</default>
+			<default>15</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

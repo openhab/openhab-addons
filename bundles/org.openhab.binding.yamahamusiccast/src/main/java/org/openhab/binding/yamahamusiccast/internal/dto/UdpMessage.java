@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.yamahamusiccast.internal.dto;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -41,6 +43,8 @@ public class UdpMessage {
     private Zone zone3;
     @SerializedName("zone4")
     private Zone zone4;
+    @SerializedName("tuner")
+    private Tuner tuner;
     @SerializedName("netusb")
     private NetUSB netusb;
     @SerializedName("dist")
@@ -60,6 +64,10 @@ public class UdpMessage {
 
     public Zone getZone4() {
         return zone4;
+    }
+
+    public Tuner getTuner() {
+        return tuner;
     }
 
     public NetUSB getNetUSB() {
@@ -109,15 +117,8 @@ public class UdpMessage {
             return volume;
         }
 
-        /**
-         * Get the volume in decibel (dB).
-         * 
-         * @return volume in dB or -90 dB if not available
-         */
-        public float getVolumeDb() {
-            if (actualVolume == null)
-                return -80f;
-            return actualVolume.getValue();
+        public @Nullable ActualVolume getActualVolume() {
+            return actualVolume;
         }
 
         public String getstatusUpdated() {
@@ -149,6 +150,21 @@ public class UdpMessage {
 
         public int getPlayTime() {
             return playTime;
+        }
+    }
+
+    public class Tuner {
+        @SerializedName("play_info_updated")
+        private String playInfoUpdated;
+        @SerializedName("preset_info_updated")
+        private String presetInfoUpdated;
+
+        public String getPresetInfoUpdated() {
+            return presetInfoUpdated;
+        }
+
+        public String getPlayInfoUpdated() {
+            return playInfoUpdated;
         }
     }
 

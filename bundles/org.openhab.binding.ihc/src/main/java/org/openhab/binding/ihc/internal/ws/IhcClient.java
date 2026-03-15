@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
+import org.openhab.binding.ihc.internal.IhcBindingConstants;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSControllerState;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSFile;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
@@ -377,7 +378,6 @@ public class IhcClient {
      * Enable resources runtime value notifications.
      *
      * @param resourceIdList List of resource Identifiers.
-     * @return True is connection successfully opened.
      */
     public synchronized void enableRuntimeValueNotifications(Set<Integer> resourceIdList) throws IhcExecption {
         resourceInteractionService.enableRuntimeValueNotifications(resourceIdList);
@@ -422,7 +422,7 @@ public class IhcClient {
      * Resource value's value field (e.g. floatingPointValue) could be old
      * information.
      *
-     * @param resoureId Resource Identifier.
+     * @param resourceId Resource Identifier.
      * @return Resource value.
      */
     public WSResourceValue getResourceValueInformation(int resourceId) throws IhcExecption {
@@ -456,6 +456,10 @@ public class IhcClient {
      */
     private class IhcResourceValueNotificationListener extends Thread {
         private volatile boolean interrupted = false;
+
+        public IhcResourceValueNotificationListener() {
+            super(String.format("OH-binding-%s-%s", IhcBindingConstants.BINDING_ID, "NotificationListener"));
+        }
 
         public void setInterrupted(boolean interrupted) {
             this.interrupted = interrupted;
@@ -562,7 +566,7 @@ public class IhcClient {
     private void sendErrorEvent(IhcExecption err) {
         eventListeners.forEach(listener -> {
             try {
-                listener.errorOccured(err);
+                listener.errorOccurred(err);
             } catch (RuntimeException e) {
                 logger.debug("Event listener invoking error.", e);
             }

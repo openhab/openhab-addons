@@ -7,8 +7,12 @@
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
-		<description>Volume of an audio item in percent</description>
+		<description>Volume of an audio device as a percentage</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%d" readOnly="false">
 		</state>
 	</channel-type>
@@ -16,6 +20,10 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Mutes the device</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="state" advanced="true">
 		<item-type>String</item-type>
@@ -39,7 +47,7 @@
 	<channel-type id="routeToSink" advanced="true">
 		<item-type>String</item-type>
 		<label>Route to Sink</label>
-		<description>Shows the sink a sink-input is currently routed to</description>
+		<description>The sink a sink-input is currently routed to</description>
 	</channel-type>
 
 </thing:thing-descriptions>

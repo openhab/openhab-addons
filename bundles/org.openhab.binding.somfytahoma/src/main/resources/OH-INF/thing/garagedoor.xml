@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Garage Door</label>
+		<semantic-equipment-tag>GarageDoor</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="control"></channel>
 		</channels>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -55,7 +56,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AndroidDebugBridgeHandler extends BaseThingHandler {
-
     public static final String KEY_EVENT_PLAY = "126";
     public static final String KEY_EVENT_PAUSE = "127";
     public static final String KEY_EVENT_NEXT = "87";
@@ -75,6 +75,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> connectionCheckerSchedule;
     private AndroidDebugBridgeMediaStatePackageConfig @Nullable [] packageConfigs = null;
     private boolean deviceAwake = false;
+    private int consecutiveTimeouts = 0;
 
     public AndroidDebugBridgeHandler(Thing thing,
             AndroidDebugBridgeDynamicCommandDescriptionProvider commandDescriptionProvider) {
@@ -102,6 +103,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             logger.warn("{} - read error: {}", currentConfig.ip, e.getMessage());
         } catch (TimeoutException e) {
             logger.warn("{} - timeout error", currentConfig.ip);
+            disconnectOnMaxADBTimeouts();
         }
     }
 
@@ -180,6 +182,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                         break;
                 }
                 break;
+            case START_INTENT_CHANNEL:
+                if (command instanceof RefreshType) {
+                    return;
+                }
+                adbConnection.startIntent(command.toFullString());
+                break;
             case RECORD_INPUT_CHANNEL:
                 recordDeviceInput(command);
                 break;
@@ -191,6 +199,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 }
                 break;
         }
+        consecutiveTimeouts = 0;
     }
 
     private void recordDeviceInput(Command recordNameCommand)
@@ -231,6 +240,16 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             var volumeInfo = adbConnection.getMediaVolume();
             maxMediaVolume = volumeInfo.max;
             updateState(channelUID, new PercentType((int) Math.round(toPercent(volumeInfo.current, volumeInfo.max))));
+        } else if (command instanceof IncreaseDecreaseType) {
+            var volumeInfo = adbConnection.getMediaVolume();
+            var volumeStep = fromPercent(config.volumeStepPercent, volumeInfo.max);
+            logger.debug("Device {} volume step: {}", getThing().getUID(), volumeStep);
+            var targetVolume = (int) Math
+                    .round(IncreaseDecreaseType.INCREASE.equals(command) ? volumeInfo.current + volumeStep
+                            : volumeInfo.current - volumeStep);
+            var newVolume = Integer.max(0, Integer.min(targetVolume, volumeInfo.max));
+            logger.debug("Device {} new volume : {}", getThing().getUID(), newVolume);
+            adbConnection.setMediaVolume(newVolume);
         } else {
             if (maxMediaVolume == 0) {
                 return; // We can not transform percentage
@@ -245,8 +264,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         return (value / maxValue) * 100;
     }
 
-    private double fromPercent(double value, double maxValue) {
-        return (value / 100) * maxValue;
+    private double fromPercent(double percent, double maxValue) {
+        return (percent / 100) * maxValue;
     }
 
     private void handleMediaControlCommand(ChannelUID channelUID, Command command)
@@ -315,8 +334,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         if (mediaStateJSONConfig != null && !mediaStateJSONConfig.isEmpty()) {
             loadMediaStateConfig(mediaStateJSONConfig);
         }
-        adbConnection.configure(currentConfig.ip, currentConfig.port, currentConfig.timeout,
-                currentConfig.recordDuration);
+        adbConnection.configure(currentConfig);
+        var androidVersion = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
+        if (androidVersion != null) {
+            // configure android implementation to use
+            adbConnection.setAndroidVersion(androidVersion);
+        }
         updateStatus(ThingStatus.UNKNOWN);
         connectionCheckerSchedule = scheduler.scheduleWithFixedDelay(this::checkConnection, 0,
                 currentConfig.refreshTime, TimeUnit.SECONDS);
@@ -354,8 +377,11 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         try {
             logger.debug("Refresh device {} status", currentConfig.ip);
             if (adbConnection.isConnected()) {
+                if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                    // refresh properties only on state changes
+                    refreshProperties();
+                }
                 updateStatus(ThingStatus.ONLINE);
-                refreshProperties();
                 refreshStatus();
             } else {
                 try {
@@ -386,9 +412,20 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         // Add some information about the device
         try {
             Map<String, String> editProperties = editProperties();
-            editProperties.put(Thing.PROPERTY_SERIAL_NUMBER, adbConnection.getSerialNo());
-            editProperties.put(Thing.PROPERTY_MODEL_ID, adbConnection.getModel());
-            editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, adbConnection.getAndroidVersion());
+            try {
+                editProperties.put(Thing.PROPERTY_SERIAL_NUMBER, adbConnection.getSerialNo());
+            } catch (AndroidDebugBridgeDeviceReadException ignored) {
+                // Allow devices without serial number.
+            }
+            try {
+                editProperties.put(Thing.PROPERTY_MODEL_ID, adbConnection.getModel());
+            } catch (AndroidDebugBridgeDeviceReadException ignored) {
+                // Allow devices without model id.
+            }
+            var androidVersion = adbConnection.getAndroidVersion();
+            editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, androidVersion);
+            // refresh android version to use
+            adbConnection.setAndroidVersion(androidVersion);
             editProperties.put(Thing.PROPERTY_VENDOR, adbConnection.getBrand());
             try {
                 editProperties.put(Thing.PROPERTY_MAC_ADDRESS, adbConnection.getMacAddress());
@@ -411,8 +448,10 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         } catch (TimeoutException e) {
             // happen a lot when device is sleeping; abort refresh other channels
             logger.debug("Unable to refresh awake state: Timeout; aborting channels refresh");
+            disconnectOnMaxADBTimeouts();
             return;
         }
+        consecutiveTimeouts = 0;
         var awakeStateChannelUID = new ChannelUID(this.thing.getUID(), AWAKE_STATE_CHANNEL);
         if (isLinked(awakeStateChannelUID)) {
             updateState(awakeStateChannelUID, OnOffType.from(awakeState));
@@ -456,6 +495,16 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             logger.warn("Unable to refresh screen state: {}", e.getMessage());
         } catch (TimeoutException e) {
             logger.warn("Unable to refresh screen state: Timeout");
+        }
+    }
+
+    private void disconnectOnMaxADBTimeouts() {
+        consecutiveTimeouts++;
+        if (config.maxADBTimeouts > 0 && consecutiveTimeouts >= config.maxADBTimeouts) {
+            logger.debug("Max consecutive timeouts reached, aborting connection");
+            adbConnection.disconnect();
+            checkConnection();
+            consecutiveTimeouts = 0;
         }
     }
 

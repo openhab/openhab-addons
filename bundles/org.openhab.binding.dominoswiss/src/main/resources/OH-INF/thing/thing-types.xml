@@ -6,6 +6,7 @@
 	<bridge-type id="egate">
 		<label>Dominoswiss EGate Server</label>
 		<description>This is a Dominoswiss EGate Server instance.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP or Host Name</label>
@@ -26,6 +27,7 @@
 		</supported-bridge-type-refs>
 		<label>Blind</label>
 		<description>Provides various control commands for Dominoswiss receivers</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="pulseUp" typeId="pulseUp"/>
 			<channel id="pulseDown" typeId="pulseDown"/>
@@ -52,6 +54,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Pulse Up</label>
 		<description>Send one pulse up</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -59,6 +65,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Pulse Down</label>
 		<description>Send one pulse down</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -66,6 +76,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Continuous Up</label>
 		<description>Send continuous up command to blind</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -73,6 +87,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Continuous Down</label>
 		<description>Send continuous down command to blind</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -80,6 +98,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Stop</label>
 		<description>Send stop impulse to stop the blinds</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -87,6 +109,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Shutter</label>
 		<description>Handle the commands up/down/stop </description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -94,6 +120,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Shutter Tilt Up Down</label>
 		<description>Handle the commands tiltUp/tiltDown/stop </description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -101,6 +131,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Tilt Up</label>
 		<description>Handle the command for 3 tilts up </description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -108,6 +142,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Tilt Down</label>
 		<description>Handle the command for 3 tilts down </description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

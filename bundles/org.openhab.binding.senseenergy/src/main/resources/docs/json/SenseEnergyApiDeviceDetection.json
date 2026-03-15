@@ -1,0 +1,7 @@
+// SenseEnergyApiDeviceDetection
+
+"device_detection": {
+     "in_progress":[],
+     "found":[],
+     "num_detected":15
+ },

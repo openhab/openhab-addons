@@ -8,6 +8,7 @@
 	<bridge-type id="bridge">
 		<label>Bridge</label>
 		<description>Bridge for Orbit B-hyve Binding</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description-ref uri="bridge-type:orbitbhyve:bridge"/>
 	</bridge-type>
 

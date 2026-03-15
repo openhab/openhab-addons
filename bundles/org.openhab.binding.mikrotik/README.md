@@ -5,27 +5,25 @@ This binding integrates [Mikrotik](https://mikrotik.com/) [RouterOS](https://hel
 
 ## Supported Things
 
-* `routeros` - An instance of the RouterOS device connection
-* `interface` - A network interface inside RouterOS device
-* `wifiRegistration` - Any wireless client connected to a RouterOS wireless network (regular or CAPsMAN-managed)
-
+- `routeros` - An instance of the RouterOS device connection
+- `interface` - A network interface inside RouterOS device
+- `wifiRegistration` - Any wireless client connected to a RouterOS wireless network (regular or CAPsMAN-managed)
 
 ## Discovery
 
 Discovery is currently not supported, but may be implemented in future versions.
 
-
 ## Bridge Configuration
 
 To use this binding you need at least one RouterOS-powered device (Bridge) accessible to the host running
 openHAB via network.
-Make sure your RouterOS has the API enabled by visiting [<kbd>IP -> Services</kbd>](https://wiki.mikrotik.com/wiki/Manual:IP/Services) 
-configuration section in 
+Make sure your RouterOS has the API enabled by visiting [<kbd>IP -> Services</kbd>](https://wiki.mikrotik.com/wiki/Manual:IP/Services)
+configuration section in
 [WinBox](https://wiki.mikrotik.com/wiki/Manual:Winbox).
 Take note of the API port number as you'll need it below.
 [SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
-To connect to the RouterOS API, you will need to provide user credentials for the bridge thing. 
-You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only need to read data from the device.
+To connect to the RouterOS API, you will need to provide user credentials for the bridge Thing.
+You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only needs to read data from the device.
 To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` group.
 
 > Thing type: `routeros`
@@ -36,12 +34,11 @@ The RouterOS Bridge configuration parameters are:
 |---|---|---|---|---|
 | host | text | Yes | 192.168.88.1 | Hostname or IP address of the RouterOS device |
 | port | integer | No | 8728 | API Port number of the RouterOS device |
-| login | text | Yes | admin | The username to access the the RouterOS device |
+| login | text | Yes | admin | The username to access the RouterOS device |
 | password | text | Yes |  | The user password to access the RouterOS device |
 | refresh | integer | No | 10 | The refresh interval in seconds to poll the RouterOS device |
 
 **All things provided by this binding require a working bridge to be set up.**
-
 
 ### Bridge Channels
 
@@ -54,9 +51,7 @@ The RouterOS Bridge configuration parameters are:
 | totalMemory | Number:DataAmount | Amount of total memory available on device in bytes |  |
 | usedMemory | Number:Dimensionless | Percentage of used device memory |  |
 | cpuLoad | Number:Dimensionless | CPU load percentage |  |
-| upSince | DateTime | Time when thing got up |  |
-
-
+| upSince | DateTime | Time when Thing got up |  |
 
 ## WiFi Client Thing Configuration
 
@@ -64,12 +59,12 @@ The RouterOS Bridge configuration parameters are:
 
 Represents a wireless client connected to a RouterOS wireless network (direct or CAPsMAN-managed).
 
-The WiFi client thing configuration parameters are:
+The WiFi client Thing configuration parameters are:
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
 | mac | text | Yes |  | WiFi client MAC address |
-| ssid | text | No |  | Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this thing will stay offline until client reconnects to specified SSID. |
+| ssid | text | No |  | Constraining SSID for the WiFi client (optional). If client will connect to another SSID, this Thing will stay offline until client reconnects to specified SSID. |
 | considerContinuous | integer | No | 180 | The interval in seconds to treat the client as connected permanently |
 
 ### WiFi client Thing Channels
@@ -83,7 +78,7 @@ The WiFi client thing configuration parameters are:
 | ssid | String | Wireless Network (SSID) the wireless client is connected to |  |
 | interface | String | Network interface name |  |
 | signal | system.signal-strength | Signal strength (RSSI) |  |
-| upSince | DateTime | Time when thing got up |  |
+| upSince | DateTime | Time when Thing got up |  |
 | lastSeen | DateTime | Time of when the client was last seen connected |  |
 | txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
 | rxRate | Number:DataTransferRate | Rate of data receiving in megabits per second |  |
@@ -101,17 +96,17 @@ The WiFi client thing configuration parameters are:
 Represents a network interface from RouterOS system (ethernet, wifi, vpn, etc.)
 At the moment the binding supports the following RouterOS interface types:
 
-* `ether`
-* `bridge`
-* `wlan`
-* `cap`
-* `pppoe-out`
-* `ppp-out`
-* `lte`
-* `l2tp-in`
-* `l2tp-out`
+- `ether`
+- `bridge`
+- `wlan`
+- `cap`
+- `pppoe-out`
+- `ppp-out`
+- `lte`
+- `l2tp-in`
+- `l2tp-out`
 
-The interface thing configuration parameters are:
+The interface Thing configuration parameters are:
 
 ### Interface Thing Configuration
 
@@ -121,9 +116,9 @@ The interface thing configuration parameters are:
 
 ### Interface Thing Channels
 
-Please note that different on RouterOS interfaces has different data available depending on the kind of interface.
-While the common dataset is same, some specific information for specific interface type may be missing. This may
-be improved in future binding versions.
+Please note that different RouterOS interfaces have different data available depending on the kind of interface.
+While the common dataset is the same, some specific information for specific interface types may be missing.
+This may be improved in future binding versions.
 
 Common for all kinds of interfaces:
 
@@ -155,30 +150,29 @@ Common for all kinds of interfaces:
 | state | String | WiFi interface state |  |
 | registeredClients | Number | Amount of clients registered to WiFi interface | Populated only for `cap` interfaces |
 | authorizedClients | Number | Amount of clients authorized by WiFi interface | Populated only for `cap` interfaces |
-| upSince | DateTime | Time when thing got up | Populated only for `cap` interfaces |
+| upSince | DateTime | Time when Thing got up | Populated only for `cap` interfaces |
 
 ## Text Configuration Example
 
 **Change config options accordingly.**
 
-_things/mikrotik.things_
+### things/mikrotik.things
 
-```
+```java
 Bridge mikrotik:routeros:rb1 "My RouterBoard" [ host="192.168.0.1", port=8728, login="openhab", password="thatsasecret", refresh=10 ] {
-	Thing interface eth1 "Eth1" [ name="ether1" ]
-	Thing interface eth2 "Eth2" [ name="ether2-wan1" ]
-	Thing interface cap1 "Cap1" [ name="cap5" ]
-	Thing interface ppp1 "PPPoE1" [ name="isp-pppoe" ]
-	Thing interface tun1 "L2TPSrv1" [ name="l2tp-parents" ]
-	Thing wifiRegistration wifi1 "Phone1" [ mac="F4:60:E2:C5:47:94", considerContinuous=60 ]
-	Thing wifiRegistration wifi2 "Tablet2" [ mac="18:1D:EA:A5:A2:9E" ]
+ Thing interface eth1 "Eth1" [ name="ether1" ]
+ Thing interface eth2 "Eth2" [ name="ether2-wan1" ]
+ Thing interface cap1 "Cap1" [ name="cap5" ]
+ Thing interface ppp1 "PPPoE1" [ name="isp-pppoe" ]
+ Thing interface tun1 "L2TPSrv1" [ name="l2tp-parents" ]
+ Thing wifiRegistration wifi1 "Phone1" [ mac="F4:60:E2:C5:47:94", considerContinuous=60 ]
+ Thing wifiRegistration wifi2 "Tablet2" [ mac="18:1D:EA:A5:A2:9E" ]
 }
 ```
 
+### items/mikrotik.items
 
-_items/mikrotik.items_
-
-```
+```java
 Group gRB1 "RB3011 System"
 Number:DataAmount   My_RB_3011_Free_Space     "Free space"     (gRB1) {channel="mikrotik:routeros:rb1:freeSpace"}
 Number:DataAmount   My_RB_3011_Total_Space    "Total space"    (gRB1) {channel="mikrotik:routeros:rb1:totalSpace"}
@@ -243,7 +237,7 @@ String     Eth_2_Rate                  "Link rate"                  (gRB1Eth2) {
 String     Eth_2_Auto_Negotiation      "Auto negotiation"           (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:autoNegotiation"}
 String     Eth_2_State                 "State"                      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:state"}
 
-Group gRB1Cap1 "CAPsMAN Inerface 1"
+Group gRB1Cap1 "CAPsMAN Interface 1"
 String     Cap_1_Type                  "Type"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:type"}
 String     Cap_1_Name                  "Name"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:name"}
 String     Cap_1_Comment               "Comment"                    (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:comment"}
@@ -357,20 +351,20 @@ Number     Tablet_2_Tx_Packets       "Transmitted packets"                  (gRB
 Number     Tablet_2_Rx_Packets       "Received packets"                     (gRB1Wifi2) {channel="mikrotik:wifiRegistration:rb1:wifi2:rxPackets"}
 ```
 
-_sitemaps/mikrotik.sitemap_
+### sitemaps/mikrotik.sitemap
 
-```
+```perl
 sitemap mikrotik label="Mikrotik Binding Demo"
 {
-	Frame label="RouterBOARD 1" {
-		Group item=gRB1
-		Group item=gRB1Eth1
-		Group item=gRB1Eth2
-		Group item=gRB1Ppp1
-		Group item=gRB1Tun1
-		Group item=gRB1Cap1
-		Group item=gRB1Wifi1
-		Group item=gRB1Wifi2
-	}
+ Frame label="RouterBOARD 1" {
+  Group item=gRB1
+  Group item=gRB1Eth1
+  Group item=gRB1Eth2
+  Group item=gRB1Ppp1
+  Group item=gRB1Tun1
+  Group item=gRB1Cap1
+  Group item=gRB1Wifi1
+  Group item=gRB1Wifi2
+ }
 }
 ```

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,15 +15,14 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.ActionType;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcAction} class represents the action Niko Home Control communication object. It contains all fields
  * representing a Niko Home Control action and has methods to trigger the action in Niko Home Control and receive action
- * updates. Specific implementation are {@link NhcAction1} and {@link NhcAction2}.
+ * updates. Specific implementation are {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1}
+ * and {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2}.
  *
  * @author Mark Herwege - Initial Contribution
  */
@@ -38,6 +37,7 @@ public abstract class NhcAction {
     protected String name;
     protected ActionType type;
     protected @Nullable String location;
+
     protected volatile int state;
     protected volatile int closeTime = 0;
     protected volatile int openTime = 0;
@@ -55,7 +55,7 @@ public abstract class NhcAction {
     }
 
     /**
-     * This method should be called when an object implementing the {@NhcActionEvent} interface is initialized.
+     * This method should be called when an object implementing the {@link NhcActionEvent} interface is initialized.
      * It keeps a record of the event handler in that object so it can be updated when the action receives an update
      * from the Niko Home Control IP-interface.
      *
@@ -66,9 +66,18 @@ public abstract class NhcAction {
     }
 
     /**
-     * Get the id of the action.
+     * This method should be called when an object implementing the {@link NhcActionEvent} interface is disposed.
+     * It resets the reference, so no updates go to the handler anymore.
      *
-     * @return the id
+     */
+    public void unsetEventHandler() {
+        this.eventHandler = null;
+    }
+
+    /**
+     * Get id of action.
+     *
+     * @return id
      */
     public String getId() {
         return id;
@@ -81,6 +90,15 @@ public abstract class NhcAction {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Set name of action.
+     *
+     * @param name action name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -101,6 +119,15 @@ public abstract class NhcAction {
      */
     public @Nullable String getLocation() {
         return location;
+    }
+
+    /**
+     * Set location name of action.
+     *
+     * @param location action location name
+     */
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
     /**
@@ -170,12 +197,15 @@ public abstract class NhcAction {
         logger.debug("action removed {}, {}", id, name);
         NhcActionEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
-            eventHandler.actionRemoved();
+            eventHandler.deviceRemoved();
+            unsetEventHandler();
         }
     }
 
     /**
-     * Sets state of action. This method is implemented in {@link NhcAction1} and {@link NhcAction2}.
+     * Sets state of action. This method is implemented in
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1} and
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2}.
      *
      * @param state - The allowed values depend on the action type.
      *            switch action: 0 or 100
@@ -185,7 +215,9 @@ public abstract class NhcAction {
     public abstract void setState(int state);
 
     /**
-     * Sends action to Niko Home Control. This method is implemented in {@link NhcAction1} and {@link NhcAction2}.
+     * Sends action to Niko Home Control. This method is implemented in
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcAction1} and
+     * {@link org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAction2}.
      *
      * @param command - The allowed values depend on the action type.
      *            switch action: On or Off

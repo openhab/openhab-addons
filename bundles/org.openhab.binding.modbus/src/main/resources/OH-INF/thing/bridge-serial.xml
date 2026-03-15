@@ -136,6 +136,13 @@
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="afterConnectionDelayMillis" type="integer" min="0" unit="ms">
+				<label>Connection warm-up time</label>
+				<description>Connection warm-up time. Additional time which is spent on preparing connection which should be spent
+					waiting while end device is getting ready to answer first modbus call. In milliseconds.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="connectTimeoutMillis" type="integer" min="0" unit="ms">
 				<label>Timeout for Establishing the Connection</label>
 				<description>The maximum time that is waited when establishing the connection. Value of zero means that system/OS

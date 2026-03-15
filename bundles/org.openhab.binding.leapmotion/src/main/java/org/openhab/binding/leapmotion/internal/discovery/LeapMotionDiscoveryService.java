@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.leapmotion.internal.discovery;
 
-import java.util.Collections;
+import java.time.Instant;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,7 +43,7 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     private @NonNullByDefault({}) Listener listener;
 
     public LeapMotionDiscoveryService() throws IllegalArgumentException {
-        super(Collections.singleton(LeapMotionBindingConstants.THING_TYPE_CONTROLLER), 10, true);
+        super(Set.of(LeapMotionBindingConstants.THING_TYPE_CONTROLLER), 10, true);
     }
 
     @Override
@@ -92,6 +93,6 @@ public class LeapMotionDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void removeDiscoveryResult() {
-        removeOlderResults(System.currentTimeMillis());
+        removeOlderResults(Instant.now());
     }
 }

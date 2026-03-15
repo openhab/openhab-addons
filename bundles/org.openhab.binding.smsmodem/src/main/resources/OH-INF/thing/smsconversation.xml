@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smsmodem"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="smsconversation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smsmodembridge"/>
+			<bridge-type-ref id="smsmodemremotebridge"/>
+		</supported-bridge-type-refs>
+		<label>SMS Conversation</label>
+		<description>Represents a conversation with a SMS recipient.</description>
+
+		<channels>
+			<channel id="send" typeId="send"/>
+			<channel id="receive" typeId="receive"/>
+			<channel id="deliverystatus" typeId="deliverystatus"/>
+		</channels>
+
+		<representation-property>recipient</representation-property>
+
+		<config-description>
+			<parameter name="recipient" type="text" required="true">
+				<label>Recipient Number</label>
+				<description>The SMS number of the recipient.</description>
+			</parameter>
+			<parameter name="deliveryReport" type="boolean" required="false">
+				<label>Delivery Report</label>
+				<description>Ask network for delivery report.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<options>
+					<option value="Enc7">Enc7</option>
+					<option value="Enc8">Enc8</option>
+					<option value="EncUcs2">EncUcs2</option>
+					<option value="EncCustom">EncCustom</option>
+				</options>
+				<description>Encoding for the message to send. Default Enc7</description>
+				<default>Enc7</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="send">
+		<item-type>String</item-type>
+		<label>Send Message</label>
+		<description>Message to send to the recipient.</description>
+	</channel-type>
+
+	<channel-type id="receive">
+		<item-type>String</item-type>
+		<label>Message Received</label>
+		<description>Last message received</description>
+	</channel-type>
+
+	<channel-type id="deliverystatus">
+		<item-type>String</item-type>
+		<label>Delivery Status</label>
+		<description>Last message delivery status (either UNKNOWN, QUEUED, SENT, PENDING, DELIVERED, EXPIRED, or FAILED)</description>
+	</channel-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,13 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -172,7 +177,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         final TimetablesV1ApiStub stubWithError = TimetablesV1ApiStub.createWithException();
 
         final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
-                (String authToken, HttpCallable httpCallable) -> stubWithError);
+                (String clientId, String clientSecret, HttpCallable httpCallable) -> stubWithError);
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -181,7 +186,6 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
             verifyChannelsUpdatedToUndef(bridge, 0, callback);
             verifyChannelsUpdatedToUndef(bridge, 1, callback);
             verifyChannelsUpdatedToUndef(bridge, 2, callback);
-
         } finally {
             handler.dispose();
         }
@@ -212,7 +216,7 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         final TimetablesV1ApiStub stubWithData = TimetablesV1ApiStub.createWithResult(timetable);
 
         final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
-                (String authToken, HttpCallable httpCallable) -> stubWithData);
+                (String clientId, String clientSecret, HttpCallable httpCallable) -> stubWithData);
 
         try {
             verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -221,7 +225,6 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
             verifyThingUpdated(bridge, 0, stop01.getId());
             verifyChannelsUpdatedToUndef(bridge, 1, callback);
             verifyChannelsUpdatedToUndef(bridge, 2, callback);
-
         } finally {
             handler.dispose();
         }

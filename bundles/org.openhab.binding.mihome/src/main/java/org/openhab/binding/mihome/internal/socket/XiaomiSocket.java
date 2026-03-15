@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.mihome.internal.socket;
+
+import static org.openhab.binding.mihome.internal.XiaomiGatewayBindingConstants.BINDING_ID;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -55,7 +57,7 @@ public abstract class XiaomiSocket {
     private final Thread socketReceiveThread = new Thread(this::receiveData);
 
     /**
-     * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a random port
+     * Sets up a {@link XiaomiSocket} with the MiHome multicast address and a random port
      *
      * @param owner identifies the socket owner
      */
@@ -64,14 +66,14 @@ public abstract class XiaomiSocket {
     }
 
     /**
-     * Sets up an {@link XiaomiSocket} with the MiHome multicast address and a specific port
+     * Sets up a {@link XiaomiSocket} with the MiHome multicast address and a specific port
      *
      * @param port the socket will be bound to this port
      * @param owner identifies the socket owner
      */
     public XiaomiSocket(int port, String owner) {
         this.port = port;
-        socketReceiveThread.setName("XiaomiSocketReceiveThread(" + port + ", " + owner + ")");
+        socketReceiveThread.setName("OH-binding-" + BINDING_ID + "-XiaomiSocket(" + port + ", " + owner + ")");
     }
 
     public void initialize() {
@@ -219,8 +221,8 @@ public abstract class XiaomiSocket {
      */
     private void notifyListeners(JsonObject message, InetAddress address) {
         for (XiaomiSocketListener listener : listeners) {
-            if (listener instanceof XiaomiBridgeHandler) {
-                if (((XiaomiBridgeHandler) listener).getHost().equals(address)) {
+            if (listener instanceof XiaomiBridgeHandler handler) {
+                if (handler.getHost().equals(address)) {
                     listener.onDataReceived(message);
                 }
             } else if (listener instanceof XiaomiBridgeDiscoveryService) {

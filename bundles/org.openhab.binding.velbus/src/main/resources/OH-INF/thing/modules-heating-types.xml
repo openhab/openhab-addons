@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="velbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vmb1ts">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1TS</label>
+		<description>Temperature Sensor Module</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="input" typeId="1channelInputModuleWithTemperatureSensor"/>
+			<channel-group id="thermostat" typeId="thermostat"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:velbus:temperatureSensorDevice"/>
+	</thing-type>
+
+</thing:thing-descriptions>

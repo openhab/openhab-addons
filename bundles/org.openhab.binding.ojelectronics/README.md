@@ -13,7 +13,7 @@ There are two things:
 
 ## Discovery
 
-After the ojcloud bridge is succesfully initialized all thermostats will be discovered.
+After the ojcloud bridge is successfully initialized all thermostats will be discovered.
 
 ### OJ Electronics Bridge configuration (ojcloud)
 
@@ -23,7 +23,6 @@ After the ojcloud bridge is succesfully initialized all thermostats will be disc
 | password              | password from the OJElectronics App (required)                           |
 | apiKey                | API key. You get the key from your local distributor.                    |
 | apiUrl                | URL of the API endpoint. Optional, the default value should always work. |
-| refreshDelayInSeconds | Refresh interval in seconds. Optional, the default value is 30 seconds.  |
 | customerId            | Customer ID. Optional, the default value should always work.             |
 | softwareVersion       | Software version. Optional, the default value should always work.        |
 
@@ -38,29 +37,29 @@ After the ojcloud bridge is succesfully initialized all thermostats will be disc
 | Channel            | Type               | Description                                                                        |
 |--------------------|--------------------|------------------------------------------------------------------------------------|
 | floorTemperature   | Number:Temperature | Floor temperature                                                                  |
-| groupName          | Text               | Group name                                                                         |
+| groupName          | String             | Group name                                                                         |
 | groupId            | Number             | Group Id                                                                           |
 | online             | Contact            | Online                                                                             |
 | heating            | Contact            | Heating                                                                            |
 | roomTemperature    | Number:Temperature | Room temperature                                                                   |
-| thermostatName     | Text               | Thermostat name                                                                    |
-| regulationMode     | Text               | Regulation mode                                                                    |
-| serialNumber       | Text               | Serial number                                                                      |
+| thermostatName     | String             | Thermostat name                                                                    |
+| regulationMode     | String             | Regulation mode                                                                    |
+| serialNumber       | String             | Serial number                                                                      |
 | comfortSetpoint    | Number:Temperature | Target comfort temperature                                                         |
-| comfortEndTime     | Date time          | Date and time when the thermostat switchs back from comfort mode to automatic mode |
-| boostEndTime       | Date time          | Date and time when the thermostat switchs back from boost mode to automatic mode   |
-| manualModeSetpoint | Number:Temperature | Target temperature of the manual mode                                              |
-| vacationEnabled    | Contact            | Vacation is enabled                                                                |
-| vacationBeginDay   | Date time          | Vacation start date                                                                |
-| vacationEndDay     | Date time          | Vacation end date                                                                  |
+| comfortEndTime     | DateTime           | Date and time when the thermostat switches back from comfort mode to automatic mode |
+| boostEndTime       | DateTime           | Date and time when the thermostat switches back from boost mode to automatic mode   |
+| manualSetpoint     | Number:Temperature | Target temperature of the manual mode                                              |
+| vacationEnabled    | Switch             | Vacation is enabled                                                                |
+| vacationBeginDay   | DateTime           | Vacation start date                                                                |
+| vacationEndDay     | DateTime           | Vacation end date                                                                  |
 
 ## Example
 
-This example shows how to configure the OJElecttronics binding.
+This example shows how to configure the OJElectronics binding.
 
-### demo.things
+### `demo.things` Example
 
-```
+```java
 Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName", password="MyPassword", apiKey="The Key" ] {
     Thing owd5 myThermostat [ serialNumber="123" ]
 }
@@ -68,17 +67,16 @@ Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserNa
 
 ### demo.items
 
-```
+```java
 Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myCloud:myThermostat:floorTemperature"}
 String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myCloud:myThermostat:regulationMode"}
 ```
 
 ### demo.sitemap
 
-```
+```perl
 sitemap myHome label="my Home"{
   Text item=Bath_Floor_Temperature
   Text item=Bath_Mode
 }
 ```
-

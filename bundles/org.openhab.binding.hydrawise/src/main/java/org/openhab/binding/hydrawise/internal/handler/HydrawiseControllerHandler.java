@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.hydrawise.internal.HydrawiseBindingConstants.*
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -96,17 +97,26 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     public void initialize() {
         HydrawiseControllerConfiguration config = getConfigAs(HydrawiseControllerConfiguration.class);
         controllerId = config.controllerId;
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            HydrawiseAccountHandler handler = (HydrawiseAccountHandler) bridge.getHandler();
-            if (handler != null) {
-                handler.addControllerListeners(this);
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.addControllerListeners(this);
+            Bridge bridge = getBridge();
+            if (bridge != null) {
                 if (bridge.getStatus() == ThingStatus.ONLINE) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Controller Handler disposed.");
+        HydrawiseAccountHandler handler = getAccountHandler();
+        if (handler != null) {
+            handler.removeControllerListeners(this);
         }
     }
 
@@ -202,20 +212,20 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                     }
                     break;
                 case CHANNEL_ZONE_SUSPENDUNTIL:
-                    if (!(command instanceof DateTimeType)) {
+                    if (!(command instanceof DateTimeType dateTimeCommand)) {
                         logger.warn("Invalid command type for suspend {}", command.getClass().getName());
                         return;
                     }
                     if (allCommand) {
                         client.suspendAllRelays(controllerId,
-                                ((DateTimeType) command).getZonedDateTime().format(DATE_FORMATTER));
+                                dateTimeCommand.getZonedDateTime(ZoneId.systemDefault()).format(DATE_FORMATTER));
                     } else if (zone != null) {
                         client.suspendRelay(zone.id,
-                                ((DateTimeType) command).getZonedDateTime().format(DATE_FORMATTER));
+                                dateTimeCommand.getZonedDateTime(ZoneId.systemDefault()).format(DATE_FORMATTER));
                     }
                     break;
                 default:
-                    logger.warn("Uknown channelId {}", channelId);
+                    logger.warn("Unknown channelId {}", channelId);
                     return;
             }
             HydrawiseAccountHandler handler = getAccountHandler();
@@ -243,14 +253,13 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateForecast(controller.location.forecast);
             }
             if (controller.zones != null) {
-                updateZones(controller.zones);
+                updateZones(controller.zones, controller.hardware.model.maxZones);
             }
 
             // update values with what the cloud tells us even though the controller may be offline
             if (!controller.status.online) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Controller Offline: %s last seen %s", controller.status.summary,
-                                secondsToDateTime(controller.status.lastContact.timestamp)));
+                        "Service reports controller as offline");
             } else if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -268,23 +277,26 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_SUMMARY,
                 new StringType(controller.status.summary));
         updateGroupState(CHANNEL_GROUP_CONTROLLER_SYSTEM, CHANNEL_CONTROLLER_LAST_CONTACT,
-                secondsToDateTime(controller.status.lastContact.timestamp));
+                controller.status.lastContact != null ? secondsToDateTime(controller.status.lastContact.timestamp)
+                        : UnDefType.NULL);
     }
 
-    private void updateZones(List<Zone> zones) {
-        AtomicReference<Boolean> anyRunning = new AtomicReference<Boolean>(false);
-        AtomicReference<Boolean> anySuspended = new AtomicReference<Boolean>(false);
+    private void updateZones(List<Zone> zones, int maxZones) {
+        AtomicReference<Boolean> anyRunning = new AtomicReference<>(false);
+        AtomicReference<Boolean> anySuspended = new AtomicReference<>(false);
         for (Zone zone : zones) {
-            // there are 12 relays per expander, expanders will have a zoneNumber like:
+            // for expansion modules who zones numbers are > 99
+            // there are maxZones relays per expander, expanders will have a zoneNumber like:
+            // maxZones = 12
             // 10 for expander 0, relay 10 = zone10
             // 101 for expander 1, relay 1 = zone13
             // 212 for expander 2, relay 12 = zone36
             // division of integers in Java give whole numbers, not remainders FYI
-            int zoneNumber = ((zone.number.value / 100) * 12) + (zone.number.value % 100);
-
+            int zoneNumber = zone.number.value <= 99 ? zone.number.value
+                    : ((zone.number.value / 100) * maxZones) + (zone.number.value % 100);
             String group = "zone" + zoneNumber;
             zoneMaps.put(group, zone);
-            logger.trace("Updateing Zone {} {} ", group, zone.name);
+            logger.trace("Updating Zone {} {} ", group, zone.name);
             updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(zone.name));
             updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + zone.icon.fileName));
             if (zone.scheduledRuns != null) {
@@ -343,7 +355,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateGroupState(group, CHANNEL_SENSOR_OFFLEVEL, new DecimalType(sensor.model.offLevel));
             }
             if (sensor.status.active != null) {
-                updateGroupState(group, CHANNEL_SENSOR_ACTIVE, sensor.status.active ? OnOffType.ON : OnOffType.OFF);
+                updateGroupState(group, CHANNEL_SENSOR_ACTIVE, OnOffType.from(sensor.status.active));
             }
             if (sensor.status.waterFlow != null) {
                 updateGroupState(group, CHANNEL_SENSOR_WATERFLOW,
@@ -356,6 +368,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         int i = 1;
         for (Forecast forecast : forecasts) {
             String group = "forecast" + (i++);
+            logger.trace("Updating {} {}", group, forecast.time);
             updateGroupState(group, CHANNEL_FORECAST_TIME, stringToDateTime(forecast.time));
             updateGroupState(group, CHANNEL_FORECAST_CONDITIONS, new StringType(forecast.conditions));
             updateGroupState(group, CHANNEL_FORECAST_HUMIDITY, new DecimalType(forecast.averageHumidity.intValue()));
@@ -378,7 +391,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     private void updateTemperature(UnitValue temperature, String group, String channel) {
         logger.debug("TEMP {} {} {} {}", group, channel, temperature.unit, temperature.value);
         updateGroupState(group, channel, new QuantityType<Temperature>(temperature.value,
-                "\\u00b0F".equals(temperature.unit) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
+                temperature.unit.indexOf("F") >= 0 ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
     }
 
     private void updateWindspeed(UnitValue wind, String group, String channel) {
@@ -433,10 +446,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     }
 
     private QuantityType<Volume> waterFlowToQuantityType(Number flow, String units) {
-        double waterFlow = flow.doubleValue();
-        if ("gals".equals(units)) {
-            waterFlow = waterFlow * 3.785;
-        }
-        return new QuantityType<>(waterFlow, Units.LITRE);
+        return new QuantityType<>(flow.doubleValue(),
+                "gal".equals(units) ? ImperialUnits.GALLON_LIQUID_US : Units.LITRE);
     }
 }

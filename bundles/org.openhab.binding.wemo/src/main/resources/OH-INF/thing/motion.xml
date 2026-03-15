@@ -7,7 +7,7 @@
 	<thing-type id="motion">
 		<label>WeMo Motion</label>
 		<description>This is a WeMo MotionSensor</description>
-
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="motionDetection" typeId="motionDetection"/>
 			<channel id="lastMotionDetected" typeId="lastMotionDetected"/>

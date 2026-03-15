@@ -6,6 +6,7 @@
 	<thing-type id="device">
 		<label>Enigma2</label>
 		<description>The Thing represents an Enigma2 device</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="powerType"/>
 			<channel id="mute" typeId="muteType"/>
@@ -48,18 +49,30 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Setting the power to on/off.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="muteType">
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Current Mute Setting</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volumeType">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>Current Volume Setting</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" step="5"></state>
 	</channel-type>
 	<channel-type id="channelType">
@@ -84,11 +97,19 @@
 		<label>Media Control</label>
 		<description>Control media (e.g. audio or video) playback</description>
 		<category>MediaControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="mediaStopType">
 		<item-type>Switch</item-type>
 		<label>Stop</label>
 		<description>Stop Playback</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="answerType">
 		<item-type>String</item-type>

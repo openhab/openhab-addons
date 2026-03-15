@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.broadlinkthermostat.internal.handler;
 
-import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkThermostatBindingConstants.*;
+import static org.openhab.binding.broadlinkthermostat.internal.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -49,7 +51,7 @@ import com.github.mob41.blapi.pkt.cmd.hysen.SetTimeCommand;
  * @author Florian Mueller - Initial contribution
  */
 @NonNullByDefault
-public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
+public class FloureonThermostatHandler extends BroadlinkBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FloureonThermostatHandler.class);
     private @Nullable FloureonDevice floureonDevice;
@@ -57,6 +59,8 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     private static final long CACHE_EXPIRY = TimeUnit.SECONDS.toSeconds(3);
     private final ExpiringCache<AdvancedStatusInfo> advancedStatusInfoExpiringCache = new ExpiringCache<>(CACHE_EXPIRY,
             this::refreshAdvancedStatus);
+
+    private @Nullable ScheduledFuture<?> scanJob;
 
     /**
      * Creates a new instance of this class for the {@link FloureonThermostatHandler}.
@@ -73,16 +77,20 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     @Override
     public void initialize() {
         super.initialize();
-        if (host != null && macAddress != null) {
+        // schedule a new scan every minute
+        scanJob = scheduler.scheduleWithFixedDelay(this::refreshData, 0, 1, TimeUnit.MINUTES);
+        if (!host.isBlank() && !macAddress.isBlank()) {
             try {
                 blDevice = new FloureonDevice(host, new Mac(macAddress));
                 this.floureonDevice = (FloureonDevice) blDevice;
                 updateStatus(ThingStatus.ONLINE);
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Could not find broadlinkthermostat device at host" + host + "with MAC+" + macAddress + ": "
+                        "Could not find broadlink device at host " + host + " with MAC " + macAddress + ": "
                                 + e.getMessage());
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing device configuration");
         }
     }
 
@@ -152,9 +160,9 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
 
     private void handleSetpointCommand(ChannelUID channelUID, Command command) {
         FloureonDevice floureonDevice = this.floureonDevice;
-        if (command instanceof QuantityType && floureonDevice != null) {
+        if (command instanceof QuantityType quantityCommand && floureonDevice != null) {
             try {
-                QuantityType<?> temperatureQuantityType = ((QuantityType<?>) command).toUnit(SIUnits.CELSIUS);
+                QuantityType<?> temperatureQuantityType = quantityCommand.toUnit(SIUnits.CELSIUS);
                 if (temperatureQuantityType != null) {
                     floureonDevice.setThermostatTemp(temperatureQuantityType.doubleValue());
                 } else {
@@ -204,12 +212,12 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     private void handleSetTimeCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof DateTimeType) {
-            ZonedDateTime zonedDateTime = ((DateTimeType) command).getZonedDateTime();
+        if (command instanceof DateTimeType dateTimeCommand) {
+            ZonedDateTime zonedDateTime = dateTimeCommand.getZonedDateTime(ZoneId.systemDefault());
             try {
                 new SetTimeCommand(tob(zonedDateTime.getHour()), tob(zonedDateTime.getMinute()),
                         tob(zonedDateTime.getSecond()), tob(zonedDateTime.getDayOfWeek().getValue()))
-                                .execute(floureonDevice);
+                        .execute(floureonDevice);
             } catch (Exception e) {
                 logger.warn("Error while setting time of {} to {}: {}", thing.getUID(), command, e.getMessage());
             }
@@ -247,8 +255,14 @@ public class FloureonThermostatHandler extends BroadlinkThermostatHandler {
     }
 
     @Override
-    protected void refreshData() {
+    public void dispose() {
+        ScheduledFuture<?> currentScanJob = scanJob;
+        if (currentScanJob != null) {
+            currentScanJob.cancel(true);
+        }
+    }
 
+    protected void refreshData() {
         AdvancedStatusInfo advancedStatusInfo = advancedStatusInfoExpiringCache.getValue();
         if (advancedStatusInfo == null) {
             return;

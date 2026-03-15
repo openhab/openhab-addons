@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="semsportal" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>SEMSPortal Binding</name>
+	<description>
+		This is the binding for SEMSPortal. The SEMS portal is where a GoodWE solar installation uploads it's
+		data. The SEMS portal has a lot of data, only a few of them are currently mapped to a channel.
+		You will need an account
+		at semsportal.com and have your solar installation registered on that account.
+	</description>
+	<connection>cloud</connection>
+
+</addon:addon>

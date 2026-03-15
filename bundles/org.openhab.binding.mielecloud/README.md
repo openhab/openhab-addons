@@ -7,7 +7,7 @@ The latter can be requested from the [Miele Developer Portal](https://www.miele.
 ## Supported Things
 
 Most Miele appliances that directly connect to the cloud via a Wi-Fi module are supported.
-Appliances connecting to the XGW3000 gateway via ZigBee are also supported when registered with the cloud account.
+Appliances connecting to the XGW3000 gateway via Zigbee are also supported when registered with the cloud account.
 However they might be better supported by the [gateway-based Miele binding](https://www.openhab.org/addons/bindings/miele/).
 Depending on the age of your appliance the functionality of the binding might be limited.
 Appliances from recent generations will support all functionality.
@@ -76,7 +76,6 @@ The account has the following parameters:
 | email       | required  | E-mail address identifying this account. This exists only to distinguish accounts. If the address is changed after authorization then the account needs to be authorized again. |
 | locale      | optional  | The locale to use for full text channels of things from this account. Possible values are `en`, `de`, `da`, `es`, `fr`, `it`, `nl`, `nb`. Default is `en`.                      |
 
-
 ### Appliance Configuration
 
 The binding configuration UI will show a things-file template containing things for all supported appliances from the paired account.
@@ -88,7 +87,6 @@ All Miele cloud appliance things have the following parameters:
 | ---------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | deviceIdentifier | required  | Technical device identifier uniquely identifying the Miele appliance. Use the discovery result or the things-file template to obtain it. |
 
-
 ## Channels
 
 The following table lists all available channels.
@@ -96,64 +94,66 @@ See the following chapters for detailed information about which appliance suppor
 Depending on the exact appliance configuration not all channels might be supported, e.g. a hob with four plates will only fill the channels for plates 1-4.
 Channel ID and channel type ID match unless noted.
 
-| Channel Type ID               | Item Type            | Description                                                                                                                               | Read only |
-| ----------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| remote_control_can_be_started | Switch | Indicates if this device can be started remotely. | Yes |
-| remote_control_can_be_stopped | Switch | Indicates if this device can be stopped remotely. | Yes |
-| remote_control_can_be_paused | Switch | Indicates if this device can be paused remotely. | Yes |
-| remote_control_can_be_switched_on | Switch | Indicates if the device can be switched on remotely. | Yes |
-| remote_control_can_be_switched_off | Switch | Indicates if the device can be switched off remotely. | Yes |
-| remote_control_can_set_program_active | Switch | Indicates if the active program of the device can be set remotely. | Yes |
-| spinning_speed | String | The spinning speed of the active program. | Yes |
-| spinning_speed_raw | Number | The raw spinning speed of the active program. | Yes |
-| program_active | String | The active program of the device. | Yes |
-| program_active_raw | Number | The raw active program of the device. | Yes |
-| dish_warmer_program_active | String | The active program of the device. | No |
-| vacuum_cleaner_program_active | String | The active program of the device. | No |
-| program_phase | String | The phase of the active program. | Yes |
-| program_phase_raw | Number | The raw phase of the active program. | Yes |
-| operation_state | String | The operation state of the device. | Yes |
-| operation_state_raw | Number | The raw operation state of the device. | Yes |
-| program_start | Switch | Starts the currently selected program. | No |
-| program_stop | Switch | Stops the currently selected program. | No |
-| program_start_stop | String | Starts or stops the currently selected program. | No |
-| program_start_stop_pause | String | Starts, stops or pauses the currently selected program. | No |
-| power_state_on_off | String | Switches the device On or Off. | No |
-| finish_state | Switch | Indicates whether the most recent program finished. | Yes |
-| delayed_start_time | Number | The delayed start time of the selected program. | Yes |
-| program_remaining_time | Number | The remaining time of the active program. | Yes |
-| program_elapsed_time | Number | The elapsed time of the active program. | Yes |
-| program_progress | Number | The progress of the active program. | Yes |
-| drying_target | String | The target drying step of the laundry. | Yes |
-| drying_target_raw | Number | The raw target drying step of the laundry. | Yes |
-| pre_heat_finished | Switch | Indicates whether the pre-heating finished. | Yes |
-| temperature_target | Number | The target temperature of the device. | Yes |
-| temperature_current | Number | The currently measured temperature of the device. | Yes |
-| ventilation_power | String | The current ventilation power of the hood. | Yes |
-| ventilation_power_raw | Number | The current raw ventilation power of the hood. | Yes |
-| error_state | Switch | Indication flag which signals an error state for the device. | Yes |
-| info_state | Switch | Indication flag which signals an information of the device. | Yes |
-| fridge_super_cool | Switch | Start the super cooling mode of the fridge. | No |
-| freezer_super_freeze | Switch | Start the super freezing mode of the freezer. | No |
-| super_cool_can_be_controlled | Switch | Indicates if super cooling can be toggled. | Yes |
-| super_freeze_can_be_controlled | Switch | Indicates if super freezing can be toggled | Yes |
-| fridge_temperature_target | Number | The target temperature of the fridge. | Yes |
-| fridge_temperature_current | Number | The currently measured temperature of the fridge. | Yes |
-| freezer_temperature_target | Number | The target temperature of the freezer. | Yes |
-| freezer_temperature_current | Number | The currently measured temperature of the freezer. | Yes |
-| top_temperature_target | Number | The target temperature of the top area. | Yes |
-| top_temperature_current | Number | The currently measured temperature of the top area. | Yes |
-| middle_temperature_target | Number | The target temperature of the middle area. | Yes |
-| middle_temperature_current | Number | The currently measured temperature of the middle area. | Yes |
-| bottom_temperature_target | Number | The target temperature of the bottom area. | Yes |
-| bottom_temperature_current | Number | The currently measured temperature of the bottom area. | Yes |
-| light_switch | Switch | Indicates if the light of the device is enabled. | No |
-| light_can_be_controlled | Switch | Indicates if the light of the device can be controlled. | Yes |
-| plate_power_step | String | The power level of the heating plate. | Yes |
-| plate_power_step_raw | Number | The raw power level of the heating plate. | Yes |
-| door_state | Switch | Indicates if the door of the device is open. | Yes |
-| door_alarm | Switch | Indicates if the door alarm of the device is active. | Yes |
-| battery_level | Number | The battery level of the robotic vacuum cleaner. | Yes |
+| Channel Type ID                       | Item Type | Description                                                                        | Read only |
+|---------------------------------------|-----------|------------------------------------------------------------------------------------|-----------|
+| remote_control_can_be_started         | Switch    | Indicates if this device can be started remotely.                                  | Yes       |
+| remote_control_can_be_stopped         | Switch    | Indicates if this device can be stopped remotely.                                  | Yes       |
+| remote_control_can_be_paused          | Switch    | Indicates if this device can be paused remotely.                                   | Yes       |
+| remote_control_can_be_switched_on     | Switch    | Indicates if the device can be switched on remotely.                               | Yes       |
+| remote_control_can_be_switched_off    | Switch    | Indicates if the device can be switched off remotely.                              | Yes       |
+| remote_control_can_set_program_active | Switch    | Indicates if the active program of the device can be set remotely.                 | Yes       |
+| spinning_speed                        | String    | The spinning speed of the active program.                                          | Yes       |
+| spinning_speed_raw                    | Number    | The raw spinning speed of the active program.                                      | Yes       |
+| program_active                        | String    | The active program of the device.                                                  | Yes       |
+| program_active_raw                    | Number    | The raw active program of the device.                                              | Yes       |
+| dish_warmer_program_active            | String    | The active program of the device.                                                  | No        |
+| vacuum_cleaner_program_active         | String    | The active program of the device.                                                  | No        |
+| program_phase                         | String    | The phase of the active program.                                                   | Yes       |
+| program_phase_raw                     | Number    | The raw phase of the active program.                                               | Yes       |
+| operation_state                       | String    | The operation state of the device.                                                 | Yes       |
+| operation_state_raw                   | Number    | The raw operation state of the device.                                             | Yes       |
+| program_start                         | Switch    | Starts the currently selected program.                                             | No        |
+| program_stop                          | Switch    | Stops the currently selected program.                                              | No        |
+| program_start_stop                    | String    | Starts or stops the currently selected program.                                    | No        |
+| program_start_stop_pause              | String    | Starts, stops or pauses the currently selected program.                            | No        |
+| power_state_on_off                    | String    | Switches the device On or Off.                                                     | No        |
+| finish_state                          | Switch    | Indicates whether the most recent program finished.                                | Yes       |
+| delayed_start_time                    | Number    | The delayed start time of the selected program.                                    | Yes       |
+| program_remaining_time                | Number    | The remaining time of the active program.                                          | Yes       |
+| program_elapsed_time                  | Number    | The elapsed time of the active program.                                            | Yes       |
+| program_progress                      | Number    | The progress of the active program.                                                | Yes       |
+| drying_target                         | String    | The target drying step of the laundry.                                             | Yes       |
+| drying_target_raw                     | Number    | The raw target drying step of the laundry.                                         | Yes       |
+| pre_heat_finished                     | Switch    | Indicates whether the pre-heating finished.                                        | Yes       |
+| temperature_target                    | Number    | The target temperature of the device.                                              | Yes       |
+| temperature_current                   | Number    | The currently measured temperature of the device.                                  | Yes       |
+| ventilation_power                     | String    | The current ventilation power of the hood.                                         | Yes       |
+| ventilation_power_raw                 | Number    | The current raw ventilation power of the hood.                                     | Yes       |
+| error_state                           | Switch    | Indication flag which signals an error state for the device.                       | Yes       |
+| info_state                            | Switch    | Indication flag which signals an information of the device.                        | Yes       |
+| fridge_super_cool                     | Switch    | Start the super cooling mode of the fridge.                                        | No        |
+| freezer_super_freeze                  | Switch    | Start the super freezing mode of the freezer.                                      | No        |
+| super_cool_can_be_controlled          | Switch    | Indicates if super cooling can be toggled.                                         | Yes       |
+| super_freeze_can_be_controlled        | Switch    | Indicates if super freezing can be toggled                                         | Yes       |
+| fridge_temperature_target             | Number    | The target temperature of the fridge.                                              | Yes       |
+| fridge_temperature_current            | Number    | The currently measured temperature of the fridge.                                  | Yes       |
+| freezer_temperature_target            | Number    | The target temperature of the freezer.                                             | Yes       |
+| freezer_temperature_current           | Number    | The currently measured temperature of the freezer.                                 | Yes       |
+| top_temperature_target                | Number    | The target temperature of the top area.                                            | Yes       |
+| top_temperature_current               | Number    | The currently measured temperature of the top area.                                | Yes       |
+| middle_temperature_target             | Number    | The target temperature of the middle area.                                         | Yes       |
+| middle_temperature_current            | Number    | The currently measured temperature of the middle area.                             | Yes       |
+| bottom_temperature_target             | Number    | The target temperature of the bottom area.                                         | Yes       |
+| bottom_temperature_current            | Number    | The currently measured temperature of the bottom area.                             | Yes       |
+| light_switch                          | Switch    | Indicates if the light of the device is enabled.                                   | No        |
+| light_can_be_controlled               | Switch    | Indicates if the light of the device can be controlled.                            | Yes       |
+| plate_power_step                      | String    | The power level of the heating plate.                                              | Yes       |
+| plate_power_step_raw                  | Number    | The raw power level of the heating plate.                                          | Yes       |
+| door_state                            | Switch    | Indicates if the door of the device is open.                                       | Yes       |
+| door_alarm                            | Switch    | Indicates if the door alarm of the device is active.                               | Yes       |
+| water_consumption_current             | Number    | The amount of water used by the current running program up to the present moment.  | Yes       |
+| energy_consumption_current            | Number    | The amount of energy used by the current running program up to the present moment. | Yes       |
+| battery_level                         | Number    | The battery level of the robotic vacuum cleaner.                                   | Yes       |
 
 ### Coffee System
 
@@ -217,6 +217,8 @@ Channel ID and channel type ID match unless noted.
 - error_state
 - info_state
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Tumble Dryer
 
@@ -244,6 +246,7 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- energy_consumption_current
 
 ### Freezer
 
@@ -389,6 +392,8 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Washing Machine
 
@@ -417,6 +422,8 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Wine Storage
 
@@ -491,18 +498,18 @@ The following chapters list the properties offered by appliances.
 
 ## Full Example
 
-### demo.things:
+### `demo.things` Example
 
-```
+```java
 Bridge mielecloud:account:home [ email="me@openhab.org", locale="en" ] {
     Thing coffee_system 000703261234 "Coffee machine CVA7440" [ deviceIdentifier="000703261234" ]
     Thing hob 000160102345 "Cooktop KM7677" [ deviceIdentifier="000160102345" ]
 }
 ```
 
-### demo.items:
+### `demo.items` Example
 
-```
+```java
 // Coffee system
 Switch coffee_system_remote_control_can_be_started      { channel="mielecloud:coffee_system:home:000703261234:remote_control_can_be_started" }
 Switch coffee_system_remote_control_can_be_stopped      { channel="mielecloud:coffee_system:home:000703261234:remote_control_can_be_stopped" }
@@ -539,9 +546,9 @@ Switch hob_plate_6_is_present            { channel="mielecloud:hob:home:00016010
 String hob_plate_6_power_step            { channel="mielecloud:hob:home:000160102345:plate_6_power_step" }
 ```
 
-### demo.sitemap:
+### `demo.sitemap` Example
 
-```
+```perl
 sitemap demo label="Kitchen"
 {
     Frame {
@@ -620,4 +627,3 @@ Here are some ideas on what could be done with this binding. You have more ideas
 ## Acknowledgements
 
 The development of this binding was initiated and sponsored by Miele & Cie. KG.
-

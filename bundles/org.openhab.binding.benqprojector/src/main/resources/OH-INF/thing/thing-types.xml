@@ -7,6 +7,7 @@
 	<thing-type id="projector-serial">
 		<label>BenQ Projector - Serial</label>
 		<description>A BenQ projector connected via a serial port</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -18,6 +19,10 @@
 			<channel id="directcmd" typeId="directcmd"/>
 			<channel id="lamptime" typeId="lamptime"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -39,6 +44,7 @@
 		<label>BenQ Projector - TCP/IP</label>
 		<description>A BenQ projector connected via the built-in ethernet port or a serial over
 			IP device</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -50,6 +56,10 @@
 			<channel id="directcmd" typeId="directcmd"/>
 			<channel id="lamptime" typeId="lamptime"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -79,6 +89,7 @@
 			<options>
 				<option value="hdmi">HDMI</option>
 				<option value="hdmi2">HDMI2</option>
+				<option value="usbreader">USB Reader</option>
 				<option value="ypbr">Component</option>
 				<option value="rgb">Computer/YPbPr</option>
 				<option value="rgb2">Computer/YPbPr2</option>
@@ -97,6 +108,8 @@
 				<option value="preset">Presentation</option>
 				<option value="srgb">sRGB</option>
 				<option value="bright">Bright</option>
+				<option value="brightcine">Bright Cinema</option>
+				<option value="filmmaker">Filmmaker Mode</option>
 				<option value="livingroom">Living Room</option>
 				<option value="game">Game</option>
 				<option value="cine">Cinema</option>
@@ -109,6 +122,9 @@
 				<option value="isfday">ISF Day</option>
 				<option value="isfnight">ISF Night</option>
 				<option value="threed">3-D</option>
+				<option value="hdr">HDR10</option>
+				<option value="hdr+">HDR10+</option>
+				<option value="hlg">HLG</option>
 			</options>
 		</state>
 	</channel-type>
@@ -123,6 +139,7 @@
 				<option value="auto">Auto</option>
 				<option value="lbox">Letterbox</option>
 				<option value="wide">Wide</option>
+				<option value="2.35">2.35:1</option>
 			</options>
 		</state>
 	</channel-type>
@@ -130,11 +147,19 @@
 		<item-type>Switch</item-type>
 		<label>Freeze Image</label>
 		<description>Turn the Freeze Image Mode On or Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="blank">
 		<item-type>Switch</item-type>
 		<label>Screen Blank</label>
 		<description>Turn the Screen Blank On or Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="directcmd" advanced="true">
 		<item-type>String</item-type>
@@ -158,11 +183,16 @@
 				<option value="enter">Enter</option>
 			</options>
 		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="lamptime">
 		<item-type>Number</item-type>
 		<label>Lamp Time</label>
-		<description>Retrieves the Lamp Hours</description>
+		<description>Retrieves the number of hours the lamp has been used</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 

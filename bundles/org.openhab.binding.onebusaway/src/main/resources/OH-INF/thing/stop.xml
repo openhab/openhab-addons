@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Stop</label>
 		<description>Provides data about different routes at a specific stop.</description>
+
 		<config-description>
 			<parameter name="interval" type="integer" min="60" max="7200">
 				<label>Interval</label>

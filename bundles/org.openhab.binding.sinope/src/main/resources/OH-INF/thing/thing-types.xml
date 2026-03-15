@@ -6,7 +6,7 @@
 	<bridge-type id="gateway">
 		<label>Sinopé Gateway</label>
 		<description>A Sinopé Gateway</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
@@ -40,6 +40,7 @@
 		</supported-bridge-type-refs>
 		<label>Sinopé Thermostat</label>
 		<description>Sinopé Thermostat control</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="insideTemperature" typeId="insideTemperature"/>
 			<channel id="outsideTemperature" typeId="outsideTemperature"/>
@@ -60,6 +61,10 @@
 		<description>Current inside temperature</description>
 		<category>Temperature</category>
 		<!-- As specified by manufacturer -->
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="-10" max="70" step="0.01" pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -68,6 +73,10 @@
 		<label>Temperature</label>
 		<description>Current outside temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="0.01" pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -76,6 +85,10 @@
 		<label>Temperature</label>
 		<description>Setpoint temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="5" max="30" step="0.01" pattern="%.2f %unit%" readOnly="false"/>
 	</channel-type>
 

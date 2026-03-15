@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="average-values">
+		<label>Average Forecast Values</label>
+		<description>Forecast values showing average case data</description>
+		<channels>
+			<channel id="power-estimate" typeId="power-estimate"/>
+			<channel id="energy-estimate" typeId="energy-estimate"/>
+			<channel id="power-actual" typeId="power-actual"/>
+			<channel id="energy-actual" typeId="energy-actual"/>
+			<channel id="energy-remain" typeId="energy-remain"/>
+			<channel id="energy-today" typeId="energy-today"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

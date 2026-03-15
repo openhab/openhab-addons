@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="kermi-xcenter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+		<label>Kermi Heat Pump X-Center</label>
+		<description>Provide Energy values, String Details and general Information of your Kermi Heat Pump</description>
+		<channel-groups>
+			<channel-group id="xcenter-state" typeId="xcenter-state-values"/>
+			<channel-group id="xcenter-energy-source" typeId="xcenter-energy-source-values"/>
+			<channel-group id="xcenter-charging-circuit" typeId="xcenter-charging-circuit-values"/>
+			<channel-group id="xcenter-power" typeId="xcenter-power-values"/>
+			<channel-group id="xcenter-workhours" typeId="xcenter-workhours-values"/>
+			<channel-group id="xcenter-alarm" typeId="xcenter-alarm-values"/>
+			<channel-group id="xcenter-pv-modulation" typeId="xcenter-pv-modulation-values"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="refresh" type="integer" min="1000" unit="ms">
+				<label>Refresh Interval</label>
+				<description>Refresh Rate of X-Center values in Milliseconds</description>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pvEnabled" type="boolean">
+				<label>Read PV-Modulation States</label>
+				<description>Enabled reading of PV-Modulation (disable to skip reading)</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

@@ -19,7 +19,7 @@
 
 	<channel-type id="eta">
 		<item-type>String</item-type>
-		<label>Estimated Time Available</label>
+		<label>Estimated Time of Arrival</label>
 		<description>Time at which the train arrives</description>
 		<state readOnly="true"/>
 	</channel-type>

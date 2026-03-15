@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Filter</label>
-		<description>Filter Equipment</description>
+		<semantic-equipment-tag>WaterFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="filterEnable" typeId="system.power"/>
 			<channel id="filterValvePosition" typeId="valvePosition"/>
@@ -35,6 +35,7 @@
 			<property name="highFilterSpeed"></property>
 			<property name="customFilterSpeed"></property>
 			<property name="freezeProtectOverrideInterval"></property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
@@ -43,7 +44,10 @@
 	<channel-type id="valvePosition">
 		<item-type>String</item-type>
 		<label>Valve Position</label>
-		<description>Valve Position</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -56,22 +60,33 @@
 
 	<channel-type id="filterSpeedPercent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Filter Speed %</label>
-		<description>Filter Speed (%)</description>
-		<state min="0" max="100" step="5" pattern="%d %unit%" readOnly="false"/>
+		<label>Filter Speed</label>
+		<description>Filter speed in percentage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state min="0" max="100" step="5" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterSpeedRpm">
-		<item-type>Number</item-type>
-		<label>Filter Speed RPM</label>
-		<description>Filter Speed (RPM)</description>
-		<state min="0" max="3600" step="200" pattern="%d" readOnly="false"/>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
+		<label>Filter Speed</label>
+		<description>Filter speed in rpm</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
+		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterSpeedSelect">
 		<item-type>String</item-type>
 		<label>Filter Speed States</label>
-		<description>Filter Speed States</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>
@@ -86,7 +101,6 @@
 	<channel-type id="filterState">
 		<item-type>String</item-type>
 		<label>Filter State</label>
-		<description>Filter State</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -108,8 +122,8 @@
 	<channel-type id="filterLastSpeed">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
-		<description>Last Speed (%)</description>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<description>Last filter speed in percentage</description>
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

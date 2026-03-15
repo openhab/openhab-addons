@@ -7,6 +7,7 @@
 		<label>KOSTAL PLENTICORE Plus 8.5 (with Battery)</label>
 		<description>Bindings for the KOSTAL PIKO PLENTICORE plus 8.5 solar inverter (with battery attached on PV string 3)</description>
 		<category>Inverter</category>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<channels>
 			<channel id="deviceLocalDCPower" typeId="device-local-dc-power"/>
 			<channel id="deviceLocalHomeconsumptionFromBattery" typeId="device-local-homeconsumption-from-battery"/>

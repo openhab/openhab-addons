@@ -1,0 +1,18 @@
+{
+    "type": "event",
+    "event": {
+        "source": "node",
+        "event": "value updated",
+        "nodeId": 78,
+        "args": {
+            "commandClassName": "Notification",
+            "commandClass": 113,
+            "property": "Access Control",
+            "propertyName": "Access Control",
+            "endpoint": 0,
+            "newValue": 22,
+            "prevValue": 23,
+            "propertyKey": "Door state (simple)"
+        }
+    }
+}

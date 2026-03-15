@@ -6,30 +6,30 @@ It was also successfully tested on a Wernig G90-160.
 
 **NOTE:** This binding does not work with the ComfoAir Q-series (e.g. Q350 or Q450). These ventilation units use a CAN bus for communication and a different protocol.
 
-### Limitations
+## Limitations
 
-* Either the ComfoAir binding or the CCEase Comfocontrol can be active, but not together.
-* You must implement auto mode by yourself with rules, but it is more powerful.
+- Either the ComfoAir binding or the CCEase Comfocontrol can be active, but not together.
+- You must implement auto mode by yourself with rules, but it is more powerful.
 
-### Prerequisites
+## Prerequisites
 
 Computer communication between ComfoAir device and openHAB via RS232 connection has to be set up.
 The connection should be made with a 3-wire cable connecting pins: GND, TX, RX of RS232 sockets, but RX and TX pins should be crossed (TX of ComfoAir to RX of PC, RX of ComfoAir to TX of PC).
 
-### Serial Port Access Rights
+## Serial Port Access Rights
 
-* Take care that the user that runs openHAB has rights to access the serial port
-* On Ubuntu/Debian based systems (incl. openHABian) that usually means adding the user (e.g. openhab) to the group "dialout", i.e.
+- Take care that the user that runs openHAB has rights to access the serial port
+- On Ubuntu/Debian based systems (incl. openHABian) that usually means adding the user (e.g. openhab) to the group "dialout", i.e.
 
-```
+```shell
 sudo usermod -a -G dialout openhab
 ```
 
 ## Supported Things
 
 The binding supports thing types for different device types.
-They only differ in the available channels, where the generic *comfoair* thing type supports all available channels.
-If there is no thing type that matches your specific device you can safely choose the *comfoair* type.
+They only differ in the available channels, where the generic _comfoair_ thing type supports all available channels.
+If there is no thing type that matches your specific device you can safely choose the _comfoair_ type.
 
 |Thing Type ID |Description                                                                  |
 |--------------|-----------------------------------------------------------------------------|
@@ -69,8 +69,8 @@ The ComfoAir binding supports the following channels.
 | ventilation#fanIn3                 | Number                   | Fan In Level 3                  | Fan level 3 performance (%) of incoming fan                                                 | false     | yes      |
 | ventilation#fanInPercent           | Number                   | Fan In (%)                      | Current relative speed (%) of incoming fan                                                  | false     | yes      |
 | ventilation#fanOutPercent          | Number                   | Fan Out (%)                     | Current relative speed (%) of outgoing fan                                                  | true      | yes      |
-| ventilation#fanInRPM               | Number                   | Fan In (rpm)                    | Current absolute speed (rpm) of incoming fan                                                | true      | yes      |
-| ventilation#fanOutRPM              | Number                   | Fan Out (rpm)                   | Current absolute speed (rpm) of outgoing fan                                                | true      | yes      |
+| ventilation#fanInRPM               | Number:Frequency         | Fan In (rpm)                    | Current absolute speed (rpm) of incoming fan                                                | true      | yes      |
+| ventilation#fanOutRPM              | Number:Frequency         | Fan Out (rpm)                   | Current absolute speed (rpm) of outgoing fan                                                | true      | yes      |
 | **Temperature Values**             |                          |                                 |                                                                                             |           |          |
 | temperatures#targetTemperature     | Number:Temperature       | Target Temperature              | Target (comfort) temperature                                                                | false     | no       |
 | temperatures#outdoorTemperatureIn  | Number:Temperature       | Outdoor Temperature Incoming    | Intake air temperature (outside)                                                            | true      | yes      |
@@ -108,14 +108,14 @@ The ComfoAir binding supports the following channels.
 | menuP1#menu28Mode                  | Switch                   | Menu 28 Mode (P18)              | State of menu 28 mode (P18)                                                                 | true      | yes      |
 | menuP1#menu29Mode                  | Switch                   | Menu 29 Mode (P19)              | State of menu 29 mode (P19)                                                                 | true      | yes      |
 | **Menu P2: Delay Settings**        |                          |                                 |                                                                                             |           |          |
-| menuP2#bathroomStartDelay          | Number                   | Menu P21                        | Start delay for bathroom switch (min)                                                       | false     | yes      |
-| menuP2#bathroomEndDelay            | Number                   | Menu P22                        | End delay for bathroom switch (min)                                                         | false     | yes      |
-| menuP2#L1EndDelay                  | Number                   | Menu P23                        | End delay for L1 switch (min)                                                               | false     | yes      |
-| menuP2#pulseVentilation            | Number                   | Menu P27                        | Period for pulse ventilation (min)                                                          | false     | yes      |
-| menuP2#filterWeeks                 | Number                   | Menu P24                        | Usage period until filter pollution message (weeks)                                         | false     | yes      |
-| menuP2#RFShortDelay                | Number                   | Menu P25                        | End delay (RF short actuation) for ventilation level 3 (min)                                | false     | yes      |
-| menuP2#RFLongDelay                 | Number                   | Menu P26                        | End delay (RF long actuation) for ventilation level 3 (min)                                 | false     | yes      |
-| menuP2#cookerhoodDelay             | Number                   | Menu P20                        | End delay for cooker hood control (min)                                                     | false     | yes      |
+| menuP2#bathroomStartDelay          | Number:Time              | Menu P21                        | Start delay for bathroom switch (uses minutes internally)                                   | false     | yes      |
+| menuP2#bathroomEndDelay            | Number:Time              | Menu P22                        | End delay for bathroom switch (uses minutes internally)                                     | false     | yes      |
+| menuP2#L1EndDelay                  | Number:Time              | Menu P23                        | End delay for L1 switch (uses minutes internally)                                           | false     | yes      |
+| menuP2#pulseVentilation            | Number:Time              | Menu P27                        | Period for pulse ventilation (uses minutes internally)                                      | false     | yes      |
+| menuP2#filterWeeks                 | Number:Time              | Menu P24                        | Usage period until filter pollution message (uses weeks internally)                         | false     | yes      |
+| menuP2#RFShortDelay                | Number:Time              | Menu P25                        | End delay (RF short actuation) for ventilation level 3 (uses minutes internally)            | false     | yes      |
+| menuP2#RFLongDelay                 | Number:Time              | Menu P26                        | End delay (RF long actuation) for ventilation level 3 (uses minutes internally)             | false     | yes      |
+| menuP2#cookerhoodDelay             | Number:Time              | Menu P20                        | End delay for cooker hood control (uses minutes internally)                                 | false     | yes      |
 | **Menu P9: Option States**         |                          |                                 |                                                                                             |           |          |
 | menuP9#chimneyState                | Switch                   | Chimney Control State           | State of the chimney control                                                                | true      | yes      |
 | menuP9#bypassState                 | Switch                   | Bypass State                    | State of the bypass (ON = open / OFF = closed)                                              | true      | yes      |
@@ -140,23 +140,23 @@ The ComfoAir binding supports the following channels.
 | preheater#preheaterValve           | Number                   | Preheater Valve                 | State of the preheater valve                                                                | true      | yes      |
 | preheater#preheaterFrostProtect    | Switch                   | Frost Protection                | State of the frost protection                                                               | true      | yes      |
 | preheater#preheaterHeating         | Switch                   | Preheater                       | State of the preheater                                                                      | true      | yes      |
-| preheater#preheaterFrostTime       | Number                   | Preheater Frost Time            | Frost minutes                                                                               | true      | yes      |
+| preheater#preheaterFrostTime       | Number:Time              | Preheater Frost Time            | Frost minutes                                                                               | true      | yes      |
 | preheater#preheaterSafety          | Number                   | Preheater Frost Safety          | Frost safety setting                                                                        | true      | yes      |
 | **GHX Values**                     |                          |                                 |                                                                                             |           |          |
-| ewt#ewtTemperatureLow              | Number:Temperature       | GHX Temperature (low)           | Lower temperature of the geothermal heat exchanger                                          | true      | yes      |
-| ewt#ewtTemperatureHigh             | Number:Temperature       | GHX Temperature (high)          | Upper temperature of the geothermal heat exchanger                                          | true      | yes      |
-| ewt#ewtSpeed                       | Number                   | GHX Speed Up (%)                | Speed up of the geothermal heat exchanger                                                   | true      | yes      |
+| ewt#ewtTemperatureLow              | Number:Temperature       | GHX Temperature (low)           | Lower temperature of the geothermal heat exchanger                                          | false     | yes      |
+| ewt#ewtTemperatureHigh             | Number:Temperature       | GHX Temperature (high)          | Upper temperature of the geothermal heat exchanger                                          | false     | yes      |
+| ewt#ewtSpeed                       | Number                   | GHX Speed Up (%)                | Speed up of the geothermal heat exchanger                                                   | false     | yes      |
 | **Heater Values**                  |                          |                                 |                                                                                             |           |          |
 | heater#heaterPower                 | Number                   | Heater Power                    | Heater power value                                                                          | true      | yes      |
 | heater#heaterPowerI                | Number                   | Heater Power I-parameter        | Heater power I-parameter value                                                              | true      | yes      |
-| heater#heaterTargetTemperature     | Number:Temperature       | Heater Target Temperature       | Target temperature of the heater                                                            | true      | yes      |
+| heater#heaterTargetTemperature     | Number:Temperature       | Heater Target Temperature       | Target temperature of the heater                                                            | false     | yes      |
 | **Cookerhood Values**              |                          |                                 |                                                                                             |           |          |
 | cookerhood#cookerhoodSpeed         | Number                   | Cookerhood Speed Up (%)         | Speed up of the cookerhood                                                                  | true      | yes      |
 | **Enthalpy Values**                |                          |                                 |                                                                                             |           |          |
 | enthalpy#enthalpyTemperature       | Number:Temperature       | Enthalpy Sensor Temperature     | Temperature of the enthalpy sensor                                                          | true      | yes      |
 | enthalpy#enthalpyHumidity          | Number                   | Enthalpy Sensor Humidity        | Humidity of the enthalpy sensor                                                             | true      | yes      |
 | enthalpy#enthalpyLevel             | Number                   | Enthalpy Sensor Level           | Level of the enthalpy sensor                                                                | true      | yes      |
-| enthalpy#enthalpyTime              | Number                   | Enthalpy Sensor Timer           | Timer state of the enthalpy sensor                                                          | true      | yes      |
+| enthalpy#enthalpyTime              | Number:Time              | Enthalpy Sensor Timer           | Timer state of the enthalpy sensor                                                          | true      | yes      |
 | **Option Settings**                |                          |                                 |                                                                                             |           |          |
 | options#isPreheater                | Switch                   | Preheater                       | Preheater option installed                                                                  | true      | yes      |
 | options#isBypass                   | Switch                   | Bypass                          | Bypass option installed                                                                     | true      | yes      |
@@ -200,78 +200,78 @@ The ComfoAir binding supports the following channels.
 
 `.things` file:
 
-```
+```java
 Thing comfoair:comfoair:myComfoAir "ComfoAir" [serialPort="/dev/ttyUSB0", refreshInterval="60"]
 ```
 
 `.items` file:
 
-```
-Switch	comfoairControl				"Activate"					<computer>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:bindingControl#activate"}
-Number	comfoairFanLevel			"Ventilation level [%d]"			<chart>		(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanLevel"}
-Number	comfoairErrorReset			"Error reset"					<service>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:resets#errorReset"}
-Number	comfoairFilterReset			"Filter reset"					<service>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:resets#filterReset"}
-Number	comfoairFilterPeriod			"Filter period [%d weeks]"			<clock>		(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP2#filterWeeks"}
+```java
+Switch comfoairControl    "Activate"     <computer> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:bindingControl#activate"}
+Number comfoairFanLevel   "Ventilation level [%d]"   <chart>  (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:ventilation#fanLevel"}
+Number comfoairErrorReset   "Error reset"     <service> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:resets#errorReset"}
+Number comfoairFilterReset   "Filter reset"     <service> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:resets#filterReset"}
+Number comfoairFilterPeriod   "Filter period [%d weeks]"   <clock>  (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP2#filterWeeks"}
 
 // Messages
-String		comfoairError			"Error: [%s]"			(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:errors#errorsCurrent"}
-Number:Time	comfoairFilterRuntime		"Filter runtime [%.0f h]"	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:times#filterHours"}
+String  comfoairError   "Error: [%s]"   (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:errors#errorsCurrent"}
+Number:Time comfoairFilterRuntime  "Filter runtime [%.0f h]" (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:times#filterHours"}
 
 // State
-Number:Temperature	comfoairTargetTemperature		"Comfort temperature [%.1f °C]"			<temperature>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:temperatures#targetTemperature"}
-Number:Temperature	comfoairOutdoorIncomingTemperature	"Inlet air temperature [%.1f °C]"		<temperature>	(ComfoAir, comfoairTemps_Chart)	{channel="comfoair:comfoair:myComfoAir:temperatures#outdoorTemperatureIn"}
-Number:Temperature	comfoairIndoorIncomingTemperature	"Supply air temperature [%.1f °C]"		<temperature>	(ComfoAir, comfoairTemps_Chart)	{channel="comfoair:comfoair:myComfoAir:temperatures#indoorTemperatureIn"}
-Number:Temperature	comfoairIndoorOutgoingTemperature	"Return air temperature [%.1f °C]"		<temperature>	(ComfoAir, comfoairTemps_Chart)	{channel="comfoair:comfoair:myComfoAir:temperatures#indoorTemperatureOut"}
-Number:Temperature	comfoairOutdoorOutgoingTemperature	"Exhaust air temperature [%.1f °C]"		<temperature>	(ComfoAir, comfoairTemps_Chart)	{channel="comfoair:comfoair:myComfoAir:temperatures#outdoorTemperatureOut"}
-Number	comfoairIncomingFan			"Supply capacity [%d %%]"			<fan_in>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanInPercent"}
-Number	comfoairOutgoingFan			"Exhaust capacity [%d %%]"			<fan_out>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanOutPercent"}
-Number	comfoairFanIn0				"Supply capacity - level 0 [%d %%]"		<fan_in>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanIn0"}
-Number	comfoairFanOut0				"Exhaust capacity - level 0 [%d %%]"		<fan_out>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanOut0"}
-Switch	comfoairBypassMode			"Bypass [MAP(comfoair_bypass.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#bypassState"}
-Switch	comfoairGHXMode 			"GHX [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#ewtState"}
-Switch	comfoairChimneyMode			"Fire programme [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#chimneyState"}
-Switch	comfoairHeaterMode			"Heater [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#heaterState"}
-Switch	comfoairCookerHoodMode			"Extractor hood [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#cookerhoodState"}
-Switch	comfoairEnthalpyMode			"Enthalpy [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#enthalpyState"}
-Switch	comfoairFreezeMode			"Freeze [MAP(comfoair_freeze.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#frostState"}
+Number:Temperature comfoairTargetTemperature  "Comfort temperature [%.1f °C]"   <temperature> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:temperatures#targetTemperature"}
+Number:Temperature comfoairOutdoorIncomingTemperature "Inlet air temperature [%.1f °C]"  <temperature> (ComfoAir, comfoairTemps_Chart) {channel="comfoair:comfoair:myComfoAir:temperatures#outdoorTemperatureIn"}
+Number:Temperature comfoairIndoorIncomingTemperature "Supply air temperature [%.1f °C]"  <temperature> (ComfoAir, comfoairTemps_Chart) {channel="comfoair:comfoair:myComfoAir:temperatures#indoorTemperatureIn"}
+Number:Temperature comfoairIndoorOutgoingTemperature "Return air temperature [%.1f °C]"  <temperature> (ComfoAir, comfoairTemps_Chart) {channel="comfoair:comfoair:myComfoAir:temperatures#indoorTemperatureOut"}
+Number:Temperature comfoairOutdoorOutgoingTemperature "Exhaust air temperature [%.1f °C]"  <temperature> (ComfoAir, comfoairTemps_Chart) {channel="comfoair:comfoair:myComfoAir:temperatures#outdoorTemperatureOut"}
+Number comfoairIncomingFan   "Supply capacity [%d %%]"   <fan_in> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:ventilation#fanInPercent"}
+Number comfoairOutgoingFan   "Exhaust capacity [%d %%]"   <fan_out> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:ventilation#fanOutPercent"}
+Number comfoairFanIn0    "Supply capacity - level 0 [%d %%]"  <fan_in> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:ventilation#fanIn0"}
+Number comfoairFanOut0    "Exhaust capacity - level 0 [%d %%]"  <fan_out> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:ventilation#fanOut0"}
+Switch comfoairBypassMode   "Bypass [MAP(comfoair_bypass.map):%s]"  <climate> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP9#bypassState"}
+Switch comfoairGHXMode    "GHX [MAP(comfoair_on-off.map):%s]"  <climate> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP9#ewtState"}
+Switch comfoairChimneyMode   "Fire programme [MAP(comfoair_on-off.map):%s]" <climate> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP9#chimneyState"}
+Switch comfoairHeaterMode   "Heater [MAP(comfoair_on-off.map):%s]"  <climate> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP9#heaterState"}
+Switch comfoairCookerHoodMode   "Extractor hood [MAP(comfoair_on-off.map):%s]" <climate> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP9#cookerhoodState"}
+Switch comfoairEnthalpyMode   "Enthalpy [MAP(comfoair_on-off.map):%s]" <climate> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP9#enthalpyState"}
+Switch comfoairFreezeMode   "Freeze [MAP(comfoair_freeze.map):%s]"  <climate> (ComfoAir)   {channel="comfoair:comfoair:myComfoAir:menuP9#frostState"}
 ```
 
 `.sitemap` file:
 
-```
+```perl
 sitemap comfoair label="ComfoAir" {
-	Frame label="Main" {
-		Text item=comfoairError labelcolor=[!="No Errors"="red"] valuecolor=[!="No Errors"="red"]
-		Switch item=comfoairControl mappings=[OFF="CCEase", ON="Computer"]
-		Switch item=comfoairErrorReset mappings=[1="Reset"]
-		Switch item=comfoairFilterReset mappings=[1="Reset"]
-	}
-	Frame label="Control" {
-		Selection item=comfoairFanLevel
-		Setpoint item=comfoairTargetTemperature step=0.5 minValue=15 maxValue=28 valuecolor=["black"]
-	}
-	Frame label="State" {
-		Text item=comfoairOutdoorIncomingTemperature valuecolor=["black"]
-		Text item=comfoairOutdoorOutgoingTemperature valuecolor=["black"]
-		Text item=comfoairIndoorIncomingTemperature valuecolor=["black"]
-		Text item=comfoairIndoorOutgoingTemperature valuecolor=["black"]
-	}
-	Frame {
-		Text item=comfoairIncomingFan valuecolor=["black"]
-		Text item=comfoairBypassMode valuecolor=["black"]
-		Text item=comfoairOutgoingFan valuecolor=["black"]
-		Text item=comfoairGHXMode valuecolor=[OFF="silver", ON="black"]
-		Text item=comfoairEfficiency valuecolor=["black"]
-		Text item=comfoairFreezeMode valuecolor=[OFF="black", ON="red"]
-		Text item=comfoairFilterRuntime_Message valuecolor=["black"]
-		Text item=comfoairChimneyMode valuecolor=[OFF="silver", ON="black"]
-	}
+ Frame label="Main" {
+  Text item=comfoairError labelcolor=[!="No Errors"="red"] valuecolor=[!="No Errors"="red"]
+  Switch item=comfoairControl mappings=[OFF="CCEase", ON="Computer"]
+  Switch item=comfoairErrorReset mappings=[1="Reset"]
+  Switch item=comfoairFilterReset mappings=[1="Reset"]
+ }
+ Frame label="Control" {
+  Selection item=comfoairFanLevel
+  Setpoint item=comfoairTargetTemperature step=0.5 minValue=15 maxValue=28 valuecolor=["black"]
+ }
+ Frame label="State" {
+  Text item=comfoairOutdoorIncomingTemperature valuecolor=["black"]
+  Text item=comfoairOutdoorOutgoingTemperature valuecolor=["black"]
+  Text item=comfoairIndoorIncomingTemperature valuecolor=["black"]
+  Text item=comfoairIndoorOutgoingTemperature valuecolor=["black"]
+ }
+ Frame {
+  Text item=comfoairIncomingFan valuecolor=["black"]
+  Text item=comfoairBypassMode valuecolor=["black"]
+  Text item=comfoairOutgoingFan valuecolor=["black"]
+  Text item=comfoairGHXMode valuecolor=[OFF="silver", ON="black"]
+  Text item=comfoairEfficiency valuecolor=["black"]
+  Text item=comfoairFreezeMode valuecolor=[OFF="black", ON="red"]
+  Text item=comfoairFilterRuntime_Message valuecolor=["black"]
+  Text item=comfoairChimneyMode valuecolor=[OFF="silver", ON="black"]
+ }
 }
 ```
 
 `comfoair_bypass.map` file:
 
-```
+```text
 ON=Opened
 OFF=Closed
 undefined=unknown
@@ -280,7 +280,7 @@ undefined=unknown
 
 `comfoair_on-off.map` file:
 
-```
+```text
 ON=active
 OFF=inactive
 undefined=unknown
@@ -289,7 +289,7 @@ undefined=unknown
 
 `comfoair_freeze.map` file:
 
-```
+```text
 ON=frozen
 OFF=OK
 undefined=unknown

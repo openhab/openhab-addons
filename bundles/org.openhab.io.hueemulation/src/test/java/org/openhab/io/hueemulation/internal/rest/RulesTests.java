@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,10 +22,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,6 +128,7 @@ public class RulesTests {
 
         // Check hue entry
         HueRuleEntry entry = cs.ds.rules.get("demo1");
+        assertNotNull(entry);
         assertThat(entry.conditions.get(0).address, is("/lights/switch1/state/on"));
         assertThat(entry.conditions.get(0).operator, is(Operator.dx));
         assertThat(entry.actions.get(0).address, is("/lights/switch1/state"));
@@ -144,6 +143,7 @@ public class RulesTests {
         ruleRegistry.update(rule);
 
         entry = cs.ds.rules.get("demo1");
+        assertNotNull(entry);
         assertThat(entry.actions.get(0).address, is("/lights/switch2/state"));
         assertThat(entry.actions.get(0).method, is("PUT"));
         assertThat(entry.actions.get(0).body, is("{'on':false}"));
@@ -156,15 +156,13 @@ public class RulesTests {
         assertThat(entry, nullValue());
     }
 
-    @SuppressWarnings("null")
     @Test
-    public void addGetRemoveRuleViaRest() {
+    public void addGetRemoveRuleViaRest() throws Exception {
         // 1. Create
         String body = "{\"name\":\"test name\",\"description\":\"\",\"owner\":\"\",\"conditions\":[{\"address\":\"/lights/switch1/state/on\",\"operator\":\"dx\"}],\"actions\":[{\"address\":\"/lights/switch1/state\",\"method\":\"PUT\",\"body\":\"{\\u0027on\\u0027:true}\"}]}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules").request()
-                .post(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("success"));
+        ContentResponse response = commonSetup.sendPost("/testuser/rules", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("success"));
 
         // 1.1 Check for entry
         Entry<String, HueRuleEntry> idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
@@ -175,26 +173,26 @@ public class RulesTests {
 
         // 1.2 Check for rule
         Rule rule = ruleRegistry.get(idAndEntry.getKey());
+        assertNotNull(rule);
         assertThat(rule.getName(), is("test name"));
         assertThat(rule.getActions().get(0).getId(), is("-api-testuser-lights-switch1-state"));
         assertThat(rule.getActions().get(0).getTypeUID(), is("rules.HttpAction"));
 
         // 2. Get
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/" + idAndEntry.getKey()).request()
-                .get();
-        assertEquals(200, response.getStatus());
-        HueSceneEntry fromJson = new Gson().fromJson(response.readEntity(String.class), HueSceneEntry.class);
+        response = commonSetup.sendGet("/testuser/rules/" + idAndEntry.getKey());
+        assertThat(response.getStatus(), is(200));
+        HueSceneEntry fromJson = new Gson().fromJson(response.getContentAsString(), HueSceneEntry.class);
+        assertNotNull(fromJson);
         assertThat(fromJson.name, is(idAndEntry.getValue().name));
 
         // 3. Remove
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/" + idAndEntry.getKey()).request()
-                .delete();
-        assertEquals(200, response.getStatus());
+        response = commonSetup.sendDelete("/testuser/rules/" + idAndEntry.getKey());
+        assertThat(response.getStatus(), is(200));
         assertTrue(cs.ds.rules.isEmpty());
     }
 
     @Test
-    public void updateRuleViaRest() {
+    public void updateRuleViaRest() throws Exception {
         HueCommand command = new HueCommand("/api/testuser/lights/switch1/state", "PUT", "{'on':true}");
         HueRuleEntry.Condition condition = new HueRuleEntry.Condition("/lights/switch1/state/on", Operator.dx, null);
 
@@ -209,10 +207,9 @@ public class RulesTests {
 
         // Modify (just the name)
         String body = "{ 'name':'A new name'}";
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/demo1").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("name"));
+        ContentResponse response = commonSetup.sendPut("/testuser/rules/demo1", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("name"));
 
         Entry<String, HueRuleEntry> idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
         HueRuleEntry entry = idAndEntry.getValue();
@@ -231,10 +228,9 @@ public class RulesTests {
 
         // Modify (Change condition)
         body = "{\"conditions\":[{\"address\":\"/lights/switch1/state/on\",\"operator\":\"ddx\"}]}";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/demo1").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("conditions"));
+        response = commonSetup.sendPut("/testuser/rules/demo1", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("conditions"));
 
         idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
         entry = idAndEntry.getValue();
@@ -243,10 +239,9 @@ public class RulesTests {
 
         // Modify (Change action)
         body = "{\"actions\":[{\"address\":\"/lights/switch2/state\",\"method\":\"PUT\",\"body\":\"{\\u0027on\\u0027:false}\"}]}";
-        response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules/demo1").request()
-                .put(Entity.json(body));
-        assertEquals(200, response.getStatus());
-        assertThat(response.readEntity(String.class), containsString("actions"));
+        response = commonSetup.sendPut("/testuser/rules/demo1", body);
+        assertThat(response.getStatus(), is(200));
+        assertThat(response.getContentAsString(), containsString("actions"));
 
         idAndEntry = cs.ds.rules.entrySet().stream().findAny().get();
         entry = idAndEntry.getValue();
@@ -255,7 +250,7 @@ public class RulesTests {
     }
 
     @Test
-    public void getAll() {
+    public void getAll() throws Exception {
         HueCommand command = new HueCommand("/api/testuser/lights/switch1/state", "PUT", "{'on':true}");
         HueRuleEntry.Condition condition = new HueRuleEntry.Condition("/lights/switch1/state/on", Operator.dx, null);
 
@@ -268,12 +263,14 @@ public class RulesTests {
 
         ruleRegistry.add(rule);
 
-        Response response = commonSetup.client.target(commonSetup.basePath + "/testuser/rules").request().get();
+        ContentResponse response = commonSetup.sendGet("/testuser/rules");
         Type type = new TypeToken<Map<String, HueRuleEntry>>() {
         }.getType();
-        String body = response.readEntity(String.class);
+        String body = response.getContentAsString();
         Map<String, HueRuleEntry> fromJson = new Gson().fromJson(body, type);
+        assertNotNull(fromJson);
         HueRuleEntry entry = fromJson.get("demo1");
+        assertNotNull(entry);
         assertThat(entry.name, is("test name"));
         assertThat(entry.actions.get(0).address, is("/lights/switch1/state"));
         assertThat(entry.conditions.get(0).address, is("/lights/switch1/state/on"));

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,15 +13,23 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
-import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.Shelly2NotifyBluEventData;
+import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyThingCreator} maps the device id into the thing type id
@@ -30,121 +38,128 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class ShellyThingCreator {
-    private static final Map<String, String> THING_TYPE_MAPPING = new LinkedHashMap<>();
-    static {
-        // mapping by device type id
-        THING_TYPE_MAPPING.put(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_1L, THING_TYPE_SHELLY1L_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_1, THING_TYPE_SHELLY1_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_3EM, THING_TYPE_SHELLY3EM_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_SHPLG_S, THING_TYPE_SHELLYPLUGS_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_SHPLG_U1, THING_TYPE_SHELLYPLUGU1_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_DUO, THING_TYPE_SHELLYDUO_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_DUORGBW, THING_TYPE_SHELLYDUORGBW_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_BULB, THING_TYPE_SHELLYBULB_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_VINTAGE, THING_TYPE_SHELLYVINTAGE_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_IX3, THING_TYPE_SHELLYIX3_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_UNI, THING_TYPE_SHELLYUNI_STR);
-        THING_TYPE_MAPPING.put(SHELLYDT_HT, THING_TYPE_SHELLYHT_STR);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyThingCreator.class);
 
-        // mapping by thing type
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1PM_STR, THING_TYPE_SHELLY1PM_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1L_STR, THING_TYPE_SHELLY1L_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY4PRO_STR, THING_TYPE_SHELLY4PRO_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDIMMER2_STR, THING_TYPE_SHELLYDIMMER2_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDIMMER_STR, THING_TYPE_SHELLYDIMMER_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYIX3_STR, THING_TYPE_SHELLYIX3_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY3EM_STR, THING_TYPE_SHELLY3EM_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYEM_STR, THING_TYPE_SHELLYEM_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDUORGBW_STR, THING_TYPE_SHELLYDUORGBW_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYVINTAGE_STR, THING_TYPE_SHELLYVINTAGE_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBULB_STR, THING_TYPE_SHELLYBULB_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYHT_STR, THING_TYPE_SHELLYHT_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYSMOKE_STR, THING_TYPE_SHELLYSMOKE_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYGAS_STR, THING_TYPE_SHELLYGAS_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYFLOOD_STR, THING_TYPE_SHELLYFLOOD_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDOORWIN_STR, THING_TYPE_SHELLYDOORWIN_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDOORWIN2_STR, THING_TYPE_SHELLYDOORWIN2_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYSENSE_STR, THING_TYPE_SHELLYSENSE_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYEYE_STR, THING_TYPE_SHELLYEYE_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBUTTON1_STR, THING_TYPE_SHELLYBUTTON1_STR);
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYUNI_STR, THING_TYPE_SHELLYUNI_STR);
-
-        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR);
+    public static ThingUID getThingUID(String serviceName) {
+        return getThingUID(serviceName, "", "");
     }
 
-    public static ThingUID getThingUID(String serviceName, String deviceType, String mode, boolean unknown) {
-        String devid = substringAfterLast(serviceName, "-");
-        if (devid.isEmpty()) {
-            throw new IllegalArgumentException("serviceName has improper format: " + serviceName);
+    public static ThingUID getThingUID(String serviceName, String deviceType, String mode) {
+        String deviceId = getDeviceIdOrThrow(serviceName);
+        return new ThingUID(getThingTypeUID(serviceName, deviceType, mode), deviceId);
+    }
+
+    public static ThingUID getThingUIDForUnknown(String serviceName, String deviceType, String mode) {
+        String deviceId = getDeviceIdOrThrow(serviceName);
+        return new ThingUID(getThingTypeUID(THING_TYPE_SHELLYUNKNOWN_STR + "-" + deviceId, deviceType, mode), deviceId);
+    }
+
+    private static String getDeviceIdOrThrow(String serviceName) {
+        String deviceId = substringAfterLast(serviceName, "-");
+        if (deviceId.isEmpty()) {
+            throw new IllegalArgumentException("Invalid serviceName format: " + serviceName);
         }
-        return new ThingUID(!unknown ? getThingTypeUID(serviceName, deviceType, mode)
-                : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, deviceType, mode), devid);
+        return deviceId;
+    }
+
+    public static ThingTypeUID getThingTypeUID(String serviceName) {
+        return getThingTypeUID(serviceName, "", "");
     }
 
     public static ThingTypeUID getThingTypeUID(String serviceName, String deviceType, String mode) {
-        return new ThingTypeUID(BINDING_ID, getThingType(serviceName, deviceType, mode));
-    }
-
-    public static ThingTypeUID getUnknownTTUID() {
-        return new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR);
-    }
-
-    public static String getThingType(String hostname, String deviceType, String mode) {
-        String name = hostname.toLowerCase();
-        String type = substringBefore(name, "-").toLowerCase();
-        String devid = substringAfterLast(name, "-");
-        if (devid.isEmpty() || type.isEmpty()) {
-            throw new IllegalArgumentException("Invalid device name format: " + hostname);
+        if (THING_TYPE_SHELLYPROTECTED_STR.equals(serviceName)) {
+            return THING_TYPE_SHELLYPROTECTED;
+        }
+        String serviceNameLowerCase = serviceName.toLowerCase(Locale.ROOT);
+        String type = substringBefore(serviceNameLowerCase, "-");
+        if (type.isEmpty()) {
+            throw new IllegalArgumentException("Invalid serviceName format: " + serviceName);
         }
 
-        // First check for special handling
-        if (name.startsWith(THING_TYPE_SHELLY25_PREFIX)) { // Shelly v2.5
-            return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY25_RELAY_STR : THING_TYPE_SHELLY25_ROLLER_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
-            return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY2_RELAY_STR : THING_TYPE_SHELLY2_ROLLER_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYPLUG_STR)) {
+        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUG_PREFIX) && !serviceNameLowerCase.contains("plugus")
+                && !serviceNameLowerCase.contains("plugsg3")) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
             // for the thing types: <thing type>-<mode>
-            if (name.startsWith(THING_TYPE_SHELLYPLUGS_STR) || name.contains("-s")) {
-                return THING_TYPE_SHELLYPLUGS_STR;
+            if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGS_PREFIX)
+                    || serviceNameLowerCase.contains("-s")) {
+                return THING_TYPE_SHELLYPLUGS;
             }
-            if (name.startsWith(THING_TYPE_SHELLYPLUGU1_STR)) {
-                return THING_TYPE_SHELLYPLUGU1_STR;
+            if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYPLUGU1_PREFIX)) {
+                return THING_TYPE_SHELLYPLUGU1;
             }
-            return THING_TYPE_SHELLYPLUG_STR;
+            return THING_TYPE_SHELLYPLUG;
         }
-        if (name.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
-            return mode.equals(SHELLY_MODE_COLOR) ? THING_TYPE_SHELLYRGBW2_COLOR_STR : THING_TYPE_SHELLYRGBW2_WHITE_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYMOTION_STR)) {
-            // depending on firmware release the Motion advertises under shellymotion-xxx or shellymotionsensor-xxxx
-            return THING_TYPE_SHELLYMOTION_STR;
+        if (serviceNameLowerCase.startsWith(SERVICE_NAME_SHELLYRGBW2_PREFIX)) {
+            return SHELLY_MODE_COLOR.equals(mode) ? THING_TYPE_SHELLYRGBW2_COLOR : THING_TYPE_SHELLYRGBW2_WHITE;
         }
 
-        // Check general mapping
         if (!deviceType.isEmpty()) {
-            String res = THING_TYPE_MAPPING.get(deviceType);
+            Map<String, ThingTypeUID> deviceTypeMap = switch (mode) {
+                case SHELLY_MODE_RELAY -> RELAY_THING_TYPE_BY_DEVICE_TYPE;
+                case SHELLY_MODE_ROLLER -> ROLLER_THING_TYPE_BY_DEVICE_TYPE;
+                default -> THING_TYPE_BY_DEVICE_TYPE;
+            };
+
+            ThingTypeUID res = deviceTypeMap.get(deviceType);
             if (res != null) {
                 return res;
             }
         }
-        String res = THING_TYPE_MAPPING.get(type);
-        if (res != null) {
-            return res;
+
+        return THING_TYPE_BY_SERVICE_NAME.getOrDefault(type, THING_TYPE_SHELLYUNKNOWN);
+    }
+
+    public static void addBluThing(String gateway, Shelly2NotifyBluEventData data, ShellyThingTable thingTable) {
+        String model = getString(data.name);
+        String bluClass = substringBefore(model, "-").toUpperCase(Locale.ROOT);
+        String mac = getString(data.addr).replaceAll(":", "");
+
+        ThingTypeUID thingTypeUID = THING_TYPE_BY_DEVICE_TYPE.get(model);
+        if (thingTypeUID == null) {
+            thingTypeUID = THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
         }
-        return THING_TYPE_SHELLYUNKNOWN_STR;
+        if (thingTypeUID == null) {
+            LOGGER.debug("{}: Unsupported BLU device model {}, MAC={}", gateway, model, mac);
+            return;
+        }
+
+        String serviceName = getBluServiceName(getString(data.name), mac);
+        Map<String, Object> properties = new TreeMap<>();
+        addProperty(properties, PROPERTY_MODEL_ID, model);
+        addProperty(properties, PROPERTY_SERVICE_NAME, serviceName);
+        addProperty(properties, PROPERTY_DEV_NAME, data.name);
+        addProperty(properties, PROPERTY_DEV_TYPE, thingTypeUID.getId());
+        addProperty(properties, PROPERTY_DEV_GEN, "BLU");
+        addProperty(properties, PROPERTY_GW_DEVICE, gateway);
+        addProperty(properties, CONFIG_DEVICEADDRESS, mac);
+
+        LOGGER.debug("{}: Create thing {} for BLU device {} / {}", gateway, thingTypeUID, model, mac);
+        thingTable.discoveredResult(thingTypeUID, model, serviceName, mac, properties);
+    }
+
+    private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
+        properties.put(key, value != null ? value : "");
+    }
+
+    /**
+     * Generates a service name based on the provided model name and MAC address.
+     * Delimiters will be stripped from the returned MAC address.
+     *
+     * @param name Model name such as SBBT-02C or just SBDW
+     * @param mac MAC address with or without colon delimiters
+     * @return service name in the form <code>&lt;service name&gt;-&lt;mac&gt;</code>
+     */
+    public static String getBluServiceName(String model, String mac) throws IllegalArgumentException {
+        String bluClass = model.contains("-") ? substringBefore(model, "-") : model;
+        ThingTypeUID uid = THING_TYPE_BY_DEVICE_TYPE.containsKey(model) ? THING_TYPE_BY_DEVICE_TYPE.get(model)
+                : THING_TYPE_BY_DEVICE_TYPE.get(bluClass);
+        if (uid != null) {
+            String serviceName = uid.getId();
+            if (!serviceName.isEmpty()) {
+                return serviceName + "-" + mac.replaceAll(":", "").toLowerCase(Locale.ROOT);
+            }
+        }
+
+        throw new IllegalArgumentException("Unsupported BLU device model " + model);
     }
 }

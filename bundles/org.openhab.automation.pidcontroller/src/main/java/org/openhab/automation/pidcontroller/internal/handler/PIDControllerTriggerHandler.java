@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,7 +117,12 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         loopTimeMs = ((BigDecimal) requireNonNull(config.get(CONFIG_LOOP_TIME), CONFIG_LOOP_TIME + " is not set"))
                 .intValue();
 
-        controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant, iMinValue, iMaxValue);
+        double previousIntegralPart = getItemNameValueAsNumberOrZero(itemRegistry, iInspector);
+        double previousDerivativePart = getItemNameValueAsNumberOrZero(itemRegistry, dInspector);
+        double previousError = getItemNameValueAsNumberOrZero(itemRegistry, eInspector);
+
+        controller = new PIDController(kpAdjuster, kiAdjuster, kdAdjuster, kdTimeConstant, iMinValue, iMaxValue,
+                previousIntegralPart, previousDerivativePart, previousError);
 
         eventFilter = event -> {
             String topic = event.getTopic();
@@ -201,18 +206,38 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
     private TriggerHandlerCallback getCallback() {
         ModuleHandlerCallback localCallback = callback;
-        if (localCallback != null && localCallback instanceof TriggerHandlerCallback) {
-            return (TriggerHandlerCallback) localCallback;
+        if (localCallback != null && localCallback instanceof TriggerHandlerCallback handlerCallback) {
+            return handlerCallback;
         }
 
         throw new IllegalStateException("The module callback is not set");
     }
 
+    private double getItemNameValueAsNumberOrZero(ItemRegistry itemRegistry, @Nullable String itemName)
+            throws IllegalArgumentException {
+        double value = 0.0;
+
+        if (itemName == null) {
+            return value;
+        }
+
+        try {
+            value = getItemValueAsNumber(itemRegistry.getItem(itemName));
+            logger.debug("Item '{}' value {} recovered by PID controller", itemName, value);
+        } catch (ItemNotFoundException e) {
+            throw new IllegalArgumentException("Configured item not found: " + itemName, e);
+        } catch (PIDException e) {
+            logger.warn("Item '{}' value recovery errored: {}", itemName, e.getMessage());
+        }
+
+        return value;
+    }
+
     private double getItemValueAsNumber(Item item) throws PIDException {
         State setpointState = item.getState();
 
-        if (setpointState instanceof Number) {
-            double doubleValue = ((Number) setpointState).doubleValue();
+        if (setpointState instanceof Number number) {
+            double doubleValue = number.doubleValue();
 
             if (Double.isFinite(doubleValue) && !Double.isNaN(doubleValue)) {
                 return doubleValue;
@@ -229,9 +254,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
     @Override
     public void receive(Event event) {
-        if (event instanceof ItemStateChangedEvent) {
+        if (event instanceof ItemStateChangedEvent changedEvent) {
             if (commandTopic.isPresent() && event.getTopic().equals(commandTopic.get())) {
-                ItemStateChangedEvent changedEvent = (ItemStateChangedEvent) event;
                 if ("RESET".equals(changedEvent.getItemState().toString())) {
                     controller.setIntegralResult(0);
                     controller.setDerivativeResult(0);

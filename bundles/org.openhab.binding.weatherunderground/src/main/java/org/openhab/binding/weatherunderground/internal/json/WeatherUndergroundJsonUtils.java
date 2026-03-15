@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,10 @@ package org.openhab.binding.weatherunderground.internal.json;
 
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import org.slf4j.LoggerFactory;
 
@@ -34,18 +33,17 @@ public class WeatherUndergroundJsonUtils {
     private static final String TREND_STABLE = "stable";
 
     /**
-     * Convert a string representing an Epoch value into a Calendar object
+     * Convert a string representing an Epoch value into an {@link Instant} object
      *
      * @param value the Epoch value as a string
      *
-     * @return the ZonedDateTime object representing the date and time of the Epoch
+     * @return the Instant object representing the date and time of the Epoch
      *         or null in case of conversion error
      */
-    public static ZonedDateTime convertToZonedDateTime(String value, ZoneId zoneId) {
+    public static Instant convertToInstant(String value) {
         if (isValid(value)) {
             try {
-                Instant epochSeconds = Instant.ofEpochSecond(Long.valueOf(value));
-                return ZonedDateTime.ofInstant(epochSeconds, zoneId);
+                return Instant.ofEpochSecond(Long.valueOf(value));
             } catch (DateTimeException e) {
                 LoggerFactory.getLogger(WeatherUndergroundJsonUtils.class).debug("Cannot convert {} to ZonedDateTime",
                         value);
@@ -90,8 +88,8 @@ public class WeatherUndergroundJsonUtils {
     }
 
     private static boolean isValid(String value) {
-        return (value != null) && !value.isEmpty() && !value.equalsIgnoreCase("N/A") && !value.equalsIgnoreCase("NA")
-                && !value.equals("-") && !value.equals("--");
+        return (value != null) && !value.isEmpty() && !"N/A".equalsIgnoreCase(value) && !"NA".equalsIgnoreCase(value)
+                && !"-".equals(value) && !"--".equals(value);
     }
 
     /**
@@ -103,9 +101,9 @@ public class WeatherUndergroundJsonUtils {
      */
     public static URL getValidUrl(String url) {
         URL validUrl = null;
-        if (url != null && !url.trim().isEmpty()) {
+        if (url != null && !url.isBlank()) {
             try {
-                validUrl = new URL(url.trim());
+                validUrl = URI.create(url.trim()).toURL();
             } catch (MalformedURLException e) {
             }
         }

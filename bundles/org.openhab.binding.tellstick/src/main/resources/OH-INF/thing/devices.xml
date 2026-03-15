@@ -14,7 +14,7 @@
 
 		<label>Dimmable Device</label>
 		<description>This is a Dimmable device</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="dimmer" typeId="dimmer"/>
 			<channel id="state" typeId="state"/>
@@ -53,7 +53,7 @@
 
 		<label>On/Off Device</label>
 		<description>This Thing defines a Switch Device</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -90,6 +90,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer Value</label>
 		<description>The channel to control the dimmer</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="state">
@@ -97,6 +101,10 @@
 		<label>Switch</label>
 		<description>Turns the power on or off</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="timestamp">

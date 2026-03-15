@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.synopanalyzer.internal.handler;
 import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.*;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +34,7 @@ import javax.ws.rs.HttpMethod;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.synopanalyzer.internal.WindBarbGenerator;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.openhab.binding.synopanalyzer.internal.stationdb.Station;
 import org.openhab.binding.synopanalyzer.internal.synop.Overcast;
@@ -46,8 +49,10 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -69,9 +74,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SynopAnalyzerHandler extends BaseThingHandler {
+    private static final String DISTANCE = "Distance";
+    private static final String LOCATION = "Location";
+    private static final String USUAL_NAME = "Usual name";
     private static final String OGIMET_SYNOP_PATH = "http://www.ogimet.com/cgi-bin/getsynop?block=%s&begin=%s";
     private static final int REQUEST_TIMEOUT_MS = 5000;
     private static final DateTimeFormatter SYNOP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHH00");
+    private static final WindBarbGenerator WB_GENERATOR = new WindBarbGenerator();
     private static final double KASTEN_POWER = 3.4;
     private static final double OCTA_MAX = 8.0;
 
@@ -79,7 +88,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private final LocationProvider locationProvider;
     private final List<Station> stations;
 
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshJob;
     private @NonNullByDefault({}) String formattedStationId;
 
     public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, List<Station> stations) {
@@ -91,9 +100,9 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         SynopAnalyzerConfiguration configuration = getConfigAs(SynopAnalyzerConfiguration.class);
-        formattedStationId = String.format("%05d", configuration.stationId);
-        logger.info("Scheduling Synop update thread to run every {} minute for Station '{}'",
-                configuration.refreshInterval, formattedStationId);
+        formattedStationId = "%05d".formatted(configuration.stationId);
+        logger.info("Scheduling Synop update every {} minute for Station '{}'", configuration.refreshInterval,
+                formattedStationId);
 
         if (thing.getProperties().isEmpty()) {
             discoverAttributes(configuration.stationId, locationProvider.getLocation());
@@ -101,20 +110,20 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::updateChannels, 0,
-                configuration.refreshInterval, TimeUnit.MINUTES));
+        refreshJob = scheduler.scheduleWithFixedDelay(this::updateChannels, 0, configuration.refreshInterval,
+                TimeUnit.MINUTES);
     }
 
     private void discoverAttributes(int stationId, @Nullable PointType serverLocation) {
         stations.stream().filter(s -> stationId == s.idOmm).findFirst().ifPresent(station -> {
             Map<String, String> properties = new HashMap<>(
-                    Map.of("Usual name", station.usualName, "Location", station.getLocation()));
+                    Map.of(USUAL_NAME, station.usualName, LOCATION, station.getLocation()));
 
             if (serverLocation != null) {
                 PointType stationLocation = new PointType(station.getLocation());
                 DecimalType distance = serverLocation.distanceFrom(stationLocation);
 
-                properties.put("Distance", new QuantityType<>(distance, SIUnits.METRE).toString());
+                properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
             }
             updateProperties(properties);
         });
@@ -128,21 +137,21 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             String answer = HttpUtil.executeUrl(HttpMethod.GET, url, REQUEST_TIMEOUT_MS);
             List<String> messages = Arrays.asList(answer.split("\n"));
             if (!messages.isEmpty()) {
-                String message = messages.get(messages.size() - 1);
+                String message = messages.getLast();
                 logger.debug(message);
                 if (message.startsWith(formattedStationId)) {
                     logger.debug("Valid Synop message received");
 
                     List<String> messageParts = Arrays.asList(message.split(","));
-                    String synopMessage = messageParts.get(messageParts.size() - 1);
+                    String synopMessage = messageParts.getLast();
 
                     return createSynopObject(synopMessage);
                 }
-                logger.warn("Message does not belong to station {} : {}", formattedStationId, message);
+                logger.warn("Message does not belong to station {}: {}", formattedStationId, message);
             }
             logger.warn("No valid Synop found for last 24h");
         } catch (IOException e) {
-            logger.warn("Synop request timedout : {}", e.getMessage());
+            logger.warn("Synop request timedout: {}", e.getMessage());
         }
         return Optional.empty();
     }
@@ -163,6 +172,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
     private State getChannelState(String channelId, Synop synop) {
         int octa = synop.getOcta();
+        Integer direction = synop.getWindDirection();
+        QuantityType<Speed> windSpeed = getWindStrength(synop);
         switch (channelId) {
             case HORIZONTAL_VISIBILITY:
                 return new StringType(synop.getHorizontalVisibility().name());
@@ -177,21 +188,28 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 return UnDefType.NULL;
             case OVERCAST:
                 Overcast overcast = Overcast.fromOcta(octa);
-                return overcast == Overcast.UNDEFINED ? UnDefType.NULL : new StringType(overcast.name());
+                return Overcast.UNDEFINED.equals(overcast) ? UnDefType.NULL : new StringType(overcast.name());
             case PRESSURE:
                 return new QuantityType<>(synop.getPressure(), PRESSURE_UNIT);
             case TEMPERATURE:
                 return new QuantityType<>(synop.getTemperature(), TEMPERATURE_UNIT);
             case WIND_ANGLE:
-                return new QuantityType<>(synop.getWindDirection(), WIND_DIRECTION_UNIT);
+                return direction != null ? new QuantityType<>(direction, WIND_DIRECTION_UNIT) : UnDefType.NULL;
             case WIND_DIRECTION:
-                return new StringType(WindDirections.getWindDirection(synop.getWindDirection()).name());
+                return direction != null ? new StringType(WindDirections.getWindDirection(direction).name())
+                        : UnDefType.NULL;
             case WIND_STRENGTH:
                 return getWindStrength(synop);
+            case WIND_BARB:
+                if (direction == null) {
+                    return UnDefType.NULL;
+                }
+                QuantityType<Speed> wsKnot = Objects.requireNonNull(windSpeed.toUnit(Units.KNOT));
+                String windBarbs = WB_GENERATOR.generateSVG(wsKnot.doubleValue(), direction);
+                return new RawType(windBarbs.getBytes(StandardCharsets.UTF_8), "image/svg+xml");
             case WIND_SPEED_BEAUFORT:
-                QuantityType<Speed> wsKpH = getWindStrength(synop).toUnit(SIUnits.KILOMETRE_PER_HOUR);
-                return wsKpH != null ? new DecimalType(Math.round(Math.pow(wsKpH.floatValue() / 3.01, 0.666666666)))
-                        : UnDefType.NULL;
+                QuantityType<Speed> wsKpH = Objects.requireNonNull(windSpeed.toUnit(SIUnits.KILOMETRE_PER_HOUR));
+                return new DecimalType(Math.round(Math.pow(wsKpH.floatValue() / 3.01, 0.666666666)));
             case TIME_UTC:
                 ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
                 int year = synop.getYear() == 0 ? now.getYear() : synop.getYear();
@@ -199,7 +217,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 return new DateTimeType(
                         ZonedDateTime.of(year, month, synop.getDay(), synop.getHour(), 0, 0, 0, ZoneOffset.UTC));
             default:
-                logger.error("Unsupported channel Id '{}'", channelId);
+                logger.error("Unsupported channel '{}'", channelId);
                 return UnDefType.UNDEF;
         }
     }
@@ -226,13 +244,15 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private String forgeURL() {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC).minusDays(1);
         String beginDate = SYNOP_DATE_FORMAT.format(utc);
-        return String.format(OGIMET_SYNOP_PATH, formattedStationId, beginDate);
+        return OGIMET_SYNOP_PATH.formatted(formattedStationId, beginDate);
     }
 
     @Override
     public void dispose() {
-        refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.empty();
+        if (refreshJob instanceof ScheduledFuture job) {
+            job.cancel(true);
+        }
+        refreshJob = null;
     }
 
     @Override

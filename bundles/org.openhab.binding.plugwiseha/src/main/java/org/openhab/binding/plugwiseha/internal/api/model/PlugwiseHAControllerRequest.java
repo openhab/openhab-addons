@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,11 @@ import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -70,6 +72,7 @@ public class PlugwiseHAControllerRequest<T> {
     private static final String CONTENT_TYPE_TEXT_XML = MimeTypes.Type.TEXT_XML_8859_1.toString();
     private static final long TIMEOUT_SECONDS = 5;
     private static final int REQUEST_MAX_RETRY_COUNT = 3;
+    private static final int RETRY_DELAY_TIMOUT = 3000;
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseHAControllerRequest.class);
     private final XStream xStream;
@@ -225,15 +228,37 @@ public class PlugwiseHAControllerRequest<T> {
 
         this.logger.debug("Performing API request: {} {}", request.getMethod(), request.getURI());
 
+        if (logger.isTraceEnabled()) {
+            String content = "";
+            final ContentProvider provider = request.getContent();
+            if (provider != null) {
+                final Iterator<ByteBuffer> it = provider.iterator();
+                while (it.hasNext()) {
+                    final ByteBuffer next = it.next();
+                    final byte[] bytes = new byte[next.capacity()];
+                    next.get(bytes);
+                    content += String.format("{}\n", new String(bytes, StandardCharsets.UTF_8));
+                }
+            }
+
+            logger.trace(">> \n{}", content);
+        }
+
         try {
             response = request.send();
         } catch (InterruptedException e) {
-            this.logger.trace("InterruptedException occured {} {}", e.getMessage(), e.getStackTrace());
+            this.logger.trace("InterruptedException occurred {} {}", e.getMessage(), e.getStackTrace());
             Thread.currentThread().interrupt();
             throw new PlugwiseHATimeoutException(e);
         } catch (TimeoutException e) {
             if (retries > 0) {
-                this.logger.debug("TimeoutException occured, remaining retries {}", retries - 1);
+                this.logger.debug("TimeoutException occurred, remaining retries {}", retries - 1);
+                try {
+                    Thread.sleep(RETRY_DELAY_TIMOUT);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new PlugwiseHATimeoutException(ie);
+                }
                 return getContentResponse(retries - 1);
             } else {
                 throw new PlugwiseHATimeoutException(e);

@@ -1050,16 +1050,16 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/ACFanLevel"
-      horizontalSwing:
-        description: Cooling system horizontal swing modes. (Tado confusingly names this array without an 's')
-        type: array
-        items:
-          $ref: "#/definitions/ACHorizontalSwing"
       verticalSwing:
         description: Cooling system vertical swing modes. (Tado confusingly names this array without an 's')
         type: array
         items:
           $ref: "#/definitions/ACVerticalSwing"
+      horizontalSwing:
+        description: Cooling system horizontal swing modes. (Tado confusingly names this array without an 's')
+        type: array
+        items:
+          $ref: "#/definitions/ACHorizontalSwing"
 
   HeatingCapabilities:
     x-discriminator-value: HEATING

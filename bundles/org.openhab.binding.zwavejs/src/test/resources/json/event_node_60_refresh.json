@@ -1,0 +1,8 @@
+{
+    "type": "result",
+    "success": true,
+    "messageId": "getvalue|1|38|Multilevel Switch||currentValue|60|71",
+    "result": {
+        "value": 64
+    }
+}

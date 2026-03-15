@@ -1,0 +1,126 @@
+ {
+  "id": "TapoStrip_3Gk6CmXOXbjCiwz9iD543C",
+  "name": "Grandma's Christmas Lights",
+  "brightness": 100,
+  "display_colors": [
+    [
+      30,
+      100,
+      100
+    ],
+    [
+      240,
+      100,
+      100
+    ],
+    [
+      130,
+      100,
+      100
+    ],
+    [
+      0,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": 1,
+  "duration": 5000,
+  "expansion_strategy": 1,
+  "fadeoff": null,
+  "hue_range": null,
+  "init_states": [],
+  "random_seed": null,
+  "repeat_times": 0,
+  "saturation_range": null,
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": [
+    [
+      30,
+      100,
+      100
+    ],
+    [
+      30,
+      0,
+      0
+    ],
+    [
+      30,
+      0,
+      0
+    ],
+    [
+      240,
+      100,
+      100
+    ],
+    [
+      240,
+      0,
+      0
+    ],
+    [
+      240,
+      0,
+      0
+    ],
+    [
+      240,
+      0,
+      100
+    ],
+    [
+      240,
+      0,
+      0
+    ],
+    [
+      240,
+      0,
+      0
+    ],
+    [
+      130,
+      100,
+      100
+    ],
+    [
+      130,
+      0,
+      0
+    ],
+    [
+      130,
+      0,
+      0
+    ],
+    [
+      0,
+      100,
+      100
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ],
+  "spread": 1,
+  "transition": 100,
+  "transition_range": null,
+  "type": "sequence"
+}

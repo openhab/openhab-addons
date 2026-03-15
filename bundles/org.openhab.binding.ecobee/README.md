@@ -1,12 +1,12 @@
 # Ecobee Binding
 
-[Ecobee Inc.](https://www.ecobee.com/)  of Toronto, Canada, sells a range of Wi-Fi 
-enabled thermostats, principally in the Americas. 
-This binding communicates with the 
-[Ecobee API](https://www.ecobee.com/home/developer/api/introduction/index.shtml) over a secure, 
-RESTful API to Ecobee's servers. 
-Monitoring ambient temperature and humidity, changing HVAC mode, changing heat or cool setpoints, 
-changing the backlight intensity, and even sending textual messages to one or a group of thermostats, 
+[Ecobee Inc.](https://www.ecobee.com/)  of Toronto, Canada, sells a range of Wi-Fi
+enabled thermostats, principally in the Americas.
+This binding communicates with the
+[Ecobee API](https://www.ecobee.com/home/developer/api/introduction/index.shtml) over a secure,
+RESTful API to Ecobee's servers.
+Monitoring ambient temperature and humidity, changing HVAC mode, changing heat or cool setpoints,
+changing the backlight intensity, and even sending textual messages to one or a group of thermostats,
 can be accomplished through this binding.
 
 ## Supported Things
@@ -21,12 +21,12 @@ The following thing types are supported:
 
 ## Discovery
 
-Once an Account has been set up, and the API key has been authorized, Thermostats and Remote 
+Once an Account has been set up, and the API key has been authorized, Thermostats and Remote
 Sensors will be discovered automatically.
 First, the thermostats will be added to the inbox.
-Then, once a Thermostat thing has been created, the Remote Sensors associated with that 
+Then, once a Thermostat thing has been created, the Remote Sensors associated with that
 thermostat will be added to the inbox.
-The binding will detect the capabilities (e.g. temperature, humidity, occupancy) supported by the 
+The binding will detect the capabilities (e.g. temperature, humidity, occupancy) supported by the
 sensor, and then dynamically create channels for those capabilities.
 
 ## Getting Started
@@ -39,14 +39,14 @@ The following steps describe what you need to do.
 1. First you need to register your thermostat(s) with Ecobee.
 To complete this step, follow the directions in your Ecobee set up documentation.
 
-2. Once the thermostats are registered, the next step is to sign up as a developer.
+1. Once the thermostats are registered, the next step is to sign up as a developer.
 Do this from the Ecobee [developer portal](https://www.ecobee.com/developers/).
 
-3. Now that you are set up as an Ecobee developer, login to your Ecobee [web portal](https://www.ecobee.com/).
+1. Now that you are set up as an Ecobee developer, login to your Ecobee [web portal](https://www.ecobee.com/).
 Once logged in, select the **Developer** option from the menu.
 If you don't see the **Developer** option on the menu, then something went wrong with the previous step.
 
-4. Finally, create a new application.
+1. Finally, create a new application.
 
 Give the application a name and fill in the application summary.
 Select the **Ecobee PIN** Authorization Method, then press **Create**.
@@ -64,13 +64,13 @@ PIN code needed to complete the authorization.
 The PIN code will be valid for several minutes.
 The status message will look something like this.
 
-```
+```text
 Enter PIN 'JULO-RVLA' in MyApps. PIN expires in 257 minutes.
 ```
 
 To complete the authorization, the PIN code must be entered into the Ecobee **My Apps** settings in your account at ecobee.com.
 This will authorize the binding to work with the thermostats associated with your Ecobee account.
-Once authorization is complete, the binding will retrieve information about the available thermostats, 
+Once authorization is complete, the binding will retrieve information about the available thermostats,
 and add those thermostats to the inbox.
 
 ## Ecobee Authorization Changes Effective 1 December 2020
@@ -151,7 +151,7 @@ The following channels are available on the Ecobee Thermostat.
 | runtime | connected | Switch |     | Connected |
 | runtime | firstConnected | DateTime |     | First Connected |
 | runtime | connectDateTime | DateTime |     | Connected Date Time |
-| runtime | disconnectDateTime | DateTime |     | Disconnected Date Timee |
+| runtime | disconnectDateTime | DateTime |     | Disconnected Date Time |
 | runtime | lastModified | DateTime |     | Last Modified |
 | runtime | lastStatusModified | DateTime |     | Last Status Modified |
 | runtime | runtimeDate | String |     | Runtime Date |
@@ -169,6 +169,10 @@ The following channels are available on the Ecobee Thermostat.
 | runtime | desiredHeatRangeHigh | Number:Temperature |     | Desired Heat Range High |
 | runtime | desiredCoolRangeLow | Number:Temperature |     | Desired Cool Range Low |
 | runtime | desiredCoolRangeHigh | Number:Temperature |     | Desired Cool Range High |
+| runtime | actualAQAccuracy | Number |     | Actual Air Quality Accuracy |
+| runtime | actualAQScore | Number |     | Actual Air Quality Score |
+| runtime | actualCO2 | Number:Dimensionless |     | Actual CO2 |
+| runtime | actualVOC | Number:Dimensionless |     | Actual VOC |
 ||||||
 | settings | hvacMode | String | yes | HVAC Mode |
 | settings | lastServiceDate | String | yes | Last Service Date |
@@ -407,14 +411,19 @@ The following channels are available on the Ecobee Remote Sensor.
 
 Some or all of the following Remote Sensor channels will be added dynamically depending on the capabilities of the sensor.
 
-| Channel      | Type                  | ReadWrite | Description  |
-|--------------|-----------------------|-----------|--------------|
-| temperature  | Number:Temperature    |           | Temperature reported by the sensor  |
-| humidity     | Number:Dimensionless  |           | Humidity reported by the sensor  |
-| occupancy    | Switch                |           | Occupancy status reported by the sensor  |
-| co2          | String                |           | CO2 reported by the sensor  |
-| dryContact   | String                |           | Dry contact status reported by the sensor  |
-| adc          | String                |           | ADC reported by the sensor  |
+| Channel            | Type                  | ReadWrite | Description  |
+|--------------------|-----------------------|-----------|--------------|
+| temperature        | Number:Temperature    |           | Temperature reported by the sensor  |
+| humidity           | Number:Dimensionless  |           | Humidity reported by the sensor  |
+| occupancy          | Switch                |           | Occupancy status reported by the sensor  |
+| adc                | String                |           | ADC reported by the sensor  |
+| airPressure        | String                |           | Air Pressure reported by the sensor  |
+| airQuality         | String                |           | Air Quality reported by the sensor (clean-poor)  |
+| airQualityAccuracy | String                |           | Air Quality Accuracy reported by the sensor  |
+| co2                | String                |           | CO2 reported by the sensor  |
+| co2PPM             | String                |           | CO2 level reported by the sensor (low-high)  |
+| dryContact         | String                |           | Dry contact status reported by the sensor  |
+| vocPPM             | String                |           | Volatile organic compounds (VOC) reported by the sensor (low-high)  |
 
 ## Thing Actions
 
@@ -422,13 +431,13 @@ Some or all of the following Remote Sensor channels will be added dynamically de
 
 The acknowledge function allows an alert to be acknowledged by specifying the alert's acknowledgement ref.
 
-##### acknowledge - acknowledge an alert
+#### acknowledge - acknowledge an alert
 
 ```java
 boolean acknowledge(String ackRef, String ackType, Boolean remindMeLater)
 ```
 
-```
+```text
 Parameters:
 ackRef - The acknowledge ref of alert.
 ackType - The type of acknowledgement. Valid values: accept, decline, defer, unacknowledged.
@@ -443,13 +452,13 @@ Control the on/off state of a plug by setting a hold on the plug.
 Creates a hold for the on or off state of the plug for the specified duration.
 Note that an event is created regardless of whether the program is in the same state as the requested state.
 
-##### controlPlug - Control the on/off state of a plug
+#### controlPlug - Control the on/off state of a plug
 
 ```java
 boolean controlPlug(String plugName, String plugState, Date startDateTime, Date endDateTime, String holdType, Number holdHours)
 ```
 
-```
+```text
 Parameters:
 plugName - Name of plug to be controlled.
 plugState - State to which plug should be set (on, off, resume).
@@ -465,17 +474,17 @@ Returns - true if the operation was successful, false otherwise
 
 If the start/end date/times are not provided for the vacation event,
 the vacation event will begin immediately and last 14 days.
-If both the coolHoldTemp and heatHoldTemp parameters provided to this function have the same value, 
+If both the coolHoldTemp and heatHoldTemp parameters provided to this function have the same value,
 and the Thermostat is in auto mode, then the two values will be adjusted during processing to be
 separated by the value stored in thermostat.settings.heatCoolMinDelta.
 
-##### createVacation - Create a vacation event on the thermostat
+#### createVacation - Create a vacation event on the thermostat
 
 ```java
 boolean createVacation(String name, QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp, Date startDateTime, Date endDateTime, String fan, Number fanMinOnTime)
 ```
 
-```
+```text
 Parameters:
 name - The vacation event name. It must be unique.
 coolHoldTemp - The temperature to set the cool vacation hold at.
@@ -491,16 +500,16 @@ Returns - true if the operation was successful, false otherwise
 ### Delete Vacation
 
 The delete vacation function deletes a vacation event from a thermostat.
-This is the only way to cancel a vacation event. 
+This is the only way to cancel a vacation event.
 This method is able to remove vacation events not yet started and scheduled in the future.
 
-##### deleteVacation - delete a vacation event from a thermostat
+#### deleteVacation - delete a vacation event from a thermostat
 
 ```java
 boolean deleteVacation(String name)
 ```
 
-```
+```text
 Parameters:
 name - Name of vacation to be deleted.
 
@@ -509,39 +518,37 @@ Returns - true if the operation was successful, false otherwise
 
 ### Reset Preferences
 
-The reset preferences function sets all of the user configurable settings back 
-to the factory default values. 
-This function call will not only reset the top level thermostat settings such 
-as hvacMode, lastServiceDate and vent, but also all of the user configurable 
+The reset preferences function sets all of the user configurable settings back
+to the factory default values.
+This function call will not only reset the top level thermostat settings such
+as hvacMode, lastServiceDate and vent, but also all of the user configurable
 fields of the thermostat.settings and thermostat.program objects.
-Note that this does not reset all values. 
+Note that this does not reset all values.
 For example, the installer settings and wifi details remain untouched.
-
-##### resetPreferences - Sets all user configurable settings back to factory defaults
 
 ```java
 boolean resetPreferences()
 ```
 
-```
+```text
 Returns - true if the operation was successful, false otherwise
 ```
 
 ### Resume program
 
-The resume program function removes the currently running event providing the event 
-is not a mandatory demand response event. 
-If resumeAll parameter is not set, top active event is removed from the stack and 
+The resume program function removes the currently running event providing the event
+is not a mandatory demand response event.
+If resumeAll parameter is not set, top active event is removed from the stack and
 the thermostat resumes its program, or enters the next event in the stack if one exists.
 If resumeAll parameter set to true, the function resumes all events and returns the thermostat to its program.
 
-##### resumeProgram - Remove the currently running event
+#### resumeProgram - Remove the currently running event
 
 ```java
 boolean resumeProgram(Boolean resumeAll)
 ```
 
-```
+```text
 Parameters:
 resumeAll - Indicates if the thermostat should be resumed to next event (false) or to its program (true).
 
@@ -550,16 +557,16 @@ Returns - true if the operation was successful, false otherwise
 
 ### Send Message
 
-The send message function allows an alert message to be sent to the thermostat. 
+The send message function allows an alert message to be sent to the thermostat.
 The message properties are same as those of the Alert Object.
 
-##### - sendMessage - Send a message to a thermostat
+#### - sendMessage - Send a message to a thermostat
 
 ```java
 boolean sendMessage(String text)
 ```
 
-```
+```text
 Parameters:
 text - Text of message to be sent to the thermostat.
 
@@ -568,25 +575,25 @@ Returns - true if the operation was successful, false otherwise
 
 ### Set Hold
 
-The set hold function sets the thermostat into a hold with the specified temperature. 
-Creates a hold for the specified duration. 
+The set hold function sets the thermostat into a hold with the specified temperature.
+Creates a hold for the specified duration.
 Note that an event is created regardless of whether the program is in the same state as the requested state.
 
-There is also support for creating a hold by passing a holdClimateRef request parameter/value pair to this function. 
-When an existing and valid Climate.climateRef value is passed to this function, the coolHoldTemp, 
-heatHoldTemp and fan mode from that Climate are used in the creation of the hold event. 
-The values from that Climate will take precedence over any coolHoldTemp, heatHoldTemp and fan mode 
+There is also support for creating a hold by passing a holdClimateRef request parameter/value pair to this function.
+When an existing and valid Climate.climateRef value is passed to this function, the coolHoldTemp,
+heatHoldTemp and fan mode from that Climate are used in the creation of the hold event.
+The values from that Climate will take precedence over any coolHoldTemp, heatHoldTemp and fan mode
 parameters passed into this function separately.
 
 To resume from a hold and return to the program, use the `resumeProgram` function.
 
-##### setHold - Set an indefinite hold using the supplied coolHoldTemp and heatHoldTemp
+#### setHold - Set an indefinite hold using the supplied coolHoldTemp and heatHoldTemp
 
 ```java
 boolean setHold(QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp)
 ```
 
-```
+```text
 Parameters:
 coolHoldTemp - The temperature to set the cool hold at.
 heatHoldTemp - The temperature to set the heat hold at.
@@ -600,7 +607,7 @@ Returns - true if the operation was successful, false otherwise
 boolean setHold(QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp, Number holdHours)
 ```
 
-```
+```text
 Parameters:
 coolHoldTemp - The temperature to set the cool hold at.
 heatHoldTemp - The temperature to set the heat hold at.
@@ -615,7 +622,7 @@ Returns - true if the operation was successful, false otherwise
 boolean setHold(String climateRef)
 ```
 
-```
+```text
 Parameters:
 climateRef - Climate to be applied to thermostat (e.g. home, away).
 
@@ -628,7 +635,7 @@ Returns - true if the operation was successful, false otherwise
 boolean setHold(String climateRef, Number holdHours)
 ```
 
-```
+```text
 Parameters:
 climateRef - Climate to be applied to thermostat (e.g. home, away).
 holdHours - Duration of hold.
@@ -636,13 +643,13 @@ holdHours - Duration of hold.
 Returns - true if the operation was successful, false otherwise
 ```
 
-##### setHold
+##### setHold - Quantity Type
 
 ```java
 boolean setHold(QuantityType<Temperature> coolHoldTemp, QuantityType<Temperature> heatHoldTemp, String holdClimateRef, Date startDateTime, Date endDateTime, String holdType, Number holdHours)
 ```
 
-```
+```text
 Parameters:
 coolHoldTemp - The temperature to set the cool hold at.
 heatHoldTemp - The temperature to set the heat hold at.
@@ -655,7 +662,7 @@ holdHours - Duration of hold.
 Returns - true if the operation was successful, false otherwise
 ```
 
-##### setHold
+##### setHold - Map
 
 ```java
 boolean setHold(Map<String,Object> params, String holdType, Number holdHours, Date startDateTime, Date endDateTime)
@@ -672,24 +679,24 @@ Returns - true if the operation was successful, false otherwise
 
 ### Set Occupied
 
-The set occupied function may only be used by EMS thermostats. 
-The function switches a thermostat from occupied mode to unoccupied, or vice versa. 
-If used on a Smart thermostat, the function will throw an error. 
-Switch occupancy events are treated as Holds. 
+The set occupied function may only be used by EMS thermostats.
+The function switches a thermostat from occupied mode to unoccupied, or vice versa.
+If used on a Smart thermostat, the function will throw an error.
+Switch occupancy events are treated as Holds.
 There may only be one Switch Occupancy at one time, and the new event will replace any previous event.
 
-Note that an occupancy event is created regardless what the program on the thermostat is set to. 
-For example, if the program is currently unoccupied and you set occupied=false, an occupancy event 
-will be created using the heat/cool settings of the unoccupied program climate. 
+Note that an occupancy event is created regardless what the program on the thermostat is set to.
+For example, if the program is currently unoccupied and you set occupied=false, an occupancy event
+will be created using the heat/cool settings of the unoccupied program climate.
 If your intent is to go back to the program and remove the occupancy event, use resumeProgram instead.
 
-##### setOccupied - 
+#### setOccupied -
 
 ```java
 boolean setOccupied(Boolean occupied, Date startDateTime, Date endDateTime, String holdType, Number holdHours)
 ```
 
-```
+```text
 Parameters:
 occupied - The climate to use for the temperature, occupied (true) or unoccupied (false).
 holdType - The hold duration type. Valid values: dateTime, nextTransition, indefinite, holdHours.
@@ -704,19 +711,19 @@ Returns - true if the operation was successful, false otherwise
 
 The update sensor function allows the caller to update the name of an ecobee3 remote sensor.
 
-Each ecobee3 remote sensor "enclosure" contains two distinct sensors types temperature and occupancy. 
-Only one of the sensors is required in the request. 
-Both of the sensors' names will be updated to ensure consistency as they are part of the 
-same remote sensor enclosure. 
+Each ecobee3 remote sensor "enclosure" contains two distinct sensors types temperature and occupancy.
+Only one of the sensors is required in the request.
+Both of the sensors' names will be updated to ensure consistency as they are part of the
+same remote sensor enclosure.
 This also reflects accurately what happens on the Thermostat itself.
 
-##### updateSensor - Update the name of a sensor
+#### updateSensor - Update the name of a sensor
 
 ```java
 boolean updateSensor(String name, String deviceId, String sensorId)
 ```
 
-```
+```text
 Parameters:
 name - The updated name to give the sensor. Has a max length of 32, but shorter is recommended.
 deviceId - The deviceId for the sensor, typically this indicates the enclosure and corresponds to the ThermostatRemoteSensor.id field. For example: rs:100
@@ -727,37 +734,37 @@ Returns - true if the operation was successful, false otherwise
 
 ### Get Alerts
 
-##### getAlerts - Get the list of alerts
+#### getAlerts - Get the list of alerts
 
 ```java
 String getAlerts()
 ```
 
-```
+```text
 Returns - A JSON string representing the array of alerts for the thermostat, or null if there are no alerts.
 ```
 
 ### Get Events
 
-##### getEvents - Get the list of events
+#### getEvents - Get the list of events
 
 ```java
 String getEvents()
 ```
 
-```
+```text
 Returns - A JSON string representing the array of events for the thermostat, or null if there are no events.
 ```
 
 ### Get Climates
 
-##### getClimates - Get the list of climates configured on this thermostat
+#### getClimates - Get the list of climates configured on this thermostat
 
 ```java
 String getClimates()
 ```
 
-```
+```text
 Returns - A JSON string representing the array of climates for the thermostat.
 ```
 
@@ -765,7 +772,7 @@ Returns - A JSON string representing the array of climates for the thermostat.
 
 ### Things
 
-```
+```java
 Bridge ecobee:account:account "Ecobee Account" [ apiKey="kjafhd4YTiucye48yn498n94c8ufn49", refreshIntervalNormal=30, refreshIntervalQuick=5, apiTimeout=20, discoveryEnabled=false ] {
     Bridge thermostat 32122305166 "Ecobee First Floor Thermostat" [ thermostatId="32122305166" ] {
         Thing sensor ei-0 "Ecobee Sensor Thermostat" [ sensorId="ei:0" ] {
@@ -792,7 +799,7 @@ Bridge ecobee:account:account "Ecobee Account" [ apiKey="kjafhd4YTiucye48yn498n9
 
 ### Items
 
-```
+```java
 Group gInfo "Information"
 Group gRuntime "Runtime"
 Group gEquipmentStatus "Equipment Status"
@@ -847,6 +854,10 @@ Number:Temperature Runtime_DesiredHeatRangeLow "Desired Heat Range Low [%.1f %un
 Number:Temperature Runtime_DesiredHeatRangeHigh "Desired Heat Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredHeatRangeHigh" }
 Number:Temperature Runtime_DesiredCoolRangeLow "Desired Cool Range Low [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeLow" }
 Number:Temperature Runtime_DesiredCoolRangeHigh "Desired Cool Range High [%.1f %unit%]" <temperature> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#desiredCoolRangeHigh" }
+Number Runtime_ActualAQAccuracy "Actual Air Quality Accuracy [%d]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQAccuracy" }
+Number Runtime_ActualAQScore "Actual Air Quality Score [%d]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualAQScore" }
+Number:Dimensionless Runtime_ActualCO2 "Actual CO2 [%d %unit%]" <carbondioxide> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualCO2" }
+Number:Dimensionless Runtime_ActualVOC "Actual VOC [%d %unit%]" <none> (gRuntime) { channel="ecobee:thermostat:account:729318833078:runtime#actualVOC" }
 
 // Settings group
 String Settings_HvacMode "HVAC Mode [%s]" <text> (gSettings) { channel="ecobee:thermostat:account:729318833078:settings#hvacMode" }
@@ -1135,7 +1146,7 @@ Switch S2_Occupancy "Occupancy [%s]" <none> (gRoom2Sensor) { channel="ecobee:sen
 
 ### Sitemap
 
-```
+```perl
 Frame label="Ecobee Thermostat" {
     Group item=gInfo
     Group item=gEquipmentStatus
@@ -1158,21 +1169,21 @@ Frame label="Ecobee Thermostat" {
 
 ### Rules
 
-Some of the example rules below depend on the following *proxy* items.
+Some of the example rules below depend on the following _proxy_ items.
 
-```
+```java
 Switch SetTemperatureHold "Set Temperature Hold [%s]"
 Number:Temperature UserCool "User Selected Heat [%.1f %unit%]"
 Number:Temperature UserHeat "User Selected Cool [%.1f %unit%]"
 String UserClimateRef "User Climate Ref [%s]"
-String SendMessage "Send an Message [%s]"
+String SendMessage "Send a Message [%s]"
 String AcknowledgeAlert "Acknowledge An Alert [%s]"
 Switch GetAlerts "Get All Alerts [%s]"
 Switch GetEvents "Get All Events [%s]"
 Switch GetClimates "Get All Climates [%s]"
 ```
 
-```
+```java
 rule "Set Temperature Hold"
 when
     Item SetTemperatureHold received command

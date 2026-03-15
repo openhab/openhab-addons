@@ -11,7 +11,7 @@
 
 		<label>Electricity Meter (DSMR V3)</label>
 		<description>This is an electricity meter that complies to the DSMR V3 specification.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="emeter_equipment_identifier" typeId="equipmentIdType"/>
 			<channel id="emeter_delivery_tariff1" typeId="deliveryTariff1Type"/>

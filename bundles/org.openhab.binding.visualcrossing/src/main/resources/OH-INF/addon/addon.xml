@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="visualcrossing" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Visual Crossing Binding</name>
+	<description>
+		Visual Crossing Weather is the easiest-to-use and lowest-cost source for historical and forecast weather
+		data. Weather API (https://www.visualcrossing.com/weather-api) is designed to integrate easily into any app or
+		code.
+	</description>
+	<connection>cloud</connection>
+
+</addon:addon>

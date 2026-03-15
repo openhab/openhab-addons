@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Thermostat Unit</label>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="targetTemperature" typeId="targetTemperature"/>
@@ -20,12 +21,20 @@
 	<channel-type id="state">
 		<item-type>Switch</item-type>
 		<label>AC On Off State</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<description>The set point temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="16" max="30" step="1" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -34,6 +43,10 @@
 		<label>Room Temperature</label>
 		<description>Current room temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -41,6 +54,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Thermostat mode (Cool, Heat, Fan, Dry, Auto)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="cool">Cool</option>
@@ -55,6 +72,10 @@
 		<item-type>String</item-type>
 		<label>Fan Level</label>
 		<description>Fan level (Low, Medium, High, Auto)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="low">Low</option>

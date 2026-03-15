@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mail.internal.action;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +30,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SendMailActions.class)
 @ThingActionsScope(name = "mail")
 @NonNullByDefault
 public class SendMailActions implements ThingActions {
@@ -49,30 +51,32 @@ public class SendMailActions implements ThingActions {
     private Map<String, String> headers = new HashMap<>();
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMail(
-            @ActionInput(name = "recipient") @Nullable String recipient,
-            @ActionInput(name = "subject") @Nullable String subject,
-            @ActionInput(name = "text") @Nullable String text) {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMail(
+            @ActionInput(name = "recipient", label = "@text/actionInputRecipientLabel", description = "@text/actionInputRecipientDescription") @Nullable String recipient,
+            @ActionInput(name = "subject", label = "@text/actionInputSubjectLabel", description = "@text/actionInputSubjectDescription") @Nullable String subject,
+            @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDescription") @Nullable String text) {
         return sendMailWithAttachments(recipient, subject, text, List.of());
     }
 
     @RuleAction(label = "@text/sendAttachmentMessageActionLabel", description = "@text/sendAttachmentMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMailWithAttachment(
-            @ActionInput(name = "recipient") @Nullable String recipient,
-            @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
-            @ActionInput(name = "url") @Nullable String urlString) {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMailWithAttachment(
+            @ActionInput(name = "recipient", label = "@text/actionInputRecipientLabel", description = "@text/actionInputRecipientDescription") @Nullable String recipient,
+            @ActionInput(name = "subject", label = "@text/actionInputSubjectLabel", description = "@text/actionInputSubjectDescription") @Nullable String subject,
+            @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDescription") @Nullable String text,
+            @ActionInput(name = "url", label = "@text/actionInputUrlLabel", description = "@text/actionInputUrlDescription") @Nullable String url) {
         List<String> urlList = new ArrayList<>();
-        if (urlString != null) {
-            urlList.add(urlString);
+        if (url != null) {
+            urlList.add(url);
         }
         return sendMailWithAttachments(recipient, subject, text, urlList);
     }
 
     @RuleAction(label = "@text/sendAttachmentsMessageActionLabel", description = "@text/sendAttachmentsMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMailWithAttachments(
-            @ActionInput(name = "recipient") @Nullable String recipient,
-            @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "text") @Nullable String text,
-            @ActionInput(name = "urlList") @Nullable List<String> urlStringList) {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendMailWithAttachments(
+            @ActionInput(name = "recipient", label = "@text/actionInputRecipientLabel", description = "@text/actionInputRecipientDescription") @Nullable String recipient,
+            @ActionInput(name = "subject", label = "@text/actionInputSubjectLabel", description = "@text/actionInputSubjectDescription") @Nullable String subject,
+            @ActionInput(name = "text", label = "@text/actionInputTextLabel", description = "@text/actionInputTextDescription") @Nullable String text,
+            @ActionInput(name = "urlList", type = "List<String>", label = "@text/actionInputUrlListLabel", description = "@text/actionInputUrlListDescription") @Nullable List<String> urlList) {
         if (recipient == null) {
             logger.warn("Cannot send mail as recipient is missing.");
             return false;
@@ -87,8 +91,8 @@ public class SendMailActions implements ThingActions {
             if (text != null && !text.isEmpty()) {
                 builder.withText(text);
             }
-            if (urlStringList != null) {
-                for (String urlString : urlStringList) {
+            if (urlList != null) {
+                for (String urlString : urlList) {
                     builder.withURLAttachment(urlString);
                 }
             }
@@ -102,7 +106,7 @@ public class SendMailActions implements ThingActions {
             } else {
                 return handler.sendMail(builder.build());
             }
-        } catch (AddressException | MalformedURLException | EmailException e) {
+        } catch (AddressException | IllegalArgumentException | EmailException e) {
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
@@ -110,48 +114,60 @@ public class SendMailActions implements ThingActions {
 
     public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text) {
-        return SendMailActions.sendMail(actions, recipient, subject, text, List.of());
+        return SendMailActions.sendMailWithAttachments(actions, recipient, subject, text, List.of());
     }
 
     public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
-            @Nullable String text, @Nullable String urlString) {
+            @Nullable String text, @Nullable String url) {
+        return SendMailActions.sendMailWithAttachment(actions, recipient, subject, text, url);
+    }
+
+    public static boolean sendMailWithAttachment(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String text, @Nullable String url) {
         List<String> urlList = new ArrayList<>();
-        if (urlString != null) {
-            urlList.add(urlString);
+        if (url != null) {
+            urlList.add(url);
         }
-        return SendMailActions.sendMail(actions, recipient, subject, text, urlList);
+        return SendMailActions.sendMailWithAttachments(actions, recipient, subject, text, urlList);
     }
 
     public static boolean sendMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
-            @Nullable String text, @Nullable List<String> urlStringList) {
-        return ((SendMailActions) actions).sendMailWithAttachments(recipient, subject, text, urlStringList);
+            @Nullable String text, @Nullable List<String> urlList) {
+        return SendMailActions.sendMailWithAttachments(actions, recipient, subject, text, urlList);
+    }
+
+    public static boolean sendMailWithAttachments(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String text, @Nullable List<String> urlList) {
+        return ((SendMailActions) actions).sendMailWithAttachments(recipient, subject, text, urlList);
     }
 
     @RuleAction(label = "@text/sendHTMLMessageActionLabel", description = "@text/sendHTMLMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMail(
-            @ActionInput(name = "recipient") @Nullable String recipient,
-            @ActionInput(name = "subject") @Nullable String subject,
-            @ActionInput(name = "html") @Nullable String html) {
-        return sendHtmlMailWithAttachments(recipient, subject, html, List.of());
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendHtmlMail(
+            @ActionInput(name = "recipient", label = "@text/actionInputRecipientLabel", description = "@text/actionInputRecipientDescription") @Nullable String recipient,
+            @ActionInput(name = "subject", label = "@text/actionInputSubjectLabel", description = "@text/actionInputSubjectDescription") @Nullable String subject,
+            @ActionInput(name = "htmlContent", label = "@text/actionInputHtmlContentLabel", description = "@text/actionInputHtmlContentDescription") @Nullable String htmlContent) {
+        return sendHtmlMailWithAttachments(recipient, subject, htmlContent, List.of());
     }
 
     @RuleAction(label = "@text/sendHTMLAttachmentMessageActionLabel", description = "@text/sendHTMLAttachmentMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachment(
-            @ActionInput(name = "recipient") @Nullable String recipient,
-            @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "html") @Nullable String html,
-            @ActionInput(name = "url") @Nullable String urlString) {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachment(
+            @ActionInput(name = "recipient", label = "@text/actionInputRecipientLabel", description = "@text/actionInputRecipientDescription") @Nullable String recipient,
+            @ActionInput(name = "subject", label = "@text/actionInputSubjectLabel", description = "@text/actionInputSubjectDescription") @Nullable String subject,
+            @ActionInput(name = "htmlContent", label = "@text/actionInputHtmlContentLabel", description = "@text/actionInputHtmlContentDescription") @Nullable String htmlContent,
+            @ActionInput(name = "url", label = "@text/actionInputUrlLabel", description = "@text/actionInputUrlDescription") @Nullable String url) {
         List<String> urlList = new ArrayList<>();
-        if (urlString != null) {
-            urlList.add(urlString);
+        if (url != null) {
+            urlList.add(url);
         }
-        return sendHtmlMailWithAttachments(recipient, subject, html, urlList);
+        return sendHtmlMailWithAttachments(recipient, subject, htmlContent, urlList);
     }
 
     @RuleAction(label = "@text/sendHTMLAttachmentsMessageActionLabel", description = "@text/sendHTMLAttachmentsMessageActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachments(
-            @ActionInput(name = "recipient") @Nullable String recipient,
-            @ActionInput(name = "subject") @Nullable String subject, @ActionInput(name = "html") @Nullable String html,
-            @ActionInput(name = "urlList") @Nullable List<String> urlStringList) {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendHtmlMailWithAttachments(
+            @ActionInput(name = "recipient", label = "@text/actionInputRecipientLabel", description = "@text/actionInputRecipientDescription") @Nullable String recipient,
+            @ActionInput(name = "subject", label = "@text/actionInputSubjectLabel", description = "@text/actionInputSubjectDescription") @Nullable String subject,
+            @ActionInput(name = "htmlContent", label = "@text/actionInputHtmlContentLabel", description = "@text/actionInputHtmlContentDescription") @Nullable String htmlContent,
+            @ActionInput(name = "urlList", type = "List<String>", label = "@text/actionInputUrlListLabel", description = "@text/actionInputUrlListDescription") @Nullable List<String> urlList) {
         if (recipient == null) {
             logger.warn("Cannot send mail as recipient is missing.");
             return false;
@@ -163,11 +179,11 @@ public class SendMailActions implements ThingActions {
             if (subject != null && !subject.isEmpty()) {
                 builder.withSubject(subject);
             }
-            if (html != null && !html.isEmpty()) {
-                builder.withHtml(html);
+            if (htmlContent != null && !htmlContent.isEmpty()) {
+                builder.withHtml(htmlContent);
             }
-            if (urlStringList != null) {
-                for (String urlString : urlStringList) {
+            if (urlList != null) {
+                for (String urlString : urlList) {
                     builder.withURLAttachment(urlString);
                 }
             }
@@ -181,35 +197,45 @@ public class SendMailActions implements ThingActions {
             } else {
                 return handler.sendMail(builder.build());
             }
-        } catch (AddressException | MalformedURLException | EmailException e) {
+        } catch (AddressException | IllegalArgumentException | EmailException e) {
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
     }
 
     public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
-            @Nullable String html) {
-        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, List.of());
+            @Nullable String htmlContent) {
+        return SendMailActions.sendHtmlMailWithAttachments(actions, recipient, subject, htmlContent, List.of());
     }
 
     public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
-            @Nullable String html, @Nullable String urlString) {
+            @Nullable String htmlContent, @Nullable String url) {
+        return SendMailActions.sendHtmlMailWithAttachment(actions, recipient, subject, htmlContent, url);
+    }
+
+    public static boolean sendHtmlMailWithAttachment(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String htmlContent, @Nullable String url) {
         List<String> urlList = new ArrayList<>();
-        if (urlString != null) {
-            urlList.add(urlString);
+        if (url != null) {
+            urlList.add(url);
         }
-        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, urlList);
+        return SendMailActions.sendHtmlMailWithAttachments(actions, recipient, subject, htmlContent, urlList);
     }
 
     public static boolean sendHtmlMail(ThingActions actions, @Nullable String recipient, @Nullable String subject,
-            @Nullable String html, @Nullable List<String> urlStringList) {
-        return ((SendMailActions) actions).sendHtmlMailWithAttachments(recipient, subject, html, urlStringList);
+            @Nullable String htmlContent, @Nullable List<String> urlList) {
+        return SendMailActions.sendHtmlMailWithAttachments(actions, recipient, subject, htmlContent, urlList);
+    }
+
+    public static boolean sendHtmlMailWithAttachments(ThingActions actions, @Nullable String recipient,
+            @Nullable String subject, @Nullable String htmlContent, @Nullable List<String> urlList) {
+        return ((SendMailActions) actions).sendHtmlMailWithAttachments(recipient, subject, htmlContent, urlList);
     }
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SMTPHandler) {
-            this.handler = (SMTPHandler) handler;
+        if (handler instanceof SMTPHandler smtpHandler) {
+            this.handler = smtpHandler;
         }
     }
 
@@ -219,8 +245,9 @@ public class SendMailActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/addHeaderActionLabel", description = "@text/addHeaderActionDescription")
-    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean addHeader(
-            @ActionInput(name = "name") @Nullable String name, @ActionInput(name = "value") @Nullable String value) {
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean addHeader(
+            @ActionInput(name = "name", label = "@text/actionInputHeaderNameLabel") @Nullable String name,
+            @ActionInput(name = "value", label = "@text/actionInputHeaderValueLabel") @Nullable String value) {
         if (name != null && !name.isEmpty()) {
             if (value != null && !value.isEmpty()) {
                 headers.put(name, value);

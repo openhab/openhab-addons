@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -54,17 +55,19 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
     public ShellyManagerOverviewPage(ConfigurationAdmin configurationAdmin,
             ShellyTranslationProvider translationProvider, HttpClient httpClient, String localIp, int localPort,
-            ShellyHandlerFactory handlerFactory) {
-        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory);
+            ShellyHandlerFactory handlerFactory, ShellyManagerCache<String, FwRepoEntry> firmwareRepo,
+            ShellyManagerCache<String, FwArchList> firmwareArch) {
+        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
+                firmwareArch);
     }
 
     @Override
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
-        String filter = getUrlParm(parameters, URLPARM_FILTER).toLowerCase();
-        String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase();
-        String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase();
+        String filter = getUrlParm(parameters, URLPARM_FILTER).toLowerCase(Locale.ROOT);
+        String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase(Locale.ROOT);
+        String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase(Locale.ROOT);
 
-        logger.debug("Generating overview for {} devices", getThingHandlers().size());
+        logger.debug("Generating overview for {} devices", getThingHandlers().size());
 
         String html = "";
         Map<String, String> properties = new HashMap<>();
@@ -75,7 +78,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         TreeMap<String, ShellyManagerInterface> sortedMap = new TreeMap<>();
         for (Map.Entry<String, ShellyManagerInterface> th : getThingHandlers().entrySet()) { // sort by Device Name
             ShellyManagerInterface handler = th.getValue();
-            sortedMap.put(getDisplayName(handler.getThing().getProperties()), handler);
+            sortedMap.put(getDisplayName(handler.getThing().getProperties(), handler.getThing()), handler);
         }
 
         html = loadHTML(HEADER_HTML, properties);
@@ -105,17 +108,22 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                     fillProperties(properties, uid, handler.getValue());
                     String deviceType = getDeviceType(properties);
 
-                    properties.put(ATTRIBUTE_DISPLAY_NAME, getDisplayName(properties));
+                    properties.put(ATTRIBUTE_DISPLAY_NAME, getDisplayName(properties, handler.getValue().getThing()));
                     properties.put(ATTRIBUTE_DEV_STATUS, fillDeviceStatus(warnings));
                     if (!warnings.isEmpty() && (status != ThingStatus.UNKNOWN)) {
                         properties.put(ATTRIBUTE_STATUS_ICON, ICON_ATTENTION);
                     }
                     if (!"unknown".equalsIgnoreCase(deviceType) && (status == ThingStatus.ONLINE)) {
-                        properties.put(ATTRIBUTE_FIRMWARE_SEL, fillFirmwareHtml(uid, deviceType, profile.mode));
+                        properties.put(ATTRIBUTE_FIRMWARE_SEL, fillFirmwareHtml(profile, uid, deviceType));
                         properties.put(ATTRIBUTE_ACTION_LIST, fillActionHtml(th, uid));
                     } else {
                         properties.put(ATTRIBUTE_FIRMWARE_SEL, "");
                         properties.put(ATTRIBUTE_ACTION_LIST, "");
+                    }
+                    if (profile.isBlu) {
+                        properties.put(ATTRIBUTE_DISPLAY_NAME, profile.thingName);
+                        properties.put(ATTRIBUTE_DEVICEIP, "n/a");
+                        properties.put(PROPERTY_WIFI_NETW, "Bluetooth");
                     }
                     html += loadHTML(OVERVIEW_DEVICE, properties);
                 }
@@ -126,13 +134,14 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
         properties.clear();
         properties.put("numberDevices", "<span class=\"footerDevices\">" + "Number of devices: " + filteredDevices
-                + " of " + String.valueOf(getThingHandlers().size()) + "&nbsp;</span>");
+                + " of " + getThingHandlers().size() + "&nbsp;</span>");
         properties.put(ATTRIBUTE_CSS_FOOTER, loadHTML(OVERVIEW_FOOTER, properties));
         html += deviceHtml + loadHTML(FOOTER_HTML, properties);
         return new ShellyMgrResponse(fillAttributes(html, properties), HttpStatus.OK_200);
     }
 
-    private String fillFirmwareHtml(String uid, String deviceType, String mode) throws ShellyApiException {
+    private String fillFirmwareHtml(ShellyDeviceProfile profile, String uid, String deviceType)
+            throws ShellyApiException {
         String html = "\n\t\t\t\t<select name=\"fwList\" id=\"fwList\" onchange=\"location = this.options[this.selectedIndex].value;\">\n";
         html += "\t\t\t\t\t<option value=\"\" selected disabled hidden>update to</option>\n";
 
@@ -140,52 +149,65 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         String bVersion = "";
         String updateUrl = SHELLY_MGR_FWUPDATE_URI + "?" + URLPARM_UID + "=" + urlEncode(uid);
         try {
-            // Get current prod + beta version from original firmware repo
-            logger.debug("{}: Load firmware version list for device type {}", LOG_PREFIX, deviceType);
-            FwRepoEntry fw = getFirmwareRepoEntry(deviceType, mode);
-            pVersion = extractFwVersion(fw.version);
+            if (!profile.isGen2) { // currently there is no public firmware repo for Gen2
+                logger.debug("{}: Load firmware version list for device type {}", LOG_PREFIX, deviceType);
+                FwRepoEntry fw = getFirmwareRepoEntry(deviceType, profile.device.mode);
+
+                pVersion = extractFwVersion(fw.version);
+                bVersion = extractFwVersion(fw.betaVer);
+            } else {
+                pVersion = extractFwVersion(getString(profile.status.update.newVersion));
+                bVersion = extractFwVersion(getString(profile.status.update.betaVersion));
+            }
             if (!pVersion.isEmpty()) {
                 html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + FWPROD + "\">Release "
                         + pVersion + "</option>\n";
             }
-            bVersion = extractFwVersion(fw.betaVer);
             if (!bVersion.isEmpty()) {
                 html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + FWBETA + "\">Beta "
                         + bVersion + "</option>\n";
             }
 
-            // Add those from Shelly Firmware Archive
-            String json = httpGet(FWREPO_ARCH_URL + "?" + URLPARM_TYPE + "=" + deviceType);
-            if (json.startsWith("[]")) {
-                // no files available for this device type
-                logger.debug("{}: No firmware files found for device type {}", LOG_PREFIX, deviceType);
-            } else {
-                // Create selection list
-                json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it an named array
-                FwArchList list = getFirmwareArchiveList(deviceType);
-                ArrayList<FwArchEntry> versions = list.versions;
-                if (versions != null) {
-                    html += "\t\t\t\t\t<option value=\"\" disabled>-- Archive:</option>\n";
-                    for (int i = versions.size() - 1; i >= 0; i--) {
-                        FwArchEntry e = versions.get(i);
-                        String version = getString(e.version);
-                        ShellyVersionDTO v = new ShellyVersionDTO();
-                        if (!version.equalsIgnoreCase(pVersion) && !version.equalsIgnoreCase(bVersion)
-                                && (v.compare(version, SHELLY_API_MIN_FWCOIOT) >= 0) || version.contains("master")) {
-                            html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + version
-                                    + "\">" + version + "</option>\n";
+            if (!profile.isGen2) { // currently no online repo for Gen2
+                // Add those from Shelly Firmware Archive
+                String json = httpGet(FWREPO_ARCH_URL + "?" + URLPARM_TYPE + "=" + deviceType);
+                if (json.startsWith("[]")) {
+                    // no files available for this device type
+                    logger.debug("{}: No firmware files found for device type {}", LOG_PREFIX, deviceType);
+                } else {
+                    // Create selection list
+                    json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it a named array
+                    FwArchList list = getFirmwareArchiveList(deviceType);
+                    ArrayList<FwArchEntry> versions = list.versions;
+                    if (versions != null) {
+                        html += "\t\t\t\t\t<option value=\"\" disabled>-- Archive:</option>\n";
+                        for (int i = versions.size() - 1; i >= 0; i--) {
+                            FwArchEntry e = versions.get(i);
+                            String version = getString(e.version);
+                            ShellyVersionDTO v = new ShellyVersionDTO();
+                            if (!version.equalsIgnoreCase(pVersion) && !version.equalsIgnoreCase(bVersion)
+                                    && (v.compare(version, SHELLY_API_MIN_FWCOIOT) >= 0)
+                                    || version.contains("master")) {
+                                html += "\t\t\t\t\t<option value=\"" + updateUrl + "&" + URLPARM_VERSION + "=" + version
+                                        + "\">" + version + "</option>\n";
+                            }
                         }
                     }
                 }
             }
-        } catch (ShellyApiException e) {
+        } catch (
+
+        ShellyApiException e) {
             logger.debug("{}: Unable to retrieve firmware list: {}", LOG_PREFIX, e.toString());
         }
 
-        html += "\t\t\t\t\t<option class=\"select-hr\" value=\"" + SHELLY_MGR_FWUPDATE_URI + "?uid=" + uid
-                + "&connection=custom\">Custom URL</option>\n";
-
-        html += "\t\t\t\t</select>\n\t\t\t";
+        html += "\t\t\t\t\t<option class=\"select-hr\" value=\"" + SHELLY_MGR_FWUPDATE_URI + "?uid=" + uid;
+        if (!profile.isBlu) {
+            html += "&connection=custom\">Custom URL";
+        } else {
+            html += "\">Check Device App";
+        }
+        html += "</option>\n\t\t\t\t</select>\n\t\t\t";
 
         return html;
     }
@@ -227,7 +249,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 // return handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE) == OnOffType.ON;
                 return getBool(profile.status.hasUpdate);
             case FILTER_UNPROTECTED:
-                return !profile.auth;
+                if (profile.device.auth != null) {
+                    return !profile.device.auth;
+                }
             case "*":
             default:
                 return true;
@@ -242,7 +266,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
         TreeMap<String, String> result = new TreeMap<>();
 
-        if ((status != ThingStatus.ONLINE) && (status != ThingStatus.UNKNOWN)) {
+        if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
             result.put("Thing Status", status.toString());
         }
         State wifiSignal = handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI);
@@ -282,9 +306,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             if ((config.eventsCoIoT) && (profile.settings.coiot != null)) {
                 if ((profile.settings.coiot.enabled != null) && !profile.settings.coiot.enabled) {
                     result.put("CoIoT Status", "COIOT_DISABLED");
-                } else if (stats.coiotMessages == 0) {
+                } else if (stats.protocolMessages == 0) {
                     result.put("CoIoT Discovery", "NO_COIOT_DISCOVERY");
-                } else if (stats.coiotMessages < 2) {
+                } else if (stats.protocolMessages < 2) {
                     result.put("CoIoT Multicast", "NO_COIOT_MULTICAST");
                 }
             }

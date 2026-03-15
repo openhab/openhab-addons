@@ -8,6 +8,7 @@
 	<thing-type id="remote" listed="false">
 		<label>Remote Control</label>
 		<description>An IR remote control</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 
 		<channels>
 			<channel id="event" typeId="event"/>

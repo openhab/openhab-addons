@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="haassohnpelletstove" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Haas+Sohn Pellet Stove Binding</name>
+	<description>This binding communicates with Haas+Sohn pellet stoves through the optional Wi‑Fi module. It allows you to
+		power the stove on and off and receive operational information.</description>
+	<connection>local</connection>
+
+</addon:addon>

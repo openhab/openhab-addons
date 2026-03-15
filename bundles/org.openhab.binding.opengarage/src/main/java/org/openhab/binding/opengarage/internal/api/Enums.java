@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,22 +12,21 @@
  */
 package org.openhab.binding.opengarage.internal.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Container class for enums related to opengarage
  *
- * @author Paul Smedley <paul@smedley.id.au> - Initial contribution
+ * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class Enums {
     public enum OpenGarageCommand {
         OPEN("open"),
         CLOSE("close"),
         CLICK("click");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(OpenGarageCommand.class);
         private final String value;
 
         OpenGarageCommand(String value) {

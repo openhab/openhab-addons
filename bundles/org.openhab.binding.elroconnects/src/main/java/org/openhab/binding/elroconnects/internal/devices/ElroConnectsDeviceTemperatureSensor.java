@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,11 +52,14 @@ public class ElroConnectsDeviceTemperatureSensor extends ElroConnectsDevice {
         }
 
         ElroDeviceStatus elroStatus = ElroDeviceStatus.NORMAL;
+        int signalStrength = 0;
         int batteryLevel = 0;
         int temperature = 0;
         int humidity = 0;
         String deviceStatus = this.deviceStatus;
         if (deviceStatus.length() >= 8) {
+            signalStrength = Integer.parseInt(deviceStatus.substring(0, 2), 16);
+            signalStrength = (signalStrength > 4) ? 4 : ((signalStrength < 0) ? 0 : signalStrength);
             batteryLevel = Integer.parseInt(deviceStatus.substring(2, 4), 16);
             temperature = Byte.parseByte(deviceStatus.substring(4, 6), 16);
             humidity = Integer.parseInt(deviceStatus.substring(6, 8));
@@ -67,15 +70,18 @@ public class ElroConnectsDeviceTemperatureSensor extends ElroConnectsDevice {
 
         switch (elroStatus) {
             case FAULT:
+                handler.updateState(SIGNAL_STRENGTH, UnDefType.UNDEF);
                 handler.updateState(BATTERY_LEVEL, UnDefType.UNDEF);
                 handler.updateState(LOW_BATTERY, UnDefType.UNDEF);
                 handler.updateState(TEMPERATURE, UnDefType.UNDEF);
                 handler.updateState(HUMIDITY, UnDefType.UNDEF);
-                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Device " + deviceId + " has a fault");
+                String msg = String.format("@text/offline.device-fault [ \"%d\" ]", deviceId);
+                handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
                 break;
             default:
+                handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
                 handler.updateState(BATTERY_LEVEL, new DecimalType(batteryLevel));
-                handler.updateState(LOW_BATTERY, (batteryLevel < 15) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 15));
                 handler.updateState(TEMPERATURE, new QuantityType<>(temperature, CELSIUS));
                 handler.updateState(HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
                 handler.updateStatus(ThingStatus.ONLINE);

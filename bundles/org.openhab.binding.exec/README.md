@@ -36,22 +36,29 @@ It is not advised to run the virtual machine as superuser/root.
 The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 
-- `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result string.
+- `transform` - [Transformations](/docs/configuration/transformations.html) to apply on the execution result string.
 - `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid automatic repetition.
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
 - `autorun` - A boolean parameter to make the command execute immediately every time the input channel is sent a different openHAB command. If choosing autorun, you may wish to also set `interval=0`. Note that sending the same command a second time will not trigger execution.
 
 For each shell command, a separate Thing has to be defined.
 
+### Transformations
+
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is also supported, e.g.: `JSONPATH:$.path`.
+Please note that if the transformation failed or returned `null`, the original data will be passed through.
+
 ```java
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]
 ```
 
-The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax).
+The `command` itself can be enhanced using the well known syntax of the [Java formatter class syntax](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Formatter.html#syntax).
 The following parameters are automatically added:
 
--   the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
--   the current (or last) command to the input channel (see below, example: `%2$s`)
+- the current date (as java.util.Date, example: `%1$tY-%1$tm-%1$td`)
+- the current (or last) command to the input channel (see below, example: `%2$s`)
 
 note - if you trigger execution using interval or the run channel, the `%2` substitution will use the most recent command (if there has been one) sent to the input channel.  The state of the Item linked to input channel is ignored.
 
@@ -73,14 +80,14 @@ Also note that only commands (e.g. `sendCommand`) to the `input` channel are rec
 
 ## Minimal Example
 
-**demo.things**
+### `demo.things` Example
 
 ```java
 Thing exec:command:apc [command="/usr/local/bin/apcaccess status", interval=15, timeout=5]
 Thing exec:command:myscript [command="php ./configurations/scripts/script.php %2$s", transform="REGEX((.*?))"]
 ```
 
-**demo.items**
+### demo.items
 
 ```java
 String APCRaw "[%s]" (All) {channel="exec:command:apc:output"}
@@ -91,9 +98,9 @@ DateTime APCLastExecution {channel="exec:command:apc:lastexecution"}
 
 ## Full Example
 
-Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to an Number Item. 
+Following is an example how to set up an exec command thing, pass it a parameter, debug it with a rule and set the returned string to a Number Item.
 
-**demo.things**
+### `demo.things` Example
 
 ```java
 // "%2$s" will be replace by the input channel command, this makes it possible to use one command line with different arguments.
@@ -101,7 +108,7 @@ Following is an example how to set up an exec command thing, pass it a parameter
 Thing exec:command:yourcommand [ command="<YOUR COMMAND> %2$s", interval=0, autorun=false ]
 ```
 
-**demo.items**
+### demo.items
 
 ```java
 Switch YourTrigger "External trigger [%s]"
@@ -111,11 +118,11 @@ Number YourNumber "Your Number [%.1f °C]"
 Switch yourcommand_Run {channel="exec:command:yourcommand:run", autoupdate="false"}
 // Arguments to be placed for '%2$s' in command line
 String yourcommand_Args {channel="exec:command:yourcommand:input"}
-// Output of command line execution 
+// Output of command line execution
 String yourcommand_Out {channel="exec:command:yourcommand:output"}
 ```
 
-**demo.sitemap**
+### demo.sitemap
 
 ```java
 // Name of file and name of sitemap has to be the same
@@ -128,7 +135,7 @@ sitemap demo label="Your Value"
 }
 ```
 
-**demo.rules**
+### demo.rules
 
 ```java
 rule "Set up your parameters"

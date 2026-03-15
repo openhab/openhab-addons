@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Temperature-Humidity Sensor</label>
 		<description>A Temperature-Humidity device.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>

@@ -7,6 +7,7 @@
 	<bridge-type id="bridgeV6">
 		<label>Milight Bridge (iBox)</label>
 		<description>A bridge for all newer light bulbs (2016+) of the Milight/Easybulb system.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<properties>
 			<property name="sessionid">N/A</property>
@@ -88,6 +89,7 @@
 		<description>Integrated bulb of the ibox bridge with no dedicated white channel and therefore no saturation control
 		</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="ledwhitemode" typeId="ledwhitemode"/>
@@ -115,6 +117,7 @@
 		<label>Color Bulb with Cold White (iBox)</label>
 		<description>Color bulb with white channel for the new Milight/Easybulb system.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="ledlink" typeId="ledlink"/>
@@ -145,6 +148,7 @@
 		<label>Color Bulb with Cold/warm White (iBox)</label>
 		<description>Color bulb with warm and cold white support for the new Milight/Easybulb system.</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 
 		<channels>
 			<channel id="ledlink" typeId="ledlink"/>

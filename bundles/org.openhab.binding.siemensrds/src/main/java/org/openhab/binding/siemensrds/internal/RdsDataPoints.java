@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -83,14 +84,13 @@ public class RdsDataPoints {
      * execute an HTTP GET command on the remote cloud server to retrieve the JSON
      * response from the given urlString
      */
-    protected static String httpGenericGetJson(String apiKey, String token, String urlString)
-            throws RdsCloudException, IOException {
+    protected static String httpGenericGetJson(String apiKey, String token, String urlString) throws IOException {
         /*
          * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        URL url = new URL(urlString);
+        URL url = URI.create(urlString).toURL();
         HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
         https.setRequestMethod(HTTP_GET);
@@ -134,7 +134,7 @@ public class RdsDataPoints {
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        URL url = new URL(pointUrl);
+        URL url = URI.create(pointUrl).toURL();
 
         HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 
@@ -196,7 +196,7 @@ public class RdsDataPoints {
         }
         @Nullable
         String pointId = indexClassToId.get(pointClass);
-        if (pointId != null) {
+        if (pointId != null && !pointId.isEmpty()) {
             return pointId;
         }
         throw new RdsCloudException(String.format("no pointId to match pointClass \"%s\"", pointClass));
@@ -250,10 +250,12 @@ public class RdsDataPoints {
                 Set<String> set = new HashSet<>();
                 String pointId;
 
-                for (ChannelMap chan : CHAN_MAP) {
-                    pointId = pointClassToId(chan.clazz);
-                    if (!pointId.isEmpty()) {
+                for (ChannelMap channel : CHAN_MAP) {
+                    try {
+                        pointId = pointClassToId(channel.clazz);
                         set.add(String.format("\"%s\"", pointId));
+                    } catch (RdsCloudException e) {
+                        logger.debug("{} \"{}\" not implemented; don't include in request", channel.id, channel.clazz);
                     }
                 }
 

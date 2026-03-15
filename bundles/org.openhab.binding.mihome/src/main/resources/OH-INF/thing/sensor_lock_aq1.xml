@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Aqara Fingerprint Door Lock</label>
 		<description>Live fingerprint unlock, password unlock, proximity card unlock, key unlock.</description>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="status" typeId="status"></channel>
 			<channel id="id" typeId="idNumber"></channel>

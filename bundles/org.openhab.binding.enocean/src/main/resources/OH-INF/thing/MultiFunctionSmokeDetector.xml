@@ -11,7 +11,7 @@
 
 		<label>Multi Function Smoke Detector</label>
 		<description>Multi Function Sensor like a Smoke Detector (EEP: F6-05, D2-14)</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

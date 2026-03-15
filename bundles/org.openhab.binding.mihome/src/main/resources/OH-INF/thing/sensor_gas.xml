@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Gas Sensor</label>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="alarm" typeId="gas_alarm"></channel>
 			<channel id="status" typeId="status"></channel>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="org.openhab.binding.emby-${project.version}">
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+
+	<feature name="openhab-binding-emby" version="${project.version}" description="openHAB Emby Binding">
+		<feature>openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.emby/${project.version}</bundle>
+	</feature>
+</features>

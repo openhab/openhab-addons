@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homewizard"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="hw-v1-system-group">
+		<label>System</label>
+		<channels>
+			<channel id="wifi_ssid" typeId="hw-wifi-ssid"/>
+			<channel id="wifi_rssi" typeId="hw-wifi-rssi"/>
+			<channel id="cloud_enabled" typeId="hw-cloud-enabled"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hw-system-group">
+		<label>System</label>
+		<channels>
+			<channel id="wifi_ssid" typeId="hw-wifi-ssid"/>
+			<channel id="wifi_rssi" typeId="hw-wifi-rssi"/>
+			<channel id="uptime" typeId="hw-uptime"/>
+			<channel id="cloud_enabled" typeId="hw-cloud-enabled"/>
+			<channel id="status_led_brightness" typeId="hw-status-led-brightness"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="hw-batteries-group">
+		<label>Batteries</label>
+		<channels>
+			<channel id="batteries_mode" typeId="hw-batteries-mode"/>
+			<channel id="batteries_battery_count" typeId="hw-batteries-battery-count"/>
+
+			<channel id="batteries_power" typeId="hw-power-advanced">
+				<label>Power</label>
+				<description>
+					This channel provides the current combined power consumption/production of the controlled Plug-In
+					Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_target_power" typeId="hw-power-advanced">
+				<label>Target Power</label>
+				<description>
+					This channel provides the target power consumption/production of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_max_consumption" typeId="hw-power-advanced">
+				<label>Maximum Consumption</label>
+				<description>
+					This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_max_production" typeId="hw-power-advanced">
+				<label>Maximum Production</label>
+				<description>
+					This channel provides the maximum allowed production power of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="hw-wifi-ssid">
+		<item-type>String</item-type>
+		<label>Wi-Fi SSID</label>
+		<description>
+			This channel provides the SSID of the Wi-Fi network.
+		</description>
+	</channel-type>
+
+	<channel-type id="hw-wifi-rssi" advanced="true">
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
+		<label>Wi-Fi RSSI</label>
+		<description>
+			This channel provides the signal strength of the Wi-Fi network.
+		</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-uptime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Uptime</label>
+		<description>
+			This channel provides the uptime of the device in seconds.
+		</description>
+		<category>Duration</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Duration</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-cloud-enabled">
+		<item-type>Switch</item-type>
+		<label>Cloud Enabled</label>
+		<description>
+			This channel provides the state of the cloud communication.
+		</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-status-led-brightness" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Status LED Brightness</label>
+		<description>
+			This channel provides the brightness of the status LED in percent.
+		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-power">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<description>
+			This channel provides the active usage in Watt.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-power-advanced" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Active Power</label>
+		<description>
+			This channel provides the active usage in Watt.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Active Voltage</label>
+		<description>
+			This channel provides the active voltage in Volt.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-voltage-advanced" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Active Voltage</label>
+		<description>
+			This channel provides the active voltage in Volt.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Active Current</label>
+		<description>
+			This channel provides the active current in Ampere.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-current-advanced" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Active Current</label>
+		<description>
+			This channel provides the active current in Ampere.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-energy-import">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy Import</label>
+		<description>
+			This channel provides the total energy usage meter reading in kWh.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-energy-import-advanced" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Import</label>
+		<description>
+			This channel provides the total energy usage meter reading in kWh.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-energy-export">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy Export</label>
+		<description>
+			This channel provides the total energy feed-in meter reading in kWh.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-energy-export-advanced" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Export</label>
+		<description>
+			This channel provides the total energy feed-in meter reading in kWh.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="hw-reactive-power" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reactive Power</label>
+		<description>
+			This channel provides the active reactive power in Volt-Ampere reactive.
+		</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f VA"/>
+	</channel-type>
+
+	<channel-type id="hw-apparent-power" advanced="true">
+		<item-type>Number</item-type>
+		<label>Apparent Power</label>
+		<description>
+			This channel provides the active apparent power in Volt-Ampere.
+		</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f VA"/>
+	</channel-type>
+
+	<channel-type id="hw-power-factor" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Power Factor</label>
+		<description>
+			This channel provides the active power factor.
+		</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-frequency" advanced="true">
+		<item-type unitHint="Hz">Number:Frequency</item-type>
+		<label>Frequency</label>
+		<description>
+			This channel provides the active frequency in Hertz.
+		</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="hw-batteries-mode">
+		<item-type>String</item-type>
+		<label>Battery Control Mode</label>
+		<description>
+			This channel provides the control mode of the Plug-In Battery.
+		</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Mode</tag>
+		</tags>
+		<command>
+			<options>
+				<option value="zero">Maintain net-zero balance</option>
+				<option value="zero_charge_only">Maintain net-zero balance, charge only</option>
+				<option value="zero_discharge_only">Maintain net-zero balance, discharge only</option>
+				<option value="to_full">Charge to 100%</option>
+				<option value="standby">Stand-by mode</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="hw-batteries-battery-count">
+		<item-type>Number</item-type>
+		<label>Battery Count</label>
+		<description>This channel provides the number of connected Plug-In Batteries.</description>
+	</channel-type>
+
+
+</thing:thing-descriptions>

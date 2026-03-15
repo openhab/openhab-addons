@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 
 import java.net.CookieManager;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -76,7 +77,7 @@ public class TouchWandRestClient {
 
     private static final int REQUEST_TIMEOUT_SEC = 10;
 
-    private static final Map<String, String> COMMAND_MAP = new HashMap<String, String>();
+    private static final Map<String, String> COMMAND_MAP = new HashMap<>();
     static {
         COMMAND_MAP.put(CMD_LOGIN, "/auth/login?");
         COMMAND_MAP.put(CMD_LIST_UNITS, "/units/listUnits");
@@ -109,7 +110,7 @@ public class TouchWandRestClient {
         String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
         response = sendCommand(command, METHOD_GET, "");
 
-        return !response.equals("Unauthorized");
+        return !"Unauthorized".equals(response);
     }
 
     public String cmdListUnits() {
@@ -203,8 +204,7 @@ public class TouchWandRestClient {
     }
 
     private String buildUrl(String command) {
-        String url = "http://" + touchWandIpAddr + ":" + touchWandPort + COMMAND_MAP.get(command);
-        return url;
+        return "http://" + touchWandIpAddr + ":" + touchWandPort + COMMAND_MAP.get(command);
     }
 
     private synchronized String sendCommand(String command, HttpMethod method, String content) {
@@ -213,7 +213,7 @@ public class TouchWandRestClient {
 
         URL url = null;
         try {
-            url = new URL(command);
+            url = URI.create(command).toURL();
         } catch (MalformedURLException e) {
             logger.warn("Error building URL {} : {}", command, e.getMessage());
             return "";
@@ -230,7 +230,7 @@ public class TouchWandRestClient {
             response = request.send();
             return response.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Error opening connecton to {} : {} ", touchWandIpAddr, e.getMessage());
+            logger.warn("Error opening connection to {} : {} ", touchWandIpAddr, e.getMessage());
         }
         return "";
     }

@@ -35,6 +35,12 @@ import org.openhab.transform.basicprofiles.internal.config.RoundStateProfileConf
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Applies rounding with the specified scale and the rounding mode to a {@link QuantityType} or {@link DecimalType}
+ * state. Default rounding mode is {@link RoundingMode#HALF_UP}.
+ *
+ * @author Christoph Weitkamp - Initial contribution
+ */
 @NonNullByDefault
 public class RoundStateProfile implements TimeSeriesProfile {
 

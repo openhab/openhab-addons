@@ -1,0 +1,256 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.matter.internal.actions;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.matter.internal.MatterBindingConstants;
+import org.openhab.binding.matter.internal.client.dto.PairingCodes;
+import org.openhab.binding.matter.internal.client.dto.cluster.gen.OperationalCredentialsCluster;
+import org.openhab.binding.matter.internal.client.dto.ws.OtaUpdateInfo;
+import org.openhab.binding.matter.internal.controller.MatterControllerClient;
+import org.openhab.binding.matter.internal.handler.NodeHandler;
+import org.openhab.binding.matter.internal.util.MatterVendorIDs;
+import org.openhab.binding.matter.internal.util.TranslationService;
+import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
+import org.openhab.core.automation.annotation.ActionOutputs;
+import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.thing.binding.ThingActions;
+import org.openhab.core.thing.binding.ThingActionsScope;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ServiceScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonParseException;
+
+/**
+ * The {@link MatterNodeActions} exposes Matter related actions for the Matter Node Thing.
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
+@NonNullByDefault
+@Component(scope = ServiceScope.PROTOTYPE, service = MatterNodeActions.class)
+@ThingActionsScope(name = "matter")
+public class MatterNodeActions implements ThingActions {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    protected @Nullable NodeHandler handler;
+    private final TranslationService translationService;
+
+    @Activate
+    public MatterNodeActions(@Reference TranslationService translationService) {
+        this.translationService = translationService;
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof NodeHandler nodeHandler) {
+            this.handler = nodeHandler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_GENERATE_NEW_PAIRING_CODE)
+    public @ActionOutputs({
+            @ActionOutput(name = "manualPairingCode", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_MANUAL_PAIRING_CODE, type = "java.lang.String"),
+            @ActionOutput(name = "qrPairingCode", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GENERATE_NEW_PAIRING_CODE_QR_PAIRING_CODE, type = "qrCode") }) Map<String, Object> generateNewPairingCode() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    PairingCodes code = client.enhancedCommissioningWindow(handler.getNodeId()).get(30,
+                            TimeUnit.SECONDS);
+                    return Map.of("manualPairingCode", code.manualPairingCode, "qrPairingCode", code.qrPairingCode);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to generate new pairing code for device {}", handler.getNodeId(), e);
+                } catch (ExecutionException | TimeoutException | JsonParseException e) {
+                    logger.debug("Failed to generate new pairing code for device {}", handler.getNodeId(), e);
+                }
+            }
+        }
+        return Map.of("manualPairingCode",
+                translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER),
+                "qrPairingCode",
+                translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER));
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_DECOMMISSION, description = MatterBindingConstants.THING_ACTION_DESC_NODE_DECOMMISSION)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_DECOMMISSION_RESULT, type = "java.lang.String") }) String decommissionNode() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    client.removeNode(handler.getNodeId()).get(30, TimeUnit.SECONDS);
+                    return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
+                    logger.debug("Failed to decommission device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GET_FABRICS, description = MatterBindingConstants.THING_ACTION_DESC_NODE_GET_FABRICS)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_GET_FABRICS_RESULT, type = "java.lang.String") }) String getFabrics() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    List<OperationalCredentialsCluster.FabricDescriptorStruct> fabrics = client
+                            .getFabrics(handler.getNodeId()).get(30, TimeUnit.SECONDS);
+                    String result = fabrics.stream().map(fabric -> String.format("#%d %s (%s)", fabric.fabricIndex,
+                            fabric.label, MatterVendorIDs.VENDOR_IDS.get(fabric.vendorId)))
+                            .collect(Collectors.joining(", "));
+                    return result.isEmpty()
+                            ? translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_FABRICS)
+                            : result;
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to retrieve fabrics {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException | JsonParseException e) {
+                    logger.debug("Failed to retrieve fabrics {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REMOVE_FABRIC, description = MatterBindingConstants.THING_ACTION_DESC_NODE_REMOVE_FABRIC)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REMOVE_FABRIC_RESULT, type = "java.lang.String") }) String removeFabric(
+                    @ActionInput(name = "indexNumber", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_REMOVE_FABRIC_INDEX, description = MatterBindingConstants.THING_ACTION_DESC_NODE_REMOVE_FABRIC_INDEX) Integer indexNumber) {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    client.removeFabric(handler.getNodeId(), indexNumber).get(30, TimeUnit.SECONDS);
+                    return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_SUCCESS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to remove fabric {} {} ", handler.getNodeId(), indexNumber, e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
+                    logger.debug("Failed to remove fabric {} {} ", handler.getNodeId(), indexNumber, e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CHECK_FIRMWARE_UPDATE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_CHECK_FIRMWARE_UPDATE)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CHECK_FIRMWARE_UPDATE_RESULT, type = "java.lang.String") }) String checkForFirmwareUpdate() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            try {
+                OtaUpdateInfo updateInfo = handler.checkForOTAUpdate().get(30, TimeUnit.SECONDS);
+                if (updateInfo == null) {
+                    return translationService
+                            .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_FIRMWARE_UPDATE);
+                }
+                return translationService.getTranslation(
+                        MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_AVAILABLE,
+                        updateInfo.softwareVersionString, updateInfo.vendorId, updateInfo.productId,
+                        updateInfo.softwareVersion);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.debug("Failed to check for firmware update for device {}", handler.getNodeId(), e);
+                return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+            } catch (ExecutionException | TimeoutException | JsonParseException e) {
+                logger.debug("Failed to check for firmware update for device {}", handler.getNodeId(), e);
+                return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_START_FIRMWARE_UPDATE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_START_FIRMWARE_UPDATE)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_START_FIRMWARE_UPDATE_RESULT, type = "java.lang.String") }) String startFirmwareUpdate() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    client.otaStartUpdate(handler.getNodeId()).get(60, TimeUnit.SECONDS);
+                    return translationService
+                            .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_STARTED);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to start firmware update for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
+                    logger.debug("Failed to start firmware update for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+
+    @RuleAction(label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE, description = MatterBindingConstants.THING_ACTION_DESC_NODE_CANCEL_FIRMWARE_UPDATE)
+    public @ActionOutputs({
+            @ActionOutput(name = "result", label = MatterBindingConstants.THING_ACTION_LABEL_NODE_CANCEL_FIRMWARE_UPDATE_RESULT, type = "java.lang.String") }) String cancelFirmwareUpdate() {
+        NodeHandler handler = this.handler;
+        if (handler != null) {
+            MatterControllerClient client = handler.getClient();
+            if (client != null) {
+                try {
+                    handler.cancelOTAUpdate().get(30, TimeUnit.SECONDS);
+                    return translationService
+                            .getTranslation(MatterBindingConstants.THING_ACTION_RESULT_FIRMWARE_UPDATE_CANCELLED);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    logger.debug("Failed to cancel firmware update for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                } catch (ExecutionException | TimeoutException e) {
+                    logger.debug("Failed to cancel firmware update for device {}", handler.getNodeId(), e);
+                    return Objects.requireNonNull(Optional.ofNullable(e.getLocalizedMessage()).orElse(e.toString()));
+                }
+            }
+        }
+        return translationService.getTranslation(MatterBindingConstants.THING_ACTION_RESULT_NO_HANDLER);
+    }
+}

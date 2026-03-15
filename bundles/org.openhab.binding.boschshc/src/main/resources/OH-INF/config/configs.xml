@@ -3,6 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
 	<config-description uri="thing-type:boschshc:bridge">
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
@@ -15,10 +16,19 @@
 			<description>The system password of the Bosch Smart Home Controller necessary for pairing.</description>
 		</parameter>
 	</config-description>
+
 	<config-description uri="thing-type:boschshc:device">
 		<parameter name="id" type="text" required="true">
 			<label>Device ID</label>
 			<description>Unique ID of the device.</description>
 		</parameter>
 	</config-description>
+
+	<config-description uri="thing-type:boschshc:user-defined-state">
+		<parameter name="id" type="text" required="true">
+			<label>State ID</label>
+			<description>Unique ID of the state.</description>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

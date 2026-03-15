@@ -10,28 +10,28 @@ It supports the separation of the heating adaption from the integration in [open
 
 The adapter transforms the address oriented raw interface of the Vitotronic to an abstract format.
 The adapter itself is not a part of the binding.
-[A alpha version is available here](https://github.com/steand/optolink)
+[An alpha version is available here](https://github.com/steand/optolink)
 [More Information about the adapter](https://github.com/steand/optolink/wiki)
 
 ## Supported Things
 
-For easy using are the main things of a heating system are already define in this binding:
+For easy use, the main Things of a heating system are already defined in this binding:
 
-*   heating (Vitotronic core system)
-*   pelletburner (Pellet Fireplace, works for wood also)
-*   oilburner (Oil Fireplace)
-*   gasburner (Gas Fireplace)
-*   storagetank (Storage Tank, stores heat in a water tank on 3 levels: bottom, middle, top=hot water)
-*   circuit (Heating circuit controls the flow between the heating system and the radiators in the rooms)
-*   solar (Solar water heating (SWH): Convert sunlight into energy for water heating)
+- heating (Vitotronic core system)
+- pelletburner (Pellet Fireplace, works for wood also)
+- oilburner (Oil Fireplace)
+- gasburner (Gas Fireplace)
+- storagetank (Storage Tank, stores heat in a water tank on 3 levels: bottom, middle, top=hot water)
+- circuit (Heating circuit controls the flow between the heating system and the radiators in the rooms)
+- solar (Solar water heating (SWH): Convert sunlight into energy for water heating)
 
-For advanced used 3 basic things of a headingsystem define also.
+For advanced use, 3 basic Things of a heating system are also defined.
 
-*   temperaturesensor (Single temperature sensor)
-*   pump (Single pump)
-*   valve (Single valve)
+- temperaturesensor (Single temperature sensor)
+- pump (Single pump)
+- valve (Single valve)
 
-Note: The mapping of things and channels to the heating system addresses must be done in the adapter.
+Note: The mapping of Things and channels to the heating system addresses must be done in the adapter.
 
 ## Discovery
 
@@ -40,28 +40,26 @@ For automatic detection the adapter and **openHAB** must be on the same LAN.
 If the bridge isn't on the same LAN, you will need to add manually.
 In this case the `IP-Address` and the `adapterID` is required.
 After the `vitotronic:bridge` is ONLINE, start a second discovery.
-It discovers all things, and places them in the inbox.
+It discovers all Things, and places them in the inbox.
 
 ## Binding Configuration
 
 Binding itself has 4 configuration parameters:
 
-*   ipAddress (The IP address of the Optolink adapter)
-*   port (Port of the LAN gateway. Default: 31113)
-*   adapterID (The ID/Name of the adapter)
-*   refreshInterval (Refresh time for data in seconds. Default: 600 seconds)
+- ipAddress (The IP address of the Optolink adapter)
+- port (Port of the LAN gateway. Default: 31113)
+- adapterID (The ID/Name of the adapter)
+- refreshInterval (Refresh time for data in seconds. Default: 600 seconds)
 
 If the adapter is automatic discovered the ipAddress, and adapterID will be set by discovery.
-The rereshInterval can be set between 60 and 600 seconds.
+The refreshInterval can be set between 60 and 600 seconds.
 The minimal setting is dependent of the performance of the adapter.
-
-
 
 ## Thing Configuration
 
 There is no configuration of Things necessary.
 Only some channels are set active by default.
-If this channels are defined in the adapter and will be used in **openHAB**  it must set active manually.
+If these channels are defined in the adapter and will be used in **openHAB**, they must be set active manually.
 Don't change the Thing Name. It is the reference to the name in the adapter.
 
 ## Channels
@@ -97,9 +95,10 @@ The follow channels are implemented:
 | middle_temp            | Number    | Temperature sensor in the middle of the storage tank  |
 | bottom_temp            | Number    | Temperature sensor at the bottom of the storage tank  |
 | circuitpump            | Switch    | Circuit pump state                                    |
-| flowtemperature        | Number    | Temperature sensor of the ciruit flow                 |
+| flowtemperature        | Number    | Temperature sensor of the circuit flow                |
 | pump                   | Switch    | Pump state                                            |
 | operationmode          | Number    | Operationmode                                         |
+| currentmode            | Number    | Current Mode                                          |
 | savemode               | Switch    | Savemode on/off                                       |
 | partymode              | Switch    | Partymode on/off                                      |
 | party_temp_setpoint    | Number    | Party mode temperature setpoint (target)              |
@@ -129,4 +128,3 @@ The follow channels are implemented:
 | producedheat           | Number    | Produced heat since starting solar system             |
 | temperature            | Number    | Generic temperature sensor                            |
 | valve                  | Number    | Value of a generic valve                              |
-

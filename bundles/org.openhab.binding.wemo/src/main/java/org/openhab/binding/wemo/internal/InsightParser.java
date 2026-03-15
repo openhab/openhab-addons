@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.wemo.internal;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,7 +103,7 @@ public class InsightParser {
     }
 
     private State getOnOff(String value) {
-        return "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"0".equals(value));
     }
 
     private State getDateTime(String value) {
@@ -116,12 +114,10 @@ public class InsightParser {
             return UnDefType.UNDEF;
         }
 
-        State lastChangedAtState = new DateTimeType(
-                ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastChangedAt), ZoneId.systemDefault()));
         if (lastChangedAt == 0) {
             return UnDefType.UNDEF;
         }
-        return lastChangedAtState;
+        return new DateTimeType(Instant.ofEpochSecond(lastChangedAt));
     }
 
     private State getNumber(String value) {

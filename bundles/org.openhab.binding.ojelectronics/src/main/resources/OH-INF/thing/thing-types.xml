@@ -22,16 +22,10 @@
 			</parameter>
 			<parameter name="apiUrl" type="text" required="true">
 				<label>API-URL</label>
-				<description>URL to cloud API-service.</description>
+				<description>URL to cloud API-service and Socket-Notification.</description>
 				<context>url</context>
 				<advanced>true</advanced>
-				<default>https://OWD5-OJ001-App.ojelectronics.com/api</default>
-			</parameter>
-			<parameter name="refreshDelayInSeconds" type="integer" required="true" min="15" unit="s">
-				<label>Refresh Delay</label>
-				<description>Refresh delay in seconds.</description>
-				<advanced>true</advanced>
-				<default>30</default>
+				<default>https://OWD5-OJ001-App.ojelectronics.com</default>
 			</parameter>
 			<parameter name="customerId" type="integer" required="true">
 				<label>Customer ID</label>
@@ -54,6 +48,7 @@
 		<label>OWD5/MWD5 Thermostat</label>
 		<description>OWD5/MWD5 Thermostat</description>
 		<category>RadiatorControl</category>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channels>
 			<channel id="floorTemperature" typeId="floorTemperature"/>
 			<channel id="roomTemperature" typeId="roomTemperature"/>
@@ -73,6 +68,7 @@
 		</channels>
 		<properties>
 			<property name="vendor">OJ Electronics</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -86,6 +82,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Floor Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="groupName">
@@ -106,12 +106,20 @@
 	<channel-type id="heating">
 		<item-type>Contact</item-type>
 		<label>Heating</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="thermostatName">
@@ -122,6 +130,10 @@
 	<channel-type id="regulationMode">
 		<item-type>String</item-type>
 		<label>Regulation Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto</option>
@@ -138,6 +150,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Set Point Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="comfortEndTime">
@@ -152,19 +168,29 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Manual Set Point Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="vacationEnabled">
 		<item-type>Switch</item-type>
 		<label>Vacation Mode Enabled</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vacationBeginDay">
-		<item-type>Switch</item-type>
+		<item-type>DateTime</item-type>
 		<label>Vacation Begin Day</label>
+		<description>Vacation start date</description>
 	</channel-type>
 	<channel-type id="vacationEndDay">
-		<item-type>Switch</item-type>
+		<item-type>DateTime</item-type>
 		<label>Vacation End Day</label>
+		<description>Vacation end date</description>
 	</channel-type>
 </thing:thing-descriptions>

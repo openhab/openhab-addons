@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
@@ -42,8 +41,8 @@ import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
-import org.openhab.binding.homematic.internal.type.HomematicChannelTypeProvider;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGeneratorImpl;
+import org.openhab.binding.homematic.internal.type.HomematicTypeProvider;
 import org.openhab.binding.homematic.internal.type.MetadataUtils;
 import org.openhab.binding.homematic.internal.type.UidUtils;
 import org.openhab.core.config.core.Configuration;
@@ -74,14 +73,14 @@ import org.slf4j.LoggerFactory;
  */
 public class HomematicThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HomematicThingHandler.class);
-    private final HomematicChannelTypeProvider channelTypeProvider;
+    private final HomematicTypeProvider typeProvider;
     private Future<?> initFuture;
     private final Object initLock = new Object();
     private volatile boolean deviceDeletionPending = false;
 
-    public HomematicThingHandler(Thing thing, HomematicChannelTypeProvider channelTypeProvider) {
+    public HomematicThingHandler(Thing thing, HomematicTypeProvider typeProvider) {
         super(thing);
-        this.channelTypeProvider = channelTypeProvider;
+        this.typeProvider = typeProvider;
     }
 
     @Override
@@ -167,10 +166,10 @@ public class HomematicThingHandler extends BaseThingHandler {
                     }
 
                     ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                    ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
+                    ChannelType channelType = typeProvider.getChannelTypeCreatedSinceStartup(channelTypeUID);
                     if (channelType == null) {
                         channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
-                        channelTypeProvider.addChannelType(channelType);
+                        typeProvider.putChannelType(channelType);
                     }
 
                     Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
@@ -244,10 +243,10 @@ public class HomematicThingHandler extends BaseThingHandler {
                 channelProps.put(propertyName, expectedFunction);
 
                 ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
-                ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
+                ChannelType channelType = typeProvider.getChannelTypeCreatedSinceStartup(channelTypeUID);
                 if (channelType == null) {
                     channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
-                    channelTypeProvider.addChannelType(channelType);
+                    typeProvider.putChannelType(channelType);
                 }
 
                 Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
@@ -347,10 +346,11 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (dp != null && dp.getChannel().getDevice().isOffline()) {
                 logger.warn("Device '{}' is OFFLINE, can't send command '{}' for channel '{}'",
                         dp.getChannel().getDevice().getAddress(), command, channelUID);
-                logger.trace("{}", ex.getMessage(), ex);
             } else {
-                logger.error("{}", ex.getMessage(), ex);
+                logger.error("Sending command '{}' for channel '{}' to device '{}' failed: {}", command, channelUID,
+                        dp.getChannel().getDevice().getAddress(), ex.getMessage());
             }
+            logger.trace("{}", ex.getMessage(), ex);
         } catch (ConverterTypeException ex) {
             logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
         } catch (Exception ex) {
@@ -372,8 +372,10 @@ public class HomematicThingHandler extends BaseThingHandler {
      * @param datapointName The datapoint that will be updated on the device
      * @param currentValue The current value of the datapoint
      * @param newValue The value that will be sent to the device
-     * @return The rxMode ({@link HomematicBindingConstants#RX_BURST_MODE "BURST"} for burst mode,
-     *         {@link HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for wakeup mode, or null for the default mode)
+     * @return The rxMode ({@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_BURST_MODE
+     *         "BURST"} for burst mode,
+     *         {@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for
+     *         wakeup mode, or null for the default mode)
      */
     protected String getRxModeForDatapointTransmission(String datapointName, Object currentValue, Object newValue) {
         return null;
@@ -445,7 +447,19 @@ public class HomematicThingHandler extends BaseThingHandler {
             if (minValid && maxValid) {
                 return dp.getValue();
             }
-            logger.warn("Value for datapoint {} is outside of valid range, using default value for config.", dp);
+
+            Map<String, Number> specialValues = dp.getSpecialValues();
+            if (specialValues != null) {
+                Number value = dp.getNumericValue();
+                for (Number special : specialValues.values()) {
+                    if (value.equals(special)) {
+                        return dp.getValue();
+                    }
+                }
+            }
+            logger.warn(
+                    "Value for datapoint {} of device {} is outside of valid range, using default value for config.",
+                    dp, dp.getChannel().getDevice().getAddress());
             return dp.getDefaultValue();
         }
         return dp.getValue();
@@ -594,15 +608,16 @@ public class HomematicThingHandler extends BaseThingHandler {
                     if (dp != null) {
                         try {
                             if (newValue != null) {
-                                if (newValue instanceof BigDecimal) {
-                                    final BigDecimal decimal = (BigDecimal) newValue;
+                                if (newValue instanceof BigDecimal decimal) {
                                     if (dp.isIntegerType()) {
                                         newValue = decimal.intValue();
                                     } else if (dp.isFloatType()) {
                                         newValue = decimal.doubleValue();
                                     }
+                                } else if (newValue instanceof String string && dp.isEnumType()) {
+                                    newValue = dp.getOptionIndex(string);
                                 }
-                                if (!Objects.equals(dp.isEnumType() ? dp.getOptionValue() : dp.getValue(), newValue)) {
+                                if (!Objects.equals(dp.getValue(), newValue)) {
                                     sendDatapoint(dp, new HmDatapointConfig(), newValue);
                                 }
                             }

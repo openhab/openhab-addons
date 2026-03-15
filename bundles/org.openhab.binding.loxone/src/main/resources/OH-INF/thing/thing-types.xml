@@ -8,6 +8,7 @@
 
 		<label>Loxone Miniserver</label>
 		<description>IP gateway for Loxone Smarthome system</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 
@@ -138,6 +139,10 @@
 		<item-type>Switch</item-type>
 		<label>Loxone Switch</label>
 		<description>Loxone's virtual input of switch type and push button controls.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="roSwitchTypeId">
@@ -151,6 +156,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Loxone Jalousie</label>
 		<description>Loxone's Jalousies (rollershutters, blinds).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="roTextTypeId">
@@ -184,6 +193,10 @@
 		<item-type>Number</item-type>
 		<label>Loxone Light Controller / Hotel Light Controller</label>
 		<description>Loxone's light controllers (LightController).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state pattern="%d" min="0" max="9" step="1">
 			<options>
 				<option value="0">All off</option>
@@ -211,12 +224,20 @@
 		<item-type>Dimmer</item-type>
 		<label>Loxone Dimmer</label>
 		<description>Loxone's dimmer control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="colorPickerTypeId">
 		<item-type>Color</item-type>
 		<label>Loxone ColorPicker</label>
 		<description>Loxone's Color Picker V2 control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="roDateTimeTypeId">

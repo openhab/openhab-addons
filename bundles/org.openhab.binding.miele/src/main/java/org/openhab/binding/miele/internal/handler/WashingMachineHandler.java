@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,19 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_WASHING_MACHINE;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -47,14 +48,16 @@ import com.google.gson.JsonElement;
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector>
         implements ExtendedDeviceStateListener {
 
-    private static final int POWER_CONSUMPTION_BYTE_POSITION = 51;
+    private static final int LAUNDRY_WEIGHT_BYTE_POSITION = 44;
+    private static final int ENERGY_CONSUMPTION_BYTE_POSITION = 51;
     private static final int WATER_CONSUMPTION_BYTE_POSITION = 53;
     private static final int EXTENDED_STATE_MIN_SIZE_BYTES = 54;
 
     private final Logger logger = LoggerFactory.getLogger(WashingMachineHandler.class);
 
-    public WashingMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
-        super(thing, i18nProvider, localeProvider, WashingMachineChannelSelector.class,
+    public WashingMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, i18nProvider, localeProvider, timeZoneProvider, WashingMachineChannelSelector.class,
                 MIELE_DEVICE_CLASS_WASHING_MACHINE);
     }
 
@@ -114,19 +117,32 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         }
     }
 
+    @Override
+    public void onAppliancePropertyChanged(DeviceProperty dp) {
+        super.onAppliancePropertyChanged(dp);
+        updateSwitchStartStopFromState(dp);
+    }
+
+    @Override
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
         if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
-            logger.warn("Unexpected size of extended state: {}", extendedDeviceState);
+            logger.debug("Insufficient extended state data to extract consumption values: {}", extendedDeviceState);
             return;
         }
 
         BigDecimal kiloWattHoursTenths = BigDecimal
-                .valueOf(extendedDeviceState[POWER_CONSUMPTION_BYTE_POSITION] & 0xff);
+                .valueOf(extendedDeviceState[ENERGY_CONSUMPTION_BYTE_POSITION] & 0xff);
         var kiloWattHours = new QuantityType<>(kiloWattHoursTenths.divide(BigDecimal.valueOf(10)), Units.KILOWATT_HOUR);
-        updateExtendedState(POWER_CONSUMPTION_CHANNEL_ID, kiloWattHours);
+        updateExtendedState(ENERGY_CONSUMPTION_CHANNEL_ID, kiloWattHours);
 
         var litres = new QuantityType<>(BigDecimal.valueOf(extendedDeviceState[WATER_CONSUMPTION_BYTE_POSITION] & 0xff),
                 Units.LITRE);
         updateExtendedState(WATER_CONSUMPTION_CHANNEL_ID, litres);
+
+        var weight = new QuantityType<>(
+                BigDecimal.valueOf(256 * (extendedDeviceState[LAUNDRY_WEIGHT_BYTE_POSITION] & 0xff)
+                        + (extendedDeviceState[LAUNDRY_WEIGHT_BYTE_POSITION + 1] & 0xff)),
+                SIUnits.GRAM);
+        updateExtendedState(LAUNDRY_WEIGHT_CHANNEL_ID, weight);
     }
 }

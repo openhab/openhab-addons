@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -118,9 +118,11 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             case CHANNEL_CURRENT_EVENT_TITLE:
             case CHANNEL_CURRENT_EVENT_START:
             case CHANNEL_CURRENT_EVENT_END:
+            case CHANNEL_CURRENT_EVENT_LOCATION:
             case CHANNEL_NEXT_EVENT_TITLE:
             case CHANNEL_NEXT_EVENT_START:
             case CHANNEL_NEXT_EVENT_END:
+            case CHANNEL_NEXT_EVENT_LOCATION:
             case CHANNEL_LAST_UPDATE:
                 if (command instanceof RefreshType) {
                     updateStates();
@@ -153,7 +155,8 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             final int maxSize = maxSizeBD.intValue();
             try {
                 regularPull = new PullJob(httpClient, new URI(currentConfiguration.url), currentConfiguration.username,
-                        currentConfiguration.password, calendarFile, maxSize * 1048576, this);
+                        currentConfiguration.password, calendarFile, maxSize * 1048576, this,
+                        currentConfiguration.userAgent);
             } catch (URISyntaxException e) {
                 throw new ConfigBrokenException(String.format(
                         "The URI '%s' for downloading the calendar contains syntax errors.", currentConfiguration.url));
@@ -267,7 +270,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 } catch (IllegalArgumentException | IllegalStateException e) {
                     logger.warn("Event: {}, Command Tag: {} => Unable to push command to target item!", event.title,
                             cmdTag.getFullTag());
-                    logger.debug("Exception occured while pushing to item!", e);
+                    logger.debug("Exception occurred while pushing to item!", e);
                 }
             }
         }
@@ -399,12 +402,15 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                             new DateTimeType(currentEvent.start.atZone(tzProvider.getTimeZone())));
                     updateState(CHANNEL_CURRENT_EVENT_END,
                             new DateTimeType(currentEvent.end.atZone(tzProvider.getTimeZone())));
+                    updateState(CHANNEL_CURRENT_EVENT_LOCATION,
+                            currentEvent.location.isEmpty() ? UnDefType.UNDEF : new StringType(currentEvent.location));
                 }
             } else {
                 updateState(CHANNEL_CURRENT_EVENT_PRESENT, OnOffType.OFF);
                 updateState(CHANNEL_CURRENT_EVENT_TITLE, UnDefType.UNDEF);
                 updateState(CHANNEL_CURRENT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_CURRENT_EVENT_END, UnDefType.UNDEF);
+                updateState(CHANNEL_CURRENT_EVENT_LOCATION, UnDefType.UNDEF);
             }
 
             final Event nextEvent = calendar.getNextEvent(now);
@@ -413,10 +419,13 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                 updateState(CHANNEL_NEXT_EVENT_START,
                         new DateTimeType(nextEvent.start.atZone(tzProvider.getTimeZone())));
                 updateState(CHANNEL_NEXT_EVENT_END, new DateTimeType(nextEvent.end.atZone(tzProvider.getTimeZone())));
+                updateState(CHANNEL_NEXT_EVENT_LOCATION,
+                        nextEvent.location.isEmpty() ? UnDefType.UNDEF : new StringType(nextEvent.location));
             } else {
                 updateState(CHANNEL_NEXT_EVENT_TITLE, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_START, UnDefType.UNDEF);
                 updateState(CHANNEL_NEXT_EVENT_END, UnDefType.UNDEF);
+                updateState(CHANNEL_NEXT_EVENT_LOCATION, UnDefType.UNDEF);
             }
 
             final Instant lastUpdate = calendarDownloadedTime;
@@ -451,10 +460,10 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
      * @param childHandler the handler to be updated
      */
     private void updateChild(@Nullable ThingHandler childHandler) {
-        if (childHandler instanceof CalendarUpdateListener) {
+        if (childHandler instanceof CalendarUpdateListener updateListener) {
             logger.trace("Notifying {} about fresh calendar.", childHandler.getThing().getUID());
             try {
-                ((CalendarUpdateListener) childHandler).onCalendarUpdated();
+                updateListener.onCalendarUpdated();
             } catch (Exception e) {
                 logger.trace("The update of a child handler failed. Ignoring.", e);
             }

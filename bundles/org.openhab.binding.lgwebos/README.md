@@ -20,33 +20,54 @@ If channel `power` receives `ON`, the binding will attempt to power on the TV by
 
 ## Binding Configuration
 
-The binding has no configuration parameter. 
+The binding has no configuration parameter.
 
 ## Discovery
 
 TVs are auto discovered through SSDP in the local network.
 The binding broadcasts a search message via UDP on the network in order to discover and monitor availability of the TV.
 
-Please note, that if you are running openHAB in a Docker container you need to use macvlan or host networking for this binding to work.
-If automatic discovery is not possible you may still manually configure a device based on host and access key.
+Please note, that if you are running openHAB in a Docker container you have several alternatives for this binding to work:
+
+- use macvlan or host networking
+- manually configure the device:
+  - host and access key for basic functionality
+  - mac address and broadcast address to be able to turn on the TV
 
 ## Thing Configuration
 
-WebOS TV has three configuration parameters.
+WebOS TV has five configuration parameters.
 
 Parameters:
 
-| Name       | Description                                                                                         |
-|------------|-----------------------------------------------------------------------------------------------------|
-| host       | Hostname or IP address of TV                                                                        |
-| key        | Key exchanged with TV after pairing (enter it after you paired the device)                          |
-| macAddress | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it. |
+| Name             | Description                                                                                                                                                                    |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host             | Hostname or IP address of TV                                                                                                                                                   |
+| key              | Key exchanged with TV after pairing (enter it after you paired the device)                                                                                                     |
+| macAddress       | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it.                                                                            |
+| broadcastAddress | The broadcast address of the network your TV is located on. Only needed when running in docker container, leave empty otherwise                                                |
+| useTLS           | Enable Transport Layer Security. This is required by latest firmware versions and should work with older versions as well. In case of compatibility issues it can be disabled. |
+
+### Configuration for wake-on-lan in docker
+
+To be able to turn on the TV from within a docker container, the binding needs to know where to send the broadcast wakeonlan packet to. Configure the
+broadcast address of the network the TV is located in as `broadcastAddress`.
+
+Example: If your TV has the IP address `192.168.0.123`, the broadcast address is `192.168.0.255`.
+
+In addition forwarding of broadcast packets needs to be enabled:
+
+- net.ipv4.icmp_echo_ignore_broadcasts=0
+- net.ipv4.conf.all.bc_forwarding=1
+- net.ipv4.conf.${interface}.bc_forwarding=1
+
+See, for example, [this guide on Homebridge, Docker, and Wake-on-LAN](https://www.devwithimagination.com/2020/06/15/homebridge-docker-and-wake-on-lan/) for instructions on enabling broadcast forwarding.
 
 ### Configuration in .things file
 
 Set host and key parameter as in the following example:
 
-```
+```java
 Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
@@ -54,12 +75,12 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 
 | Channel Type ID | Item Type | Description                                                                                                                                                                                                             | Read/Write |
 |-----------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|
-| power           | Switch    | Current power setting. TV can only be powered off, not on, via the TV's API. Turning on is implemented via Wake On Lan, for which the MAC address must be set in the thing configuration. | RW         |
+| power           | Switch    | Current power setting. TV can only be powered off, not on, via the TV's API. Turning on is implemented via Wake On Lan, for which the MAC address must be set in the Thing configuration. | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
 | channel         | String    | Current channel. Use the channel number or channel id as command to update the channel.                                                                                                                                 | RW         |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
-| mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
+| mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | RW         |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
 | rcButton        | String    | Simulates pressing of a button on the TV's remote control. See below for a list of button names.                                                                                                                        | W          |
@@ -68,10 +89,13 @@ The available application IDs for your TV can be listed using a console command 
 You have to use one of these IDs as command for the appLauncher channel.
 Here are examples of values that could be available for your TV: airplay, amazon, com.apple.appletv, com.webos.app.browser, com.webos.app.externalinput.av1, com.webos.app.externalinput.av2, com.webos.app.externalinput.component, com.webos.app.hdmi1, com.webos.app.hdmi2, com.webos.app.hdmi3, com.webos.app.hdmi4, com.webos.app.homeconnect, com.webos.app.igallery, com.webos.app.livetv, com.webos.app.music, com.webos.app.photovideo, com.webos.app.recordings, com.webos.app.screensaver, googleplaymovieswebos, netflix, youtube.leanback.v4.
 
+Older WebOS versions don't publish its play state, so the `mediaPlayer` channel is write-only.
+Starting from WebOS version 7, the `mediaPlayer` channel receives the PLAY/PAUSE state from the TV.
+
 ### Remote Control Buttons
 
-The rcButton channel has only been tested on an LGUJ657A TV. and this is a list of button codes that are known to work with this device.
-This list has been compiled mostly through trial and error. Your mileage may vary.
+This is a list of button codes that are known to work with several LG WebOS TV models.
+This list has been compiled mostly through trial and error, but the codes applicable to your model may vary.
 
 | Code String | Description                                              |
 |-------------|----------------------------------------------------------|
@@ -92,7 +116,6 @@ This list has been compiled mostly through trial and error. Your mileage may var
 | PAUSE       | "PAUSE" button                                           |
 | STOP        | "STOP" button                                            |
 
-
 A sample HABPanel remote control widget can be found [in this GitHub repository.](https://github.com/bbrodt/openhab2-misc)
 
 ## Console Commands
@@ -100,7 +123,7 @@ A sample HABPanel remote control widget can be found [in this GitHub repository.
 The binding provides a few commands you can use in the console.
 Enter the command `openhab:lgwebos` to get the usage.
 
-```
+```shell
 Usage: openhab:lgwebos <thingUID> applications - list applications
 Usage: openhab:lgwebos <thingUID> channels - list channels
 Usage: openhab:lgwebos <thingUID> accesskey - show the access key
@@ -114,13 +137,13 @@ The command `accesskey` reports in the console the access key used to connect to
 
 demo.things:
 
-```
+```java
 Thing lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85ea3aef", macAddress="3c:cd:93:c2:20:e0"]
 ```
 
 demo.items:
 
-```
+```java
 Switch LG_TV0_Power "TV Power" <television>  { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:power" }
 Switch LG_TV0_Mute  "TV Mute"                { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mute"}
 Dimmer LG_TV0_Volume "Volume [%d]"           { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:volume" }
@@ -131,12 +154,11 @@ String LG_TV0_Toast                          { channel="lgwebos:WebOSTV:3aab9eea
 Switch LG_TV0_Stop "Stop"                    { autoupdate="false", channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaStop" }
 String LG_TV0_Application "Application [%s]" { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:appLauncher"}
 Player LG_TV0_Player                         { channel="lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46:mediaPlayer"}
-
 ```
 
 demo.sitemap:
 
-```
+```perl
 sitemap demo label="Main Menu"
 {
     Frame label="TV" {
@@ -152,10 +174,9 @@ sitemap demo label="Main Menu"
 }
 ```
 
-
 demo.rules:
 
-```
+```java
 // for relative volume changes
 rule "VolumeUpDown"
 when Item LG_TV0_VolDummy received command
@@ -175,7 +196,7 @@ then
         logInfo("actions", "Actions not found, check thing ID")
         return
     }
-                
+
     switch receivedCommand{
                     case 0: actions.decreaseChannel()
                     case 1: actions.increaseChannel()
@@ -183,10 +204,9 @@ then
 end
 ```
 
-
 Example of a toast message.
 
-```
+```java
 LG_TV0_Toast.sendCommand("Hello World")
 ```
 
@@ -196,7 +216,7 @@ Multiple actions are supported by this binding. In classic rules these are acces
 
 Example
 
-```
+```java
  val actions = getActions("lgwebos","lgwebos:WebOSTV:3aab9eea-953b-4272-bdbd-f0cd0ecf4a46")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
@@ -216,7 +236,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.showToast("Hello World")
 ```
 
@@ -233,7 +253,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.showToast("http://localhost:8080/icon/energy?format=png","Hello World")
 ```
 
@@ -249,7 +269,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.launchBrowser("https://www.openhab.org")
 ```
 
@@ -265,7 +285,7 @@ Parameters:
 
 Examples:
 
-```
+```java
 actions.launchApplication("com.webos.app.tvguide") // TV Guide
 actions.launchApplication("com.webos.app.livetv") // TV
 actions.launchApplication("com.webos.app.hdmi1") // HDMI1
@@ -286,7 +306,7 @@ Parameters:
 
 Examples:
 
-```
+```java
 actions.launchApplication("appId","{\"key\":\"value\"}")
 ```
 
@@ -304,7 +324,7 @@ Parameters:
 
 Example:
 
-```
+```java
 actions.sendText("Some text")
 ```
 
@@ -314,14 +334,33 @@ Sends a button press event to a WebOS device.
 
 Parameters:
 
-| Name    | Description                                                            |
-|---------|------------------------------------------------------------------------|
-| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, DELETE, ENTER, HOME, or OK  |
+| Name    | Description                                                                                    |
+|---------|------------------------------------------------------------------------------------------------|
+| button  | Can be one of UP, DOWN, LEFT, RIGHT, BACK, EXIT, ENTER, HOME, OK or any other supported value. |
 
 Example:
 
+```java
+actions.sendButton("HOME")
 ```
-actions.sendButton("OK")
+
+### sendKeyboard(key)
+
+Sends a keyboard input to the WebOS on-screen keyboard.
+
+Parameters:
+
+| Name    | Description                    |
+|---------|--------------------------------|
+| key     | Can be either DELETE or ENTER. |
+
+DELETE will delete the last character when on-screen keyboard is displayed with focus in the text field.
+ENTER will remove the keyboard when on-screen keyboard is displayed with focus in the text field.
+
+Example:
+
+```java
+actions.sendKeyboard("ENTER")
 ```
 
 ### increaseChannel()
@@ -330,7 +369,7 @@ TV will switch one channel up in the current channel list.
 
 Example:
 
-```
+```java
 actions.increaseChannel
 ```
 
@@ -340,7 +379,7 @@ TV will switch one channel down in the current channel list.
 
 Example:
 
-```
+```java
 actions.decreaseChannel
 ```
 
@@ -348,7 +387,6 @@ actions.decreaseChannel
 
 In case of issues you may find it helpful to enable debug level logging and check you log file. Log into openHAB console and enable debug logging for this binding:
 
-```
+```shell
 log:set debug org.openhab.binding.lgwebos
 ```
-

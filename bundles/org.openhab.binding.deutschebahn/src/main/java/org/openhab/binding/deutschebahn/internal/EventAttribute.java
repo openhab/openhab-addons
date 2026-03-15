@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,7 @@ package org.openhab.binding.deutschebahn.internal;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -41,7 +38,7 @@ import org.openhab.core.types.State;
  *
  * chapter "1.2.11 Event" in Technical Interface Description for external Developers
  *
- * @see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData&#tab1
+ * @see <a href="https://developers.deutschebahn.com/db-api-marketplace/apis/product/timetables">DB API Marketplace</a>
  *
  * @author Sönke Küper - initial contribution
  *
@@ -215,7 +212,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     private static final SimpleDateFormat DATETIME_FORMAT = new SimpleDateFormat("yyMMddHHmm");
 
     /**
-     * Creates an new {@link EventAttribute}.
+     * Creates a new {@link EventAttribute}.
      *
      * @param getter Function to get the raw value.
      * @param setter Function to set the raw value.
@@ -236,9 +233,9 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
 
     private static List<String> listFromEventStatus(final @Nullable EventStatus value) {
         if (value == null) {
-            return Collections.emptyList();
+            return List.of();
         } else {
-            return Collections.singletonList(value.value());
+            return List.of(value.value());
         }
     }
 
@@ -247,14 +244,14 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     private static List<String> nullToEmptyList(@Nullable final List<String> value) {
-        return value == null ? Collections.emptyList() : value;
+        return value == null ? List.of() : value;
     }
 
     /**
      * Returns a list containing only the given value or empty list if value is <code>null</code>.
      */
     private static List<String> singletonList(@Nullable String value) {
-        return value == null ? Collections.emptyList() : Collections.singletonList(value);
+        return value == null ? List.of() : List.of(value);
     }
 
     private static OnOffType parseHidden(@Nullable Integer value) {
@@ -262,9 +259,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     private static Function<Event, @Nullable Date> getDate(final Function<Event, @Nullable String> getValue) {
-        return (final Event event) -> {
-            return parseDate(getValue.apply(event));
-        };
+        return (final Event event) -> parseDate(getValue.apply(event));
     }
 
     private static BiConsumer<Event, Date> setDate(final BiConsumer<Event, String> setter) {
@@ -300,8 +295,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         if (value == null) {
             return null;
         } else {
-            final ZonedDateTime d = ZonedDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault());
-            return new DateTimeType(d);
+            return new DateTimeType(value.toInstant());
         }
     }
 
@@ -331,7 +325,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      */
     private static List<String> mapMessagesToList(final @Nullable List<Message> messages) {
         if (messages == null || messages.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         } else {
             return messages //
                     .stream()//
@@ -360,22 +354,24 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
 
     private static List<String> mapIntegerToStringList(@Nullable Integer value) {
         if (value == null) {
-            return Collections.emptyList();
+            return List.of();
         } else {
-            return Collections.singletonList(String.valueOf(value));
+            return List.of(String.valueOf(value));
         }
     }
 
     private static List<String> mapDateToStringList(@Nullable Date value) {
         if (value == null) {
-            return Collections.emptyList();
+            return List.of();
         } else {
-            return Collections.singletonList(DATETIME_FORMAT.format(value));
+            synchronized (DATETIME_FORMAT) {
+                return List.of(DATETIME_FORMAT.format(value));
+            }
         }
     }
 
     /**
-     * Returns an single station from an path value (i.e. pipe separated value of stations).
+     * Returns a single station from a path value (i.e. pipe separated value of stations).
      * 
      * @param getPath Getter for the path.
      * @param returnFirst if <code>true</code> the first value will be returned, <code>false</code> will return the last
@@ -399,8 +395,8 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
     }
 
     /**
-     * Returns all intermediate stations from an path. The first or last station will be omitted. The values will be
-     * separated by an single dash -.
+     * Returns all intermediate stations from a path. The first or last station will be omitted. The values will be
+     * separated by a single dash -.
      * 
      * @param getPath Getter for the path.
      * @param removeFirst if <code>true</code> the first value will be removed, <code>false</code> will remove the last
@@ -429,7 +425,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      * Used for derived attributes that can't be set.
      */
     private static <VALUE_TYPE> BiConsumer<Event, VALUE_TYPE> voidSetter() {
-        return new BiConsumer<Event, VALUE_TYPE>() {
+        return new BiConsumer<>() {
 
             @Override
             public void accept(Event t, VALUE_TYPE u) {

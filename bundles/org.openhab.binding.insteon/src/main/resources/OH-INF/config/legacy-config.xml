@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:insteon:legacy-button">
+		<parameter name="related" type="text">
+			<label>Related Devices</label>
+			<description>List of related Insteon devices separated by a '+' sign.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:insteon:legacy-contact">
+		<parameter name="related" type="text">
+			<label>Related Devices</label>
+			<description>List of related Insteon devices separated by a '+' sign.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:insteon:legacy-dimmer">
+		<parameter name="dimmermax" type="integer" min="1" max="99">
+			<label>Maximum Brightness</label>
+			<description>Maximum brightness of the dimmer in percentage.</description>
+		</parameter>
+		<parameter name="related" type="text">
+			<label>Related Devices</label>
+			<description>List of related Insteon devices separated by a '+' sign.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:insteon:legacy-keypad-button">
+		<parameter name="group" type="text">
+			<label>Group</label>
+			<description>Insteon broadcast group configured for this button.</description>
+		</parameter>
+		<parameter name="related" type="text">
+			<label>Related Devices</label>
+			<description>List of related Insteon devices separated by a '+' sign.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:insteon:legacy-keypad-button-fastonoff">
+		<parameter name="group" type="text">
+			<label>Group</label>
+			<description>Insteon broadcast group configured for this button.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:insteon:legacy-keypad-button-manualchange">
+		<parameter name="group" type="text">
+			<label>Group</label>
+			<description>Insteon broadcast group configured for this button.</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:insteon:legacy-switch">
+		<parameter name="related" type="text">
+			<label>Related Devices</label>
+			<description>List of related Insteon devices separated by a '+' sign.</description>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

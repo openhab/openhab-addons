@@ -12,7 +12,7 @@
 
 		<label>Sash Handle Sensor</label>
 		<description>Combined sensor for window/door sash state and handle state</description>
-
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<config-description>
 			<parameter name="enoceanId" type="text" required="true">
 				<label>EnOceanId</label>

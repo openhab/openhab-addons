@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,8 +57,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://cloud.google.com/pubsub/docs/reference/rest
- * @see https://developers.google.com/nest/device-access/api/events
+ * @see <a href="https://cloud.google.com/pubsub/docs/reference/rest">
+ *      https://cloud.google.com/pubsub/docs/reference/rest</a>
+ * @see <a href="https://developers.google.com/nest/device-access/api/events">
+ *      https://developers.google.com/nest/device-access/api/events</a>
  */
 @NonNullByDefault
 public class PubSubAPI {
@@ -79,6 +81,7 @@ public class PubSubAPI {
             }
 
             try {
+                checkAccessTokenValidity();
                 String messages = pullSubscriptionMessages(subscriptionId);
 
                 PubSubPullResponse pullResponse = GSON.fromJson(messages, PubSubPullResponse.class);
@@ -86,13 +89,13 @@ public class PubSubAPI {
                 if (pullResponse != null && pullResponse.receivedMessages != null) {
                     logger.debug("Subscription '{}' has {} new message(s)", subscriptionId,
                             pullResponse.receivedMessages.size());
-                    forEachListener((listener) -> pullResponse.receivedMessages
-                            .forEach((message) -> listener.onMessage(message.message)));
+                    forEachListener(listener -> pullResponse.receivedMessages
+                            .forEach(message -> listener.onMessage(message.message)));
                     List<String> ackIds = pullResponse.receivedMessages.stream().map(message -> message.ackId)
                             .collect(Collectors.toList());
                     acknowledgeSubscriptionMessages(subscriptionId, ackIds);
                 } else {
-                    forEachListener((listener) -> listener.onNoNewMessages());
+                    forEachListener(PubSubSubscriptionListener::onNoNewMessages);
                 }
 
                 scheduler.submit(this);
@@ -100,15 +103,16 @@ public class PubSubAPI {
                 logger.debug("Expected exception while pulling message for '{}' subscription", subscriptionId, e);
                 Throwable cause = e.getCause();
                 if (!(cause instanceof InterruptedException)) {
-                    forEachListener((listener) -> listener.onError(e));
+                    forEachListener(listener -> listener.onError(e));
                     scheduler.schedule(this, RETRY_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS);
                 }
             } catch (InvalidPubSubAccessTokenException e) {
-                logger.warn("Cannot pull messages for '{}' subscription (access token invalid)", subscriptionId, e);
-                forEachListener((listener) -> listener.onError(e));
+                logger.warn("Cannot pull messages for '{}' subscription (access or refresh token invalid)",
+                        subscriptionId, e);
+                forEachListener(listener -> listener.onError(e));
             } catch (Exception e) {
                 logger.warn("Unexpected exception while pulling message for '{}' subscription", subscriptionId, e);
-                forEachListener((listener) -> listener.onError(e));
+                forEachListener(listener -> listener.onError(e));
                 scheduler.schedule(this, RETRY_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS);
             }
         }
@@ -125,7 +129,7 @@ public class PubSubAPI {
 
     private static final String AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
     private static final String TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
-    private static final String REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    private static final String REDIRECT_URI = "https://www.google.com";
 
     private static final String PUBSUB_HANDLE_FORMAT = "%s.pubsub";
     private static final String PUBSUB_SCOPE = "https://www.googleapis.com/auth/pubsub";
@@ -142,7 +146,9 @@ public class PubSubAPI {
     private final Logger logger = LoggerFactory.getLogger(PubSubAPI.class);
 
     private final HttpClient httpClient;
+    private final OAuthFactory oAuthFactory;
     private final OAuthClientService oAuthService;
+    private final String oAuthServiceHandleId;
     private final String projectId;
     private final ScheduledThreadPoolExecutor scheduler;
     private final Map<String, Set<PubSubSubscriptionListener>> subscriptionListeners = new HashMap<>();
@@ -151,14 +157,21 @@ public class PubSubAPI {
             String clientId, String clientSecret) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.projectId = projectId;
-        this.oAuthService = oAuthFactory.createOAuthClientService(String.format(PUBSUB_HANDLE_FORMAT, ownerId),
-                TOKEN_URL, AUTH_URL, clientId, clientSecret, PUBSUB_SCOPE, false);
+        this.oAuthFactory = oAuthFactory;
+        this.oAuthServiceHandleId = String.format(PUBSUB_HANDLE_FORMAT, ownerId);
+        this.oAuthService = oAuthFactory.createOAuthClientService(oAuthServiceHandleId, TOKEN_URL, AUTH_URL, clientId,
+                clientSecret, PUBSUB_SCOPE, false);
         scheduler = new ScheduledThreadPoolExecutor(3, new NamedThreadFactory(ownerId, true));
     }
 
     public void dispose() {
         subscriptionListeners.clear();
         scheduler.shutdownNow();
+        oAuthFactory.ungetOAuthService(oAuthServiceHandleId);
+    }
+
+    public void deleteOAuthServiceAndAccessToken() {
+        oAuthFactory.deleteServiceAndAccessToken(oAuthServiceHandleId);
     }
 
     public void authorizeClient(String authorizationCode) throws InvalidPubSubAuthorizationCodeException, IOException {
@@ -203,8 +216,8 @@ public class PubSubAPI {
                 listeners.remove(listener);
                 if (listeners.isEmpty()) {
                     subscriptionListeners.remove(subscriptionId);
-                    scheduler.getQueue().removeIf((runnable) -> runnable instanceof Subscriber
-                            && ((Subscriber) runnable).subscriptionId.equals(subscriptionId));
+                    scheduler.getQueue().removeIf(
+                            runnable -> runnable instanceof Subscriber s && s.subscriptionId.equals(subscriptionId));
                 }
             }
         }
@@ -224,6 +237,10 @@ public class PubSubAPI {
             if (response == null || response.getAccessToken() == null || response.getAccessToken().isEmpty()) {
                 throw new InvalidPubSubAccessTokenException(
                         "No Pub/Sub access token. Client may not have been authorized.");
+            }
+            if (response.getRefreshToken() == null || response.getRefreshToken().isEmpty()) {
+                throw new InvalidPubSubAccessTokenException(
+                        "No Pub/Sub refresh token. Delete and readd credentials, then reauthorize.");
             }
             return BEARER + response.getAccessToken();
         } catch (OAuthException | OAuthResponseException e) {

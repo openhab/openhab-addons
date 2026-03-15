@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Energymeter</label>
 		<description>A specific energy meter.</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="last_reading_value" typeId="last_reading_value_energy"/>
 			<channel id="last_reading_date" typeId="last_reading_date"/>
@@ -17,9 +18,9 @@
 		</channels>
 		<config-description>
 			<parameter name="resourceId" type="text" required="true">
-				<label>Ressource ID</label>
-				<description>The ID which represents the current meter. You can find it in the pixometer browser app while editing a
-					specific meter. It should look like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
+				<label>Resource ID</label>
+				<description>The ID that represents the current meter. You can find it in the Pixometer web app while editing a
+					specific meter. It looks like this: "https://pixometer.io/portal/#/meters/XXXXX/edit"</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -27,6 +28,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Last Reading</label>
 		<description>The last value that has been read for this meter.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

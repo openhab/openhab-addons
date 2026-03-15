@@ -7,7 +7,7 @@
 	<thing-type id="ct_bulb">
 		<label>Yeelight White LED Bulb v2</label>
 		<description>Yeelight White LED Bulb v2</description>
-
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="colorTemperature" typeId="colorTemperature"/>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,13 +13,14 @@
 package org.openhab.binding.goecharger.internal.handler;
 
 import static org.openhab.binding.goecharger.internal.GoEChargerBindingConstants.*;
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.ALW;
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.AMP;
+import static org.openhab.binding.goecharger.internal.api.GoEStatusV2ApiKeys.DWO;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import javax.measure.quantity.ElectricCurrent;
-import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -148,19 +149,19 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                 if (goeResponse.allowCharging == null) {
                     return UnDefType.UNDEF;
                 }
-                return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(goeResponse.allowCharging == 1);
             case PHASES:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;
                 }
                 int count = 0;
-                if (goeResponse.energy[4] > 0) { // current P1
+                if (goeResponse.energy.length >= 5 && goeResponse.energy[4] > 0) { // current P1
                     count++;
                 }
-                if (goeResponse.energy[5] > 0) { // current P2
+                if (goeResponse.energy.length >= 6 && goeResponse.energy[5] > 0) { // current P2
                     count++;
                 }
-                if (goeResponse.energy[6] > 0) { // current P3
+                if (goeResponse.energy.length >= 7 && goeResponse.energy[6] > 0) { // current P3
                     count++;
                 }
                 return new DecimalType(count);
@@ -173,56 +174,69 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                 if (goeResponse.sessionChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumption / 360000d),
-                        Units.KILOWATT_HOUR);
+                return new QuantityType<>(goeResponse.sessionChargeConsumption / 360000d, Units.KILOWATT_HOUR);
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
                 if (goeResponse.sessionChargeConsumptionLimit == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.sessionChargeConsumptionLimit / 10d),
-                        Units.KILOWATT_HOUR);
+                return new QuantityType<>(goeResponse.sessionChargeConsumptionLimit / 10d, Units.KILOWATT_HOUR);
             case TOTAL_CONSUMPTION:
                 if (goeResponse.totalChargeConsumption == null) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.totalChargeConsumption / 10d), Units.KILOWATT_HOUR);
+                return new QuantityType<>(goeResponse.totalChargeConsumption / 10d, Units.KILOWATT_HOUR);
             case CURRENT_L1:
-                if (goeResponse.energy == null) {
+                if (goeResponse.energy == null || goeResponse.energy.length < 5) {
                     return UnDefType.UNDEF;
                 }
                 // values come in as A*10, 41 means 4.1A
-                return new QuantityType<>((Double) (goeResponse.energy[4] / 10d), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[4] / 10d, Units.AMPERE);
             case CURRENT_L2:
-                if (goeResponse.energy == null) {
+                if (goeResponse.energy == null || goeResponse.energy.length < 6) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[5] / 10d), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[5] / 10d, Units.AMPERE);
             case CURRENT_L3:
-                if (goeResponse.energy == null) {
+                if (goeResponse.energy == null || goeResponse.energy.length < 7) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>((Double) (goeResponse.energy[6] / 10d), Units.AMPERE);
+                return new QuantityType<>(goeResponse.energy[6] / 10d, Units.AMPERE);
             case POWER_L1:
-                if (goeResponse.energy == null) {
+                if (goeResponse.energy == null || goeResponse.energy.length < 8) {
                     return UnDefType.UNDEF;
                 }
                 // values come in as kW*10, 41 means 4.1kW
                 return new QuantityType<>(goeResponse.energy[7] * 100, Units.WATT);
             case POWER_L2:
-                if (goeResponse.energy == null) {
+                if (goeResponse.energy == null || goeResponse.energy.length < 9) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[8] * 100, Units.WATT);
             case POWER_L3:
-                if (goeResponse.energy == null) {
+                if (goeResponse.energy == null || goeResponse.energy.length < 10) {
                     return UnDefType.UNDEF;
                 }
                 return new QuantityType<>(goeResponse.energy[9] * 100, Units.WATT);
-            case POWER_ALL:
-                if (goeResponseBase.energy == null) {
+            case VOLTAGE_L1:
+                if (goeResponse.energy == null || goeResponse.energy.length < 1) {
                     return UnDefType.UNDEF;
                 }
-                return new QuantityType<>(goeResponseBase.energy[11] * 10, Units.WATT);
+                return new QuantityType<>(goeResponse.energy[0], Units.VOLT);
+            case VOLTAGE_L2:
+                if (goeResponse.energy == null || goeResponse.energy.length < 2) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[1], Units.VOLT);
+            case VOLTAGE_L3:
+                if (goeResponse.energy == null || goeResponse.energy.length < 3) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[2], Units.VOLT);
+            case POWER_ALL:
+                if (goeResponse.energy == null || goeResponse.energy.length < 12) {
+                    return UnDefType.UNDEF;
+                }
+                return new QuantityType<>(goeResponse.energy[11] * 10, Units.WATT);
         }
         return UnDefType.UNDEF;
     }
@@ -240,33 +254,34 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
 
         switch (channelUID.getId()) {
             case MAX_CURRENT:
-                key = "amp";
-                if (command instanceof DecimalType) {
-                    value = String.valueOf(((DecimalType) command).intValue());
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                key = AMP;
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand.intValue());
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String.valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.AMPERE)).intValue());
                 }
                 break;
             case MAX_CURRENT_TEMPORARY:
                 key = "amx";
-                if (command instanceof DecimalType) {
-                    value = String.valueOf(((DecimalType) command).intValue());
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand.intValue());
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String.valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.AMPERE)).intValue());
                 }
                 break;
             case SESSION_CHARGE_CONSUMPTION_LIMIT:
-                key = "dwo";
+                key = DWO;
                 var multiplier = 10;
-                if (command instanceof DecimalType) {
-                    value = String.valueOf(((DecimalType) command).intValue() * multiplier);
-                } else if (command instanceof QuantityType<?>) {
-                    value = String.valueOf(
-                            ((QuantityType<Energy>) command).toUnit(Units.KILOWATT_HOUR).intValue() * multiplier);
+                if (command instanceof DecimalType decimalCommand) {
+                    value = String.valueOf(decimalCommand.intValue() * multiplier);
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    value = String
+                            .valueOf(Objects.requireNonNull(quantityCommand.toUnit(Units.KILOWATT_HOUR)).intValue()
+                                    * multiplier);
                 }
                 break;
             case ALLOW_CHARGING:
-                key = "alw";
+                key = ALW;
                 if (command instanceof OnOffType) {
                     value = command == OnOffType.ON ? "1" : "0";
                 }
@@ -306,12 +321,12 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
     }
 
     private String getReadUrl() {
-        return GoEChargerBindingConstants.API_URL.replace("%IP%", config.ip.toString());
+        return GoEChargerBindingConstants.API_URL.replace("%IP%", Objects.requireNonNull(config.ip));
     }
 
     private String getWriteUrl(String key, String value) {
-        return GoEChargerBindingConstants.MQTT_URL.replace("%IP%", config.ip.toString()).replace("%KEY%", key)
-                .replace("%VALUE%", value);
+        return GoEChargerBindingConstants.MQTT_URL.replace("%IP%", Objects.requireNonNull(config.ip))
+                .replace("%KEY%", key).replace("%VALUE%", value);
     }
 
     private void sendData(String key, String value) {
@@ -353,8 +368,8 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
      */
     @Nullable
     @Override
-    protected GoEStatusResponseBaseDTO getGoEData()
-            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    protected GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException, ExecutionException,
+            JsonSyntaxException, IllegalArgumentException {
         String urlStr = getReadUrl();
         logger.trace("GET URL = {}", urlStr);
 
@@ -377,7 +392,7 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
             allChannels.forEach(channel -> updateState(channel, UnDefType.UNDEF));
         } else {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            allChannels.forEach(channel -> updateState(channel, getValue(channel, (GoEStatusResponseDTO) goeResponse)));
+            allChannels.forEach(channel -> updateState(channel, getValue(channel, goeResponse)));
         }
     }
 }

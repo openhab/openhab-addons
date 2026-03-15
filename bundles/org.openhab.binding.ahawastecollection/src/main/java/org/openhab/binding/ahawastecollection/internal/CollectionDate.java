@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Contains the next collection dates for an given waste type.
+ * Contains the next collection dates for a given waste type.
  * 
  * @author Sönke Küper - Initial contribution
  */
@@ -45,7 +45,11 @@ final class CollectionDate {
         /**
          * Light packaging.
          */
-        LIGHT_PACKAGES;
+        LIGHT_PACKAGES,
+        /**
+         * Christmas Tree.
+         */
+        CHRISTMAS_TREES;
 
         /**
          * Parses the {@link WasteType} from the given Value from the Web-page.
@@ -60,6 +64,8 @@ final class CollectionDate {
                     return PAPER;
                 case "Leichtverpackungen":
                     return LIGHT_PACKAGES;
+                case "Weihnachtsbäume":
+                    return CHRISTMAS_TREES;
                 default:
                     throw new IllegalArgumentException("Unknown waste type: " + value);
             }
@@ -70,7 +76,7 @@ final class CollectionDate {
     private final List<Date> dates;
 
     /**
-     * Creates an new {@link CollectionDate}.
+     * Creates a new {@link CollectionDate}.
      */
     public CollectionDate(final WasteType type, final List<Date> dates) {
         this.type = type;

@@ -1,0 +1,252 @@
+<?xml version="1.0" ?>
+<ns0:update-descriptions xmlns:ns0="https://openhab.org/schemas/update-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="onkyo:TX-NR609">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="onkyo:onkyoAVR">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:ht-RC560">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR545">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR575">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR838">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR828">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR727">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR646">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR414">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR509">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR515">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR609">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:tx-rz900">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR807">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR717">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR575e">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:channel-groups">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR737">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR474">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR555">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR747">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR809">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:HT-RC440">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR616">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR818">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR636">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR535">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR656">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR708">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR525">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR3007">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR626">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR686">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+	<thing-type uid="onkyo:TX-NR676">
+		<instruction-set targetVersion="1">
+			<add-channel id="audysseyeq">
+				<type>onkyo:audysseyeq</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</ns0:update-descriptions>

@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Xiaomi Aqara 2 Channel Wall Switch</label>
 		<description>Mains powered Aqara Switch with 2 controllable Channels</description>
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="ch1" typeId="sw-btn">
 				<label>Button 1</label>

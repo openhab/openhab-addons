@@ -3,9 +3,9 @@
 .idea
 .project
 .DS_Store
+.gradle
 *.iml
-npm-debug.log
-.build.log
+*.log
 
 .metadata/
 bin/

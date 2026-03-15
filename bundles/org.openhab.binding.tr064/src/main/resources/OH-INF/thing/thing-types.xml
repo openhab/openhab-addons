@@ -27,6 +27,12 @@
 				<label>Refresh Interval</label>
 				<default>60</default>
 			</parameter>
+			<parameter name="timeout" type="integer" unit="s">
+				<label>Timeout</label>
+				<description>Timeout for all requests (SOAP requests, phone book retrieval, call lists, ...).</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -53,6 +59,12 @@
 			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<default>60</default>
+			</parameter>
+			<parameter name="timeout" type="integer" unit="s">
+				<label>Timeout</label>
+				<description>Timeout for all requests (SOAP requests, phone book retrieval, call lists, ...).</description>
+				<default>5</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tamIndices" type="text" multiple="true">
 				<label>TAM</label>
@@ -98,6 +110,17 @@
 				<label>Phone Book Interval</label>
 				<description>The interval for refreshing the phone book (disabled = 0).</description>
 				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="backupDirectory" type="text">
+				<label>Backup Directory</label>
+				<description>The directory where configuration backups are stored (default to userdata directory).</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="backupPassword" type="text">
+				<label>Backup Password</label>
+				<description>The password used to encrypt the backup data.</description>
+				<context>password</context>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -146,7 +169,7 @@
 			</parameter>
 			<parameter name="macOnline" type="text" multiple="true">
 				<label>MAC Online</label>
-				<description>List of MACs for "online" status detection (format: 11:11:11:11:11:11).</description>
+				<description>List of MACs for "online" status detection (format: 11:11:11:11:11:11). One MAC-Address per row.</description>
 			</parameter>
 		</config-description>
 	</thing-type>

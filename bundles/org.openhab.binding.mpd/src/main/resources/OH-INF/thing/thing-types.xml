@@ -7,6 +7,7 @@
 	<thing-type id="mpd">
 		<label>Music Player Daemon</label>
 		<description>Music Player Daemon Binding</description>
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="system.media-control"/>
 			<channel id="volume" typeId="system.volume"/>
@@ -28,7 +29,7 @@
 				<description>The IP or host name of the Music Player Daemon.</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="port" type="integer" required="true" min="1" max="65335">
+			<parameter name="port" type="integer" required="true" min="1" max="65535">
 				<label>Port</label>
 				<description>Port for the Music Player Daemon</description>
 				<default>6600</default>
@@ -47,6 +48,10 @@
 		<item-type>String</item-type>
 		<label>Current Album</label>
 		<description>Name of the album currently playing.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -56,6 +61,10 @@
 		<description>Name for current song. This is not the song title. The exact meaning of this tag is not well-defined. It
 			is often used by badly configured internet radio stations with broken tags to squeeze both the artist name and the
 			song title in one tag.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -63,6 +72,10 @@
 		<item-type>Number</item-type>
 		<label>Current Track</label>
 		<description>The current track number.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
@@ -70,13 +83,21 @@
 		<item-type>Number</item-type>
 		<label>Current Song</label>
 		<description>The current song number.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentsongid" advanced="true">
 		<item-type>Number</item-type>
-		<label>Current Song Id</label>
-		<description>The current song id.</description>
+		<label>Current Song ID</label>
+		<description>The current song ID.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 

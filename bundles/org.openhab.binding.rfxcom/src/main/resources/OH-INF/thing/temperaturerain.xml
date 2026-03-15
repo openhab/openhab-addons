@@ -14,6 +14,7 @@
 
 		<label>RFXCOM Temperature-Rain Sensor</label>
 		<description>A Temperature-Rain device.</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>

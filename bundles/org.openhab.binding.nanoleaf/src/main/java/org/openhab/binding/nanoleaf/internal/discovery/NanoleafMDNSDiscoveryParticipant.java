@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.nanoleaf.internal.discovery;
 
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +68,15 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
         }
         final Map<String, Object> properties = new HashMap<>(2);
         String host = service.getHostAddresses()[0];
+        try {
+            if (InetAddress.getByName(host).getAddress().length != 4) {
+                logger.debug("Ignoring IPv6 address for nanoleaf controllers: {}", host);
+                return null;
+            }
+        } catch (UnknownHostException e) {
+            logger.warn("Error while checking IP address for nanoleaf controller: {}", host);
+            return null;
+        }
         properties.put(CONFIG_ADDRESS, host);
         int port = service.getPort();
         properties.put(CONFIG_PORT, port);
@@ -86,10 +97,8 @@ public class NanoleafMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
                     MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
         }
 
-        final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withThingType(getThingType(service))
-                .withProperties(properties).withLabel(service.getName()).withRepresentationProperty(CONFIG_ADDRESS)
-                .build();
-        return result;
+        return DiscoveryResultBuilder.create(uid).withThingType(getThingType(service)).withProperties(properties)
+                .withLabel(service.getName()).withRepresentationProperty(CONFIG_ADDRESS).build();
     }
 
     @Override

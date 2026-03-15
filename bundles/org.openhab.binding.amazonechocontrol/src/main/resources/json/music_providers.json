@@ -1,0 +1,78 @@
+[
+    {
+        "id": "CLOUDPLAYER",
+        "displayName": "My Library",
+        "description": "Music provider",
+        "supportedProperties": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedTriggers": [],
+        "supportedOperations": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedConditions": [],
+        "availability": "AVAILABLE",
+        "icon": null,
+        "providerData": {
+            "isDefaultMusicProvider": false,
+            "isDefaultStationProvider": false
+        }
+    },
+    {
+        "id": "AMAZON_MUSIC",
+        "displayName": "Amazon Music",
+        "description": "Music provider",
+        "supportedProperties": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedTriggers": [],
+        "supportedOperations": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedConditions": [],
+        "availability": "AVAILABLE",
+        "icon": null,
+        "providerData": {
+            "isDefaultMusicProvider": true,
+            "isDefaultStationProvider": true
+        }
+    },
+    {
+        "id": "TUNEIN",
+        "displayName": "TuneIn",
+        "description": "Music provider",
+        "supportedProperties": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedTriggers": [],
+        "supportedOperations": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedConditions": [],
+        "availability": "AVAILABLE",
+        "icon": null,
+        "providerData": {
+            "isDefaultMusicProvider": false,
+            "isDefaultStationProvider": false
+        }
+    },
+    {
+        "id": "DEFAULT",
+        "displayName": "",
+        "description": "Default Music provider",
+        "supportedProperties": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedTriggers": [],
+        "supportedOperations": [
+            "Alexa.Music.PlaySearchPhrase"
+        ],
+        "supportedConditions": [],
+        "availability": "AVAILABLE",
+        "icon": null,
+        "providerData": {
+            "isDefaultMusicProvider": false,
+            "isDefaultStationProvider": false
+        }
+    }
+]

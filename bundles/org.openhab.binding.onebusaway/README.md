@@ -1,6 +1,7 @@
 # OneBusAway Binding
 
-[OneBusAway](https://onebusaway.org/) is an open source, real-time, transit-information service.  This binding allows you to get events based on transit arrival and departures, so you can create rules to do something based on that data.
+[OneBusAway](https://onebusaway.org/) is an open source, real-time, transit-information service.
+This binding lets you get events based on transit arrivals and departures, so you can create rules to do something based on that data.
 
 ## Preparation
 
@@ -20,7 +21,6 @@ The following configuration options are available for the API binding:
 | `apiKey`    | API Key    | The API key given to you by a transit provider for their deployment.                | yes      |
 | `apiServer` | API Server | The domain name of the deployment to talk to, e.g. `api.pugetsound.onebusaway.org`. | yes      |
 
-
 The following configuration options are available for the Stop binding (which requires an API binding):
 
 | Parameter | Name | Description | Required |
@@ -36,22 +36,20 @@ The following configuration options are available for a Route (which requires a 
 |-----------|----------|---------------------------------------------------------------------|----------|
 | `routeId` | Route ID | The OneBusAway ID of the route to obtain data for, e.g. `1_102574`. | yes      |
 
-
 ## Channels
 
-The Route Thing supports the following state channels:
+The Route Thing supports the following channels:
 
 | Channel Type ID  | Channel Kind | Item Type | Description                                                                                              |
 |------------------|--------------|-----------|----------------------------------------------------------------------------------------------------------|
 | arrival          | state        | DateTime  | The arrival time of a Route at a Stop.                                                                   |
 | departure        | state        | DateTime  | The departure time of a Route at a Stop.                                                                 |
 | update           | state        | DateTime  | The last time this data was updated (per the data provider, not the last time openHAB updated the data). |
-| arrivalDeparture | trigger      | DateTime  | Triggered when a Route arrives or departs a Stop.                                                        |
-
+| routeEvent       | trigger      | —         | Triggered when a Route arrives or departs a Stop (event values: `ARRIVAL`, `DEPARTURE`).                 |
 
 ### Channel Configurations
 
-The `arrival`, `departure`, and `arrivalDeparture` channels can be configured with an `offset` specifying the number of seconds to move an event back in time.
+The `arrival`, `departure`, and `routeEvent` channels can be configured with an `offset` specifying the number of seconds to move an event back in time.
 
 ## Full Example
 
@@ -59,7 +57,7 @@ Here is an example of a configuration for a bus stop in Seattle, WA, USA that ha
 
 `demo.things`:
 
-```
+```java
 Bridge onebusaway:api:pugetsound [apiKey="your-api-key", apiServer="api.pugetsound.onebusaway.org"] {
   Bridge onebusaway:stop:1_26860 [stopId="1_26860"] {
     Thing onebusaway:route:1_100193 [routeId="1_100193"]
@@ -71,7 +69,7 @@ Bridge onebusaway:api:pugetsound [apiKey="your-api-key", apiServer="api.pugetsou
 
 `demo.items`:
 
-```
+```java
 // Route 1_100193 (#32)
 DateTime Fremont_32_Arrival "32 - University District" { channel="onebusaway:route:1_100193:arrival" }
 DateTime Fremont_32_Departure "32 - University District" { channel="onebusaway:route:1_100193:departure" }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,6 +59,7 @@ public class TouchWandWebSockets {
 
     private WebSocketClient client;
     private String controllerAddress;
+    private int port;
     private TouchWandSocket touchWandSocket;
     private boolean isShutDown = false;
     private CopyOnWriteArraySet<TouchWandUnitStatusUpdateListener> listeners = new CopyOnWriteArraySet<>();
@@ -67,17 +68,18 @@ public class TouchWandWebSockets {
 
     private ScheduledExecutorService scheduler;
 
-    public TouchWandWebSockets(String ipAddress, ScheduledExecutorService scheduler) {
+    public TouchWandWebSockets(String ipAddress, int port, ScheduledExecutorService scheduler) {
         client = new WebSocketClient();
         touchWandSocket = new TouchWandSocket();
         this.controllerAddress = ipAddress;
+        this.port = port;
         this.scheduler = scheduler;
         socketReconnect = null;
     }
 
     public void connect() {
         try {
-            uri = new URI("ws://" + controllerAddress + WS_ENDPOINT_TOUCHWAND);
+            uri = new URI("ws://" + controllerAddress + ":" + port + WS_ENDPOINT_TOUCHWAND);
         } catch (URISyntaxException e) {
             logger.warn("URI not valid {} message {}", uri, e.getMessage());
             return;
@@ -150,13 +152,13 @@ public class TouchWandWebSockets {
             TouchWandUnitData touchWandUnit;
             try {
                 JsonObject unitObj = JsonParser.parseString(msg).getAsJsonObject();
-                boolean eventUnitChanged = unitObj.get("type").getAsString().equals("UNIT_CHANGED");
+                boolean eventUnitChanged = "UNIT_CHANGED".equals(unitObj.get("type").getAsString());
                 if (!eventUnitChanged) {
                     return;
                 }
                 touchWandUnit = TouchWandUnitFromJson.parseResponse(unitObj.get("unit").getAsJsonObject());
-                if (!touchWandUnit.getStatus().equals("ALIVE")) {
-                    return;
+                if (!"ALIVE".equals(touchWandUnit.getStatus())) {
+                    logger.debug("UNIT_CHANGED unit status not ALIVE : {}", touchWandUnit.getStatus());
                 }
                 boolean supportedUnitType = Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(touchWandUnit.getType());
                 if (!supportedUnitType) {

@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Area</label>
 		<description>Area</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel typeId="area_status" id="status"/>
 			<channel typeId="area_armed" id="armed"/>
@@ -108,6 +109,9 @@
 		<item-type>Contact</item-type>
 		<label>Area in Alarm</label>
 		<description>Indicates if area is in alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Ok</option>

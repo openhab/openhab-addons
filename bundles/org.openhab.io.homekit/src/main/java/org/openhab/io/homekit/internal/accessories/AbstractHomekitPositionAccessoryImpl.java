@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.POSITION_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_POSITION;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +30,8 @@ import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -38,6 +39,7 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
 
@@ -51,21 +53,24 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     private final Logger logger = LoggerFactory.getLogger(AbstractHomekitPositionAccessoryImpl.class);
     protected int closedPosition;
     protected int openPosition;
-    private final Map<PositionStateEnum, String> positionStateMapping;
+    private final Map<PositionStateEnum, Object> positionStateMapping;
+    protected boolean emulateState;
+    protected boolean emulateStopSameDirection;
+    protected boolean sendUpDownForExtents;
+    protected PositionStateEnum emulatedState = PositionStateEnum.STOPPED;
 
     public AbstractHomekitPositionAccessoryImpl(HomekitTaggedItem taggedItem,
-            List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater,
-            HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        final String invertedConfig = getAccessoryConfiguration(HomekitTaggedItem.INVERTED, "true");
-        final boolean inverted = invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
+            List<HomekitTaggedItem> mandatoryCharacteristics, List<Characteristic> mandatoryRawCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+        final boolean inverted = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.INVERTED, true);
+        emulateState = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_STATE, false);
+        emulateStopSameDirection = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_SAME_DIRECTION,
+                false);
+        sendUpDownForExtents = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.SEND_UP_DOWN_FOR_EXTENTS, false);
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
-        positionStateMapping = new EnumMap<>(PositionStateEnum.class);
-        positionStateMapping.put(PositionStateEnum.DECREASING, "DECREASING");
-        positionStateMapping.put(PositionStateEnum.INCREASING, "INCREASING");
-        positionStateMapping.put(PositionStateEnum.STOPPED, "STOPPED");
-        updateMapping(POSITION_STATE, positionStateMapping);
+        positionStateMapping = createMapping(POSITION_STATE, PositionStateEnum.class);
     }
 
     public CompletableFuture<Integer> getCurrentPosition() {
@@ -73,8 +78,8 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     }
 
     public CompletableFuture<PositionStateEnum> getPositionState() {
-        return CompletableFuture
-                .completedFuture(getKeyFromMapping(POSITION_STATE, positionStateMapping, PositionStateEnum.STOPPED));
+        return CompletableFuture.completedFuture(emulateState ? emulatedState
+                : getKeyFromMapping(POSITION_STATE, positionStateMapping, PositionStateEnum.STOPPED));
     }
 
     public CompletableFuture<Integer> getTargetPosition() {
@@ -85,19 +90,48 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         getCharacteristic(TARGET_POSITION).ifPresentOrElse(taggedItem -> {
             final Item item = taggedItem.getItem();
             final int targetPosition = convertPosition(value, openPosition);
-
-            if (item instanceof RollershutterItem) {
-                ((RollershutterItem) item).send(new PercentType(targetPosition));
-            } else if (item instanceof DimmerItem) {
-                ((DimmerItem) item).send(new PercentType(targetPosition));
-            } else if (item instanceof NumberItem) {
-                ((NumberItem) item).send(new DecimalType(targetPosition));
-            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof RollershutterItem) {
-                ((GroupItem) item).send(new PercentType(targetPosition));
-            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof DimmerItem) {
-                ((GroupItem) item).send(new PercentType(targetPosition));
-            } else if (item instanceof GroupItem && ((GroupItem) item).getBaseItem() instanceof NumberItem) {
-                ((GroupItem) item).send(new DecimalType(targetPosition));
+            if (item instanceof RollershutterItem itemAsRollerShutterItem) {
+                // HomeKit home app never sends STOP. we emulate stop if we receive 100% or 0% while the blind is moving
+                if (emulateState && (targetPosition == 100 && emulatedState == PositionStateEnum.DECREASING)
+                        || ((targetPosition == 0 && emulatedState == PositionStateEnum.INCREASING))) {
+                    if (emulateStopSameDirection) {
+                        // some blinds devices do not support "STOP" but would stop if receive UP/DOWN while moving
+                        itemAsRollerShutterItem
+                                .send(emulatedState == PositionStateEnum.INCREASING ? UpDownType.UP : UpDownType.DOWN);
+                    } else {
+                        itemAsRollerShutterItem.send(StopMoveType.STOP);
+                    }
+                    emulatedState = PositionStateEnum.STOPPED;
+                } else {
+                    if (sendUpDownForExtents && targetPosition == 0) {
+                        itemAsRollerShutterItem.send(UpDownType.UP);
+                    } else if (sendUpDownForExtents && targetPosition == 100) {
+                        itemAsRollerShutterItem.send(UpDownType.DOWN);
+                    } else {
+                        itemAsRollerShutterItem.send(new PercentType(targetPosition));
+                    }
+                    if (emulateState) {
+                        @Nullable
+                        PercentType currentPosition = item.getStateAs(PercentType.class);
+                        emulatedState = currentPosition == null || currentPosition.intValue() == targetPosition
+                                ? PositionStateEnum.STOPPED
+                                : currentPosition.intValue() < targetPosition ? PositionStateEnum.INCREASING
+                                        : PositionStateEnum.DECREASING;
+                    }
+                }
+            } else if (item instanceof DimmerItem itemAsDimmerItem) {
+                itemAsDimmerItem.send(new PercentType(targetPosition));
+            } else if (item instanceof NumberItem itemAsNumberItem) {
+                itemAsNumberItem.send(new DecimalType(targetPosition));
+            } else if (item instanceof GroupItem itemAsGroupItem
+                    && itemAsGroupItem.getBaseItem() instanceof RollershutterItem) {
+                itemAsGroupItem.send(new PercentType(targetPosition));
+            } else if (item instanceof GroupItem itemAsGroupItem
+                    && itemAsGroupItem.getBaseItem() instanceof DimmerItem) {
+                itemAsGroupItem.send(new PercentType(targetPosition));
+            } else if (item instanceof GroupItem itemAsGroupItem
+                    && itemAsGroupItem.getBaseItem() instanceof NumberItem) {
+                itemAsGroupItem.send(new DecimalType(targetPosition));
             } else {
                 logger.warn(
                         "Unsupported item type for characteristic {} at accessory {}. Expected Rollershutter, Dimmer or Number item, got {}",
@@ -164,7 +198,8 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(type);
         if (taggedItem.isPresent()) {
             final Item item = taggedItem.get().getItem();
-            if ((item instanceof RollershutterItem) || ((item instanceof DimmerItem))) {
+            final Item baseItem = taggedItem.get().getBaseItem();
+            if (baseItem instanceof RollershutterItem || baseItem instanceof DimmerItem) {
                 value = item.getStateAs(PercentType.class);
             } else {
                 value = item.getStateAs(DecimalType.class);

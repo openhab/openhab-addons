@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,9 @@ import static org.openhab.binding.avmfritz.internal.dto.DeviceModel.ETSUnitInfoM
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
@@ -79,7 +80,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
-    private long refreshInterval = 15;
+    private long pollingInterval = 15;
 
     /**
      * Interface object for querying the FRITZ!Box web interface
@@ -131,10 +132,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     "The 'ipAddress' parameter must be configured.");
             configValid = false;
         }
-        refreshInterval = config.pollingInterval;
-        if (refreshInterval < 5) {
+        pollingInterval = config.pollingInterval;
+        if (pollingInterval < 1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The 'pollingInterval' parameter must be greater then at least 5 seconds.");
+                    "The 'pollingInterval' parameter must be greater than or equals to 1 second.");
             configValid = false;
         }
 
@@ -172,21 +173,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof FritzAhaStatusListener) {
-            registerStatusListener((FritzAhaStatusListener) childHandler);
+        if (childHandler instanceof FritzAhaStatusListener listener) {
+            registerStatusListener(listener);
         }
     }
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof FritzAhaStatusListener) {
-            unregisterStatusListener((FritzAhaStatusListener) childHandler);
+        if (childHandler instanceof FritzAhaStatusListener listener) {
+            unregisterStatusListener(listener);
         }
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(AVMFritzDiscoveryService.class);
+        return Set.of(AVMFritzDiscoveryService.class);
     }
 
     public boolean registerStatusListener(FritzAhaStatusListener listener) {
@@ -203,8 +204,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     protected void startPolling() {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
-            logger.debug("Start polling job at interval {}s", refreshInterval);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, refreshInterval, TimeUnit.SECONDS);
+            logger.debug("Start polling job at interval {}s", pollingInterval);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, INITIAL_DELAY, pollingInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -268,23 +269,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     public void onDeviceListAdded(List<AVMFritzBaseModel> deviceList) {
         final Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
                 .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
-        getThing().getThings().forEach(childThing -> {
-            final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
-            if (childHandler != null) {
-                final AVMFritzBaseModel device = deviceIdentifierMap.get(childHandler.getIdentifier());
-                if (device != null) {
-                    deviceList.remove(device);
-                    listeners.forEach(listener -> listener.onDeviceUpdated(childThing.getUID(), device));
-                } else {
-                    listeners.forEach(listener -> listener.onDeviceGone(childThing.getUID()));
-                }
-            } else {
-                logger.debug("Handler missing for thing '{}'", childThing.getUID());
-            }
-        });
-        deviceList.forEach(device -> {
-            listeners.forEach(listener -> listener.onDeviceAdded(device));
-        });
+
+        listeners.stream().filter(listener -> listener instanceof AVMFritzBaseThingHandler)
+                .map(listener -> (AVMFritzBaseThingHandler) listener).forEach(handler -> {
+                    if (deviceIdentifierMap.get(handler.getIdentifier()) instanceof AVMFritzBaseModel device) {
+                        device.isLinked = true;
+                        scheduler.submit(() -> handler.onDeviceUpdated(handler.getThing().getUID(), device));
+                    } else {
+                        scheduler.submit(() -> handler.onDeviceGone(handler.getThing().getUID()));
+                    }
+                });
+
+        deviceIdentifierMap.values().stream().filter(device -> !device.isLinked)
+                .forEach(device -> listeners.stream().filter(listener -> listener instanceof AVMFritzDiscoveryService)
+                        .map(listener -> (AVMFritzDiscoveryService) listener)
+                        .forEach(service -> scheduler.submit(() -> service.onDeviceAdded(device))));
     }
 
     /**
@@ -297,13 +296,16 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @return ThingUID without illegal characters.
      */
     public @Nullable ThingUID getThingUID(AVMFritzBaseModel device) {
-        ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device));
+        String id = getThingTypeId(device);
+        ThingTypeUID thingTypeUID = id.isEmpty() ? null : new ThingTypeUID(BINDING_ID, id);
         ThingUID bridgeUID = thing.getUID();
         String thingName = getThingName(device);
 
-        if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+        if (thingTypeUID != null && (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)
                 || SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)
-                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                || SUPPORTED_POWER_METER_THING_TYPES.contains(thingTypeUID)
+                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID))) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
         } else if (device.isHeatingThermostat()) {
             return new ThingUID(GROUP_HEATING_THING_TYPE, bridgeUID, thingName);
@@ -321,12 +323,14 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     public String getThingTypeId(AVMFritzBaseModel device) {
         if (device instanceof GroupModel) {
-            if (device.isHeatingThermostat()) {
+            if (device.isHANFUNBlinds()) {
+                return GROUP_BLINDS;
+            } else if (device.isHeatingThermostat()) {
                 return GROUP_HEATING;
             } else if (device.isSwitchableOutlet()) {
                 return GROUP_SWITCH;
             }
-        } else if (device instanceof DeviceModel && device.isHANFUNUnit()) {
+        } else if (device instanceof DeviceModel deviceModel && device.isHANFUNUnit()) {
             if (device.isHANFUNBlinds()) {
                 return DEVICE_HAN_FUN_BLINDS;
             } else if (device.isColorLight()) {
@@ -334,8 +338,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (device.isDimmableLight()) {
                 return DEVICE_HAN_FUN_DIMMABLE_BULB;
             }
-            List<String> interfaces = Arrays
-                    .asList(((DeviceModel) device).getEtsiunitinfo().getInterfaces().split(","));
+            List<String> interfaces = Arrays.asList(deviceModel.getEtsiunitinfo().getInterfaces().split(","));
             if (interfaces.contains(HAN_FUN_INTERFACE_ALERT)) {
                 return DEVICE_HAN_FUN_CONTACT;
             } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {
@@ -343,8 +346,17 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (interfaces.contains(HAN_FUN_INTERFACE_ON_OFF)) {
                 return DEVICE_HAN_FUN_ON_OFF;
             }
+            if (device.isHumiditySensor() || device.isTemperatureSensor()) {
+                return DEVICE_HAN_FUN_SENSOR;
+            }
+        } else if (device instanceof DeviceModel && device.isHANFUNDevice()
+                && (device.isHANFUNBattery() || (device.getBattery() != null) || (device.getBatterylow() != null))) {
+            // offer the host device as a potential thing -- but only if it should support battery channels
+            return DEVICE_HAN_FUN_HOST;
         }
-        return device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productName = device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productAlias = ALIAS_PRODUCT_NAME_MAP.get(productName.toUpperCase());
+        return productAlias != null ? productAlias : productName;
     }
 
     /**

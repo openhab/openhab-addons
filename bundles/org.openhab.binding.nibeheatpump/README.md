@@ -3,21 +3,21 @@
 The Nibe Heatpump binding is used to get live data from Nibe heat pumps without using an expensive MODBUS40 adapter.
 This binding is compatible with the F750, F1145, F1245, F1155, F1255, F470 and SMO40 heat pump models.
 
-The binding supports data telegrams (containing a maximum of 20 registers) from the heat pump.
+This binding supports data telegrams (containing a maximum of 20 registers) from the heat pump.
 The binding can also read other registers from the pump.
-It is recommended to add the most often updated variables to a telegram.
+It is recommended to add the most frequently updated variables to a telegram.
 The binding will then read all other registers automatically from the pump when channels are linked to an item.
-Register reading needs to be enabled in the thing configuration.
+Register reading needs to be enabled in the Thing configuration.
 The binding also has experimental support for writing registers.
 This can be used to configure the heat pump.
-Write mode needs to be enabled in the thing configuration and for safety reasons all register identifiers need to be explicitly defined.
+Write mode needs to be enabled in the Thing configuration and, for safety reasons, all register identifiers need to be explicitly defined.
 
 ## Supported Things
 
 This binding supports direct serial port connection (RS-485 adapter needed) to heat pump but also UDP connection via NibeGW software.
 
 | Thing type      | Description                                      |
-|-----------------|--------------------------------------------------|
+| --------------- | ------------------------------------------------ |
 | f1x45-serial    | Serial port connected F1145 and F1245 Heat Pumps |
 | f1x45-udp       | UDP connected Nibe F1145 and F1245 Heat Pumps    |
 | f1x45-simulator | Simulator for Nibe F1145 and F1245 Heat Pumps    |
@@ -36,7 +36,7 @@ This binding supports direct serial port connection (RS-485 adapter needed) to h
 
 ## Discovery
 
-Discovery is not supported. 
+Discovery is not supported.
 
 ## Prerequisites
 
@@ -44,35 +44,35 @@ When Modbus adapter support is enabled from the heat pump UI, the heat pump will
 A telegram contains a maximum of 20 registers.
 Those 20 registers can be configured via the Nibe ModbusManager application.
 
-Unfortunately Nibe has made this tricky.
+Unfortunately, Nibe has made this tricky.
 A telegram from the heat pump must be acknowledged, otherwise the heat pump will raise an alarm and go into the alarm state.
 Acknowledgement (ACK or NAK) responses should be sent correctly.
 The binding also supports direct serial port connections to the heat pump, but the heat pump will raise an alarm when the openHAB binding is not running e.g. during openHAB updates.
 This problem can be resolved by using the `nibegw` program, which can be run on Unix/Linux (such as a Raspberry Pi) or Arduino-based boards.
 If you are running openHAB on a Raspberry Pi, the `nibegw` program can also run on the same machine.
-Then when openHAB is not running , `nibegw` will acknowledge packets from the heat pump.
-Obviously, this doesn't solve the problem when the Raspberry Pi is down, therefore an Arduino based solution is recommended.
+Then, when openHAB is not running, `nibegw` will acknowledge packets from the heat pump.
+Obviously, this doesn't solve the problem when the Raspberry Pi is down; therefore an Arduino-based solution is recommended.
 
-`nibegw` is an application that reads telegrams from a serial port (which requires an RS-485 adapter), sends ACK/NAK to the heat pump and relays untouched telegrams to openHAB via UDP packets.
-The Nibe Heat Pump binding will listen to a UDP port and parse register data from UDP telegrams.
+`nibegw` is an application that reads telegrams from a serial port (which requires an RS-485 adapter), sends ACK/NAK to the heat pump, and relays untouched telegrams to openHAB via UDP packets.
+The Nibe Heatpump binding will listen on a UDP port and parse register data from UDP telegrams.
 
 ### Arduino
 
 An Arduino-based solution has been tested with Arduino uno + RS485 and Ethernet shields.
-The [ProDiNo](https://www.kmpelectronics.eu/en-us/products/prodinoethernet.aspx) NetBoards are also supported.
-A ProDiNo has an Ethernet and RS-485 port on the board.
+[PRODINo ESP32 Ethernet v1](https://kmpelectronics.eu/products/prodino-esp32-ethernet-v1/) and [ProDiNo Ethernet V2](https://kmpelectronics.eu/products/prodino-ethernet-v2/) boards are also supported.
+PRODINo boards have built-in Ethernet and RS-485 ports.
 
-Arduino code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
+The Arduino code for NibeGW is available in the [NibeGW Arduino directory of the openHAB add-ons GitHub repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/Arduino/NibeGW).
 
-Arduino code can be build via Arduino IDE.
-For more details see [www.arduino.cc](https://www.arduino.cc/en/Main/Software). 
-NibeGW configuration (such IP addresses, ports, etc) can be adapted directly by editing the code files.
+Arduino code can be built via the [Arduino IDE software](https://www.arduino.cc/en/Main/Software).
+NibeGW configuration (such as IP addresses, ports, etc) can be adapted directly by editing the code files.
+PRODINo ESP32 Ethernet v1 also supports dynamic configuration and OTA updates via Wi-Fi access point.
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
-C code is available [here](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
+The C code for NibeGW on Raspberry Pi is available in the [NibeGW Raspberry Pi directory of the openHAB add-ons GitHub repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
 
-To build the C code use: 
+To build the C code use:
 
 ```shell
 gcc -std=gnu99 -o nibegw nibegw.c
@@ -108,64 +108,58 @@ Usage example:
 nibegw -v -d /dev/ttyUSB0 -a 192.168.1.10
 ```
 
-## Binding Configuration
-
-No binding configuration required.
-
 ## Thing Configuration
 
 Things can be fully configured via the UI.
-The following information is useful when configuring things via thing configuration files.
+The following information is useful when configuring things via Thing configuration files.
 
 ### UDP connection
 
 Thing examples:
 
-```
+```java
 nibeheatpump:f1x45-udp:myPump [hostName="192.168.1.50", port=9999]
 ```
 
-```
+```java
 nibeheatpump:f1x45-udp:myPump [hostName="192.168.1.50", port=9999, readCommandsPort=10000, writeCommandsPort=10001, refreshInterval=30, enableReadCommands=true, enableWriteCommands=true, enableWriteCommandsToRegisters="44266, 47004"]
 ```
 
-All supported configuration parameters for UDP connection:
+All supported configuration parameters for a UDP connection:
 
-| Property                        | Type    | Default | Required | Description |
-|---------------------------------|---------|---------|----------|-------------|
-| hostName                        | String  |         | Yes      | Network address of the Nibe heat pump |
-| port                            | Integer | 9999    | No       | UDP port to listening data packets from the NibeGW |
-| readCommandsPort                | Integer | 9999    | No       | UDP port to send read commands to the NibeGW |
-| writeCommandsPort               | Integer | 10000   | No       | UDP port to send write commands to the NibeGW |
-| refreshInterval                 | Integer | 60      | No       | States how often a refresh shall occur in seconds |
-| enableReadCommands              | Boolean | false   | No       | Enable read commands to read additional variable from Nibe heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk! |
-| enableWriteCommands             | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is experimental feature, use it at your own risk! |
-| enableWriteCommandsToRegisters  | String  |         | No       | Comma separated list of registers, which are allowed to write to Nibe heat pump. E.g. 44266, 47004 |
-| throttleTime                    | Integer | 0       | No       | Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds. |
+| Property                       | Type    | Default | Required | Description                                                                                                                                                                  |
+| ------------------------------ | ------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| hostName                       | String  |         | Yes      | Network address of the Nibe heat pump                                                                                                                                        |
+| port                           | Integer | 9999    | No       | UDP port to listen for data packets from NibeGW                                                                                                                              |
+| readCommandsPort               | Integer | 9999    | No       | UDP port to send read commands to NibeGW                                                                                                                                     |
+| writeCommandsPort              | Integer | 10000   | No       | UDP port to send write commands to NibeGW                                                                                                                                    |
+| refreshInterval                | Integer | 60      | No       | How often to refresh, in seconds                                                                                                                                             |
+| enableReadCommands             | Boolean | false   | No       | Enable read commands to read additional variables from the Nibe heat pump that are not included in data readout messages. This is an experimental feature; use at your own risk. |
+| enableWriteCommands            | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is an experimental feature; use at your own risk.                                                               |
+| enableWriteCommandsToRegisters | String  |         | No       | Comma-separated list of registers allowed to be written to the Nibe heat pump, e.g., 44266, 47004                                                                            |
+| throttleTime                   | Integer | 0       | No       | Throttle incoming data readout messages from the heat pump. 0 = throttle is disabled; otherwise, throttle time in milliseconds.                                              |
 
 ### Serial port connection
 
 Thing example:
 
-```
+```java
 nibeheatpump:f1x45-serial:myPump [serialPort="/dev/ttyUSB0"]
 ```
 
+All supported configuration parameters for a serial port connection:
 
-All supported configuration parameters for serial port connection:
-
-| Property                        | Type    | Default | Required | Description |
-|---------------------------------|---------|---------|----------|-------------|
-| serialPort                      | String  |         | Yes      | Network address of the Nibe heat pump |
-| refreshInterval                 | Integer | 60      | No       | States how often a refresh shall occur in seconds |
-| enableReadCommands              | Boolean | false   | No       | Enable read commands to read additional variable from Nibe heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk! |
-| enableWriteCommands             | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is experimental feature, use it at your own risk! |
-| enableWriteCommandsToRegisters  | String  |         | No       | Comma separated list of registers, which are allowed to write to Nibe heat pump. E.g. 44266, 47004 |
-| sendAckToMODBUS40               | Boolean | true    | No       | Binding emulates MODBUS40 device and send protocol acknowledges to heat pump |
-| sendAckToRMU40                  | Boolean | false   | No       | Binding emulates RMU40 device and send protocol acknowledges to heat pump |
-| sendAckToSMS40                  | Boolean | false   | No       | Binding emulates SMS40 device and send protocol acknowledges to heat pump |
-| throttleTime                    | Integer | 0       | No       | Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds. |
-
+| Property                       | Type    | Default | Required | Description                                                                                                                                                                  |
+| ------------------------------ | ------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| serialPort                     | String  |         | Yes      | Serial port device (for example, COM3 on Windows or /dev/ttyUSB0 on Linux)                                                                                                   |
+| refreshInterval                | Integer | 60      | No       | How often to refresh, in seconds                                                                                                                                             |
+| enableReadCommands             | Boolean | false   | No       | Enable read commands to read additional variables from the Nibe heat pump that are not included in data readout messages. This is an experimental feature; use at your own risk. |
+| enableWriteCommands            | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is an experimental feature; use at your own risk.                                                               |
+| enableWriteCommandsToRegisters | String  |         | No       | Comma-separated list of registers allowed to be written to the Nibe heat pump, e.g., 44266, 47004                                                                            |
+| sendAckToMODBUS40              | Boolean | true    | No       | Binding emulates a MODBUS40 device and sends protocol acknowledgments to the heat pump                                                                                        |
+| sendAckToRMU40                 | Boolean | false   | No       | Binding emulates an RMU40 device and sends protocol acknowledgments to the heat pump                                                                                          |
+| sendAckToSMS40                 | Boolean | false   | No       | Binding emulates an SMS40 device and sends protocol acknowledgments to the heat pump                                                                                          |
+| throttleTime                   | Integer | 0       | No       | Throttle incoming data readout messages from the heat pump. 0 = throttle is disabled; otherwise, throttle time in milliseconds.                                              |
 
 ## Channels
 
@@ -174,7 +168,7 @@ All supported configuration parameters for serial port connection:
 This binding currently supports following channels for F1x45 pump models:
 
 | Channel Type ID | Item Type | Min         | Max        | Type    | Description                                              | Values                                                                                                                                                             |
-|-----------------|-----------|-------------|------------|---------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------- | --------- | ----------- | ---------- | ------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 40004           | Number    | -32767      | 32767      | Setting | BT1 Outdoor temp                                         |                                                                                                                                                                    |
 | 40005           | Number    | -32767      | 32767      | Setting | EP23-BT2 Supply temp S4                                  |                                                                                                                                                                    |
 | 40006           | Number    | -32767      | 32767      | Setting | EP22-BT2 Supply temp S3                                  |                                                                                                                                                                    |
@@ -229,6 +223,7 @@ This binding currently supports following channels for F1x45 pump models:
 | 40129           | Number    | -32767      | 32767      | Setting | EP21-BT3 Return temp S2                                  |                                                                                                                                                                    |
 | 40155           | Number    | -32767      | 32767      | Setting | EQ1-BT57 Collector temp.                                 |                                                                                                                                                                    |
 | 40156           | Number    | -32767      | 32767      | Setting | EQ1-BT75 Heatdump temp.                                  |                                                                                                                                                                    |
+| 40940           | Number    | -30000      | 30000      | Setting | Degree Minutes (32 bit)                                  |                                                                                                                                                                    |
 | 43001           | Number    | 0           | 65535      | Setting | Software version                                         |                                                                                                                                                                    |
 | 43005           | Number    | -30000      | 30000      | Setting | Degree Minutes                                           |                                                                                                                                                                    |
 | 43006           | Number    | -32767      | 32767      | Setting | Calculated Supply Temperature S4                         |                                                                                                                                                                    |
@@ -678,6 +673,7 @@ This binding currently supports following channels for F1x45 pump models:
 | 44911           | Number    | -32767      | 32767      | Setting | Brine pump  dT act.                                      |                                                                                                                                                                    |
 | 44912           | Switch    | 0           | 1          | Sensor  | Brine pump auto controlled                               |                                                                                                                                                                    |
 | 45001           | Number    | -32767      | 32767      | Sensor  | Alarm Number                                             |                                                                                                                                                                    |
+| 45171           | Number    | 0           | 255        | Setting | Alarm Reset                                              |                                                                                                                                                                    |
 | 47291           | Number    | 0           | 10000      | Sensor  | Floor drying timer                                       |                                                                                                                                                                    |
 | 47325           | Number    | 0           | 7          | Sensor  | Step controlled add. max. step                           |                                                                                                                                                                    |
 | 47004           | Number    | 0           | 15         | Sensor  | Heat curve S4                                            |                                                                                                                                                                    |
@@ -804,10 +800,10 @@ This binding currently supports following channels for F1x45 pump models:
 | 47370           | Switch    | 0           | 1          | Setting | Allow Additive Heating                                   |                                                                                                                                                                    |
 | 47371           | Switch    | 0           | 1          | Setting | Allow Heating                                            |                                                                                                                                                                    |
 | 47372           | Switch    | 0           | 1          | Setting | Allow Cooling                                            |                                                                                                                                                                    |
-| 47374           | Number    | -200        | 400        | Setting | Start Temperature Cooling                                |                                                                                                                                                       |
+| 47374           | Number    | -200        | 400        | Setting | Start Temperature Cooling                                |                                                                                                                                                                    |
 | 47375           | Number    | -200        | 400        | Setting | Stop Temperature Heating                                 |                                                                                                                                                                    |
 | 47376           | Number    | -250        | 400        | Setting | Stop Temperature Additive                                |                                                                                                                                                                    |
-| 47377           | Number    | 0           | 48         | Setting | Outdoor Filter Time                                      |                                                                                                                                             |
+| 47377           | Number    | 0           | 48         | Setting | Outdoor Filter Time                                      |                                                                                                                                                                    |
 | 47378           | Number    | 10          | 250        | Setting | Max diff. comp.                                          |                                                                                                                                                                    |
 | 47379           | Number    | 10          | 240        | Setting | Max diff. add.                                           |                                                                                                                                                                    |
 | 47380           | Switch    | 0           | 1          | Setting | Low brine out autoreset                                  |                                                                                                                                                                    |
@@ -844,8 +840,8 @@ This binding currently supports following channels for F1x45 pump models:
 | 47543           | Number    | 10          | 150        | Setting | Cooling DM diff                                          |                                                                                                                                                                    |
 | 47570           | String    | 0           | 255        | Setting | Operational mode                                         | 0=Auto, 1=Manual, 2=Add. heat only                                                                                                                                 |
 | 48043           | String    | 0           | 10         | Setting | Holiday - Activated                                      | 0=inactive, 10=active                                                                                                                                              |
-| 48046           | Number    | -10         | 10         | Setting | Heat Offset Holiday                                      | |
-| 48047           | String    | -1          | 2          | Setting | Hot water mode Holiday                                   | -1 = off, 0 = economy, 1 = normal, 2 = luxury                                                                                                                                              |
+| 48046           | Number    | -10         | 10         | Setting | Heat Offset Holiday                                      |                                                                                                                                                                    |
+| 48047           | String    | -1          | 2          | Setting | Hot water mode Holiday                                   | -1 = off, 0 = economy, 1 = normal, 2 = luxury                                                                                                                      |
 | 48053           | Number    | 0           | 100        | Setting | FLM 2 speed 4                                            |                                                                                                                                                                    |
 | 48054           | Number    | 0           | 100        | Setting | FLM 2 speed 3                                            |                                                                                                                                                                    |
 | 48055           | Number    | 0           | 100        | Setting | FLM 2 speed 2                                            |                                                                                                                                                                    |
@@ -922,7 +918,7 @@ This binding currently supports following channels for F1x45 pump models:
 This binding currently supports following channels for F1x55 pump models:
 
 | Channel Type ID | Item Type | Min         | Max        | Type    | Description                                              | Values                                                                                                                                                             |
-|-----------------|-----------|-------------|------------|---------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------- | --------- | ----------- | ---------- | ------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 32260           | Number    | 0           | 255        | Setting | NIBE Inverter 216-state                                  |                                                                                                                                                                    |
 | 40004           | Number    | -32767      | 32767      | Setting | BT1 Outdoor Temperature                                  |                                                                                                                                                                    |
 | 40005           | Number    | -32767      | 32767      | Setting | EP23-BT2 Supply temp S4                                  |                                                                                                                                                                    |
@@ -1900,11 +1896,11 @@ This binding currently supports following channels for F1x55 pump models:
 | 49381           | Switch    | 0           | 1          | Setting | External ERS 2 accessory bypass at heat                  |                                                                                                                                                                    |
 | 49430           | Number    | 0           | 255        | Setting | AUX ERS Fire Place Guard                                 |                                                                                                                                                                    |
 
-
 ### SMO40
 
 To keep this documentation light, all parameters are documented in the NIBE ModbusManager except of:
-| Channel Type ID | Item Type | Min         | Max        | Type    | Description                                              | Values                                                                                                                                                             |
-|-----------------|-----------|-------------|------------|---------|----------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 45780           | Number    | 0           | 120        | Setting | Silent Mode Frequency 1 (defined in the service-menu)    |                                                                                                                                                                    |
-| 49806           | Number    | 0           | 120        | Setting | Silent Mode Frequency 2 (defined in the service-menu)    |                                                                                                                                                                    |
+
+| Channel Type ID | Item Type | Min | Max | Type    | Description                                           | Values |
+| --------------- | --------- | --- | --- | ------- | ----------------------------------------------------- | ------ |
+| 45780           | Number    | 0   | 120 | Setting | Silent Mode Frequency 1 (defined in the service-menu) |        |
+| 49806           | Number    | 0   | 120 | Setting | Silent Mode Frequency 2 (defined in the service-menu) |        |

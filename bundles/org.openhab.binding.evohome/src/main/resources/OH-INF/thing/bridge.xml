@@ -8,6 +8,7 @@
 		<label>evohome Account</label>
 		<description>The evohome account is used to connect to your Total Connect Comfort (TCC) using your TCC username and
 			password.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter-group name="auth">
 				<label>Authentication</label>

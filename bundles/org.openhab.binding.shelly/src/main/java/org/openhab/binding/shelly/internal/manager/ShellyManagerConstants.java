@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.shelly.internal.manager;
+
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.CONFIG_DEVICEIP;
 
 import java.nio.charset.StandardCharsets;
 
@@ -39,7 +41,6 @@ public class ShellyManagerConstants {
     public static final String ACTION_SETCOIOT_PEER = "setcoiotpeer";
     public static final String ACTION_SETCOIOT_MCAST = "setcoiotmcast";
     public static final String ACTION_SETTZ = "settz";
-    public static final String ACTION_SETNTP = "setntp";
     public static final String ACTION_ENCLOUD = "encloud";
     public static final String ACTION_DISCLOUD = "discloud";
     public static final String ACTION_RES_STATS = "reset_stat";
@@ -49,6 +50,12 @@ public class ShellyManagerConstants {
     public static final String ACTION_DISWIFIREC = "diswifirec";
     public static final String ACTION_ENAPROAMING = "enaproaming";
     public static final String ACTION_DISAPROAMING = "disaproaming";
+    public static final String ACTION_ENRANGEEXT = "enrangeext";
+    public static final String ACTION_ENETHERNET = "enethernet";
+    public static final String ACTION_DISETHERNET = "disethernet";
+    public static final String ACTION_ENBLUETOOTH = "enbluetooth";
+    public static final String ACTION_DISBLUETOOTH = "disbluetooth";
+    public static final String ACTION_DISRANGEEXT = "disrangeext";
     public static final String ACTION_OTACHECK = "otacheck";
     public static final String ACTION_ENDEBUG = "endebug";
     public static final String ACTION_DISDEBUG = "disdebug";
@@ -56,7 +63,6 @@ public class ShellyManagerConstants {
     public static final String ACTION_GETDEB1 = "getdebug1";
     public static final String ACTION_NONE = "-";
 
-    public static final String TEMPLATE_PATH = "sniplets/";
     public static final String HEADER_HTML = "header.html";
     public static final String OVERVIEW_HTML = "overview.html";
     public static final String OVERVIEW_HEADER = "ov_header.html";
@@ -78,6 +84,7 @@ public class ShellyManagerConstants {
     public static final String ATTRIBUTE_MESSAGE = "message";
     public static final String ATTRIBUTE_TOTAL_DEV = "totalDevices";
     public static final String ATTRIBUTE_STATUS_ICON = "iconStatus";
+    public static final String ATTRIBUTE_DEVICEIP = CONFIG_DEVICEIP;
     public static final String ATTRIBUTE_DISPLAY_NAME = "displayName";
     public static final String ATTRIBUTE_DEV_STATUS = "deviceStatus";
     public static final String ATTRIBUTE_DEBUG_MODE = "debugMode";
@@ -143,7 +150,4 @@ public class ShellyManagerConstants {
     public static final String FWREPO_TEST_URL = "https://repo.shelly.cloud/files/firmware/";
     public static final String FWREPO_ARCH_URL = "http://archive.shelly-tools.de/archive.php";
     public static final String FWREPO_ARCFILE_URL = "http://archive.shelly-tools.de/version/";
-
-    public static final int CACHE_TIMEOUT_DEF_MIN = 60; // Default timeout for cache entries
-    public static final int CACHE_TIMEOUT_FW_MIN = 15; // Cache entries for the firmware list 15min
 }

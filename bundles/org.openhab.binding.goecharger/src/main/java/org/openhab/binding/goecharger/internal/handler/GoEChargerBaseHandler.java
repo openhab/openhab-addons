@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -55,15 +56,12 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GoEChargerBaseHandler.class);
 
-    protected @Nullable GoEChargerConfiguration config;
-
+    protected final Gson gson = new Gson();
+    protected final HttpClient httpClient;
+    protected GoEChargerConfiguration config = new GoEChargerConfiguration();
     protected List<String> allChannels = new ArrayList<>();
 
-    protected final Gson gson = new Gson();
-
     private @Nullable ScheduledFuture<?> refreshJob;
-
-    protected final HttpClient httpClient;
 
     public GoEChargerBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -87,21 +85,6 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
                     return UnDefType.UNDEF;
                 }
                 return new StringType(goeResponseBase.firmware);
-            case VOLTAGE_L1:
-                if (goeResponseBase.energy == null) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponseBase.energy[0], Units.VOLT);
-            case VOLTAGE_L2:
-                if (goeResponseBase.energy == null) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponseBase.energy[1], Units.VOLT);
-            case VOLTAGE_L3:
-                if (goeResponseBase.energy == null) {
-                    return UnDefType.UNDEF;
-                }
-                return new QuantityType<>(goeResponseBase.energy[2], Units.VOLT);
         }
         return UnDefType.UNDEF;
     }
@@ -120,13 +103,19 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        GoEChargerConfiguration config = this.config;
+
+        if (config.ip == null && (config.serial == null || config.token == null)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "either ip or token+serial must be configured");
+            return;
+        }
+
         startAutomaticRefresh();
-        logger.debug("Finished initializing!");
     }
 
-    @Nullable
-    protected GoEStatusResponseBaseDTO getGoEData()
-            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+    protected @Nullable GoEStatusResponseBaseDTO getGoEData() throws InterruptedException, TimeoutException,
+            ExecutionException, JsonSyntaxException, IllegalArgumentException {
         return null;
     }
 
@@ -134,29 +123,34 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
     }
 
     private void refresh() {
-        synchronized (this) {
-            // Request new GoE data
-            try {
+        // Request new GoE data and update channels/status
+        try {
+            synchronized (this) {
                 GoEStatusResponseBaseDTO goeResponse = getGoEData();
                 updateChannelsAndStatus(goeResponse, null);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                updateChannelsAndStatus(null, ie.getMessage());
-            } catch (TimeoutException | ExecutionException e) {
-                updateChannelsAndStatus(null, e.getMessage());
             }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            updateChannelsAndStatus(null, ie.getMessage());
+        } catch (TimeoutException | ExecutionException | JsonSyntaxException e) {
+            logger.warn("Error fetching GoE data: {}", e.getMessage(), e);
+            updateChannelsAndStatus(null, e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.debug("Invalid configuration getting data: {}", e.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
         }
     }
 
     private void startAutomaticRefresh() {
-        synchronized (this) {
-            if (refreshJob == null || refreshJob.isCancelled()) {
-                GoEChargerConfiguration config = getConfigAs(GoEChargerConfiguration.class);
-                int delay = config.refreshInterval.intValue();
-                logger.debug("Running refresh job with delay {} s", delay);
-                refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, delay, TimeUnit.SECONDS);
-            }
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            logger.debug("Refresh job is already running, not starting a new one.");
+            return;
         }
+
+        int delay = config.refreshInterval.intValue();
+        logger.debug("Running refresh job with delay {} s", delay);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, delay, TimeUnit.SECONDS);
     }
 
     @Override
@@ -164,7 +158,7 @@ public abstract class GoEChargerBaseHandler extends BaseThingHandler {
         logger.debug("Disposing the Go-eCharger handler.");
 
         final ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null && !refreshJob.isCancelled()) {
+        if (refreshJob != null) {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }

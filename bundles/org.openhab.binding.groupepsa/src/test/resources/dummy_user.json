@@ -1,0 +1,71 @@
+{
+    "_links": {
+      "self": {
+        "href": "ivuvawoj"
+      },
+      "trips": {
+        "href": "ugihub"
+      },
+      "lastTrip": {
+        "href": "culugakin"
+      },
+      "lastEcodriving": {
+        "href": "bagnu"
+      }
+    },
+    "id": "7000650216898560",
+    "email": "iwni@georure.kr",
+    "firstName": "Floyd",
+    "lastName": "Gilbert",
+    "createdAt": "2019-08-24T14:15:22Z",
+    "updatedAt": "2019-08-24T14:15:22Z",
+    "_embedded": {
+      "vehicles": [
+        {
+          "_links": {
+            "self": {
+              "href": "ovoha"
+            },
+            "lastTrip": {
+              "href": "lotudwe"
+            },
+            "lastPosition": {
+              "href": "bobediirewelojbu"
+            },
+            "trips": {
+              "href": "vacofgutv"
+            },
+            "collisions": {
+              "href": "koafeu"
+            },
+            "telemetry": {
+              "href": "ewahzonug"
+            },
+            "maintenance": {
+              "href": "dovuzibwudmicel"
+            },
+            "alerts": {
+              "href": "izbisbiwpejunun"
+            },
+            "events": {
+              "href": "tece"
+            }
+          },
+          "id": "4336155157856256",
+          "vin": "mycar_vin1",
+          "brand": "opel",
+          "engine": [
+            {
+              "class": "Thermic",
+              "energy": "GPL"
+            },
+            {
+              "class": "Electric"
+            }
+          ],
+          "createdAt": "2019-08-24T14:15:22Z",
+          "updatedAt": "2019-08-24T14:15:22Z"
+        }
+      ]
+    }
+  }

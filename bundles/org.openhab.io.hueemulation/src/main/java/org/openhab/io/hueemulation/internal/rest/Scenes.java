@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,10 @@ package org.openhab.io.hueemulation.internal.rest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -130,7 +128,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
         List<String> items = new ArrayList<>();
 
         for (Action a : scene.getActions()) {
-            if (!a.getTypeUID().equals("core.ItemCommandAction")) {
+            if (!"core.ItemCommandAction".equals(a.getTypeUID())) {
                 continue;
             }
             ItemCommandActionConfig config = a.getConfiguration().as(ItemCommandActionConfig.class);
@@ -179,7 +177,6 @@ public class Scenes implements RegistryChangeListener<Rule> {
         return Response.ok(cs.gson.toJson(cs.ds.scenes)).build();
     }
 
-    @SuppressWarnings({ "unused", "null" })
     @GET
     @Path("{username}/scenes/{id}")
     @Operation(summary = "Return a scene", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -194,7 +191,12 @@ public class Scenes implements RegistryChangeListener<Rule> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Scene does not exist!");
         }
         HueSceneWithLightstates s = new HueSceneWithLightstates(sceneEntry);
-        for (String itemID : s.lights) {
+        List<String> lights = s.lights;
+        if (lights == null) {
+            lights = List.of();
+        }
+
+        for (String itemID : lights) {
             Item item;
             try {
                 item = itemRegistry.getItem(itemID);
@@ -261,6 +263,10 @@ public class Scenes implements RegistryChangeListener<Rule> {
 
         final HueChangeSceneEntry changeRequest = cs.gson.fromJson(body, HueChangeSceneEntry.class);
 
+        if (changeRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
+
         Rule rule = ruleRegistry.remove(id);
         if (rule == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Scene does not exist!");
@@ -279,10 +285,8 @@ public class Scenes implements RegistryChangeListener<Rule> {
 
         List<String> lights = changeRequest.lights;
         if (changeRequest.storelightstate && lights != null) {
-            @SuppressWarnings("null")
-            @NonNullByDefault({})
             List<Action> actions = lights.stream().map(itemID -> itemRegistry.get(itemID)).filter(Objects::nonNull)
-                    .map(item -> actionFromState(item.getUID(), item.getState())).collect(Collectors.toList());
+                    .map(item -> actionFromState(item.getUID(), item.getState())).toList();
             builder.withActions(actions);
         }
         Map<String, HueStateChange> lightStates = changeRequest.lightstates;
@@ -317,7 +321,6 @@ public class Scenes implements RegistryChangeListener<Rule> {
         ));
     }
 
-    @SuppressWarnings({ "null" })
     @POST
     @Path("{username}/scenes")
     @Operation(summary = "Create a new scene", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -358,8 +361,7 @@ public class Scenes implements RegistryChangeListener<Rule> {
             if (groupItem == null) {
                 return NetworkUtils.singleError(cs.gson, uri, HueResponse.ARGUMENTS_INVALID, "Group does not exist!");
             }
-            List<Action> actions = Collections
-                    .singletonList(actionFromState(cs.mapItemUIDtoHueID(groupItem), groupItem.getState()));
+            List<Action> actions = List.of(actionFromState(cs.mapItemUIDtoHueID(groupItem), groupItem.getState()));
             builder.withActions(actions);
         }
 

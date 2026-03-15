@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.openhab.binding.keba.internal.KebaBindingConstants;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -71,7 +72,8 @@ public class KeContactTransceiver {
                 selector = Selector.open();
 
                 if (transceiverThread == null) {
-                    transceiverThread = new Thread(transceiverRunnable, "OH-binding-Keba-Transceiver");
+                    transceiverThread = new Thread(transceiverRunnable,
+                            "OH-binding-" + KebaBindingConstants.BINDING_ID + "-Transceiver");
                     transceiverThread.start();
                 }
 
@@ -405,7 +407,7 @@ public class KeContactTransceiver {
     private void establishConnection(KeContactHandler handler) {
         String ipAddress = handler.getIPAddress();
         if (handler.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.CONFIGURATION_ERROR
-                && !ipAddress.equals("")) {
+                && !"".equals(ipAddress)) {
             logger.debug("Establishing the connection to the KEBA KeContact '{}'", handler.getThing().getUID());
 
             DatagramChannel datagramChannel = null;

@@ -9,6 +9,7 @@
 	<bridge-type id="klf200">
 		<label>@text/bridge-type.velux.klf200.label</label>
 		<description>@text/bridge-type.velux.klf200.description</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="status" typeId="status"/>

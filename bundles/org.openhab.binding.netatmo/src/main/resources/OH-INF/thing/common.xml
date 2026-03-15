@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="netatmo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="monitoring">
+		<label>API Monitoring</label>
+		<channels>
+			<channel id="request-count" typeId="request-count"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="signal">
+		<label>Signal</label>
+		<channels>
+			<channel id="value" typeId="rssi"/>
+			<channel id="strength" typeId="system.signal-strength"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="battery">
+		<label>Battery</label>
+		<channels>
+			<channel id="value" typeId="system.battery-level"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="location">
+		<label>Location</label>
+		<channels>
+			<channel id="value" typeId="location"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="battery-extended">
+		<label>Battery</label>
+		<channels>
+			<channel id="value" typeId="system.battery-level"/>
+			<channel id="status" typeId="battery-status"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="timestamp">
+		<label>Timestamp</label>
+		<channels>
+			<channel id="last-seen" typeId="timestamp">
+				<label>Last Seen</label>
+				<description>Last time the module reported its presence.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="timestamp-extended">
+		<label>Timestamp</label>
+		<channels>
+			<channel id="measures" typeId="timestamp">
+				<label>Measures Timestamp</label>
+				<description>Moment of the last measures update.</description>
+			</channel>
+			<channel id="last-seen" typeId="timestamp-advanced">
+				<label>Last Seen</label>
+				<description>Last time the module reported its presence.</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

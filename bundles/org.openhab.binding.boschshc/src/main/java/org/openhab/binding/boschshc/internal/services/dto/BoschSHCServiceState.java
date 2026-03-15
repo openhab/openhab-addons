@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,26 +13,22 @@
 package org.openhab.binding.boschshc.internal.services.dto;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Base Bosch Smart Home Controller service state.
- * 
+ *
  * @author Christian Oeing - Initial contribution
  */
 public class BoschSHCServiceState {
 
-    /**
-     * gson instance to convert a class to json string and back.
-     */
-    private static final Gson gson = new Gson();
-
-    private static final Logger logger = LoggerFactory.getLogger(BoschSHCServiceState.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * State type. Initialized when instance is created.
@@ -40,9 +36,9 @@ public class BoschSHCServiceState {
     private @Nullable String stateType = null;
 
     @SerializedName("@type")
-    private final String type;
+    public final String type;
 
-    protected BoschSHCServiceState(String type) {
+    public BoschSHCServiceState(String type) {
         this.type = type;
 
         if (stateType == null) {
@@ -67,9 +63,12 @@ public class BoschSHCServiceState {
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(String json,
             Class<TState> stateClass) {
-        var state = gson.fromJson(json, stateClass);
+        var state = getUserDefinedStateOrNull(json, stateClass);
         if (state == null || !state.isValid()) {
-            return null;
+            state = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(json, stateClass);
+            if (state == null || !state.isValid()) {
+                return null;
+            }
         }
 
         return state;
@@ -77,11 +76,31 @@ public class BoschSHCServiceState {
 
     public static <TState extends BoschSHCServiceState> @Nullable TState fromJson(JsonElement json,
             Class<TState> stateClass) {
-        var state = gson.fromJson(json, stateClass);
+        var state = getUserDefinedStateOrNull(json, stateClass);
         if (state == null || !state.isValid()) {
-            return null;
+            state = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(json, stateClass);
+            if (state == null || !state.isValid()) {
+                return null;
+            }
         }
-
         return state;
+    }
+
+    private static <TState extends BoschSHCServiceState> TState getUserDefinedStateOrNull(JsonElement json,
+            Class<TState> stateClass) {
+        if (stateClass.isAssignableFrom(UserStateServiceState.class)) {
+            return BoschSHCServiceState.getUserDefinedStateOrNull(json.getAsString(), stateClass);
+        }
+        return null;
+    }
+
+    private static <TState extends BoschSHCServiceState> TState getUserDefinedStateOrNull(String json,
+            Class<TState> stateClass) {
+        if (stateClass.isAssignableFrom(UserStateServiceState.class)) {
+            var state = new UserStateServiceState();
+            state.setStateFromString(json);
+            return (TState) state;
+        }
+        return null;
     }
 }

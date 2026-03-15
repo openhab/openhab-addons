@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -93,7 +92,7 @@ public class FeedHandler extends BaseThingHandler {
         // It is not necessary to check if the URL is valid, this will be done in fetchFeedData() method
         String urlString = (String) configuration.get(URL);
         try {
-            url = new URL(urlString);
+            url = URI.create(urlString).toURL();
         } catch (MalformedURLException e) {
             logger.warn("Url '{}' is not valid: ", urlString, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
@@ -184,8 +183,7 @@ public class FeedHandler extends BaseThingHandler {
                     return;
                 } else {
                     Date date = latestEntry.getPublishedDate();
-                    ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-                    state = new DateTimeType(zdt);
+                    state = new DateTimeType(date.toInstant());
                 }
                 break;
             case CHANNEL_AUTHOR:

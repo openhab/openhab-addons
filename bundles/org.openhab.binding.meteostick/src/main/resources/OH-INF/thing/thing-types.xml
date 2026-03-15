@@ -7,6 +7,7 @@
 	<bridge-type id="meteostick_bridge">
 		<label>Meteostick USB Receiver</label>
 		<description>Meteostick USB Receiver</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="pressure" typeId="pressure"/>
 			<channel id="indoor-temperature" typeId="indoor-temperature"/>
@@ -41,6 +42,7 @@
 
 		<label>Davis Vantage Vue ISS</label>
 		<description>Davis Integrated Sensor Suite</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channels>
 			<channel id="outdoor-temperature" typeId="outdoor-temperature"/>
 			<channel id="humidity" typeId="humidity"/>
@@ -52,6 +54,7 @@
 			<channel id="rain-raw" typeId="rain-raw"/>
 			<channel id="rain-currenthour" typeId="rain-currenthour"/>
 			<channel id="rain-lasthour" typeId="rain-lasthour"/>
+			<channel id="rain-today" typeId="rain-today"/>
 			<channel id="solar-power" typeId="solar-power"/>
 			<channel id="signal-strength" typeId="system.signal-strength"/>
 			<channel id="low-battery" typeId="system.low-battery"/>
@@ -79,6 +82,13 @@
 				<default>0.254</default>
 				<unitLabel>mm</unitLabel>
 			</parameter>
+
+			<parameter name="deltaWindDirection" type="integer" required="false" min="0" max="359">
+				<label>Wind Vane Direction</label>
+				<description>Specifies the direction that the wind vane's North is actually pointed towards (0 to 359)</description>
+				<default>0</default>
+				<unitLabel>°</unitLabel>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -87,6 +97,10 @@
 		<label>Indoor Temperature</label>
 		<description>Current indoor temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -96,6 +110,10 @@
 		<label>Outdoor Temperature</label>
 		<description>Current outdoor temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -105,6 +123,10 @@
 		<label>Outdoor Humidity</label>
 		<description>Current humidity in percent</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%">
 		</state>
 	</channel-type>
@@ -114,6 +136,10 @@
 		<label>Pressure</label>
 		<description>Current atmospheric pressure</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -123,6 +149,10 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -132,6 +162,10 @@
 		<label>Wind Direction (Average)</label>
 		<description>Wind direction average over last two minutes</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%">
 		</state>
 	</channel-type>
@@ -141,6 +175,10 @@
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
@@ -150,6 +188,10 @@
 		<label>Wind Speed (Average)</label>
 		<description>Wind speed average over last two minutes</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
@@ -168,6 +210,10 @@
 		<label>Rainfall (Raw)</label>
 		<description>A counter between 0 and 255 in spoon-sized steps</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f">
 		</state>
 	</channel-type>
@@ -177,6 +223,10 @@
 		<label>Rainfall (previous Hour)</label>
 		<description>Rainfall in the previous hour</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -186,6 +236,23 @@
 		<label>Rainfall (60 Minutes)</label>
 		<description>Rainfall in the last 60 minutes</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="rain-today">
+		<item-type>Number:Length</item-type>
+		<label>Rainfall Today</label>
+		<description>Total rainfall today</description>
+		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -195,6 +262,10 @@
 		<label>Solar Power</label>
 		<description>Solar panel power percentage</description>
 		<category>Light</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %%">
 		</state>
 	</channel-type>

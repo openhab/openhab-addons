@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>HVAC controller</label>
-
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature"/>
 			<channel id="currentHumidity" typeId="currentHumidity"/>

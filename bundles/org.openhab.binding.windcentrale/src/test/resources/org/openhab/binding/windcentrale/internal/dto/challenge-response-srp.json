@@ -1,0 +1,10 @@
+{
+  "ChallengeName": "PASSWORD_VERIFIER",
+  "ChallengeParameters": {
+    "SALT": "salt123",
+    "SECRET_BLOCK": "secretBlock456",
+    "SRP_B": "srpB789",
+    "USERNAME": "username@acme.com",
+    "USER_ID_FOR_SRP": "userid@acme.com"
+  }
+}

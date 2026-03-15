@@ -1,52 +1,73 @@
 # tado° Binding
 
-The tado° binding integrates devices from [tado°](https://www.tado.com).
+The binding integrates tado° devices as shown in the [tado° official website](https://www.tado.com).
 
 It requires a fully functional tado° installation.
 You can then monitor and control all zone types (Heating, AC, Hot Water) as well as retrieve the HOME/AWAY status of mobile devices, and setting the HOME/AWAY status of your home.
 
+**WARNING**: This binding doesn't work together with new tado X radiator thermostats, as they are using a different API (see the [TadoX API Documentation on SwaggerHub](https://app.swaggerhub.com/apis/JPlenert/TadoX/0.8.0)).
+
 ## `home` Thing (the Bridge)
 
-The binding supports discovery, but a `home` thing type has to be configured first.
-It serves as bridge to the tado° cloud services.
+The `home` Thing serves as bridge to the tado° cloud services.
+The binding will automatically discover this Thing and place it in the Inbox.
+It must be authenticated before it will actually go online.
+Authenticatation is done online via the OAuth Device Code Grant Flow (RFC-8628) authentication process via the link provided at `http://[openhab-ip-address]:8080/tado`.
 
-Parameter | Required | Description
--|-|-
-`username` | yes | Username used to log in at [my.tado](https://my.tado.com)
-`password` | yes | Password of the username
+| Parameter     | Optional | Description                                                                   | Default                      |
+| ------------- | -------- | ----------------------------------------------------------------------------- | ---------------------------- |
+| `rfcWithUser` | yes      | Determines if the user name is included in the oAuth RFC-8628 authentication. |                              |
+| `tadoApiUrl`  | no       | Selects the URL to be used for API calls (it's possible to use a proxy)       | `https://my.tado.com/api/v2` |
+| `username`    | yes      | Selects the tado° account to be used if there is more than one account.       |                              |
+| `homeId`      | yes      | Selects the Home Id to use in case of more than one home per account.         |                              |
 
+The `rfcWithUser` and `username` settings are only needed if you have more than one tado° account.
+The `rfcWithUser` setting makes the binding use a different authentication token for each respective account `username`.
+
+The `homeId` is only needed if you have more than one home under a given tado° account.
+It forces the binding to read and write the data for the respective Home Id.
+If you do not have multiple homes, the binding always uses the first and (therefore) only Home Id.
 
 Example `tado.things`
 
-```
-Bridge tado:home:demo [ username="mail@example.com", password="secret" ]
+```java
+// normal example with one tado° account containing one home
+Bridge tado:home:demo
+..
+// special case if you have more than one tado° account, or more than one home in an account
+Bridge tado:home:demo [ rfcWithUser=true, username="mail@example.com", homeId=1234 ]
 ```
 
-Afterwards the discovery will show all zones and mobile devices associated with the user's home.
+Once the `home` Thing is online, the binding will discover all its respective zones and mobile devices, and place them in the Inbox.
 
 ### Channels
 
-Name | Type | Description | Read/Write
--|-|-|-
-`homePresence` | String | Current presence value of the tado home. `HOME` and `AWAY` can be set | RW
+| Name                | Type        | Description                                                                | Read/Write |
+| ------------------- | ----------- | -------------------------------------------------------------------------- | ---------- |
+| `homePresence`      | Switch      | Current presence value of the tado home; `ON` = HOME / `OFF` = AWAY        | RW         |
+| `geofencingEnabled` | Switch      | Selects if automatic geofencing is enabled or disabled                     | RW         |
+| `apiRateRemaining`  | Number      | Number of API calls remaining before the maximum is reached                | R          |
+| `apiRateLimit`      | Number      | Maximum API calls allowed per specified duration                           | R          |
+| `apiRateDuration`   | Number:Time | Duration in which the API count rises until maximum                        | R          |
+| `apiRateReset`      | Number:Time | Duration before the API count resets (only when the API limit is breached) | R          |
 
 ## `zone` Thing
 
-A *zone* is an area/room of your home.
+A _zone_ is an area/room of your home.
 You have defined them during installation.
 One zone relates to one page in the tado° mobile- or webapp.
 
-Parameter | Required | Description | Default
--|-|-|-
-`id` | yes | Zone Id | -
-`refreshInterval` | no | Refresh interval of state updates in seconds | 30
-`hvacChangeDebounce` | no | Duration in seconds to combine multiple HVAC changes into one | 5
+| Parameter            | Required | Description                                                   | Default |
+| -------------------- | -------- | ------------------------------------------------------------- | ------- |
+| `id`                 | yes      | Zone Id                                                       | -       |
+| `refreshInterval`    | no       | Refresh interval of state updates in seconds                  | 30      |
+| `hvacChangeDebounce` | no       | Duration in seconds to combine multiple HVAC changes into one | 5       |
 
 Zones can either be added through discovery or manually. Following up on the above example, a zone configuration could look like this:
 
 Example `tado.things`
 
-```
+```java
 Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
   zone heating [id=1]
   zone ac [id=2]
@@ -62,25 +83,28 @@ A zone is either of type `HEATING`, `AC` or `DHW` (domestic hot water).
 The availability of items as well as their allowed values depend on type and capabilities of the HVAC setup.
 If you are unsure, have a look at the tado° app and see if the functionality is available and what values are supported.
 
-Name | Type | Description | Read/Write | Zone type
--|-|-|-|-
-`currentTemperature` | Number:Temperature | Current inside temperature | R | `HEATING`, `AC`
-`humidity` | Number | Current relative inside humidity in percent | R | `HEATING`, `AC`
-`heatingPower` | Number | Amount of heating power currently present | R | `HEATING`
-`acPower` | Switch | Indicates if the Air-Conditioning is Off or On | R | `AC`
-`hvacMode` | String | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO` | RW | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more
-`targetTemperature` | Number:Temperature | Set point | RW | `HEATING`, `AC`, `DHW`
-`fanspeed`<sup>1)</sup> | String | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH` | RW | `AC`
-`fanLevel`<sup>1)</sup> | String | Fan speed, one of <sup>3)</sup> `AUTO`, `SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4`, `LEVEL5` | RW | `AC`
-`swing`<sup>2)</sup> | Switch | Swing on/off | RW | `AC`
-`verticalSwing`<sup>2)</sup> | String | Vertical swing state, one of <sup>3)</sup> `OFF`, `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO` | RW | `AC`
-`horizontalSwing`<sup>2)</sup> | String | Horizontal swing state, one of <sup>3)</sup> `OFF`, `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW | `AC`
-`overlayExpiry` | DateTime | End date and time of a timer | R | `HEATING`, `AC`, `DHW`
-`timerDuration` | Number | Timer duration in minutes | RW | `HEATING`, `AC`, `DHW`
-`operationMode` | String | Operation mode the zone is currently in. One of `SCHEDULE` (follow smart schedule), `MANUAL` (override until ended manually), `TIMER` (override for a given time), `UNTIL_CHANGE` (active until next smart schedule block or until AWAY mode becomes active) | RW | `HEATING`, `AC`, `DHW`
-`batteryLowAlarm` | Switch | A control device in the Zone has a low battery (if applicable) | R | Any Zone
-`openWindowDetected` | Switch | An open window has been detected in the Zone | R | Any Zone
-`light` | Switch | State (`ON`, `OFF`) of the control panel light (if applicable) | RW | `AC`
+| Name                           | Type                 | Description                                                                                                       | Read/Write | Zone type                                                           |
+|--------------------------------|----------------------|-------------------------------------------------------------------------------------------------------------------|------------|---------------------------------------------------------------------|
+| `currentTemperature`           | Number:Temperature   | Current inside temperature                                                                                        | R          | `HEATING`, `AC`                                                     |
+| `humidity`                     | Number:Dimensionless | Current relative inside humidity in percent                                                                       | R          | `HEATING`, `AC`                                                     |
+| `hvacMode`                     | String               | Active mode, one of `OFF`, `HEAT`, `COOL`, `DRY`, `FAN`, `AUTO`                                                   | RW         | `HEATING` and `DHW` support `OFF` and `HEAT`, `AC` can support more |
+| `targetTemperature`            | Number:Temperature   | Set point                                                                                                         | RW         | `HEATING`, `AC`, `DHW`                                              |
+| `operationMode`                | String               | Operation mode: `SCHEDULE`, `MANUAL`, `TIMER`, `UNTIL_CHANGE`                                                     | RW         | `HEATING`, `AC`, `DHW`                                              |
+| `overlayExpiry`                | DateTime             | End date and time of a timer                                                                                      | R          | `HEATING`, `AC`, `DHW`                                              |
+| `timerDuration`                | Number               | Timer duration in minutes                                                                                         | RW         | `HEATING`, `AC`, `DHW`                                              |
+| `heatingPower`                 | Number:Dimensionless | Amount of heating power currently present                                                                         | R          | `HEATING`                                                           |
+| `acPower`                      | Switch               | Air-Conditioning on/off state                                                                                     | R          | `AC`                                                                |
+| `fanspeed`<sup>1)</sup>        | String               | Fan speed, one of `AUTO`, `LOW`, `MIDDLE`, `HIGH`                                                                 | RW         | `AC`                                                                |
+| `fanLevel`<sup>1)</sup>        | String               | Fan speed, one of <sup>3)</sup> `AUTO`, `SILENT`, `LEVEL1`, `LEVEL2`, `LEVEL3`, `LEVEL4`, `LEVEL5`                | RW         | `AC`                                                                |
+| `swing`<sup>2)</sup>           | Switch               | Swing on/off                                                                                                      | RW         | `AC`                                                                |
+| `verticalSwing`<sup>2)</sup>   | String               | Vertical swing state, one of <sup>3)</sup> `OFF`, `ON`, `UP`, `MID_UP`, `MID`, `MID_DOWN`, `DOWN`, `AUTO`         | RW         | `AC`                                                                |
+| `horizontalSwing`<sup>2)</sup> | String               | Horizontal swing state, one of <sup>3)</sup> `OFF`, `ON`, `LEFT`, `MID_LEFT`, `MID`, `MID_RIGHT`, `RIGHT`, `AUTO` | RW         | `AC`                                                                |
+| `batteryLowAlarm`              | Switch               | A control device in the Zone has a low battery                                                                    | R          | Any Zone                                                            |
+| `openWindowDetected`           | Switch               | An open window has been detected in the Zone                                                                      | R          | `HEATING`, `AC`                                                     |
+| `openWindowRemainingTime`      | Number:Time          | The remaining Open Window heating/cooling Override time in the Zone                                               | R          | `HEATING`, `AC`                                                     |
+| `light`                        | Switch               | State (`ON`, `OFF`) of the control panel light                                                                    | RW         | `AC`                                                                |
+
+You will see some of the above mentioned Channels only if your tado° device supports the respective function.
 
 The `RW` items are used to either override the schedule or to return to it (if `hvacMode` is set to `SCHEDULE`).
 
@@ -119,42 +143,42 @@ If parts of the setting are missing, then the currently active zone setting is u
 
 If the termination condition is missing, the binding first checks if an override is active.
 If that is the case, the existing termination condition is used.
-An existing timer, for example, just keeps running. 
+An existing timer, for example, just keeps running.
 In case the zone is currently in smart-schedule mode and thus doesn't have a termination condition, then the default termination condition is used, as configured in the tado° app (settings -> select zone -> manual control on tado° device).
 
 ## `mobiledevice` Thing
 
-The `mobiledevice` thing represents a smart phone that is configured for tado°. It provides access to the geotracking functionality.
+The `mobiledevice` Thing represents a smart phone that is configured for tado°. It provides access to the geotracking functionality.
 
-Parameter | Required | Description | Default
--|-|-|-
-`id` | yes | Mobile Device Id | -
-`refreshInterval` | no | Refresh interval of state updates in seconds | 60
+| Parameter         | Required | Description                                  | Default |
+| ----------------- | -------- | -------------------------------------------- | ------- |
+| `id`              | yes      | Mobile Device Id                             | -       |
+| `refreshInterval` | no       | Refresh interval of state updates in seconds | 60      |
 
 Mobile devices are part of discovery, but can also be configured manually.
 It is again easiest to refer to discovery in order to find the `id`.
 
 Example `tado.things`:
 
-```
+```java
 Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
   mobiledevice phone [id=12345]
 }
 ```
 
-### Items
+### Channels
 
-Name | Type | Description | Read/Write
--|-|-|-
-`atHome` | Switch | ON if mobile device is in HOME mode, OFF if AWAY | R
+| Name     | Type   | Description                                      | Read/Write |
+| -------- | ------ | ------------------------------------------------ | ---------- |
+| `atHome` | Switch | ON if mobile device is in HOME mode, OFF if AWAY | R          |
 
-Group `OR` can be used to define an item for *'is any device at home'*.
+Group `OR` can be used to define an item for _'is any device at home'_.
 
 # Full Example
 
-## tado.things
+## `tado.things` Example
 
-```
+```java
 Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
   zone heating [id=1]
   zone ac [id=2]
@@ -164,10 +188,10 @@ Bridge tado:home:demo [ username="mail@example.com", password="secret" ] {
 }
 ```
 
-## tado.items
+## `tado.items` Example
 
-```
-Switch             TADO_PRESENCE_home             "Tado Presence: [MAP(presence.map):%s]"               { channel="tado:home:demo:homePresence" }
+```java
+Switch             TADO_PRESENCE_home         "Tado Presence: [MAP(presence.map):%s]"               { channel="tado:home:demo:homePresence" }
 Number:Temperature HEAT_inside_temperature    "Inside Temperature"      { channel="tado:zone:demo:heating:currentTemperature" }
 Number             HEAT_humidity              "Humidity"                { channel="tado:zone:demo:heating:humidity" }
 Number             HEAT_heating_power         "Heating Power"           { channel="tado:zone:demo:heating:heatingPower" }
@@ -199,9 +223,9 @@ Switch             Battery_Low_Alarm          "Battery Low Alarm"       { channe
 Switch             Phone_atHome               "Phone location [MAP(presence.map):%s]" { channel="tado:mobiledevice:demo:phone:atHome" }
 ```
 
-## tado.sitemap
+## `tado.sitemap` Example
 
-```
+```perl
 sitemap tado label="Tado"
 {
     Frame label="Status" {
@@ -251,9 +275,9 @@ sitemap tado label="Tado"
 }
 ```
 
-## presence.map
+## `presence.map` Example
 
-```
+```text
 ON=at home
 OFF=away
 NULL=lost

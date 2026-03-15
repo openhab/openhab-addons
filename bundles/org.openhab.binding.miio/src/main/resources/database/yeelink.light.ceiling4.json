@@ -298,7 +298,7 @@
 				"property": "nl_br",
 				"friendlyName": "Nightlight Brightness",
 				"channel": "nightlightBrightness",
-				"type": "Number",
+				"type": "Dimmer",
 				"refresh": true,
 				"actions": [],
 				"category": "light",

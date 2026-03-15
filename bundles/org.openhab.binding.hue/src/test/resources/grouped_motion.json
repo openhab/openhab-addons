@@ -1,0 +1,21 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "aab07fb5-b0c1-400b-828f-a9e0a05394f9",
+			"id_v1": "/sensors/5",
+			"enabled": true,
+			"motion": {
+				"motion_report": {
+					"changed": "2024-12-13T11:01:25.156Z",
+					"motion": true
+				}
+			},
+			"owner": {
+				"rid": "bb9b4bb4-b0c8-4b6a-8dc0-85add8f77964",
+				"rtype": "bridge_home"
+			},
+			"type": "grouped_motion"
+		}
+	]
+}

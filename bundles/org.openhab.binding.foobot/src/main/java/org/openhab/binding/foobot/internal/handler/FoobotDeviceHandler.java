@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,6 @@ package org.openhab.binding.foobot.internal.handler;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Map;
 
 import javax.measure.Unit;
@@ -26,9 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
 import org.openhab.binding.foobot.internal.FoobotApiException;
 import org.openhab.binding.foobot.internal.FoobotBindingConstants;
-import org.openhab.binding.foobot.internal.json.FoobotDevice;
-import org.openhab.binding.foobot.internal.json.FoobotJsonData;
-import org.openhab.binding.foobot.internal.json.FoobotSensor;
+import org.openhab.binding.foobot.internal.dto.FoobotDevice;
+import org.openhab.binding.foobot.internal.dto.FoobotJsonData;
+import org.openhab.binding.foobot.internal.dto.FoobotSensor;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -201,8 +199,7 @@ public class FoobotDeviceHandler extends BaseThingHandler {
         } else {
             final Unit<?> stateUnit = sensor.getUnit(unit);
             if (sensor == FoobotSensor.TIME) {
-                return new DateTimeType(
-                        ZonedDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(value)), ZoneId.systemDefault()));
+                return new DateTimeType(Instant.ofEpochSecond(Long.parseLong(value)));
             } else if (stateUnit == null) {
                 return new DecimalType(value);
             } else {

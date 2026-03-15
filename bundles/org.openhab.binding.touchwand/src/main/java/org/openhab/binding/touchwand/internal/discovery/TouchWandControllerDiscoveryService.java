@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     }
 
     private void addDeviceDiscoveryResult(String label, String ip) {
-        String id = ip.replaceAll("\\.", "");
+        String id = ip.replace(".", "");
         ThingUID thingUID = new ThingUID(THING_TYPE_BRIDGE, id);
         Map<String, Object> properties = new HashMap<>();
         properties.put("label", label);
@@ -122,6 +122,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
         private DatagramSocket mySocket;
 
         public ReceiverThread(DatagramSocket socket) {
+            super(String.format("OH-binding-%s-%s", TouchWandBindingConstants.BINDING_ID, "Receiver"));
             mySocket = socket;
         }
 
@@ -138,7 +139,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
                     String sentence = new String(dgram.getData(), 0, dgram.getLength(), StandardCharsets.US_ASCII);
                     JsonObject bridge = JsonParser.parseString(sentence).getAsJsonObject();//
                     String name = bridge.get("name").getAsString();
-                    addDeviceDiscoveryResult(name, address.getHostAddress().toString());
+                    addDeviceDiscoveryResult(name, address.getHostAddress());
                     logger.debug("Received Datagram from {}:{} on Port {} message {}", address.getHostAddress(),
                             dgram.getPort(), mySocket.getLocalPort(), sentence);
                 }

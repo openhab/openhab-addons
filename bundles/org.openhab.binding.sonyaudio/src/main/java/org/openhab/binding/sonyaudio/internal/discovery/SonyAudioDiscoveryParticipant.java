@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.sonyaudio.internal.discovery;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +72,8 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 Map<String, Object> properties = getDescription(host, port, path);
                 properties.put(SonyAudioBindingConstants.HOST_PARAMETER, descriptorURL.getHost());
                 result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties).build();
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
+                logger.debug("Failed to retrieve description for device {}: {}", thingUid, e.getMessage());
                 return null;
             }
         }
@@ -118,9 +121,10 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
         return thingTypeUID;
     }
 
-    private Map<String, Object> getDescription(String host, int port, String path) throws IOException {
+    private Map<String, Object> getDescription(String host, int port, String path)
+            throws IOException, URISyntaxException {
         Map<String, Object> properties = new HashMap<>(2, 1);
-        URL url = new URL("http", host, port, path);
+        URL url = new URI("http", null, host, port, path, null, null).toURL();
         logger.debug("URL: {}", url.toString());
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             String s;
@@ -128,19 +132,19 @@ public class SonyAudioDiscoveryParticipant implements UpnpDiscoveryParticipant {
             while ((s = bufferedReader.readLine()) != null) {
                 builder.append(s);
             }
-            Pattern ScalarWebAPImatch = Pattern.compile("<av:X_ScalarWebAPI_BaseURL>(.*)</av:X_ScalarWebAPI_BaseURL>");
+            Pattern scalarWebAPImatch = Pattern.compile("<av:X_ScalarWebAPI_BaseURL>(.*)</av:X_ScalarWebAPI_BaseURL>");
             Pattern baseURLmatch = Pattern.compile("http://(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d+)([^<]*)");
 
-            Matcher tagmatch = ScalarWebAPImatch.matcher(builder.toString());
+            Matcher tagmatch = scalarWebAPImatch.matcher(builder.toString());
             if (tagmatch.find()) {
                 Matcher matcher = baseURLmatch.matcher(tagmatch.group());
                 matcher.find();
                 // String scalar_host = matcher.group(0);
-                int scalar_port = Integer.parseInt(matcher.group(2));
-                String scalar_path = matcher.group(3);
+                int scalarPort = Integer.parseInt(matcher.group(2));
+                String scalarPath = matcher.group(3);
 
-                properties.put(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER, scalar_port);
-                properties.put(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER, scalar_path);
+                properties.put(SonyAudioBindingConstants.SCALAR_PORT_PARAMETER, scalarPort);
+                properties.put(SonyAudioBindingConstants.SCALAR_PATH_PARAMETER, scalarPath);
             }
             return properties;
         }

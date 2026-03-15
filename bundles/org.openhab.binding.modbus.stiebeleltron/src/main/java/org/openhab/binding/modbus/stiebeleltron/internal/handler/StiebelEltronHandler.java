@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBl
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInfromationBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInformationBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
@@ -59,10 +59,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Modbus.StiebelEltronHandler} is responsible for handling commands,
+ * The {@link StiebelEltronHandler} is responsible for handling commands,
  * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Fixed Eclipse warning
  */
 @NonNullByDefault
 public class StiebelEltronHandler extends BaseThingHandler {
@@ -90,7 +91,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-
             logger.debug("Setting up regular polling");
 
             ModbusCommunicationInterface mycomms = StiebelEltronHandler.this.comms;
@@ -135,7 +135,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
+    private final SystemInformationBlockParser systemInformationBlockParser = new SystemInformationBlockParser();
     /**
      * Parser used to convert incoming raw messages into system state blocks
      */
@@ -178,7 +178,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
-     * @param modbusManager the modbus manager
      */
     public StiebelEltronHandler(Thing thing) {
         super(thing);
@@ -220,16 +219,15 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *         the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType) {
-            QuantityType<?> c = ((QuantityType<?>) command).toUnit(CELSIUS);
+        if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
             } else {
                 throw new StiebelEltronException("Unsupported unit");
             }
         }
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
+        if (command instanceof DecimalType c) {
             return (short) (c.doubleValue() * 10);
         }
         throw new StiebelEltronException("Unsupported command type");
@@ -240,8 +238,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * @return short the value of the command as short
      */
     private short getInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof DecimalType) {
-            DecimalType c = (DecimalType) command;
+        if (command instanceof DecimalType c) {
             return c.shortValue();
         }
         throw new StiebelEltronException("Unsupported command type");
@@ -302,10 +299,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
                     return;
                 }
-                String cls = error.getClass().getName();
-                String msg = error.getMessage();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Error with: %s: %s", cls, msg));
+                String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]",
+                        error.getClass().getName(), error.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             }
         }
     }
@@ -327,14 +323,13 @@ public class StiebelEltronHandler extends BaseThingHandler {
      * Start the periodic polling1
      */
     private void startUp() {
-
         if (comms != null) {
             return;
         }
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
             return;
         }
 
@@ -347,10 +342,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         }
 
         if (comms == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
+                    String.format("@text/offline.bridge-not-initialized [ \"%s\" ]", label));
             return;
         }
 
@@ -479,9 +473,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
             return null;
         }
 
-        if (handler instanceof ModbusEndpointThingHandler) {
-            ModbusEndpointThingHandler slaveEndpoint = (ModbusEndpointThingHandler) handler;
-            return slaveEndpoint;
+        if (handler instanceof ModbusEndpointThingHandler thingHandler) {
+            return thingHandler;
         } else {
             throw new IllegalStateException("Unexpected bridge handler: " + handler.toString());
         }
@@ -529,9 +522,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_DEWPOINT), getScaled(block.dewpointFek, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_OUTDOOR_TEMPERATURE),
                 getScaled(block.temperatureOutdoor, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHk1, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHc1, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE_SETPOINT),
-                getScaled(block.temperatureHk1SetPoint, CELSIUS));
+                getScaled(block.temperatureHc1SetPoint, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_SUPPLY_TEMPERATURE),
                 getScaled(block.temperatureSupply, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_RETURN_TEMPERATURE),
@@ -652,10 +645,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = failure.getCause().getMessage();
-        String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with read: %s: %s", cls, msg));
+        String statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]",
+                failure.getCause().getMessage(), failure.getCause().getClass().getName());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**
@@ -666,10 +658,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = failure.getCause().getMessage();
-        String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with write: %s: %s", cls, msg));
+        String statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]",
+                failure.getCause().getMessage(), failure.getCause().getClass().getName());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**

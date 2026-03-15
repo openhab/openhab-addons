@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Z-Wave Heating System</label>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 		<channels>
 			<channel id="current_temperature" typeId="current_temperature"></channel>
 			<channel id="current_state" typeId="current_state"></channel>

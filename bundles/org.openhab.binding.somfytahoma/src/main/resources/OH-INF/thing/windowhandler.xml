@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Window Handle</label>
+		<semantic-equipment-tag>Window</semantic-equipment-tag>
 		<channels>
 			<channel id="handle_state" typeId="handle_state"></channel>
 		</channels>

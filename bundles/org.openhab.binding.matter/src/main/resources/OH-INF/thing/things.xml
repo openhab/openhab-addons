@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="matter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="controller">
+		<label>Matter Controller</label>
+		<description>The Matter controller connects to Matter nodes and devices</description>
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>Node ID</label>
+				<description>The Matter Node ID / Number of the Controller bridge. Do not change this once devices have been added.</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="node">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="controller"/>
+		</supported-bridge-type-refs>
+		<label>Matter Node</label>
+		<description>The Matter node describes a logical node in a Matter Fabric</description>
+		<representation-property>nodeId</representation-property>
+		<config-description>
+			<parameter name="nodeId" type="text" required="true">
+				<label>Node Id</label>
+				<description>The Matter Node Id</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" required="false" min="0" unit="s">
+				<label>Poll Interval (seconds)</label>
+				<description>The interval to poll in seconds for diagnostic cluster attributes. Set to 0 to disable polling.</description>
+				<advanced>true</advanced>
+				<default>1800</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="endpoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="node"/>
+		</supported-bridge-type-refs>
+		<label>Matter Endpoint</label>
+		<description>A Matter Endpoint represented as a standalone Thing</description>
+		<representation-property>endpointId</representation-property>
+		<config-description>
+			<parameter name="endpointId" type="integer" required="true">
+				<label>Endpoint Id</label>
+				<description>The Matter Endpoint Id</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" required="false" min="0" unit="s">
+				<label>Poll Interval (seconds)</label>
+				<description>The interval to poll in seconds for diagnostic cluster attributes. Set to 0 to disable polling.</description>
+				<advanced>true</advanced>
+				<default>1800</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -260,7 +260,7 @@ public class MiIoAsyncCommunication {
         private final String deviceId;
 
         public MessageSenderThread(String deviceId) {
-            super("OH-binding-miio-MessageSenderThread-" + deviceId);
+            super(String.format("OH-binding-%s-%s-%s", MiIoBindingConstants.BINDING_ID, "Sender", deviceId));
             setDaemon(true);
             this.deviceId = deviceId;
         }
@@ -415,9 +415,8 @@ public class MiIoAsyncCommunication {
                 sendPacket.setData(new byte[MSG_BUFFER_SIZE]);
             }
             clientSocket.receive(receivePacket);
-            byte[] response = Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
+            return Arrays.copyOfRange(receivePacket.getData(), receivePacket.getOffset(),
                     receivePacket.getOffset() + receivePacket.getLength());
-            return response;
         } catch (SocketTimeoutException e) {
             logger.debug("Communication error for Mi device at {}: {}", ip, e.getMessage());
             needPing = true;

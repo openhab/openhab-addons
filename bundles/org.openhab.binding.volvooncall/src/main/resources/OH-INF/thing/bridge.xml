@@ -8,6 +8,7 @@
 	<bridge-type id="vocapi">
 		<label>VolvoOnCall API</label>
 		<description>This bridge represents the gateway to Volvo On Call API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:volvooncall:vocapi"/>
 	</bridge-type>
 

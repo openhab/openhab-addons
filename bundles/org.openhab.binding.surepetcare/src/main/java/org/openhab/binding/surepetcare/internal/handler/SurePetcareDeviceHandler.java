@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,8 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-import javax.measure.quantity.Mass;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.surepetcare.internal.SurePetcareAPIHelper;
 import org.openhab.binding.surepetcare.internal.SurePetcareApiException;
@@ -33,10 +31,12 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,11 +72,11 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
         } else {
             switch (channelUID.getId()) {
                 case DEVICE_CHANNEL_LOCKING_MODE:
-                    if (command instanceof StringType) {
+                    if (command instanceof StringType commandAsStringType) {
                         synchronized (petcareAPI) {
                             SurePetcareDevice device = petcareAPI.getDevice(thing.getUID().getId());
                             if (device != null) {
-                                String newLockingModeIdStr = ((StringType) command).toString();
+                                String newLockingModeIdStr = commandAsStringType.toString();
                                 try {
                                     Integer newLockingModeId = Integer.valueOf(newLockingModeIdStr);
                                     petcareAPI.setDeviceLockingMode(device, newLockingModeId);
@@ -135,13 +135,27 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                 updateState(DEVICE_CHANNEL_PAIRING_MODE, new StringType(device.status.pairingModeId.toString()));
             } else {
                 float batVol = device.status.battery;
-                updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
-                updateState(DEVICE_CHANNEL_BATTERY_LEVEL, new DecimalType(Math.min(
-                        (batVol - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f,
-                        100.0f)));
+                updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new QuantityType<>(batVol, Units.VOLT));
+                updateState(DEVICE_CHANNEL_BATTERY_LEVEL,
+                        new QuantityType<>(
+                                Math.min((batVol - BATTERY_EMPTY_VOLTAGE)
+                                        / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f, 100.0f),
+                                Units.PERCENT));
                 updateState(DEVICE_CHANNEL_LOW_BATTERY, OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
-                updateState(DEVICE_CHANNEL_DEVICE_RSSI, new DecimalType(device.status.signal.deviceRssi));
-                updateState(DEVICE_CHANNEL_HUB_RSSI, new DecimalType(device.status.signal.hubRssi));
+
+                if (device.status.signal != null && device.status.signal.deviceRssi != null) {
+                    updateState(DEVICE_CHANNEL_DEVICE_RSSI,
+                            new QuantityType<>(device.status.signal.deviceRssi, Units.DECIBEL_MILLIWATTS));
+                } else {
+                    updateState(DEVICE_CHANNEL_DEVICE_RSSI, UnDefType.UNDEF);
+                }
+
+                if (device.status.signal != null && device.status.signal.hubRssi != null) {
+                    updateState(DEVICE_CHANNEL_HUB_RSSI,
+                            new QuantityType<>(device.status.signal.hubRssi, Units.DECIBEL_MILLIWATTS));
+                } else {
+                    updateState(DEVICE_CHANNEL_HUB_RSSI, UnDefType.UNDEF);
+                }
 
                 if (thing.getThingTypeUID().equals(THING_TYPE_FLAP_DEVICE)) {
                     updateThingCurfews(device);
@@ -154,18 +168,18 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                         if (bowlId == BOWL_ID_ONE_BOWL_USED) {
                             updateState(DEVICE_CHANNEL_BOWLS_FOOD,
                                     new StringType(bowlSettings.get(0).foodId.toString()));
-                            updateState(DEVICE_CHANNEL_BOWLS_TARGET, new QuantityType<Mass>(
+                            updateState(DEVICE_CHANNEL_BOWLS_TARGET, new QuantityType<>(
                                     device.control.bowls.bowlSettings.get(0).targetId, SIUnits.GRAM));
                         } else if (bowlId == BOWL_ID_TWO_BOWLS_USED) {
                             updateState(DEVICE_CHANNEL_BOWLS_FOOD_LEFT,
                                     new StringType(bowlSettings.get(0).foodId.toString()));
                             updateState(DEVICE_CHANNEL_BOWLS_TARGET_LEFT,
-                                    new QuantityType<Mass>(bowlSettings.get(0).targetId, SIUnits.GRAM));
+                                    new QuantityType<>(bowlSettings.get(0).targetId, SIUnits.GRAM));
                             if (numBowls > 1) {
                                 updateState(DEVICE_CHANNEL_BOWLS_FOOD_RIGHT,
                                         new StringType(bowlSettings.get(1).foodId.toString()));
                                 updateState(DEVICE_CHANNEL_BOWLS_TARGET_RIGHT,
-                                        new QuantityType<Mass>(bowlSettings.get(1).targetId, SIUnits.GRAM));
+                                        new QuantityType<>(bowlSettings.get(1).targetId, SIUnits.GRAM));
                             }
                         }
                     }
@@ -174,6 +188,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                             new StringType(device.control.lid.closeDelayId.toString()));
                     updateState(DEVICE_CHANNEL_BOWLS_TRAINING_MODE,
                             new StringType(device.control.trainingModeId.toString()));
+                } else if (thing.getThingTypeUID().equals(THING_TYPE_WATER_DEVICE)) {
+                    // Currently no specific channels for water stations are supported by this binding
                 } else {
                     logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
                 }
@@ -212,7 +228,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                                     logger.debug("Enabling curfew slot: {}", slot);
                                     requiresUpdate = true;
                                 }
-                                curfew.enabled = (command.equals(OnOffType.ON));
+                                curfew.enabled = command.equals(OnOffType.ON);
                             }
                             break;
                         case DEVICE_CHANNEL_CURFEW_LOCK_TIME:

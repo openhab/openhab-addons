@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
@@ -21,8 +22,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,7 +47,7 @@ import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
+import org.openhab.binding.shelly.internal.api.ShellyHttpClient;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
@@ -85,8 +88,8 @@ public class ShellyManagerPage {
     protected final Map<String, String> htmlTemplates = new HashMap<>();
     protected final Gson gson = new Gson();
 
-    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo = new ShellyManagerCache<>(15 * 60 * 1000);
-    protected final ShellyManagerCache<String, FwArchList> firmwareArch = new ShellyManagerCache<>(15 * 60 * 1000);
+    protected final ShellyManagerCache<String, FwRepoEntry> firmwareRepo;
+    protected final ShellyManagerCache<String, FwArchList> firmwareArch;
 
     public static class ShellyMgrResponse {
         public @Nullable Object data = "";
@@ -144,13 +147,16 @@ public class ShellyManagerPage {
     }
 
     public ShellyManagerPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
         this.configurationAdmin = configurationAdmin;
         this.resources = translationProvider;
         this.handlerFactory = handlerFactory;
         this.httpClient = httpClient;
         this.localIp = localIp;
         this.localPort = localPort;
+        this.firmwareRepo = firmwareRepo;
+        this.firmwareArch = firmwareArch;
     }
 
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
@@ -163,13 +169,13 @@ public class ShellyManagerPage {
         }
 
         String html = "";
-        String file = TEMPLATE_PATH + template;
+        String file = BUNDLE_RESOURCE_SNIPLETS + "/" + template;
         logger.debug("Read HTML from {}", file);
         ClassLoader cl = ShellyManagerInterface.class.getClassLoader();
         if (cl != null) {
             try (InputStream inputStream = cl.getResourceAsStream(file)) {
                 if (inputStream != null) {
-                    html = new BufferedReader(new InputStreamReader(inputStream)).lines()
+                    html = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
                             .collect(Collectors.joining("\n"));
                     htmlTemplates.put(template, html);
                 }
@@ -211,11 +217,11 @@ public class ShellyManagerPage {
         ShellyDeviceStats stats = th.getStats();
         properties.putAll(stats.asProperties());
 
-        for (Map.Entry<String, Object> p : thing.getConfiguration().getProperties().entrySet()) {
+        for (Map.Entry<String, @Nullable Object> p : thing.getConfiguration().getProperties().entrySet()) {
             String key = p.getKey();
-            if (p.getValue() != null) {
-                String value = p.getValue().toString();
-                properties.put(key, value);
+            Object o = p.getValue();
+            if (o != null) {
+                properties.put(key, o.toString());
             }
         }
 
@@ -253,13 +259,17 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_APR_TRESHOLD,
                 profile.settings.apRoaming != null ? getOption(profile.settings.apRoaming.threshold) : "n/a");
         properties.put(ATTRIBUTE_PWD_PROTECT,
-                profile.auth ? "enabled, user=" + getString(profile.settings.login.username) : "disabled");
+                getBool(profile.device.auth) ? "enabled, user=" + getString(profile.settings.login.username)
+                        : "disabled");
         String tz = getString(profile.settings.timezone);
         properties.put(ATTRIBUTE_TIMEZONE,
                 (tz.isEmpty() ? "n/a" : tz) + ", auto-detect: " + getBool(profile.settings.tzautodetect));
         properties.put(ATTRIBUTE_ACTIONS_SKIPPED,
                 profile.status.astats != null ? String.valueOf(profile.status.astats.skipped) : "n/a");
         properties.put(ATTRIBUTE_MAX_ITEMP, stats.maxInternalTemp > 0 ? stats.maxInternalTemp + " °C" : "n/a");
+        if (stats.maxInternalTemp == 0) {
+            properties.replace(CHANNEL_DEVST_ITEMP, "n/a");
+        }
 
         // Shelly H&T: When external power is connected the battery level is not valid
         if (!profile.isHT || (getInteger(profile.settings.externalPower) == 0)) {
@@ -324,7 +334,7 @@ public class ShellyManagerPage {
             default:
                 statusIcon = ts.toString();
         }
-        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase());
+        properties.put(ATTRIBUTE_STATUS_ICON, statusIcon.toLowerCase(Locale.ROOT));
 
         return properties;
     }
@@ -334,15 +344,13 @@ public class ShellyManagerPage {
         State state = thingHandler.getChannelValue(group, attribute);
         String value = "";
         if (state != UnDefType.NULL) {
-            if (state instanceof DateTimeType) {
-                DateTimeType dt = (DateTimeType) state;
+            if (state instanceof DateTimeType dateTimeState) {
                 switch (attribute) {
                     case ATTRIBUTE_LAST_ALARM:
-                        value = dt.format(null).replace('T', ' ').replace('-', '/');
+                        value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                         break;
                     default:
-                        value = getTimestamp(dt);
-                        value = dt.format(null).replace('T', ' ').replace('-', '/');
+                        value = dateTimeState.format(null).replace('T', ' ').replace('-', '/');
                 }
             } else {
                 value = state.toString();
@@ -390,10 +398,11 @@ public class ShellyManagerPage {
 
     protected FwRepoEntry getFirmwareRepoEntry(String deviceType, String mode) throws ShellyApiException {
         logger.debug("ShellyManager: Load firmware list from {}", FWREPO_PROD_URL);
-        FwRepoEntry fw = null;
-        if (firmwareRepo.containsKey(deviceType)) {
-            fw = firmwareRepo.get(deviceType);
+        FwRepoEntry fw = firmwareRepo.get(deviceType);
+        if (fw != null) {
+            return fw;
         }
+
         String json = httpGet(FWREPO_PROD_URL); // returns a strange JSON format so we are parsing this manually
         String entry = substringBetween(json, "\"" + deviceType + "\":{", "}");
         if (!entry.isEmpty()) {
@@ -410,7 +419,7 @@ public class ShellyManagerPage {
             fw = fromJson(gson, entry, FwRepoEntry.class);
 
             // Special case: RGW2 has a split firmware - xxx-white.zip vs. xxx-color.zip
-            if (!mode.isEmpty() && deviceType.equalsIgnoreCase(SHELLYDT_RGBW2)) {
+            if (SHELLYDT_RGBW2.equalsIgnoreCase(deviceType) && !mode.isEmpty()) {
                 // check for spilt firmware
                 String url = substringBefore(fw.url, ".zip") + "-" + mode + ".zip";
                 if (testUrl(url)) {
@@ -431,14 +440,10 @@ public class ShellyManagerPage {
     }
 
     protected FwArchList getFirmwareArchiveList(String deviceType) throws ShellyApiException {
-        FwArchList list;
         String json = "";
-
-        if (firmwareArch.contains(deviceType)) {
-            list = firmwareArch.get(deviceType); // return from cache
-            if (list != null) {
-                return list;
-            }
+        FwArchList list = firmwareArch.get(deviceType); // return from cache
+        if (list != null) {
+            return list;
         }
 
         try {
@@ -453,10 +458,10 @@ public class ShellyManagerPage {
             // no files available for this device type
             logger.info("{}: No firmware files found for device type {}", LOG_PREFIX, deviceType);
             list = new FwArchList();
-            list.versions = new ArrayList<FwArchEntry>();
+            list.versions = new ArrayList<>();
         } else {
             // Create selection list
-            json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it an named array
+            json = "{" + json.replace("[{", "\"versions\":[{") + "}"; // make it a named array
             list = fromJson(gson, json, FwArchList.class);
         }
 
@@ -486,15 +491,13 @@ public class ShellyManagerPage {
     }
 
     protected String httpRequest(HttpMethod method, String url) throws ShellyApiException {
-        ShellyApiResult apiResult = new ShellyApiResult();
-
         try {
             Request request = httpClient.newRequest(url).method(method).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
-            request.header(HttpHeader.ACCEPT, ShellyHttpApi.CONTENT_TYPE_JSON);
+            request.header(HttpHeader.ACCEPT, ShellyHttpClient.CONTENT_TYPE_JSON);
             logger.trace("{}: HTTP {} {}", LOG_PREFIX, method, url);
             ContentResponse contentResponse = request.send();
-            apiResult = new ShellyApiResult(contentResponse);
+            ShellyApiResult apiResult = ShellyApiResult.builder(contentResponse).build();
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("{}: HTTP Response {}: {}", LOG_PREFIX, contentResponse.getStatus(), response);
 
@@ -534,7 +537,7 @@ public class ShellyManagerPage {
     }
 
     protected static String getDeviceIp(Map<String, String> properties) {
-        return getString(properties.get("deviceIp"));
+        return getString(properties.get(ATTRIBUTE_DEVICEIP));
     }
 
     protected static String getDeviceName(Map<String, String> properties) {
@@ -555,10 +558,19 @@ public class ShellyManagerPage {
         return option.toString();
     }
 
-    protected static String getDisplayName(Map<String, String> properties) {
+    protected static String getDisplayName(Map<String, String> properties, Thing thing) {
         String name = getString(properties.get(PROPERTY_DEV_NAME));
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_SERVICE_NAME));
+        }
+        if (name.isEmpty()) {
+            name = getString(properties.get(PROPERTY_MAC_ADDRESS));
+        }
+        if (name.isEmpty()) {
+            name = thing.getLabel();
+        }
+        if (name == null || name.isEmpty()) {
+            name = thing.getUID().getId();
         }
         return name;
     }

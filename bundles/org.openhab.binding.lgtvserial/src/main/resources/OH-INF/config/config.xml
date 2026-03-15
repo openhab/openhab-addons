@@ -10,9 +10,15 @@
 			<label>Serial Port</label>
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 		</parameter>
+		<parameter name="refreshInterval" type="integer" max="65535" min="10" unit="s" required="false">
+			<label>Refresh Interval</label>
+			<description>Refresh interval in seconds</description>
+			<default>120</default>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="setId" type="integer" required="true">
 			<label>Set ID</label>
-			<description>Set ID configured in the TV. If 0, this will send a command to every chained TV.</description>
+			<description>Set ID configured in the TV. If 0, will send the commands to every chained TV.</description>
 			<default>1</default>
 		</parameter>
 	</config-description>

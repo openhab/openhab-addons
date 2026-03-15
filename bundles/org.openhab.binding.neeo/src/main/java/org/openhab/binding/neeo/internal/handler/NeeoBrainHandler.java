@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -29,10 +31,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.servlet.ServletException;
-import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.neeo.internal.NeeoBrainApi;
 import org.openhab.binding.neeo.internal.NeeoBrainConfig;
 import org.openhab.binding.neeo.internal.NeeoConstants;
@@ -72,8 +74,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
     /** The {@link NetworkAddressService} to use */
     private final NetworkAddressService networkAddressService;
 
-    /** The {@link ClientBuilder} to use */
-    private final ClientBuilder clientBuilder;
+    private final HttpClient httpClient;
 
     /** GSON implementation - only used to deserialize {@link NeeoAction} */
     private final Gson gson = new Gson();
@@ -114,7 +115,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
      * @param networkAddressService the non-null {@link NetworkAddressService}
      */
     NeeoBrainHandler(Bridge bridge, int servicePort, HttpService httpService,
-            NetworkAddressService networkAddressService, ClientBuilder clientBuilder) {
+            NetworkAddressService networkAddressService, HttpClient httpClient) {
         super(bridge);
 
         Objects.requireNonNull(bridge, "bridge cannot be null");
@@ -124,7 +125,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
         this.servicePort = servicePort;
         this.httpService = httpService;
         this.networkAddressService = networkAddressService;
-        this.clientBuilder = clientBuilder;
+        this.httpClient = httpClient;
     }
 
     /**
@@ -169,7 +170,7 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                         "Brain IP Address must be specified");
                 return;
             }
-            final NeeoBrainApi api = new NeeoBrainApi(ipAddress, clientBuilder);
+            final NeeoBrainApi api = new NeeoBrainApi(ipAddress, httpClient);
             final NeeoBrain brain = api.getBrain();
             final String brainId = getNeeoBrainId();
 
@@ -195,13 +196,17 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                     final NeeoAction action = Objects.requireNonNull(gson.fromJson(json, NeeoAction.class));
                     getThing().getThings().stream().map(Thing::getHandler).filter(NeeoRoomHandler.class::isInstance)
                             .forEach(h -> ((NeeoRoomHandler) h).processAction(action));
-                }, config.getForwardChain(), clientBuilder);
+                }, config.getForwardChain(), httpClient);
 
                 NeeoUtil.checkInterrupt();
                 try {
-                    servletPath = NeeoConstants.WEBAPP_FORWARDACTIONS.replace("{brainid}", brainId);
+                    String servletPath = NeeoConstants.WEBAPP_FORWARDACTIONS.replace("{brainid}", brainId);
+                    this.servletPath = servletPath;
 
-                    httpService.registerServlet(servletPath, forwardActionServlet, new Hashtable<>(),
+                    Hashtable<Object, Object> initParams = new Hashtable<>();
+                    initParams.put("servlet-name", servletPath);
+
+                    httpService.registerServlet(servletPath, forwardActionServlet, initParams,
                             httpService.createDefaultHttpContext());
 
                     final URL callbackURL = createCallbackUrl(brainId, config);
@@ -209,10 +214,10 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
                         logger.debug(
                                 "Unable to create a callback URL because there is no primary address specified (please set the primary address in the configuration)");
                     } else {
-                        final URL url = new URL(callbackURL, servletPath);
+                        final URL url = callbackURL.toURI().resolve(servletPath).toURL();
                         api.registerForwardActions(url);
                     }
-                } catch (NamespaceException | ServletException e) {
+                } catch (NamespaceException | ServletException | URISyntaxException e) {
                     logger.debug("Error registering forward actions to {}: {}", servletPath, e.getMessage(), e);
                 }
             }
@@ -368,9 +373,11 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
      * @param config the non-null brain configuration
      * @return the callback URL
      * @throws MalformedURLException if the URL is malformed
+     * @throws URISyntaxException if the URI is malformed
      */
     @Nullable
-    private URL createCallbackUrl(String brainId, NeeoBrainConfig config) throws MalformedURLException {
+    private URL createCallbackUrl(String brainId, NeeoBrainConfig config)
+            throws MalformedURLException, URISyntaxException {
         NeeoUtil.requireNotEmpty(brainId, "brainId cannot be empty");
         Objects.requireNonNull(config, "config cannot be null");
 
@@ -380,6 +387,6 @@ public class NeeoBrainHandler extends BaseBridgeHandler {
             return null;
         }
 
-        return new URL("http://" + ipAddress + ":" + servicePort);
+        return new URI("http", null, ipAddress, servicePort, null, null, null).toURL();
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,22 +49,20 @@ public class DimmableUnitHandler extends UnitHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("handleCommand called for channel: {}, command: {}", channelUID, command);
-        switch (channelUID.getId()) {
-            case CHANNEL_UNIT_LEVEL:
-                handleUnitLevel(channelUID, command);
-                break;
-            default:
-                logger.debug("Unknown channel for Dimmable Unit thing: {}", channelUID);
-                super.handleCommand(channelUID, command);
+        if (CHANNEL_UNIT_LEVEL.equals(channelUID.getId())) {
+            handleUnitLevel(channelUID, command);
+        } else {
+            logger.debug("Unknown channel for Dimmable Unit thing: {}", channelUID);
+            super.handleCommand(channelUID, command);
         }
     }
 
     private void handleUnitLevel(ChannelUID channelUID, Command command) {
         logger.debug("handleUnitLevel called for channel: {}, command: {}", channelUID, command);
-        if (command instanceof PercentType) {
-            handlePercent(channelUID, (PercentType) command);
-        } else if (command instanceof IncreaseDecreaseType) {
-            handleIncreaseDecrease(channelUID, (IncreaseDecreaseType) command);
+        if (command instanceof PercentType percentCommand) {
+            handlePercent(channelUID, percentCommand);
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            handleIncreaseDecrease(channelUID, increaseDecreaseCommand);
         } else {
             // Only handle percent or increase/decrease.
             super.handleCommand(channelUID, command);

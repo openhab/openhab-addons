@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.PROPERTY_SERVICE_NAME;
-import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.SHELLY_COIOT_MCAST;
+import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.SHELLY_COIOT_MCAST;
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
@@ -24,13 +24,15 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyOtaCheckResult;
-import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsLogin;
+import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyOtaCheckResult;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsLogin;
+import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
+import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -49,8 +51,10 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
     private final Logger logger = LoggerFactory.getLogger(ShellyManagerActionPage.class);
 
     public ShellyManagerActionPage(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
-            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
-        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory);
+            HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory,
+            ShellyManagerCache<String, FwRepoEntry> firmwareRepo, ShellyManagerCache<String, FwArchList> firmwareArch) {
+        super(configurationAdmin, translationProvider, httpClient, localIp, localPort, handlerFactory, firmwareRepo,
+                firmwareArch);
     }
 
     @Override
@@ -81,8 +85,8 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
             ShellyThingConfiguration config = getThingConfig(th, properties);
             ShellyDeviceProfile profile = th.getProfile();
-            ShellyHttpApi api = th.getApi();
-            new ShellyHttpApi(uid, config, httpClient);
+            ShellyApiInterface api = th.getApi();
+            new Shelly1HttpApi(uid, config, httpClient);
 
             int refreshTimer = 0;
             switch (action) {
@@ -102,7 +106,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                                 // maybe the device restarts before returning the http response
                             }
                             setRestarted(th, uid); // refresh after reboot
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-deviceReboot").start();
                         refreshTimer = profile.isMotion ? 60 : 30;
                     } else {
                         message = getMessageS("action.restart.confirm", MCINFO);
@@ -137,8 +141,8 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     }
 
                     String peer = getString(profile.settings.coiot.peer);
-                    boolean mcast = peer.isEmpty() || SHELLY_COIOT_MCAST.equalsIgnoreCase(peer);
-                    String newPeer = mcast ? localIp + ":" + ShellyCoapJSonDTO.COIOT_PORT : SHELLY_COIOT_MCAST;
+                    boolean mcast = peer.isEmpty() || SHELLY_COIOT_MCAST.equalsIgnoreCase(peer) || profile.isMotion;
+                    String newPeer = mcast ? localIp + ":" + Shelly1CoapJSonDTO.COIOT_PORT : SHELLY_COIOT_MCAST;
                     String displayPeer = mcast ? newPeer : "Multicast";
 
                     if (profile.isMotion && action.equalsIgnoreCase(ACTION_SETCOIOT_MCAST)) {
@@ -161,7 +165,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                                 // maybe the device restarts before returning the http response
                             }
                             setRestarted(th, uid); // refresh after reboot
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-reboot").start();
 
                         // The device needs a restart after changing the peer mode
                         message = getMessageP("action.restart.info", MCINFO);
@@ -187,7 +191,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                             } catch (ShellyApiException e) {
                                 // maybe the device restarts before returning the http response
                             }
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-factoryReset").start();
                         message = getMessageP("action.reset.confirm", MCINFO, serviceName);
                         refreshTimer = 5;
                     }
@@ -215,7 +219,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                             } catch (ShellyApiException e) {
                                 // maybe the device restarts before returning the http response
                             }
-                        }).start();
+                        }, "OH-binding-" + ShellyBindingConstants.BINDING_ID + "-" + uid + "-setDebug").start();
 
                         message = getMessage("action.debug-confirm", enable ? "enabled" : "disabled");
                         refreshTimer = 3;
@@ -251,7 +255,6 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                         refreshTimer = 3;
                     }
                     break;
-
                 case ACTION_ENAPROAMING:
                 case ACTION_DISAPROAMING:
                     enable = ACTION_ENAPROAMING.equalsIgnoreCase(action);
@@ -266,6 +269,77 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                             message = getMessage("action.aproaming-failed", e.toString());
                         }
                         refreshTimer = 3;
+                    }
+                    break;
+                case ACTION_ENRANGEEXT:
+                case ACTION_DISRANGEEXT:
+                    enable = ACTION_ENRANGEEXT.equalsIgnoreCase(action);
+                    if (!"yes".equalsIgnoreCase(update)) {
+                        message = getMessage(
+                                enable ? "action.setwifirangeext-enable" : "action.setwifirangeext-disable");
+                        actionUrl = buildActionUrl(uid, action);
+                    } else {
+                        try {
+                            boolean res = api.setWiFiRangeExtender(enable);
+                            if (res) {
+                                message = getMessageP("action.restart.info", MCINFO);
+                                actionButtonLabel = "Ok";
+                                actionUrl = buildActionUrl(uid, ACTION_RESTART);
+                            } else {
+                                message = getMessage("action.setwifirangeext-confirm", res ? "yes" : "no");
+                                refreshTimer = 5;
+                            }
+                        } catch (ShellyApiException e) {
+                            message = getMessage("action.setwifirangeext-failed", e.toString());
+                            refreshTimer = 10;
+                        }
+                    }
+                    break;
+
+                case ACTION_ENETHERNET:
+                case ACTION_DISETHERNET:
+                    enable = ACTION_ENETHERNET.equalsIgnoreCase(action);
+                    if (!"yes".equalsIgnoreCase(update)) {
+                        message = getMessage(enable ? "action.setethernet-enable" : "action.setethernet-disable");
+                        actionUrl = buildActionUrl(uid, action);
+                    } else {
+                        try {
+                            boolean res = api.setEthernet(enable);
+                            if (res) {
+                                message = getMessageP("action.restart.info", MCINFO);
+                                actionButtonLabel = "Ok";
+                                actionUrl = buildActionUrl(uid, ACTION_RESTART);
+                            } else {
+                                message = getMessage("action.setethernet-confirm", res ? "yes" : "no");
+                                refreshTimer = 5;
+                            }
+                        } catch (ShellyApiException e) {
+                            message = getMessage("action.setethernet-failed", e.toString());
+                            refreshTimer = 10;
+                        }
+                    }
+                    break;
+                case ACTION_ENBLUETOOTH:
+                case ACTION_DISBLUETOOTH:
+                    enable = ACTION_ENBLUETOOTH.equalsIgnoreCase(action);
+                    if (!"yes".equalsIgnoreCase(update)) {
+                        message = getMessage(enable ? "action.setbluetooth-enable" : "action.setbluetooth-disable");
+                        actionUrl = buildActionUrl(uid, action);
+                    } else {
+                        try {
+                            boolean res = api.setBluetooth(enable);
+                            if (res) {
+                                message = getMessageP("action.restart.info", MCINFO);
+                                actionButtonLabel = "Ok";
+                                actionUrl = buildActionUrl(uid, ACTION_RESTART);
+                            } else {
+                                message = getMessage("action.setbluetooth-confirm", res ? "yes" : "no");
+                                refreshTimer = 5;
+                            }
+                        } catch (ShellyApiException e) {
+                            message = getMessage("action.setbluetooth-failed", e.toString());
+                            refreshTimer = 10;
+                        }
                     }
                     break;
 
@@ -302,40 +376,60 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
 
     public static Map<String, String> getActions(ShellyDeviceProfile profile) {
         Map<String, String> list = new LinkedHashMap<>();
-        list.put(ACTION_RES_STATS, "Reset Statistics");
-        list.put(ACTION_RESTART, "Reboot Device");
-        list.put(ACTION_PROTECT, "Protect Device");
+        boolean gen2 = profile.isGen2;
 
-        if ((profile.settings.coiot != null) && (profile.settings.coiot.peer != null) && !profile.isMotion) {
+        list.put(ACTION_RES_STATS, "Reset Statistics");
+        if (!profile.isBlu) {
+            list.put(ACTION_RESTART, "Reboot Device");
+        }
+        if (!gen2 || !profile.isBlu) {
+            list.put(ACTION_PROTECT, "Protect Device");
+        }
+
+        if (profile.settings.coiot != null && profile.settings.coiot.peer != null) {
             boolean mcast = profile.settings.coiot.peer.isEmpty()
-                    || SHELLY_COIOT_MCAST.equalsIgnoreCase(profile.settings.coiot.peer);
+                    || SHELLY_COIOT_MCAST.equalsIgnoreCase(profile.settings.coiot.peer) || profile.isMotion;
             list.put(mcast ? ACTION_SETCOIOT_PEER : ACTION_SETCOIOT_MCAST,
                     mcast ? "Set CoIoT Peer Mode" : "Set CoIoT Multicast Mode");
         }
-        if (profile.isSensor && !profile.isMotion && (profile.settings.wifiSta != null)
-                && profile.settings.wifiSta.enabled) {
+        if (profile.isSensor && !profile.isMotion && profile.settings.wifiSta != null
+                && getBool(profile.settings.wifiSta.enabled)) {
             // FW 1.10+: Reset STA list, force WiFi rescan and connect to stringest AP
             list.put(ACTION_RESSTA, "Reconnect WiFi");
         }
-        if (profile.settings.apRoaming != null) {
+        if (!gen2 && profile.settings.apRoaming != null && profile.settings.apRoaming.enabled != null) {
             list.put(!profile.settings.apRoaming.enabled ? ACTION_ENAPROAMING : ACTION_DISAPROAMING,
                     !profile.settings.apRoaming.enabled ? "Enable WiFi Roaming" : "Disable WiFi Roaming");
         }
-        if (profile.settings.wifiRecoveryReboot != null) {
+        if (!gen2 && profile.settings.wifiRecoveryReboot != null) {
             list.put(!profile.settings.wifiRecoveryReboot ? ACTION_ENWIFIREC : ACTION_DISWIFIREC,
                     !profile.settings.wifiRecoveryReboot ? "Enable WiFi Recovery" : "Disable WiFi Recovery");
         }
+        if (profile.settings.wifiAp != null && profile.settings.wifiAp.rangeExtender != null) {
+            list.put(!profile.settings.wifiAp.rangeExtender ? ACTION_ENRANGEEXT : ACTION_DISRANGEEXT,
+                    !profile.settings.wifiAp.rangeExtender ? "Enable Range Extender" : "Disable Range Extender");
+        }
+        if (profile.settings.ethernet != null) {
+            list.put(!profile.settings.ethernet ? ACTION_ENETHERNET : ACTION_DISETHERNET,
+                    !profile.settings.ethernet ? "Enable Ethernet" : "Disable Ethernet");
+        }
+        if (profile.settings.bluetooth != null) {
+            list.put(!profile.settings.bluetooth ? ACTION_ENBLUETOOTH : ACTION_DISBLUETOOTH,
+                    !profile.settings.bluetooth ? "Enable Bluetooth" : "Disable Bluetooth");
+        }
 
-        boolean set = (profile.settings.cloud != null) && profile.settings.cloud.enabled;
-        list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
+        if (!profile.isBlu) {
+            boolean set = profile.settings.cloud != null && getBool(profile.settings.cloud.enabled);
+            list.put(set ? ACTION_DISCLOUD : ACTION_ENCLOUD, set ? "Disable Cloud" : "Enable Cloud");
 
-        list.put(ACTION_RESET, "-Factory Reset");
-        if (profile.extFeatures) {
+            list.put(ACTION_RESET, "-Factory Reset");
+        }
+
+        if (!gen2 && profile.extFeatures) {
             list.put(ACTION_OTACHECK, "Check for Update");
-            boolean debug_enable = getBool(profile.settings.debugEnable);
-            list.put(!debug_enable ? ACTION_ENDEBUG : ACTION_DISDEBUG,
-                    !debug_enable ? "Enable Debug" : "Disable Debug");
-            if (debug_enable) {
+            boolean debugEnable = getBool(profile.settings.debugEnable);
+            list.put(!debugEnable ? ACTION_ENDEBUG : ACTION_DISDEBUG, !debugEnable ? "Enable Debug" : "Disable Debug");
+            if (debugEnable) {
                 list.put(ACTION_GETDEB, "Get Debug log");
                 list.put(ACTION_GETDEB1, "Get Debug log1");
             }
@@ -350,7 +444,7 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
     }
 
     private void setRestarted(ShellyManagerInterface th, String uid) {
-        th.setThingOffline(ThingStatusDetail.GONE, "offline.status-error-restarted");
+        th.setThingOfflineAndDisconnect(ThingStatusDetail.GONE, "offline.status-error-restarted");
         scheduleUpdate(th, uid + "_upgrade", 25); // wait 25s before refresh
     }
 }

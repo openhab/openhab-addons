@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,22 +64,22 @@ public class UpbRoomHandler extends UnitHandler {
             case CHANNEL_ROOM_SCENE_B:
             case CHANNEL_ROOM_SCENE_C:
             case CHANNEL_ROOM_SCENE_D:
-                if (command instanceof OnOffType) {
-                    handleRoomScene(channelUID, (OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    handleRoomScene(channelUID, onOffCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be OnOffType", command);
                 }
                 break;
             case CHANNEL_ROOM_SWITCH:
-                if (command instanceof OnOffType) {
-                    super.handleOnOff(channelUID, (OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    super.handleOnOff(channelUID, onOffCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be OnOffType", command);
                 }
                 break;
             case CHANNEL_ROOM_STATE:
-                if (command instanceof DecimalType) {
-                    handleRoomState(channelUID, (DecimalType) command);
+                if (command instanceof DecimalType decimalCommand) {
+                    handleRoomState(channelUID, decimalCommand);
                 } else {
                     logger.debug("Invalid command: {}, must be DecimalType", command);
                 }
@@ -146,7 +146,7 @@ public class UpbRoomHandler extends UnitHandler {
                 param2 = ((roomNum * 6) - 3) + cmdValue - 2;
                 break;
             default:
-                logger.warn("Unexpected UPB Room state: {}", Integer.toString(cmdValue));
+                logger.warn("Unexpected UPB Room state: {}", cmdValue);
                 return;
         }
 

@@ -1,0 +1,54 @@
+<svg version="1.2" width="14mm" height="26.86mm" viewBox="8097 7056 1400 2686" preserveAspectRatio="xMidYMid"
+   fill-rule="evenodd" stroke-width="28.222" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+   <defs class="prefix__ClipPathGroup">
+      <clipPath id="prefix__a" clipPathUnits="userSpaceOnUse">
+         <path d="M8097 7056h1400v2686H8097z" />
+      </clipPath>
+   </defs>
+   <g class="prefix__SlideGroup">
+      <g class="prefix__Slide" clip-path="url(#prefix__a)">
+         <g class="prefix__Page">
+            <g class="prefix__com_sun_star_drawing_ClosedBezierShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8097 7056h1401v2687H8097z" />
+               <path fill="#143A79"
+                  d="M8304 7056h986c114 0 207 93 207 207v2272c0 114-93 207-207 207h-986c-114 0-207-93-207-207V7263c0-114 93-207 207-207z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_ClosedBezierShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8312 7201h460v551h-460z" />
+               <path fill="#FFF"
+                  d="M8313 7562c0 113 101 189 229 189s229-76 229-189v-361h-98v352c0 75-57 115-131 115s-132-40-132-115v-352h-97v361z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_PolyPolygonShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8816 7201h503v546h-503z" />
+               <path fill="#FFF" d="M9028 7746h76l214-545h-105l-146 415h-2l-146-415h-103l212 545z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_PolyPolygonShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8327 7807h32v217h-32z" />
+               <path fill="#FFF" d="M8327 8023h31v-216h-31v216z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_PolyPolygonShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8445 7807h154v217h-154z" />
+               <path fill="#FFF" d="M8445 8023h31v-153l92 153h30v-216h-32v154l-92-154h-29v216z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_ClosedBezierShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8685 7807h145v217h-145z" />
+               <path fill="#FFF"
+                  d="M8685 8023h69c30 0 52-16 64-36 9-15 11-23 11-72 0-45 0-53-10-72-14-24-37-36-63-36h-71v216zm30-186h37c17 0 27 5 36 20 10 11 11 21 11 59 0 40-1 46-9 57-8 13-20 19-38 19h-37v-155z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_PolyPolygonShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8909 7807h132v217h-132z" />
+               <path fill="#FFF" d="M8909 8023h131v-31h-100v-63h85v-29h-85v-63h100v-30h-131v216z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_PolyPolygonShape">
+               <path class="prefix__BoundingBox" fill="none" d="M9088 7807h162v217h-162z" />
+               <path fill="#FFF" d="M9212 8023h36l-63-111 59-105h-36l-41 75-40-75h-35l58 105-62 111h35l44-80 45 80z" />
+            </g>
+            <g class="prefix__com_sun_star_drawing_ClosedBezierShape">
+               <path class="prefix__BoundingBox" fill="none" d="M8323 8110h956v1527h-956z" />
+               <path fill="#FFF200"
+                  d="M8353 8928h226c56-91 124-125 216-125 197 0 242 123 242 291 0 142 0 325-235 325-134 0-214-68-240-176h-239c35 282 272 393 488 393 167 0 295-83 363-162 73-83 103-161 103-363 0-250-40-325-131-414-61-59-173-110-299-110-104 0-188 25-268 82v-343h665v-216h-891v818z" />
+            </g>
+         </g>
+      </g>
+   </g>
+</svg>

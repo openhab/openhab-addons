@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,12 @@
 package org.openhab.binding.openuv.internal.handler;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -29,11 +31,7 @@ import org.openhab.binding.openuv.internal.config.BridgeConfiguration;
 import org.openhab.binding.openuv.internal.discovery.OpenUVDiscoveryService;
 import org.openhab.binding.openuv.internal.json.OpenUVResponse;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.LocationProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -57,30 +55,26 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class OpenUVBridgeHandler extends BaseBridgeHandler {
-    private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%s&lng=%s&alt=%s";
+    private static final String QUERY_URL = "https://api.openuv.io/api/v1/uv?lat=%.2f&lng=%.2f&alt=%.0f";
+    private static final int RECONNECT_DELAY_MIN = 5;
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
 
     private final Logger logger = LoggerFactory.getLogger(OpenUVBridgeHandler.class);
     private final Properties header = new Properties();
     private final Gson gson;
-    private final LocationProvider locationProvider;
-    private final TranslationProvider i18nProvider;
-    private final LocaleProvider localeProvider;
 
-    private @Nullable ScheduledFuture<?> reconnectJob;
+    private Optional<ScheduledFuture<?>> reconnectJob = Optional.empty();
+    private boolean keyVerified;
 
-    public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, TranslationProvider i18nProvider,
-            LocaleProvider localeProvider, Gson gson) {
+    public OpenUVBridgeHandler(Bridge bridge, Gson gson) {
         super(bridge);
         this.gson = gson;
-        this.locationProvider = locationProvider;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvider;
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing OpenUV API bridge handler.");
+        keyVerified = false;
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -93,29 +87,28 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> job = this.reconnectJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-        }
-        reconnectJob = null;
+        header.clear();
+        freeReconnectJob();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             initiateConnexion();
-            return;
+        } else {
+            logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
         }
-        logger.debug("The OpenUV bridge only handles Refresh command and not '{}'", command);
     }
 
     private void initiateConnexion() {
         // Just checking if the provided api key is a valid one by making a fake call
-        getUVData("0", "0", "0");
+        getUVData(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
     }
 
-    public @Nullable OpenUVResult getUVData(String latitude, String longitude, String altitude) {
-        String url = String.format(QUERY_URL, latitude, longitude, altitude);
+    public @Nullable OpenUVResult getUVData(BigDecimal latitude, BigDecimal longitude, BigDecimal altitude) {
+        String statusMessage = "";
+        ThingStatusDetail statusDetail = ThingStatusDetail.COMMUNICATION_ERROR;
+        String url = QUERY_URL.formatted(latitude, longitude, altitude);
         String jsonData = "";
         try {
             jsonData = HttpUtil.executeUrl("GET", url, header, null, null, REQUEST_TIMEOUT_MS);
@@ -124,46 +117,54 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 String error = uvResponse.getError();
                 if (error == null) {
                     updateStatus(ThingStatus.ONLINE);
+                    keyVerified = true;
                     return uvResponse.getResult();
                 }
                 throw new OpenUVException(error);
             }
         } catch (JsonSyntaxException e) {
-            logger.debug("No valid json received when calling `{}` : {}", url, jsonData);
+            if (jsonData.contains("MongoError")) {
+                statusMessage = "@text/offline.comm-error-faultly-service [ \"%d\" ]".formatted(RECONNECT_DELAY_MIN);
+                scheduleReconnectJob(RECONNECT_DELAY_MIN);
+            } else {
+                statusDetail = ThingStatusDetail.NONE;
+                statusMessage = "@text/offline.invalid-json [ \"%s\" ]".formatted(url);
+                logger.debug("{} : {}", statusMessage, jsonData);
+            }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            statusMessage = "@text/offline.comm-error-ioexception [ \"%s\",\"%d\" ]".formatted(e.getMessage(),
+                    RECONNECT_DELAY_MIN);
+            scheduleReconnectJob(RECONNECT_DELAY_MIN);
         } catch (OpenUVException e) {
             if (e.isQuotaError()) {
-                LocalDateTime tomorrowMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
-                        .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
-
-                reconnectJob = scheduler.schedule(this::initiateConnexion,
-                        Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
-            } else {
-                updateStatus(ThingStatus.OFFLINE,
-                        e.isApiKeyError() ? ThingStatusDetail.CONFIGURATION_ERROR : ThingStatusDetail.NONE,
-                        e.getMessage());
+                LocalDateTime nextMidnight = LocalDate.now().plusDays(1).atStartOfDay().plusMinutes(2);
+                statusMessage = "@text/offline.comm-error-quota-exceeded [ \"%s\" ]".formatted(nextMidnight.toString());
+                scheduleReconnectJob(Duration.between(LocalDateTime.now(), nextMidnight).toMinutes());
+            } else if (e.isApiKeyError()) {
+                if (keyVerified) {
+                    statusMessage = "@text/offline.api-key-not-recognized [ \"%d\" ]".formatted(RECONNECT_DELAY_MIN);
+                    scheduleReconnectJob(RECONNECT_DELAY_MIN);
+                } else {
+                    statusDetail = ThingStatusDetail.CONFIGURATION_ERROR;
+                }
             }
         }
+        updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
         return null;
+    }
+
+    private void scheduleReconnectJob(long delay) {
+        freeReconnectJob();
+        reconnectJob = Optional.of(scheduler.schedule(this::initiateConnexion, delay, TimeUnit.MINUTES));
+    }
+
+    private void freeReconnectJob() {
+        reconnectJob.ifPresent(job -> job.cancel(true));
+        reconnectJob = Optional.empty();
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(OpenUVDiscoveryService.class);
-    }
-
-    public @Nullable PointType getLocation() {
-        return locationProvider.getLocation();
-    }
-
-    public TranslationProvider getI18nProvider() {
-        return i18nProvider;
-    }
-
-    public LocaleProvider getLocaleProvider() {
-        return localeProvider;
     }
 }

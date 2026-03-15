@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Caddx</label>
 		<description>This bridge represents the Caddx Serial interface.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="send_command" typeId="command">

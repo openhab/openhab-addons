@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,12 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link HaasSohnpelletstoveJsonDataDTO} is the Java class used to map the JSON
- * response to a Oven request.
+ * response to an Oven request.
  *
  * @author Christian Feininger - Initial contribution
  */
 public class HaasSohnpelletstoveJsonDataDTO {
-    metadata meta = new metadata();
+    Metadata meta = new Metadata();
     boolean prg;
     boolean wprg;
     String mode = "";
@@ -32,9 +32,9 @@ public class HaasSohnpelletstoveJsonDataDTO {
     @SerializedName("ht_char")
     String htChar = "";
     @SerializedName("weekprogram")
-    private wprogram[] weekprogram;
+    private Wprogram[] weekprogram;
     @SerializedName("error")
-    private err[] error;
+    private Err[] error;
     @SerializedName("eco_mode")
     boolean ecoMode;
     boolean pgi;
@@ -98,7 +98,7 @@ public class HaasSohnpelletstoveJsonDataDTO {
         return this;
     }
 
-    public class metadata {
+    public class Metadata {
         @SerializedName("sw_version")
         String swVersion = "";
         @SerializedName("hw_version")
@@ -119,19 +119,19 @@ public class HaasSohnpelletstoveJsonDataDTO {
         String ean = "";
         boolean rau;
         @SerializedName("wlan_features")
-        private String[] wlan_features;
+        private String[] wlanFeatures;
 
         public String getNonce() {
             return nonce;
         }
     }
 
-    public class err {
+    public class Err {
         String time = "";
         String nr = "";
     }
 
-    public class wprogram {
+    public class Wprogram {
         String day = "";
         String begin = "";
         String end = "";

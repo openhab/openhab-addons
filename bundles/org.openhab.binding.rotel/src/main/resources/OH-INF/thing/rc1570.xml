@@ -8,6 +8,7 @@
 	<thing-type id="rc1570">
 		<label>RC-1570 Stereo Preamplifier</label>
 		<description>Connection to the Rotel RC-1570 stereo preamplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -21,6 +22,7 @@
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="tcbypass" typeId="tcbypass"/>
 			<channel id="balance" typeId="balance"/>
+			<channel id="otherCommand" typeId="otherCommand"/>
 		</channels>
 
 		<properties>

@@ -9,6 +9,10 @@
 		<label>BBRHPJR</label>
 		<description>Total consumed energy at high rate pricing on red days</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -17,6 +21,10 @@
 		<label>BBRHCJR</label>
 		<description>Total consumed energy at low rate pricing on red days</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -25,6 +33,10 @@
 		<label>BBRHPJW</label>
 		<description>Total consumed energy at high rate pricing on white days</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -33,6 +45,10 @@
 		<label>BBRHCJW</label>
 		<description>Total consumed energy at low rate pricing on white days</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -41,6 +57,10 @@
 		<label>BBRHPJB</label>
 		<description>Total consumed energy at high rate pricing on blue days</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -49,6 +69,10 @@
 		<label>BBRHCJB</label>
 		<description>Total consumed energy at low rate pricing on blue days</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -57,6 +81,10 @@
 		<label>DEMAIN</label>
 		<description>Following day color</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="Bleu">Bleu</option>
@@ -71,6 +99,10 @@
 		<label>ProgrammeCircuit1</label>
 		<description>Circuit 1 program</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="A">A</option>
@@ -85,6 +117,10 @@
 		<label>ProgrammeCircuit2</label>
 		<description>Circuit 2 program</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="P0">P0</option>

@@ -11,7 +11,7 @@
 
 		<label>Water Meter (DSMR V3.0)</label>
 		<description>This is a water meter that complies to the DSMR V3.0 specification.</description>
-
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="meter_device_type" typeId="deviceType"/>
 			<channel id="meter_equipment_identifier" typeId="equipmentIdType"/>

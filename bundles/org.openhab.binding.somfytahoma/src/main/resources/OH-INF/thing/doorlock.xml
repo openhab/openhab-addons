@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Door Lock</label>
+		<semantic-equipment-tag>Lock</semantic-equipment-tag>
 		<channels>
 			<channel id="open" typeId="open"></channel>
 			<channel id="lock" typeId="lock"></channel>

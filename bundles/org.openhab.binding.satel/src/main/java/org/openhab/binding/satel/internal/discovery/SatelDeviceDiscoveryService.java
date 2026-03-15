@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,12 @@ package org.openhab.binding.satel.internal.discovery;
 import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,19 +52,31 @@ import org.slf4j.LoggerFactory;
 public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .of(DEVICE_THING_TYPES_UIDS, VIRTUAL_THING_TYPES_UIDS).flatMap(uids -> uids.stream())
+            .of(DEVICE_THING_TYPES_UIDS, VIRTUAL_THING_TYPES_UIDS).flatMap(Collection::stream)
             .collect(Collectors.toSet());
     private static final int OUTPUT_FUNCTION_SHUTTER = 105;
 
     private final Logger logger = LoggerFactory.getLogger(SatelDeviceDiscoveryService.class);
 
-    private SatelBridgeHandler bridgeHandler;
-    private Function<ThingTypeUID, ThingType> thingTypeProvider;
+    private final SatelBridgeHandler bridgeHandler;
+    private final Function<ThingTypeUID, ThingType> thingTypeProvider;
     private volatile boolean scanStopped;
 
     public SatelDeviceDiscoveryService(SatelBridgeHandler bridgeHandler,
             Function<ThingTypeUID, ThingType> thingTypeProvider) {
-        super(SUPPORTED_THING_TYPES, 60, true);
+        super(SUPPORTED_THING_TYPES, 60, false);
+        this.bridgeHandler = bridgeHandler;
+        this.thingTypeProvider = thingTypeProvider;
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    SatelDeviceDiscoveryService(ScheduledExecutorService scheduler, SatelBridgeHandler bridgeHandler,
+            Function<ThingTypeUID, ThingType> thingTypeProvider) {
+        super(scheduler, SUPPORTED_THING_TYPES, 60, false, null, null);
         this.bridgeHandler = bridgeHandler;
         this.thingTypeProvider = thingTypeProvider;
     }
@@ -74,20 +88,14 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
             // add virtual things by default
             for (ThingTypeUID thingTypeUID : VIRTUAL_THING_TYPES_UIDS) {
                 ThingType thingType = thingTypeProvider.apply(thingTypeUID);
-                addThing(thingTypeUID, null, thingType.getLabel(), Collections.emptyMap());
+                addThing(thingTypeUID, toCamelCase(thingTypeUID.getId()), thingType.getLabel(), Collections.emptyMap());
             }
         }
         if (!scanStopped) {
-            scanForDevices(DeviceType.KEYPAD, 8);
+            scanForDevices(DeviceType.PARTITION, bridgeHandler.getIntegraType().getPartitions());
         }
         if (!scanStopped) {
-            scanForDevices(DeviceType.EXPANDER, 64);
-        }
-        if (!scanStopped) {
-            scanForDevices(DeviceType.PARTITION_WITH_OBJECT, bridgeHandler.getIntegraType().getPartitions());
-        }
-        if (!scanStopped) {
-            scanForDevices(DeviceType.ZONE_WITH_PARTITION, bridgeHandler.getIntegraType().getZones());
+            scanForDevices(DeviceType.ZONE, bridgeHandler.getIntegraType().getZones());
         }
         if (!scanStopped) {
             scanForDevices(DeviceType.OUTPUT, bridgeHandler.getIntegraType().getZones());
@@ -109,9 +117,8 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
             if (bridgeHandler.sendCommand(cmd, false)) {
                 String name = cmd.getName(encoding);
                 int deviceKind = cmd.getDeviceKind();
-                int info = cmd.getAdditionalInfo();
                 logger.debug("Found device: type={}, id={}, name={}, kind/function={}, info={}", deviceType.name(), i,
-                        name, deviceKind, info);
+                        name, deviceKind, cmd.getAdditionalInfo());
                 if (isDeviceAvailable(deviceType, deviceKind)) {
                     addDevice(deviceType, deviceKind, i, name);
                 }
@@ -119,7 +126,7 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
                 // serious failure, disconnection or so
                 scanStopped = true;
                 logger.error("Unexpected failure during scan for {} using {}", deviceType.name(),
-                        bridgeHandler.getThing().getUID().toString());
+                        bridgeHandler.getThing().getUID());
             }
         }
         if (scanStopped) {
@@ -135,7 +142,7 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
         if (thingTypeUID == null) {
             logger.warn("Unknown device found: type={}, kind={}, name={}", deviceType.name(), deviceKind, deviceName);
         } else if (!getSupportedThingTypes().contains(thingTypeUID)) {
-            logger.warn("Unsupported device: {}", thingTypeUID.toString());
+            logger.warn("Unsupported device: {}", thingTypeUID);
         } else {
             Map<String, Object> properties = new HashMap<>();
 
@@ -150,44 +157,29 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void addThing(ThingTypeUID thingTypeUID, @Nullable String deviceId, String label,
-            Map<String, Object> properties) {
+    private void addThing(ThingTypeUID thingTypeUID, String deviceId, String label, Map<String, Object> properties) {
         final ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID,
-                deviceId == null ? toCamelCase(thingTypeUID.getId()) : deviceId);
+        final ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceId);
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
                 .withBridge(bridgeUID).withLabel(label).withProperties(properties).build();
         thingDiscovered(discoveryResult);
     }
 
     private static @Nullable ThingTypeUID getThingTypeUID(DeviceType deviceType, int deviceKind) {
-        switch (deviceType) {
-            case OUTPUT:
-                return (deviceKind == OUTPUT_FUNCTION_SHUTTER) ? THING_TYPE_SHUTTER : THING_TYPE_OUTPUT;
-            case PARTITION:
-            case PARTITION_WITH_OBJECT:
-                return THING_TYPE_PARTITION;
-            case ZONE:
-            case ZONE_WITH_PARTITION:
-                return THING_TYPE_ZONE;
-            default:
-                return null;
-        }
+        return switch (deviceType) {
+            case OUTPUT -> (deviceKind == OUTPUT_FUNCTION_SHUTTER) ? THING_TYPE_SHUTTER : THING_TYPE_OUTPUT;
+            case PARTITION -> THING_TYPE_PARTITION;
+            case ZONE -> THING_TYPE_ZONE;
+            default -> null;
+        };
     }
 
     private static boolean isDeviceAvailable(DeviceType deviceType, int deviceKind) {
-        switch (deviceType) {
-            case OUTPUT:
-                return deviceKind != 0 && deviceKind != OUTPUT_FUNCTION_SHUTTER
-                        && (deviceKind != OUTPUT_FUNCTION_SHUTTER + 1);
-            case PARTITION:
-            case PARTITION_WITH_OBJECT:
-            case ZONE:
-            case ZONE_WITH_PARTITION:
-                return true;
-            default:
-                return false;
-        }
+        return switch (deviceType) {
+            case OUTPUT -> deviceKind != 0 && deviceKind != (OUTPUT_FUNCTION_SHUTTER + 1);
+            case PARTITION, ZONE -> true;
+            default -> false;
+        };
     }
 
     private static String toCamelCase(String s) {

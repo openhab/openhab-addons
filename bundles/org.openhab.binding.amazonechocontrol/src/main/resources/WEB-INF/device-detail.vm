@@ -1,0 +1,58 @@
+#* @vtlvariable name="accountPath" type="java.lang.String" *#
+#* @vtlvariable name="servletPath" type="java.lang.String" *#
+#* @vtlvariable name="thing" type="org.openhab.core.thing.Thing" *#
+#* @vtlvariable name="channels" type="java.util.Map<java.lang.String, java.util.List<org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlServlet.ChannelOption>>" *#
+#* @vtlvariable name="capabilities" type="java.util.List<java.lang.String>" *#
+<html lang="en-US">
+<head>
+    <title>AmazonEchoControl - $thing.label</title>
+    <link rel="stylesheet" href="$servletPath/static/default.css">
+</head>
+<body>
+<h3>
+    <a href="$accountPath">Account Overview</a>
+    <a href="$servletPath">Binding Overview</a>
+</h3>
+<h1>
+    Device "$thing.label"
+    (<code>$thing.UID</code>)
+</h1>
+    #foreach($channelInfo in $channels.entrySet())
+        #set($channel = $thing.getChannel($channelInfo.key))
+        #if($channel != "") #* only show if channel is available on device *#
+        <h2>
+            Channel "$channel.label"
+            (<code>$channelInfo.key</code>)
+        </h2>
+            #if($channelInfo.value.isEmpty())
+            <p>No channel options found.</p>
+            #else
+            <table class="table-bordered">
+                <tr>
+                    <th>Value</th>
+                    <th>Name</th>
+                </tr>
+                #foreach($option in $channelInfo.value)
+                    <tr>
+                        <td><code>$option.value</code></td>
+                        <td>$option.displayName</td>
+                    </tr>
+                #end
+            </table>
+            #end
+        #end
+    #end
+<h2>Device Capabilities</h2>
+    #if ($capabilities.isEmpty())
+    <p>No capabilities detected.</p>
+    #else
+    <table class="table-bordered">
+        #foreach($capability in $capabilities)
+            <tr>
+                <td>$capability</td>
+            </tr>
+        #end
+    </table>
+    #end
+</body>
+</html>

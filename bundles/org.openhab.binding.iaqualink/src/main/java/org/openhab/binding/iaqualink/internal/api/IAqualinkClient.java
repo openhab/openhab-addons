@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ import com.google.gson.JsonPrimitive;
 /**
  * IAqualink HTTP Client
  *
- * The {@link IAqualinkClient} provides basic HTTP commands to control and monitor a iAquaLink
+ * The {@link IAqualinkClient} provides basic HTTP commands to control and monitor an iAquaLink
  * based system.
  *
  * GSON is used to provide custom deserialization on the JSON results. These results
@@ -177,8 +177,8 @@ public class IAqualinkClient {
     /**
      * Retrieves {@link Auxiliary[]} devices
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @return {@link Auxiliary[]}
      * @throws IOException
      * @throws NotAuthorizedException
@@ -221,10 +221,11 @@ public class IAqualinkClient {
     /**
      * Sends an Auxiliary light command
      *
-     * @param serialNumber
-     * @param sessionId
-     * @param command
+     * @param serial
+     * @param sessionID
+     * @param auxID
      * @param lightValue
+     * @param subType
      * @return
      * @throws IOException
      * @throws NotAuthorizedException
@@ -241,12 +242,12 @@ public class IAqualinkClient {
     }
 
     /**
-     * Sends a Auxiliary dimmer command
+     * Sends an Auxiliary dimmer command
      *
-     * @param serialNumber
-     * @param sessionId
-     * @param auxId
-     * @param lightValue
+     * @param serial
+     * @param sessionID
+     * @param auxID
+     * @param level
      * @return
      * @throws IOException
      * @throws NotAuthorizedException
@@ -263,8 +264,8 @@ public class IAqualinkClient {
     /**
      * Sets the Spa Temperature Setpoint
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @param spaSetpoint
      * @return
      * @throws IOException
@@ -282,8 +283,8 @@ public class IAqualinkClient {
     /**
      * Sets the Pool Temperature Setpoint
      *
-     * @param serialNumber
-     * @param sessionId
+     * @param serial
+     * @param sessionID
      * @param poolSetpoint
      * @return
      * @throws IOException
@@ -394,8 +395,11 @@ public class IAqualinkClient {
             if (homeScreen != null) {
                 homeScreen.forEach(element -> {
                     element.getAsJsonObject().entrySet().forEach(entry -> {
-                        home.add(entry.getKey(), entry.getValue());
-                        serializedMap.add(entry.getKey(), entry.getValue());
+                        JsonElement value = entry.getValue();
+                        home.add(entry.getKey(), value);
+                        if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+                            serializedMap.add(entry.getKey(), value);
+                        }
                     });
                 });
                 home.add("serialized_map", serializedMap);

@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,17 +39,13 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
     private String preset;
 
     @XStreamImplicit(itemFieldName = "appliance")
-    private List<String> locationAppliances = new ArrayList<String>();
+    private List<String> locationAppliances = new ArrayList<>();
 
     @XStreamImplicit(itemFieldName = "point_log", keyFieldName = "type")
-    private Logs pointLogs;
+    private PointLogs pointLogs;
 
     @XStreamImplicit(itemFieldName = "actuator_functionality", keyFieldName = "type")
     private ActuatorFunctionalities actuatorFunctionalities;
-
-    public Location(String presetScene) {
-        this.preset = presetScene;
-    }
 
     public String getName() {
         return name;
@@ -71,9 +67,9 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
         return locationAppliances;
     }
 
-    public Logs getPointLogs() {
+    public PointLogs getPointLogs() {
         if (pointLogs == null) {
-            pointLogs = new Logs();
+            pointLogs = new PointLogs();
         }
         return pointLogs;
     }
@@ -114,6 +110,10 @@ public class Location extends PlugwiseBaseModel implements PlugwiseComparableDat
             return this.actuatorFunctionalities.getRegulationControl();
         }
         return null;
+    }
+
+    public void setPreset(String preset) {
+        this.preset = preset;
     }
 
     public int applianceCount() {

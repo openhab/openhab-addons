@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class GoEChargerBindingConstants {
 
     // List of all Channel ids
     public static final String MAX_CURRENT = "maxCurrent";
-    public static final String MAX_CURRENT_TEMPORARY = "maxCurrentTemporary";
+    public static final String MAX_CURRENT_TEMPORARY = "maxCurrentTemp";
     public static final String ACCESS_CONFIGURATION = "accessConfiguration";
     public static final String PWM_SIGNAL = "pwmSignal";
     public static final String ERROR = "error";
@@ -45,6 +45,7 @@ public class GoEChargerBindingConstants {
     public static final String POWER_L2 = "powerL2";
     public static final String POWER_L3 = "powerL3";
     public static final String POWER_ALL = "powerAll";
+    public static final String TRANSACTION = "transaction";
     public static final String ALLOW_CHARGING = "allowCharging";
     public static final String CABLE_ENCODING = "cableCurrent";
     public static final String PHASES = "phases";
@@ -54,6 +55,7 @@ public class GoEChargerBindingConstants {
     public static final String SESSION_CHARGE_CONSUMPTION_LIMIT = "sessionChargeEnergyLimit";
     public static final String TOTAL_CONSUMPTION = "totalChargedEnergy";
     public static final String FIRMWARE = "firmware";
+    public static final String AWATTAR_MAX_PRICE = "awattarMaxPrice";
 
     public static final String API_URL = "http://%IP%/status";
     public static final String MQTT_URL = "http://%IP%/mqtt?payload=%KEY%=%VALUE%";
@@ -63,4 +65,7 @@ public class GoEChargerBindingConstants {
 
     public static final String API_URL_V2 = "http://%IP%/api/status";
     public static final String SET_URL_V2 = "http://%IP%/api/set?%KEY%=%VALUE%";
+
+    public static final String API_URL_CLOUD_V2 = "https://%SERIAL%.api.v3.go-e.io/api/status?token=%TOKEN%";
+    public static final String SET_URL_CLOUD_V2 = "https://%SERIAL%.api.v3.go-e.io/api/set?token=%TOKEN%&%KEY%=%VALUE%";
 }

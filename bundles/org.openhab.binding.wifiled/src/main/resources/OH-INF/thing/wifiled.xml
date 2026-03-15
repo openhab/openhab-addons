@@ -6,8 +6,8 @@
 
 	<thing-type id="wifiled">
 		<label>WiFi LED</label>
-		<description>WiFi LED Device</description>
-
+		<description>WiFi LED device</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="color" typeId="color"/>
@@ -20,17 +20,17 @@
 		<config-description>
 			<parameter name="ip" type="text" required="true">
 				<label>IP</label>
-				<description>IP address or host name of the WIFI LED Controller</description>
+				<description>IP address or host name of the Wi‑Fi LED controller</description>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1024" max="49151">
 				<label>Port</label>
-				<description>Used Port of the device</description>
+				<description>Port used by the device</description>
 				<default>5577</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pollingPeriod" type="integer" required="false">
 				<label>Polling Period</label>
-				<description>Polling period for refreshing the data in s</description>
+				<description>Polling period for refreshing data (s)</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -74,19 +74,35 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="white">
 		<item-type>Dimmer</item-type>
 		<label>White</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="white2">
 		<item-type>Dimmer</item-type>
 		<label>White 2</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="program" advanced="true">
 		<item-type>String</item-type>
@@ -102,9 +118,9 @@
 				<option value="42">Cyan Gradual Change</option>
 				<option value="43">Purple Gradual Change</option>
 				<option value="44">White Gradual Change</option>
-				<option value="45">Red,Green Cross Fade</option>
-				<option value="46">Red, Blue Cross Fade</option>
-				<option value="47">Green, Blue Cross Fade</option>
+				<option value="45">Red/Green Cross Fade</option>
+				<option value="46">Red/Blue Cross Fade</option>
+				<option value="47">Green/Blue Cross Fade</option>
 				<option value="48">Seven Colors Strobe Flash</option>
 				<option value="49">Red Strobe Flash</option>
 				<option value="50">Green Strobe Flash</option>

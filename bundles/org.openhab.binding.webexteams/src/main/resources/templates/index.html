@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>        
+        <!-- Basic Page Needs
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <meta charset="utf-8">
+        <title>Authorize openHAB binding for Webex</title>
+        <meta name="description" content="">
+        <meta name="author" content="tom@ducbase.com">
+        ${pageRefresh}
+
+        <!-- Mobile Specific Metas
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- FONT
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+        <!-- CSS
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link rel="stylesheet" href="res/css/normalize.css">
+        <link rel="stylesheet" href="res/css/skeleton.css">
+        <link rel="stylesheet" href="res/css/custom.css">
+
+        <!-- Favicon
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+        <link rel="shortcut icon" href="res/images/favicon.ico">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row bottom-one">
+                <h3>Authorize openHAB binding for Webex</h3>
+                <p>On this page you can authorize your openHAB Webex Teams Account configured with the clientId and clientSecret of the Webex API on your Developer account.</p>
+                <p>To use this binding the following requirements apply:</p>
+                <ul>
+                    <li>A Cisco Webex account.</li>
+                    <li>Create an integration (a bot account doesn't require oAuth authorization)</li>
+                </ul>
+                <p>
+                    The redirect URI to use with the Webex API for this openHAB installation is
+                    <a href="${redirectUri}">${redirectUri}</a>
+                </p>
+        
+            </div>
+                
+            ${authorizedUser}
+            ${accounts}
+            
+            <div class="row">
+                ${error}
+            </div>
+    
+        </div>
+
+    </body>
+</html>

@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Jablonet Bridge</label>
 		<description>A bridge to the Jablonet cloud service.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description-ref uri="bridge-type:jablotron:bridge"/>
 	</bridge-type>
