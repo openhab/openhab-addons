@@ -186,7 +186,7 @@ public class VigiCruesHandler extends BaseThingHandler {
             StaEntVigiCruAnswer feeds = apiHandler.getStationFeeds(config.id);
             List<StaEntVigiCru> listEntVigiCru = feeds.listEntVigiCru;
 
-            if (listEntVigiCru != null && listEntVigiCru.isEmpty()) {
+            if (listEntVigiCru != null && !listEntVigiCru.isEmpty()) {
                 StaEntVigiCru station = listEntVigiCru.get(0);
                 String debit = station.vigilanceCrues.fluxDonnees.observations.debits;
                 String hauteur = station.vigilanceCrues.fluxDonnees.observations.hauteurs;
