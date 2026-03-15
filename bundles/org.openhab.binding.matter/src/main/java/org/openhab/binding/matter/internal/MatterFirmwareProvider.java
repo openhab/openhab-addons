@@ -125,9 +125,9 @@ public class MatterFirmwareProvider implements FirmwareProvider {
                 // No OTA update available - return current firmware version so the
                 // framework reports UP_TO_DATE instead of UNKNOWN
                 String currentVersion = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
-                if (currentVersion != null) {
+                if (currentVersion != null && !currentVersion.isBlank()) {
                     return Collections
-                            .singleton(FirmwareBuilder.create(thing.getThingTypeUID(), currentVersion).build());
+                            .singleton(FirmwareBuilder.create(thing.getThingTypeUID(), currentVersion.trim()).build());
                 }
             }
         }
