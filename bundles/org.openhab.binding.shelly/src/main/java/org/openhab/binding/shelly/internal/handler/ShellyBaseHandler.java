@@ -190,7 +190,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             boolean start = false;
             try {
                 if (initializeThingConfig()) {
-                    logger.debug("{}: Config: {}", thingName, config);
+                    String uid = thing.getUID().getAsString();
+                    thingTable.addThing(uid, this);
+                    logger.debug("Thing handler for uid {} added, total things = {}", uid, thingTable.size());
+
                     start = initializeThing();
                 }
             } catch (ShellyApiException e) {
@@ -1086,6 +1089,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         skipCount = config.updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
         logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, config.updateInterval, skipCount);
 
+        logger.debug("{}: Config: {}", thingName, config);
         return true;
     }
 
