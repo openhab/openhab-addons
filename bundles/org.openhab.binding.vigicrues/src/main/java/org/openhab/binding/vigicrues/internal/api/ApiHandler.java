@@ -63,6 +63,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class ApiHandler {
     private static final int TIMEOUT_S = 30;
+    private static final int MAX_RETRY_ATTEMPS = 3;
 
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
@@ -120,7 +121,7 @@ public class ApiHandler {
         String jsonResponse = "";
         int retry = 0;
         try {
-            while (retry < 3) {
+            while (retry < MAX_RETRY_ATTEMPS) {
                 Request req = httpClient.newRequest(url).timeout(TIMEOUT_S, TimeUnit.SECONDS).method("GET");
                 req.header("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36");
@@ -144,7 +145,7 @@ public class ApiHandler {
                     return gson.fromJson(jsonResponse, responseType);
                 }
             }
-            throw new VigiCruesException(("Request failed after 3 retry %s").formatted(url));
+            throw new VigiCruesException(("Request failed after %d retry %s").formatted(MAX_RETRY_ATTEMPS, url));
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new VigiCruesException(e);
         } catch (JsonSyntaxException e) {
