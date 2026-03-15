@@ -68,7 +68,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class SmartThingsServlet extends HttpServlet
-        implements SmartthingsLocalCallbackListener.ResponseHandlerListener {
+        implements SmartThingsLocalCallbackListener.ResponseHandlerListener {
 
     private static final long serialVersionUID = -4719613645562518231L;
 
@@ -76,8 +76,8 @@ public class SmartThingsServlet extends HttpServlet
 
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
     private final Logger logger = LoggerFactory.getLogger(SmartThingsServlet.class);
-    private final SmartThingsAuthService smartthingsAuthService;
-    private final SmartthingsLocalCallbackListener smartthingsLocalCallbackListener;
+    private final SmartThingsAuthService smartThingsAuthService;
+    private final SmartThingsLocalCallbackListener smartThingsLocalCallbackListener;
 
     private final String indexTemplate;
     private final String step1Template;
@@ -107,11 +107,11 @@ public class SmartThingsServlet extends HttpServlet
 
     public SmartThingsServlet(SmartThingsBridgeHandler bridgeHandler, SmartThingsAuthService smartthingsAuthService,
             HttpService httpService) throws SmartThingsException {
-        this.smartthingsAuthService = smartthingsAuthService;
+        this.smartThingsAuthService = smartthingsAuthService;
         this.bridgeHandler = bridgeHandler;
         this.httpService = httpService;
-        this.smartthingsLocalCallbackListener = new SmartthingsLocalCallbackListener();
-        this.smartthingsLocalCallbackListener.setListener(this);
+        this.smartThingsLocalCallbackListener = new SmartThingsLocalCallbackListener();
+        this.smartThingsLocalCallbackListener.setListener(this);
 
         try {
             indexTemplate = readTemplate("index-oauth.html");
@@ -128,14 +128,14 @@ public class SmartThingsServlet extends HttpServlet
             logger.info("registerServlet:" + PATH);
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
             httpService.registerResources(PATH + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS, "img", null);
-            smartthingsLocalCallbackListener.startCallbackListener();
+            smartThingsLocalCallbackListener.startCallbackListener();
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start SmartThings servlet service: {}", e.getMessage());
         }
     }
 
     public void desactivate() {
-        smartthingsLocalCallbackListener.stopCallbackListener();
+        smartThingsLocalCallbackListener.stopCallbackListener();
     }
 
     public void deactivate(ComponentContext componentContext) {
@@ -180,7 +180,7 @@ public class SmartThingsServlet extends HttpServlet
     }
 
     private String handleTemplate(String requestUrl, @Nullable String queryString) {
-        SmartThingsAccountHandler accountHandler = smartthingsAuthService.getSmartThingsAccountHandler();
+        SmartThingsAccountHandler accountHandler = smartThingsAuthService.getSmartThingsAccountHandler();
 
         if (accountHandler == null) {
             logger.error("accountHandler==nul in SmartThingsServlet::handleTemplate");
@@ -230,7 +230,7 @@ public class SmartThingsServlet extends HttpServlet
                             } else if ("step2".equals(reqState)) {
                                 template = confirmTemplate;
 
-                                smartthingsAuthService.authorize(SmartThingsBindingConstants.REDIRECT_URI, reqState,
+                                smartThingsAuthService.authorize(SmartThingsBindingConstants.REDIRECT_URI, reqState,
                                         reqCode);
 
                                 SmartThingsApi api = bridgeHandler.getSmartThingsApi();

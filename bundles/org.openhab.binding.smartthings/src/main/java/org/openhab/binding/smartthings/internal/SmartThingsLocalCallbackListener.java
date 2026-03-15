@@ -27,16 +27,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartthingsLocalCallbackListener} : implemts a callback listener simple http server to handle oauth
+ * The {@link SmartThingsLocalCallbackListener} : implemts a callback listener simple http server to handle oauth
  * callback request.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Laurent Arnal - code adaptation
  */
 @NonNullByDefault
-public class SmartthingsLocalCallbackListener {
+public class SmartThingsLocalCallbackListener {
 
-    private final Logger logger = LoggerFactory.getLogger(SmartthingsLocalCallbackListener.class);
+    private final Logger logger = LoggerFactory.getLogger(SmartThingsLocalCallbackListener.class);
 
     private @Nullable ServerSocket callbackServerSocket;
     private @Nullable Thread callbackThread;
