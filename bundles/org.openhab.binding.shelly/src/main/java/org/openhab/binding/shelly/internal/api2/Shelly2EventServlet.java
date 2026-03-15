@@ -60,10 +60,6 @@ public class Shelly2EventServlet extends WebSocketServlet {
     private final ShellyThingTable thingTable;
     private final WebSocketClient webSocketClient;
 
-    // A dedicated thread pool isn't needed - but passing the one from the ThingHander here is complicated,
-    // which is why we simply acquire the same thread pool from the source.
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyThingHandler");
-
     @Activate
     public Shelly2EventServlet(@Reference ShellyThingTable thingTable, @Reference WebSocketFactory webSocketFactory) {
         this.thingTable = thingTable;
@@ -129,7 +125,7 @@ public class Shelly2EventServlet extends WebSocketServlet {
 
         // A dedicated thread pool isn't needed - but passing the one from the ThingHander here is complicated,
         // which is why we simply acquire the same thread pool from the source.
-        private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("ShellyThingHandler");
+        private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("thingHandler");
 
         public Shelly2WebSocketCreator(ShellyThingTable thingTable, WebSocketClient webSocketClient) {
             this.thingTable = thingTable;
