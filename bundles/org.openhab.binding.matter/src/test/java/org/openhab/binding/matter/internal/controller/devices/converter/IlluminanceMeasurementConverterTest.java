@@ -19,8 +19,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
-import javax.measure.quantity.Illuminance;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +27,7 @@ import org.mockito.Mock;
 import org.openhab.binding.matter.internal.client.dto.cluster.gen.IlluminanceMeasurementCluster;
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.binding.matter.internal.util.ValueUtils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.types.StateDescription;
@@ -72,18 +69,20 @@ class IlluminanceMeasurementConverterTest extends BaseMatterConverterTest {
         AttributeChangedMessage message = new AttributeChangedMessage();
         message.path = new Path();
         message.path.attributeName = "measuredValue";
-        message.value = 100;
+        message.value = 10001;
         converter.onEvent(message);
+        // 10001 -> 10^((10001-1)/10000) = 10^1 = 10 lux
         verify(mockHandler, times(1)).updateState(eq(1), eq("illuminancemeasurement-measuredvalue"),
-                eq(new QuantityType<Illuminance>(100, Units.LUX)));
+                eq(ValueUtils.valueToIlluminance(10001)));
     }
 
     @Test
     void testInitState() {
-        mockCluster.measuredValue = 100;
+        mockCluster.measuredValue = 20001;
         converter.initState();
+        // 20001 -> 10^((20001-1)/10000) = 10^2 = 100 lux
         verify(mockHandler, times(1)).updateState(eq(1), eq("illuminancemeasurement-measuredvalue"),
-                eq(new QuantityType<Illuminance>(100, Units.LUX)));
+                eq(ValueUtils.valueToIlluminance(20001)));
     }
 
     @Test
