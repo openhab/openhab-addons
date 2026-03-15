@@ -68,4 +68,12 @@ public class WLedHelper {
         }
         return "";
     }
+
+    public static String getMacAddress(String message) {
+        String macAddress = getValue(message, "\"mac\":\"", "\"");
+        if (!macAddress.isBlank()) {
+            return macAddress.replaceAll("[^A-Fa-f0-9]", "").toUpperCase().replaceAll("(.{2})(?!$)", "$1:");
+        }
+        return "";
+    }
 }

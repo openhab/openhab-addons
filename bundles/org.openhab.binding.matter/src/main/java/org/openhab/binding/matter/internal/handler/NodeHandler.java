@@ -78,6 +78,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
     private Integer pollInterval = 0;
     private Map<Integer, EndpointHandler> bridgedEndpoints = new ConcurrentHashMap<>();
     private volatile @Nullable ProgressCallback progressCallback;
+    private volatile UpdateStateEnum lastHandledOtaState = UpdateStateEnum.UNKNOWN;
 
     public NodeHandler(Bridge bridge, BaseThingHandlerFactory thingHandlerFactory,
             MatterStateDescriptionOptionProvider stateDescriptionProvider,
@@ -224,6 +225,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                 client.otaStartUpdate(getNodeId()).get(30, TimeUnit.SECONDS);
                 progressCallback.defineSequence(ProgressStep.DOWNLOADING, ProgressStep.UPDATING);
                 this.progressCallback = progressCallback;
+                lastHandledOtaState = UpdateStateEnum.UNKNOWN;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 logger.debug("Failed to start firmware update for device {}", getNodeId(), e);
@@ -249,6 +251,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                 progressCallback.canceled();
             }
             this.progressCallback = null;
+            lastHandledOtaState = UpdateStateEnum.UNKNOWN;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.debug("Failed to cancel firmware update for device {}", getNodeId(), e);
@@ -356,6 +359,13 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                 OtaSoftwareUpdateRequestorCluster.CLUSTER_ID) instanceof OtaSoftwareUpdateRequestorConverter converter) {
             if (canceled) {
                 converter.resetUpdateState();
+                ProgressCallback progressCallback = this.progressCallback;
+                if (progressCallback != null) {
+                    progressCallback.canceled();
+                }
+                this.progressCallback = null;
+                lastHandledOtaState = UpdateStateEnum.UNKNOWN;
+                return;
             }
             handleOtaUpdateAvailable(converter.isUpdateAvailable());
             handleOtaStateTransition(converter.getLastUpdateState());
@@ -394,6 +404,7 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                     progressCallback.success();
                     this.progressCallback = null;
                 }
+                lastHandledOtaState = stateTransition;
                 break;
             case QUERYING:
             case DELAYED_ON_QUERY:
@@ -401,7 +412,8 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
             case DOWNLOADING:
                 updateStatus(status, ThingStatusDetail.FIRMWARE_UPDATING, translationService
                         .getTranslation(MatterBindingConstants.THING_STATUS_DETAIL_FIRMWARE_DOWNLOADING));
-                if (progressCallback != null) {
+                if (progressCallback != null && lastHandledOtaState != UpdateStateEnum.DOWNLOADING) {
+                    lastHandledOtaState = UpdateStateEnum.DOWNLOADING;
                     // DOWNLOADING
                     progressCallback.next();
                 }
@@ -411,7 +423,8 @@ public class NodeHandler extends MatterBaseThingHandler implements BridgeHandler
                 // online when it is done
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING, translationService
                         .getTranslation(MatterBindingConstants.THING_STATUS_DETAIL_FIRMWARE_APPLYING));
-                if (progressCallback != null) {
+                if (progressCallback != null && lastHandledOtaState != UpdateStateEnum.APPLYING) {
+                    lastHandledOtaState = UpdateStateEnum.APPLYING;
                     // UPDATING
                     progressCallback.update(100);
                     progressCallback.next();
