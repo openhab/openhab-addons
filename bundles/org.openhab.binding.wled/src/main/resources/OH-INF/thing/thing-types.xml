@@ -23,6 +23,10 @@
 			<channel id="syncSend" typeId="syncSend"/>
 			<channel id="syncReceive" typeId="syncReceive"/>
 		</channels>
+		<properties>
+			<property name="macAddress"></property>
+		</properties>
+		<representation-property>macAddress</representation-property>
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
