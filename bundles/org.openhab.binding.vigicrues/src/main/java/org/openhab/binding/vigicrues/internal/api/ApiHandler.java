@@ -146,7 +146,10 @@ public class ApiHandler {
                 }
             }
             throw new VigiCruesException(("Request failed after %d retry %s").formatted(MAX_RETRY_ATTEMPS, url));
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new VigiCruesException("Thread interrupted while calling API", e);
+        } catch (TimeoutException | ExecutionException e) {
             throw new VigiCruesException(e);
         } catch (JsonSyntaxException e) {
             throw new VigiCruesException(e);

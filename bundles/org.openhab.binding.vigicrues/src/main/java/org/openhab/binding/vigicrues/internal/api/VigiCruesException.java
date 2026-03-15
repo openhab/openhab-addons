@@ -27,6 +27,10 @@ public class VigiCruesException extends Exception {
         super(e.getMessage(), e);
     }
 
+    public VigiCruesException(String msg, Throwable e) {
+        super(msg, e);
+    }
+
     public VigiCruesException(String msg) {
         super(msg, null);
     }
