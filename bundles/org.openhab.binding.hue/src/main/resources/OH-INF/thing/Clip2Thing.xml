@@ -134,8 +134,8 @@
 			<bridge-type-ref id="bridge-api2"/>
 		</supported-bridge-type-refs>
 
-		<label>Hue Room Light Group</label>
-		<description>A group of Hue API v2 lights that are located in a single room.</description>
+		<label>Hue Room Group</label>
+		<description>A group of Hue API v2 equipment that are located in a single room.</description>
 
 		<channels>
 			<channel id="brightness" typeId="system.brightness">
@@ -160,6 +160,24 @@
 				<description>Set the on/off parameter of the group of lights in the room without changing other state
 					parameters.</description>
 			</channel>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion-last-updated" typeId="last-updated-v2">
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</channel>
+			<channel id="motion-enabled" typeId="sensor-enabled">
+				<description>Motion sensor enabled.</description>
+			</channel>
+			<channel id="light-level" typeId="illuminance">
+				<description>Current light level.</description>
+			</channel>
+			<channel id="light-level-last-updated" typeId="last-updated-v2">
+				<label>Light Level Last Updated</label>
+				<description>The date and time when the light level was last updated.</description>
+			</channel>
+			<channel id="light-level-enabled" typeId="sensor-enabled">
+				<description>Light level sensor enabled.</description>
+			</channel>
 		</channels>
 
 		<representation-property>resourceId</representation-property>
@@ -179,8 +197,8 @@
 			<bridge-type-ref id="bridge-api2"/>
 		</supported-bridge-type-refs>
 
-		<label>Hue Zone Light Group</label>
-		<description>A group of Hue API v2 lights that are located in a zone.</description>
+		<label>Hue Zone Group</label>
+		<description>A group of Hue API v2 equipment that are located in a zone.</description>
 
 		<channels>
 			<channel id="brightness" typeId="system.brightness">
@@ -203,6 +221,24 @@
 			</channel>
 			<channel id="on-off-only" typeId="advanced-power">
 				<description>Set the on/off parameter of the group of lights in the zone without changing other state parameters.</description>
+			</channel>
+			<channel id="motion" typeId="system.motion"/>
+			<channel id="motion-last-updated" typeId="last-updated-v2">
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</channel>
+			<channel id="motion-enabled" typeId="sensor-enabled">
+				<description>Motion sensor enabled.</description>
+			</channel>
+			<channel id="light-level" typeId="illuminance">
+				<description>Current light level.</description>
+			</channel>
+			<channel id="light-level-last-updated" typeId="last-updated-v2">
+				<label>Light Level Last Updated</label>
+				<description>The date and time when the light level was last updated.</description>
+			</channel>
+			<channel id="light-level-enabled" typeId="sensor-enabled">
+				<description>Light level sensor enabled.</description>
 			</channel>
 		</channels>
 
