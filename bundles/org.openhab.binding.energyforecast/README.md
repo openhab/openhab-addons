@@ -24,6 +24,15 @@ Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/
 `refreshInterval` given in minutes. Align this value with your [booked plan](https://www.energyforecast.de/pricing).
 `errorLimit` to avoid extraordinary error percentage values in `metric` group. Value `0` is no limit.
 
+#### Calculate Gross Price
+
+`fixCost`and `vat` are convenience parameters to calculate the gross price easily.
+The gross price is calculated as ( `series price` + `fixCost` ) * (1 + `vat` / 100). 
+
+If you've already one or more items holding fix cost values consider to [calculate the future prices in a rule](https://www.openhab.org/addons/bindings/energidataservice/#time-series).
+
+Instead of the `vat` configuration value consider to use the [VAT Transformation Service](https://www.openhab.org/addons/transformations/vat/). 
+
 ## Channels
 
 All channels delivering `timeseries` information. 
