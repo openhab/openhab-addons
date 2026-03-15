@@ -22,6 +22,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
+import org.openhab.binding.fronius.internal.api.FroniusPollingSkipException;
 import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 import org.openhab.binding.fronius.internal.api.dto.Head;
 import org.openhab.binding.fronius.internal.api.dto.HeadStatus;
@@ -151,6 +152,9 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
             }
+        } catch (FroniusPollingSkipException e) {
+            logger.debug("Skipping refresh for {} because another request is already in progress.",
+                    getThing().getUID().getId());
         } catch (FroniusCommunicationException | RuntimeException e) {
             logger.debug("Exception caught in refresh() for {}", getThing().getUID().getId(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -167,6 +171,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             throws FroniusCommunicationException;
 
     /**
+     * Collect data for periodic polling. Requests are skipped when another request for the same host is in progress.
      *
      * @param type response class type
      * @param url to request
@@ -174,11 +179,26 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
      */
     protected <T extends BaseFroniusResponse> T collectDataFromUrl(Class<T> type, String url)
             throws FroniusCommunicationException {
+        return collectDataFromUrl(type, url, true);
+    }
+
+    /**
+     * Collect data and choose whether the request may be skipped while another request for the same host is active.
+     *
+     * @param type response class type
+     * @param url to request
+     * @param usePollingRequest true when the request may be skipped, false when it must wait for the active request
+     * @return the object representation of the json response
+     */
+    protected <T extends BaseFroniusResponse> T collectDataFromUrl(Class<T> type, String url, boolean usePollingRequest)
+            throws FroniusCommunicationException {
         try {
             int attempts = 1;
             while (true) {
                 logger.trace("Fetching URL = {}", url);
-                String response = FroniusHttpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
+                String response = usePollingRequest
+                        ? FroniusHttpUtil.executePollingUrl(HttpMethod.GET, url, API_TIMEOUT)
+                        : FroniusHttpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
                 logger.trace("aqiResponse = {}", response);
 
                 @Nullable

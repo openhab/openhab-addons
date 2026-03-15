@@ -28,6 +28,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
+import org.openhab.binding.fronius.internal.api.FroniusPollingSkipException;
 import org.openhab.binding.fronius.internal.api.FroniusTlsTrustManagerProvider;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.openhab.core.thing.Bridge;
@@ -175,6 +176,9 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
                     for (FroniusBaseThingHandler service : services) {
                         service.refresh(config);
                     }
+                } catch (FroniusPollingSkipException e) {
+                    logger.debug("Skipping refresh for bridge '{}' because another request is still in progress.",
+                            getThing().getUID().getId());
                 } catch (FroniusCommunicationException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
                 }
@@ -185,6 +189,6 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     }
 
     private void checkBridgeOnline(FroniusBridgeConfiguration config) throws FroniusCommunicationException {
-        FroniusHttpUtil.executeUrl(HttpMethod.GET, "http://" + config.hostname, API_TIMEOUT);
+        FroniusHttpUtil.executePollingUrl(HttpMethod.GET, config.scheme + "://" + config.hostname, API_TIMEOUT);
     }
 }

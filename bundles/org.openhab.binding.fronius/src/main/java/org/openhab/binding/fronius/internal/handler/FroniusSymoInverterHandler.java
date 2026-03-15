@@ -409,7 +409,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     private InverterInfoResponse getInverterInfoData(String scheme, String ip) throws FroniusCommunicationException {
         String location = FroniusBindingConstants.getInverterInfoUrl(scheme, ip);
-        return collectDataFromUrl(InverterInfoResponse.class, location);
+        return collectDataFromUrl(InverterInfoResponse.class, location, false);
     }
 
     /**
