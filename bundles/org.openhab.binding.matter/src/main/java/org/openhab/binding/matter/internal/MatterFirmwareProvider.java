@@ -109,7 +109,7 @@ public class MatterFirmwareProvider implements FirmwareProvider {
             if (firmwareEntry != null && firmwareEntry.updateInfo != null) {
                 OtaUpdateInfo updateInfo = firmwareEntry.updateInfo;
                 FirmwareBuilder builder = FirmwareBuilder.create(thing.getThingTypeUID(),
-                        String.valueOf(updateInfo.softwareVersion));
+                        updateInfo.softwareVersionString);
                 builder.withVendor(String.valueOf(updateInfo.vendorId))
                         .withDescription(updateInfo.softwareVersionString);
                 if (updateInfo.releaseNotesUrl != null && !updateInfo.releaseNotesUrl.isBlank()) {
@@ -121,6 +121,14 @@ public class MatterFirmwareProvider implements FirmwareProvider {
                     }
                 }
                 return Collections.singleton(builder.build());
+            } else {
+                // No OTA update available - return current firmware version so the
+                // framework reports UP_TO_DATE instead of UNKNOWN
+                String currentVersion = thing.getProperties().get(Thing.PROPERTY_FIRMWARE_VERSION);
+                if (currentVersion != null) {
+                    return Collections
+                            .singleton(FirmwareBuilder.create(thing.getThingTypeUID(), currentVersion).build());
+                }
             }
         }
         return null;
