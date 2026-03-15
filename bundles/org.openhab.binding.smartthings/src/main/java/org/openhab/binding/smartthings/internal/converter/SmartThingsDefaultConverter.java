@@ -31,6 +31,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.JSonType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -79,7 +80,10 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
     private Object getValue(Command command, ThingTypeUID thingUid, String channelId) {
         Object value = null;
 
-        String commandSt = command.toString().toLowerCase(Locale.ROOT);
+        String commandSt = command.toString();
+        if (!(command instanceof JSonType)) {
+            commandSt = commandSt.toLowerCase(Locale.ROOT);
+        }
         if (command instanceof DateTimeType dateTimeCommand) {
             value = dateTimeCommand.format("%m/%d/%Y %H.%M.%S");
         } else if (command instanceof HSBType hsbCommand) {
@@ -135,6 +139,10 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
     @Override
     public void convertToSmartThingsInternal(Thing thing, ChannelUID channelUid, Command command) {
         Object value = getValue(command, thing.getThingTypeUID(), channelUid.getId());
+
+        if (command instanceof JSonType jsonType) {
+            value = gson.fromJson(jsonType.getJSonString().toString(), JsonElement.class);
+        }
 
         Channel channel = thing.getChannel(channelUid);
         if (channel == null) {
@@ -227,9 +235,11 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
 
                             JsonObject elm = gson.fromJson("{" + jSonArgs + "}", JsonObject.class);
                             if (elm != null) {
-                                stack.push(elm);
+                                // stack.push(elm);
                             }
-                        } else {
+                        }
+
+                        if (value != null) {
                             stack.push(value);
                         }
                     }

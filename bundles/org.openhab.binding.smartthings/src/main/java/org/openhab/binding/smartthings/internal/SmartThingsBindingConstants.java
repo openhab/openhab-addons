@@ -92,6 +92,7 @@ public class SmartThingsBindingConstants {
     public static final String TYPE_COLOR = "Color";
     public static final String TYPE_CONTACT = "Contact";
     public static final String TYPE_NUMBER = "Number";
+    public static final String TYPE_JSON = "JSon";
     public static final String TYPE_STRING = "String";
     public static final String TYPE_VECTOR3 = "Vector3";
     public static final String TYPE_PLAYER = "Player";
