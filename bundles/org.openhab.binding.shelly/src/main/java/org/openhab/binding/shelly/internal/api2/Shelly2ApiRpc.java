@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -109,10 +110,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final Logger logger = LoggerFactory.getLogger(Shelly2ApiRpc.class);
     private final ShellyThingTable thingTable;
 
-    protected boolean initialized = false;
+    protected volatile boolean initialized = false;
     private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
+    private final ScheduledExecutorService scheduler;
 
     // Plus devices support up to 3 scripts, Pro devices up to 10
     // We need to find a free script id when uploading our script
@@ -124,12 +126,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      *
      * @param thingName Symbolic thing name
      * @param thing Thing Handler (ThingHandlerInterface)
+     * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
-            WebSocketClient webSocketClient) {
+            WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
         super(thingName, thing);
         this.thingTable = thingTable;
         this.client = webSocketClient;
+        this.scheduler = scheduler;
     }
 
     @Override
@@ -143,7 +147,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         if (rpcSocket != null) {
             rpcSocket.disconnect();
         }
-        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client);
+
+        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
         rpcSocket.addMessageHandler(this);
         this.rpcSocket = rpcSocket;
         initialized = true;
@@ -746,9 +751,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onMessage(String message) {
-        logger.debug("{}: Unexpected RPC message received: {}", thingName, message);
-        incProtErrors();
+    public void onPong() {
+        ShellyThingInterface thing;
+        synchronized (this) {
+            thing = this.thing;
+        }
+        if (thing != null) {
+            thing.restartWatchdog();
+        }
     }
 
     @Override
@@ -1363,7 +1373,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void close() {
         Shelly2RpcSocket rpcSocket = this.rpcSocket;
         if (rpcSocket == null) {
-            logger.debug("{}: Cannot close RPC socket since it's null", thingName);
             initialized = false;
             return;
         }
