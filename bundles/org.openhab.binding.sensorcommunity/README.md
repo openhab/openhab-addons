@@ -80,7 +80,7 @@ Perform the following steps to get the appropriate Sensor ID
 
 | Channel ID            | Item Type                         | Description                                          |
 |-----------------------|-----------------------------------|------------------------------------------------------|
-| radiation             | Number:RadiationDoseEffective     | Radiation measure in micro Sievert per hour          |
+| radiation             | Number:RadiationDoseRate          | Radiation measure in micro-Sievert per hour          |
 | radiation-level       | Number                            | Severity level of radiation dose                     |
 | counts-per-minute     | Number                            | Number of decay events in one minute                 |
 | hv-pulses             | Number                            | Number of high voltage pulses in measurement period  |

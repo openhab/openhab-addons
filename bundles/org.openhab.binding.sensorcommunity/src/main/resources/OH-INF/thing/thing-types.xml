@@ -192,7 +192,7 @@
 		<state pattern="%.1f dB" readOnly="true"/>
 	</channel-type>
 	<channel-type id="radiation">
-		<item-type unitHint="μSv/h">Number:RadiationAirDose</item-type>
+		<item-type unitHint="μSv/h">Number:RadiationDoseRate</item-type>
 		<label>Radiation</label>
 		<description>Radiation measure in micro-Sievert per hour</description>
 		<tags>
