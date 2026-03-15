@@ -331,27 +331,13 @@ public class Shelly2RpcSocket implements WriteCallback {
                         Shelly2RpcNotifyEvent events = fromJson(gson, receivedMessage, Shelly2RpcNotifyEvent.class);
                         events.src = message.src;
                         if (events.params == null || events.params.events == null) {
-                            logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("{}: Malformed event data: {}", thingName, receivedMessage);
+                            }
                         } else {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
-                                    if (thingTable.findThing(address) != null) {
-                                        // known device
-                                        ShellyThingInterface thing = thingTable.getThing(address);
-                                        Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
-                                        handler = api.getRpcHandler();
-                                        handler.onNotifyEvent(receivedMessage);
-                                    } else {
-                                        // new device
-                                        if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
-                                            addBluThing(getString(message.src), e.blu, thingTable);
-                                        } else {
-                                            logger.debug(
-                                                    "{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox",
-                                                    message.src, e.event, e.blu.addr);
-                                        }
-                                    }
+                                    handleBluEvent(e, message, receivedMessage);
                                 } else {
                                     handler.onNotifyEvent(receivedMessage);
                                 }
@@ -368,7 +354,32 @@ public class Shelly2RpcSocket implements WriteCallback {
                 }
             }
         } catch (ShellyApiException | IllegalArgumentException e) {
-            logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Unable to process Rpc message ({}): {}", thingName, e.getMessage(), receivedMessage);
+            }
+        }
+    }
+
+    private void handleBluEvent(Shelly2NotifyEvent e, Shelly2RpcBaseMessage message, String receivedMessage)
+            throws ShellyApiException {
+        ShellyThingTable thingTable = this.thingTable;
+        String address = getString(e.blu != null ? e.blu.addr : "").replace(":", "");
+        if (thingTable.findThing(address) != null) {
+            // known device
+            ShellyThingInterface thing = thingTable.getThing(address);
+            Shelly2ApiRpc api = (Shelly2ApiRpc) thing.getApi();
+            Shelly2RpctInterface bluHandler = api.getRpcHandler();
+            bluHandler.onNotifyEvent(receivedMessage);
+        } else {
+            // new device
+            if (SHELLY2_EVENT_BLUSCAN.equals(e.event)) {
+                addBluThing(message.src, e.blu, thingTable);
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("{}: NotifyEvent {} for unknown BLU device {} or Thing in Inbox", message.src, e.event,
+                            e.blu != null ? e.blu.addr : "");
+                }
+            }
         }
     }
 
@@ -486,7 +497,7 @@ public class Shelly2RpcSocket implements WriteCallback {
     public static WebSocketClient createWebSocketClient(WebSocketFactory webSocketFactory, String consumerName) {
         WebSocketClient client = webSocketFactory.createWebSocketClient(consumerName);
         client.setConnectTimeout(SHELLY_API_TIMEOUT_MS);
-        client.setStopTimeout(1000);
+        client.setStopTimeout(3000);
         return client;
     }
 }
