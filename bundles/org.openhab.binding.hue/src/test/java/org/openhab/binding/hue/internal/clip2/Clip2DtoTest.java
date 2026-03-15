@@ -98,15 +98,7 @@ class Clip2DtoTest {
     // Resource types which do not yet have a test JSON payload available
     public static final Set<ResourceType> RESOURCES_WITH_NO_JSON_TEST_CASE_YET = EnumSet.of(
     //@formatter:off
-            ResourceType.CLIP,
-            ResourceType.DEVICE_SOFTWARE_UPDATE,
-            ResourceType.GROUPED_LIGHT_LEVEL,
-            ResourceType.MATTER,
-            ResourceType.MATTER_FABRIC,
-            ResourceType.MOTION_AREA_CANDIDATE,
-            ResourceType.SERVICE_GROUP,
-            ResourceType.WIFI_CONNECTIVITY,
-            ResourceType.ZIGBEE_DEVICE_DISCOVERY
+            ResourceType.SERVICE_GROUP
     //@formatter:on
     );
 
