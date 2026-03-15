@@ -122,6 +122,8 @@ public class ApiHandler {
         int retry = 0;
         try {
             while (retry < MAX_RETRY_ATTEMPS) {
+                retry++;
+
                 Request req = httpClient.newRequest(url).timeout(TIMEOUT_S, TimeUnit.SECONDS).method("GET");
                 req.header("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36");
@@ -133,7 +135,6 @@ public class ApiHandler {
                 req.send(listener);
 
                 ContentResponse response = listener.get(TIMEOUT_S, TimeUnit.SECONDS);
-                retry++;
 
                 int status = response.getStatus();
                 if (status == HttpStatus.OK_200) {
