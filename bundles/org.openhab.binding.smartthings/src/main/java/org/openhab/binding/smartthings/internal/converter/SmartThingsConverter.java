@@ -24,7 +24,6 @@ import org.openhab.binding.smartthings.internal.SmartThingsBindingConstants;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.JSonType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -184,18 +183,6 @@ public abstract class SmartThingsConverter {
                 }
                 if (dataFromSmartThings instanceof Double doubleCommandDimmer) {
                     return new PercentType(new BigDecimal(doubleCommandDimmer));
-                } else {
-                    logger.warn("Failed to convert with a value of {} from class {} to an appropriate type.",
-                            dataFromSmartThings, dataFromSmartThings.getClass().getName());
-                    return UnDefType.UNDEF;
-                }
-
-            case SmartThingsBindingConstants.TYPE_JSON:
-                if (dataFromSmartThings instanceof String jsonCommand) {
-                    return new JSonType(jsonCommand);
-                } else if (dataFromSmartThings instanceof Map<?, ?> jsonTreemap) {
-                    String json = gson.toJson(jsonTreemap);
-                    return new JSonType(json);
                 } else {
                     logger.warn("Failed to convert with a value of {} from class {} to an appropriate type.",
                             dataFromSmartThings, dataFromSmartThings.getClass().getName());
