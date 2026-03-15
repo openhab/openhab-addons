@@ -242,7 +242,7 @@ public class SmartThingsApi {
 
             AppRequest appRequest = new AppRequest();
             appRequest.appName = appName;
-            appRequest.displayName = "OpenhHab";
+            appRequest.displayName = "openHAB";
             appRequest.description = "Desc " + appName;
             appRequest.appType = "API_ONLY";
             appRequest.principalType = "LOCATION";
