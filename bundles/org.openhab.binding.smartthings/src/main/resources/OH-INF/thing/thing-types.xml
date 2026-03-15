@@ -12,19 +12,23 @@
 			<parameter name="appName" type="text" required="false">
 				<label>AppName</label>
 				<description>The Samsung apps name</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="clientId" type="text" required="false">
 				<label>Client ID</label>
 				<description>The app's OAuth Client ID</description>
+                <advanced>true</advanced>
 			</parameter>
 			<parameter name="clientSecret" type="text" required="false">
 				<label>Client Secret</label>
 				<description>The app's OAuth Client Secret</description>
+                <advanced>true</advanced>
 			</parameter>
 			<parameter name="pollingTime" type="integer" required="false">
 				<label>Polling Time</label>
 				<description>The polling time for refreshing the device (-1 is disabled)</description>
 				<default>-1</default>
+                <advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
