@@ -504,7 +504,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
         if (cluster != null && cluster instanceof BasicInformationCluster basicCluster) {
             addProperty(properties, Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
             // This is used for OTA firmware updates
-            addProperty(properties, Thing.PROPERTY_FIRMWARE_VERSION, String.valueOf(basicCluster.softwareVersion));
+            addProperty(properties, Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
             addProperty(properties, Thing.PROPERTY_VENDOR, basicCluster.vendorName);
             addProperty(properties, Thing.PROPERTY_MODEL_ID, basicCluster.productName);
             addProperty(properties, Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
@@ -512,7 +512,7 @@ public abstract class MatterBaseThingHandler extends BaseThingHandler
             cluster = root.clusters.get(BridgedDeviceBasicInformationCluster.CLUSTER_NAME);
             if (cluster != null && cluster instanceof BridgedDeviceBasicInformationCluster basicCluster) {
                 addProperty(properties, Thing.PROPERTY_SERIAL_NUMBER, basicCluster.serialNumber);
-                addProperty(properties, Thing.PROPERTY_FIRMWARE_VERSION, String.valueOf(basicCluster.softwareVersion));
+                addProperty(properties, Thing.PROPERTY_FIRMWARE_VERSION, basicCluster.softwareVersionString);
                 addProperty(properties, Thing.PROPERTY_VENDOR, basicCluster.vendorName);
                 addProperty(properties, Thing.PROPERTY_MODEL_ID, basicCluster.productName);
                 addProperty(properties, Thing.PROPERTY_HARDWARE_VERSION, basicCluster.hardwareVersionString);
