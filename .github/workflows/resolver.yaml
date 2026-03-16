@@ -1,0 +1,52 @@
+name: Resolve itest dependencies
+
+on:
+  schedule:
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  resolve:
+    name: Resolve itest dependencies
+    runs-on: 'ubuntu-24.04'
+    permissions:
+      contents: write
+      pull-requests: write
+    # typical duration is ~20min, set twice the amount as limit (default is 6h)
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build and resolve dependencies
+        id: build
+        # call mvnw directly to avoid filtering of the log by the wrapper,
+        # use more cores, safe to do so as we skip tests (which might depend on load)
+        run: './mvnw verify -B -T 2.5C -U -DskipChecks -DskipTests -DwithResolver'
+        env:
+          MAVEN_OPTS: >-
+            -Xmx8g
+            -Dmaven.wagon.http.retryHandler.count=5
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: Show Resolver Status
+        run: |
+          git branch -v
+          git status
+          git diff
+
+      - name: Open PR if changed
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # 8.1.0
+        with:
+          commit-message: "Resolve itest dependencies"
+          title: "Resolve itest dependencies"
+          branch: "gha/resolver/${{ github.ref_name }}"
+          delete-branch: true
+          # labels: infrastructure
