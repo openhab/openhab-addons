@@ -1,4 +1,4 @@
-# Teleinfo Binding
+## Discovery# Teleinfo Binding
 
 The Teleinfo binding supports an interface to ENEDIS/ERDF [Teleinfo protocol](https://www.enedis.fr/sites/default/files/Enedis-NOI-CPT_54E.pdf) for (French) Electricity Meter. This binding works with a Teleinfo modem plugged to the I1 and I2 terminals of your electricity meter. Teleinfo modems can be ordered (see the [list of tested hardware](#tested-hardware) below) or build by yourself (see [this example](http://bernard.lefrancois.free.fr)).
 
@@ -68,32 +68,33 @@ Standard mode doesn't depend on the pricing options, but it adds some useful inf
 
 ## Bridge
 
-Consumption data will be retrieve directly from your meters (Linky or even older blue meters).<br/>
-More information about Teleinfo protocols can be found here:  [Teleinfo protocol](https://www.enedis.fr/sites/default/files/Enedis-NOI-CPT_54E.pdf) 
+Consumption data can be retrieved directly from your electricity meter (Linky or older “blue” meters).
+More information about the Teleinfo protocol is available here: [Teleinfo protocol](https://www.enedis.fr/sites/default/files/Enedis-NOI-CPT_54E.pdf) 
 
-To achieve this, you need to connect the Teleinfo output to your OpenHAB server.<br/>
-This can be done by plugging a Teleinfo modem into the I1 and I2 terminals of your electricity meter.
-There are two main ways to do this:
+To do this, the Teleinfo output must be connected to your openHAB server.
+This is typically done by connecting a Teleinfo modem to the I1 and I2 terminals of your electricity meter.
 
-- Direct connection: Using a Teleinfo-to-serial modem converter (typically provides data with a granularity between 2 to 5 seconds).
-- Remote connection: Using an ERL dongle put into your counter (typically provides data with a granularity of around 1 minute).
+There are two main ways to achieve this:
+- Direct connection: using a Teleinfo-to-serial modem connected directly to the meter (typically providing data with a granularity of 2 to 5 seconds).
+- Remote connection: using an ERL dongle installed in the meter (typically providing data with a granularity of around 1 minute).
 
-Before the binding can be used, a controller must be added. There is currently two sort of controller (serial or D2l).
+Before the binding can be used, a controller must be configured. Currently, two types of controllers are supported: serial and D2L.
 
-Remote controller connection can use different technologies to transmit the Teleinfo frame.
-I have tested it using a D2L ERL, which uses Wi-Fi technology to send the frame over a TCP/IP port.
-However, other ERLs use different radio technologies, such as:
+Remote controller connections may use different technologies to transmit the Teleinfo frames.
+This binding has been tested with a D2L ERL, which uses Wi-Fi to send the frames over a TCP/IP connection.
+
+However, some ERLs use other radio technologies, such as:
 
 - 433 MHz transmission
 - LoRa or Sigfox (long-range, low-bandwidth networks)
-- KNX technology
-- Zigbee technology
+- KNX
+- Zigbee
 
-The binding currently supports only Wi-Fi/D2L.
+At the moment, the binding supports Wi-Fi/D2L devices only.
 Support for 433 MHz transmission may be added in the future.
-KNX and Zigbee are out of scope as they have their own bindings.
 
-This needs to be done manually. 
+KNX and Zigbee are out of scope, as they already have dedicated openHAB bindings.
+
 
 ### Serial Bridge
 
@@ -117,16 +118,24 @@ The D2L bridge will open a TCP port, listen on it, and wait for Teleinfo frames.
 If you have multiple meters, you can use a single port for all of them.
 The bridge will decode the ID of the D2L device sending the frame and dispatch it to the corresponding thing.
 
-| Parameter                      | Sample         | Description                                                       |
-|--------------------------------|----------------|-------------------------------------------------------------------|
-| listenningPort                 | 7845           | The tcp port we will listen for Teleinfo frame coming from D2L    |
+| Parameter                      | Sample                                  | Description                                                       |
+|--------------------------------|-----------------------------------------|-------------------------------------------------------------------|
+| listenningPort                 | 7845                                    | The tcp port we will listen for Teleinfo frame coming from D2L    |
+| encryptionKeys                 | idd2l:appKey:ivKey;idd2l:appKey:ivKey;  | The key use by your D2L ERL                                       |
+
+EncryptionKeys must be filled with the key assigned to your D2L.  
+You can put multiple encryptionKeys separate by ";". It will be usefull if you have multiple D2L module.  
+
+Each encryptionKey must have this format : idd2l:appKey:ivKey  
+You can find the idd2l on D2L sticker.  
+You will have to ask the appKey and ivKey to eesmart support : support@eesmart.fr  
 
 ## Discovery
 
 This binding provides a discovery service only for things.
 Once the bridge added, electricity meters will automatically appear after starting discovery.
 They meter will have a default label **[MeterType] ADCO #adco** where **#adco** is your electricity meter identifier.
-For D2L-connected meters, you will need to enter the appKey and ivKey for decryption after the discovering phase by editing the discovered thing.
+For D2L-connected meters, you will need to enter the encryptionKey on the D2L bridge previous the discovery phase.
 
 
 ## Channels
@@ -377,11 +386,10 @@ DateTime TLInfoEDF_SMAXSN_DATE "SMAXSN_DATE" <energy> ["Measurement","Energy"] {
 ### Standard TIC Mode With D2l
 
 The following `things` file declare a D2L controller listenning on tcp port 7845 for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289`:
-AppKey and ivKey will be used to decrypt the traffic.
 
 ```java
 Bridge teleinfo:d2lcontroller:teleinfoD2L "D2lBridge" [ listenningPort="7845"] {
-	Thing lsmm_electricitymeter myElectricityMeter [ adco="031528042289", appKey="b9c94b3d84045264e99c12903d7ff983", ivKey="19d2a8b23eba48749baf66fc5e2ff3ab", idd2l="021802000384"]
+	Thing lsmm_electricitymeter myElectricityMeter [ adco="031528042289" ]
 ```
 
 ## Tested Hardware

@@ -70,9 +70,6 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     protected TeleinfoElectricityMeterConfiguration configuration = new TeleinfoElectricityMeterConfiguration();
     private boolean wasLastFrameShort = false;
 
-    private String appKey = "";
-    private String ivKey = "";
-    private long idd2l = -1;
     private String adco = "";
     private double cosphi = Double.NaN;
 
@@ -94,15 +91,6 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
 
         adco = configuration.getAdco();
         logger.debug("Initializing Linky handler for {}", adco);
-
-        appKey = configuration.getAppKey();
-        ivKey = configuration.getIvKey();
-        String idd2lSt = configuration.getIdd2l();
-        if (!idd2lSt.isBlank()) {
-            idd2l = Long.parseLong(idd2lSt);
-        } else {
-            idd2l = -1;
-        }
     }
 
     @Override
@@ -260,8 +248,6 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                                 Manufacturer manufacturer = Manufacturer
                                         .getManufacturerForId(Integer.parseInt(manufacturerSt));
 
-                                props.put(THING_ELECTRICITY_METER_PROPERTY_IDD2L, "" + idd2l);
-
                                 if (manufacturer != null) {
                                     props.put(THING_ELECTRICITY_METER_PROPERTY_MANUFACTURER, manufacturer.getLabel());
                                 }
@@ -370,20 +356,8 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
         }
     }
 
-    public long getIdd2l() {
-        return this.idd2l;
-    }
-
     public String getAdco() {
         return this.adco;
-    }
-
-    public String getAppKey() {
-        return this.appKey;
-    }
-
-    public String getIvKey() {
-        return this.ivKey;
     }
 
     protected @Nullable Instant getAsInstant(String timestamp) {

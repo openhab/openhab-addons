@@ -126,8 +126,11 @@ public class TeleinfoDiscoveryService extends AbstractThingHandlerDiscoveryServi
             ThingTypeUID thingTypeUID = getThingTypeUID(frameSample);
             ThingUID thingUID = new ThingUID(thingTypeUID, adco, thingHandler.getThing().getUID().getId());
 
-            String label = translationProvider.getText(FrameworkUtil.getBundle(getClass()),
-                    String.format("thing-type.teleinfo.%s.label", thingTypeUID.getId()), null, null);
+            String key = String.format("thing-type.teleinfo.%s.label", thingTypeUID.getId());
+            String label = key;
+            if (translationProvider != null) {
+                label = translationProvider.getText(FrameworkUtil.getBundle(getClass()), key, null, null);
+            }
 
             final Map<String, Object> properties = getThingProperties(adco);
             final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;

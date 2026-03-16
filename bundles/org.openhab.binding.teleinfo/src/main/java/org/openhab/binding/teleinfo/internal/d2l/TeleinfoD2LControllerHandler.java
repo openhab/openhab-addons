@@ -45,12 +45,12 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.teleinfo.internal.d2l.TeleinfoD2LConfig.D2LConfig;
 import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoAbstractControllerHandler;
 import org.openhab.binding.teleinfo.internal.handler.TeleinfoElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -74,9 +74,9 @@ import com.google.gson.reflect.TypeToken;
 public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(TeleinfoD2LControllerHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob = null;
-    private String listenningPort = "";
+    private int listenningPort = 7845;
+    private TeleinfoD2LConfig config;
 
-    // this prefix is use on appKey in d2L
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
     private static final DateTimeFormatter LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private static final DateTimeFormatter LOCALDATETIME_FORMATTER = new DateTimeFormatterBuilder()
@@ -104,14 +104,17 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
 
     public TeleinfoD2LControllerHandler(Bridge bridge) {
         super(bridge);
+        config = new TeleinfoD2LConfig();
     }
 
     @Override
     public void initialize() {
-        Configuration thingConfig = getConfig();
-        listenningPort = (String) thingConfig.get("listenningPort");
+        config = getConfigAs(TeleinfoD2LConfig.class);
+        config.initKey();
 
-        if ("".equals(listenningPort)) {
+        listenningPort = config.getListenningPort();
+
+        if (listenningPort == -1) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/@listenning_port_not_defined");
             return;
@@ -274,11 +277,12 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
         }
 
         // Look if we have a thing that is declared for this idd2l
-        TeleinfoElectricityMeterHandler handler = getHandlerForIdd2l(idd2l);
-        if (handler != null) {
+        D2LConfig d2lConfig = config.getConfig(idd2l);
+
+        if (d2lConfig != null) {
             // if so, get appKey and ivKey and decode the buffer
-            String appKey = handler.getAppKey();
-            String ivKey = handler.getIvKey();
+            String appKey = d2lConfig.getAppKey();
+            String ivKey = d2lConfig.getIvKey();
             // Prefix "7F" is required for AES key derivation to ensure proper key formatting for d2l.
             final String AES_KEY_PREFIX = "7F";
 
@@ -343,10 +347,6 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
                         }
 
                         fireOnFrameReceivedEvent(frame);
-                        // handler.handleFrame(frame);
-                        // TeleinfoReceiveThreadListener listener = this.listener;
-                        // listener.onFrameReceived(frame);
-
                         res = true;
                     }
                 }
@@ -356,20 +356,6 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
         }
 
         return res;
-    }
-
-    public @Nullable TeleinfoElectricityMeterHandler getHandlerForIdd2l(long idd2l) {
-        List<Thing> lThing = getThing().getThings();
-
-        for (Thing th : lThing) {
-            if (th.getHandler() instanceof TeleinfoElectricityMeterHandler handler) {
-                if (idd2l == handler.getIdd2l()) {
-                    return handler;
-                }
-            }
-        }
-
-        return null;
     }
 
     public @Nullable TeleinfoElectricityMeterHandler getHandlerForPrmId(String prmId) {
