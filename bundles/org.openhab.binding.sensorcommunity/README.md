@@ -145,4 +145,3 @@ sitemap SensorCommunity label="SensorCommunity" {
         Text item=LDI_NoiseMax              label="Noise max [%.1f %unit%]"
 }
 ```
- 
