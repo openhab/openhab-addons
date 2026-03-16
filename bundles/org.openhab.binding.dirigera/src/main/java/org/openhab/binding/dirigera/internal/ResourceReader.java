@@ -40,7 +40,7 @@ public class ResourceReader implements ResourceProvider {
     private static final Map<String, String> TEMPLATES = new ConcurrentHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(ResourceReader.class);
 
-    private static ResourceProvider provider = new ResourceReader();
+    static ResourceProvider provider = new ResourceReader();
 
     public static String getResource(String resourcePath) {
         return provider.getResourceFile(resourcePath);
@@ -98,9 +98,5 @@ public class ResourceReader implements ResourceProvider {
         }
         logger.warn("DIRIGERA MODEL resource file  {} cannot be provided", fileName);
         return "";
-    }
-
-    public static void setProvider(ResourceProvider resourceProvider) {
-        provider = resourceProvider;
     }
 }

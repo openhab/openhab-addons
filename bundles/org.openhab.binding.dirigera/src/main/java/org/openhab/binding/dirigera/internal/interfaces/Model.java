@@ -94,7 +94,7 @@ public interface Model {
     static final String EVENT_TYPE_SCENE_UPDATE = "sceneUpdated";
     static final String EVENT_TYPE_SCENE_DELETED = "sceneDeleted";
 
-    static final String EVENT_KEY_CLICK_PATTER = "clickPattern";
+    static final String EVENT_KEY_CLICK_PATTERN = "clickPattern";
 
     static final String TEMPLATE_LIGHT_PRESET_BRIGHT = "/json/light-presets/bright.json";
     static final String TEMPLATE_LIGHT_PRESET_SLOWDOWN = "/json/light-presets/slowdown.json";

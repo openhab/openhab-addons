@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link Matter3ButtonCotroller} is the custom handling for BILRESA 3-Button with 3 groups. For each group a
+ * The {@link Matter3ButtonController} is the custom handling for BILRESA 3-Button with 3 groups. For each group a
  * separate handler is created to handle the complexity.
  *
  * @author Bernd Weymann - Initial contribution
@@ -112,7 +112,7 @@ public class Matter3ButtonController extends BaseMatterHandler {
 
         // handle remotePress events
         String channelName = triggerChannelMapping.get(update.optString(JSON_KEY_DEVICE_ID));
-        String clickPattern = TRIGGER_MAPPING.get(update.optString(EVENT_KEY_CLICK_PATTER));
+        String clickPattern = TRIGGER_MAPPING.get(update.optString(EVENT_KEY_CLICK_PATTERN));
         if (channelName != null && clickPattern != null) {
             logger.trace("Button {} pressed: {}", channelName, clickPattern);
             triggerChannel(channelName, clickPattern);

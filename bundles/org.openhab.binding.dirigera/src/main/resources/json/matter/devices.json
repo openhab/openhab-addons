@@ -414,7 +414,7 @@
 			{
 				"attribute": "controlMode",
 				"channel": "control-mode",
-				"channelType": "mode-3-options",
+				"channelType": "mode-4-options",
 				"itemType": "Number",
 				"inType": "String",
 				"outType": "DecimalType",

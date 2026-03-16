@@ -27,7 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.Constants;
 import org.openhab.binding.dirigera.internal.FileReader;
-import org.openhab.binding.dirigera.internal.ResourceReader;
+import org.openhab.binding.dirigera.internal.ResourceReaderMock;
 import org.openhab.binding.dirigera.internal.mock.CallbackMock;
 import org.openhab.binding.dirigera.internal.mock.DicoveryServiceMock;
 import org.openhab.binding.dirigera.internal.mock.DirigeraAPISimu;
@@ -58,7 +58,7 @@ public class DirigeraBridgeProvider {
      * @return Bridge
      */
     public static Bridge prepareSimuBridge(String homeFile, boolean discovery, List<String> knownDevicesd) {
-        ResourceReader.setProvider(new FileReader());
+        ResourceReaderMock.setProvider(new FileReader());
         String ipAddress = "1.2.3.4";
         HttpClient httpMock = mock(HttpClient.class);
 

@@ -286,13 +286,14 @@ Light devices in several variants.
 Can be light bulbs, LED stripes, remote driver and more.
 Configuration contains
 
-| Name                  | Type    | Description                                                         | Default | Required |
-|-----------------------|---------|---------------------------------------------------------------------|---------|----------|
-| `id`                  | text    | Unique id of this device / scene                                    | N/A     | yes      |
-| `fadeTime`            | integer | Required time for fade sequnce to color or brightness               | 750     | yes      |
-| `fadeSequence`        | integer | Define sequence if several light parameters are changed at once     | 0       | yes      |
-| `colorTemperatureMin` | integer | Overwrite minimum color temperature from light device in kelvin     | N/A     | yes      |
-| `colorTemperatureMax` | integer | Overwrite maximum color temperature from light device in kelvin     | N/A       | yes      |
+| Name                  | Type    | Description                                                     | Default | Required |
+|-----------------------|---------|-----------------------------------------------------------------|---------|----------|
+| `id`                  | text    | Unique id of this device / scene                                | N/A     | yes      |
+| `fadeTime`            | integer | Required time for fade sequence to color or brightness          | 750     | yes      |
+| `fadeSequence`        | integer | Define sequence if several light parameters are changed at once | 0       | yes      |
+| `colorTemperatureMin` | integer | Overwrite minimum color temperature from light device in kelvin | N/A     | no       |
+| `colorTemperatureMax` | integer | Overwrite maximum color temperature from light device in kelvin | N/A     | no       |
+
 
 `fadeTime` adjust fading time according to your device.
 Current behavior shows commands are acknowledged while device is fading  but not executed correctly.
@@ -629,12 +630,12 @@ Sensor measuring illuminance.
 
 Environment measures for temperature, humidity and air quality.
 
-| Channel               | Type                  | Read/Write | Description                                          |
-|-----------------------|-----------------------|------------|------------------------------------------------------|
-| `temperature`         | Number:Temperature    | R          | Current indoor temperature                                     |
-| `humidity`            | Number:Dimensionless  | R          | Current atmospheric relative humidity                                         |
-| `particulate-matter`  | Number:Density        | R          | Category 2.5 particulate matter                      |
-| `co2`                 | Number:Dimensionless  | R          | CO₂ concentration    |
+| Channel              | Type                 | Read/Write | Description                           |
+|----------------------|----------------------|------------|---------------------------------------|
+| `temperature`        | Number:Temperature   | R          | Current indoor temperature            |
+| `humidity`           | Number:Dimensionless | R          | Current atmospheric relative humidity |
+| `particulate-matter` | Number:Density       | R          | Category 2.5 particulate matter       |
+| `co2`                | Number:Dimensionless | R          | CO₂ concentration                     |
 
 ## Open Close Sensor
 

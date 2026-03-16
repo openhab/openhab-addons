@@ -79,7 +79,7 @@ public class Matter2ButtonController extends BaseMatterHandler {
 
         // handle remotePress events
         String channelName = triggerChannelMapping.get(update.optString(JSON_KEY_DEVICE_ID));
-        String clickPattern = TRIGGER_MAPPING.get(update.optString(EVENT_KEY_CLICK_PATTER));
+        String clickPattern = TRIGGER_MAPPING.get(update.optString(EVENT_KEY_CLICK_PATTERN));
         if (channelName != null && clickPattern != null) {
             logger.trace("Button {} pressed: {}", channelName, clickPattern);
             triggerChannel(channelName, clickPattern);

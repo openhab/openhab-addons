@@ -189,13 +189,13 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         }
     }
 
-    @Override
     /**
      * Check Handler sanity
      * Initial channel update
      * Thing properties
      * Register device at gateway
      */
+    @Override
     public void initializeDevice() {
         if (!checkHandler()) {
             // if handler doesn't match model status will be set to offline and it will stay until correction

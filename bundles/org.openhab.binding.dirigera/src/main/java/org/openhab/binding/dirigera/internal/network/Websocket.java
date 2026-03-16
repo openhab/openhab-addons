@@ -141,7 +141,7 @@ public class Websocket {
     }
 
     public boolean isRunning() {
-        return websocketClient().isPresent() && session().isPresent() && session().get().isOpen();
+        return websocketClient().isPresent() && session().filter(session -> session.isOpen()).isPresent();
     }
 
     public void stop() {

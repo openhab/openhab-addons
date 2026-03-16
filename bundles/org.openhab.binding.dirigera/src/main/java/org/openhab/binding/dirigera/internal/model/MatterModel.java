@@ -86,12 +86,13 @@ public class MatterModel {
     private final Map<String, JSONObject> statusProperties = new HashMap<>();
     private final List<String> thingProperties = new ArrayList<>();
 
+    static {
+        loadDeviceConfig();
+    }
+
     public MatterModel(String deviceId, String deviceType) {
         this.deviceId = deviceId;
         this.deviceType = deviceType;
-        if (MATTER_DEVICE_CONFIG.isEmpty()) {
-            loadDeviceConfig();
-        }
         addDeviceType(TYPE_BASE);
         addDeviceType(deviceType);
     }
@@ -208,7 +209,7 @@ public class MatterModel {
         if (statusConfig != null) {
             String channel = statusConfig.optString(CHANNEL_KEY_CHANNEL_NAME);
             State state = getState(value, statusConfig);
-            if (channel != null && state != null) {
+            if (!channel.isBlank() && state != null) {
                 return Map.entry(channel, state);
             }
         }
@@ -220,7 +221,7 @@ public class MatterModel {
      *
      * @param value to be transformed
      * @param channelConfiguration for the value
-     * @return
+     * @return state after transformation, null if it cannot or shouldn't be transformed
      */
     private @Nullable State getState(Object value, JSONObject channelConfiguration) {
         // correction for numeric values

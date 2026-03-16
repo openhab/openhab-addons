@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.dirigera.internal.FileReader;
-import org.openhab.binding.dirigera.internal.ResourceReader;
+import org.openhab.binding.dirigera.internal.ResourceReaderMock;
 import org.openhab.binding.dirigera.internal.handler.DirigeraBridgeProvider;
 import org.openhab.binding.dirigera.internal.interfaces.Gateway;
 import org.openhab.core.thing.Bridge;
@@ -38,7 +38,7 @@ class TestMatterModel {
     @BeforeEach
     void setup() {
         // Make sure to use the ResourceReader as ResourceProvider
-        ResourceReader.setProvider(new FileReader());
+        ResourceReaderMock.setProvider(new FileReader());
     }
 
     @Test

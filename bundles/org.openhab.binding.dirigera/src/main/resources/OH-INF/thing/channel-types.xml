@@ -380,7 +380,7 @@
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="mode-3-options" advanced="true">
+	<channel-type id="mode-4-options" advanced="true">
 		<item-type>Number</item-type>
 		<label>Control Mode</label>
 		<description>Select which device type shall be controlled</description>
@@ -410,7 +410,6 @@
 		<state readOnly="false">
 			<options>
 				<option value="0">Not configured</option>
-				<option value="1">Shortcut</option>
 				<option value="2">Lights and outlets</option>
 				<option value="3">Speakers</option>
 			</options>

@@ -103,14 +103,10 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
     private final BundleContext bundleContext;
     private final Websocket websocket;
 
-    @Nullable
-    private DirigeraAPI api;
-    @Nullable
-    private Model model;
-    @Nullable
-    private ScheduledFuture<?> watchdog;
-    @Nullable
-    private ScheduledFuture<?> updater;
+    private @Nullable DirigeraAPI api;
+    private @Nullable Model model;
+    private @Nullable ScheduledFuture<?> watchdog;
+    private @Nullable ScheduledFuture<?> updater;
 
     private Map<String, State> channelStateMap = new HashMap<>();
     private List<Object> knownDevices = new ArrayList<>();
@@ -901,7 +897,7 @@ public class DirigeraHandler extends BaseBridgeHandler implements Gateway, Debug
                     }
                     break;
                 default:
-                    logger.debug("DIRIGERA HANDLER unkown type {} for websocket update {}", type, update);
+                    logger.debug("DIRIGERA HANDLER unknown type {} for websocket update {}", type, update);
             }
         }
     }

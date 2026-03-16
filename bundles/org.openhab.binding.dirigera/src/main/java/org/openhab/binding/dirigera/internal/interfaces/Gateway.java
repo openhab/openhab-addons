@@ -161,7 +161,7 @@ public interface Gateway {
     /**
      * Resolve device name from device id.
      *
-     * @param devieId connected device id
+     * @param deviceId connected device id
      * @return device name as OH label if handler is present, IKEA name otherwise
      */
     String resolveDeviceName(String devieId);
