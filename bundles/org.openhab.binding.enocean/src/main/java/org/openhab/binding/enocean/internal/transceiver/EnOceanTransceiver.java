@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.TooManyListenersException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -244,20 +245,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
             this.timeOutTask = null;
         }
 
-        Future<?> readingTask = this.readingTask;
-        if (readingTask != null) {
-            readingTask.cancel(true);
-
-            InputStream localInputStream = inputStream;
-            if (localInputStream != null) {
-                try {
-                    localInputStream.close();
-                } catch (IOException e) {
-                    logger.debug("IOException occurred while closing the stream", e);
-                }
-            }
-            this.readingTask = null;
-        }
+        shutDownRx();
 
         listeners.clear();
         eventListeners.clear();
@@ -295,7 +283,15 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.info("Transceiver shutdown");
     }
 
-    private void receivePackets() {
+    protected void shutDownRx() {
+        Future<?> readingTask = this.readingTask;
+        if (readingTask != null) {
+            readingTask.cancel(true);
+            this.readingTask = null;
+        }
+    }
+
+    protected void receivePackets() {
         byte[] buffer = new byte[1];
 
         Future<?> readingTask = this.readingTask;
@@ -334,6 +330,10 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     }
 
     protected void informListeners(BasePacket packet) {
+        informListeners(packet, null);
+    }
+
+    protected void informListeners(BasePacket packet, @Nullable ScheduledExecutorService scheduler) {
         try {
             if (packet.getPacketType() == ESPPacketType.RADIO_ERP1) {
                 ERP1Message msg = (ERP1Message) packet;
@@ -356,7 +356,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
 
                             TeachInListener localListener = teachInListener;
                             if (localListener != null) {
-                                localListener.packetReceived(msg);
+                                if (scheduler != null) {
+                                    scheduler.execute(() -> localListener.packetReceived(msg));
+                                } else {
+                                    localListener.packetReceived(msg);
+                                }
                             }
                             return;
                         } else if (teachInListener == null && msg.getIsTeachIn()) {
@@ -369,7 +373,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                         synchronized (this) {
                             HashSet<PacketListener> pl = listeners.get(s);
                             if (pl != null) {
-                                pl.forEach(l -> l.packetReceived(msg));
+                                if (scheduler != null) {
+                                    scheduler.execute(() -> pl.forEach(l -> l.packetReceived(msg)));
+                                } else {
+                                    pl.forEach(l -> l.packetReceived(msg));
+                                }
                             }
                         }
                     }
@@ -390,7 +398,11 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                         logger.info("Received smart teach in from {}", HexUtils.bytesToHex(senderId));
                         TeachInListener localListener = teachInListener;
                         if (localListener != null) {
-                            localListener.eventReceived(event);
+                            if (scheduler != null) {
+                                scheduler.execute(() -> localListener.eventReceived(event));
+                            } else {
+                                localListener.eventReceived(event);
+                            }
                         }
                         return;
                     } else {
@@ -401,7 +413,14 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                 }
 
                 synchronized (this) {
-                    eventListeners.forEach(l -> l.eventReceived(event));
+                    if (!eventListeners.isEmpty()) {
+                        if (scheduler != null) {
+                            final Set<EventListener> eventListeners = Set.copyOf(this.eventListeners);
+                            scheduler.execute(() -> eventListeners.forEach(l -> l.eventReceived(event)));
+                        } else {
+                            eventListeners.forEach(l -> l.eventReceived(event));
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -409,7 +428,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         }
     }
 
-    protected void handleResponse(Response response) throws IOException {
+    protected void handleResponse(Response response) {
         Request localCurrentRequest = currentRequest;
         if (localCurrentRequest != null) {
             ResponseListener<? extends @Nullable Response> listener = localCurrentRequest.responseListener;
