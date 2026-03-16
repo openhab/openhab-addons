@@ -134,7 +134,6 @@ public enum Archetype {
     OTHER;
 
     public static final Set<Archetype> BRIDGES = Set.of(BRIDGE_V2, BRIDGE_V3);
-    public static final Set<Archetype> IGNORED_DEVICES = Set.of(Archetype.BRIDGE_V2, Archetype.BRIDGE_V3);
 
     public static Archetype of(@Nullable String value) {
         if (value != null) {

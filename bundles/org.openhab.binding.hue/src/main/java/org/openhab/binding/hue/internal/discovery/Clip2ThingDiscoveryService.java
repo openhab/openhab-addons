@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
@@ -110,8 +109,8 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
 
                         ProductData productData = resource.getProductData();
                         if (Objects.nonNull(productData)
-                                && Archetype.IGNORED_DEVICES.contains(productData.getProductArchetype())) {
-                            // bridge devices handled by bridge thing handler; other specified devices ignored
+                                && Archetype.BRIDGES.contains(productData.getProductArchetype())) {
+                            // bridges are discovered elsewhere and handled by bridge thing handlers
                             continue;
                         }
 
@@ -120,8 +119,7 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                         String resourceType = resource.getType().toString();
                         String resourceName = resource.getName();
                         String thingId = resourceId;
-                        String thingLabel = ((resource.getMetaData() instanceof MetaData metaData)
-                                && (metaData.getName() instanceof String name)) ? name : resourceName;
+                        String thingLabel = resourceName;
                         String legacyThingUID = null;
 
                         // special zone 'all lights'
