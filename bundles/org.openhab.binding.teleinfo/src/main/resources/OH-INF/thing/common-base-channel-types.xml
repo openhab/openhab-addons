@@ -15,11 +15,11 @@
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	
-   <channel-type id="invalid-frame-counter">
-        <item-type>Number</item-type>
-        <label>Frames Corrupted</label>
-        <description>Counter tracking the number of frames invalid/corrupted (checksum)</description>
-        <state pattern="%d" readOnly="true"></state>
-    </channel-type>
+
+	<channel-type id="invalid-frame-counter">
+		<item-type>Number</item-type>
+		<label>Frames Corrupted</label>
+		<description>Counter tracking the number of frames invalid/corrupted (checksum)</description>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>
