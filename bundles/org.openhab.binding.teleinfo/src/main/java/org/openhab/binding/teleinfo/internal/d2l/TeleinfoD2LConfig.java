@@ -92,5 +92,4 @@ public class TeleinfoD2LConfig {
             this.ivKey = ivKey;
         }
     }
-
 }

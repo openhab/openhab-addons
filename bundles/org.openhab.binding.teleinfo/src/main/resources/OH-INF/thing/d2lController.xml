@@ -19,9 +19,9 @@
 				<description>The tcp port we receive data from d2l</description>
 			</parameter>
 			<parameter name="encryptionKeys" type="text" required="true">
-                <label>Encryption Key</label>
-                <description>The different encryptionKey of your d2l</description>
-            </parameter>
+				<label>Encryption Key</label>
+				<description>The different encryptionKey of your d2l</description>
+			</parameter>
 			<parameter name="ticMode" type="text" required="true">
 				<label>TIC Mode</label>
 				<description>TIC Mode of the telemeter (Standard TIC mode is only available on Linky telemeters)</description>
