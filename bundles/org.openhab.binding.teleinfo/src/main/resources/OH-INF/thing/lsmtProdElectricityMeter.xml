@@ -14,9 +14,9 @@
 		<description>Three-phase producer Linky Electricity meter in standard mode</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
-			<channel-group id="commonLSMGroup" typeId="commonLSMGroupType"/>
-			<channel-group id="producerLSMGroup" typeId="producerLSMGroupType"/>
-			<channel-group id="threePhasedLSMGroup" typeId="threePhasedLSMGroupType"/>
+			<channel-group id="commonLSMGroup" typeId="three-phased-lsm-group-type"/>
+			<channel-group id="producerLSMGroup" typeId="producer-lsm-group-type"/>
+			<channel-group id="threePhasedLSMGroup" typeId="three-phased-lsm-group-type"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:teleinfo:adco"/>
