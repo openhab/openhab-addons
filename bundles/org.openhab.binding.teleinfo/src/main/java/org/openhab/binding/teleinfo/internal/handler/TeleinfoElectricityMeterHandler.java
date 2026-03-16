@@ -142,6 +142,8 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             if (channelUID.getId().indexOf("cosphi") >= 0) {
                 if (command instanceof DecimalType dc) {
                     cosphi = dc.doubleValue();
+                } else if (command instanceof QuantityType<?> qt) {
+                    cosphi = qt.toBigDecimal().doubleValue();
                 }
             } else {
                 logger.debug("The Linky local binding is read-only and can not handle command {} {}",
@@ -314,16 +316,6 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                 } catch (InvalidFrameException e) {
                     logger.warn("Can not find phase.");
                 }
-            } else {
-                if (frame.getLabelToValues().containsKey(Label.RELAIS)) {
-                    String relaisString = frame.get(Label.RELAIS);
-                    if (relaisString != null) {
-                        boolean[] relaisStates = FrameUtil.parseRelaisStates(relaisString);
-                        for (int i = 0; i <= 7; i++) {
-                            updateState(CHANNELS_LSM_RELAIS[i], OnOffType.from(relaisStates[i]));
-                        }
-                    }
-                }
             }
         } catch (InvalidFrameException e) {
             logger.warn("Can not find TIC mode.");
@@ -358,10 +350,11 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             return;
         }
 
-        double phi = Math.acos(cosphi);
+        double clampedCosphi = Math.max(-1.0, Math.min(1.0, cosphi));
+        double phi = Math.acos(clampedCosphi);
         double sinphi = Math.sin(phi);
 
-        double sactive = sinst * cosphi;
+        double sactive = sinst * clampedCosphi;
         double sreactive = sinst * sinphi;
 
         updateState(channelSactive.getChannelName(),
@@ -409,7 +402,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
                 res = res.minusHours(1);
             }
         } else {
-            DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern("MMM ppd yyyy")
+            DateTimeFormatter df = new DateTimeFormatterBuilder().appendPattern("MMM dd yyyy")
                     .toFormatter(Locale.ENGLISH);
             res = LocalDate.parse(timestamp, df).atStartOfDay();
         }
@@ -496,13 +489,9 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
     }
 
     private void handleRelaisPayload(String value) {
-        boolean[] relaisState = new boolean[8];
-        int valuei = Integer.parseInt(value);
+        boolean[] relaisStates = FrameUtil.parseRelaisStates(value);
         for (int i = 0; i <= 7; i++) {
-            relaisState[i] = (valuei & 1) == 1;
-            valuei >>= 1;
-            updateState(TeleinfoBindingConstants.CHANNEL_RELAIS + i, OnOffType.from(relaisState[i]));
-
+            updateState(CHANNELS_LSM_RELAIS[i], OnOffType.from(relaisStates[i]));
         }
     }
 

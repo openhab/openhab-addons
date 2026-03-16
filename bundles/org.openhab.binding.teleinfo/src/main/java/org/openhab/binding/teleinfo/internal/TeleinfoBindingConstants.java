@@ -179,8 +179,6 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_LSM_UMOY2_DATE = "threePhasedLSMGroup#umoy2Date";
     public static final String CHANNEL_LSM_UMOY3_DATE = "threePhasedLSMGroup#umoy3Date";
 
-    public static final String CHANNEL_RELAIS = "commonLSMGroup#relais";
-
     public static final String CHANNEL_PJOURF_IDX = "commonLSMGroup#pjourf";
     public static final String CHANNEL_PPOINTE_IDX = "commonLSMGroup#ppointe";
 
@@ -205,8 +203,8 @@ public class TeleinfoBindingConstants {
     public static final String CHANNEL_PLC_SYNCHRO = "commonLSMGroup#plc-synchro";
     public static final String CHANNEL_TEMPO_TODAY = "commonLSMGroup#tempo-today";
     public static final String CHANNEL_TEMPO_TOMORROW = "commonLSMGroup#tempo-tomorrow";
-    public static final String CHANNEL_MOVING_TIPS_ADVICE = "commonLSMGroup#moving-tips";
-    public static final String CHANNEL_MOVING_TIPS = "commonLSMGroup#advice-moving-tips";
+    public static final String CHANNEL_MOVING_TIPS = "commonLSMGroup#moving-tips";
+    public static final String CHANNEL_MOVING_TIPS_ADVICE = "commonLSMGroup#advice-moving-tips";
 
     public static final String NOT_A_CHANNEL = "";
 

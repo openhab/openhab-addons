@@ -56,13 +56,14 @@
 	</channel-type>
 
 	<channel-type id="power-factor">
-		<item-type>Number:Power</item-type>
+		<item-type>Number</item-type>
 		<label>Teleinfo PowerFactor Type</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
+			<tag>Power</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="switch">
@@ -91,7 +92,7 @@
 		<label>Cutoff Type</label>
 		<description>This status describes the current cutoff type.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state>
 			<options>
@@ -112,7 +113,8 @@
 		<label>Overvoltage State</label>
 		<description>Describes an over voltage condition possible state.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
+			<tag>Voltage</tag>
 		</tags>
 		<state>
 			<options>
@@ -127,7 +129,8 @@
 		<label>Exceeding Power State</label>
 		<description>Describe an Exceeding power condition state papp > pmax.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Alarm</tag>
+			<tag>Power</tag>
 		</tags>
 		<state>
 			<options>
@@ -143,6 +146,7 @@
 		<description>Tell if the meter is in Consummer mode or Producer mode.</description>
 		<tags>
 			<tag>Measurement</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -173,6 +177,7 @@
 		<description>State of the clock.</description>
 		<tags>
 			<tag>Measurement</tag>
+			<tag>Alarm</tag>
 		</tags>
 		<state>
 			<options>
@@ -187,7 +192,8 @@
 		<label>PLC Mode</label>
 		<description>Mode of the PLC</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -202,7 +208,8 @@
 		<label>Output Com State</label>
 		<description>State of the communication output</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state>
 			<options>
@@ -219,7 +226,7 @@
 		<label>PLC State</label>
 		<description>State of the PLC</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state>
 			<options>
@@ -235,7 +242,7 @@
 		<label>PLC Synchro State</label>
 		<description>State of the PLC Synchro</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state>
 			<options>
@@ -250,7 +257,7 @@
 		<label>Moving Tips</label>
 		<description>Indicate a special tariff slot for a specific period.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state>
 			<options>
@@ -258,7 +265,6 @@
 				<option value="1">Moving tips advice 1</option>
 				<option value="2">Moving tips advice 2</option>
 				<option value="3">Moving tips advice 3</option>
-
 			</options>
 		</state>
 	</channel-type>
@@ -268,7 +274,7 @@
 		<label>Tempo Color Information</label>
 		<description>This status describes the tempo color of a day.</description>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state>
 			<options>
@@ -285,7 +291,7 @@
 		<label>Numeric Rate Type</label>
 		<category>energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
