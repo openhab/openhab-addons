@@ -86,11 +86,10 @@ public class PirateWeatherChannelConfiguration {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         try {
             LocalTime localTime = LocalTime.parse(time, formatter);
-            return Duration.ofHours(localTime.getHour())
-                           .plusMinutes(localTime.getMinute())
-                           .toMinutes();
+            return·Duration.ofHours(localTime.getHour()).plusMinutes(localTime.getMinute()).toMinutes();
         } catch (DateTimeParseException ex) {
-            logger.warn("Cannot parse channel configuration '{}' to hour and minutes, use pattern HH:mm, ignoring!", time);
+            logger.warn("Cannot·parse·channel·configuration·'{}'·to·hour·and·minutes,·use·pattern·HH:mm,·ignoring!",
+                    time);
             return 0;
         }
     }
