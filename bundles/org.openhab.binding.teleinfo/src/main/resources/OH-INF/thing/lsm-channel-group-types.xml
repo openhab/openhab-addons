@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="commonLSMGroup">
+	<channel-group-type id="commonLSMGroupType">
 		<label>Common</label>
 		<description>Common channels for Linky telemeter in standard teleinformation mode</description>
 		<category>Energy</category>
@@ -500,7 +500,7 @@
 
 	</channel-group-type>
 
-	<channel-group-type id="producerLSMGroup">
+	<channel-group-type id="producerLSMGroupType">
 		<label>Producer</label>
 		<description>Producer channels for Linky telemeter in standard teleinformation mode</description>
 		<category>Energy</category>
@@ -577,7 +577,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="threePhasedLSMGroup">
+	<channel-group-type id="threePhasedLSMGroupType">
 		<label>Three-phase</label>
 		<description>Three-phased channels for Linky telemeter in standard teleinformation mode</description>
 		<category>Energy</category>
