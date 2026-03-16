@@ -85,21 +85,19 @@ public class PirateWeatherAPIHandler extends BaseBridgeHandler {
                     "@text/offline.conf-error-not-supported-refreshInterval");
             return;
         }
-        String language = config.language;
-        if (language != null && !language.isBlank()
-                && !PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language.toLowerCase())) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-not-supported-language");
-            return;
-        } else {
-            language = localeProvider.getLocale().getLanguage();
-            if (PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
-                logger.debug("Language set to '{}'.", language);
-                Configuration editConfig = editConfiguration();
-                editConfig.put(CONFIG_LANGUAGE, language);
-                updateConfiguration(editConfig);
-            }
-        }
+
+		String language = localeProvider.getLocale().getLanguage();
+		if (PirateWeatherAPIConfiguration.SUPPORTED_LANGUAGES.contains(language)) {
+			logger.debug("Language set to '{}'.", language);
+			Configuration editConfig = editConfiguration();
+			editConfig.put(CONFIG_LANGUAGE, language);
+			updateConfiguration(editConfig);
+		} else {
+			logger.debug("Language not supported '{}', Using Default Language '{}'.", language, DEFAULT_LANGUAGE);
+			Configuration editConfig = editConfiguration();
+			editConfig.put(CONFIG_LANGUAGE, DEFAULT_LANGUAGE);
+			updateConfiguration(editConfig);			
+		}       
 
         updateStatus(ThingStatus.UNKNOWN);
         connection = new PirateWeatherConnection(this, httpClient);
