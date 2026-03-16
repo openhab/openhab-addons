@@ -130,7 +130,6 @@ public class SmartThingsBindingConstants {
     public static final String PORT = "port";
 
     // Thing config properties
-    public static final String SMARTTHINGS_NAME = "smartthingsName";
     public static final String THING_TIMEOUT = "timeout";
 
     public static final String COMPONENT = "component";

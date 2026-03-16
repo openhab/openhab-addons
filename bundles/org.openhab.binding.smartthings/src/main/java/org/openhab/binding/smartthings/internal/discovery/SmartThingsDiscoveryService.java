@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * SmartThings Discovery service
+ * SmartThings discovery service
  *
  * @author Bob Raker - Initial contribution
  */
@@ -53,7 +53,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsDiscoveryService.class);
 
-    private @Nullable SmartThingsBridgeHandler smartthingsBridgeHandler;
+    private @Nullable SmartThingsBridgeHandler smartThingsBridgeHandler;
     private @Nullable SmartThingsTypeRegistry typeRegistry;
 
     /*
@@ -80,7 +80,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
     }
 
     public void doScan(Boolean addDevice) throws SmartThingsException {
-        SmartThingsBridgeHandler bridge = smartthingsBridgeHandler;
+        SmartThingsBridgeHandler bridge = smartThingsBridgeHandler;
         if (bridge == null) {
             return;
         }
@@ -101,36 +101,10 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
 
     public void registerDevice(SmartThingsDevice device, Boolean addDevice) {
         String name = device.name;
-        String label = device.label;
 
         logger.trace("Find Device : {} / {}", device.name, device.label);
 
         if (device.components == null || device.components.length == 0) {
-            return;
-        }
-
-        Boolean enabled = false;
-        if ("Four".equals(label)) {
-            enabled = false;
-        }
-        if ("Petrole".equals(label)) {
-            enabled = true;
-        }
-
-        if ("Bureau".equals(label)) {
-            enabled = false;
-        }
-        if (label.contains("cuisson")) {
-            enabled = false;
-        }
-
-        if (label.contains("Plug")) {
-            enabled = false;
-        }
-
-        // enabled = false;
-
-        if (!enabled) {
             return;
         }
 
@@ -150,7 +124,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         }
 
         if (deviceType == null) {
-            logger.info("unknow device, bypass");
+            logger.debug("unknow device, bypass");
             return;
         }
 
@@ -170,37 +144,35 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
     }
 
     /**
-     * Create a device with the data from the SmartThings hub
+     * Create a device with the data from the SmartThings account
      *
-     * @param deviceData Device data from the hub
+     * @param deviceData Device data from the account
      */
     private void createDevice(String deviceType, SmartThingsDevice device) {
         logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceType, device.name);
 
-        // Build the UID as a string smartthings:{ThingType}:{BridgeName}:{DeviceName}
-        String name = device.label; // Note: this is necessary for null analysis to work
-        if (name == null) {
-            logger.info(
-                    "Unexpectedly received data for a device with no name. Check the SmartThings hub devices and make sure every device has a name");
+        // Build the UID as a string "smartthings:{ThingType}:{BridgeName}:{DeviceName}"
+        String label = device.label; // Note: this is necessary for null analysis to work
+        if (label == null) {
+            logger.warn(
+                    "Unexpectedly received data for a device with no label. Check the SmartThings account and make sure every device has a name.");
             return;
         }
-        String deviceNameNoSpaces = name.replaceAll("\\s", "_");
+        String deviceNameNoSpaces = label.replaceAll("\\s", "_");
         String smartthingsDeviceName = findIllegalChars.matcher(deviceNameNoSpaces).replaceAll("");
-        SmartThingsBridgeHandler bridgeHandler = smartthingsBridgeHandler;
+        SmartThingsBridgeHandler bridgeHandler = smartThingsBridgeHandler;
         if (bridgeHandler != null) {
             ThingUID bridgeUid = bridgeHandler.getThing().getUID();
             String bridgeId = bridgeUid.getId();
             String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
 
             Map<String, Object> properties = new HashMap<>();
-            properties.put(SmartThingsBindingConstants.SMARTTHINGS_NAME, name);
             properties.put(SmartThingsBindingConstants.DEVICE_ID, device.deviceId);
-            properties.put(SmartThingsBindingConstants.DEVICE_LABEL, device.label);
             properties.put(SmartThingsBindingConstants.DEVICE_NAME, device.name);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(new ThingUID(uidStr))
-                    .withProperties(properties).withRepresentationProperty("deviceId").withBridge(bridgeUid)
-                    .withLabel(name).build();
+                    .withProperties(properties).withRepresentationProperty(SmartThingsBindingConstants.DEVICE_ID)
+                    .withBridge(bridgeUid).withLabel(label).build();
 
             thingDiscovered(discoveryResult);
         }
@@ -223,13 +195,13 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof SmartThingsBridgeHandler smartthingsBridgeHandler) {
-            this.smartthingsBridgeHandler = smartthingsBridgeHandler;
+            this.smartThingsBridgeHandler = smartthingsBridgeHandler;
             smartthingsBridgeHandler.registerDiscoveryListener(this);
         }
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return smartthingsBridgeHandler;
+        return smartThingsBridgeHandler;
     }
 }

@@ -75,7 +75,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsTypeRegistryImpl.class);
 
-    private HashMap<String, SemanticTag> sementicTags = new HashMap<String, SemanticTag>();
+    private HashMap<String, SemanticTag> semanticTags = new HashMap<String, SemanticTag>();
     private @Nullable SmartThingsThingTypeProvider thingTypeProvider;
     private @Nullable SmartThingsChannelTypeProvider channelTypeProvider;
     private @Nullable SmartThingsChannelGroupTypeProvider channelGroupTypeProvider;
@@ -90,16 +90,17 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     }
 
     public void initSemanticTags() {
-        sementicTags.put("light", Equipment.LIGHTBULB);
-        sementicTags.put("motionsensor", Equipment.MOTION_DETECTOR);
-        sementicTags.put("oven", Equipment.OVEN);
-        sementicTags.put("dishwasher", Equipment.DISHWASHER);
-        sementicTags.put("smartplug", Equipment.POWER_OUTLET);
-        sementicTags.put("leaksensor", Equipment.LEAK_SENSOR);
+        semanticTags.put("light", Equipment.LIGHTBULB);
+        semanticTags.put("motionsensor", Equipment.MOTION_DETECTOR);
+        semanticTags.put("oven", Equipment.OVEN);
+        semanticTags.put("dishwasher", Equipment.DISHWASHER);
+        semanticTags.put("smartplug", Equipment.POWER_OUTLET);
+        semanticTags.put("leaksensor", Equipment.LEAK_SENSOR);
+        semanticTags.put("airconditioner", Equipment.AIR_CONDITIONER);
 
         // @todo: review this one
-        sementicTags.put("hub", Equipment.NETWORK_APPLIANCE);
-        sementicTags.put("networking", Equipment.NETWORK_APPLIANCE);
+        semanticTags.put("hub", Equipment.NETWORK_APPLIANCE);
+        semanticTags.put("networking", Equipment.NETWORK_APPLIANCE);
     }
 
     @Override
@@ -229,7 +230,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         channelTypeId = getChannelType(smartThingsType, capa, channelProp);
 
         if ("".equals(channelTypeId)) {
-            logger.info("need review");
+            logger.debug("need review");
         }
         String label = capa.name;
 
@@ -423,7 +424,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                     }
                 }
 
-                tt = createThingType(deviceType, deviceId, groupTypes);
+                tt = createThingType(deviceType, device.deviceTypeName, groupTypes);
                 lcThingTypeProvider.addThingType(tt);
             }
         }
@@ -470,8 +471,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
 
                 if (subPropList != null) {
                     for (String subPropKey : subPropList.keySet()) {
-                        logger.info("");
-
                         Map<String, String> props = new Hashtable<String, String>();
 
                         String channelName = getChannelName(subPropKey);
@@ -627,10 +626,10 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
     }
 
     public @Nullable SemanticTag getThingSemanticType(String deviceType) {
-        if (sementicTags.containsKey(deviceType)) {
-            return sementicTags.get(deviceType);
+        if (semanticTags.containsKey(deviceType)) {
+            return semanticTags.get(deviceType);
         } else {
-            logger.info("@need review, missing semanticTag for deviceType: {}", deviceType);
+            logger.debug("@need review, missing semanticTag for deviceType: {}", deviceType);
         }
         return null;
     }

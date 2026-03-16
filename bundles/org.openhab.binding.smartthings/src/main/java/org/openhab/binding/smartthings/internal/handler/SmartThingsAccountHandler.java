@@ -89,7 +89,6 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     }
 
     public void registerSubcriptions() {
-        logger.info("registerSubcriptions()");
         SmartThingsApi api = this.getSmartThingsApi();
 
         boolean sucess = false;
@@ -101,7 +100,6 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     }
 
     public void initCapabilites() throws SmartThingsException {
-        logger.info("initCapabilites()");
         SmartThingsApi api = this.getSmartThingsApi();
         typeRegistry.setCloudBridgeHandler(this);
 
@@ -127,7 +125,6 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
         }
 
         api.getNetworkConnector().waitAllPendingRequest();
-        logger.info("End init capa");
     }
 
     @Override
