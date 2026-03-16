@@ -75,6 +75,7 @@ To do this, the Teleinfo output must be connected to your openHAB server.
 This is typically done by connecting a Teleinfo modem to the I1 and I2 terminals of your electricity meter.
 
 There are two main ways to achieve this:
+
 - Direct connection: using a Teleinfo-to-serial modem connected directly to the meter (typically providing data with a granularity of 2 to 5 seconds).
 - Remote connection: using an ERL dongle installed in the meter (typically providing data with a granularity of around 1 minute).
 

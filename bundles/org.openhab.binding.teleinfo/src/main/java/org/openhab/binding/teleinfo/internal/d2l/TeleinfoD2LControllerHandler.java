@@ -26,6 +26,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -34,6 +35,7 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -78,7 +80,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
     private TeleinfoD2LConfig config;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
-    private static final DateTimeFormatter LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    private static final DateTimeFormatter LOCALDATE_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd", Locale.ROOT);
     private static final DateTimeFormatter LOCALDATETIME_FORMATTER = new DateTimeFormatterBuilder()
             .appendPattern("uuuu-MM-dd['T'][' ']HH:mm").optionalStart().appendLiteral(':')
             .appendValue(SECOND_OF_MINUTE, 2).optionalStart().appendFraction(NANO_OF_SECOND, 0, 9, true).toFormatter();
@@ -161,7 +163,6 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
             socket.configureBlocking(false);
             socket.register(selector, SelectionKey.OP_ACCEPT);
             updateStatus(ThingStatus.ONLINE);
-
         } catch (Exception ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
             return;
@@ -284,18 +285,17 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
             String appKey = d2lConfig.getAppKey();
             String ivKey = d2lConfig.getIvKey();
             // Prefix "7F" is required for AES key derivation to ensure proper key formatting for d2l.
-            final String AES_KEY_PREFIX = "7F";
+            final String aesKeyPrefix = "7F";
 
             try {
                 Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
-                byte[] bytesKey = new BigInteger(AES_KEY_PREFIX + appKey, 16).toByteArray();
+                byte[] bytesKey = new BigInteger(aesKeyPrefix + appKey, 16).toByteArray();
                 SecretKeySpec key = new SecretKeySpec(bytesKey, 1, bytesKey.length - 1, "AES");
 
                 byte[] bytesIv = new BigInteger(ivKey, 16).toByteArray();
                 IvParameterSpec iv = new IvParameterSpec(bytesIv);
 
-                // cipher.init(Cipher.DECRYPT_MODE, key, iv);
                 cipher.init(Cipher.DECRYPT_MODE, key, iv);
 
                 byte[] bufferToDecode = new byte[length];
@@ -307,7 +307,7 @@ public class TeleinfoD2LControllerHandler extends TeleinfoAbstractControllerHand
                 int payloadLength = byteBufferDecode.getShort(18);
                 int payloadType = byteBufferDecode.get(20) & 0x7f;
 
-                String st1 = new String(plainText, 22, payloadLength);
+                String st1 = new String(plainText, 22, payloadLength, StandardCharsets.UTF_8);
                 logger.trace("frame with payload: {}", payloadType);
 
                 if (payloadType == 0x03) {
