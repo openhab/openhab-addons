@@ -23,7 +23,6 @@ import org.openhab.binding.pirateweather.internal.handler.PirateWeatherWeatherAn
  */
 @NonNullByDefault
 public class PirateWeatherWeatherAndForecastConfiguration {
-    public String location = ""; // Ensure non-null default
     public int forecastHours;
     public int forecastDays;
     public int numberOfAlerts;
