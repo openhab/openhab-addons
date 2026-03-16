@@ -43,9 +43,4 @@ public class FileReader implements ResourceProvider {
     public String getResourceFile(String resourcePath) {
         return readFileInString("src/main/resources" + resourcePath);
     }
-
-    @Override
-    public String getResourceFileUncompressed(String resourcePath) {
-        return readFileInString("src/main/resources" + resourcePath);
-    }
 }

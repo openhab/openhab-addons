@@ -28,7 +28,7 @@
 	</channel-type>
 	<channel-type id="sensor-schedule">
 		<item-type>Number</item-type>
-		<label>Activity Schedule</label>
+		<label>Sensor Schedule</label>
 		<description>Schedule when the sensor shall be active</description>
 		<state>
 			<options>

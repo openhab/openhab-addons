@@ -255,7 +255,7 @@ public class MatterModel {
             case "mapping" -> map(inValue.toString(), channelConfiguration.getJSONObject(CHANNEL_KEY_MAPPING));
             case "code" -> "";
             default -> {
-                logger.info("MATTER MODEL State conversion: transformation '{}' unknown", transformation);
+                logger.warn("MATTER MODEL State conversion: transformation '{}' unknown", transformation);
                 yield "";
             }
         };
@@ -271,7 +271,7 @@ public class MatterModel {
                 try {
                     yield new DecimalType(transformed);
                 } catch (NumberFormatException nfe) {
-                    logger.info("MATTER MODEL State conversion: cannot convert {} into number", transformed);
+                    logger.warn("MATTER MODEL State conversion: cannot convert {} into number", transformed);
                     yield UnDefType.UNDEF;
                 }
             }
@@ -280,11 +280,11 @@ public class MatterModel {
                 try {
                     yield QuantityType.valueOf(transformed);
                 } catch (NumberFormatException nfe) {
-                    logger.info("MATTER MODEL State conversion: cannot convert {} into number, cause {}", transformed,
+                    logger.warn("MATTER MODEL State conversion: cannot convert {} into number, cause {}", transformed,
                             nfe.getMessage());
                     yield UnDefType.UNDEF;
                 } catch (IllegalArgumentException iae) {
-                    logger.info("MATTER MODEL State conversion: cannot convert {} into quantity, cause {}", transformed,
+                    logger.warn("MATTER MODEL State conversion: cannot convert {} into quantity, cause {}", transformed,
                             iae.getMessage());
                     yield UnDefType.UNDEF;
                 }
@@ -293,7 +293,7 @@ public class MatterModel {
             case "OpenClosedType" ->
                 (Boolean.TRUE.toString().equalsIgnoreCase(transformed)) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             default -> {
-                logger.info("MATTER MODEL State conversion: out type '{}' unknown", outType);
+                logger.warn("MATTER MODEL State conversion: out type '{}' unknown", outType);
                 yield UnDefType.NULL;
             }
         };
@@ -310,7 +310,7 @@ public class MatterModel {
     private String map(String value, JSONObject mapping) {
         Object mappingValue = mapping.opt(value);
         if (mappingValue == null) {
-            logger.trace("MATTER MODEL State conversion: no mapping found for {} in {}", value, mapping);
+            logger.warn("MATTER MODEL State conversion: no mapping found for {} in {}", value, mapping);
             return "";
         }
         return mappingValue.toString();
@@ -352,7 +352,7 @@ public class MatterModel {
                 case "mapping" -> map(command.toString(), channelConfiguration.getJSONObject(CHANNEL_KEY_MAPPING));
                 case "code" -> "";
                 default -> {
-                    logger.info("MATTER MODEL Request conversion: unknown transformation {} for target attribute '{}'",
+                    logger.warn("MATTER MODEL Request conversion: unknown transformation {} for target attribute '{}'",
                             transformation, targetAttribute);
                     yield "";
                 }
@@ -365,7 +365,7 @@ public class MatterModel {
                 case "Boolean" -> Boolean.parseBoolean(commandStringValue);
                 case "String" -> commandStringValue;
                 default -> {
-                    logger.info("MATTER MODEL Request conversion: unknown outType {} for target attribute '{}'",
+                    logger.warn("MATTER MODEL Request conversion: unknown outType {} for target attribute '{}'",
                             outType, targetAttribute);
                     yield "";
                 }
@@ -378,7 +378,7 @@ public class MatterModel {
                     yield patch;
                 }
                 default -> {
-                    logger.info("MATTER MODEL Request conversion: unknown json content {} for target attribute '{}'",
+                    logger.warn("MATTER MODEL Request conversion: unknown json content {} for target attribute '{}'",
                             jsonContent, targetAttribute);
                     yield new JSONObject();
                 }
@@ -431,7 +431,7 @@ public class MatterModel {
      * Read complete device definitions from resources into memory
      */
     public static void loadDeviceConfig() {
-        String deviceConfig = ResourceReader.getResourceUncompressed(CONFIG_FILE_PATH);
+        String deviceConfig = ResourceReader.getResource(CONFIG_FILE_PATH);
         JSONArray devices = new JSONArray(deviceConfig);
         devices.forEach(device -> {
             String tt = ((JSONObject) device).getString(CONFIG_KEY_THING_TYPE);

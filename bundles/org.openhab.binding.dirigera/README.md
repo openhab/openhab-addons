@@ -47,7 +47,7 @@ Examples are MYGGSPRAY as `occupancy-sensor` which also provides a `light-sensor
 
 | ThingTypeUID          | Description                                               | Section                                   | Products                                  |
 |-----------------------|-----------------------------------------------------------|-------------------------------------------|-------------------------------------------|
-| `occupancy-sensor`    | Sensor to detect motion. Maybe combined with light-sensor | [Sensors](#occupancy-sensor)              | MYGGSPRAY                                 |
+| `occupancy-sensor`    | Sensor to detect presence of people                       | [Sensors](#occupancy-sensor)              | MYGGSPRAY                                 |
 | `light-sensor`        | Sensor providing illuminance measures                     | [Sensors](#light-sensor)                  | included in MYGGSPRAY                     |
 | `environment-sensor`  | Sensor measuring temperature, humidity and air quality    | [Sensors](#environment-sensor)            | TIMMERFLOTTE, ALPSTUGA                    |
 | `open-close-sensor`   | Sensor detecting open/closed doors, windows or drawers    | [Sensors](#open-close-sensor)             | MYGGBETT                                  |
@@ -606,7 +606,10 @@ State will switch to `Undef` after countdown.
 
 ## Occupancy Sensor
 
-Sensor detecting motion events.
+Sensor to detect presence of people.
+Currently IKEA's product portfolio provides only motion sensors without additional presence detection. 
+Nevertheless they are registered as _occupancy_ which is a bit misleading.
+Maybe there will be extensions in the future.
 
 | Channel               | Type                  | Read/Write | Description                                      |
 |-----------------------|-----------------------|------------|--------------------------------------------------|

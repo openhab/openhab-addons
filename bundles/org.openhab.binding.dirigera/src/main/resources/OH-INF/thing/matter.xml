@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Occupancy Sensor</label>
-		<description>Sensor to detect motion</description>
+		<description>Sensor to detect presence of people</description>
 
 		<config-description-ref uri="thing-type:dirigera:base-device"/>
 	</thing-type>

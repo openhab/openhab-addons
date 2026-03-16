@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.dirigera.internal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dirigera.internal.interfaces.ResourceProvider;
@@ -46,15 +43,11 @@ public class ResourceReader implements ResourceProvider {
         return provider.getResourceFile(resourcePath);
     }
 
-    public static String getResourceUncompressed(String resourcePath) {
-        return provider.getResourceFileUncompressed(resourcePath);
-    }
-
     @Override
     public String getResourceFile(String resourcePath) {
         String template = TEMPLATES.get(resourcePath);
         if (template == null) {
-            template = getBundleResource(resourcePath, true);
+            template = getBundleResource(resourcePath);
             if (!template.isBlank()) {
                 TEMPLATES.put(resourcePath, template);
             } else {
@@ -65,31 +58,17 @@ public class ResourceReader implements ResourceProvider {
         return template;
     }
 
-    @Override
-    public String getResourceFileUncompressed(String resourcePath) {
-        return getBundleResource(resourcePath, false);
-    }
-
-    private String getBundleResource(String fileName, boolean compressed) {
+    private String getBundleResource(String fileName) {
         try {
             Bundle myself = FrameworkUtil.getBundle(ResourceReader.class);
             if (myself != null) {
                 URL url = myself.getResource(fileName);
                 if (url != null) {
-                    if (compressed) {
-                        // https://www.baeldung.com/java-scanner-usedelimiter
-                        try (InputStream input = url.openStream();
-                                Scanner scanner = new Scanner(input, StandardCharsets.UTF_8).useDelimiter("\\A")) {
-                            String result = scanner.hasNext() ? scanner.next() : "";
-                            String resultReplaceAll = result.replaceAll("[\\n\\r\\s]", "");
-                            return resultReplaceAll;
-                        }
-                    } else {
-                        try (InputStream input = url.openStream();
-                                BufferedReader reader = new BufferedReader(
-                                        new InputStreamReader(input, StandardCharsets.UTF_8))) {
-                            return reader.lines().collect(Collectors.joining("\n"));
-                        }
+                    // https://www.baeldung.com/java-scanner-usedelimiter
+                    try (InputStream input = url.openStream();
+                            Scanner scanner = new Scanner(input, StandardCharsets.UTF_8).useDelimiter("\\A")) {
+                        String result = scanner.hasNext() ? scanner.next() : "";
+                        return result.replaceAll("[\\n\\r\\s]", "");
                     }
                 }
             }

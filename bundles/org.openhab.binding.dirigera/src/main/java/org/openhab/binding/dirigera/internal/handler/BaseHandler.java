@@ -515,7 +515,7 @@ public class BaseHandler extends BaseThingHandler implements BaseDevice, DebugHa
         }
     }
 
-    protected synchronized void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
+    protected void createChannelIfNecessary(String channelId, String channelTypeUID, String itemType) {
         createChannelIfNecessary(channelId, channelTypeUID, itemType, null, null);
     }
 

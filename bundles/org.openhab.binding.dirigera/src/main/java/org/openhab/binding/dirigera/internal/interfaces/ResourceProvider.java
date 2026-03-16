@@ -21,7 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface ResourceProvider {
-    String getResourceFile(String resourcePath);
 
-    String getResourceFileUncompressed(String resourcePath);
+    /**
+     * Get file from bundle resources and return as String. The file content will be cached in memory for future access.
+     *
+     * @param resourcePath to the resource file
+     * @return file content as String
+     */
+    String getResourceFile(String resourcePath);
 }

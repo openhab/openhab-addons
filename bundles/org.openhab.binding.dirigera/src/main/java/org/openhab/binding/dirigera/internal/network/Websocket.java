@@ -66,8 +66,8 @@ public class Websocket {
     public static final String MODEL_UPDATE_TIME = "modelUpdateDuration";
     public static final String MODEL_UPDATE_LAST = "lastModelUpdate";
 
-    private @Nullable WebSocketClient websocketClient;
-    private @Nullable Session session;
+    private volatile @Nullable WebSocketClient websocketClient;
+    private volatile @Nullable Session session;
     private JSONObject statistics = new JSONObject();
     private HttpClient httpClient;
     private Gateway gateway;
@@ -78,11 +78,11 @@ public class Websocket {
         this.httpClient = httpClient;
     }
 
-    private synchronized void setWebsocketClient(@Nullable WebSocketClient client) {
+    private void setWebsocketClient(@Nullable WebSocketClient client) {
         this.websocketClient = client;
     }
 
-    private synchronized Optional<WebSocketClient> websocketClient() {
+    private Optional<WebSocketClient> websocketClient() {
         WebSocketClient localWebsocketClient = websocketClient;
         if (localWebsocketClient != null) {
             return Optional.of(localWebsocketClient);
@@ -91,11 +91,11 @@ public class Websocket {
         }
     }
 
-    private synchronized void setSession(@Nullable Session session) {
+    private void setSession(@Nullable Session session) {
         this.session = session;
     }
 
-    private synchronized Optional<Session> session() {
+    private Optional<Session> session() {
         Session localSession = session;
         if (localSession != null) {
             return Optional.of(localSession);
