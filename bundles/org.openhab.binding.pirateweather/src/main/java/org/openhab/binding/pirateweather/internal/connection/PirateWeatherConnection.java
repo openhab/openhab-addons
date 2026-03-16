@@ -1,0 +1,192 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.pirateweather.internal.connection;
+
+import static java.util.stream.Collectors.joining;
+import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.eclipse.jetty.http.HttpStatus.*;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.openhab.binding.pirateweather.internal.config.PirateWeatherAPIConfiguration;
+import org.openhab.binding.pirateweather.internal.dto.PirateWeatherJsonWeatherData;
+import org.openhab.binding.pirateweather.internal.handler.PirateWeatherAPIHandler;
+import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.library.types.PointType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+/**
+ * The {@link PirateWeatherConnection} is responsible for handling the connections to Pirate Weather API.
+ *
+ * @author Scott Hanson - Initial contribution
+ */
+@NonNullByDefault
+public class PirateWeatherConnection {
+
+    private final Logger logger = LoggerFactory.getLogger(PirateWeatherConnection.class);
+
+    private static final String PARAM_EXCLUDE = "exclude";
+    private static final String PARAM_UNITS = "units";
+    private static final String PARAM_LANG = "lang";
+
+    private static final String WEATHER_URL = "https://api.pirateweather.net/forecast/%s/%f,%f";
+
+    private final PirateWeatherAPIHandler handler;
+    private final HttpClient httpClient;
+
+    private final ExpiringCacheMap<String, String> cache;
+
+    private final Gson gson = new Gson();
+
+    public PirateWeatherConnection(PirateWeatherAPIHandler handler, HttpClient httpClient) {
+        this.handler = handler;
+        this.httpClient = httpClient;
+
+        PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
+        cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.refreshInterval));
+    }
+
+    /**
+     * Requests the current weather data for the given location (see
+     * https://pirateweather.net/dev/docs#forecast-request).
+     *
+     * @param location location represented as {@link PointType}
+     * @return the current weather data
+     * @throws JsonSyntaxException
+     * @throws PirateWeatherCommunicationException
+     * @throws PirateWeatherConfigurationException
+     */
+    public synchronized @Nullable PirateWeatherJsonWeatherData getWeatherData(@Nullable PointType location)
+            throws JsonSyntaxException, PirateWeatherCommunicationException, PirateWeatherConfigurationException {
+        if (location == null) {
+            throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-location");
+        }
+
+        PirateWeatherAPIConfiguration config = handler.getPirateWeatherAPIConfig();
+        String apikey = config.apikey;
+        if (apikey == null || apikey.isBlank()) {
+            throw new PirateWeatherConfigurationException("@text/offline.conf-error-missing-apikey");
+        }
+
+        String url = String.format(Locale.ROOT, WEATHER_URL, apikey, location.getLatitude().doubleValue(),
+                location.getLongitude().doubleValue());
+
+        return gson.fromJson(getResponseFromCache(buildURL(url, getRequestParams(config))),
+                PirateWeatherJsonWeatherData.class);
+    }
+
+    private Map<String, String> getRequestParams(PirateWeatherAPIConfiguration config) {
+        Map<String, String> params = new HashMap<>();
+        params.put(PARAM_EXCLUDE, "minutely,flags");
+
+        params.put(PARAM_UNITS, "si");
+
+        String language = config.language;
+        if (language != null && !(language = language.trim()).isEmpty()) {
+            params.put(PARAM_LANG, language.toLowerCase());
+        }
+        return params;
+    }
+
+    private String buildURL(String url, Map<String, String> requestParams) {
+        return requestParams.entrySet().stream().filter(entry -> entry.getValue() != null)
+                .map(entry -> entry.getKey() + "=" + encodeParam(entry.getValue()))
+                .collect(joining("&", url + "?", ""));
+    }
+
+    private String encodeParam(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            logger.debug("UnsupportedEncodingException occurred during execution: {}", e.getLocalizedMessage(), e);
+            return "";
+        }
+    }
+
+    private @Nullable String getResponseFromCache(String url)
+            throws PirateWeatherConfigurationException, PirateWeatherCommunicationException {
+        return cache.putIfAbsentAndGet(url, () -> {
+            try {
+                return getResponse(url);
+            } catch (PirateWeatherConfigurationException e) {
+                // Log and handle the exception
+                logger.error("Error fetching response from cache: {}", e.getMessage());
+                return "";
+            } catch (PirateWeatherCommunicationException e) {
+                // Log and handle the exception
+                logger.error("Error fetching response from cache: {}", e.getMessage());
+                return "";
+            }
+        });
+    }
+
+    private String getResponse(String url)
+            throws PirateWeatherConfigurationException, PirateWeatherCommunicationException {
+        try {
+            logger.trace("Pirate Weather request: URL = '{}'", uglifyApikey(url));
+            ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS)
+                    .send();
+            int httpStatus = contentResponse.getStatus();
+            String content = contentResponse.getContentAsString();
+            logger.trace("Pirate Weather response: status = {}, content = '{}'", httpStatus, content);
+            switch (httpStatus) {
+                case OK_200:
+                    return content;
+                case BAD_REQUEST_400:
+                case UNAUTHORIZED_401:
+                case NOT_FOUND_404:
+                    logger.debug("Pirate Weather server responded with status code {}: {}", httpStatus, content);
+                    throw new PirateWeatherConfigurationException(content);
+                default:
+                    logger.debug("Pirate Weather server responded with status code {}: {}", httpStatus, content);
+                    throw new PirateWeatherCommunicationException(content);
+            }
+        } catch (ExecutionException e) {
+            String errorMessage = e.getLocalizedMessage();
+            logger.trace("Exception occurred during execution: {}", errorMessage, e);
+            if (e.getCause() instanceof HttpResponseException) {
+                logger.debug("Pirate Weather server responded with status code {}: Invalid API key.", UNAUTHORIZED_401);
+                throw new PirateWeatherConfigurationException("@text/offline.conf-error-invalid-apikey");
+            } else {
+                throw new PirateWeatherCommunicationException(e);
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new PirateWeatherCommunicationException(e);
+        } catch (Exception e) {
+            logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
+            throw new PirateWeatherCommunicationException(e);
+        }
+    }
+
+    private String uglifyApikey(String url) {
+        return url.replaceAll("(?<=forecast/)[^/]+", "*****");
+    }
+}
