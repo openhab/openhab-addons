@@ -104,7 +104,7 @@ public class RokuHandler extends BaseThingHandler {
         if (host != null && !host.isBlank()) {
             this.communicator = new RokuCommunicator(httpClient, host, config.port);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host name must be specified");
             return;
         }
 
@@ -183,7 +183,7 @@ public class RokuHandler extends BaseThingHandler {
                 }
             } catch (RokuUnknownHostException e) {
                 logger.debug("Unable to resolve hostname: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to resolve hostname");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to resolve host name");
                 return;
             } catch (RokuHttpException e) {
                 logger.debug("Unable to retrieve Roku active-app info. Exception: {}", e.getMessage(), e);
