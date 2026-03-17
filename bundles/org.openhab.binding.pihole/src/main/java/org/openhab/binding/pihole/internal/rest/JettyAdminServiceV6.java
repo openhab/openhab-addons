@@ -61,7 +61,6 @@ public class JettyAdminServiceV6 extends AdminService {
     private final URI databaseSummaryURI;
     private final URI historyClientsURI;
     private final URI configURI;
-    private final URI clientsURI;
     private final String tokenJson;
 
     private @Nullable String sid;
@@ -76,7 +75,6 @@ public class JettyAdminServiceV6 extends AdminService {
         configURI = apiUriBuilder.clone().path("config").build();
         dnsBlockingURI = apiUriBuilder.clone().path("dns").path("blocking").build();
         historyClientsURI = apiUriBuilder.clone().path("history").path("clients").build();
-        clientsURI = apiUriBuilder.clone().path("clients").build();
 
         UriBuilder statsUriBuilder = apiUriBuilder.clone().path("stats");
         statsSummaryURI = statsUriBuilder.clone().path("summary").build();
