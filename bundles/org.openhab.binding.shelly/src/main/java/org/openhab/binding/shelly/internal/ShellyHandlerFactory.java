@@ -159,6 +159,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             String uid = thing.getUID().getAsString();
             thingTable.addThing(uid, handler);
             logger.debug("Thing handler for uid {} added, total things = {}", uid, thingTable.size());
+            return handler;
         }
         logger.debug("Unable to create Thing Handler instance!");
         return null;
