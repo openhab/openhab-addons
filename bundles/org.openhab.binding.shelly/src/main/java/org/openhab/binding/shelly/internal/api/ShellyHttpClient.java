@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.HttpHeaders;
 
@@ -66,13 +67,16 @@ public class ShellyHttpClient {
     public static final String CONTENT_TYPE_FORM_URLENC = "application/x-www-form-urlencoded";
 
     protected final HttpClient httpClient;
-    protected ShellyThingConfiguration config;
-    protected volatile String thingName;
     protected final Gson gson = new Gson();
-    protected int timeoutErrors = 0;
-    protected int timeoutsRecovered = 0;
+    protected volatile String thingName;
+    protected AtomicInteger timeoutErrors = new AtomicInteger(0);
+    protected AtomicInteger timeoutsRecovered = new AtomicInteger(0);
+    protected volatile boolean basicAuth = false;
+
+    // All access must be guarded by "this"
+    protected ShellyThingConfiguration config;
+
     protected final ShellyDeviceProfile profile;
-    protected boolean basicAuth = false;
 
     public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
         this.thingName = thingName;
@@ -88,7 +92,7 @@ public class ShellyHttpClient {
         this.profile = new ShellyDeviceProfile(THING_TYPE_SHELLYUNKNOWN);
     }
 
-    public void setConfig(String thingName, ShellyThingConfiguration config) {
+    public synchronized void setConfig(String thingName, ShellyThingConfiguration config) {
         this.thingName = thingName;
         this.config = config;
     }
@@ -112,6 +116,7 @@ public class ShellyHttpClient {
         ShellyApiResult apiResult;
         int retries = 3;
         boolean timeout = false;
+
         while (retries > 0) {
             try {
                 apiResult = innerRequest(HttpMethod.GET, uri, null, "");
@@ -120,11 +125,15 @@ public class ShellyHttpClient {
                 if (timeout) {
                     logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors, timeoutsRecovered,
                             apiResult.getUrl());
-                    timeoutsRecovered++;
+                    timeoutsRecovered.incrementAndGet();
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !config.password.isEmpty()) {
+                String password;
+                synchronized (this) {
+                    password = config.password;
+                }
+                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !password.isBlank()) {
                     logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
                     basicAuth = true;
                     apiResult = innerRequest(HttpMethod.GET, uri, null, "");
@@ -140,7 +149,7 @@ public class ShellyHttpClient {
                 }
 
                 timeout = true;
-                timeoutErrors++; // count the retries
+                timeoutErrors.incrementAndGet(); // count the retries
                 retries--;
                 if (profile.alwaysOn) {
                     logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
@@ -160,26 +169,34 @@ public class ShellyHttpClient {
 
     private ShellyApiResult innerRequest(HttpMethod method, String uri, @Nullable Shelly2AuthChallenge auth,
             String data) throws ShellyApiException {
+        String deviceIp;
+        String userId;
+        String password;
+        synchronized (this) {
+            deviceIp = config.deviceIp;
+            userId = config.userId;
+            password = config.password;
+        }
+
         Request request = null;
-        String url = "http://" + config.deviceIp + uri;
+        String url = "http://" + deviceIp + uri;
         ShellyApiResultBuilder builder = ShellyApiResult.builder(method.toString(), url);
 
         try {
             request = httpClient.newRequest(url).method(method.toString()).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
 
-            if (!uri.equals(SHELLY_URL_DEVINFO) && !config.password.isEmpty()) { // not for /shelly or no password
-                                                                                 // configured
+            if (!uri.equals(SHELLY_URL_DEVINFO) && !password.isBlank()) { // not for /shelly or no password
+                                                                          // configured
                 // Add Auth info
                 // Gen 1: Basic Auth
                 // Gen 2: Digest Auth
                 String authHeader = "";
                 if (auth != null) { // only if we received an Auth challenge
-                    authHeader = formatAuthResponse(uri,
-                            buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, config.password));
+                    authHeader = formatAuthResponse(uri, buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, password));
                 } else {
                     if (basicAuth) {
-                        String bearer = config.userId + ":" + config.password;
+                        String bearer = userId + ":" + password;
                         authHeader = HTTP_AUTH_TYPE_BASIC + " "
                                 + Base64.getEncoder().encodeToString(bearer.getBytes(StandardCharsets.UTF_8));
                     }
@@ -322,11 +339,11 @@ public class ShellyHttpClient {
     }
 
     public int getTimeoutErrors() {
-        return timeoutErrors;
+        return timeoutErrors.get();
     }
 
     public int getTimeoutsRecovered() {
-        return timeoutsRecovered;
+        return timeoutsRecovered.get();
     }
 
     public void postEvent(String device, String index, String event, Map<String, String> parms)
