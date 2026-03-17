@@ -508,8 +508,8 @@ public class ShieldTVMessageParser {
 
                     logger.trace("{} - Cert privLen: {}", thingId, privLen);
                     if (i + privLen > charArray.length) {
-                        throw new IllegalArgumentException("Private key payload truncated: need " + privLen
-                                + " chars but only " + (charArray.length - i) + " remain");
+                        throw new IllegalArgumentException("Private key payload shorter than expected: privLen="
+                                + privLen + ", remaining=" + (charArray.length - i));
                     }
                     for (int end = i + privLen; i < end; i++) {
                         privKey.append(charArray[i]);
@@ -533,8 +533,8 @@ public class ShieldTVMessageParser {
                     }
 
                     if (i + pubLen > charArray.length) {
-                        throw new IllegalArgumentException("Certificate payload truncated: need " + pubLen
-                                + " chars but only " + (charArray.length - i) + " remain");
+                        throw new IllegalArgumentException("Certificate payload shorter than expected: pubLen=" + pubLen
+                                + ", remaining=" + (charArray.length - i));
                     }
                     for (int end = i + pubLen; i < end; i++) {
                         pubKey.append(charArray[i]);
