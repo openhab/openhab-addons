@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class TeleinfoElectricityMeterConfiguration {
-
     private String adco = "";
 
     public String getAdco() {

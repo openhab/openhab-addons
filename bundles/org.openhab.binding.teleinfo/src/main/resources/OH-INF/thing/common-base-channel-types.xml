@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="baseType">
+	<channel-type id="base">
 		<item-type>Number:Energy</item-type>
 		<label>BASE</label>
 		<description>Total consumed energy</description>
@@ -16,4 +16,10 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="invalid-frame-counter">
+		<item-type>Number</item-type>
+		<label>Frames Corrupted</label>
+		<description>Counter tracking the number of frames invalid/corrupted (checksum)</description>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
 </thing:thing-descriptions>
