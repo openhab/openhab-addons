@@ -251,7 +251,7 @@ public record Ccs2VehicleStatusResponse(String resCode, @SerializedName("Service
 
     // Location & Coordinates
     public record VehicleLocation(@SerializedName("Data") String time, @SerializedName("GeoCoord") GeoCoordinates coord,
-            @SerializedName("Heading") int head, @SerializedName("Speed") ValueUnit speed) {
+            @SerializedName("Heading") double head, @SerializedName("Speed") ValueUnit speed) {
     }
 
     public record GeoCoordinates(@SerializedName("Latitude") double lat, @SerializedName("Longitude") double lon,
