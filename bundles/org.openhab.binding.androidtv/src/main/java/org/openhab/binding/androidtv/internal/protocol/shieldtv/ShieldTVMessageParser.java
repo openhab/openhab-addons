@@ -507,6 +507,10 @@ public class ShieldTVMessageParser {
                     }
 
                     logger.trace("{} - Cert privLen: {}", thingId, privLen);
+                    if (i + privLen > charArray.length) {
+                        throw new IllegalArgumentException("Private key payload shorter than expected: privLen="
+                                + privLen + ", remaining=" + (charArray.length - i));
+                    }
                     for (int end = i + privLen; i < end; i++) {
                         privKey.append(charArray[i]);
                     }
@@ -528,6 +532,10 @@ public class ShieldTVMessageParser {
                                 "Certificate protobuf length " + pubLen + " does not match DER length " + pubDerLen);
                     }
 
+                    if (i + pubLen > charArray.length) {
+                        throw new IllegalArgumentException("Certificate payload shorter than expected: pubLen="
+                                + pubLen + ", remaining=" + (charArray.length - i));
+                    }
                     for (int end = i + pubLen; i < end; i++) {
                         pubKey.append(charArray[i]);
                     }
