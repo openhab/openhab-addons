@@ -58,21 +58,23 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
     private static final int DISCOVERY_INTERVAL_SECONDS = 600;
 
     /**
-     * Two maps of resource types and respective thing types to be discovered for non- motion aware (v2) and motion
-     * aware (v3+) bridges respectively.
+     * Resource types and respective thing types to be discovered for v2 bridges.
      */
-    public static final Map<Boolean, Map<ResourceType, ThingTypeUID>> DISCOVERY_TYPES = Map.of( //
-            false, Map.of( // non- motion aware v2 bridge
-                    ResourceType.DEVICE, THING_TYPE_DEVICE, //
-                    ResourceType.ROOM, THING_TYPE_ROOM, //
-                    ResourceType.ZONE, THING_TYPE_ZONE, //
-                    ResourceType.BRIDGE_HOME, THING_TYPE_ZONE),
-            true, Map.of( // motion aware v3+ bridge
-                    ResourceType.DEVICE, THING_TYPE_DEVICE, //
-                    ResourceType.ROOM, THING_TYPE_ROOM, //
-                    ResourceType.ZONE, THING_TYPE_ZONE, //
-                    ResourceType.BRIDGE_HOME, THING_TYPE_ZONE, //
-                    ResourceType.MOTION_AREA_CONFIGURATION, THING_TYPE_AREA));
+    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES_V2 = Map.of( //
+            ResourceType.DEVICE, THING_TYPE_DEVICE, //
+            ResourceType.ROOM, THING_TYPE_ROOM, //
+            ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
+
+    /**
+     * Resource types and respective thing types to be discovered for v3+ bridges.
+     */
+    public static final Map<ResourceType, ThingTypeUID> DISCOVERY_TYPES_V3 = Map.of( //
+            ResourceType.DEVICE, THING_TYPE_DEVICE, //
+            ResourceType.ROOM, THING_TYPE_ROOM, //
+            ResourceType.ZONE, THING_TYPE_ZONE, //
+            ResourceType.BRIDGE_HOME, THING_TYPE_ZONE, //
+            ResourceType.MOTION_AREA_CONFIGURATION, THING_TYPE_AREA);
 
     private @Nullable ScheduledFuture<?> discoveryTask;
 
@@ -102,8 +104,9 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
         if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 ThingUID bridgeUID = thingHandler.getThing().getUID();
-                for (Entry<ResourceType, ThingTypeUID> entry : DISCOVERY_TYPES.get(thingHandler.motionAware())
-                        .entrySet()) {
+                for (Entry<ResourceType, ThingTypeUID> entry : (thingHandler.getBridgeGeneration() >= 3
+                        ? DISCOVERY_TYPES_V3
+                        : DISCOVERY_TYPES_V2).entrySet()) {
                     for (Resource resource : thingHandler.getResources(new ResourceReference().setType(entry.getKey()))
                             .getResources()) {
 
