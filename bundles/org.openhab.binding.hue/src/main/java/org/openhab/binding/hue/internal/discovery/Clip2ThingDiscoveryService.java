@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
+import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
@@ -107,9 +107,10 @@ public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoverySer
                     for (Resource resource : thingHandler.getResources(new ResourceReference().setType(entry.getKey()))
                             .getResources()) {
 
-                        MetaData metaData = resource.getMetaData();
-                        if (Objects.nonNull(metaData) && Archetype.IGNORED_DEVICES.contains(metaData.getArchetype())) {
-                            // bridge devices handled by bridge thing handler; other unknown devices ignored
+                        ProductData productData = resource.getProductData();
+                        if (Objects.nonNull(productData)
+                                && Archetype.BRIDGES.contains(productData.getProductArchetype())) {
+                            // bridges are discovered elsewhere and handled by bridge thing handlers
                             continue;
                         }
 

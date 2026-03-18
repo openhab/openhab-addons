@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.teleinfo.util;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,7 +32,12 @@ public final class TestUtils {
     }
 
     public static File getTestFile(String testResourceName) {
-        URL url = TestUtils.class.getClassLoader().getResource(testResourceName);
+        ClassLoader classLoader = TestUtils.class.getClassLoader();
+        assertNotNull(classLoader);
+
+        URL url = classLoader.getResource(testResourceName);
+        assertNotNull(url);
+
         try {
             return new File(url.toURI());
         } catch (URISyntaxException e) {
