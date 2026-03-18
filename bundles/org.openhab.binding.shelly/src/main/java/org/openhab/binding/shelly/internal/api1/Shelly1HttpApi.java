@@ -567,6 +567,10 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     private void setSensorEventUrls() throws ShellyApiException, ShellyApiException {
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
+            ShellyThingConfiguration config;
+            synchronized (this) {
+                config = this.config;
+            }
             setEventUrl(config.eventsSensorReport, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
                     SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_OPEN, SHELLY_EVENT_CLOSE,
                     SHELLY_EVENT_VIBRATION, SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY, SHELLY_EVENT_ALARM_OFF,
@@ -581,6 +585,10 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     private void setEventUrls(Integer index) throws ShellyApiException {
+        ShellyThingConfiguration config;
+        synchronized (this) {
+            config = this.config;
+        }
         if (profile.isRoller) {
             setEventUrl(EVENT_TYPE_ROLLER, 0, config.eventsRoller, SHELLY_EVENT_ROLLER_OPEN, SHELLY_EVENT_ROLLER_CLOSE,
                     SHELLY_EVENT_ROLLER_STOP);
@@ -605,6 +613,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
+        ShellyThingConfiguration config;
+        synchronized (this) {
+            config = this.config;
+        }
+
         if (config.localIp.isEmpty()) {
             throw new ShellyApiException(thingName + ": Local IP address was not detected, can't build Callback URL");
         }
@@ -633,6 +646,11 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     private void setEventUrl(String deviceClass, Integer index, boolean enabled, String... eventTypes)
             throws ShellyApiException {
+        ShellyThingConfiguration config;
+        synchronized (this) {
+            config = this.config;
+        }
+
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
                 String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
