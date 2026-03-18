@@ -1,0 +1,48 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "a3752057-d413-4ac5-807a-8d22439678e3",
+			"resources": [
+				"behavior_script",
+				"behavior_instance",
+				"geofence_client",
+				"geolocation",
+				"smart_scene",
+				"clip",
+				"bridge_home",
+				"grouped_light",
+				"grouped_light_level",
+				"grouped_motion",
+				"room",
+				"service_group",
+				"zone",
+				"scene",
+				"homekit",
+				"bridge",
+				"button",
+				"device",
+				"device_power",
+				"device_software_update",
+				"entertainment",
+				"light",
+				"light_level",
+				"zigbee_connectivity",
+				"zgp_connectivity",
+				"motion",
+				"camera_motion",
+				"relative_rotary",
+				"temperature",
+				"zigbee_device_discovery",
+				"contact",
+				"tamper",
+				"speaker",
+				"bell_button",
+				"matter",
+				"matter_fabric",
+				"entertainment_configuration"
+			],
+			"type": "clip"
+		}
+	]
+}

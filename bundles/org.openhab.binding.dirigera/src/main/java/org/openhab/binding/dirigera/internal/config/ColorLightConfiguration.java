@@ -24,4 +24,6 @@ public class ColorLightConfiguration extends BaseDeviceConfiguration {
 
     public int fadeTime = 750;
     public int fadeSequence = 0;
+    public int colorTemperatureMin = -1;
+    public int colorTemperatureMax = -1;
 }

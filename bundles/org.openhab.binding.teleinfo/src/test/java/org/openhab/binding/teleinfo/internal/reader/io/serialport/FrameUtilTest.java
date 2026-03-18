@@ -33,35 +33,37 @@ public class FrameUtilTest {
 
     @Test
     public void testComputeGroupLineChecksumThreePhaseProd() throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-three-phase-prod.raw"))));
-        String groupLine;
-        int i = 0;
-        while ((groupLine = bufferedReader.readLine()) != null) {
-            if (i >= 1 && !TeleinfoInputStream.isHeaderFrame(groupLine)) {
-                char expected = groupLine.charAt(groupLine.length() - 1);
-                char actual = FrameUtil.computeGroupLineChecksum(groupLine.substring(0, groupLine.length() - 2),
-                        TeleinfoTicMode.STANDARD);
-                assertEquals(expected, actual, i + " " + groupLine + " " + (int) expected + " " + (int) actual);
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-three-phase-prod.raw"))))) {
+            String groupLine;
+            int i = 0;
+            while ((groupLine = bufferedReader.readLine()) != null) {
+                if (i >= 1 && !TeleinfoInputStream.isHeaderFrame(groupLine)) {
+                    char expected = groupLine.charAt(groupLine.length() - 1);
+                    char actual = FrameUtil.computeGroupLineChecksum(groupLine.substring(0, groupLine.length() - 2),
+                            TeleinfoTicMode.STANDARD);
+                    assertEquals(expected, actual, i + " " + groupLine + " " + (int) expected + " " + (int) actual);
+                }
+                i++;
             }
-            i++;
         }
     }
 
     @Test
     public void testComputeGroupLineChecksumSinglePhaseProd() throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-single-phase-prod.raw"))));
-        String groupLine;
-        int i = 0;
-        while ((groupLine = bufferedReader.readLine()) != null) {
-            if (i >= 1 && !TeleinfoInputStream.isHeaderFrame(groupLine)) {
-                char expected = groupLine.charAt(groupLine.length() - 1);
-                char actual = FrameUtil.computeGroupLineChecksum(groupLine.substring(0, groupLine.length() - 2),
-                        TeleinfoTicMode.STANDARD);
-                assertEquals(expected, actual, i + " " + groupLine + " " + (int) expected + " " + (int) actual);
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                new FileInputStream(TestUtils.getTestFile("linky-tic-mode-standard-single-phase-prod.raw"))))) {
+            String groupLine;
+            int i = 0;
+            while ((groupLine = bufferedReader.readLine()) != null) {
+                if (i >= 1 && !TeleinfoInputStream.isHeaderFrame(groupLine)) {
+                    char expected = groupLine.charAt(groupLine.length() - 1);
+                    char actual = FrameUtil.computeGroupLineChecksum(groupLine.substring(0, groupLine.length() - 2),
+                            TeleinfoTicMode.STANDARD);
+                    assertEquals(expected, actual, i + " " + groupLine + " " + (int) expected + " " + (int) actual);
+                }
+                i++;
             }
-            i++;
         }
     }
 
