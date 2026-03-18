@@ -101,7 +101,7 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
             }
             this.trustManager = localTrustManager;
         } catch (CertificateException | MalformedURLException e) {
-            logger.debug("An unexpected exception occurred: {}", e.getMessage(), e);
+            logger.warn("An unexpected exception occurred: {}", e.getMessage(), e);
         }
         return localTrustManager;
     }
