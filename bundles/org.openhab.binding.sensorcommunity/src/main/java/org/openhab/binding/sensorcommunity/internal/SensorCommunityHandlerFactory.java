@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.sensorcommunity.internal;
 
+import static org.openhab.binding.sensorcommunity.internal.SensorCommunityBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sensorcommunity.internal.handler.ConditionHandler;
 import org.openhab.binding.sensorcommunity.internal.handler.HTTPHandler;
 import org.openhab.binding.sensorcommunity.internal.handler.NoiseHandler;
 import org.openhab.binding.sensorcommunity.internal.handler.PMHandler;
+import org.openhab.binding.sensorcommunity.internal.handler.RadiationHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -48,19 +51,19 @@ public class SensorCommunityHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return (thingTypeUID.equals(SensorCommunityBindingConstants.THING_TYPE_PARTICULATE)
-                || thingTypeUID.equals(SensorCommunityBindingConstants.THING_TYPE_CONDITIONS)
-                || thingTypeUID.equals(SensorCommunityBindingConstants.THING_TYPE_NOISE));
+        return SUPPORTED_THING_TYPES.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(SensorCommunityBindingConstants.THING_TYPE_PARTICULATE)) {
+        if (THING_TYPE_PARTICULATE.equals(thing.getThingTypeUID())) {
             return new PMHandler(thing);
-        } else if (thing.getThingTypeUID().equals(SensorCommunityBindingConstants.THING_TYPE_CONDITIONS)) {
+        } else if (THING_TYPE_CONDITIONS.equals(thing.getThingTypeUID())) {
             return new ConditionHandler(thing);
-        } else if (thing.getThingTypeUID().equals(SensorCommunityBindingConstants.THING_TYPE_NOISE)) {
+        } else if (THING_TYPE_NOISE.equals(thing.getThingTypeUID())) {
             return new NoiseHandler(thing);
+        } else if (THING_TYPE_RADIATION.equals(thing.getThingTypeUID())) {
+            return new RadiationHandler(thing);
         }
         logger.info("Handler for {} not found", thing.getThingTypeUID());
         return null;
