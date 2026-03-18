@@ -161,7 +161,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     protected void dataUpdate() {
         if (sensorUrl.isBlank()) {
-            logger.info("Sensor URL not configured yet");
+            logger.warn("Sensor URL not configured yet");
             return;
         } else {
             HTTPHandler.getHandler().request(sensorUrl, this);
