@@ -180,6 +180,10 @@
 			</channel>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>resourceId</representation-property>
 
 		<config-description>
@@ -241,6 +245,10 @@
 				<description>Light level sensor enabled.</description>
 			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>resourceId</representation-property>
 
