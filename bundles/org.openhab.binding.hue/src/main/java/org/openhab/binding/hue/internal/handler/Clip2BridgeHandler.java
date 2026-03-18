@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.HueBridgeModel;
 import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
 import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
@@ -109,14 +110,18 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final String AUTOMATION_CHANNEL_DESCRIPTION_KEY = "dynamic-channel.automation-enable.description";
 
     /**
-     * Two lists of resource references that need to be mass down loaded for non- motion aware (v2) and motion
-     * aware (v3+) bridges respectively.
-     * NOTE: the SCENE resources must be mass down loaded first!
+     * Resource references that need to be mass downloaded for v2 bridges.
+     * NOTE: the SCENE resources must be mass downloaded first!
      */
-    public static final Map<Boolean, List<ResourceReference>> MASS_DOWNLOAD_RESOURCE_REFERENCES = Map.of( //
-            false, List.of(SCENE, DEVICE, ROOM, ZONE), // non- motion aware v2 bridge
-            true, List.of(SCENE, DEVICE, ROOM, ZONE, AREA) // motion aware v3+ bridge
-    );
+    public static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES_V2 = List.of(SCENE, DEVICE, ROOM,
+            ZONE);
+
+    /**
+     * Resource references that need to be mass downloaded for v3+ bridges.
+     * NOTE: the SCENE resources must be mass downloaded first!
+     */
+    public static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES_V3 = List.of(SCENE, DEVICE, ROOM,
+            ZONE, AREA);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -142,7 +147,13 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private boolean assetsLoaded;
     private int applKeyRetriesRemaining;
     private int connectRetriesRemaining;
-    private boolean motionAware; // true if the bridge is a v3+ model that supports the motion aware feature
+
+    /**
+     * The generation of the bridge model, as returned by the DEVICE resource, used to determine if certain features are
+     * supported.
+     * For example, the motion aware feature is only supported on v3+ models.
+     */
+    private int bridgeGeneration;
 
     public Clip2BridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory, ThingRegistry thingRegistry,
             LocaleProvider localeProvider, TranslationProvider translationProvider) {
@@ -703,7 +714,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                     properties.put(PROPERTY_PRODUCT_ARCHETYPE, productData.getProductArchetype().toString());
                     properties.put(PROPERTY_PRODUCT_CERTIFIED, productData.getCertified().toString());
 
-                    motionAware = !"BSB002".equals(productData.getModelId());
+                    bridgeGeneration = HueBridgeModel.getGeneration(productData.getModelId());
                 }
                 break; // we only needed the BRIDGE_V2 or BRIDGE_V3 resource
             }
@@ -776,7 +787,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("updateThingsNow()");
         try {
             Clip2Bridge bridge = getClip2Bridge();
-            for (ResourceReference reference : MASS_DOWNLOAD_RESOURCE_REFERENCES.get(motionAware)) {
+            for (ResourceReference reference : bridgeGeneration >= 3 ? MASS_DOWNLOAD_RESOURCE_REFERENCES_V3
+                    : MASS_DOWNLOAD_RESOURCE_REFERENCES_V2) {
                 ResourceType resourceType = reference.getType();
                 List<Resource> resourceList = bridge.getResources(reference).getResources();
                 switch (resourceType) {
@@ -944,11 +956,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Getter for whether the bridge is motion aware
-     * 
-     * @return
+     * Getter for the bridge generation, as determined from the model id.
+     *
+     * @return the bridge generation, or 0 if the generation is unknown.
      */
-    public boolean motionAware() {
-        return motionAware;
+    public int getBridgeGeneration() {
+        return bridgeGeneration;
     }
 }
