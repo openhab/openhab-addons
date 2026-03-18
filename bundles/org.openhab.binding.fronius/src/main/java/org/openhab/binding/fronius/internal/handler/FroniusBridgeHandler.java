@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FroniusBridgeHandler.class);
+    private final FroniusHttpUtil httpUtil = new FroniusHttpUtil();
     private final Set<FroniusBaseThingHandler> services = new HashSet<>();
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ServiceRegistration<?> tlsProviderService;
@@ -127,6 +128,10 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
         unregisterTlsTrustManager();
     }
 
+    FroniusHttpUtil getHttpUtil() {
+        return httpUtil;
+    }
+
     @Override
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
@@ -189,6 +194,6 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     }
 
     private void checkBridgeOnline(FroniusBridgeConfiguration config) throws FroniusCommunicationException {
-        FroniusHttpUtil.executePollingUrl(HttpMethod.GET, config.scheme + "://" + config.hostname, API_TIMEOUT);
+        httpUtil.executePollingUrl(HttpMethod.GET, config.scheme + "://" + config.hostname, API_TIMEOUT);
     }
 }
