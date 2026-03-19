@@ -491,6 +491,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void initializeAssets() {
         logger.debug("initializeAssets() {}", this);
         synchronized (this) {
+            ServiceRegistration<?> temp = trustManagerRegistration;
+            if (temp != null) {
+                temp.unregister();
+                trustManagerRegistration = null;
+            }
+
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
 
             String ipAddress = config.ipAddress;
