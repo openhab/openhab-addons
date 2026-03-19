@@ -19,9 +19,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -75,7 +75,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private final Logger logger = LoggerFactory.getLogger(AtmoFranceApiHandler.class);
-    private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> jobs = new ConcurrentHashMap<>();
     private final AtmoFranceDeserializer deserializer;
     private final HttpClient httpClient;
 

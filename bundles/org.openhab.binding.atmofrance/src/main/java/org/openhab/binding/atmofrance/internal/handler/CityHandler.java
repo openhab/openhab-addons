@@ -16,9 +16,9 @@ import static org.openhab.binding.atmofrance.internal.AtmoFranceBindingConstants
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
@@ -56,7 +56,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
     private static final String POLLENS_JOB = "%s Pollens";
 
     private final Logger logger = LoggerFactory.getLogger(CityHandler.class);
-    private final Map<String, ScheduledFuture<?>> jobs = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> jobs = new ConcurrentHashMap<>();
 
     private @Nullable CityConfiguration config;
 
