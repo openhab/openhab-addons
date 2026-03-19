@@ -530,13 +530,10 @@ public class Clip2Bridge implements Closeable {
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
-    private static boolean isIpAddress(String hostName) {
-        return hostName.matches("^(\\d{1,3}\\.){3}\\d{1,3}$");
-    }
-
     /**
      * Static method to attempt to connect to a Hue Bridge, get its software version, and check if it is high enough to
-     * support the CLIP 2 API.
+     * support the CLIP 2 API. The bridge may redirect HTTP to HTTPS, but since we do not yet have the certificate
+     * configuration parameters for a real bridge, we implement a trustAll policy and disable host name verification.
      *
      * @param hostName the bridge IP address.
      * @return true if bridge is online and it supports CLIP 2, or false if it is online and does not support CLIP 2.
@@ -559,10 +556,7 @@ public class Clip2Bridge implements Closeable {
                     sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
                     httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL().openConnection();
                     httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
-                    if (isIpAddress(hostName)) {
-                        LOGGER.trace("isClip2Supported() using ip address so host name verification disabled");
-                        httpsConnection.setHostnameVerifier((hostname, session) -> true);
-                    }
+                    httpsConnection.setHostnameVerifier((hostname, session) -> true);
                     try (InputStream in = httpsConnection.getInputStream()) {
                         response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                     }
@@ -637,9 +631,8 @@ public class Clip2Bridge implements Closeable {
             String applicationKey) throws ApiException {
         LOGGER.debug("Clip2Bridge()");
         httpClient = httpClientFactory.getCommonHttpClient();
-        SslContextFactory sslContextFactory = httpClient.getSslContextFactory();
-        if (isIpAddress(hostName)) {
-            LOGGER.trace("Clip2Bridge() using ip address so host name verification disabled");
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        if (hostName.matches("^(\\d{1,3}\\.){3}\\d{1,3}$")) {
             sslContextFactory.setEndpointIdentificationAlgorithm(null);
         }
         http2Client = httpClientFactory.createHttp2Client("hue-clip2", sslContextFactory);
