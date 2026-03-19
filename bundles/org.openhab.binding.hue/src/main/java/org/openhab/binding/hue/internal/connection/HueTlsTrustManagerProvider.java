@@ -162,7 +162,7 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
      * @return the content of the PEM file as a string, or null if the file is not found or cannot be read
      */
     private @Nullable String readPEMCertificatesStringFromResource(String fileName) {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        URL resource = HueTlsTrustManagerProvider.class.getClassLoader().getResource(fileName);
         if (resource != null) {
             try (InputStream certInputStream = resource.openStream()) {
                 return new String(certInputStream.readAllBytes(), StandardCharsets.UTF_8);
