@@ -45,6 +45,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -557,7 +558,7 @@ public class Clip2Bridge implements Closeable {
                     sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
                     httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL().openConnection();
                     httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
-                    httpsConnection.setHostnameVerifier((hostname, session) -> true);
+                    httpsConnection.setHostnameVerifier((hostname, session) -> true); // don't verify host name
                     try (InputStream in = httpsConnection.getInputStream()) {
                         response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                     }
@@ -619,6 +620,10 @@ public class Clip2Bridge implements Closeable {
     private @Nullable Thread recreateThread;
     private @Nullable Future<?> checkAliveTask;
 
+    private static final String IPV4_PART = "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)";
+    private static final String IPV4_REGEX = "^(" + IPV4_PART + "\\.){3}" + IPV4_PART + "$";
+    private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
+
     /**
      * Constructor.
      *
@@ -642,7 +647,8 @@ public class Clip2Bridge implements Closeable {
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             throw new ApiException("Could not initialize Hue SSL Context", e);
         }
-        if (hostName.matches("^(\\d{1,3}\\.){3}\\d{1,3}$")) { // if IP address don't verify host name
+        // don't verify host name when using an IP address since Hue certificates don't contain IP SANs
+        if (IPV4_PATTERN.matcher(hostName).matches()) {
             sslContextFactory.setEndpointIdentificationAlgorithm("");
         }
         http2Client = httpClientFactory.createHttp2Client("hue-clip2", sslContextFactory);
