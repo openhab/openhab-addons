@@ -530,6 +530,10 @@ public class Clip2Bridge implements Closeable {
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
+    private static boolean isIpAddress(String hostName) {
+        return hostName.matches("^(\\d{1,3}\\.){3}\\d{1,3}$");
+    }
+
     /**
      * Static method to attempt to connect to a Hue Bridge, get its software version, and check if it is high enough to
      * support the CLIP 2 API.
@@ -546,10 +550,6 @@ public class Clip2Bridge implements Closeable {
         try {
             URL url = new URI(String.format(FORMAT_URL_CONFIG, hostName)).toURL();
             httpConnection = (HttpURLConnection) url.openConnection();
-            /*
-             * TODO we manually check if the bridge redirects to HTTPS, and if so, since v3 bridges
-             * currently don't provide a full certificate chain we force use of a TrustAllTrustManager
-             */
             httpConnection.setInstanceFollowRedirects(false);
             int status = httpConnection.getResponseCode();
             if (status == 301 || status == 302) {
@@ -559,6 +559,10 @@ public class Clip2Bridge implements Closeable {
                     sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
                     httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL().openConnection();
                     httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                    if (isIpAddress(hostName)) {
+                        LOGGER.trace("isClip2Supported() using ip address so host name verification disabled");
+                        httpsConnection.setHostnameVerifier((hostname, session) -> true);
+                    }
                     try (InputStream in = httpsConnection.getInputStream()) {
                         response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                     }
@@ -633,7 +637,12 @@ public class Clip2Bridge implements Closeable {
             String applicationKey) throws ApiException {
         LOGGER.debug("Clip2Bridge()");
         httpClient = httpClientFactory.getCommonHttpClient();
-        http2Client = httpClientFactory.createHttp2Client("hue-clip2", httpClient.getSslContextFactory());
+        SslContextFactory sslContextFactory = httpClient.getSslContextFactory();
+        if (isIpAddress(hostName)) {
+            LOGGER.trace("Clip2Bridge() using ip address so host name verification disabled");
+            sslContextFactory.setEndpointIdentificationAlgorithm(null);
+        }
+        http2Client = httpClientFactory.createHttp2Client("hue-clip2", sslContextFactory);
         http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
         startHttp2Client();
