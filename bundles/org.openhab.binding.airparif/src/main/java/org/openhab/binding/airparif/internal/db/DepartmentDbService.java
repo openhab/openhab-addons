@@ -59,8 +59,7 @@ public class DepartmentDbService {
         try (InputStream stream = DepartmentDbService.class.getResourceAsStream("/db/departments.json");
                 Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
             if (stream == null) {
-                logger.warn("Unable to load departments list: resource /db/departments.json not found");
-                return;
+                throw new IllegalStateException("Resource /db/departments.json not found");
             }
             Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             Department[] parsed = gson.fromJson(reader, Department[].class);
