@@ -19,7 +19,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,15 +56,13 @@ public class DepartmentDbService {
     }
 
     private void loadDB() {
-        ClassLoader cl = Objects.requireNonNull(getClass().getClassLoader());
-        InputStream is = cl.getResourceAsStream("/db/departments.json");
-        if (is == null) {
-            logger.warn("Unable to load departments list: resource /db/departments.json not found");
-            return;
-        }
-
-        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-        try (InputStream stream = is; Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+        try (InputStream stream = DepartmentDbService.class.getResourceAsStream("/db/departments.json");
+                Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+            if (stream == null) {
+                logger.warn("Unable to load departments list: resource /db/departments.json not found");
+                return;
+            }
+            Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
             Department[] parsed = gson.fromJson(reader, Department[].class);
             departments = Arrays.asList(parsed);
             logger.debug("Loaded {} French departments", departments.size());
