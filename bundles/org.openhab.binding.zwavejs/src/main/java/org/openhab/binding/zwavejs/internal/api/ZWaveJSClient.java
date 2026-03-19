@@ -198,11 +198,6 @@ public class ZWaveJSClient implements WebSocketListener {
         this.reconnectFuture = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 start(this.uri);
-                ScheduledFuture<?> future = this.reconnectFuture;
-                if (future != null) {
-                    future.cancel(false);
-                    this.reconnectFuture = null;
-                }
             } catch (CommunicationException | InterruptedException e) {
                 // silently ignore as the thing state is already updated when the connection is lost
                 logger.debug("Error while reconnecting to Z-Wave JS Webservice: {}", e.getMessage());
@@ -227,6 +222,7 @@ public class ZWaveJSClient implements WebSocketListener {
             currentPolicy.setInputBufferSize(bufferSize);
             currentPolicy.setMaxTextMessageSize(bufferSize);
             currentPolicy.setMaxBinaryMessageSize(bufferSize);
+
             keepAliveFuture = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     String data = "Ping";
@@ -236,6 +232,13 @@ public class ZWaveJSClient implements WebSocketListener {
                     logger.warn("Problem starting periodic Ping. {}", e.getMessage());
                 }
             }, 25, 25, TimeUnit.SECONDS);
+
+            ScheduledFuture<?> future = this.reconnectFuture;
+            logger.info("Cancelling reconnect attempts to Z-Wave JS Webservice");
+            if (future != null) {
+                future.cancel(false);
+                this.reconnectFuture = null;
+            }
         }
     }
 
@@ -259,6 +262,7 @@ public class ZWaveJSClient implements WebSocketListener {
         }
 
         notifyListenersOnError(String.format("Error: %s", localThrowable.getMessage()));
+        scheduleReconnect();
     }
 
     @Override
