@@ -16,11 +16,10 @@ import static org.openhab.binding.dirigera.internal.Constants.*;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jmdns.ServiceInfo;
 
@@ -50,7 +49,7 @@ public class DirigeraMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
 
     private static final String SERVICE_TYPE = "_ihsp._tcp.local.";
     private final Logger logger = LoggerFactory.getLogger(DirigeraMDNSDiscoveryParticipant.class);
-    private final List<String> unresolvedDevices = new ArrayList<>();
+    private final Set<String> unresolvedDevices = ConcurrentHashMap.newKeySet();
     protected final ThingRegistry thingRegistry;
 
     @Activate
@@ -83,10 +82,9 @@ public class DirigeraMDNSDiscoveryParticipant implements MDNSDiscoveryParticipan
                     InetAddress address = InetAddress.getByName(gatewayHostName);
                     ipAddress = address.getHostAddress();
                 } catch (Exception e) {
-                    if (!unresolvedDevices.contains(gatewayHostName)) {
-                        unresolvedDevices.add(gatewayHostName);
+                    if (unresolvedDevices.add(gatewayHostName)) {
                         logger.warn("DIRIGERA mDNS failed to resolve IP for {} reason {}", gatewayHostName,
-                                e.getMessage());
+                                e.getMessage(), e);
                     }
                 }
             } else if (ipAddresses.length > 0) {
