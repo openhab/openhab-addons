@@ -297,7 +297,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                         logger.trace("Property target temperatures {} added", message.getValue());
                         properties.put("targetTemperature limits", "[" + minTemp + "," + maxTemp + "]");
                         addChannel(CHANNEL_TYPE_TARGETTEMP, "Number:Temperature");
-                    } else {
+                    } else if (message.getLimitsValue().size() > 0) {
                         switch (function) {
                             case "MODE":
                                 properties.put("supported modes", message.getValue());
@@ -320,6 +320,9 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                                 addChannel(CHANNEL_TYPE_VANESLR, "String");
                                 break;
                         }
+                    } else {
+                        logger.trace("Property {} limits {} not added (due to missing limits)", function,
+                                message.getValue());
                     }
                     updateProperties(properties);
                     break;
