@@ -70,7 +70,7 @@ public class MatterModel {
     public static final String CHANNEL_KEY_REQUEST_JSON = "json";
     public static final String CHANNEL_KEY_MAPPING = "mapping";
     public static final String CHANNEL_KEY_FORMAT = "format";
-    public static final String CHANNEL_KEY_CORRECTION = "correction";
+    public static final String CHANNEL_KEY_CONVERSION = "conversion";
     public static final String CHANNEL_KEY_IN_TYPE = "inType";
     public static final String CHANNEL_KEY_OUT_TYPE = "outType";
 
@@ -225,15 +225,10 @@ public class MatterModel {
      */
     private @Nullable State getState(Object value, JSONObject channelConfiguration) {
         // correction for numeric values
-        String correctionType = channelConfiguration.optString(CHANNEL_KEY_CORRECTION);
+        String conversionType = channelConfiguration.optString(CHANNEL_KEY_CONVERSION);
         var correctedValue = value;
-        if (!correctionType.isBlank() && value instanceof Number num) {
-            double correctionValue = channelConfiguration.getDouble(correctionType);
-            correctedValue = switch (correctionType) {
-                case "factor" -> num.doubleValue() * correctionValue;
-                case "offset" -> num.doubleValue() + correctionValue;
-                default -> value;
-            };
+        if (!conversionType.isBlank() && value instanceof Number num) {
+            correctedValue = ConversionModel.convert(conversionType, num);
         }
         // convert numbers in order to have either Integer or Double values
         String inType = channelConfiguration.optString(CHANNEL_KEY_IN_TYPE);

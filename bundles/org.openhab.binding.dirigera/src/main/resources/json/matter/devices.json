@@ -248,8 +248,7 @@
 				"itemType": "Number:Illuminance",
 				"inType": "Integer",
 				"outType": "QuantityType",
-				"correction": "factor",
-				"factor": 1,
+				"conversion": "illuminance",
 				"transformation": "format",
 				"format": "%d lx"
 			}
