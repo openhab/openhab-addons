@@ -25,8 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.naming.CommunicationException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -44,6 +42,7 @@ import org.openhab.binding.zwavejs.internal.api.dto.messages.BaseMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.EventMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.VersionMessage;
+import org.openhab.binding.zwavejs.internal.api.exception.CommunicationException;
 import org.openhab.binding.zwavejs.internal.handler.ZwaveEventListener;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
@@ -80,21 +79,25 @@ import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 @NonNullByDefault
 public class ZWaveJSClient implements WebSocketListener {
 
-    private Logger logger = LoggerFactory.getLogger(ZWaveJSClient.class);
-    private int bufferSize = 1048576 * 2; // 2 MiB
     private static final int RECONNECT_INTERVAL_MINUTES = 2;
     private static final String BINDING_SHUTDOWN_MESSAGE = "Binding shutdown";
 
+    private final Logger logger = LoggerFactory.getLogger(ZWaveJSClient.class);
     private final WebSocketClient wsClient;
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(BindingConstants.BINDING_ID);
-    private volatile @Nullable Session session;
+    private final Gson gson;
+
     private final Set<ZwaveEventListener> listeners = new CopyOnWriteArraySet<>();
+    private final Object lifecycleLock = new Object();
+    private final Object sendLock = new Object();
+
+    private volatile int bufferSize = 1048576 * 2; // 2 MiB
+    private volatile @Nullable Session session;
     private @Nullable Future<?> sessionFuture;
     private @Nullable ScheduledFuture<?> keepAliveFuture;
     private @Nullable ScheduledFuture<?> reconnectFuture;
-    private final Gson gson;
-    private final Object sendLock = new Object();
-    private String uri = "";
+    private volatile String uri = "";
+    private volatile boolean shuttingDown = false;
 
     public ZWaveJSClient(WebSocketClient wsClient) {
         this.wsClient = wsClient;
@@ -109,20 +112,45 @@ public class ZWaveJSClient implements WebSocketListener {
     }
 
     /**
-     * Starts the WebSocket connection to the Z-Wave JS Webservice.
-     *
-     * @param uri the URI of the WebSocket server
+     * Initiates a WebSocket connection to the Z-Wave JS Webservice at the specified URI.
      * 
-     * @throws CommunicationException if there is an error during communication
+     * <p>
+     * This method attempts to establish a connection to the Z-Wave JS server. If a connection
+     * or connection attempt is already active, the method returns silently without creating
+     * a duplicate connection. If the client is in the process of shutting down, this method
+     * returns without attempting to connect.
      * 
-     * @throws InterruptedException if the thread is interrupted
+     * @param uri the URI of the Z-Wave JS Webservice (e.g., "ws://localhost:3000/")
+     * @throws CommunicationException if an {@link IOException} or {@link URISyntaxException}
+     *             occurs during the connection attempt, or if the URI is invalid
+     * 
+     * @see #stop()
+     * @see #onWebSocketConnect(Session)
+     * @see #onWebSocketError(Throwable)
      */
-    public void start(String uri) throws CommunicationException, InterruptedException {
+    public void start(String uri) throws CommunicationException {
         logger.debug("Connecting to Z-Wave JS Webservice");
-        this.uri = uri;
+        synchronized (lifecycleLock) {
+            this.uri = uri;
+            startLocked();
+        }
+    }
+
+    private void startLocked() throws CommunicationException {
+        if (shuttingDown) {
+            return;
+        }
+        if (hasActiveConnectionOrAttempt()) {
+            logger.debug("Skipping connect attempt because a connection or connection attempt is already active");
+            return;
+        }
         try {
+            shuttingDown = false;
             sessionFuture = wsClient.connect(this, new URI(uri));
         } catch (IOException | URISyntaxException e) {
+            if (e.getCause() instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             throw new CommunicationException("Failed to connect to Z-Wave JS Webservice: " + e.getMessage());
         }
     }
@@ -132,21 +160,12 @@ public class ZWaveJSClient implements WebSocketListener {
      */
     public void stop() {
         logger.debug("Disconnecting from Z-Wave JS Webservice");
-        Session localSession = this.session;
-        if (localSession != null) {
-            stopKeepAlive();
-            try {
-                localSession.close(StatusCode.NORMAL, BINDING_SHUTDOWN_MESSAGE);
-            } catch (Exception e) {
-                logger.debug("Error while closing websocket communication: {} ({})", e.getClass().getName(),
-                        e.getMessage());
-            }
-            session = null;
-        }
+        synchronized (lifecycleLock) {
+            shuttingDown = true;
+            closeSessionLocked(this.session, StatusCode.NORMAL, BINDING_SHUTDOWN_MESSAGE);
+            this.session = null;
 
-        Future<?> localSessionFuture = sessionFuture;
-        if (localSessionFuture != null) {
-            localSessionFuture.cancel(true);
+            stopReconnectJobLocked();
         }
     }
 
@@ -170,18 +189,22 @@ public class ZWaveJSClient implements WebSocketListener {
 
     @Override
     public void onWebSocketClose(int statusCode, @NonNullByDefault({}) String reason) {
-        logger.debug("onWebSocketClose({}, '{}')", statusCode, reason);
+        logger.debug("Closing WebSocket with status code {}, reason '{}'", statusCode, reason);
 
-        try {
-            for (ZwaveEventListener listener : listeners) {
+        for (ZwaveEventListener listener : listeners) {
+            try {
                 listener.onConnectionError(String.format("Connection closed: %d, %s", statusCode, reason));
+            } catch (Exception e) {
+                logger.warn("Error invoking event listener on close", e);
             }
-        } catch (Exception e) {
-            logger.warn("Error invoking event listener on close", e);
         }
-        stopKeepAlive();
-        session = null;
-        sessionFuture = null;
+
+        synchronized (lifecycleLock) {
+            stopKeepAliveLocked();
+            this.session = null;
+            stopSessionFutureLocked();
+        }
+
         if (statusCode == StatusCode.NORMAL && BINDING_SHUTDOWN_MESSAGE.equals(reason)) {
             logger.debug("Z-Wave JS Webservice closed normally");
             return;
@@ -190,34 +213,40 @@ public class ZWaveJSClient implements WebSocketListener {
     }
 
     private void scheduleReconnect() {
-        ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
-        if (reconnectFuture != null) {
-            return;
-        }
-        logger.info("Scheduling reconnect to Z-Wave JS Webservice every {} minutes", RECONNECT_INTERVAL_MINUTES);
-        this.reconnectFuture = scheduler.scheduleWithFixedDelay(() -> {
-            try {
-                start(this.uri);
-            } catch (CommunicationException | InterruptedException e) {
-                // silently ignore as the thing state is already updated when the connection is lost
-                logger.debug("Error while reconnecting to Z-Wave JS Webservice: {}", e.getMessage());
+        synchronized (lifecycleLock) {
+            if (shuttingDown) {
+                logger.debug("Not scheduling reconnect because client is shutting down");
+                return;
             }
-        }, RECONNECT_INTERVAL_MINUTES, RECONNECT_INTERVAL_MINUTES, TimeUnit.MINUTES);
-    }
+            ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
+            if (reconnectFuture != null) {
+                return;
+            }
 
-    private void stopKeepAlive() {
-        ScheduledFuture<?> keepAliveFuture = this.keepAliveFuture;
-        if (keepAliveFuture != null) {
-            keepAliveFuture.cancel(true);
+            logger.info("Scheduling reconnect to Z-Wave JS Webservice every {} minutes", RECONNECT_INTERVAL_MINUTES);
+            this.reconnectFuture = scheduler.scheduleWithFixedDelay(() -> {
+                try {
+                    startLocked();
+                } catch (CommunicationException e) {
+                    // silently ignore as the thing state is already updated when the connection is lost
+                    logger.debug("Error while reconnecting to Z-Wave JS Webservice: {}", e.getMessage());
+                }
+            }, RECONNECT_INTERVAL_MINUTES, RECONNECT_INTERVAL_MINUTES, TimeUnit.MINUTES);
         }
-        this.keepAliveFuture = null;
     }
 
     @Override
     public void onWebSocketConnect(@NonNullByDefault({}) Session session) {
-        logger.debug("onWebSocketConnect('{}')", session);
-        this.session = session;
-        if (session != null) {
+        synchronized (lifecycleLock) {
+            if (shuttingDown) {
+                logger.debug("WebSocket connected but client is shutting down, closing session");
+                closeSessionLocked(session, StatusCode.SHUTDOWN, BINDING_SHUTDOWN_MESSAGE);
+                this.session = null;
+                return;
+            }
+            logger.debug("onWebSocketConnect('{}')", session);
+            this.session = session;
+
             final WebSocketPolicy currentPolicy = session.getPolicy();
             currentPolicy.setInputBufferSize(bufferSize);
             currentPolicy.setMaxTextMessageSize(bufferSize);
@@ -229,16 +258,11 @@ public class ZWaveJSClient implements WebSocketListener {
                     ByteBuffer payload = ByteBuffer.wrap(data.getBytes(StandardCharsets.UTF_8));
                     session.getRemote().sendPing(payload);
                 } catch (IOException e) {
-                    logger.warn("Problem starting periodic Ping. {}", e.getMessage());
+                    logger.warn("Problem sending periodic Ping: {}", e.getMessage());
                 }
             }, 25, 25, TimeUnit.SECONDS);
 
-            ScheduledFuture<?> future = this.reconnectFuture;
-            logger.info("Cancelling reconnect attempts to Z-Wave JS Webservice");
-            if (future != null) {
-                future.cancel(false);
-                this.reconnectFuture = null;
-            }
+            stopReconnectJobLocked();
         }
     }
 
@@ -248,17 +272,12 @@ public class ZWaveJSClient implements WebSocketListener {
                 : new IllegalStateException("Null Exception passed to onWebSocketError");
         logger.debug("Error during websocket communication: {}", localThrowable.getMessage());
 
-        Session localSession = session;
-        if (localSession != null) {
-            stopKeepAlive();
-            try {
-                // Close the session with an error status code
-                localSession.close(StatusCode.SERVER_ERROR, "Error: " + localThrowable.getMessage());
-            } catch (Exception e) {
-                logger.warn("Error while closing websocket session: {}", e.getMessage());
+        synchronized (lifecycleLock) {
+            if (this.session != null) {
+                stopKeepAliveLocked();
+                closeSessionLocked(this.session, StatusCode.SERVER_ERROR, "Error: " + localThrowable.getMessage());
+                this.session = null;
             }
-
-            session = null;
         }
 
         notifyListenersOnError(String.format("Error: %s", localThrowable.getMessage()));
@@ -267,7 +286,7 @@ public class ZWaveJSClient implements WebSocketListener {
 
     @Override
     public void onWebSocketBinary(@NonNullByDefault({}) byte[] payload, int offset, int len) {
-        throw new UnsupportedOperationException("Unimplemented method 'onWebSocketBinary'");
+        logger.debug("Ignoring unsupported binary websocket message (offset={}, len={})", offset, len);
     }
 
     @Override
@@ -292,15 +311,16 @@ public class ZWaveJSClient implements WebSocketListener {
         logEventResponse(baseEvent, message);
 
         // Notify listeners
-        try {
-            for (ZwaveEventListener listener : listeners) {
+        for (ZwaveEventListener listener : listeners) {
+            try {
+
                 listener.onEvent(baseEvent);
-            }
-        } catch (Exception e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Error invoking event listener on websockettext: {}", e.toString(), e);
-            } else {
-                logger.warn("Error invoking event listener on websockettext");
+            } catch (Exception e) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Error invoking event listener on websockettext: {}", e.toString(), e);
+                } else {
+                    logger.warn("Error invoking event listener on websockettext");
+                }
             }
         }
 
@@ -359,7 +379,7 @@ public class ZWaveJSClient implements WebSocketListener {
                 return;
             }
             logger.debug("Sending command: {}.", command.getClass().getSimpleName());
-            logger.debug("SEND | {}", commandAsJson);
+            logger.trace("SEND | {}", commandAsJson);
             synchronized (sendLock) {
                 endpoint.sendString(commandAsJson);
             }
@@ -373,28 +393,59 @@ public class ZWaveJSClient implements WebSocketListener {
         bufferSize = maxMessageSize;
     }
 
+    private void closeSessionLocked(@Nullable Session session, int statusCode, String reason) {
+        if (session != null) {
+            stopKeepAliveLocked();
+            try {
+                session.close(statusCode, reason);
+            } catch (Exception e) {
+                logger.warn("Error while closing websocket session: {}", e.getMessage());
+            }
+        }
+
+        stopSessionFutureLocked();
+    }
+
+    private void stopReconnectJobLocked() {
+        ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
+        if (reconnectFuture != null) {
+            reconnectFuture.cancel(true);
+            this.reconnectFuture = null;
+        }
+    }
+
+    private void stopSessionFutureLocked() {
+        Future<?> sessionFuture = this.sessionFuture;
+        if (sessionFuture != null) {
+            sessionFuture.cancel(true);
+            this.sessionFuture = null;
+        }
+    }
+
+    private void stopKeepAliveLocked() {
+        ScheduledFuture<?> keepAliveFuture = this.keepAliveFuture;
+        if (keepAliveFuture != null) {
+            keepAliveFuture.cancel(true);
+        }
+        this.keepAliveFuture = null;
+    }
+
+    private boolean hasActiveConnectionOrAttempt() {
+        Session session = this.session;
+        if (session != null && session.isOpen()) {
+            return true;
+        }
+        Future<?> sessionFuture = this.sessionFuture;
+        return sessionFuture != null && !sessionFuture.isDone();
+    }
+
     /**
      * Disposes the client by clearing the connection and scheduled futures.
      */
     public void dispose() {
         logger.debug("Disposing ZWaveJSClient");
-        stop(); // Ensure the connection is stopped
 
-        ScheduledFuture<?> localReconnectFuture = reconnectFuture;
-        if (localReconnectFuture != null) {
-            localReconnectFuture.cancel(true);
-            reconnectFuture = null;
-        }
-
-        stopKeepAlive();
-
-        Future<?> localSessionFuture = sessionFuture;
-        if (localSessionFuture != null) {
-            if (!localSessionFuture.isDone()) {
-                localSessionFuture.cancel(true);
-            }
-            sessionFuture = null;
-        }
+        stop();
 
         listeners.clear();
         logger.debug("ZWaveJSClient disposed");
