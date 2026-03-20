@@ -206,7 +206,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             getClip2Bridge().testConnectionState();
             updateSelf(); // go online
         } catch (HttpUnauthorizedException unauthorizedException) {
-            logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
+            Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
+            if (config.applicationKey.isBlank()) {
+                logger.debug("checkConnection() no application key configured");
+            } else {
+                logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
+            }
             if (applKeyRetriesRemaining > 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error.press-pairing-button");
@@ -755,7 +760,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateThingFromLegacy() {
         if (isInitialized()) {
-            logger.warn("Cannot update bridge thing '{}' from legacy since handler already initialized.",
+            logger.debug("Cannot update bridge thing '{}' from legacy since handler already initialized.",
                     thing.getUID());
             return;
         }
