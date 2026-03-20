@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.persistence.timescaledb-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+
+	<!-- Keep dependency version numbers explicit, don't use variables from pom as this will break distro build -->
+	<feature name="openhab-persistence-timescaledb" description="TimescaleDB Persistence" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<bundle start-level="80">mvn:org.postgresql/postgresql/42.7.9</bundle>
+		<bundle start-level="80">mvn:com.zaxxer/HikariCP/5.1.0</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.timescaledb/${project.version}</bundle>
+	</feature>
+
+</features>
