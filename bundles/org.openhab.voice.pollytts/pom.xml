@@ -14,6 +14,11 @@
 
   <name>openHAB Add-ons :: Bundles :: Voice :: Polly Text-to-Speech</name>
 
+  <!-- TODO remove this once AWS SDK is updated to a version which does not require jackson 2.x -->
+  <properties>
+    <jackson.version>2.21.1</jackson.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
@@ -25,6 +30,24 @@
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>com.amazonaws.aws-java-sdk-polly</artifactId>
       <version>1.12.626</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>${jackson.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-cbor</artifactId>
+      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
