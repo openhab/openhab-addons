@@ -74,6 +74,8 @@ public abstract class EaseeBaseThingHandler extends BaseThingHandler
             if (isInitialized()) {
                 if (bridgeStatusInfo.getStatus() == ThingStatus.UNKNOWN) {
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
+                } else if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
                 stopPolling();
             }
