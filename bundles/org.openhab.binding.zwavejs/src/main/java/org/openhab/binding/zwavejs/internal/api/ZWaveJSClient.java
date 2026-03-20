@@ -226,8 +226,10 @@ public class ZWaveJSClient implements WebSocketListener {
             logger.info("Scheduling reconnect to Z-Wave JS Webservice every {} minutes", RECONNECT_INTERVAL_MINUTES);
             this.reconnectFuture = scheduler.scheduleWithFixedDelay(() -> {
                 try {
-                    startLocked();
-                } catch (CommunicationException e) {
+                    synchronized (lifecycleLock) {
+                        startLocked();
+                    }
+                } catch (RuntimeException | CommunicationException e) {
                     // silently ignore as the thing state is already updated when the connection is lost
                     logger.debug("Error while reconnecting to Z-Wave JS Webservice: {}", e.getMessage());
                 }
