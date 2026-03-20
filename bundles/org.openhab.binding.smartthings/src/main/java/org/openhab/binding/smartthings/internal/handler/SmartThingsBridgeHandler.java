@@ -150,8 +150,11 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 setupClient(null);
                 logger.info("token: {}", response.getAccessToken());
             } else {
-                String msg = "Please authorize the binding by visiting the path "
-                        + "<a href=\"/smartthings\" onclick=\"event.stopPropagation(); window.location.assign('/smartthings'); return false;\">/smartthings</a>. "
+                String msg = "Please authorize the binding by visiting the path " + "<a "
+                        + "onclick=\"event.stopPropagation(); " + "var w = 600, h = 500;\r\n"
+                        + "var left = (screen.width - w) / 2;\r\n" + "var top = (screen.height - h) / 2;\r\n"
+                        + "window.open('/smartthings', 'popup', 'width=${w},height=${h},top=${top},left=${left}');"
+                        + "return false;\">/smartthings</a>. "
                         + "The authorization code will be captured automatically.";
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
