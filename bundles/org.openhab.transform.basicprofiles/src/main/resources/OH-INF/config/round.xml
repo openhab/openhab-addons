@@ -5,6 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="profile:basic-profiles:round">
+		<parameter name="precision" type="integer" min="1" step="1" required="false">
+			<label>Precision</label>
+			<description>Optional. Number of significant digits to round to before applying scale.</description>
+		</parameter>
 		<parameter name="scale" type="integer" min="-16" max="16" step="1" required="true">
 			<label>Scale</label>
 			<description>Scale to indicate the resulting number of decimal places.</description>
@@ -21,10 +25,6 @@
 				<option value="HALF_UP">HALF_UP</option>
 				<option value="HALF_DOWN">HALF_DOWN</option>
 			</options>
-		</parameter>
-		<parameter name="precision" type="integer" min="1" step="1" required="false">
-			<label>Precision</label>
-			<description>Optional. Number of significant digits to round to before applying scale.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
