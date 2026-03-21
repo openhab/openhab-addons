@@ -125,7 +125,7 @@ public class SmartThingsServlet extends HttpServlet
     public void activate() {
         try {
             Dictionary<String, String> servletParams = new Hashtable<String, String>();
-            logger.info("registerServlet:" + PATH);
+            logger.trace("registerServlet: {}", PATH);
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
             httpService.registerResources(PATH + SmartThingsBindingConstants.SMARTTHINGS_IMG_ALIAS, "img", null);
             smartThingsLocalCallbackListener.startCallbackListener();
@@ -149,7 +149,7 @@ public class SmartThingsServlet extends HttpServlet
 
     @Override
     public void init(@Nullable ServletConfig servletConfig) throws ServletException {
-        logger.info("SmartThingsServlet:init");
+        logger.trace("SmartThingsServlet:init");
     }
 
     @Override

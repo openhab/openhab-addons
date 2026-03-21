@@ -57,7 +57,7 @@ public class SmartThingsLocalCallbackListener {
         Thread thread = new Thread(() -> {
             try (ServerSocket serverSocket = new ServerSocket(61973)) {
                 this.callbackServerSocket = serverSocket;
-                logger.info("Started OAuth callback listener on port 61973");
+                logger.debug("Started OAuth callback listener on port 61973");
                 while (!serverSocket.isClosed()) {
                     try (Socket socket = serverSocket.accept();
                             BufferedReader in = new BufferedReader(

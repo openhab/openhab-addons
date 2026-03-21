@@ -307,6 +307,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
     }
 
+    @Nullable
     public SmartThingsApi getSmartThingsApi() {
         return smartthingsApi;
     }

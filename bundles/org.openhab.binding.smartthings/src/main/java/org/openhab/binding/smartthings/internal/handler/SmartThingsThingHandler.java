@@ -193,6 +193,10 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
         SmartThingsApi api = accountHandler.getSmartThingsApi();
+        if (api == null) {
+            return;
+        }
+
         Map<String, String> properties = getThing().getProperties();
 
         String deviceId = properties.get("deviceId");
