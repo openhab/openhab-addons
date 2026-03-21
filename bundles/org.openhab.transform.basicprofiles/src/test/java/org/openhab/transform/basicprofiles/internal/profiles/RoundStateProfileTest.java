@@ -60,7 +60,7 @@ public class RoundStateProfileTest {
     public void testParsingParameters() {
         ProfileCallback callback = mock(ProfileCallback.class);
         RoundStateProfile roundProfile = createProfile(callback, 4, 2, "NOT_SUPPORTED");
-        
+
         assertThat(roundProfile.precision, is(4));
         assertThat(roundProfile.scale, is(2));
         assertThat(roundProfile.roundingMode, is(RoundingMode.HALF_UP));
@@ -97,7 +97,7 @@ public class RoundStateProfileTest {
         DecimalType dtResult = (DecimalType) result;
         assertThat(dtResult.doubleValue(), is(20.0));
     }
-    
+
     @Test
     public void testDecimalTypeOnCommandFromItemWithNegativeScale() {
         ProfileCallback callback = mock(ProfileCallback.class);
@@ -224,11 +224,12 @@ public class RoundStateProfileTest {
         return createProfile(callback, precision, scale, null);
     }
 
-    private RoundStateProfile createProfile(ProfileCallback callback, Integer precision, Integer scale, @Nullable String mode) {
+    private RoundStateProfile createProfile(ProfileCallback callback, Integer precision, Integer scale,
+            @Nullable String mode) {
         ProfileContext context = mock(ProfileContext.class);
         Configuration config = new Configuration();
-        
-        config.put(RoundStateProfile.PARAM_PRECISION, precision);        
+
+        config.put(RoundStateProfile.PARAM_PRECISION, precision);
         config.put(RoundStateProfile.PARAM_SCALE, scale);
         config.put(RoundStateProfile.PARAM_MODE, mode == null ? RoundingMode.HALF_UP.name() : mode);
         when(context.getConfiguration()).thenReturn(config);
