@@ -22,7 +22,7 @@
 				<option value="HALF_DOWN">HALF_DOWN</option>
 			</options>
 		</parameter>
-		<parameter name="prec" type="integer" min="1" step="1" required="false">
+		<parameter name="precision" type="integer" min="1" step="1" required="false">
 			<label>Precision</label>
 			<description>Optional. Number of significant digits to round to before applying scale.</description>
 		</parameter>
