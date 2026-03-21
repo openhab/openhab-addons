@@ -47,21 +47,21 @@ public class RoundStateProfile implements TimeSeriesProfile {
     private final Logger logger = LoggerFactory.getLogger(RoundStateProfile.class);
 
     public static final String PARAM_SCALE = "scale";
-    public static final String PARAM_PREC = "prec";
+    public static final String PARAM_PRECISION = "precision";
     public static final String PARAM_MODE = "mode";
 
     private final ProfileCallback callback;
 
     final @Nullable Integer scale;
-    final @Nullable Integer prec;
+    final @Nullable Integer precision;
     final RoundingMode roundingMode;
 
     public RoundStateProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
 
         RoundStateProfileConfig config = context.getConfiguration().as(RoundStateProfileConfig.class);
-        logger.debug("Configuring profile with parameters: [scale='{}', prec='{}', mode='{}']", config.scale,
-                config.prec, config.mode);
+        logger.debug("Configuring profile with parameters: [scale='{}', precision='{}', mode='{}']", config.scale,
+                config.precision, config.mode);
 
         Integer localScale = null;
         if (config.scale != null) {
@@ -70,12 +70,12 @@ public class RoundStateProfile implements TimeSeriesProfile {
             logger.error("Parameter 'scale' is not of type String or Number.");
         }
 
-        Integer localPrec = null;
-        if (config.prec != null) {
-            if (config.prec.intValue() > 0) {
-                localPrec = config.prec;
+        Integer localPrecision = null;
+        if (config.precision != null) {
+            if (config.precision.intValue() > 0) {
+                localPrecision = config.precision;
             } else {
-                logger.warn("Parameter 'prec' must be > 0: '{}'. Ignoring it.", config.prec);
+                logger.warn("Parameter 'precision' must be > 0: '{}'. Ignoring it.", config.precision);
             }
         }
 
@@ -91,7 +91,7 @@ public class RoundStateProfile implements TimeSeriesProfile {
         }
 
         this.scale = localScale;
-        this.prec = localPrec;
+        this.precision = localPrecision;
         this.roundingMode = localRoundingMode;
     }
 
@@ -150,8 +150,8 @@ public class RoundStateProfile implements TimeSeriesProfile {
     private BigDecimal roundNumber(BigDecimal value) {
         BigDecimal result = value;
 
-        if (prec != null) {
-            result = result.round(new MathContext(prec.intValue(), roundingMode));
+        if (precision != null) {
+            result = result.round(new MathContext(precision.intValue(), roundingMode));
         }
         if (scale != null) {
             result = result.setScale(scale.intValue(), roundingMode);
