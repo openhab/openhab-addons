@@ -130,8 +130,8 @@ class TimescaleDBPersistenceServiceTest {
     }
 
     @Test
-    void getDefaultStrategiesReturnsemptylist() {
-        assertTrue(service.getDefaultStrategies().isEmpty());
+    void getSuggestedStrategiesReturnsEmptyList() {
+        assertTrue(service.getSuggestedStrategies().isEmpty());
     }
 
     // ------------------------------------------------------------------

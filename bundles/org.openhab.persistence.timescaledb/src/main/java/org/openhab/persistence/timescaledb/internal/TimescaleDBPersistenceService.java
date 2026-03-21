@@ -211,7 +211,7 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
     }
 
     @Override
-    public List<PersistenceStrategy> getDefaultStrategies() {
+    public List<PersistenceStrategy> getSuggestedStrategies() {
         return Collections.emptyList();
     }
 
