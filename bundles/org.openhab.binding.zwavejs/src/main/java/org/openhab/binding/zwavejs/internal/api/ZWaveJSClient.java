@@ -151,7 +151,7 @@ public class ZWaveJSClient implements WebSocketListener {
             if (e.getCause() instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            throw new CommunicationException("Failed to connect to Z-Wave JS Webservice: " + e.getMessage());
+            throw new CommunicationException("Failed to connect to Z-Wave JS Webservice (" + uri + ")", e);
         }
     }
 
