@@ -1497,8 +1497,10 @@ public class DeviceHandler extends ViessmannThingHandler {
         if (channelType.isBlank() || "object".equals(channelType)) {
             channelType = "string";
         }
-        if ("meter".equals(msg.getUnit()) || "degree".equals(msg.getUnit())) {
-            channelType = msg.getUnit();
+
+        String unit = msg.getUnit();
+        if ("meter".equals(unit) || "degree".equals(unit) || "seconds".equals(unit)) {
+            channelType = unit;
         }
 
         List<String> com = msg.getAllCommands();
