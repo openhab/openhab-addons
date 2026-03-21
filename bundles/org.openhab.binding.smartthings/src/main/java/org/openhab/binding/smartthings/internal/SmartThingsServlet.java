@@ -52,7 +52,6 @@ import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -134,11 +133,8 @@ public class SmartThingsServlet extends HttpServlet
         }
     }
 
-    public void desactivate() {
+    public void deactivate() {
         smartThingsLocalCallbackListener.stopCallbackListener();
-    }
-
-    public void deactivate(ComponentContext componentContext) {
         try {
             httpService.unregister(PATH);
             httpService.unregister(PATH + "/img");

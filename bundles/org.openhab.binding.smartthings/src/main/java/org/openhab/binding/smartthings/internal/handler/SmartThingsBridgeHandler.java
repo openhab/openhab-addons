@@ -316,7 +316,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     public void dispose() {
         SmartThingsServlet s = servlet;
         if (s != null) {
-            s.desactivate();
+            s.deactivate();
         }
         super.dispose();
     }
