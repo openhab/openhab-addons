@@ -83,6 +83,22 @@ public class RoundStateProfileTest {
     }
 
     @Test
+    public void testDecimalTypeOnCommandFromItemForPrecision() {
+        ProfileCallback callback = mock(ProfileCallback.class);
+        RoundStateProfile roundProfile = createProfile(callback, 1, 9); /* precision 1, scale 9 */
+
+        Command cmd = new DecimalType(24.444);
+        roundProfile.onCommandFromItem(cmd);
+
+        ArgumentCaptor<Command> capture = ArgumentCaptor.forClass(Command.class);
+        verify(callback, times(1)).handleCommand(capture.capture());
+
+        Command result = capture.getValue();
+        DecimalType dtResult = (DecimalType) result;
+        assertThat(dtResult.doubleValue(), is(20.0));
+    }
+    
+    @Test
     public void testDecimalTypeOnCommandFromItemWithNegativeScale() {
         ProfileCallback callback = mock(ProfileCallback.class);
         RoundStateProfile roundProfile = createProfile(callback, 8, -2);
