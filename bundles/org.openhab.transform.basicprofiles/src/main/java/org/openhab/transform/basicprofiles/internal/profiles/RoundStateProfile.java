@@ -46,14 +46,14 @@ public class RoundStateProfile implements TimeSeriesProfile {
 
     private final Logger logger = LoggerFactory.getLogger(RoundStateProfile.class);
 
-    public static final String PARAM_SCALE = "scale";
     public static final String PARAM_PRECISION = "precision";
+    public static final String PARAM_SCALE = "scale";
     public static final String PARAM_MODE = "mode";
 
     private final ProfileCallback callback;
 
-    final @Nullable Integer scale;
     final @Nullable Integer precision;
+    final @Nullable Integer scale;
     final RoundingMode roundingMode;
 
     public RoundStateProfile(ProfileCallback callback, ProfileContext context) {
@@ -90,8 +90,8 @@ public class RoundStateProfile implements TimeSeriesProfile {
             logger.error("Parameter 'mode' is not of type String.");
         }
 
-        this.scale = localScale;
         this.precision = localPrecision;
+        this.scale = localScale;
         this.roundingMode = localRoundingMode;
     }
 
