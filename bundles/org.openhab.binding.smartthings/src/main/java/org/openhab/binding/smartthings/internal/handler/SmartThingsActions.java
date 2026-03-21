@@ -85,7 +85,6 @@ public class SmartThingsActions implements ThingActions {
 
         }
         return "test";
-
     }
 
     public static String setFade(@Nullable ThingActions actions, @Nullable String state, @Nullable String fadeType,
