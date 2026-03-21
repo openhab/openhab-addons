@@ -181,15 +181,42 @@ class TimescaleDBPersistenceServiceTest {
     // ------------------------------------------------------------------
 
     @Test
-    void queryItemnotincacheReturnsemptylist() throws Exception {
+    void queryItemnotincacheAndNotInDbReturnsemptylist() throws Exception {
         var filter = new FilterCriteria();
         filter.setItemName("UnknownItem");
+        // Default mock: resultSet.next() = false → item not in DB either
 
         var result = service.query(filter);
 
         assertFalse(result.iterator().hasNext());
-        // DataSource should not be queried if item_id is not cached
-        verify(dataSource, never()).getConnection();
+        // Fix 1: on cache miss the service now performs a DB lookup before giving up
+        verify(dataSource, atLeastOnce()).getConnection();
+    }
+
+    @Test
+    void queryCacheMissItemFoundInDbPopulatescacheAndExecutesquery() throws Exception {
+        // Arrange: item_id lookup returns 42, actual query returns no rows
+        PreparedStatement findPs = mock(PreparedStatement.class);
+        ResultSet findRs = mock(ResultSet.class);
+        when(findRs.next()).thenReturn(true);
+        when(findRs.getInt(1)).thenReturn(42);
+        when(findPs.executeQuery()).thenReturn(findRs);
+        when(connection.prepareStatement(contains("SELECT id FROM item_meta"))).thenReturn(findPs);
+        when(itemRegistry.getItem("Sensor1")).thenReturn(new NumberItem("Sensor1"));
+
+        var filter = new FilterCriteria();
+        filter.setItemName("Sensor1");
+
+        var result = service.query(filter);
+
+        // Still returns empty (no rows in the items table mock)
+        assertFalse(result.iterator().hasNext());
+        // Fix 1: two connections — one for DB lookup, one for actual query
+        verify(dataSource, atLeast(2)).getConnection();
+        // Fix 1: item is now cached → a second query must NOT trigger another DB lookup
+        reset(findPs);
+        service.query(filter);
+        verify(findPs, never()).executeQuery();
     }
 
     @Test
@@ -224,12 +251,37 @@ class TimescaleDBPersistenceServiceTest {
     // ------------------------------------------------------------------
 
     @Test
-    void removeItemnotincacheReturnsfalse() throws Exception {
+    void removeItemnotincacheAndNotInDbReturnsfalse() throws Exception {
         var filter = new FilterCriteria();
         filter.setItemName("UnknownItem");
+        // Default mock: resultSet.next() = false → item not in DB either
 
         assertFalse(service.remove(filter));
-        verify(dataSource, never()).getConnection();
+        // Fix 2: on cache miss the service now performs a DB lookup before giving up
+        verify(dataSource, atLeastOnce()).getConnection();
+    }
+
+    @Test
+    void removeCacheMissItemFoundInDbPopulatescacheAndExecutesdelete() throws Exception {
+        // Arrange: item_id lookup returns 7, DELETE returns 3 rows deleted
+        PreparedStatement findPs = mock(PreparedStatement.class);
+        ResultSet findRs = mock(ResultSet.class);
+        when(findRs.next()).thenReturn(true);
+        when(findRs.getInt(1)).thenReturn(7);
+        when(findPs.executeQuery()).thenReturn(findRs);
+        when(connection.prepareStatement(contains("SELECT id FROM item_meta"))).thenReturn(findPs);
+        when(preparedStatement.executeUpdate()).thenReturn(3);
+
+        var filter = new FilterCriteria();
+        filter.setItemName("Sensor1");
+
+        assertTrue(service.remove(filter));
+        // Fix 2: two connections — one for DB lookup, one for DELETE
+        verify(dataSource, atLeast(2)).getConnection();
+        // Fix 2: item is now cached → a second remove must NOT trigger another DB lookup
+        reset(findPs);
+        service.remove(filter);
+        verify(findPs, never()).executeQuery();
     }
 
     @Test
@@ -299,6 +351,22 @@ class TimescaleDBPersistenceServiceTest {
     void deactivateClosesdatasource() throws Exception {
         service.deactivate();
         verify(dataSource).close();
+    }
+
+    @Test
+    void deactivateSetsDownsampleJobInstanceToNullSoRunDownsampleNowReturnsFalse() throws Exception {
+        // Fix 3: inject a job instance, then deactivate → runDownsampleNow() must return false
+        var jobField = TimescaleDBPersistenceService.class.getDeclaredField("downsampleJobInstance");
+        jobField.setAccessible(true);
+        jobField.set(service, mock(TimescaleDBDownsampleJob.class));
+
+        assertTrue(service.runDownsampleNow(), "sanity: job present before deactivate");
+
+        service.deactivate();
+
+        assertFalse(service.runDownsampleNow(),
+                "runDownsampleNow() must return false after deactivate() — console command "
+                        + "must not trigger a job backed by a closed connection pool");
     }
 
     // ------------------------------------------------------------------

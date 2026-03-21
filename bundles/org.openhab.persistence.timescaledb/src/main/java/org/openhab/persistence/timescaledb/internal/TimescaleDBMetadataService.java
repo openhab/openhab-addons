@@ -102,6 +102,11 @@ public class TimescaleDBMetadataService {
             // Note: openHAB requires a non-empty metadata value, so use a single space (" ")
             // in item files and the UI when you only want retention without downsampling.
             int retentionDays = getInt(metadata.getConfiguration(), "retentionDays", DEFAULT_RETENTION_DAYS);
+            if (retentionDays < 0) {
+                LOGGER.warn("Item '{}': retentionDays must be >= 0, ignoring negative value {}", itemName,
+                        retentionDays);
+                return Optional.empty();
+            }
             if (retentionDays > 0) {
                 LOGGER.debug("Item '{}': retention-only config with retentionDays={}", itemName, retentionDays);
                 return Optional.of(DownsampleConfig.retentionOnly(retentionDays));
@@ -136,7 +141,15 @@ public class TimescaleDBMetadataService {
         }
 
         int retainRawDays = getInt(config, "retainRawDays", DEFAULT_RETAIN_RAW_DAYS);
+        if (retainRawDays < 0) {
+            LOGGER.warn("Item '{}': retainRawDays must be >= 0, using default {}", itemName, DEFAULT_RETAIN_RAW_DAYS);
+            retainRawDays = DEFAULT_RETAIN_RAW_DAYS;
+        }
         int retentionDays = getInt(config, "retentionDays", DEFAULT_RETENTION_DAYS);
+        if (retentionDays < 0) {
+            LOGGER.warn("Item '{}': retentionDays must be >= 0, using default {}", itemName, DEFAULT_RETENTION_DAYS);
+            retentionDays = DEFAULT_RETENTION_DAYS;
+        }
 
         DownsampleConfig result = new DownsampleConfig(function, sqlInterval, retainRawDays, retentionDays);
         LOGGER.debug("Item '{}': parsed DownsampleConfig {}", itemName, result);

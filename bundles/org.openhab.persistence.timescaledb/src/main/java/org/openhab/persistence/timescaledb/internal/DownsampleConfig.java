@@ -70,6 +70,9 @@ public record DownsampleConfig(@Nullable AggregationFunction function, @Nullable
      * @param retentionDays Days after which all rows are deleted. Must be &gt; 0.
      */
     public static DownsampleConfig retentionOnly(int retentionDays) {
+        if (retentionDays <= 0) {
+            throw new IllegalArgumentException("retentionDays must be > 0, got " + retentionDays);
+        }
         return new DownsampleConfig(null, null, 0, retentionDays);
     }
 }

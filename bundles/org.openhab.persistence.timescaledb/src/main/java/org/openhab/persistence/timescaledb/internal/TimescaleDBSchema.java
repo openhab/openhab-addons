@@ -13,6 +13,7 @@
 package org.openhab.persistence.timescaledb.internal;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -82,7 +83,7 @@ public class TimescaleDBSchema {
             END $$
             """;
 
-    private static final String SQL_CREATE_HYPERTABLE = "SELECT create_hypertable('items', 'time', if_not_exists => TRUE, chunk_time_interval => INTERVAL '%s')";
+    private static final String SQL_CREATE_HYPERTABLE = "SELECT create_hypertable('items', 'time', if_not_exists => TRUE, chunk_time_interval => ?::INTERVAL)";
 
     private static final String SQL_CREATE_INDEX = "CREATE INDEX IF NOT EXISTS items_item_id_time_idx ON items (item_id, time DESC)";
 
@@ -145,10 +146,15 @@ public class TimescaleDBSchema {
 
             stmt.execute(SQL_CREATE_ITEMS);
             LOGGER.debug("Table items ready");
+        }
 
-            stmt.execute(SQL_CREATE_HYPERTABLE.formatted(chunkInterval));
+        try (PreparedStatement ps = connection.prepareStatement(SQL_CREATE_HYPERTABLE)) {
+            ps.setString(1, chunkInterval);
+            ps.execute();
             LOGGER.debug("Hypertable configured with chunk interval '{}'", chunkInterval);
+        }
 
+        try (Statement stmt = connection.createStatement()) {
             stmt.execute(SQL_CREATE_INDEX);
             LOGGER.debug("Index on (item_id, time DESC) ready");
 

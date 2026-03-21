@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,15 +37,18 @@ class TimescaleDBSchemaTest {
 
     private Connection connection;
     private Statement statement;
+    private PreparedStatement hypertablePs;
     private ResultSet extensionResultSet;
 
     @BeforeEach
     void setUp() throws SQLException {
         connection = mock(Connection.class);
         statement = mock(Statement.class);
+        hypertablePs = mock(PreparedStatement.class);
         extensionResultSet = mock(ResultSet.class);
 
         when(connection.createStatement()).thenReturn(statement);
+        when(connection.prepareStatement(anyString())).thenReturn(hypertablePs);
         when(statement.executeQuery(contains("pg_extension"))).thenReturn(extensionResultSet);
         when(extensionResultSet.next()).thenReturn(true); // extension is present by default
     }
@@ -62,8 +66,9 @@ class TimescaleDBSchemaTest {
         // Must create items table
         verify(statement).execute(contains("CREATE TABLE IF NOT EXISTS items"));
 
-        // Must create hypertable
-        verify(statement).execute(contains("create_hypertable"));
+        // Must create hypertable via PreparedStatement (not raw Statement — avoids SQL injection on chunkInterval)
+        verify(connection).prepareStatement(contains("create_hypertable"));
+        verify(hypertablePs).execute();
 
         // Must create index
         verify(statement).execute(contains("CREATE INDEX IF NOT EXISTS items_item_id_time_idx"));
@@ -71,16 +76,30 @@ class TimescaleDBSchemaTest {
 
     @Test
     void initializeHypertablecontainsconfiguredchunkinterval() throws SQLException {
-        var capturedSql = new java.util.ArrayList<String>();
+        TimescaleDBSchema.initialize(connection, "14 days", 0, 0);
+
+        // The chunk interval must be passed as a PreparedStatement parameter, not interpolated into SQL
+        verify(hypertablePs).setString(1, "14 days");
+        verify(hypertablePs).execute();
+    }
+
+    @Test
+    void initializeHypertableUsespreparedstatementNotRawSql() throws SQLException {
+        // The SQL_CREATE_HYPERTABLE constant must use ?::INTERVAL — verify no string-formatted interval leaks
+        // into a raw Statement.execute() call
+        var capturedRawSql = new java.util.ArrayList<String>();
         doAnswer(inv -> {
-            capturedSql.add(inv.getArgument(0));
+            capturedRawSql.add(inv.getArgument(0));
             return false;
         }).when(statement).execute(anyString());
 
-        TimescaleDBSchema.initialize(connection, "14 days", 0, 0);
+        TimescaleDBSchema.initialize(connection, "3 days", 0, 0);
 
-        assertTrue(capturedSql.stream().anyMatch(s -> s.contains("create_hypertable") && s.contains("14 days")),
-                "Hypertable should use configured chunk interval");
+        // No raw Statement should contain "create_hypertable" or the interval value
+        assertFalse(capturedRawSql.stream().anyMatch(s -> s.contains("create_hypertable")),
+                "create_hypertable must not be executed via raw Statement (SQL injection risk)");
+        assertFalse(capturedRawSql.stream().anyMatch(s -> s.contains("3 days")),
+                "chunkInterval value must not appear in any raw Statement SQL");
     }
 
     @Test

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -93,6 +94,14 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
             final @Reference TimescaleDBMetadataService metadataService) {
         this.itemRegistry = itemRegistry;
         this.metadataService = metadataService;
+    }
+
+    /** Package-private constructor for unit tests — skips OSGi activation, allows injecting a DataSource. */
+    TimescaleDBPersistenceService(ItemRegistry itemRegistry, TimescaleDBMetadataService metadataService,
+            @Nullable HikariDataSource dataSource) {
+        this.itemRegistry = itemRegistry;
+        this.metadataService = metadataService;
+        this.dataSource = dataSource;
     }
 
     @Activate
@@ -171,6 +180,7 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
             job.cancel(false);
             downsampleJob = null;
         }
+        downsampleJobInstance = null;
 
         HikariDataSource ds = dataSource;
         if (ds != null) {
@@ -267,8 +277,25 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
         @Nullable
         Integer itemId = itemIdCache.get(queryName);
         if (itemId == null) {
-            LOGGER.debug("Item '{}' not yet known to TimescaleDB — returning empty query result", queryName);
-            return Collections.emptyList();
+            HikariDataSource dsFallback = dataSource;
+            if (dsFallback == null) {
+                LOGGER.warn(
+                        "TimescaleDB data source not available while resolving item_id for '{}' — returning empty query result",
+                        queryName);
+                return Collections.emptyList();
+            }
+            try (Connection connFallback = dsFallback.getConnection()) {
+                Optional<Integer> resolved = TimescaleDBQuery.findItemId(connFallback, queryName);
+                if (resolved.isEmpty()) {
+                    LOGGER.debug("Item '{}' not present in TimescaleDB — returning empty query result", queryName);
+                    return Collections.emptyList();
+                }
+                itemId = resolved.get();
+                itemIdCache.put(queryName, itemId);
+            } catch (SQLException e) {
+                LOGGER.error("Failed to resolve item_id for item '{}': {}", queryName, e.getMessage(), e);
+                return Collections.emptyList();
+            }
         }
 
         Item item;
@@ -304,8 +331,25 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
         @Nullable
         Integer itemId = itemIdCache.get(itemName);
         if (itemId == null) {
-            LOGGER.debug("Item '{}' not yet known to TimescaleDB — nothing to remove", itemName);
-            return false;
+            HikariDataSource dsFallback = dataSource;
+            if (dsFallback == null) {
+                LOGGER.warn(
+                        "TimescaleDB data source not available while resolving item_id for '{}' — cannot remove data",
+                        itemName);
+                return false;
+            }
+            try (Connection connFallback = dsFallback.getConnection()) {
+                Optional<Integer> resolved = TimescaleDBQuery.findItemId(connFallback, itemName);
+                if (resolved.isEmpty()) {
+                    LOGGER.debug("Item '{}' not present in TimescaleDB — nothing to remove", itemName);
+                    return false;
+                }
+                itemId = resolved.get();
+                itemIdCache.put(itemName, itemId);
+            } catch (SQLException e) {
+                LOGGER.error("Failed to resolve item_id for item '{}': {}", itemName, e.getMessage(), e);
+                return false;
+            }
         }
 
         HikariDataSource ds = dataSource;
