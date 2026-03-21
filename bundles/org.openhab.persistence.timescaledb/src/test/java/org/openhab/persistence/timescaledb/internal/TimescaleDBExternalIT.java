@@ -35,7 +35,7 @@ import com.zaxxer.hikari.HikariDataSource;
  * against the external TimescaleDB instance configured via environment variables:
  * HOST, PORT, DBNAME, USER, PASSWORD.
  *
- * Run with: mvn test -Dgroups=external-integration -pl bundles/org.openhab.persistence.timescaledb
+ * Run with: mvn test -Dgroups=external-integration -DexcludedGroups="" -pl bundles/org.openhab.persistence.timescaledb
  */
 @Tag("external-integration")
 @NonNullByDefault
