@@ -144,6 +144,12 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
             return;
         }
 
+        if (compressionAfterDays > 0) {
+            LOGGER.warn("TimescaleDB: compressionAfterDays={} is set. Ensure all per-item retainRawDays "
+                    + "are less than compressionAfterDays, otherwise downsampling will attempt to write into "
+                    + "already-compressed (read-only) chunks and cause SQLExceptions.", compressionAfterDays);
+        }
+
         // Schedule the daily downsampling job via the openHAB shared thread pool
         TimescaleDBDownsampleJob job = new TimescaleDBDownsampleJob(ds, metadataService);
         downsampleJobInstance = job;

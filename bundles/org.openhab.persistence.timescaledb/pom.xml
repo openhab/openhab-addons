@@ -60,7 +60,6 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar</argLine>
           <excludedGroups>performance,external-integration</excludedGroups>
         </configuration>
       </plugin>

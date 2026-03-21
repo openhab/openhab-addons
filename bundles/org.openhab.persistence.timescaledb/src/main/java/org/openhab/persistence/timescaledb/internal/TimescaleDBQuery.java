@@ -20,7 +20,6 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -273,12 +272,5 @@ public class TimescaleDBQuery {
             }
         }
         return java.util.Optional.empty();
-    }
-
-    /**
-     * Returns an empty list as a safe default when the item is not yet known to the DB.
-     */
-    public static List<HistoricItem> emptyResult() {
-        return Collections.emptyList();
     }
 }

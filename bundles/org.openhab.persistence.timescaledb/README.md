@@ -140,7 +140,7 @@ The downsampling runs as a scheduled job (daily, at midnight):
 For each item with timescaledb metadata:
   1. Parse operation + downsampleInterval from metadata
   2. Compute cutoff = NOW() - retainRawDays
-  3. SELECT time_bucket(interval, time), agg_fn(value), last(unit, time)
+  3. SELECT time_bucket(interval, time), agg_fn(value), MAX(unit)
        FROM items
        WHERE item_id = ? AND downsampled = FALSE AND time < cutoff
        GROUP BY bucket

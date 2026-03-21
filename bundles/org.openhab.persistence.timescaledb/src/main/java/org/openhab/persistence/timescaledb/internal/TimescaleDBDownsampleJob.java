@@ -56,7 +56,7 @@ public class TimescaleDBDownsampleJob implements Runnable {
      * do not support column-inference conflict targets. Because the schema uses
      * UNIQUE(time, item_id, downsampled) and we always insert downsampled=TRUE, this never
      * silently drops a bucket that merely collides with a raw row at the bucket boundary.
-     * Placeholders: (1) item_id, (2) item_id (NOT EXISTS sub-select).
+     * Placeholder: (1) item_id.
      * Interval and agg-fn are pre-validated strings from the allowlist/enum.
      */
     private static final String SQL_INSERT_AGGREGATED_TEMPLATE = """
@@ -141,7 +141,7 @@ public class TimescaleDBDownsampleJob implements Runnable {
             try {
                 downsampleItem(itemName, config);
                 success++;
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 logger.error("Downsampling failed for item '{}': {}", itemName, e.getMessage(), e);
                 failed++;
             }
