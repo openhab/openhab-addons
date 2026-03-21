@@ -121,16 +121,20 @@ Switch invertedSwitch { channel="xxx" [profile="basic-profiles:invert"] }
 
 ## Round Profile
 
-The Round Profile scales the state to a specific number of decimal places based on the power of ten.
-Optionally the [Rounding mode](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/math/RoundingMode.html) can be set.
-Source channels should accept Item type `Number`.
+The Round Profile scales the State to a specific number of decimal places based on the power of ten. It can also limit the precision 
+of the State to a specific number of [significant digits](https://en.wikipedia.org/wiki/Significant_figures).
+When scaling, a specific [Rounding mode](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/RoundingMode.html) may be applied.
+Source Channels should accept Item Type `Number`.
 
 ### Round Profile Configuration
 
 | Configuration Parameter | Type    | Description                                                                                                     |
 |-------------------------|---------|-----------------------------------------------------------------------------------------------------------------|
-| `scale`                 | integer | Scale to indicate the resulting number of decimal places (min: -16, max: 16, STEP: 1) **mandatory**.            |
-| `mode`                  | text    | Rounding mode to be used (e.g. "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP" or "HALF_DOWN" (default: "HALF_UP"). |
+| `scale`                 | integer | Scale to indicate the resulting number of decimal places (min: -16, max: 16, STEP: 1) .            |
+| `mode`                  | text    | Rounding mode to be used for scaling (e.g. "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP" or "HALF_DOWN" (default: "HALF_UP"). |
+| `precision`             | integer | Limit the number of significant digits in the output (min: 1, max: 16, STEP: 1).            |
+
+Either `precision` or `scale` must be given. When both are given, `precision` is applied first, then `scale`.
 
 ### Round Profile Example
 
