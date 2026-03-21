@@ -26,6 +26,6 @@ import org.openhab.transform.basicprofiles.internal.profiles.RoundStateProfile;
 @NonNullByDefault
 public class RoundStateProfileConfig {
     public @Nullable Integer scale;
-    public @Nullable Integer prec;
+    public @Nullable Integer precision;
     public String mode = RoundingMode.HALF_UP.name();
 }
