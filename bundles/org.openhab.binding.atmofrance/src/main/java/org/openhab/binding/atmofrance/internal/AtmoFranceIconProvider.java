@@ -114,7 +114,7 @@ public class AtmoFranceIconProvider implements IconProvider {
                     result = result.replaceAll(NEUTRAL_COLOR, color);
                 }
             } catch (IOException e) {
-                logger.warn("Unable to load ressource '{}': {}", iconResource.getPath(), e.getMessage());
+                logger.warn("Unable to load resource '{}': {}", iconResource.getPath(), e.getMessage());
             }
         }
         return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));

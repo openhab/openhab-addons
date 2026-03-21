@@ -124,7 +124,9 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
     }
 
     private void getPollens() {
+        @Nullable
         AtmoFranceApiHandler apiHandler = getBridgeHandler(AtmoFranceApiHandler.class);
+        @Nullable
         CityConfiguration local = config;
         long delay = 3600;
         if (apiHandler != null && local != null) {
