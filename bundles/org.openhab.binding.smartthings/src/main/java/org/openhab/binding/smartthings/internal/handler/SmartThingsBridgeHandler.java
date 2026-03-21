@@ -125,7 +125,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
-        // Validate the config
         config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
 
         if (!validateConfig(this.config)) {
@@ -138,17 +137,16 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "OAuth Service is not initialized correctly !");
+                    "OAuth Service is not initialized correctly!");
             return;
 
         }
-        updateStatus(ThingStatus.ONLINE);
-
         try {
             AccessTokenResponse response = oAuthService.getAccessTokenResponse();
             if (response != null && response.getAccessToken() != null) {
                 setupClient(null);
-                logger.info("token: {}", response.getAccessToken());
+                logger.debug("Token: {}", response.getAccessToken());
+                updateStatus(ThingStatus.ONLINE);
             } else {
                 String msg = "Please authorize the binding by visiting the path " + "<a "
                         + "onclick=\"event.stopPropagation(); " + "var w = 600, h = 500;\r\n"

@@ -117,7 +117,7 @@ public class SmartThingsServlet extends HttpServlet
             step1Template = readTemplate("step1.html");
             confirmTemplate = readTemplate("confirmation.html");
         } catch (IOException e) {
-            throw new SmartThingsException("unable to initialize auth servlet", e);
+            throw new SmartThingsException("Unable to initialize auth servlet", e);
         }
     }
 
@@ -390,15 +390,20 @@ public class SmartThingsServlet extends HttpServlet
      * @throws IOException thrown when an HTML template could not be read
      */
     protected String readTemplate(String templateName) throws IOException {
-        final URL url = bridgeHandler.getBundleContext().getBundle().getEntry(TEMPLATE_PATH + templateName);
+        try {
+            final URL url = bridgeHandler.getBundleContext().getBundle().getEntry(TEMPLATE_PATH + templateName);
 
-        if (url == null) {
-            throw new FileNotFoundException(
-                    String.format("Cannot find {}' - failed to initialize Linky servlet".formatted(templateName)));
-        } else {
-            try (InputStream inputStream = url.openStream()) {
-                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            if (url == null) {
+                throw new FileNotFoundException(
+                        String.format("Cannot find {}' - failed to initialize Linky servlet".formatted(templateName)));
+            } else {
+                try (InputStream inputStream = url.openStream()) {
+                    return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                }
             }
+        } catch (IllegalStateException e) {
+            // ignore - this happens when the bundle has already been deactivated
+            return "";
         }
     }
 }
