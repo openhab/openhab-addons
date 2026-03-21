@@ -130,9 +130,9 @@ Source Channels should accept Item Type `Number`.
 
 | Configuration Parameter | Type    | Description                                                                                                     |
 |-------------------------|---------|-----------------------------------------------------------------------------------------------------------------|
+| `precision`             | integer | Limit the number of significant digits in the output (min: 1, max: 16, STEP: 1).            |
 | `scale`                 | integer | Scale to indicate the resulting number of decimal places (min: -16, max: 16, STEP: 1) .            |
 | `mode`                  | text    | Rounding mode to be used for scaling (e.g. "UP", "DOWN", "CEILING", "FLOOR", "HALF_UP" or "HALF_DOWN" (default: "HALF_UP"). |
-| `precision`             | integer | Limit the number of significant digits in the output (min: 1, max: 16, STEP: 1).            |
 
 Either `precision` or `scale` must be given. When both are given, `precision` is applied first, then `scale`.
 
