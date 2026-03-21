@@ -64,6 +64,9 @@ public class IntesisBoxMessage {
     }
 
     public List<String> getLimitsValue() {
+        if (value.length() <= 2) {
+            return List.of();
+        }
         return Arrays.asList(value.substring(1, value.length() - 1).split(","));
     }
 
