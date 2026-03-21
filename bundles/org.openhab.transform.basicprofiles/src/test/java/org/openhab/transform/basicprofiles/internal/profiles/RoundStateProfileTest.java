@@ -59,8 +59,9 @@ public class RoundStateProfileTest {
     @Test
     public void testParsingParameters() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 2, "NOT_SUPPORTED");
-
+        RoundStateProfile roundProfile = createProfile(callback, 4, 2, "NOT_SUPPORTED");
+        
+        assertThat(roundProfile.precision, is(4));
         assertThat(roundProfile.scale, is(2));
         assertThat(roundProfile.roundingMode, is(RoundingMode.HALF_UP));
     }
@@ -68,7 +69,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItem() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 2);
+        RoundStateProfile roundProfile = createProfile(callback, 8, 2);
 
         Command cmd = new DecimalType(23.333);
         roundProfile.onCommandFromItem(cmd);
@@ -82,9 +83,25 @@ public class RoundStateProfileTest {
     }
 
     @Test
+    public void testDecimalTypeOnCommandFromItemForPrecision() {
+        ProfileCallback callback = mock(ProfileCallback.class);
+        RoundStateProfile roundProfile = createProfile(callback, 1, 9); /* precision 1, scale 9 */
+
+        Command cmd = new DecimalType(24.444);
+        roundProfile.onCommandFromItem(cmd);
+
+        ArgumentCaptor<Command> capture = ArgumentCaptor.forClass(Command.class);
+        verify(callback, times(1)).handleCommand(capture.capture());
+
+        Command result = capture.getValue();
+        DecimalType dtResult = (DecimalType) result;
+        assertThat(dtResult.doubleValue(), is(20.0));
+    }
+    
+    @Test
     public void testDecimalTypeOnCommandFromItemWithNegativeScale() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, -2);
+        RoundStateProfile roundProfile = createProfile(callback, 8, -2);
 
         Command cmd = new DecimalType(1234.333);
         roundProfile.onCommandFromItem(cmd);
@@ -100,7 +117,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItemWithCeiling() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 0, RoundingMode.CEILING.name());
+        RoundStateProfile roundProfile = createProfile(callback, 8, 0, RoundingMode.CEILING.name());
 
         Command cmd = new DecimalType(23.3);
         roundProfile.onCommandFromItem(cmd);
@@ -116,7 +133,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItemWithFloor() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 0, RoundingMode.FLOOR.name());
+        RoundStateProfile roundProfile = createProfile(callback, 8, 0, RoundingMode.FLOOR.name());
 
         Command cmd = new DecimalType(23.6);
         roundProfile.onCommandFromItem(cmd);
@@ -132,7 +149,7 @@ public class RoundStateProfileTest {
     @Test
     public void testQuantityTypeOnCommandFromItem() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 1);
+        RoundStateProfile roundProfile = createProfile(callback, 8, 1);
 
         Command cmd = new QuantityType<Temperature>("23.333 °C");
         roundProfile.onCommandFromItem(cmd);
@@ -150,7 +167,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnStateUpdateFromHandler() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 1);
+        RoundStateProfile roundProfile = createProfile(callback, 8, 1);
 
         State state = new DecimalType(23.333);
         roundProfile.onStateUpdateFromHandler(state);
@@ -166,7 +183,7 @@ public class RoundStateProfileTest {
     @Test
     public void testQuantityTypeOnCommandFromHandler() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile offsetProfile = createProfile(callback, 1);
+        RoundStateProfile offsetProfile = createProfile(callback, 8, 1);
 
         Command cmd = new QuantityType<>("23.333 °C");
         offsetProfile.onCommandFromHandler(cmd);
@@ -183,7 +200,7 @@ public class RoundStateProfileTest {
     @Test
     public void testTimeSeriesFromHandler() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 1);
+        RoundStateProfile roundProfile = createProfile(callback, 8, 1);
 
         TimeSeries ts = new TimeSeries(Policy.ADD);
         Instant now = Instant.now();
@@ -203,13 +220,15 @@ public class RoundStateProfileTest {
         assertThat(dtResult.doubleValue(), is(23.3));
     }
 
-    private RoundStateProfile createProfile(ProfileCallback callback, Integer scale) {
-        return createProfile(callback, scale, null);
+    private RoundStateProfile createProfile(ProfileCallback callback, Integer precision, Integer scale) {
+        return createProfile(callback, precision, scale, null);
     }
 
-    private RoundStateProfile createProfile(ProfileCallback callback, Integer scale, @Nullable String mode) {
+    private RoundStateProfile createProfile(ProfileCallback callback, Integer precision, Integer scale, @Nullable String mode) {
         ProfileContext context = mock(ProfileContext.class);
         Configuration config = new Configuration();
+        
+        config.put(RoundStateProfile.PARAM_PRECISION, precision);        
         config.put(RoundStateProfile.PARAM_SCALE, scale);
         config.put(RoundStateProfile.PARAM_MODE, mode == null ? RoundingMode.HALF_UP.name() : mode);
         when(context.getConfiguration()).thenReturn(config);
