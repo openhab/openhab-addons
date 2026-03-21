@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.smartthings.internal.handler;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +36,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -97,6 +94,9 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                     }
 
                     SmartThingsApi api = accountHander.getSmartThingsApi();
+                    if (api == null) {
+                        return;
+                    }
                     Map<String, String> properties = this.getThing().getProperties();
                     String deviceId = properties.get("deviceId");
 
@@ -281,6 +281,9 @@ public class SmartThingsThingHandler extends BaseThingHandler {
             return;
         }
         SmartThingsApi api = accountHandler.getSmartThingsApi();
+        if (api == null) {
+            return;
+        }
         String deviceId = "702C1F72-C35A-0000-0000-000000000000";
 
         String jsonMsg = "";
@@ -344,11 +347,6 @@ public class SmartThingsThingHandler extends BaseThingHandler {
                 }
             }
         }
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(SmartThingsActions.class);
     }
 
     @Override
