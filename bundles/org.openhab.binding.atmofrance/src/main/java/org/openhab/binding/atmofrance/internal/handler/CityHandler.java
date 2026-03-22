@@ -120,7 +120,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
         updateState(group, CHANNEL_DATE_ECH, properties.getEffectiveDate());
         updateState(group, CHANNEL_DATE_DIF, properties.getDiffusionDate());
 
-        thing.setProperty("%s-source".formatted(group), properties.source);
+        updateProperty("%s-source".formatted(group), properties.source);
     }
 
     private void getPollens() {

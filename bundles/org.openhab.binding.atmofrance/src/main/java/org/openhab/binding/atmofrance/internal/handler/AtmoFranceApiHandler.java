@@ -179,7 +179,6 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         StringContentProvider contentProvider = new StringContentProvider(MediaType.APPLICATION_JSON, payload,
                 DEFAULT_CHARSET);
         request.content(contentProvider, MediaType.APPLICATION_JSON);
-        logger.trace(" -with payload : {} ", payload);
     }
 
     private void handleBearer(Request request, @Nullable String bearer) {

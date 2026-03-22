@@ -38,8 +38,8 @@ You can add multiple `city`, e.g. for gathering pollen or air quality data for d
 | aq      | pm10-index     | Number         | R          | PM 10 (Particulate Matter < 10 µm)                       |
 | aq      | pm25-index     | Number         | R          | PM 2.5 (Particulate Matter < 2,5 µm)                     |
 | aq      | timestamp      | DateTime       | R          | Timestamp                                                |
-| aq      | date-ech       | DateTime       | R          | Value Date                                           |
-| aq      | date-dif       | DateTime       | R          | Publication Date                                      |
+| aq      | date-ech       | DateTime       | R          | Value Date                                               |
+| aq      | date-dif       | DateTime       | R          | Publication Date                                         |
 | pollens | index          | Number         | R          | Pollen Index                                             |
 | pollens | alder-conc     | Number:Density | R          | Alder concentration                                      |
 | pollens | alder-level    | Number         | R          | Alder Index                                              |
@@ -54,8 +54,8 @@ You can add multiple `city`, e.g. for gathering pollen or air quality data for d
 | pollens | wormwood-conc  | Number:Density | R          | Wormwood concentration                                   |
 | pollens | wormwood-level | Number         | R          | Wormwood Index                                           |
 | pollens | timestamp      | DateTime       | R          | Timestamp                                                |
-| pollens | date-ech       | DateTime       | R          | Value Date                                           |
-| pollens | date-dif       | DateTime       | R          | Publication Date                                      |
+| pollens | date-ech       | DateTime       | R          | Value Date                                               |
+| pollens | date-dif       | DateTime       | R          | Publication Date                                         |
 
 Notes on index options:
 

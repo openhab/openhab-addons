@@ -14,6 +14,9 @@ package org.openhab.binding.atmofrance.internal.deserialization;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.atmofrance.internal.AtmoFranceException;
@@ -40,9 +43,14 @@ public class AtmoFranceDeserializer {
     public AtmoFranceDeserializer() {
         gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(Instant.class, (JsonDeserializer<Instant>) (json, type, context) -> {
-                    String string = json.getAsString();
-                    string += string.contains("+") ? "" : "Z";
-                    return Instant.parse(string);
+                    String value = json.getAsString();
+                    if (!value.contains("T")) {
+                        return LocalDate.parse(value).atStartOfDay(ZoneOffset.UTC).toInstant();
+                    } else if (value.endsWith("Z") || value.matches(".*T.*[+-]\\d{2}:?\\d{2}$")) {
+                        return OffsetDateTime.parse(value).toInstant();
+                    } else {
+                        return LocalDateTime.parse(value).toInstant(ZoneOffset.UTC);
+                    }
                 })
                 .registerTypeAdapter(LocalDate.class,
                         (JsonDeserializer<LocalDate>) (json, type, context) -> LocalDate.parse(json.getAsString()))
