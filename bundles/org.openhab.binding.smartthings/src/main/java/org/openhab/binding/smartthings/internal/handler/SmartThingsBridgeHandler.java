@@ -195,7 +195,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     // =
     // ============================================================================
 
-    public void finishOAuth(String callBackUri, String code, String verifier) {
+    public void finishOAuth(String eventCallbackuri, String code, String verifier) {
         org.openhab.core.auth.client.oauth2.OAuthClientService srv = oAuthService;
         if (srv != null) {
             try {
@@ -204,7 +204,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                         .getAccessTokenResponseByAuthorizationCode(code, SmartThingsBindingConstants.REDIRECT_URI);
                 if (response.getAccessToken() != null) {
                     logger.info("token: {}", response.getAccessToken());
-                    setupClient(callBackUri);
+                    setupClient(eventCallbackuri);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Failed to exchange code for tokens");
@@ -216,7 +216,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    protected void setupClient(@Nullable String callBackUri) {
+    protected void setupClient(@Nullable String eventCallbackuri) {
         final org.openhab.core.auth.client.oauth2.OAuthClientService oAuthService = this.oAuthService;
 
         if (oAuthService != null) {
@@ -224,8 +224,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             smartthingsApi = new SmartThingsApi(httpClientFactory, this, networkConnector, clientBuilder,
                     eventSourceFactory);
 
-            if (callBackUri != null) {
-                setupApp(callBackUri);
+            if (eventCallbackuri != null) {
+                setupApp(eventCallbackuri);
             }
 
             registerOAuth(false);
@@ -260,7 +260,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         updateConfiguration(config);
     }
 
-    protected void setupApp(String callBackUri) {
+    protected void setupApp(String eventCallbackuri) {
         boolean appExist = smartthingsApi.isAppExist(config.appName);
         if (!appExist) {
             int retry = 0;
@@ -273,7 +273,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 }
 
                 try {
-                    appResponse = smartthingsApi.createApp(appName, callBackUri);
+                    appResponse = smartthingsApi.createApp(appName, eventCallbackuri);
 
                     updateConfig(appName, appResponse.oauthClientId, appResponse.oauthClientSecret);
 

@@ -102,6 +102,7 @@ public class SmartThingsNetworkRequestListener<T> extends BufferingResponseListe
 
             if (content != null) {
                 if (content.indexOf("<!DOCTYPE html>") >= 0) {
+                    networkConnector.onComplete(result.getRequest());
                     T typedResult = resultClass.cast(content);
                     callback.execute(result.getRequest().getURI(), result.getResponse().getStatus(), typedResult);
                 } else {

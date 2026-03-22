@@ -99,7 +99,6 @@ public class SmartThingsServlet extends HttpServlet
     private Gson gson = new Gson();
 
     private String servletBaseURL = "";
-    private String servletBaseURLSecure = "";
 
     protected final SmartThingsBridgeHandler bridgeHandler;
     protected final HttpService httpService;
@@ -213,7 +212,7 @@ public class SmartThingsServlet extends HttpServlet
                                 logger.debug("Captured auth code: {}", reqCode);
 
                                 // Finish OAuth flow
-                                bridgeHandler.finishOAuth(servletBaseURLSecure, reqCode,
+                                bridgeHandler.finishOAuth(servletBaseURL, reqCode,
                                         bridgeHandler.getThing().getUID().getId());
                                 String authorizationUri = accountHandler.formatAuthorizationUrl(
                                         SmartThingsBindingConstants.REDIRECT_URI, "step2", false);
@@ -259,10 +258,9 @@ public class SmartThingsServlet extends HttpServlet
         else {
             // calculate the callback URL
             servletBaseURL = requestUrl;
-            servletBaseURLSecure = servletBaseURL.replace("http://", "https://").replace("8080", "8443");
 
             // Display it in page rendering for user confirmation
-            replaceMap.put(KEY_CALLBACK_URI, servletBaseURLSecure);
+            replaceMap.put(KEY_CALLBACK_URI, servletBaseURL);
 
             String authorizationUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
                     "step1", true);

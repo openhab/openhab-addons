@@ -97,8 +97,6 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         semanticTags.put("smartplug", Equipment.POWER_OUTLET);
         semanticTags.put("leaksensor", Equipment.LEAK_SENSOR);
         semanticTags.put("airconditioner", Equipment.AIR_CONDITIONER);
-
-        // @todo: review this one
         semanticTags.put("hub", Equipment.NETWORK_APPLIANCE);
         semanticTags.put("networking", Equipment.NETWORK_APPLIANCE);
     }
