@@ -4,11 +4,11 @@ This binding integrates Dahua VTO Villastation door controllers with openHAB, en
 
 ## Supported Things
 
-| Thing Type    | Thing ID        | Description                                                     |
-|---------------|-----------------|-----------------------------------------------------------------|
-| VTO2202       | `vto2202`       | Dahua VTO2202 outdoor station with single button                |
-| VTO3211       | `vto3211`       | Dahua VTO3211 outdoor station with dual buttons (LockNum 1 & 2) |
-| VTO (legacy)  | `dahua_vto2202` | Deprecated: Use `vto2202` instead                               |
+| Thing Type | Thing ID  | Description                                      |
+| ---------- | --------- | ------------------------------------------------ |
+| VTO2202    | `vto2202` | Dahua VTO2202 outdoor station with single button |
+| VTO3211    | `vto3211` | Dahua VTO3211 outdoor station with dual buttons  |
+
 
 ## Discovery
 
@@ -17,32 +17,17 @@ Things must be manually configured.
 
 ## Thing Configuration
 
-### VTO2202 Device (`vto2202`)
+### VTO2202/VTO32011 Device 
 
 Single-button outdoor station.
 
-| Parameter    | Type | Required | Default | Description                                                   |
-|--------------|------|----------|---------|---------------------------------------------------------------|
-| hostname     | text | Yes      | -       | Hostname or IP address of the device (e.g., 192.168.1.100)   |
-| username     | text | Yes      | -       | Username to access the device                                 |
-| password     | text | Yes      | -       | Password to access the device                                 |
-| snapshotpath | text | Yes      | -       | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
+| Parameter    | Type | Required | Description                                                                  |
+| ------------ | ---- | -------- | ---------------------------------------------------------------------------- |
+| hostname     | text | Yes      | Hostname or IP address of the device (e.g., 192.168.1.100)                   |
+| username     | text | Yes      | Username to access the device                                                |
+| password     | text | Yes      | Password to access the device                                                |
+| snapshotPath | text | Yes      | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
 
-### VTO3211 Device (`vto3211`)
-
-Dual-button outdoor station with automatic button detection via LockNum parameter.
-
-| Parameter    | Type | Required | Default | Description                                                   |
-|--------------|------|----------|---------|---------------------------------------------------------------|
-| hostname     | text | Yes      | -       | Hostname or IP address of the device (e.g., 192.168.1.100)   |
-| username     | text | Yes      | -       | Username to access the device                                 |
-| password     | text | Yes      | -       | Password to access the device                                 |
-| snapshotpath | text | Yes      | -       | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
-
-**VTO3211 Button Detection:** The binding automatically detects which button was pressed by reading the `LockNum` parameter from the Invite event:
-
-- **LockNum 1** → triggers `bell-button-1` and updates `door-image-1`
-- **LockNum 2** → triggers `bell-button-2` and updates `door-image-2`
 
 **Note:** Windows paths are not currently supported.
 
@@ -50,23 +35,23 @@ Dual-button outdoor station with automatic button detection via LockNum paramete
 
 ### VTO2202 Channels (Single Button)
 
-| Channel ID   | Type    | Read/Write | Description                                        |
-|--------------|---------|------------|----------------------------------------------------|
-| bell-button  | Trigger | Read       | Triggers when doorbell button is pressed (event: PRESSED) |
-| door-image   | Image   | Read       | Camera snapshot taken when doorbell is pressed     |
-| open-door-1  | Switch  | Write      | Command to open door relay 1                       |
-| open-door-2  | Switch  | Write      | Command to open door relay 2                       |
+| Channel ID  | Type    | Read/Write | Description                                               |
+| ----------- | ------- | ---------- | --------------------------------------------------------- |
+| bell-button | Trigger | Read       | Triggers when doorbell button is pressed (event: PRESSED) |
+| door-image  | Image   | Read       | Camera snapshot taken when doorbell is pressed            |
+| open-door-1 | Switch  | Write      | Command to open door relay 1                              |
+| open-door-2 | Switch  | Write      | Command to open door relay 2                              |
 
 ### VTO3211 Channels (Dual Button)
 
-| Channel ID     | Type    | Read/Write | Description                                        |
-|----------------|---------|------------|----------------------------------------------------|
-| bell-button-1  | Trigger | Read       | Triggers when button 1 is pressed (event: PRESSED) |
-| bell-button-2  | Trigger | Read       | Triggers when button 2 is pressed (event: PRESSED) |
-| door-image-1   | Image   | Read       | Camera snapshot when button 1 is pressed           |
-| door-image-2   | Image   | Read       | Camera snapshot when button 2 is pressed           |
-| open-door-1    | Switch  | Write      | Command to open door relay 1                       |
-| open-door-2    | Switch  | Write      | Command to open door relay 2                       |
+| Channel ID    | Type    | Read/Write | Description                                        |
+| ------------- | ------- | ---------- | -------------------------------------------------- |
+| bell-button-1 | Trigger | Read       | Triggers when button 1 is pressed (event: PRESSED) |
+| bell-button-2 | Trigger | Read       | Triggers when button 2 is pressed (event: PRESSED) |
+| door-image-1  | Image   | Read       | Camera snapshot when button 1 is pressed           |
+| door-image-2  | Image   | Read       | Camera snapshot when button 2 is pressed           |
+| open-door-1   | Switch  | Write      | Command to open door relay 1                       |
+| open-door-2   | Switch  | Write      | Command to open door relay 2                       |
 
 ## Full Example
 
@@ -79,7 +64,7 @@ Thing dahuadoor:vto2202:frontdoor "Front Door Station" @ "Entrance" [
     hostname="192.168.1.100",
     username="admin",
     password="password123",
-    snapshotpath="/var/lib/openhab/door-images"
+    snapshotPath="/var/lib/openhab/door-images"
 ]
 ```
 
@@ -115,7 +100,7 @@ Thing dahuadoor:vto3211:entrance "Entrance Station" @ "Entrance" [
     hostname="192.168.1.101",
     username="admin",
     password="password123",
-    snapshotpath="/var/lib/openhab/door-images"
+    snapshotPath="/var/lib/openhab/door-images"
 ]
 ```
 

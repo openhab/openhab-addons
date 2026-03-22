@@ -7,6 +7,7 @@
 	<thing-type id="vto3211">
 		<label>Dahua VTO3211 Door Station</label>
 		<description>Dahua VTO3211 outdoor station with dual buttons</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 
 		<channels>
 			<channel id="bell-button-1" typeId="bell-button">
@@ -45,7 +46,7 @@
 				<label>Password</label>
 				<description>Password to access the device</description>
 			</parameter>
-			<parameter name="snapshotpath" type="text" required="true">
+			<parameter name="snapshotPath" type="text" required="true">
 				<label>Snapshot Path</label>
 				<description>Path where snapshots will be saved (e.g., /var/lib/openhab/door-images)</description>
 			</parameter>

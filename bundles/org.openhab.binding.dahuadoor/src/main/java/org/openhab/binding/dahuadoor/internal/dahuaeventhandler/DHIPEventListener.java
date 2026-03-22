@@ -27,7 +27,7 @@ public interface DHIPEventListener {
     /**
      * Handles incoming DHIP events from the Dahua device.
      *
-     * @param data JSON object containing the event data from the device
+     * @param eventData JSON object containing the event data from the device
      */
-    void eventHandler(JsonObject data);
+    void onEvent(JsonObject eventData);
 }

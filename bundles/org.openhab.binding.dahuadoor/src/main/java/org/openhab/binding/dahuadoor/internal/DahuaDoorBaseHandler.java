@@ -16,6 +16,7 @@ import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.*
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -60,26 +61,18 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected Gson gson = new Gson();
 
     protected @Nullable DahuaEventClient client = null;
-    protected @Nullable DahuaDoorHttpQueries queries = null;
-    private @Nullable HttpClient httpClient = null;
+    private final HttpClient httpClient;
 
-    public DahuaDoorBaseHandler(Thing thing) {
+    public DahuaDoorBaseHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-    }
-
-    public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
-    }
-
-    public @Nullable HttpClient getHttpClient() {
-        return this.httpClient;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        DahuaDoorHttpQueries localQueries = queries;
-        if (localQueries == null) {
-            logger.warn("HTTP queries not initialized, cannot handle command");
+        DahuaEventClient localClient = client;
+        if (localClient == null) {
+            logger.warn("Client not initialized, cannot handle command");
             return;
         }
 
@@ -87,7 +80,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             case CHANNEL_OPEN_DOOR_1:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        localQueries.openDoor(1);
+                        localClient.openDoor(1);
                         updateState(channelUID, OnOffType.OFF);
                     }
                 }
@@ -95,7 +88,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             case CHANNEL_OPEN_DOOR_2:
                 if (command instanceof OnOffType) {
                     if (command == OnOffType.ON) {
-                        localQueries.openDoor(2);
+                        localClient.openDoor(2);
                         updateState(channelUID, OnOffType.OFF);
                     }
                 }
@@ -115,22 +108,21 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         // Validate required configuration
         if (localConfig.hostname.isBlank() || localConfig.username.isBlank() || localConfig.password.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Hostname, username and password must be configured.");
+                    "@text/offline.conf-error-missing-credentials");
             return;
         }
 
-        if (localConfig.snapshotpath.isBlank()) {
+        if (localConfig.snapshotPath.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Snapshot path must be configured.");
+                    "@text/offline.conf-error-missing-snapshot-path");
             return;
         }
 
         client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password, this, scheduler,
-                this::errorInformer);
-        queries = new DahuaDoorHttpQueries(httpClient, localConfig);
+                this::errorInformer, httpClient, localConfig);
 
-        // Mark thing as online; errorInformer will switch to OFFLINE on failures
-        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected to device");
+        // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -140,11 +132,6 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             localClient.dispose();
             client = null;
         }
-        DahuaDoorHttpQueries localQueries = queries;
-        if (localQueries != null) {
-            localQueries.dispose();
-            queries = null;
-        }
     }
 
     public void saveSnapshot(byte @Nullable [] buffer) {
@@ -153,7 +140,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             logger.warn("Configuration not initialized");
             return;
         }
-        if (localConfig.snapshotpath.isEmpty()) {
+        if (localConfig.snapshotPath.isEmpty()) {
             logger.warn("Path for Snapshots is invalid");
             return;
         }
@@ -163,18 +150,18 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         }
 
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-        String filename = localConfig.snapshotpath + "/DoorBell_" + timestamp + ".jpg";
+        String filename = localConfig.snapshotPath + "/DoorBell_" + timestamp + ".jpg";
 
         try (FileOutputStream fos = new FileOutputStream(new File(filename))) {
             fos.write(buffer);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Could not write image to file '{}', check permissions and path", filename, e);
         }
 
-        String latestSnapshotFilename = localConfig.snapshotpath + "/Doorbell.jpg";
+        String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell.jpg";
         try {
             Files.copy(Paths.get(filename), Paths.get(latestSnapshotFilename), StandardCopyOption.REPLACE_EXISTING);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Could not copy file from '{}' to '{}', check permissions and path", filename,
                     latestSnapshotFilename, e);
         }
@@ -197,18 +184,18 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         }
         triggerChannel(channel.getUID(), "PRESSED");
 
-        DahuaDoorHttpQueries localQueries = queries;
-        if (localQueries == null) {
-            logger.warn("HTTP queries not initialized, cannot retrieve doorbell image");
+        DahuaEventClient localClient = client;
+        if (localClient == null) {
+            logger.warn("Client not initialized, cannot retrieve doorbell image");
             return;
         }
-        byte[] buffer = localQueries.requestImage();
+        byte[] buffer = localClient.requestImage();
         updateChannelImage(buffer);
         saveSnapshot(buffer);
     }
 
     @Override
-    public void eventHandler(JsonObject data) {
+    public void onEvent(JsonObject eventData) {
         // Set thing ONLINE when first event is received (confirms successful
         // connection)
         if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -216,127 +203,149 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
         }
 
         try {
-            logger.trace("JSON{}", data);
-            JsonObject jsonObj = data.getAsJsonObject("params");
+            logger.trace("JSON{}", eventData);
+            JsonObject jsonObj = eventData.getAsJsonObject("params");
+            if (jsonObj == null) {
+                logger.debug("Missing 'params' object in DahuaDoor event. Raw payload: {}", eventData.toString());
+                return;
+            }
+
             JsonArray firstLevel = jsonObj.getAsJsonArray("eventList");
+            if (firstLevel == null || firstLevel.isEmpty()) {
+                logger.debug("Missing or empty 'eventList' array in DahuaDoor event. Raw payload: {}",
+                        eventData.toString());
+                return;
+            }
+
             JsonObject eventList = firstLevel.get(0).getAsJsonObject();
-            String eventCode = eventList.get("Code").getAsString();
-            JsonObject eventData = eventList.getAsJsonObject("Data");
+            if (!eventList.has("Code")) {
+                logger.debug("Missing 'Code' in event data. Raw payload: {}", eventData.toString());
+                return;
+            }
+
+            String eventCodeString = eventList.get("Code").getAsString();
+            DahuaEventCode eventCode = DahuaEventCode.fromString(eventCodeString);
+            JsonObject eventPayload = eventList.getAsJsonObject("Data");
             if (firstLevel.size() > 1) {
-                logger.debug("Event Manager subscription reply: {}", eventCode);
+                logger.debug("Event Manager subscription reply: {}", eventCodeString);
             } else {
                 switch (eventCode) {
-                    case "CallNoAnswered":
+                    case CALL_NO_ANSWERED:
                         handleVTOCall();
                         break;
-                    case "IgnoreInvite":
+                    case IGNORE_INVITE:
                         handleVTHAnswer();
                         break;
-                    case "VideoMotion":
+                    case VIDEO_MOTION:
                         handleMotionEvent();
                         break;
-                    case "RtspSessionDisconnect":
-                        handleRTSPDisconnect(eventList, eventData);
+                    case RTSP_SESSION_DISCONNECT:
+                        handleRTSPDisconnect(eventList, eventPayload);
                         break;
-                    case "BackKeyLight":
-                        handleBackKeyLight(eventData);
+                    case BACK_KEY_LIGHT:
+                        handleBackKeyLight(eventPayload);
                         break;
-                    case "TimeChange":
-                        handleTimeChange(eventData);
+                    case TIME_CHANGE:
+                        handleTimeChange(eventPayload);
                         break;
-                    case "NTPAdjustTime":
-                        handleNTPAdjust(eventData);
+                    case NTP_ADJUST_TIME:
+                        handleNTPAdjust(eventPayload);
                         break;
-                    case "KeepLightOn":
-                        handleKeepLightOn(eventData);
+                    case KEEP_LIGHT_ON:
+                        handleKeepLightOn(eventPayload);
                         break;
-                    case "VideoBlind":
+                    case VIDEO_BLIND:
                         handleVideoBlind(eventList);
                         break;
-                    case "FingerPrintCheck":
-                        handleFingerPrintCheck(eventData);
+                    case FINGER_PRINT_CHECK:
+                        handleFingerPrintCheck(eventPayload);
                         break;
-                    case "DoorCard":
-                        handleDoorCard(eventList, eventData);
+                    case DOOR_CARD:
+                        handleDoorCard(eventList, eventPayload);
                         break;
-                    case "SIPRegisterResult":
-                        handleSIPRegisterResult(eventList, eventData);
+                    case SIP_REGISTER_RESULT:
+                        handleSIPRegisterResult(eventList, eventPayload);
                         break;
-                    case "AccessControl":
-                        handleAccessControl(eventData);
+                    case ACCESS_CONTROL:
+                        handleAccessControl(eventPayload);
                         break;
-                    case "CallSnap":
-                        handleCallSnap(eventData);
+                    case CALL_SNAP:
+                        handleCallSnap(eventPayload);
                         break;
-                    case "HungupPhone":
-                        handleHungupPhone(eventList, eventData);
+                    case HUNGUP_PHONE:
+                        handleHungupPhone(eventList, eventPayload);
                         break;
-                    case "HangupPhone":
-                        handleHangupPhone(eventList, eventData);
+                    case HANGUP_PHONE:
+                        handleHangupPhone(eventList, eventPayload);
                         break;
-                    case "Hangup":
-                        handleHangup(eventList, eventData);
+                    case HANGUP:
+                        handleHangup(eventList, eventPayload);
                         break;
-                    case "Invite":
-                        handleInvite(eventList, eventData);
+                    case INVITE:
+                        handleInvite(eventList, eventPayload);
                         break;
-                    case "AlarmLocal":
-                        handleAlarmLocal(eventList, eventData);
+                    case ALARM_LOCAL:
+                        handleAlarmLocal(eventList, eventPayload);
                         break;
-                    case "AccessSnap":
-                        handleAccessSnap(eventData);
+                    case ACCESS_SNAP:
+                        handleAccessSnap(eventPayload);
                         break;
-                    case "RequestCallState":
-                        handleRequestCallState(eventList, eventData);
+                    case REQUEST_CALL_STATE:
+                        handleRequestCallState(eventList, eventPayload);
                         break;
-                    case "PassiveHangup":
-                        handlePassiveHangup(eventList, eventData);
+                    case PASSIVE_HANGUP:
+                        handlePassiveHangup(eventList, eventPayload);
                         break;
-                    case "ProfileAlarmTransmit":
-                        handleProfileAlarmTransit(eventList, eventData);
+                    case PROFILE_ALARM_TRANSMIT:
+                        handleProfileAlarmTransit(eventList, eventPayload);
                         break;
-                    case "NewFile":
-                        handleNewFile(eventList, eventData);
+                    case NEW_FILE:
+                        handleNewFile(eventList, eventPayload);
                         break;
-                    case "UpdateFile":
-                        handleUpdateFile(eventList, eventData);
+                    case UPDATE_FILE:
+                        handleUpdateFile(eventList, eventPayload);
                         break;
-                    case "Reboot":
-                        handleReboot(eventList, eventData);
+                    case REBOOT:
+                        handleReboot(eventList, eventPayload);
                         break;
-                    case "SecurityImExport":
-                        handleSecurityImport(eventList, eventData);
+                    case SECURITY_IM_EXPORT:
+                        handleSecurityImport(eventList, eventPayload);
                         break;
-                    case "DGSErrorReport":
-                        handleDGSErrorReport(eventList, eventData);
+                    case DGS_ERROR_REPORT:
+                        handleDGSErrorReport(eventList, eventPayload);
                         break;
-                    case "Upgrade":
-                        handleUpgrade(eventList, eventData);
+                    case UPGRADE:
+                        handleUpgrade(eventList, eventPayload);
                         break;
-                    case "SendCard":
-                        handleSendCard(eventList, eventData);
+                    case SEND_CARD:
+                        handleSendCard(eventList, eventPayload);
                         break;
-                    case "AddCard":
-                        handleAddCard(eventList, eventData);
+                    case ADD_CARD:
+                        handleAddCard(eventList, eventPayload);
                         break;
-                    case "DoorStatus":
-                        handleDoorStatus(eventList, eventData);
+                    case DOOR_STATUS:
+                        handleDoorStatus(eventList, eventPayload);
                         break;
-                    case "DoorControl":
-                        handleDoorControl(eventList, eventData);
+                    case DOOR_CONTROL:
+                        handleDoorControl(eventList, eventPayload);
                         break;
-                    case "DoorNotClosed":
-                        handleDoorNotClosed(eventList, eventData);
+                    case DOOR_NOT_CLOSED:
+                        handleDoorNotClosed(eventList, eventPayload);
                         break;
-                    case "NetworkChange":
-                        handleNetworkChanged(eventList, eventData);
+                    case NETWORK_CHANGE:
+                        handleNetworkChanged(eventList, eventPayload);
                         break;
+                    case UNKNOWN:
                     default:
-                        logger.debug("Unknown event received. JSON{}", gson.toJson(data));
+                        logger.debug("Unknown event received. JSON{}", gson.toJson(eventData));
                 }
             }
-        } catch (Exception e) {
-            logger.debug("Exception while handling DahuaDoor event. Raw payload: {}", data.toString(), e);
+        } catch (IllegalStateException e) {
+            logger.debug("Invalid JSON structure while handling DahuaDoor event. Raw payload: {}", eventData.toString(),
+                    e);
+        } catch (IndexOutOfBoundsException e) {
+            logger.debug("Missing expected array elements in DahuaDoor event. Raw payload: {}", eventData.toString(),
+                    e);
         }
     }
 

@@ -65,17 +65,10 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        DahuaDoorBaseHandler handler = null;
-
         if (THING_TYPE_VTO2202.equals(thingTypeUID)) {
-            handler = new DahuaVto2202Handler(thing);
+            return new DahuaVto2202Handler(thing, httpClient);
         } else if (THING_TYPE_VTO3211.equals(thingTypeUID)) {
-            handler = new DahuaVto3211Handler(thing);
-        }
-
-        if (handler != null) {
-            handler.setHttpClient(httpClient);
-            return handler;
+            return new DahuaVto3211Handler(thing, httpClient);
         }
 
         return null;

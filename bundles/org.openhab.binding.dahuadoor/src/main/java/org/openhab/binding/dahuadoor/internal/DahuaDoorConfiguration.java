@@ -29,5 +29,5 @@ public class DahuaDoorConfiguration {
     public String hostname = "";
     public String username = "";
     public String password = "";
-    public String snapshotpath = "";
+    public String snapshotPath = "";
 }

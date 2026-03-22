@@ -6,8 +6,11 @@
 
 	<channel-type id="bell-button">
 		<kind>trigger</kind>
-		<label>Door Bell Button</label>
-		<description>Triggered when door bell button is pressed</description>
+		<label>Doorbell Button</label>
+		<description>Triggered when doorbell button is pressed.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<event>
 			<options>
 				<option value="PRESSED">Pressed</option>
@@ -18,14 +21,17 @@
 	<channel-type id="door-image">
 		<item-type>Image</item-type>
 		<label>Door Image</label>
-		<description>Snapshot image taken when door bell is pressed</description>
+		<description>Snapshot image taken when doorbell is pressed.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="open-door">
 		<item-type>Switch</item-type>
 		<label>Open Door</label>
-		<description>Open door relay</description>
+		<description>Controls the door lock relay.</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
