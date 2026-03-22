@@ -12,8 +12,65 @@
  */
 package org.openhab.binding.sunsynk.internal.handler;
 
-import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.*;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_CURRENT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_1_CAPACITY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_1_GEN_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_1_POWER_LIMIT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_1_TIME;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_2_CAPACITY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_2_GEN_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_2_GRID_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_2_POWER_LIMIT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_2_TIME;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_3_CAPACITY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_3_GEN_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_3_GRID_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_3_POWER_LIMIT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_3_TIME;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_4_CAPACITY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_4_GEN_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_4_GRID_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_4_POWER_LIMIT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_4_TIME;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_5_CAPACITY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_5_GEN_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_5_GRID_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_5_POWER_LIMIT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_5_TIME;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_6_CAPACITY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_6_GEN_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_6_GRID_CHARGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_6_POWER_LIMIT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_INTERVAL_6_TIME;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_POWER;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_SOC;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_TEMPERATURE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_BATTERY_VOLTAGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_AC_TEMPERATURE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_CONTROL_TIMER;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_CONTROL_WORK_MODE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_DC_TEMPERATURE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_GRID_CURRENT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_GRID_FREQUENCY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_GRID_POWER;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_GRID_VOLTAGE;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_RATED_AC_OUTPUT;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_EFFICIENCY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_ENERGY_MONTH;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_ENERGY_TODAY;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_ENERGY_YEAR;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_POWER;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_STRING_CURRENT_1;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_STRING_CURRENT_2;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_STRING_POWER_1;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_STRING_POWER_2;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_STRING_VOLTAGE_1;
+import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.CHANNEL_INVERTER_SOLAR_STRING_VOLTAGE_2;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -255,12 +312,13 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     public void refreshStateAndUpdate() {
         ZonedDateTime lockoutTimer = this.lockoutTimer;
-        if (lockoutTimer != null && lockoutTimer.isAfter(ZonedDateTime.now())) { // lockout calls that come
-                                                                                 // too fast
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+        if (lockoutTimer != null && lockoutTimer.isAfter(now)) { // lockout calls that come
+                                                                 // too fast
             logger.debug("API call too frequent, ignored {} ", lockoutTimer);
             return;
         }
-        this.lockoutTimer = ZonedDateTime.now().plusMinutes(1); // lockout time 1 min
+        this.lockoutTimer = now.plusMinutes(1); // lockout time 1 min
 
         Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
         if (!checkBridge.isPresent()) {

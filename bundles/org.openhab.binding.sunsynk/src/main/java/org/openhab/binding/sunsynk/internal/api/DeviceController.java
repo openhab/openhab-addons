@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -363,6 +364,6 @@ public class DeviceController {
     }
 
     private String getAPIFormatDate() {
-        return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return LocalDate.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }
