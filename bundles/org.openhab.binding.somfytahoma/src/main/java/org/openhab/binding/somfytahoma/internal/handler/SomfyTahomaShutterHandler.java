@@ -21,6 +21,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 
 /**
  * The {@link SomfyTahomaShutterHandler} is responsible for handling commands,
@@ -33,6 +34,21 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaShutterHandler(Thing thing) {
         super(thing);
+        // Link Tahoma closure state to the read-only "closure" channel
+        stateNames.put("closure", "core:ClosureState");
+    }
+
+    @Override
+    protected void updateState(String channelID, State state) {
+        // Scale cloud values (0.0-1.0) to openHAB percentage (0-100) for the closure channel
+        if ("closure".equals(channelID) && state instanceof DecimalType) {
+            double value = ((DecimalType) state).doubleValue();
+            if (value <= 1.0) {
+                super.updateState(channelID, new DecimalType(value * 100));
+                return;
+            }
+        }
+        super.updateState(channelID, state);
     }
 
     @Override
@@ -46,9 +62,10 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
             return;
         } else {
             if (command instanceof DecimalType) {
-                sendCommand(toInteger(command) == 0 ? COMMAND_OPEN : COMMAND_CLOSE);
+                // Send specific percentage to the cloud for RS100 support
+                sendCommand("setClosure", "[" + toInteger(command) + "]");
             } else {
-                // Shutter understands "open", "close" and "stop" commands
+                // Standard commands: UP, DOWN, STOP
                 String cmd = getTahomaCommand(command.toString());
                 if (cmd != null) {
                     sendCommand(cmd);
