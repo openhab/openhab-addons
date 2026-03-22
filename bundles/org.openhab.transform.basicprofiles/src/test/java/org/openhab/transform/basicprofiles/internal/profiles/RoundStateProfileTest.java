@@ -69,7 +69,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItem() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 8, 2);
+        RoundStateProfile roundProfile = createProfile(callback, null, 2);
 
         Command cmd = new DecimalType(23.333);
         roundProfile.onCommandFromItem(cmd);
@@ -85,7 +85,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItemForPrecision() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 1, 9); /* precision 1, scale 9 */
+        RoundStateProfile roundProfile = createProfile(callback, 1, null);
 
         Command cmd = new DecimalType(24.444);
         roundProfile.onCommandFromItem(cmd);
@@ -101,7 +101,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItemWithNegativeScale() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 8, -2);
+        RoundStateProfile roundProfile = createProfile(callback, null, -2);
 
         Command cmd = new DecimalType(1234.333);
         roundProfile.onCommandFromItem(cmd);
@@ -117,7 +117,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItemWithCeiling() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 8, 0, RoundingMode.CEILING.name());
+        RoundStateProfile roundProfile = createProfile(callback, null, 0, RoundingMode.CEILING.name());
 
         Command cmd = new DecimalType(23.3);
         roundProfile.onCommandFromItem(cmd);
@@ -133,7 +133,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnCommandFromItemWithFloor() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 8, 0, RoundingMode.FLOOR.name());
+        RoundStateProfile roundProfile = createProfile(callback, null, 0, RoundingMode.FLOOR.name());
 
         Command cmd = new DecimalType(23.6);
         roundProfile.onCommandFromItem(cmd);
@@ -149,7 +149,7 @@ public class RoundStateProfileTest {
     @Test
     public void testQuantityTypeOnCommandFromItem() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 8, 1);
+        RoundStateProfile roundProfile = createProfile(callback, null, 1);
 
         Command cmd = new QuantityType<Temperature>("23.333 °C");
         roundProfile.onCommandFromItem(cmd);
@@ -167,7 +167,7 @@ public class RoundStateProfileTest {
     @Test
     public void testDecimalTypeOnStateUpdateFromHandler() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 8, 1);
+        RoundStateProfile roundProfile = createProfile(callback, null, 1);
 
         State state = new DecimalType(23.333);
         roundProfile.onStateUpdateFromHandler(state);
@@ -183,7 +183,7 @@ public class RoundStateProfileTest {
     @Test
     public void testQuantityTypeOnCommandFromHandler() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile offsetProfile = createProfile(callback, 8, 1);
+        RoundStateProfile offsetProfile = createProfile(callback, null, 1);
 
         Command cmd = new QuantityType<>("23.333 °C");
         offsetProfile.onCommandFromHandler(cmd);
@@ -200,7 +200,7 @@ public class RoundStateProfileTest {
     @Test
     public void testTimeSeriesFromHandler() {
         ProfileCallback callback = mock(ProfileCallback.class);
-        RoundStateProfile roundProfile = createProfile(callback, 8, 1);
+        RoundStateProfile roundProfile = createProfile(callback, null, 1);
 
         TimeSeries ts = new TimeSeries(Policy.ADD);
         Instant now = Instant.now();
