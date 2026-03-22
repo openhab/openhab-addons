@@ -69,7 +69,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
     private final Logger logger = LoggerFactory.getLogger(Shelly1CoapHandler.class);
     private final ShellyThingInterface thingHandler;
-    private ShellyThingConfiguration config = new ShellyThingConfiguration();
+    private final ShellyThingConfiguration config;
     private final GsonBuilder gsonBuilder = new GsonBuilder();
     private final Gson gson;
     private String thingName;
@@ -92,9 +92,11 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     private ShellyDeviceProfile profile;
     private ShellyApiInterface api;
 
-    public Shelly1CoapHandler(ShellyThingInterface thingHandler, Shelly1CoapServer coapServer) {
+    public Shelly1CoapHandler(ShellyThingInterface thingHandler, String thingName, ShellyThingConfiguration config,
+            Shelly1CoapServer coapServer) {
         this.thingHandler = thingHandler;
-        this.thingName = thingHandler.getThingName();
+        this.thingName = thingName;
+        this.config = config;
         this.profile = thingHandler.getProfile();
         this.api = thingHandler.getApi();
         this.coapServer = coapServer;
@@ -112,10 +114,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
      * @param config ShellyThingConfiguration
      * @throws ShellyApiException
      */
-    public synchronized void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+    public synchronized void start() throws ShellyApiException {
         try {
-            this.thingName = thingName;
-            this.config = config;
             this.profile = thingHandler.getProfile();
             if (isStarted()) {
                 logger.trace("{}: CoAP Listener was already started", thingName);
@@ -128,7 +128,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 coiotPort = Integer.parseInt(ps);
             }
             coapServer.start(config.localIp, coiotPort, this);
-            statusClient = new CoapClient(completeUrl(config.deviceIp, coiotPort, COLOIT_URI_DEVSTATUS))
+            statusClient = new CoapClient(completeUrl(config.getDeviceIp(), coiotPort, COLOIT_URI_DEVSTATUS))
                     .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
             @Nullable
             Endpoint endpoint = null;
@@ -147,7 +147,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             throw new ShellyApiException("Network error", e);
         } catch (UnknownHostException e) {
             logger.info("{}: CoAP Exception (Unknown Host)", thingName, e);
-            throw new ShellyApiException("Unknown Host: " + config.deviceIp, e);
+            throw new ShellyApiException("Unknown Host: " + config.getDeviceIp(), e);
         }
     }
 
@@ -177,7 +177,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         List<Option> options = response.getOptions().asSortedList();
         String ip = response.getSourceContext().getPeerAddress().toString();
-        boolean match = ip.contains("/" + config.deviceIp + ":");
+        boolean match = ip.contains("/" + config.getDeviceIp() + ":");
         if (!match) {
             // We can't identify device by IP, so we need to check the CoAP header's Global Device ID
             for (Option opt : options) {
@@ -310,7 +310,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
 
         if (!updatesRequested) {
             // Observe Status Updates
-            reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
+            reqStatus = sendRequest(reqStatus, config.getDeviceIp(), COLOIT_URI_DEVSTATUS, Type.NON);
             updatesRequested = true;
         }
     }
@@ -537,7 +537,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 }
             }
         }
-        reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
+        reqDescription = sendRequest(reqDescription, config.getDeviceIp(), COLOIT_URI_DEVDESC, Type.CON);
     }
 
     /**

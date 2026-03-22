@@ -193,13 +193,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
 
     public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address,
             String realm) {
-        ShellyThingConfiguration config = new ShellyThingConfiguration();
-        config.realm = realm; // mDNS service name or hostname provided by /shelly
-        config.deviceIp = address;
-        config.userId = getString(bindingConfig.defaultUserId);
-        config.password = getString(bindingConfig.defaultPassword);
-        config.localIp = getString(bindingConfig.localIP);
-        return config;
+        return new ShellyThingConfiguration(bindingConfig, address, realm);
     }
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {

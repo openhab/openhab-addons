@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
+import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
@@ -29,6 +30,8 @@ import org.openhab.core.types.State;
 public interface ShellyManagerInterface {
 
     public Thing getThing();
+
+    public ShellyThingConfiguration getThingConfig();
 
     public String getThingName();
 

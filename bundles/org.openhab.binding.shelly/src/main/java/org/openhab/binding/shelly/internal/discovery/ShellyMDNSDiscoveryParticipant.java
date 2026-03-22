@@ -139,11 +139,7 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
                 bindingConfig.updateFromProperties(serviceConfig.getProperties());
             }
 
-            ShellyThingConfiguration config = new ShellyThingConfiguration();
-            config.deviceIp = address;
-            config.userId = bindingConfig.defaultUserId;
-            config.password = bindingConfig.defaultPassword;
-
+            ShellyThingConfiguration config = new ShellyThingConfiguration(bindingConfig, serviceName, address);
             String gen = getString(service.getPropertyString("gen"));
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
                     || ShellyDeviceProfile.isGeneration2(serviceName);

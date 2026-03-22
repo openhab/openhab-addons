@@ -101,7 +101,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         info.hostname = !config.realm.isEmpty() ? config.realm : "";
         info.fw = "";
         info.type = "BLU";
-        info.mac = config.deviceAddress;
+        info.mac = config.getDeviceAddress();
         info.auth = false;
         info.gen = 2;
         return info;

@@ -148,7 +148,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             rpcSocket.disconnect();
         }
 
-        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
+        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client, scheduler);
         rpcSocket.addMessageHandler(this);
         this.rpcSocket = rpcSocket;
         initialized = true;
@@ -163,7 +163,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void startScan() {
         try {
             if (getProfile().isBlu) {
-                installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
             }
         } catch (ShellyApiException e) {
         }
@@ -347,9 +347,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         try {
             if (profile.alwaysOn && dc.ble != null) {
+                boolean enableBluGateway = config.getEnableBluGateway();
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
-                        config.enableBluGateway ? "enabled" : "disabled");
-                if (config.enableBluGateway) {
+                        enableBluGateway ? "enabled" : "disabled");
+                if (enableBluGateway) {
                     boolean bluetooth = getBool(dc.ble.enable);
                     boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
                     if (!bluetooth) {
@@ -365,7 +366,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         restart = setBluetooth(true);
                     }
 
-                    installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
+                    installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
 
                     if (restart) {
                         logger.info("{}: Restart device to activate BLU Gateway", thingName);
