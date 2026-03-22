@@ -21,7 +21,6 @@ import java.net.UnknownHostException;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +31,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyThingConfiguration extends ShellyThingBasicConfig {
-    protected final Logger logger = LoggerFactory.getLogger(ShellyBaseHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(ShellyThingConfiguration.class);
 
     // All access must be guarded by "this"
-    public String realm;
+    private String realm;
 
-    public final String localIp; // local ip addresses used to create callback url
-    public final String localPort;
+    private final String localIp; // local ip addresses used to create callback url
+    private final String localPort;
 
     public ShellyThingConfiguration(String thingName, ShellyThingBasicConfig basicConfig,
             ShellyBindingConfiguration bindingConfig, String realm, boolean gen2) {
@@ -118,6 +117,22 @@ public class ShellyThingConfiguration extends ShellyThingBasicConfig {
         eventsPush = false;
         eventsRoller = false;
         eventsSensorReport = false;
+    }
+
+    public synchronized String getLocalIp() {
+        return localIp;
+    }
+
+    public synchronized String getLocalPort() {
+        return localPort;
+    }
+
+    public synchronized String getRealm() {
+        return realm;
+    }
+
+    public synchronized void setRealm(String realm) {
+        this.realm = realm;
     }
 
     @Override

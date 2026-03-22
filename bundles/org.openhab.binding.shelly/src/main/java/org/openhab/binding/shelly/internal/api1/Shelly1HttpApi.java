@@ -608,12 +608,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
-        ShellyThingConfiguration config;
-        synchronized (this) {
-            config = this.config;
-        }
-
-        if (config.localIp.isEmpty()) {
+        if (config.getLocalIp().isEmpty()) {
             throw new ShellyApiException(thingName + ": Local IP address was not detected, can't build Callback URL");
         }
         for (String eventType : eventTypes) {
@@ -621,8 +616,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
                 // H&T adds the type=xx to report_url itself, so we need to ommit here
                 String eclass = profile.isSensor ? EVENT_TYPE_SENSORDATA : eventType;
                 String urlParm = eventType.contains("temp") || profile.isHT ? "" : "?type=" + eventType;
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
-                        + profile.thingName + "/" + eclass + urlParm;
+                String callBackUrl = "http://" + config.getLocalIp() + ":" + config.getLocalPort()
+                        + SHELLY1_CALLBACK_URI + "/" + profile.thingName + "/" + eclass + urlParm;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String testUrl = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
                 if (!enabled && !profile.settingsJson.contains(testUrl)) {
@@ -643,8 +638,9 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
             throws ShellyApiException {
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
-                String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY1_CALLBACK_URI + "/"
-                        + profile.thingName + "/" + deviceClass + "/" + index + "?type=" + eventType;
+                String callBackUrl = "http://" + config.getLocalIp() + ":" + config.getLocalPort()
+                        + SHELLY1_CALLBACK_URI + "/" + profile.thingName + "/" + deviceClass + "/" + index + "?type="
+                        + eventType;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
                 String test = "\"" + mkEventUrl(eventType) + "\":\"" + callBackUrl + "\"";
                 if (!enabled && !profile.settingsJson.contains(test)) {

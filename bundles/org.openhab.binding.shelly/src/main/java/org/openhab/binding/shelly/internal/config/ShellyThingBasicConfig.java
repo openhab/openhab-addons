@@ -125,5 +125,4 @@ public class ShellyThingBasicConfig {
     public synchronized boolean getEventsCoIoT() {
         return eventsCoIoT;
     }
-
 }

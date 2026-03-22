@@ -127,7 +127,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 String ps = substringAfter(profile.coiotEndpoint, ":");
                 coiotPort = Integer.parseInt(ps);
             }
-            coapServer.start(config.localIp, coiotPort, this);
+            coapServer.start(config.getLocalIp(), coiotPort, this);
             statusClient = new CoapClient(completeUrl(config.getDeviceIp(), coiotPort, COLOIT_URI_DEVSTATUS))
                     .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
             @Nullable
