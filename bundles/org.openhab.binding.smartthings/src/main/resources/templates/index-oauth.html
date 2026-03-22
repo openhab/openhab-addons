@@ -72,6 +72,10 @@ html {
 		<br/>
 		The redirect URI that will be use with SmartThings for callback event is
 		<a href="${callBackUri}">${callBackUri}</a>
+		
+		<br/>
+		Make sure this URI is publicly accessible from the internet and uses HTTPS if you want events to be propagated from SmartThings via the callback URL.
+        Otherwise, you will need to use polling instead.
 	</p>
 	<br/><br/>
 	<div class="block${bridge.authorized}">

@@ -132,12 +132,19 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         }
 
         registerOAuth(true);
-        registerServlet();
+        try {
+            registerServlet();
+        } catch (SmartThingsException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.unable-register-servlet");
+            return;
+
+        }
 
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "OAuth Service is not initialized correctly!");
+                    "@text/offline.oauth-service-notinitialized");
             return;
 
         }
@@ -147,9 +154,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 setupClient(null);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                String msg = "Please authorize the binding by visiting the path " + "<a "
-                        + "onclick=\"event.stopPropagation(); " + "var w = 600, h = 500;\r\n"
-                        + "var left = (screen.width - w) / 2;\r\n" + "var top = (screen.height - h) / 2;\r\n"
+                String msg = "@text/authorize-message" + "<a " + "onclick=\"event.stopPropagation(); "
+                        + "var w = 600, h = 500;\r\n" + "var left = (screen.width - w) / 2;\r\n"
+                        + "var top = (screen.height - h) / 2;\r\n"
                         + "window.open('/smartthings', 'popup', 'width=${w},height=${h},top=${top},left=${left}');"
                         + "return false;\">/smartthings</a>. "
                         + "The authorization code will be captured automatically.";
@@ -157,7 +164,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "OAuth failed: " + e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.oauth-failed" + ":" + e.getMessage());
         }
     }
 
@@ -238,13 +246,13 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
      * @return the newly created servlet
      */
 
-    public void registerServlet() {
+    public void registerServlet() throws SmartThingsException {
         try {
             SmartThingsServlet s = new SmartThingsServlet(this, authService, httpService);
             s.activate();
             servlet = s;
         } catch (Exception e) {
-            logger.warn("Error during smartthings servlet startup", e);
+            throw new SmartThingsException("Error during smartthings servlet startup", e);
         }
     }
 
@@ -331,14 +339,14 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public boolean isAuthorized() {
+    public boolean isAuthorized() throws SmartThingsException {
         final AccessTokenResponse accessTokenResponse = getAccessTokenResponse();
 
         return accessTokenResponse != null && accessTokenResponse.getAccessToken() != null
                 && accessTokenResponse.getRefreshToken() != null;
     }
 
-    public @Nullable AccessTokenResponse getAccessTokenResponse() {
+    public @Nullable AccessTokenResponse getAccessTokenResponse() throws SmartThingsException {
         try {
             OAuthClientService oAuthService = this.oAuthService;
             AccessTokenResponse response = oAuthService == null ? null : oAuthService.getAccessTokenResponse();
@@ -351,18 +359,16 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             }
             return null;
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
-            logger.debug("Exception checking authorization: ", e);
-            return null;
+            throw new SmartThingsException("Error durring getAccessTokenResponse", e);
         }
     }
 
-    public @Nullable AccessTokenResponse refreshToken() {
+    public @Nullable AccessTokenResponse refreshToken() throws SmartThingsException {
         try {
             OAuthClientService oAuthService = this.oAuthService;
             return oAuthService == null ? null : oAuthService.refreshToken();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
-            logger.debug("Exception checking authorization: ", e);
-            return null;
+            throw new SmartThingsException("Error durring refreshToken", e);
         }
     }
 
@@ -403,7 +409,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public String formatAuthorizationUrl(String redirectUri, String state, boolean useCli) {
+    public String formatAuthorizationUrl(String redirectUri, String state, boolean useCli) throws SmartThingsException {
         try {
             OAuthClientService oAuthService = this.oAuthService;
             if (oAuthService == null) {
@@ -419,8 +425,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
             return authorizationUri;
         } catch (final OAuthException e) {
-            logger.debug("Error constructing AuthorizationUrl: ", e);
-            return "";
+            throw new SmartThingsException("Error constructing AuthorizationUr", e);
         }
     }
 

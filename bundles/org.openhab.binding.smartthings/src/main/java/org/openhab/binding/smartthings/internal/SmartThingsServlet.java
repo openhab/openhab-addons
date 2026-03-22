@@ -262,11 +262,14 @@ public class SmartThingsServlet extends HttpServlet
             // Display it in page rendering for user confirmation
             replaceMap.put(KEY_CALLBACK_URI, servletBaseURL);
 
-            String authorizationUri = accountHandler.formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI,
-                    "step1", true);
-
-            // handle first redirection to Smartthings when user click button
-            replaceMap.put(KEY_BRIDGE_URI, authorizationUri);
+            try {
+                String authorizationUri = accountHandler
+                        .formatAuthorizationUrl(SmartThingsBindingConstants.REDIRECT_URI, "step1", true);
+                // handle first redirection to Smartthings when user click button
+                replaceMap.put(KEY_BRIDGE_URI, authorizationUri);
+            } catch (SmartThingsException ex) {
+                replaceMap.put(KEY_BRIDGE_URI, "Errors occurs during retrieve of authorizationUri:" + ex.getMessage());
+            }
 
         }
 

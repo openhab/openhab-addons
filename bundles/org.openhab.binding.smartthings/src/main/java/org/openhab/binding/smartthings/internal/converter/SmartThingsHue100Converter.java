@@ -67,7 +67,7 @@ public class SmartThingsHue100Converter extends SmartThingsConverter {
 
             this.pushCommand(componentKey, capaKey, cmdName, arguments);
         } else {
-            logger.info("");
+            logger.warn("Command is not currenlty supported : " + command.getClass());
         }
     }
 

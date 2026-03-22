@@ -263,47 +263,11 @@ public class SmartThingsThingHandler extends BaseThingHandler {
         SmartThingsConverterFactory.registerConverters(typeRegistry);
         SmartThingsStateHandlerFactory.registerStateHandler();
 
-        // testCommand();
         refreshDevice();
 
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 1, TimeUnit.SECONDS);
 
         updateStatus(ThingStatus.ONLINE);
-    }
-
-    public void testCommand() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            return;
-        }
-        SmartThingsAccountHandler accountHandler = (SmartThingsAccountHandler) bridge.getHandler();
-        if (accountHandler == null) {
-            return;
-        }
-        SmartThingsApi api = accountHandler.getSmartThingsApi();
-        if (api == null) {
-            return;
-        }
-        String deviceId = "702C1F72-C35A-0000-0000-000000000000";
-
-        String jsonMsg = "";
-        jsonMsg += "{";
-        jsonMsg += "   \"commands\":";
-        jsonMsg += "     [";
-        jsonMsg += "        {";
-        jsonMsg += "          \"component\":\"main\",";
-        jsonMsg += "          \"capability\":\"ovenOperatingState\",";
-        jsonMsg += "          \"command\":\"start\",";
-        jsonMsg += "          \"arguments\":[\"Baker\", 300 , 210 ]";
-        jsonMsg += "        }";
-        jsonMsg += "     ]";
-        jsonMsg += "}";
-
-        try {
-            api.sendCommand(deviceId, jsonMsg);
-        } catch (SmartThingsException ex) {
-            logger.error("exception: ", ex);
-        }
     }
 
     @Override

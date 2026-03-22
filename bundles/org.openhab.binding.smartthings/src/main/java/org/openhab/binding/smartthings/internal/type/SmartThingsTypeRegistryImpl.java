@@ -137,7 +137,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         }
 
         if (channelType == null) {
-            logger.debug("need review");
+            logger.debug("@todo: need review");
             return result;
         }
 
@@ -228,7 +228,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         channelTypeId = getChannelType(smartThingsType, capa, channelProp);
 
         if ("".equals(channelTypeId)) {
-            logger.debug("need review");
+            logger.debug("@todo: need review");
         }
         String label = capa.name;
 
@@ -637,7 +637,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
         if (semanticTags.containsKey(deviceType)) {
             return semanticTags.get(deviceType);
         } else {
-            logger.debug("@need review, missing semanticTag for deviceType: {}", deviceType);
+            logger.debug("@todo: need review, missing semanticTag for deviceType: {}", deviceType);
         }
         return null;
     }

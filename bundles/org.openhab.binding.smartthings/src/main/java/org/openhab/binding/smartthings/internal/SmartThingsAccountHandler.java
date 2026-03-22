@@ -27,7 +27,7 @@ public interface SmartThingsAccountHandler extends ThingHandler {
     /**
      * @return Returns true if the SmartThings Bridge is authorized.
      */
-    boolean isAuthorized();
+    boolean isAuthorized() throws SmartThingsException;
 
     /**
      * Calls SmartThings Api to obtain refresh and access tokens and persist data with Thing.
@@ -44,5 +44,5 @@ public interface SmartThingsAccountHandler extends ThingHandler {
      * @param redirectUri The uri SmartThings will redirect back to
      * @return the formatted url that should be used to call SmartThings Web Api with
      */
-    String formatAuthorizationUrl(String redirectUri, String state, boolean useCli);
+    String formatAuthorizationUrl(String redirectUri, String state, boolean useCli) throws SmartThingsException;
 }
