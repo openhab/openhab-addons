@@ -27,6 +27,7 @@ import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler
 import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -60,6 +61,7 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
     private @NonNullByDefault({}) HttpService httpService;
     private final HttpClientFactory httpClientFactory;
     private final SmartThingsAuthService authService;
+    private final TranslationProvider translationProvider;
     private final OAuthFactory oAuthFactory;
     private final SmartThingsTypeRegistry typeRegistry;
     private final ClientBuilder clientBuilder;
@@ -72,12 +74,14 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
 
     @Activate
     public SmartThingsHandlerFactory(final @Reference HttpService httpService,
-            final @Reference SmartThingsAuthService authService, final @Reference OAuthFactory oAuthFactory,
+            final @Reference SmartThingsAuthService authService,
+            final @Reference TranslationProvider translationProvider, final @Reference OAuthFactory oAuthFactory,
             final @Reference HttpClientFactory httpClientFactory,
             final @Reference SmartThingsTypeRegistry typeRegistery, final @Reference ClientBuilder clientBuilder,
             @Reference SseEventSourceFactory eventSourceFactory) {
         this.httpService = httpService;
         this.authService = authService;
+        this.translationProvider = translationProvider;
         this.httpClientFactory = httpClientFactory;
         this.oAuthFactory = oAuthFactory;
         this.typeRegistry = typeRegistery;
@@ -99,8 +103,9 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
                 return null;
             }
 
-            bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, bundleContext, httpService,
-                    oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory);
+            bridgeHandler = new SmartThingsAccountHandler((Bridge) thing, this, authService, translationProvider,
+                    bundleContext, httpService, oAuthFactory, httpClientFactory, typeRegistry, clientBuilder,
+                    eventSourceFactory);
 
             SmartThingsBridgeHandler accountHandler = bridgeHandler;
             authService.setSmartThingsAccountHandler(accountHandler);

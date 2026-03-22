@@ -14,6 +14,7 @@ package org.openhab.binding.smartthings.internal.handler;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -48,7 +50,9 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.jaxrs.client.SseEventSourceFactory;
@@ -74,6 +78,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) HttpClientFactory httpClientFactory;
     private @NonNullByDefault({}) SmartThingsApi smartthingsApi;
     private @NonNullByDefault({}) SmartThingsAuthService authService;
+    private @NonNullByDefault({}) TranslationProvider translationProvider;
     protected @NonNullByDefault({}) SmartThingsTypeRegistry typeRegistry;
     protected @NonNullByDefault({}) SmartThingsDiscoveryService discoService;
     protected @NonNullByDefault({}) ClientBuilder clientBuilder;
@@ -86,9 +91,10 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
     private @Nullable SmartThingsServlet servlet;
 
     public SmartThingsBridgeHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
-            SmartThingsAuthService authService, BundleContext bundleContext, HttpService httpService,
-            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartThingsTypeRegistry typeRegistry,
-            ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory) {
+            SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
+            HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
+            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory) {
         super(bridge);
 
         config = getThing().getConfiguration().as(SmartThingsBridgeConfig.class);
@@ -97,6 +103,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.bundleContext = bundleContext;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
+        this.translationProvider = translationProvider;
         this.authService = authService;
         this.httpClientFactory = httpClientFactory;
         this.typeRegistry = typeRegistry;
@@ -154,12 +161,14 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 setupClient(null);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                String msg = "@text/authorize-message" + "<a " + "onclick=\"event.stopPropagation(); "
-                        + "var w = 600, h = 500;\r\n" + "var left = (screen.width - w) / 2;\r\n"
-                        + "var top = (screen.height - h) / 2;\r\n"
+                Locale locale = Locale.getDefault(); // ou mieux si tu as accès au locale utilisateur
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                String text = translationProvider.getText(bundle, "authorize-message", null, locale);
+
+                String msg = text + " : <a " + "onclick=\"event.stopPropagation(); " + "var w = 600, h = 500;\r\n"
+                        + "var left = (screen.width - w) / 2;\r\n" + "var top = (screen.height - h) / 2;\r\n"
                         + "window.open('/smartthings', 'popup', 'width=${w},height=${h},top=${top},left=${left}');"
-                        + "return false;\">/smartthings</a>. "
-                        + "The authorization code will be captured automatically.";
+                        + "return false;\">/smartthings</a>. ";
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }

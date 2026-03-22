@@ -26,6 +26,7 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsCapability;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
 import org.openhab.binding.smartthings.internal.type.SmartThingsTypeRegistry;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -49,11 +50,12 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SmartThingsAccountHandler.class);
 
     public SmartThingsAccountHandler(Bridge bridge, SmartThingsHandlerFactory smartthingsHandlerFactory,
-            SmartThingsAuthService authService, BundleContext bundleContext, HttpService httpService,
-            OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory, SmartThingsTypeRegistry typeRegistry,
-            ClientBuilder clientBuilder, SseEventSourceFactory eventSourceFactory) {
-        super(bridge, smartthingsHandlerFactory, authService, bundleContext, httpService, oAuthFactory,
-                httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory);
+            SmartThingsAuthService authService, TranslationProvider translationProvider, BundleContext bundleContext,
+            HttpService httpService, OAuthFactory oAuthFactory, HttpClientFactory httpClientFactory,
+            SmartThingsTypeRegistry typeRegistry, ClientBuilder clientBuilder,
+            SseEventSourceFactory eventSourceFactory) {
+        super(bridge, smartthingsHandlerFactory, authService, translationProvider, bundleContext, httpService,
+                oAuthFactory, httpClientFactory, typeRegistry, clientBuilder, eventSourceFactory);
     }
 
     @Override

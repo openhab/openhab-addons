@@ -33,9 +33,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = SmartThingsAuthService.class, configurationPid = "binding.internal.authService")
 @NonNullByDefault
 public class SmartThingsAuthService {
-
-    private static final String ERROR_UKNOWN_BRIDGE = "Returned 'state' by doesn't match any Bridges. Has the bridge been removed?";
-
     private final Logger logger = LoggerFactory.getLogger(SmartThingsAuthService.class);
 
     private @Nullable SmartThingsAccountHandler accountHandler;
@@ -56,7 +53,7 @@ public class SmartThingsAuthService {
      * @param state The state use in oauth call
      * @param code The smartthings return authorization code
      *
-     * @return returns""
+     * @return returns the name of the SmartThings user that is authorized
      */
     public String authorize(String redirectUri, String state, String code) throws SmartThingsException {
         SmartThingsAccountHandler accountHandler = getSmartThingsAccountHandler();
@@ -64,7 +61,7 @@ public class SmartThingsAuthService {
             logger.debug(
                     "SmartThings redirected with state '{}' but no matching bridge was found. Possible bridge has been removed.",
                     state);
-            throw new SmartThingsException(ERROR_UKNOWN_BRIDGE);
+            throw new SmartThingsException("@text/error-unknow-bridge");
         } else {
             return accountHandler.authorize(redirectUri, code);
         }
