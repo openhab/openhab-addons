@@ -545,7 +545,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                         toQuantityType(getDouble(sdata.bat.value), 0, Units.PERCENT));
 
-                int lowBattery = thingHandler.getThingConfig().lowBattery;
+                int lowBattery = thingHandler.getThingConfig().getLowBattery();
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getOnOff(!charger && getDouble(sdata.bat.value) < lowBattery));
                 updated |= changed;

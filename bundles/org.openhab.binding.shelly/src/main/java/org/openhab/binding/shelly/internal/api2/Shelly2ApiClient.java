@@ -256,9 +256,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.realm.isBlank()) {
-            config.realm = getString(profile.device.hostname);
-            logger.trace("{}: {} is used as realm", thingName, config.realm);
+        if (config.getRealm().isBlank()) {
+            config.setRealm(getString(profile.device.hostname));
+            logger.trace("{}: {} is used as realm", thingName, config.getRealm());
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
@@ -1301,7 +1301,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             String uid = thing.getThing().getUID().getAsString();
             suffix = substringAfterLast(uid, ":");
         } else {
-            suffix = config.localIp; // use a unique identifier;
+            suffix = config.getLocalIp(); // use a unique identifier;
         }
 
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();

@@ -12,7 +12,17 @@
  */
 package org.openhab.binding.shelly.internal.config;
 
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
+
+import java.lang.reflect.Field;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyThingConfiguration} class contains fields mapping thing configuration parameters.
@@ -20,32 +30,102 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyThingConfiguration {
-    public String deviceIp = ""; // ip address of thedevice
-    public String deviceAddress = ""; // IP address or MAC address for BLU devices
-    public String userId = ""; // userid for http basic auth
-    public String password = ""; // password for http basic auth
+public class ShellyThingConfiguration extends ShellyThingBasicConfig {
+    private final Logger logger = LoggerFactory.getLogger(ShellyThingConfiguration.class);
 
-    public int updateInterval = 60; // schedule interval for the update job
-    public int lowBattery = 15; // threshold for battery value
-    public boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
+    // All access must be guarded by "this"
+    private String realm;
 
-    public int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
-    public int favoriteDOWN = 0; // Roller position favorite when control channel receives ON, 0=none
+    private final String localIp; // local ip addresses used to create callback url
+    private final String localPort;
 
-    public boolean eventsButton = false; // true: register for Relay btn_xxx events
-    public boolean eventsSwitch = true; // true: register for device out_xxx events
-    public boolean eventsPush = true; // true: register for short/long push events
-    public boolean eventsRoller = true; // true: register for short/long push events
-    public boolean eventsSensorReport = true; // true: register for sensor events
-    public boolean eventsCoIoT = false; // true: use CoIoT events (based on COAP)
+    public ShellyThingConfiguration(String thingName, ShellyThingBasicConfig basicConfig,
+            ShellyBindingConfiguration bindingConfig, String realm, boolean gen2) {
+        for (Field field : ShellyThingBasicConfig.class.getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                field.set(this, field.get(basicConfig));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to copy field: " + field.getName(), e);
+            }
+        }
 
-    public String localIp = ""; // local ip addresses used to create callback url
-    public String localPort = "8080";
-    public String realm = "";
+        if (deviceAddress.isEmpty()) {
+            if (!deviceIp.isEmpty()) {
+                try {
+                    String ip = deviceIp.contains(":") ? substringBefore(deviceIp, ":") : deviceIp;
+                    String port = deviceIp.contains(":") ? substringAfter(deviceIp, ":") : "";
+                    InetAddress addr = InetAddress.getByName(ip);
+                    String saddr = addr.getHostAddress();
+                    if (!ip.equals(saddr)) {
+                        logger.debug("{}: hostname {} resolved to IP address {}", thingName, deviceIp, saddr);
+                        deviceIp = saddr + (port.isEmpty() ? "" : ":" + port);
+                    }
+                } catch (UnknownHostException e) {
+                    logger.debug("{}: Unable to resolve hostname {}", thingName, deviceIp);
+                }
+            }
 
-    public Boolean enableBluGateway = false;
-    public Boolean enableRangeExtender = true;
+            deviceAddress = deviceIp;
+        } else {
+            // remove : from MAC address and convert to lower case
+            deviceAddress = deviceAddress.toLowerCase(Locale.ROOT).replace(":", "");
+        }
+
+        if (!gen2 && userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
+            // Gen2 has hard coded user "admin"
+            userId = bindingConfig.defaultUserId;
+            logger.debug("{}: Using default user id '{}' from binding configuration", thingName, userId);
+        }
+        if (password.isEmpty() && !bindingConfig.defaultPassword.isEmpty()) {
+            password = bindingConfig.defaultPassword;
+            logger.debug("{}: Using default password from binding configuration", thingName);
+        }
+
+        if (updateInterval == 0) {
+            updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
+        }
+        if (updateInterval < UPDATE_MIN_DELAY) {
+            updateInterval = UPDATE_MIN_DELAY;
+        }
+
+        if (gen2) {
+            eventsCoIoT = false;
+        }
+        if (eventsCoIoT) {
+            logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
+            disableGen1Events();
+        }
+
+        this.localIp = bindingConfig.localIP;
+        this.localPort = String.valueOf(bindingConfig.httpPort != -1 ? bindingConfig.httpPort : DEFAULT_LOCAL_PORT);
+        this.realm = getString(realm);
+    }
+
+    public ShellyThingConfiguration(ShellyBindingConfiguration bindingConfig, String realm, String deviceIp) {
+        this.realm = realm; // mDNS service name or hostname provided by /shelly
+        this.deviceIp = deviceIp;
+        this.userId = getString(bindingConfig.defaultUserId);
+        this.password = getString(bindingConfig.defaultPassword);
+        this.localIp = getString(bindingConfig.localIP);
+        this.localPort = String.valueOf(bindingConfig.httpPort != -1 ? bindingConfig.httpPort : DEFAULT_LOCAL_PORT);
+    }
+
+    public String getLocalIp() {
+        return localIp;
+    }
+
+    public String getLocalPort() {
+        return localPort;
+    }
+
+    public synchronized String getRealm() {
+        return realm;
+    }
+
+    public synchronized void setRealm(String realm) {
+        this.realm = realm;
+    }
 
     @Override
     public String toString() {

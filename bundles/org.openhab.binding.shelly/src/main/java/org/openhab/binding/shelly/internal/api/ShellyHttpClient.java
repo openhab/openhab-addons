@@ -74,7 +74,7 @@ public class ShellyHttpClient {
     protected volatile boolean basicAuth = false;
 
     // All access must be guarded by "this"
-    protected ShellyThingConfiguration config;
+    protected volatile ShellyThingConfiguration config;
 
     protected final ShellyDeviceProfile profile;
 
@@ -129,11 +129,7 @@ public class ShellyHttpClient {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                String password;
-                synchronized (this) {
-                    password = config.password;
-                }
-                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !password.isBlank()) {
+                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !config.getPassword().isBlank()) {
                     logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
                     basicAuth = true;
                     apiResult = innerRequest(HttpMethod.GET, uri, null, "");
@@ -169,14 +165,9 @@ public class ShellyHttpClient {
 
     private ShellyApiResult innerRequest(HttpMethod method, String uri, @Nullable Shelly2AuthChallenge auth,
             String data) throws ShellyApiException {
-        String deviceIp;
-        String userId;
-        String password;
-        synchronized (this) {
-            deviceIp = config.deviceIp;
-            userId = config.userId;
-            password = config.password;
-        }
+        String deviceIp = config.getDeviceIp();
+        String userId = config.getUserId();
+        String password = config.getPassword();
 
         Request request = null;
         String url = "http://" + deviceIp + uri;
