@@ -176,7 +176,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
 
                     Stack<Object> stack = new Stack<Object>();
                     for (SmartThingsArgument arg : cmd.arguments) {
-                        if (arg.optional) {
+                        if (Boolean.TRUE.equals(arg.optional)) {
                             continue;
                         }
 
@@ -201,28 +201,29 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
                                 jSonArgs = jSonArgs + "\"" + subAttr + "\":";
 
                                 String cacheKey = groupId + "#" + subAttr;
-                                State state = stateHandler.getState(cacheKey);
-                                if (state instanceof StringType stateString) {
-                                    String stState = stateString.toFullString();
-                                    stState = stState.trim();
-                                    if (stState.contains(",")) {
-                                        if (stState.endsWith(",")) {
-                                            stState = stState.substring(0, stState.length() - 1);
+
+                                if (stateHandler != null) {
+                                    State state = stateHandler.getState(cacheKey);
+                                    if (state instanceof StringType stateString) {
+                                        String stState = stateString.toFullString();
+                                        stState = stState.trim();
+                                        if (stState.contains(",")) {
+                                            if (stState.endsWith(",")) {
+                                                stState = stState.substring(0, stState.length() - 1);
+                                            }
+                                            stState = stState.replace(".0", "");
+                                            jSonArgs = jSonArgs + "[" + stState + "]";
+                                        } else {
+                                            jSonArgs = jSonArgs + state;
                                         }
-                                        stState = stState.replace(".0", "");
-                                        jSonArgs = jSonArgs + "[" + stState + "]";
+                                    } else if (state instanceof UnDefType) {
+                                        jSonArgs = jSonArgs + "\"WindDown\"";
+                                    } else if (state instanceof DecimalType decimalType) {
+                                        jSonArgs = jSonArgs + decimalType.intValue();
                                     } else {
                                         jSonArgs = jSonArgs + state;
                                     }
-                                } else if (state instanceof UnDefType) {
-                                    jSonArgs = jSonArgs + "\"WindDown\"";
-                                } else if (state instanceof DecimalType decimalType) {
-                                    jSonArgs = jSonArgs + decimalType.intValue();
-                                } else {
-                                    jSonArgs = jSonArgs + state;
                                 }
-
-                                logger.info("");
                             }
 
                             JsonObject elm = gson.fromJson("{" + jSonArgs + "}", JsonObject.class);

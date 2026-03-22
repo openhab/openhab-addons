@@ -453,7 +453,7 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
             capaKey = idComponents[1];
         }
 
-        String componentId = UidUtils.sanetizeId(component.id);
+        String componentId = UidUtils.sanitizeId(component.id);
 
         for (String attrKey : capa.attributes.keySet()) {
             if (attrKey.indexOf("Range") >= 0) {

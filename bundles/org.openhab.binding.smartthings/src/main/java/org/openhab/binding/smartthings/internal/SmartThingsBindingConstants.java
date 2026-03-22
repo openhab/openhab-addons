@@ -92,7 +92,7 @@ public class SmartThingsBindingConstants {
     public static final String TYPE_STRING = "String";
     public static final String TYPE_VECTOR3 = "Vector3";
     public static final String TYPE_PLAYER = "Player";
-    public static final String TYPE_DATETIME = "Datettime";
+    public static final String TYPE_DATETIME = "DateTime";
     public static final String TYPE_ROLLERSHUTTER = "Rollershutter";
 
     public static final String OPEN_VALUE = "open";

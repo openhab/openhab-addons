@@ -205,7 +205,7 @@ public class SmartThingsServlet extends HttpServlet
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
-                    if (!reqCode.isBlank()) {
+                    if (!StringUtil.isBlank(reqCode)) {
                         if ("/finish".equals(requestUrl)) {
                             if ("step1".equals(reqState)) {
                                 template = step1Template;
@@ -230,11 +230,18 @@ public class SmartThingsServlet extends HttpServlet
                                         reqCode);
 
                                 SmartThingsApi api = bridgeHandler.getSmartThingsApi();
-                                SmartThingsDevice[] devices = api.getAllDevices();
-                                SmartThingsLocation[] locations = api.getAllLocations();
+                                if (api == null) {
+                                    logger.warn("Api is null on step2 authentification");
+                                    replaceMap.put(KEY_LOCATION, "Unknow location");
+                                    replaceMap.put(KEY_DEVICES_COUNT, "0");
 
-                                replaceMap.put(KEY_LOCATION, locations[0].name + " / " + locations[0].locationId);
-                                replaceMap.put(KEY_DEVICES_COUNT, "" + devices.length);
+                                } else {
+                                    SmartThingsDevice[] devices = api.getAllDevices();
+                                    SmartThingsLocation[] locations = api.getAllLocations();
+
+                                    replaceMap.put(KEY_LOCATION, locations[0].name + " / " + locations[0].locationId);
+                                    replaceMap.put(KEY_DEVICES_COUNT, "" + devices.length);
+                                }
                             }
                         }
                     } else {

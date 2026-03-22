@@ -145,7 +145,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             AccessTokenResponse response = oAuthService.getAccessTokenResponse();
             if (response != null && response.getAccessToken() != null) {
                 setupClient(null);
-                logger.debug("Token: {}", response.getAccessToken());
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 String msg = "Please authorize the binding by visiting the path " + "<a "

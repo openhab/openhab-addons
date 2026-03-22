@@ -29,7 +29,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 @NonNullByDefault
 public class UidUtils {
 
-    public static String sanetizeId(String st) {
+    public static String sanitizeId(String st) {
         StringBuffer buffer = new StringBuffer();
 
         for (int i = 0; i < st.length(); i++) {
@@ -56,13 +56,13 @@ public class UidUtils {
 
             else if (c >= 224 && c <= 229) {
                 c = 'a';
-            } else if (c == 192 && c <= 197) {
+            } else if (c >= 192 && c <= 197) {
                 c = 'A';
             }
 
-            else if (c == 199) {
+            else if (c == 231) {
                 c = 'c';
-            } else if (c == 231) {
+            } else if (c == 199) {
                 c = 'C';
             }
 

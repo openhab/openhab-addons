@@ -135,7 +135,8 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     @Override
     protected boolean validateConfig(SmartThingsBridgeConfig config) {
         if (!super.validateConfig(config)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknow");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.invalid-configuration");
             return false;
         }
 

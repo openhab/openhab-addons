@@ -244,6 +244,7 @@ public abstract class SmartThingsConverter {
                 } else {
                     logger.error("@todo : handle this case: {} inputClass: {}", channelUid,
                             dataFromSmartThings.getClass());
+                    return new StringType("NA");
                 }
 
             case SmartThingsBindingConstants.TYPE_SWITCH:
