@@ -153,16 +153,25 @@ A positive number means the dial was rotated clock-wise, whereas a negative numb
 Room and Zone things allow you to control the lights in a given zone or room.
 They support the following channels:
 
-| Channel ID          | Item Type          | Description                                                                       |
-|---------------------|--------------------|-----------------------------------------------------------------------------------|
-| brightness          | Dimmer             | Supports adjusting the brightness or switching the lights on and off.             |
-| switch              | Switch             | Supports switching the lights on and off.                                         |
-| scene<sup>1)</sup>  | String             | Setting the string to a valid scene friendly name activates the respective scene. |
-| dynamics            | Number:Time        | The duration of dynamic transitions between light or scene states.                |
-| alert<sup>1)</sup>  | String             | This channel allows setting an alert on the lights e.g. flashing them.            |
+| Channel ID               | Item Type          | Description                                                                                          |
+|--------------------------|--------------------|------------------------------------------------------------------------------------------------------|
+| brightness               | Dimmer             | Supports adjusting the brightness or switching the lights on and off.                                |
+| switch                   | Switch             | Supports switching the lights on and off.                                                            |
+| scene                    | String             | Setting the string to a valid scene friendly name activates the respective scene.                    |
+| dynamics                 | Number:Time        | The duration of dynamic transitions between light or scene states.                                   |
+| alert                    | String             | This channel allows setting an alert on the lights e.g. flashing them.                               |
+| dimming-only             | Dimmer             | Allows access to the `dimming` parameter of the light(s) only. Has no impact on `on-off` parameter.  |
+| on-off-only              | Switch             | Allows access to the `on-off` parameter of the light(s) only. Has no impact on `dimming` parameter.  |
+| motion                   | Switch             | Shows if motion has been detected by any of the sensors in the group. (Read Only)                    |
+| motion-enabled           | Switch             | Supports enabling / disabling the grouped motion sensor. (Advanced)                                  |
+| motion-last-updated      | DateTime           | The date and time when the grouped motion value was last updated. (Read Only) (Advanced)             |
+| light-level              | Number:Illuminance | Shows the current amalgamated light level measured by the sensors in the group. (Read Only)          |
+| light-level-last-updated | DateTime           | The date and time when the grouped light level was last updated. (Read Only) (Advanced)              |
+| light-level-enabled      | Switch             | Supports enabling / disabling the grouped light level sensor. (Advanced)                             |
 
-<sup>1)</sup> The scene and alert channels are optional.
-If the respective room or zone has no scenes or alerts associated with it, the respective channel will not be shown.
+The exact list of channels in a given room or zone is determined at run time when the system is started.
+Each room or zone reports its own live list of capabilities, and the respective list of channels is created accordingly.
+The channels `dimming-only` and `on-off-only` are _advanced_ channels - see [below](#advanced-channels-for-devices-rooms-and-zones) for more details.
 
 ### Channels for MotionAware™ Areas
 

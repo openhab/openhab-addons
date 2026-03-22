@@ -76,6 +76,7 @@ public class ViessmannBindingConstants {
             entry("power-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("heat-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("percent", Units.PERCENT.toString()), //
+            entry("seconds", Units.SECOND.toString()), //
             entry("minute", Units.MINUTE.toString()), //
             entry("hour", Units.HOUR.toString()), //
             entry("hours", Units.HOUR.toString()), //

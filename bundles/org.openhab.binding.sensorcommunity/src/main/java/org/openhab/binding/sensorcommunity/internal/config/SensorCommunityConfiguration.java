@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sensorcommunity.internal;
+package org.openhab.binding.sensorcommunity.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sensorcommunity.internal.utils.Constants;
