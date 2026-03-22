@@ -88,6 +88,14 @@ class BundleManifestTest {
     }
 
     @Test
+    void servicePidFollowsOpenHABConvention() {
+        assertTrue(TimescaleDBPersistenceService.CONFIGURATION_PID.matches("org\\.openhab\\.[a-z]+"),
+                "CONFIGURATION_PID must be 'org.openhab.<name>' (no extra segments) so that "
+                        + "timescaledb.cfg is resolved correctly by the openHAB ConfigDispatcher. Got: "
+                        + TimescaleDBPersistenceService.CONFIGURATION_PID);
+    }
+
+    @Test
     void addonXmlExists() {
         assertTrue(Files.exists(Path.of("src/main/resources/OH-INF/addon/addon.xml")),
                 "OH-INF/addon/addon.xml is missing — the addon will not appear in the openHAB UI. "

@@ -35,28 +35,28 @@ Item states are stored in a single hypertable `items` (columns: `time`, `item_id
 |-------------------|--------------------------------|-----------------|------------------------|
 | `DecimalType`     | numeric value                  | —               | —                      |
 | `QuantityType`    | numeric value (stripped)       | —               | unit string, e.g. `°C` |
-| `OnOffType`       | `1.0` (ON) / `0.0` (OFF)      | —               | —                      |
-| `OpenClosedType`  | `1.0` (OPEN) / `0.0` (CLOSED) | —               | —                      |
+| `OnOffType`       | `1.0` (ON) / `0.0` (OFF)       | —               | —                      |
+| `OpenClosedType`  | `1.0` (OPEN) / `0.0` (CLOSED)  | —               | —                      |
 | `PercentType`     | `0.0`–`100.0`                  | —               | —                      |
-| `UpDownType`      | `0.0` (UP) / `1.0` (DOWN)     | —               | —                      |
+| `UpDownType`      | `0.0` (UP) / `1.0` (DOWN)      | —               | —                      |
 | `HSBType`         | —                              | `H,S,B`         | —                      |
 | `DateTimeType`    | —                              | ISO-8601        | —                      |
 | `StringType`      | —                              | raw string      | —                      |
 
 ## Configuration
 
-Configure via `$OPENHAB_CONF/services/org.openhab.persistence.timescaledb.cfg` or in the UI under `Settings → Add-ons → TimescaleDB → Configure`.
+Configure via `$OPENHAB_CONF/services/timescaledb.cfg` or in the UI under `Settings → Add-ons → TimescaleDB → Configure`.
 
-| Property               | Default  | Required | Description                                               |
-|------------------------|----------|:--------:|-----------------------------------------------------------|
-| `url`                  |          | Yes      | JDBC URL, e.g. `jdbc:postgresql://localhost:5432/openhab` |
-| `user`                 | `openhab`| No       | Database user                                             |
-| `password`             |          | Yes      | Database password                                         |
-| `chunkInterval`        | `7 days` | No       | TimescaleDB chunk interval for the hypertable             |
-| `retentionDays`        | `0`      | No       | Drop data older than N days. `0` = disabled               |
-| `compressionAfterDays` | `0`      | No       | Compress chunks older than N days. `0` = disabled         |
-| `maxConnections`       | `5`      | No       | Maximum DB connections in the pool                        |
-| `connectTimeout`       | `5000`   | No       | Connection timeout in milliseconds                        |
+| Property               | Default   | Required | Description                                               |
+|------------------------|-----------|:--------:|-----------------------------------------------------------|
+| `url`                  |           | Yes      | JDBC URL, e.g. `jdbc:postgresql://localhost:5432/openhab` |
+| `user`                 | `openhab` | No       | Database user                                             |
+| `password`             |           | Yes      | Database password                                         |
+| `chunkInterval`        | `7 days`  | No       | TimescaleDB chunk interval for the hypertable             |
+| `retentionDays`        | `0`       | No       | Drop data older than N days. `0` = disabled               |
+| `compressionAfterDays` | `0`       | No       | Compress chunks older than N days. `0` = disabled         |
+| `maxConnections`       | `5`       | No       | Maximum DB connections in the pool                        |
+| `connectTimeout`       | `5000`    | No       | Connection timeout in milliseconds                        |
 
 ## Persistence Configuration
 
@@ -90,7 +90,7 @@ timescaledb="<operation>" [downsampleInterval="<interval>", retainRawDays="<n>",
 | Metadata key         | Values                               | Description                                                                                                                                       |
 |----------------------|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
 | value (main)         | `AVG`, `MAX`, `MIN`, `SUM`, or `" "` | Aggregation function. Use a single space `" "` for retention-only (no downsampling). openHAB rejects a truly empty value, so a space is required. |
-| `downsampleInterval` | e.g. `1h`, `15m`, `1d`              | Time bucket size for aggregation. Required when value is an aggregation function.                                                                 |
+| `downsampleInterval` | e.g. `1h`, `15m`, `1d`               | Time bucket size for aggregation. Required when value is an aggregation function.                                                                 |
 | `retainRawDays`      | integer, default `5`                 | Keep raw data for N days before replacing with aggregated rows.                                                                                   |
 | `retentionDays`      | integer, default `0`                 | Drop all data (raw + downsampled) older than N days. `0` = off.                                                                                   |
 
@@ -166,16 +166,16 @@ This keeps the hypertable as the single source of truth. openHAB reads aggregate
 
 The service implements the full `QueryablePersistenceService` interface:
 
-| openHAB Query                              | TimescaleDB Implementation                        |
-|--------------------------------------------|---------------------------------------------------|
-| `historicState(item, timestamp)`           | `WHERE time <= ? ORDER BY time DESC LIMIT 1`      |
-| `averageSince(item, timestamp)`            | `AVG(value) WHERE time >= ?`                      |
-| `sumSince(item, timestamp)`                | `SUM(value) WHERE time >= ?`                      |
-| `minSince(item, timestamp)`                | `MIN(value) WHERE time >= ?`                      |
-| `maxSince(item, timestamp)`                | `MAX(value) WHERE time >= ?`                      |
-| `countSince(item, timestamp)`              | `COUNT(*) WHERE time >= ?`                        |
-| `getAllStatesBetween(item, begin, end)`     | Range scan, returns both raw and downsampled rows |
-| `removeAllStatesBetween(item, begin, end)` | Bulk DELETE                                       |
+| openHAB Query                              | TimescaleDB Implementation            |
+|--------------------------------------------|---------------------------------------|
+| `historicState(item, timestamp)`           | `SELECT … ORDER BY time DESC LIMIT 1` |
+| `averageSince(item, timestamp)`            | `AVG(value) WHERE time >= ?`          |
+| `sumSince(item, timestamp)`                | `SUM(value) WHERE time >= ?`          |
+| `minSince(item, timestamp)`                | `MIN(value) WHERE time >= ?`          |
+| `maxSince(item, timestamp)`                | `MAX(value) WHERE time >= ?`          |
+| `countSince(item, timestamp)`              | `COUNT(*) WHERE time >= ?`            |
+| `getAllStatesBetween(item, begin, end)`    | Range scan (raw + downsampled)        |
+| `removeAllStatesBetween(item, begin, end)` | `DELETE WHERE time BETWEEN ? AND ?`   |
 
 ## Compression
 

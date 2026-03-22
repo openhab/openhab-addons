@@ -15,7 +15,10 @@ package org.openhab.persistence.timescaledb.internal;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.console.Console;
+import org.openhab.core.io.console.ConsoleCommandCompleter;
+import org.openhab.core.io.console.StringsCompleter;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.osgi.service.component.annotations.Activate;
@@ -33,9 +36,11 @@ import org.osgi.service.component.annotations.Reference;
  */
 @NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
-public class TimescaleDBConsoleCommandExtension extends AbstractConsoleCommandExtension {
+public class TimescaleDBConsoleCommandExtension extends AbstractConsoleCommandExtension
+        implements ConsoleCommandCompleter {
 
     private static final String CMD_DOWNSAMPLE = "downsample";
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CMD_DOWNSAMPLE), false);
 
     private final TimescaleDBPersistenceService persistenceService;
 
@@ -48,6 +53,16 @@ public class TimescaleDBConsoleCommandExtension extends AbstractConsoleCommandEx
     @Override
     public List<String> getUsages() {
         return List.of(buildCommandUsage(CMD_DOWNSAMPLE, "run the downsampling/retention job immediately"));
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
+    }
+
+    @Override
+    public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
+        return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
     }
 
     @Override

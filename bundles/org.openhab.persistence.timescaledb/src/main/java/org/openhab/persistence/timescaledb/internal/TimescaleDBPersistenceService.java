@@ -66,12 +66,13 @@ import com.zaxxer.hikari.HikariDataSource;
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class, QueryablePersistenceService.class, ModifiablePersistenceService.class,
-        TimescaleDBPersistenceService.class }, configurationPid = "org.openhab.persistence.timescaledb", configurationPolicy = ConfigurationPolicy.REQUIRE, property = Constants.SERVICE_PID
-                + "=org.openhab.persistence.timescaledb")
+        TimescaleDBPersistenceService.class }, configurationPid = "org.openhab.timescaledb", configurationPolicy = ConfigurationPolicy.REQUIRE, property = Constants.SERVICE_PID
+                + "=org.openhab.timescaledb")
 @ConfigurableService(category = "persistence", label = "TimescaleDB Persistence Service", description_uri = TimescaleDBPersistenceService.CONFIG_URI)
 public class TimescaleDBPersistenceService implements ModifiablePersistenceService {
 
     static final String CONFIG_URI = "persistence:timescaledb";
+    static final String CONFIGURATION_PID = "org.openhab.timescaledb";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimescaleDBPersistenceService.class);
     private static final String THREAD_POOL_NAME = "timescaledb";
@@ -109,7 +110,7 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
         String url = (String) config.getOrDefault("url", "");
         if (url.isBlank()) {
             LOGGER.warn("TimescaleDB persistence not configured: missing 'url'. "
-                    + "Configure org.openhab.persistence.timescaledb:url.");
+                    + "Configure org.openhab.timescaledb:url.");
             return;
         }
 
