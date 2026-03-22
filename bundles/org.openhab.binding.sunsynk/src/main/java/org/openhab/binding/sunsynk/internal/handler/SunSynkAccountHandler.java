@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.sunsynk.internal.handler;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SunSynkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountHandler.class);
+    private static final long EXPIRYSECONDS = 100L; // 100 seconds before expiry
     private AccountController sunAccount = new AccountController();
     private @Nullable ScheduledFuture<?> discoverApiKeyJob;
     private @Nullable SunSynkAccountConfig accountConfig;
@@ -127,16 +129,33 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    /**
+     * Checks if the bearer token is near expiry and if it is refreshes by logging in.
+     * 
+     * @return boolean, true for a logged in account with unexpired token
+     * @throws SunSynkAuthenticateException
+     */
     public boolean refreshAccount() throws SunSynkAuthenticateException {
         try {
             SunSynkAccountConfig accountConfig = this.accountConfig;
             if (accountConfig == null) {
                 throw new SunSynkTokenException("No account config");
             }
-            this.sunAccount.refreshAccount(accountConfig.getEmail());
+            long expiresFromNow = this.sunAccount.checkExpireTime();
+            if (expiresFromNow < EXPIRYSECONDS) {
+                logger.debug("Account configuration token about to expired - logging in.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "re-enabling account");
+                configAccount();
+            } else {
+                Duration d = Duration.ofSeconds(expiresFromNow);
+                logger.debug(
+                        "Account configuration token not expired, valid for: {} days, {} hours, {} minutes, {} seconds",
+                        d.toDays(), d.toHoursPart(), d.toMinutesPart(), d.toSecondsPart());
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (SunSynkTokenException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to refresh token: " + e.getMessage());
+                    "Error attempting to refresh account: " + e.getMessage());
             return false;
         }
         return true;
