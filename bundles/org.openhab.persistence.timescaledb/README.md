@@ -45,7 +45,7 @@ Item states are stored in a single hypertable `items` (columns: `time`, `item_id
 
 ## Configuration
 
-Configure via `$OPENHAB_CONF/services/timescaledb.cfg` or in the UI under `Settings → Add-ons → TimescaleDB → Configure`.
+Configure via `$OPENHAB_CONF/services/org.openhab.persistence.timescaledb.cfg` or in the UI under `Settings → Add-ons → TimescaleDB → Configure`.
 
 | Property               | Default  | Required | Description                                               |
 |------------------------|----------|:--------:|-----------------------------------------------------------|
