@@ -412,6 +412,9 @@ public class SmartThingsApi {
             doRequest(JsonObject.class, subscriptionUri);
 
             SmartThingsApi api = bridgeHandler.getSmartThingsApi();
+            if (api == null) {
+                return false;
+            }
 
             SmartThingsDevice[] devices = api.getAllDevices();
             for (SmartThingsDevice dev : devices) {

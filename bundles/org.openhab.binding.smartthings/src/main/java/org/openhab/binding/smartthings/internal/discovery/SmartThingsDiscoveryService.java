@@ -87,14 +87,14 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         logger.trace("Start Discovery");
 
         SmartThingsApi api = bridge.getSmartThingsApi();
-        SmartThingsDevice[] devices = api.getAllDevices();
+        if (api != null) {
+            SmartThingsDevice[] devices = api.getAllDevices();
 
-        for (SmartThingsDevice device : devices) {
-            registerDevice(device, addDevice);
+            for (SmartThingsDevice device : devices) {
+                registerDevice(device, addDevice);
 
+            }
         }
-
-        // doTest(addDevice);
 
         logger.trace("End Discovery");
     }

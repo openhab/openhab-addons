@@ -91,17 +91,28 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     public void registerSubcriptions() {
         SmartThingsApi api = this.getSmartThingsApi();
 
-        boolean sucess = false;
+        if (api != null) {
+            boolean sucess = false;
 
-        sucess = api.registerSSESubscription();
-        if (!sucess) {
-            api.registerCallbackSubscription();
+            sucess = api.registerSSESubscription();
+            if (!sucess) {
+                sucess = api.registerCallbackSubscription();
+            }
+
+            if (!sucess) {
+                logger.warn(
+                        "RegisterSubscriptions failed, please consider use pooling instead to get device feedbacks information");
+            }
         }
     }
 
     public void initCapabilites() throws SmartThingsException {
         SmartThingsApi api = this.getSmartThingsApi();
         typeRegistry.setCloudBridgeHandler(this);
+
+        if (api == null) {
+            throw new SmartThingsException("Can't initialize capabilities, api is null");
+        }
 
         SmartThingsCapability[] capabilitiesList = api.getAllCapabilities();
 

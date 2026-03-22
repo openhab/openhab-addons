@@ -405,15 +405,20 @@ public class SmartThingsTypeRegistryImpl implements SmartThingsTypeRegistry {
                             SmartThingsBridgeHandler bridgeHandler = this.bridgeHandler;
                             if (bridgeHandler != null) {
                                 SmartThingsApi api = bridgeHandler.getSmartThingsApi();
-                                try {
-                                    logger.trace("Need capability not registered in cache: id:{} version:{}", cap.id,
-                                            cap.version);
-                                    capa = api.getCapability(cap.id, cap.version, null);
 
-                                    logger.trace("capa is: {}", gson.toJson(capa));
-                                    registerCapability(capa);
-                                } catch (SmartThingsException ex) {
-                                    logger.error("Exception during capa reading:{}", ex.toString(), ex);
+                                if (api == null) {
+                                    logger.error("can't generateThingsType, api is null");
+                                } else {
+                                    try {
+                                        logger.trace("Need capability not registered in cache: id:{} version:{}",
+                                                cap.id, cap.version);
+                                        capa = api.getCapability(cap.id, cap.version, null);
+
+                                        logger.trace("capa is: {}", gson.toJson(capa));
+                                        registerCapability(capa);
+                                    } catch (SmartThingsException ex) {
+                                        logger.error("Exception during capa reading:{}", ex.toString(), ex);
+                                    }
                                 }
                             }
                         }
