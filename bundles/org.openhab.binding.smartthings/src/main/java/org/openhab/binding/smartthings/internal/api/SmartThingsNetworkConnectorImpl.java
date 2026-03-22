@@ -100,7 +100,8 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
     }
 
     @Override
-    public <T> void onError(@Nullable Request request, @Nullable SmartThingsNetworkCallback<T> cb) throws Exception {
+    public <T> void onError(Class<T> resultClass, @Nullable Request request, @Nullable SmartThingsNetworkCallback<T> cb)
+            throws Exception {
         lockObj.lock();
         try {
             logger.debug("OnError");
@@ -118,7 +119,7 @@ public class SmartThingsNetworkConnectorImpl implements SmartThingsNetworkConnec
             request.method(HttpMethod.GET);
 
             if (retryRequest != null) {
-                // executeRequest(retryRequest, cb);
+                executeRequest(resultClass, retryRequest, cb);
             }
         } catch (Exception ex) {
             logger.error("exception: {}", ex.toString(), ex);

@@ -96,7 +96,7 @@ public class SmartThingsNetworkRequestListener<T> extends BufferingResponseListe
 
             if (result.getResponse().getStatus() != 200) {
                 logger.debug("bad gateway !!!");
-                networkConnector.onError(result.getRequest(), callback);
+                networkConnector.onError(resultClass, result.getRequest(), callback);
                 return;
             }
 
@@ -126,7 +126,7 @@ public class SmartThingsNetworkRequestListener<T> extends BufferingResponseListe
                         return;
                     } else {
                         logger.debug("error");
-                        networkConnector.onError(result.getRequest(), callback);
+                        networkConnector.onError(resultClass, result.getRequest(), callback);
                     }
 
                     return;
