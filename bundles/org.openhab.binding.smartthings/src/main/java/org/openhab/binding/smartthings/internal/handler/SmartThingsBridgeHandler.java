@@ -161,21 +161,27 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                 setupClient(null);
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                Locale locale = Locale.getDefault(); // ou mieux si tu as accès au locale utilisateur
-                Bundle bundle = FrameworkUtil.getBundle(getClass());
-                String text = translationProvider.getText(bundle, "authorize-message", null, locale);
-
-                String msg = text + " : <a " + "onclick=\"event.stopPropagation(); " + "var w = 600, h = 500;\r\n"
-                        + "var left = (screen.width - w) / 2;\r\n" + "var top = (screen.height - h) / 2;\r\n"
-                        + "window.open('/smartthings', 'popup', 'width=${w},height=${h},top=${top},left=${left}');"
-                        + "return false;\">/smartthings</a>. ";
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                setStatusToAuthRequired();
             }
+        } catch (OAuthResponseException e) {
+            setStatusToAuthRequired();
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.oauth-failed" + ":" + e.getMessage());
         }
+    }
+
+    private void setStatusToAuthRequired() {
+        Locale locale = Locale.getDefault();
+        Bundle bundle = FrameworkUtil.getBundle(getClass());
+        String text = translationProvider.getText(bundle, "authorize-message", null, locale);
+
+        String msg = text + " <a " + "onclick=\"event.stopPropagation(); " + "var w = 600, h = 500;\r\n"
+                + "var left = (screen.width - w) / 2;\r\n" + "var top = (screen.height - h) / 2;\r\n"
+                + "window.open('/smartthings', 'popup', 'width=${w},height=${h},top=${top},left=${left}');"
+                + "return false;\">/smartthings</a>. ";
+
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
     }
 
     public void registerOAuth(boolean useCli) {
@@ -204,13 +210,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(SmartThingsBridgeHandler.this);
     }
-
-    // ============================================================================
-    // =
-    // =
-    // =
-    // =
-    // ============================================================================
 
     public void finishOAuth(String eventCallbackuri, String code, String verifier) {
         org.openhab.core.auth.client.oauth2.OAuthClientService srv = oAuthService;
@@ -261,7 +260,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             s.activate();
             servlet = s;
         } catch (Exception e) {
-            throw new SmartThingsException("Error during smartthings servlet startup", e);
+            throw new SmartThingsException("Error during SmartThings servlet startup", e);
         }
     }
 
@@ -309,13 +308,6 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             }
         }
     }
-
-    // ============================================================================
-    // =
-    // =
-    // =
-    // =
-    // ============================================================================
 
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
@@ -427,7 +419,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
             String authorizationUri = oAuthService.getAuthorizationUrl(redirectUri, null, state);
 
-            // Smarthings Cli need this additional parameters for authorization
+            // SmartThings CLI need this additional parameters for authorization
             if (useCli) {
                 authorizationUri = authorizationUri + "&client_type=USER_LEVEL";
             }
