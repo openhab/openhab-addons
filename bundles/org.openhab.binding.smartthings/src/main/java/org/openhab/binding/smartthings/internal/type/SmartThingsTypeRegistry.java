@@ -30,7 +30,7 @@ public interface SmartThingsTypeRegistry {
      */
     void initialize();
 
-    void register(String deviceType, SmartThingsDevice device);
+    void register(String deviceCategory, SmartThingsDevice device);
 
     void registerCapability(SmartThingsCapability capa);
 

@@ -108,7 +108,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        String deviceType = null;
+        String deviceCategory = null;
         for (SmartThingsComponent component : device.components) {
             String compId = component.id;
 
@@ -117,13 +117,13 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
                     String catId = cat.name;
 
                     if (SmartThingsBindingConstants.GROUPD_ID_MAIN.equals(compId)) {
-                        deviceType = catId;
+                        deviceCategory = catId;
                     }
                 }
             }
         }
 
-        if (deviceType == null) {
+        if (deviceCategory == null) {
             logger.debug("unknow device, bypass");
             return;
         }
@@ -132,14 +132,14 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        deviceType = deviceType.toLowerCase(Locale.ROOT);
+        deviceCategory = deviceCategory.toLowerCase(Locale.ROOT);
 
         SmartThingsTypeRegistry registry = this.typeRegistry;
         if (registry != null) {
-            registry.register(deviceType, device);
+            registry.register(deviceCategory, device);
         }
         if (addDevice) {
-            createDevice(deviceType, Objects.requireNonNull(device));
+            createDevice(deviceCategory, Objects.requireNonNull(device));
         }
     }
 
@@ -148,8 +148,8 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
      *
      * @param deviceData Device data from the account
      */
-    private void createDevice(String deviceType, SmartThingsDevice device) {
-        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceType, device.name);
+    private void createDevice(String deviceCategory, SmartThingsDevice device) {
+        logger.trace("Discovery: Creating device: ThingType {} with name {}", deviceCategory, device.name);
 
         // Build the UID as a string "smartthings:{ThingType}:{BridgeName}:{DeviceName}"
         String label = device.label; // Note: this is necessary for null analysis to work
@@ -164,7 +164,7 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
         if (bridgeHandler != null) {
             ThingUID bridgeUid = bridgeHandler.getThing().getUID();
             String bridgeId = bridgeUid.getId();
-            String uidStr = String.format("smartthings:%s:%s:%s", deviceType, bridgeId, smartthingsDeviceName);
+            String uidStr = String.format("smartthings:%s:%s:%s", deviceCategory, bridgeId, smartthingsDeviceName);
 
             Map<String, Object> properties = new HashMap<>();
             properties.put(SmartThingsBindingConstants.DEVICE_ID, device.deviceId);
