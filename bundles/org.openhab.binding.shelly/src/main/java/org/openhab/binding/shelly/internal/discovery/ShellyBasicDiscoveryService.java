@@ -127,7 +127,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, String> properties = new HashMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
+            ShellyThingConfiguration config = new ShellyThingConfiguration(bindingConfig, hostname, ipAddress);
             if (gen2) {
                 api = new Shelly2ApiClient(name, config, httpClient);
             } else {
@@ -139,7 +139,8 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             model = getString(devInfo.type);
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
-                config.realm = name = getString(devInfo.hostname);
+                name = getString(devInfo.hostname);
+                config.setRealm(name);
             }
 
             thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;
@@ -189,17 +190,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         }
 
         return null;
-    }
-
-    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address,
-            String realm) {
-        ShellyThingConfiguration config = new ShellyThingConfiguration();
-        config.realm = realm; // mDNS service name or hostname provided by /shelly
-        config.deviceIp = address;
-        config.userId = getString(bindingConfig.defaultUserId);
-        config.password = getString(bindingConfig.defaultPassword);
-        config.localIp = getString(bindingConfig.localIP);
-        return config;
     }
 
     private static void addProperty(Map<String, String> properties, String key, @Nullable String value) {

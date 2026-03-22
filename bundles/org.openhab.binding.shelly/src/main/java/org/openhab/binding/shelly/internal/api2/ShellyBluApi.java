@@ -97,10 +97,10 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = new ShellySettingsDevice();
-        info.hostname = !config.realm.isEmpty() ? config.realm : "";
+        info.hostname = !config.getRealm().isEmpty() ? config.getRealm() : "";
         info.fw = "";
         info.type = "BLU";
-        info.mac = config.deviceAddress;
+        info.mac = config.getDeviceAddress();
         info.auth = false;
         info.gen = 2;
         return info;
@@ -124,8 +124,8 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         }
 
         profile.device = getDeviceInfo();
-        if (config.realm.isEmpty()) {
-            config.realm = getString(profile.device.hostname);
+        if (config.getRealm().isEmpty()) {
+            config.setRealm(getString(profile.device.hostname));
         }
 
         // for now we have no API to get this information

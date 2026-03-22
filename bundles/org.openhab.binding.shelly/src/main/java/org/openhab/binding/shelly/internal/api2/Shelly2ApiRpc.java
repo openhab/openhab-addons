@@ -144,7 +144,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         if (alwaysOn) {
             disconnect();
-            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
+            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client, scheduler);
             rpcSocket.addMessageHandler(this);
         }
 
@@ -160,7 +160,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void startScan() {
         try {
             if (getProfile().isBlu) {
-                installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
             }
         } catch (ShellyApiException e) {
         }
@@ -216,9 +216,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.realm.isBlank()) {
-            config.realm = getString(profile.device.hostname);
-            logger.trace("{}: {} is used as realm", thingName, config.realm);
+        if (config.getRealm().isBlank()) {
+            config.setRealm(getString(profile.device.hostname));
+            logger.trace("{}: {} is used as realm", thingName, config.getRealm());
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
@@ -344,9 +344,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         try {
             if (alwaysOn && dc.ble != null) {
+                boolean enableBluGateway = config.getEnableBluGateway();
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
-                        config.enableBluGateway ? "enabled" : "disabled");
-                if (config.enableBluGateway) {
+                        enableBluGateway ? "enabled" : "disabled");
+                if (enableBluGateway) {
                     boolean bluetooth = getBool(dc.ble.enable);
                     boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
                     if (!bluetooth) {
@@ -362,7 +363,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         restart = setBluetooth(true);
                     }
 
-                    installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
+                    installScript(SHELLY2_BLU_GWSCRIPT, enableBluGateway && bluetooth);
 
                     if (restart) {
                         logger.info("{}: Restart device to activate BLU Gateway", thingName);
@@ -380,8 +381,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void checkSetWsCallback() throws ShellyApiException {
         Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
-        String url = "ws://" + config.localIp + ":" + config.localPort + "/shelly/wsevent";
-        if (!config.localIp.isEmpty() && !getBool(wsConfig.enable)
+        String url = "ws://" + config.getLocalIp() + ":" + config.getLocalPort() + "/shelly/wsevent";
+        if (!config.getLocalIp().isEmpty() && !getBool(wsConfig.enable)
                 || !url.equalsIgnoreCase(getString(wsConfig.server))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
             wsConfig.enable = true;
@@ -1053,7 +1054,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.user = "admin";
-        params.realm = config.realm;
+        params.realm = config.getRealm();
         params.ha1 = sha256(params.user + ":" + params.realm + ":" + password);
         apiRequest(SHELLYRPC_METHOD_AUTHSET, params, String.class);
 
