@@ -41,6 +41,18 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="channel-type:tuya:bitmap">
+		<parameter name="dp" type="integer" required="true">
+			<label>DP</label>
+		</parameter>
+		<parameter name="sendAsString" type="boolean">
+			<label>Send As String</label>
+			<description>Send the value as string instead of number.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 	<config-description uri="channel-type:tuya:number">
 		<parameter name="dp" type="integer" required="true">
 			<label>DP</label>
