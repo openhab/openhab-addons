@@ -143,7 +143,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
         Bridge bridge = getBridge();
         if (bridge == null || bridgeHandler == null) {
-            logger.warn("bridge is null in initialize(), this is a bug, please report it.");
+            logger.warn("bridge ({}) or bridgeHandler ({}) is null in initialize(), this is a bug, please report it.",
+                    bridge, bridgeHandler);
             return;
         }
         FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
@@ -165,9 +166,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         Bridge bridge = getBridge();
         FroniusBridgeHandler bridgeHandler = getFroniusBridgeHandler();
         FroniusBaseDeviceConfiguration config = this.config;
-        if (bridge == null || bridgeHandler == null || config == null) {
+        if (bridge == null || bridgeHandler == null) {
             logger.warn(
-                    "bridge or config is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.");
+                    "bridge ({}) or bridgeHandler ({}) is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.",
+                    bridge, bridgeHandler);
+            return;
+        }
+        if (config == null) {
+            logger.warn("config is null in handleBridgeConfigurationUpdate(), this is a bug, please report it.");
             return;
         }
         FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);

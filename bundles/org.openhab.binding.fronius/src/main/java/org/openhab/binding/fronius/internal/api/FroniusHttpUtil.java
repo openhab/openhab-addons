@@ -176,8 +176,8 @@ public class FroniusHttpUtil {
         try {
             if (requestMode == RequestMode.POLLING) {
                 if (!requestLock.tryLock()) {
-                    throw new FroniusPollingSkipException(
-                            "Skipping polling request because another request for this Fronius bridge is still running");
+                    throw new FroniusPollingSkipException("Skipping polling request to '" + url
+                            + "' because another request for this Fronius bridge is still running");
                 }
             } else {
                 requestLock.lockInterruptibly();

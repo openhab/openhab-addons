@@ -61,18 +61,21 @@ class FroniusHttpUtilTest {
         });
 
         firstRequest.start();
-        assertTrue(firstStarted.await(5, TimeUnit.SECONDS));
+        try {
+            assertTrue(firstStarted.await(5, TimeUnit.SECONDS));
 
-        assertThrows(FroniusPollingSkipException.class,
-                () -> httpUtil.executePollingUrl(HttpMethod.GET, "http://fronius-b", null, null, null, 5000,
-                        (httpMethod, url, httpHeaders, content, contentType, timeout) -> {
-                            skippedExecutorCalls.incrementAndGet();
-                            return "unexpected";
-                        }));
-        assertEquals(0, skippedExecutorCalls.get());
+            assertThrows(FroniusPollingSkipException.class,
+                    () -> httpUtil.executePollingUrl(HttpMethod.GET, "http://fronius-b", null, null, null, 5000,
+                            (httpMethod, url, httpHeaders, content, contentType, timeout) -> {
+                                skippedExecutorCalls.incrementAndGet();
+                                return "unexpected";
+                            }));
+            assertEquals(0, skippedExecutorCalls.get());
+        } finally {
+            releaseFirstRequest.countDown();
+            firstRequest.join(5000);
+        }
 
-        releaseFirstRequest.countDown();
-        firstRequest.join(5000);
         assertFalse(firstRequest.isAlive());
         assertNull(backgroundFailure.get());
     }
@@ -116,16 +119,20 @@ class FroniusHttpUtilTest {
         });
 
         firstRequest.start();
-        assertTrue(firstStarted.await(5, TimeUnit.SECONDS));
+        try {
+            assertTrue(firstStarted.await(5, TimeUnit.SECONDS));
 
-        secondRequest.start();
-        assertFalse(secondExecuted.await(200, TimeUnit.MILLISECONDS));
+            secondRequest.start();
+            assertFalse(secondExecuted.await(200, TimeUnit.MILLISECONDS));
 
-        releaseFirstRequest.countDown();
-        assertTrue(secondExecuted.await(5, TimeUnit.SECONDS));
+            releaseFirstRequest.countDown();
+            assertTrue(secondExecuted.await(5, TimeUnit.SECONDS));
+        } finally {
+            releaseFirstRequest.countDown();
+            firstRequest.join(5000);
+            secondRequest.join(5000);
+        }
 
-        firstRequest.join(5000);
-        secondRequest.join(5000);
         assertFalse(firstRequest.isAlive());
         assertFalse(secondRequest.isAlive());
         assertNull(backgroundFailure.get());
@@ -158,14 +165,17 @@ class FroniusHttpUtilTest {
         });
 
         firstRequest.start();
-        assertTrue(firstStarted.await(5, TimeUnit.SECONDS));
+        try {
+            assertTrue(firstStarted.await(5, TimeUnit.SECONDS));
 
-        String response = secondBridgeHttpUtil.executePollingUrl(HttpMethod.GET, "http://fronius-e", null, null, null,
-                5000, (httpMethod, url, httpHeaders, content, contentType, timeout) -> "other-bridge-ok");
-        assertEquals("other-bridge-ok", response);
+            String response = secondBridgeHttpUtil.executePollingUrl(HttpMethod.GET, "http://fronius-e", null, null,
+                    null, 5000, (httpMethod, url, httpHeaders, content, contentType, timeout) -> "other-bridge-ok");
+            assertEquals("other-bridge-ok", response);
+        } finally {
+            releaseFirstRequest.countDown();
+            firstRequest.join(5000);
+        }
 
-        releaseFirstRequest.countDown();
-        firstRequest.join(5000);
         assertFalse(firstRequest.isAlive());
         assertNull(backgroundFailure.get());
     }
