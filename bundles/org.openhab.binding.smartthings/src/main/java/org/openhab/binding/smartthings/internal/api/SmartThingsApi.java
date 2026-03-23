@@ -246,7 +246,10 @@ public class SmartThingsApi {
             appRequest.description = "Desc " + appName;
             appRequest.appType = "API_ONLY";
             appRequest.principalType = "LOCATION";
-            appRequest.apiOnly = new AppRequest.apiOnlyApp(fullCallbackUri);
+            if (fullCallbackUri.contains("https://")) {
+                appRequest.apiOnly = new AppRequest.apiOnlyApp(fullCallbackUri);
+            }
+
             appRequest.classifications = new String[1];
             appRequest.classifications[0] = "CONNECTED_SERVICE";
 

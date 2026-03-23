@@ -63,4 +63,12 @@ public class SmartThingsException extends Exception {
 
         return msg;
     }
+
+    public static String getRootCauseMessage(Throwable t) {
+        Throwable root = t;
+        while (root != null && root.getCause() != null) {
+            root = root.getCause();
+        }
+        return root.getClass().getSimpleName() + (root.getMessage() != null ? ": " + root.getMessage() : "");
+    }
 }

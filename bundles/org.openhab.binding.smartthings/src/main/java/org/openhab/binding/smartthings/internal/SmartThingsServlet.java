@@ -22,6 +22,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -49,9 +50,12 @@ import org.openhab.binding.smartthings.internal.dto.SmartThingsLocation;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsBridgeHandler;
 import org.openhab.binding.smartthings.internal.handler.SmartThingsThingHandler;
 import org.openhab.binding.smartthings.internal.type.SmartThingsException;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -77,11 +81,14 @@ public class SmartThingsServlet extends HttpServlet
     private final Logger logger = LoggerFactory.getLogger(SmartThingsServlet.class);
     private final SmartThingsAuthService smartThingsAuthService;
     private final SmartThingsLocalCallbackListener smartThingsLocalCallbackListener;
+    private @NonNullByDefault({}) TranslationProvider translationProvider;
 
     private final String indexTemplate;
     private final String step1Template;
+    private final String errorTemplate;
     private final String confirmTemplate;
-    private static final String HTML_ERROR = "<p class='block error'>Call to SmartThings failed with error: %s</p>";
+    private static final String HTML_ERROR = "<p class='block error'>%s<pre>%s</pre></p>";
+    private static final String HTML_WARNING = "<p class='block warn'>%s</p>";
 
     // Keys present in the index.html
     private static final String KEY_ERROR = "error";
@@ -99,22 +106,23 @@ public class SmartThingsServlet extends HttpServlet
     private Gson gson = new Gson();
 
     private String servletBaseURL = "";
-    private String servletBaseURLSecure = "";
 
     protected final SmartThingsBridgeHandler bridgeHandler;
     protected final HttpService httpService;
 
     public SmartThingsServlet(SmartThingsBridgeHandler bridgeHandler, SmartThingsAuthService smartthingsAuthService,
-            HttpService httpService) throws SmartThingsException {
+            TranslationProvider translationProvider, HttpService httpService) throws SmartThingsException {
         this.smartThingsAuthService = smartthingsAuthService;
         this.bridgeHandler = bridgeHandler;
         this.httpService = httpService;
         this.smartThingsLocalCallbackListener = new SmartThingsLocalCallbackListener();
         this.smartThingsLocalCallbackListener.setListener(this);
+        this.translationProvider = translationProvider;
 
         try {
             indexTemplate = readTemplate("index-oauth.html");
             step1Template = readTemplate("step1.html");
+            errorTemplate = readTemplate("error.html");
             confirmTemplate = readTemplate("confirmation.html");
         } catch (IOException e) {
             throw new SmartThingsException("Unable to initialize auth servlet", e);
@@ -160,14 +168,80 @@ public class SmartThingsServlet extends HttpServlet
 
         logger.debug("SmartThings auth callback servlet received GET request {}.", req.getRequestURI());
 
-        StringBuffer requestUrl = req.getRequestURL();
-        String requestUrlSt = requestUrl != null ? requestUrl.toString() : "";
+        String requestUrlSt = getFullURL(req);
         String queryString = req.getQueryString();
 
         String template = handleTemplate(requestUrlSt, queryString);
         resp.setContentType(CONTENT_TYPE);
         resp.getWriter().append(template);
         resp.getWriter().close();
+    }
+
+    public static String getFullURL(HttpServletRequest req) {
+
+        String scheme = extractFirst(req.getHeader("X-Forwarded-Proto"));
+        if (scheme == null) {
+            scheme = req.getScheme();
+        }
+
+        String hostHeader = extractFirst(req.getHeader("X-Forwarded-Host"));
+        String host;
+        int port = -1;
+
+        if (hostHeader != null) {
+            // peut contenir host:port
+            if (hostHeader.contains(":")) {
+                String[] parts = hostHeader.split(":", 2);
+                host = parts[0];
+                try {
+                    port = Integer.parseInt(parts[1]);
+                } catch (NumberFormatException ignored) {
+                }
+            } else {
+                host = hostHeader;
+            }
+        } else {
+            host = req.getServerName();
+            port = req.getServerPort();
+        }
+
+        // X-Forwarded-Port prioritaire si présent
+        String forwardedPort = extractFirst(req.getHeader("X-Forwarded-Port"));
+        if (forwardedPort != null) {
+            try {
+                port = Integer.parseInt(forwardedPort);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        StringBuilder url = new StringBuilder();
+        url.append(scheme).append("://").append(host);
+
+        if (isNonStandardPort(scheme, port)) {
+            url.append(":").append(port);
+        }
+
+        url.append(req.getRequestURI());
+
+        if (req.getQueryString() != null) {
+            url.append("?").append(req.getQueryString());
+        }
+
+        return url.toString();
+    }
+
+    private static @Nullable String extractFirst(@Nullable String header) {
+        if (header == null || header.isEmpty()) {
+            return null;
+        }
+        return header.split(",")[0].trim();
+    }
+
+    private static boolean isNonStandardPort(String scheme, int port) {
+        if (port <= 0) {
+            return false;
+        }
+        return !("http".equalsIgnoreCase(scheme) && port == 80) && !("https".equalsIgnoreCase(scheme) && port == 443);
     }
 
     @Override
@@ -202,7 +276,12 @@ public class SmartThingsServlet extends HttpServlet
             if (!StringUtil.isBlank(reqError)) {
                 template = confirmTemplate;
                 logger.debug("SmartThings redirected with an error: {}", reqError);
-                replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
+
+                Locale locale = Locale.getDefault();
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                String smartthingsError = translationProvider.getText(bundle, "redirectUriNotHttps", null, locale);
+
+                replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, smartthingsError, reqError));
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     if (!StringUtil.isBlank(reqCode)) {
@@ -213,7 +292,7 @@ public class SmartThingsServlet extends HttpServlet
                                 logger.debug("Captured auth code: {}", reqCode);
 
                                 // Finish OAuth flow
-                                bridgeHandler.finishOAuth(servletBaseURLSecure, reqCode,
+                                bridgeHandler.finishOAuth(servletBaseURL, reqCode,
                                         bridgeHandler.getThing().getUID().getId());
                                 String authorizationUri = accountHandler.formatAuthorizationUrl(
                                         SmartThingsBindingConstants.REDIRECT_URI, "step2", false);
@@ -248,8 +327,14 @@ public class SmartThingsServlet extends HttpServlet
                         // @todo: handle errors
                     }
                 } catch (SmartThingsException e) {
+                    template = errorTemplate;
                     logger.debug("Exception during authorizaton: ", e);
-                    replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
+                    Locale locale = Locale.getDefault();
+                    Bundle bundle = FrameworkUtil.getBundle(getClass());
+                    String smartthingsError = translationProvider.getText(bundle, "redirectUriNotHttps", null, locale);
+
+                    replaceMap.put(KEY_ERROR,
+                            String.format(HTML_ERROR, smartthingsError, SmartThingsException.getRootCauseMessage(e)));
                 }
             } else {
                 bridgeHandler.registerOAuth(true);
@@ -259,10 +344,16 @@ public class SmartThingsServlet extends HttpServlet
         else {
             // calculate the callback URL
             servletBaseURL = requestUrl;
-            servletBaseURLSecure = servletBaseURL.replace("http://", "https://");
 
             // Display it in page rendering for user confirmation
-            replaceMap.put(KEY_CALLBACK_URI, servletBaseURLSecure);
+            replaceMap.put(KEY_CALLBACK_URI, servletBaseURL);
+
+            if (!servletBaseURL.startsWith("https://")) {
+                Locale locale = Locale.getDefault();
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                String redirectUriError = translationProvider.getText(bundle, "redirectUriNotHttps", null, locale);
+                replaceMap.put(KEY_ERROR, String.format(HTML_WARNING, redirectUriError));
+            }
 
             try {
                 String authorizationUri = accountHandler
@@ -297,7 +388,7 @@ public class SmartThingsServlet extends HttpServlet
             return;
         }
 
-        if ("/smartthings".equals(path)) {
+        if ("/smartthings".equals(path) || "/smartthings/".equals(path)) {
             super.service(req, resp);
         } else if ("/smartthings/cb".equals(path)) {
             BufferedReader rdr = new BufferedReader(req.getReader());

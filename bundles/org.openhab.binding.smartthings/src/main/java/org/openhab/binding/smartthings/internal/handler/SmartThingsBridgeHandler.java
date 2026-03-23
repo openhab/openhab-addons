@@ -211,7 +211,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         oAuthService.addAccessTokenRefreshListener(SmartThingsBridgeHandler.this);
     }
 
-    public void finishOAuth(String eventCallbackuri, String code, String verifier) {
+    public void finishOAuth(String eventCallbackuri, String code, String verifier) throws SmartThingsException {
         org.openhab.core.auth.client.oauth2.OAuthClientService srv = oAuthService;
         if (srv != null) {
             try {
@@ -228,11 +228,12 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Token exchange failed: " + e.getMessage());
+                throw new SmartThingsException("Token exchange failed:", e);
             }
         }
     }
 
-    protected void setupClient(@Nullable String eventCallbackuri) {
+    protected void setupClient(@Nullable String eventCallbackuri) throws SmartThingsException {
         final org.openhab.core.auth.client.oauth2.OAuthClientService oAuthService = this.oAuthService;
 
         if (oAuthService != null) {
@@ -256,7 +257,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
     public void registerServlet() throws SmartThingsException {
         try {
-            SmartThingsServlet s = new SmartThingsServlet(this, authService, httpService);
+            SmartThingsServlet s = new SmartThingsServlet(this, authService, translationProvider, httpService);
             s.activate();
             servlet = s;
         } catch (Exception e) {
@@ -276,8 +277,9 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         updateConfiguration(config);
     }
 
-    protected void setupApp(String eventCallbackuri) {
+    protected void setupApp(String eventCallbackuri) throws SmartThingsException {
         boolean appExist = smartthingsApi.isAppExist(config.appName);
+        SmartThingsException lastExp = null;
         if (!appExist) {
             int retry = 0;
             boolean success = false;
@@ -297,14 +299,20 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                     success = true;
                 } catch (SmartThingsException ex) {
                     logger.debug("failed to create app {}", appName);
+                    lastExp = ex;
                 }
 
                 retry++;
             }
 
             if (!success) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "unable to create app");
-                return;
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "unable to create SmartThins app");
+                if (lastExp != null) {
+                    throw new SmartThingsException("unable to create SmartThins app", lastExp);
+                } else {
+                    throw new SmartThingsException("unable to create SmartThins app");
+                }
             }
         }
     }

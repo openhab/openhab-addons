@@ -70,8 +70,8 @@ public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {
     }
 
     @Override
-    protected void setupClient(@Nullable String callBackUri) {
-        super.setupClient(callBackUri);
+    protected void setupClient(@Nullable String eventCallBackUri) throws SmartThingsException {
+        super.setupClient(eventCallBackUri);
 
         scheduler.submit(() -> {
             try {
