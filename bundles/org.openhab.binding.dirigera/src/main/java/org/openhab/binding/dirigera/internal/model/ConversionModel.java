@@ -32,12 +32,11 @@ public class ConversionModel {
             case CHANNEL_ILLUMINANCE -> {
                 // see Page 4-5
                 // https://zigbeealliance.org/wp-content/uploads/2019/12/07-5123-06-zigbee-cluster-library-specification.pdf
-                double integerValue = value.intValue();
-                if (integerValue == 0) {
-                    yield 0.0;
-                } else {
-                    yield Math.pow(10, (integerValue - 1) / 10000.0);
+                double measuredValue = value.doubleValue();
+                if (measuredValue > 0) {
+                    yield Math.pow(10, (measuredValue - 1) / 10000.0);
                 }
+                yield measuredValue;
             }
             default -> {
                 LOGGER.warn("No conversion found for type {}, returning raw value", type);

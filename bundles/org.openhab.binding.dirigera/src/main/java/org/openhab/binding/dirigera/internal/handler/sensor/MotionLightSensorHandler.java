@@ -88,8 +88,10 @@ public class MotionLightSensorHandler extends MotionSensorHandler {
                 String targetChannel = property2ChannelMap.get(key);
                 if (targetChannel != null) {
                     if (CHANNEL_ILLUMINANCE.equals(targetChannel)) {
-                        updateState(new ChannelUID(thing.getUID(), targetChannel), QuantityType.valueOf(
-                                ConversionModel.convert(targetChannel, attributes.getInt(key)).intValue(), Units.LUX));
+                        updateState(new ChannelUID(thing.getUID(), targetChannel),
+                                QuantityType.valueOf(
+                                        ConversionModel.convert(targetChannel, attributes.getInt(key)).doubleValue(),
+                                        Units.LUX));
                     }
                 }
             }
