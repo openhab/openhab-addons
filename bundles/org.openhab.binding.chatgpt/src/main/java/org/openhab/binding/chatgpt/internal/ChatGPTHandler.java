@@ -229,8 +229,6 @@ public class ChatGPTHandler extends BaseThingHandler {
         this.apiUrl = config.apiUrl;
         this.modelUrl = config.modelUrl;
 
-        updateStatus(ThingStatus.UNKNOWN);
-
         if (!isValidTimeout(config.requestTimeout)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/requestTimeout.configuration-error");
@@ -243,6 +241,7 @@ public class ChatGPTHandler extends BaseThingHandler {
                     "@text/requestTimeout.configuration-error");
             return;
         }
+        updateStatus(ThingStatus.UNKNOWN);
 
         scheduler.execute(() -> {
             try {
