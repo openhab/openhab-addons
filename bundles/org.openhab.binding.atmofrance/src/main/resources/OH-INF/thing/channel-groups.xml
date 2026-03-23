@@ -10,11 +10,11 @@
 			<channel id="index" typeId="index"/>
 			<channel id="no2-index" typeId="index-adv">
 				<label>NO₂</label>
-				<description>Nitric Dioxide</description>
+				<description>Nitrogen dioxide</description>
 			</channel>
 			<channel id="so2-index" typeId="index-adv">
 				<label>SO₂</label>
-				<description>Sulfur Dioxide</description>
+				<description>Sulfur dioxide</description>
 			</channel>
 			<channel id="o3-index" typeId="index-adv">
 				<label>O₃</label>
@@ -22,18 +22,17 @@
 			</channel>
 			<channel id="pm10-index" typeId="index-adv">
 				<label>PM 10</label>
-				<description>Particulate Matter &lt; 10 µm</description>
+				<description>Particulate matter &lt; 10 µm</description>
 			</channel>
 			<channel id="pm25-index" typeId="index-adv">
 				<label>PM 2.5</label>
-				<description>Particulate Matter &lt; 2,5 µm</description>
+				<description>Particulate matter &lt; 2,5 µm</description>
 			</channel>
-			<channel id="timestamp" typeId="timestamp"/>
-			<channel id="date-ech" typeId="localdate">
-				<label>Value Date</label>
+			<channel id="effective-date" typeId="localdate">
+				<label>Effective date</label>
 			</channel>
-			<channel id="date-dif" typeId="localdate">
-				<label>Publication Date</label>
+			<channel id="diffusion-date" typeId="localdate">
+				<label>Publication date</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -43,59 +42,46 @@
 		<channels>
 			<channel id="index" typeId="pollen-index"/>
 			<channel id="alder-conc" typeId="concentration">
-				<label>Alder</label>
-				<description>Alder concentration</description>
+				<label>Alder concentration</label>
 			</channel>
 			<channel id="alder-level" typeId="alder-level">
-				<label>Alder</label>
-				<description>Alder Index</description>
+				<label>Alder index</label>
 			</channel>
 			<channel id="birch-conc" typeId="concentration">
-				<label>Birch</label>
-				<description>Birch concentration</description>
+				<label>Birch concentration</label>
 			</channel>
 			<channel id="birch-level" typeId="birch-level">
-				<label>Birch</label>
-				<description>Birch Index</description>
+				<label>Birch index</label>
 			</channel>
 			<channel id="grasses-conc" typeId="concentration">
-				<label>Grasses</label>
-				<description>Grasses concentration</description>
+				<label>Grasses concentration</label>
 			</channel>
 			<channel id="grasses-level" typeId="grasses-level">
-				<label>Grasses</label>
-				<description>Grasses Index</description>
+				<label>Grasses index</label>
 			</channel>
 			<channel id="olive-conc" typeId="concentration">
-				<label>Olive</label>
-				<description>Olive concentration</description>
+				<label>Olive concentration</label>
 			</channel>
 			<channel id="olive-level" typeId="olive-level">
-				<label>Olive</label>
-				<description>Olive Index</description>
+				<label>Olive index</label>
 			</channel>
 			<channel id="ragweed-conc" typeId="concentration">
-				<label>Ragweed</label>
-				<description>Ragweed concentration</description>
+				<label>Ragweed concentration</label>
 			</channel>
 			<channel id="ragweed-level" typeId="ragweed-level">
-				<label>Ragweed</label>
-				<description>Ragweed Index</description>
+				<label>Ragweed index</label>
 			</channel>
 			<channel id="wormwood-conc" typeId="concentration">
-				<label>Wormwood</label>
-				<description>Wormwood concentration</description>
+				<label>Wormwood concentration</label>
 			</channel>
 			<channel id="wormwood-level" typeId="wormwood-level">
-				<label>Wormwood</label>
-				<description>Wormwood Index</description>
+				<label>Wormwood index</label>
 			</channel>
-			<channel id="timestamp" typeId="timestamp"/>
-			<channel id="date-ech" typeId="localdate">
-				<label>Value Date</label>
+			<channel id="effective-date" typeId="localdate">
+				<label>Effective date</label>
 			</channel>
-			<channel id="date-dif" typeId="localdate">
-				<label>Publication Date</label>
+			<channel id="diffusion-date" typeId="localdate">
+				<label>Publication date</label>
 			</channel>
 		</channels>
 	</channel-group-type>

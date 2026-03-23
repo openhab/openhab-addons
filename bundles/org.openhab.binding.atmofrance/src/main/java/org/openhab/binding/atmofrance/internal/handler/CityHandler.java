@@ -103,7 +103,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Atmo data provided");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-data");
                 } else {
                     // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
                     return;
@@ -116,9 +116,8 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
     }
 
     private void updateCommon(BaseProperties properties, String group) {
-        updateState(group, CHANNEL_TIMESTAMP, properties.dateMaj);
-        updateState(group, CHANNEL_DATE_ECH, properties.getEffectiveDate());
-        updateState(group, CHANNEL_DATE_DIF, properties.getDiffusionDate());
+        updateState(group, CHANNEL_EFFECTIVE_DATE, properties.getEffectiveDate());
+        updateState(group, CHANNEL_DIFFUSION_DATE, properties.getDiffusionDate());
 
         updateProperty("%s-source".formatted(group), properties.source);
     }
@@ -142,7 +141,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 if (getBridgeHandler(AtmoFranceApiHandler.class) != null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No Pollens data provided");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-pollens");
                 } else {
                     // the call to getBridgeHandler will already have put me on OFFLINE/BRIDGE_OFFLINE
                     return;

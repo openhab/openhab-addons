@@ -11,7 +11,6 @@ You'll need your username and password.
 
 You can add multiple `city`, e.g. for gathering pollen or air quality data for different locations.
 
-
 ## Thing Configuration
 
 ### `api` Thing Configuration
@@ -32,14 +31,14 @@ You can add multiple `city`, e.g. for gathering pollen or air quality data for d
 | Group   | Channel        | Type           | Read/Write | Description                                              |
 |---------|----------------|----------------|------------|----------------------------------------------------------|
 | aq      | index          | Number         | R          | Air Quality index                                        |
-| aq      | no2-index      | Number         | R          | NO₂ (Nitric Dioxide)                                     |
-| aq      | so2-index      | Number         | R          | SO₂ (Sulfur Dioxide)                                     |
+| aq      | no2-index      | Number         | R          | NO₂ (Nitrogen dioxide)                                   |
+| aq      | so2-index      | Number         | R          | SO₂ (Sulfur dioxide)                                     |
 | aq      | o3-index       | Number         | R          | O₃ (Ozone)                                               |
 | aq      | pm10-index     | Number         | R          | PM 10 (Particulate Matter < 10 µm)                       |
 | aq      | pm25-index     | Number         | R          | PM 2.5 (Particulate Matter < 2,5 µm)                     |
 | aq      | timestamp      | DateTime       | R          | Timestamp                                                |
-| aq      | date-ech       | DateTime       | R          | Value Date                                               |
-| aq      | date-dif       | DateTime       | R          | Publication Date                                         |
+| aq      | effective-date | DateTime       | R          | Effective Date                                           |
+| aq      | diffusion-date | DateTime       | R          | Publication Date                                         |
 | pollens | index          | Number         | R          | Pollen Index                                             |
 | pollens | alder-conc     | Number:Density | R          | Alder concentration                                      |
 | pollens | alder-level    | Number         | R          | Alder Index                                              |
@@ -57,9 +56,8 @@ You can add multiple `city`, e.g. for gathering pollen or air quality data for d
 | pollens | date-ech       | DateTime       | R          | Value Date                                               |
 | pollens | date-dif       | DateTime       | R          | Publication Date                                         |
 
-Notes on index options:
-
 Air Quality index values:
+
 | Value | Meaning         |
 |-------|-----------------|
 | 0     | Good            |
@@ -72,6 +70,7 @@ Air Quality index values:
 | 9     | Absent          |
 
 Pollen index values:
+
 | Value | Meaning         |
 |-------|-----------------|
 | 0     | Very Low        |
@@ -82,8 +81,7 @@ Pollen index values:
 | 5     | Extremely High  |
 | 9     | Absent          |
 
-
-## Provided icon set
+## Provided Icon Set
 
 This binding has its own IconProvider and makes available the following list of icons
 
@@ -97,3 +95,4 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:atmofrance:grasses  |   Yes   | ![Grasses](doc/images/grasses.svg)       |
 | oh:atmofrance:ragweed  |   Yes   | ![Ragweed](doc/images/ragweed.svg)       |
 | oh:atmofrance:wormwood |   Yes   | ![Wormwood](doc/images/wormwood.svg)     |
+

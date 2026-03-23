@@ -122,7 +122,6 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
             if (e.getStatusDetail() instanceof ThingStatusDetail statusDetail) {
                 updateStatus(ThingStatus.OFFLINE, statusDetail, e.getMessage());
             } else {
-                logger.warn("Error initiating connection to Atmo France: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 schedule("reconnect", this::initiateConnexion, Duration.ofHours(1));
             }

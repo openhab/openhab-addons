@@ -37,10 +37,9 @@ public class AtmoFranceBindingConstants {
     public static final String GROUP_POLLENS = "pollens";
 
     // List of all channels
-    public static final String CHANNEL_TIMESTAMP = "timestamp";
     public static final String CHANNEL_INDEX = "index";
-    public static final String CHANNEL_DATE_ECH = "date-ech";
-    public static final String CHANNEL_DATE_DIF = "date-dif";
+    public static final String CHANNEL_EFFECTIVE_DATE = "effective-date";
+    public static final String CHANNEL_DIFFUSION_DATE = "diffusion-date";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_API, THING_TYPE_CITY);
 }

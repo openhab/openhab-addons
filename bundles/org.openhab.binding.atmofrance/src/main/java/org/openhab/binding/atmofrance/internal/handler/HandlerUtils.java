@@ -33,13 +33,24 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public interface HandlerUtils {
-    default @Nullable ScheduledFuture<?> cancelFuture(@Nullable ScheduledFuture<?> job) {
-        if (job != null && !job.isCancelled()) {
+    /**
+     * Cancels the given scheduled future if it exists and is not already cancelled.
+     *
+     * @param job the scheduled future to cancel
+     */
+    default void cancelFuture(ScheduledFuture<?> job) {
+        if (!job.isCancelled()) {
             job.cancel(true);
         }
-        return null;
     }
 
+    /**
+     * Retrieves the bridge handler of the specified class type if the bridge is online and correctly configured.
+     *
+     * @param <T> the type of the bridge handler
+     * @param clazz the class of the bridge handler to retrieve
+     * @return the bridge handler instance, or null if not available or incorrect type
+     */
     default @Nullable <T extends BridgeHandler> T getBridgeHandler(Class<T> clazz) {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
@@ -55,6 +66,13 @@ public interface HandlerUtils {
         return null;
     }
 
+    /**
+     * Schedules a job to run after the specified duration, cancelling any existing job with the same name.
+     *
+     * @param jobName the name of the job for tracking
+     * @param job the runnable job to execute
+     * @param duration the duration to wait before executing the job
+     */
     default void schedule(String jobName, Runnable job, Duration duration) {
         ScheduledFuture<?> result = getJobs().remove(jobName);
 
@@ -66,6 +84,9 @@ public interface HandlerUtils {
         getJobs().put(jobName, getScheduler().schedule(job, duration.getSeconds(), TimeUnit.SECONDS));
     }
 
+    /**
+     * Cancels all scheduled jobs and clears the jobs map.
+     */
     default void cleanJobs() {
         getJobs().values().forEach(this::cancelFuture);
         getJobs().clear();
