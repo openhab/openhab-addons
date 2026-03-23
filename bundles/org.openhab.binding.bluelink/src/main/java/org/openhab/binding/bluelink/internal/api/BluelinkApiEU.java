@@ -95,8 +95,9 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
     private @Nullable Instant ccs2ControlTokenExpiry;
 
     public BluelinkApiEU(final HttpClient httpClient, final Brand brand, final Map<String, String> properties,
-            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken) {
-        super(httpClient, timeZoneProvider, "", refreshToken, null);
+            final @Nullable String baseUrl, final TimeZoneProvider timeZoneProvider, final String refreshToken,
+            final @Nullable String pin) {
+        super(httpClient, timeZoneProvider, "", refreshToken, pin);
         this.refreshToken = refreshToken;
         final BrandConfig baseBrandConfig = BrandConfig.forBrand(brand);
         if (baseUrl == null) {
@@ -426,7 +427,7 @@ public class BluelinkApiEU extends AbstractBluelinkApi<Vehicle> {
         final String url = brandConfig.apiBaseUrl + SPA_API_URL_V2 + "vehicles/" + vehicleId + "/ccs2/control/"
                 + endpoint;
         final String payloadJson = gson.toJson(payload);
-        logger.debug("send CC2 control command request: {}", payloadJson);
+        logger.debug("send CC2 control action request: {}", payloadJson);
         final Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                 .header(HttpHeader.USER_AGENT, HTTP_USER_AGENT)
                 .content(new StringContentProvider(payloadJson), APPLICATION_JSON);

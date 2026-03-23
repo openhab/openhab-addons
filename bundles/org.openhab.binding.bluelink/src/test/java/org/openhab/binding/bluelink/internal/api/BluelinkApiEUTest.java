@@ -86,7 +86,7 @@ public class BluelinkApiEUTest {
     void testLoginAndGetVehicleStatus() throws BluelinkApiException {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
-                MockApiData.TEST_REFRESH_TOKEN);
+                MockApiData.TEST_REFRESH_TOKEN, null);
         assertTrue(api.login());
 
         // Verify device ID was obtained
@@ -198,7 +198,7 @@ public class BluelinkApiEUTest {
     void testLoginAndGetVehicleStatusForCcs2Protocol() throws BluelinkApiException {
         final String baseUrl = "http://localhost:" + WIREMOCK_SERVER.port();
         final BluelinkApiEU api = new BluelinkApiEU(HTTP_CLIENT, Brand.HYUNDAI, Map.of(), baseUrl, timeZoneProvider,
-                MockApiData.TEST_REFRESH_TOKEN);
+                MockApiData.TEST_REFRESH_TOKEN, null);
         assertTrue(api.login());
 
         // Verify device ID was obtained
