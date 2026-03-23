@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
@@ -223,11 +224,11 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                     setupClient(eventCallbackuri);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Failed to exchange code for tokens");
+                            "@text/offline.failedToExchangeToken");
                 }
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Token exchange failed: " + e.getMessage());
+                        "@text/offline.failedToExchangeToken: " + e.getMessage());
                 throw new SmartThingsException("Token exchange failed:", e);
             }
         }
@@ -307,7 +308,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
             if (!success) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "unable to create SmartThins app");
+                        "@text/offline.unableToCreateApp");
                 if (lastExp != null) {
                     throw new SmartThingsException("unable to create SmartThins app", lastExp);
                 } else {

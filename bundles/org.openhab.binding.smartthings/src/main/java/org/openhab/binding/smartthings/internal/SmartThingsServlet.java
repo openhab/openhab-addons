@@ -324,7 +324,13 @@ public class SmartThingsServlet extends HttpServlet
                             }
                         }
                     } else {
-                        // @todo: handle errors
+                        template = errorTemplate;
+                        Locale locale = Locale.getDefault();
+                        Bundle bundle = FrameworkUtil.getBundle(getClass());
+                        String missingReqCodeError = translationProvider.getText(bundle, "missingReqCode", null,
+                                locale);
+
+                        replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, missingReqCodeError, reqError));
                     }
                 } catch (SmartThingsException e) {
                     template = errorTemplate;

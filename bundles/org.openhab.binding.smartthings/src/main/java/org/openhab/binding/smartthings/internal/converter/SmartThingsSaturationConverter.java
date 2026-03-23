@@ -33,6 +33,7 @@ import org.openhab.core.types.UnDefType;
  * For this converter only the hue is coming into openHAB and it is a number
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public class SmartThingsSaturationConverter extends SmartThingsConverter {

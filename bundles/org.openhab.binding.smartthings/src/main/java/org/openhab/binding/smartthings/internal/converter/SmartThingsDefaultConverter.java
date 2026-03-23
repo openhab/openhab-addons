@@ -66,6 +66,7 @@ import com.google.gson.JsonObject;
  * See SmartThingsThingHandler.initialize() for details
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public class SmartThingsDefaultConverter extends SmartThingsConverter {
@@ -202,6 +203,7 @@ public class SmartThingsDefaultConverter extends SmartThingsConverter {
 
                                 String cacheKey = groupId + "#" + subAttr;
 
+                                // @todo : review this, hard coded case
                                 if (stateHandler != null) {
                                     State state = stateHandler.getState(cacheKey);
                                     if (state instanceof StringType stateString) {

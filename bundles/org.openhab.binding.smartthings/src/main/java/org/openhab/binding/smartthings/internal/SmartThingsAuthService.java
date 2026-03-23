@@ -41,9 +41,6 @@ public class SmartThingsAuthService {
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
     }
 
-    protected void initialize() {
-    }
-
     /**
      * Call with SmartThings redirect uri returned State and Code values to get the refresh and access tokens and
      * persist

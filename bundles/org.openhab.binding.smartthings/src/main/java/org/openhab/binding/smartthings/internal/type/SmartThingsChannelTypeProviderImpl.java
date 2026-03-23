@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.osgi.service.component.annotations.Component;
 
@@ -57,7 +58,7 @@ public class SmartThingsChannelTypeProviderImpl implements SmartThingsChannelTyp
     }
 
     /**
-     * @see ChannelTypeRegistr#getChannelType(ChannelTypeUID, Locale)
+     * @see ChannelTypeRegistry#getChannelType(ChannelTypeUID, Locale)
      */
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {

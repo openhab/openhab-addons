@@ -46,6 +46,7 @@ import com.google.gson.Gson;
  * And, converting handler.handleCommand() into messages to be sent to smartthings
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public abstract class SmartThingsConverter {
@@ -137,7 +138,6 @@ public abstract class SmartThingsConverter {
     protected State defaultConvertToOpenHab(Thing thing, ChannelUID channelUid, Object dataFromSmartThings) {
         Channel channel = thing.getChannel(channelUid);
         if (channel == null) {
-            // @todo : review, need handling this case
             logger.error("Channel not found: {}", channelUid);
             return UnDefType.UNDEF;
         }
@@ -242,7 +242,7 @@ public abstract class SmartThingsConverter {
                     String resultSt = gson.toJson(map).toString();
                     return new StringType(resultSt);
                 } else {
-                    logger.error("@todo : handle this case: {} inputClass: {}", channelUid,
+                    logger.error("No handling for this datatype: {} inputClass: {}", channelUid,
                             dataFromSmartThings.getClass());
                     return new StringType("NA");
                 }

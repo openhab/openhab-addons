@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * The {@link SmartThingsHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - Refactor for new version of the binding
  */
 @NonNullByDefault
 @Component(service = { ThingHandlerFactory.class }, configurationPid = "binding.smarthings")
@@ -55,10 +56,12 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
 
     private final Logger logger = LoggerFactory.getLogger(SmartThingsHandlerFactory.class);
 
+    private List<SmartThingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
+
     private @Nullable SmartThingsBridgeHandler bridgeHandler = null;
     private @Nullable ThingUID bridgeUID;
-    private List<SmartThingsThingHandler> thingHandlers = Collections.synchronizedList(new ArrayList<>());
     private @NonNullByDefault({}) HttpService httpService;
+
     private final HttpClientFactory httpClientFactory;
     private final SmartThingsAuthService authService;
     private final TranslationProvider translationProvider;
@@ -94,8 +97,8 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_ACCOUNT)) {
-            // This binding only supports one bridge. If the user tries to add a second bridge register and error and
-            // ignore
+            // This binding only supports one bridge. If the user tries to add a second bridge register and error
+            // and ignore
             if (bridgeHandler != null) {
                 logger.warn(
                         "The SmartThings binding only supports one bridge. Please change your configuration to only use one Bridge. This bridge {} will be ignored.",
@@ -109,7 +112,6 @@ public class SmartThingsHandlerFactory extends BaseThingHandlerFactory implement
 
             SmartThingsBridgeHandler accountHandler = bridgeHandler;
             authService.setSmartThingsAccountHandler(accountHandler);
-            authService.initialize();
 
             bridgeUID = thing.getUID();
             logger.debug("SmartThingsHandlerFactory created SmartThingsAccountHandler for {}",

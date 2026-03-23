@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * SmartThings discovery service
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public class SmartThingsDiscoveryService extends AbstractDiscoveryService
@@ -125,10 +126,6 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
 
         if (deviceCategory == null) {
             logger.debug("unknow device, bypass");
-            return;
-        }
-
-        if ("white-and-color-ambiance".equals(name)) {
             return;
         }
 

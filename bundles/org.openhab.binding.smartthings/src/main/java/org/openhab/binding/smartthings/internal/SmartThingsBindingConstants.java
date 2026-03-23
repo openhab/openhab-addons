@@ -25,6 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - Refactor for new version of the binding
  */
 @NonNullByDefault
 public class SmartThingsBindingConstants {
@@ -61,10 +62,6 @@ public class SmartThingsBindingConstants {
 
     public static final String SMARTTHINGS_AUTHORIZE_URL = SMARTTHINGS_ACCOUNT_URL + "/authorize";
     public static final String SMARTTHINGS_API_TOKEN_URL = SMARTTHINGS_ACCOUNT_URL + "/token";
-
-    // List of all Thing Type UIDs
-    // I tried to replace this with a dynamic processing of the thing-types.xml file using the ThingTypeRegistry
-    // But the HandlerFactory wants to start checking on things before that code runs. So, back to a hard coded list
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(SmartThingsBindingConstants.THING_TYPE_ACCOUNT).collect(Collectors.toSet()));

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * For this converter only the hue is coming into openHAB and it is a number
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public class SmartThingsHue100Converter extends SmartThingsConverter {
@@ -71,7 +72,7 @@ public class SmartThingsHue100Converter extends SmartThingsConverter {
         }
     }
 
-    // <!-- The SmartThings colorControl:hue has a range of 0-100% where OH2 uses the normal 0-360 degrees -->
+    // The SmartThings colorControl:hue has a range of 0-100% where OH2 uses the normal 0-360 degrees
     @Override
     public State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartThings) {
         // Here we have to multiply the value from SmartThings by 3.6 to convert from 0-100 to 0-360

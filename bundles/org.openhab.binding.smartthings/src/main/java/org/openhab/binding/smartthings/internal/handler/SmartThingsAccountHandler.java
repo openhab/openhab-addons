@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public class SmartThingsAccountHandler extends SmartThingsBridgeHandler {

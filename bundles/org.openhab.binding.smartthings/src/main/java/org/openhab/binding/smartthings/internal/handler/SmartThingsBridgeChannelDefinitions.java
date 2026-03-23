@@ -25,6 +25,7 @@ import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
  * Configuration data for SmartThings
  *
  * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - review code for new API
  */
 @NonNullByDefault
 public class SmartThingsBridgeChannelDefinitions {

@@ -29,7 +29,7 @@ import org.openhab.core.types.UnDefType;
  * The converter classes are responsible for converting "state" messages from the SmartThings into openHAB States.
  * And, converting handler.handleCommand() into messages to be sent to SmartThings
  *
- * @author Bob Raker - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public abstract class SmartThingsStateHandler {
