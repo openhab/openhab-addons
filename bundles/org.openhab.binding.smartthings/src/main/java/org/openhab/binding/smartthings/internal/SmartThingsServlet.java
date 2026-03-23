@@ -279,7 +279,7 @@ public class SmartThingsServlet extends HttpServlet
 
                 Locale locale = Locale.getDefault();
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
-                String smartthingsError = translationProvider.getText(bundle, "redirectUriNotHttps", null, locale);
+                String smartthingsError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
 
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, smartthingsError, reqError));
             } else if (!StringUtil.isBlank(reqState)) {
@@ -327,7 +327,7 @@ public class SmartThingsServlet extends HttpServlet
                         template = errorTemplate;
                         Locale locale = Locale.getDefault();
                         Bundle bundle = FrameworkUtil.getBundle(getClass());
-                        String missingReqCodeError = translationProvider.getText(bundle, "missingReqCode", null,
+                        String missingReqCodeError = translationProvider.getText(bundle, "missing-req-code", null,
                                 locale);
 
                         replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, missingReqCodeError, reqError));
@@ -337,7 +337,8 @@ public class SmartThingsServlet extends HttpServlet
                     logger.debug("Exception during authorizaton: ", e);
                     Locale locale = Locale.getDefault();
                     Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    String smartthingsError = translationProvider.getText(bundle, "redirectUriNotHttps", null, locale);
+                    String smartthingsError = translationProvider.getText(bundle, "redirect-uri-not-https", null,
+                            locale);
 
                     replaceMap.put(KEY_ERROR,
                             String.format(HTML_ERROR, smartthingsError, SmartThingsException.getRootCauseMessage(e)));
@@ -357,7 +358,7 @@ public class SmartThingsServlet extends HttpServlet
             if (!servletBaseURL.startsWith("https://")) {
                 Locale locale = Locale.getDefault();
                 Bundle bundle = FrameworkUtil.getBundle(getClass());
-                String redirectUriError = translationProvider.getText(bundle, "redirectUriNotHttps", null, locale);
+                String redirectUriError = translationProvider.getText(bundle, "redirect-uri-not-https", null, locale);
                 replaceMap.put(KEY_ERROR, String.format(HTML_WARNING, redirectUriError));
             }
 

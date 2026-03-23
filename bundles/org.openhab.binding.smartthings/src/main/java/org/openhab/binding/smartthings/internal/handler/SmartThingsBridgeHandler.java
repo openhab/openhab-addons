@@ -224,11 +224,11 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                     setupClient(eventCallbackuri);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "@text/offline.failedToExchangeToken");
+                            "@text/offline.failed-to-exchange-token");
                 }
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.failedToExchangeToken: " + e.getMessage());
+                        "@text/offline.failed-to-exchange-token: " + e.getMessage());
                 throw new SmartThingsException("Token exchange failed:", e);
             }
         }
@@ -308,7 +308,7 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
 
             if (!success) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.unableToCreateApp");
+                        "@text/offline.unable-to-create-app");
                 if (lastExp != null) {
                     throw new SmartThingsException("unable to create SmartThins app", lastExp);
                 } else {
