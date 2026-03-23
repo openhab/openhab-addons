@@ -57,6 +57,7 @@ import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
+import org.openhab.automation.jsscripting.internal.scope.ScriptExtensionModuleProvider;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
 import org.openhab.core.OpenHAB;
