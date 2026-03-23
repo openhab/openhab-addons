@@ -433,6 +433,7 @@ public class SmartThingsServlet extends HttpServlet
                 Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
                         .findFirst();
                 if (theThingOpt.isPresent()) {
+                    logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
                     Thing theThing = theThingOpt.get();
 
                     ThingHandler handler = theThing.getHandler();
@@ -441,9 +442,11 @@ public class SmartThingsServlet extends HttpServlet
                         smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
                                 value);
                     }
+                } else {
+                    logger.info("Can't find device for EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr,
+                            value);
                 }
 
-                logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
             } else if (eventType.equals(SmartThingsBindingConstants.EVENT_TYPE_CONFIRMATION)) {
                 String confirmUrl = resultObj.confirmationData.confirmationUrl();
 
