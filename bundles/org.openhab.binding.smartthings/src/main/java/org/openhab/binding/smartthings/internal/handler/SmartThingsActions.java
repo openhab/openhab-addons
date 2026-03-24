@@ -64,7 +64,6 @@ public class SmartThingsActions implements ThingActions {
 
         }
         return "No Result";
-
     }
 
     public static String sendCommand(@Nullable ThingActions actions, @Nullable String jsonCmd)
