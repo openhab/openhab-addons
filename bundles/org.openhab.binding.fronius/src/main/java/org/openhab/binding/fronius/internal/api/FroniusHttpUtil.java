@@ -129,7 +129,7 @@ public class FroniusHttpUtil {
             @Nullable InputStream content, @Nullable String contentType, int timeout, RequestMode requestMode,
             RequestExecutor requestExecutor) throws FroniusCommunicationException {
         acquireLock(requestLock, requestMode, url);
-        LOGGER.debug("Executing {} request against {}", requestMode.name().toLowerCase(), url);
+        LOGGER.debug("Executing {} request against {}", requestMode, url);
         int attemptCount = 1;
         try {
             while (true) {
