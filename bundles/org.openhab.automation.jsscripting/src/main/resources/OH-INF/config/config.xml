@@ -7,14 +7,17 @@
 	<config-description uri="automation:jsscripting">
 		<parameter-group name="environment">
 			<label>JavaScript Environment</label>
-			<description>This group defines JavaScript's environment.</description>
 		</parameter-group>
 
 		<parameter-group name="system">
 			<label>System Behavior</label>
-			<description>This group defines JavaScript's system behavior.</description>
 		</parameter-group>
 
+		<parameter-group name="debugger">
+			<label>Debugger Support</label>
+		</parameter-group>
+
+		<!-- Environment -->
 		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="3" groupName="environment">
 			<label>Inject Global Variables from Helper Library</label>
 			<description><![CDATA[
@@ -50,6 +53,7 @@
 			<advanced>true</advanced>
 		</parameter>
 
+		<!-- System Behaviour -->
 		<parameter name="injectionCachingEnabled" type="boolean" required="true" groupName="system">
 			<label>Cache openHAB JavaScript Library Injection</label>
 			<description><![CDATA[
@@ -65,6 +69,23 @@
 				your scripts to reload until you can test it. Please note that changing this setting only applies to scripts loaded
 				after the change.</description>
 			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<!-- Debugger -->
+		<parameter name="debuggerEnabled" type="boolean" required="true" groupName="debugger">
+			<label>Enable Debugger</label>
+			<description><![CDATA[
+			Enables Chrome Debugger support for JavaScript. This allows to attach any debugger compatible with the <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome DevTools Protocol</a>, such as Chrome's Developer Tools or Visual Studio Code.
+			]]>
+			</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="debuggerPort" type="integer" required="true" min="1024" max="49151" groupName="debugger">
+			<label>Debugger Port</label>
+			<description>The port to bind the debugger to.</description>
+			<default>9229</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
