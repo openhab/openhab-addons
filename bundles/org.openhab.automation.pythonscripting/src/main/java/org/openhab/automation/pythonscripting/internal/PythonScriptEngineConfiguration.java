@@ -67,12 +67,16 @@ public class PythonScriptEngineConfiguration {
     private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 3;
     private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 4;
 
+    private static final int DEBUGGER_PORT_DEFAULT = 9229;
+
     // The variable names must match the configuration keys in config.xml
     public static class PythonScriptingConfiguration {
         public int injectionEnabled = INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
+        private boolean debuggerEnabled = false;
+        private int debuggerPort = DEBUGGER_PORT_DEFAULT;
         public String pipModules = "";
     }
 
@@ -153,21 +157,30 @@ public class PythonScriptEngineConfiguration {
     public void modified(Map<String, Object> config, PythonScriptEngineFactory factory) {
         int oldInjectionEnabled = configuration.injectionEnabled;
         boolean oldDependencyTrackingEnabled = isDependencyTrackingEnabled();
-
         String oldPipModules = configuration.pipModules;
+        boolean oldDebuggerEnabled = configuration.debuggerEnabled;
+        int oldDebuggerPort = configuration.debuggerPort;
+
         configuration = new Configuration(config).as(PythonScriptingConfiguration.class);
+
         if (!oldPipModules.equals(configuration.pipModules)) {
             PythonScriptEngineHelper.initPipModules(this, factory);
         }
 
         if (oldInjectionEnabled != configuration.injectionEnabled) {
-            logger.info(
+            logger.warn(
                     "Changed helper module setting for Python Scripting. Please resave your python scripts to apply this change.");
         }
         if (oldDependencyTrackingEnabled != isDependencyTrackingEnabled()) {
-            logger.info(
+            logger.warn(
                     "{} dependency tracking for Python Scripting. Please resave your python scripts to apply this change.",
                     isDependencyTrackingEnabled() ? "Enabled" : "Disabled");
+        }
+        if (oldDebuggerEnabled != configuration.debuggerEnabled) {
+            logger.warn("{} debugger for Python Scripting. Restart openHAB to apply this change.",
+                    configuration.debuggerEnabled ? "Enabled" : "Disabled");
+        } else if (oldDebuggerPort != configuration.debuggerPort) {
+            logger.warn("Reconfigured debugger for Python Scripting. Restart openHAB to apply this change.");
         }
     }
 
@@ -201,6 +214,14 @@ public class PythonScriptEngineConfiguration {
 
     public boolean isJythonEmulation() {
         return configuration.jythonEmulation;
+    }
+
+    public boolean isDebuggerEnabled() {
+        return configuration.debuggerEnabled;
+    }
+
+    public int getDebuggerPort() {
+        return configuration.debuggerPort;
     }
 
     public String getPIPModules() {

@@ -174,7 +174,8 @@ public class PythonConsoleCommandExtension extends AbstractConsoleCommandExtensi
     }
 
     private void info(Console console) {
-        new InfoCmd(pythonScriptEngineConfiguration, console).show(configDescriptionRegistry);
+        new InfoCmd(pythonScriptEngineConfiguration, console, this.pythonScriptEngineFactory.getLanguage())
+                .show(configDescriptionRegistry);
     }
 
     private void startConsole(Console console, String[] args) {

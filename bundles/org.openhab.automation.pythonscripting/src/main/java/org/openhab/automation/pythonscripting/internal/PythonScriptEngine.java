@@ -45,7 +45,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.PolyglotException;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
@@ -83,8 +82,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     public static final String CONTEXT_KEY_ENGINE_LOGGER_INPUT = "ctx.engine-logger-input";
     private static final String CONTEXT_KEY_SCRIPT_FILENAME = "javax.script.filename";
 
-    private static final String PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY = "engine.WarnInterpreterOnly";
-
     private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
 
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
@@ -105,11 +102,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     private static final int STACK_TRACE_LENGTH = 5;
 
     private static final String LOGGER_INIT_NAME = "__logger_init__";
-
-    /** Shared Polyglot {@link Engine} across all instances of {@link PythonScriptEngine} */
-    private static Engine engine = Engine.newBuilder()
-            // disable warning about fallback runtime (is only available in graalvm)
-            .option(PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY, Boolean.toString(false)).build();
 
     static {
         // disable warning about missing TruffleAttach library (is only available in graalvm)
@@ -165,8 +157,10 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     /**
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
+     *
+     * @param engine
      */
-    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration,
+    public PythonScriptEngine(PythonScriptEngineConfiguration pythonScriptEngineConfiguration, Engine engine,
             PythonScriptEngineFactory pythonScriptEngineFactory) {
         this.pythonScriptEngineConfiguration = pythonScriptEngineConfiguration;
 
@@ -630,9 +624,5 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
                 + (!value.hasMember("tzinfo") || value.getMember("tzinfo").isNull()
                         ? OffsetDateTime.now().getOffset().getId()
                         : ""));
-    }
-
-    public static @Nullable Language getLanguage() {
-        return engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
     }
 }

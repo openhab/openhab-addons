@@ -16,6 +16,11 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
+		<parameter-group name="debugger">
+			<label>Debugger Support</label>
+		</parameter-group>
+
+		<!-- Environment -->
 		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="4" groupName="environment">
 			<label>Activate openHAB Python helper module and inject scope and helper objects into rules.</label>
 			<description><![CDATA[
@@ -32,6 +37,8 @@
 			</options>
 			<default>2</default>
 		</parameter>
+
+		<!-- System Behaviour -->
 		<parameter name="pipModules" type="text" required="false" groupName="system">
 			<label>Python pip modules (requires a manually configured venv)</label>
 			<description><![CDATA[
@@ -66,6 +73,23 @@
 			For tips and instructions, please refer to <a href="https://www.graalvm.org/latest/reference-manual/python/Modern-Python-on-JVM">Jython Migration Guide</a>.
 			]]></description>
 			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<!-- Debugger -->
+		<parameter name="debuggerEnabled" type="boolean" required="true" groupName="debugger">
+			<label>Enable Debugger</label>
+			<description><![CDATA[
+			Enables Chrome Debugger support for Python Script. This allows to attach any debugger compatible with the <a href="https://chromedevtools.github.io/devtools-protocol/">Chrome DevTools Protocol</a>, such as Chrome's Developer Tools or Visual Studio Code.
+			]]>
+			</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="debuggerPort" type="integer" required="true" min="1024" max="49151" groupName="debugger">
+			<label>Debugger Port</label>
+			<description>The port to bind the debugger to.</description>
+			<default>9229</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
