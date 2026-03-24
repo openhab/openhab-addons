@@ -208,6 +208,12 @@ public class SmartThingsBridgeChannelDefinitions {
         channelProperties.put("waterSensor#water", new ChannelProperty(Point.MEASUREMENT, Property.HUMIDITY));
 
         // ============================
+        // = mediaPlayback
+        // ============================
+        channelProperties.put("mediaPlayback#playbackStatus", new ChannelProperty(
+                SmartThingsBindingConstants.TYPE_PLAYER, null, Point.CONTROL, Property.MEDIA_CONTROL));
+
+        // ============================
         // = base type
         // ============================
         channelTypes.put(SmartThingsBindingConstants.SM_TYPE_INTEGER, SmartThingsBindingConstants.TYPE_NUMBER);

@@ -27,6 +27,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.Channel;
@@ -208,8 +209,19 @@ public abstract class SmartThingsConverter {
                 }
 
             case SmartThingsBindingConstants.TYPE_PLAYER:
-                logger.warn("Conversion of Player is not currently supported. Need to provide support for message {}.",
-                        dataFromSmartThings);
+                if (dataFromSmartThings instanceof String stringCommand) {
+                    if ("playing".equals(stringCommand)) {
+                        return PlayPauseType.PLAY;
+                    } else if ("paused".equals(stringCommand)) {
+                        return PlayPauseType.PAUSE;
+                    } else if ("stop".equals(stringCommand)) {
+                        return PlayPauseType.PAUSE;
+                    }
+                } else {
+                    logger.warn("Failed to convert Player with a value of {} from class {} to an appropriate type.",
+                            dataFromSmartThings, dataFromSmartThings.getClass().getName());
+                    return UnDefType.UNDEF;
+                }
                 return UnDefType.UNDEF;
 
             case SmartThingsBindingConstants.TYPE_ROLLERSHUTTER:
