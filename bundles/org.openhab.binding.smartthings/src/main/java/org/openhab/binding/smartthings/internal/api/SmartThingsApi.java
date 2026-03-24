@@ -289,10 +289,11 @@ public class SmartThingsApi {
         return accessToken;
     }
 
-    public void sendCommand(String deviceId, String jsonMsg) throws SmartThingsException {
+    public String sendCommand(String deviceId, String jsonMsg) throws SmartThingsException {
         try {
             String uri = baseUrl + deviceEndPoint + "/" + deviceId + "/commands";
-            doRequest(HttpMethod.POST, JsonObject.class, uri, jsonMsg);
+            JsonObject result = doRequest(HttpMethod.POST, JsonObject.class, uri, jsonMsg);
+            return gson.toJson(result);
         } catch (final Exception e) {
             throw new SmartThingsException(
                     String.format("SmartThingsApi : Unable to send command: %s %s", deviceId, jsonMsg), e);
