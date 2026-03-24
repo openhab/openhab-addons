@@ -45,9 +45,11 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -532,7 +534,8 @@ public class Clip2Bridge implements Closeable {
 
     /**
      * Static method to attempt to connect to a Hue Bridge, get its software version, and check if it is high enough to
-     * support the CLIP 2 API.
+     * support the CLIP 2 API. The bridge may redirect HTTP to HTTPS, but since we do not yet have the certificate
+     * configuration parameters for a real bridge, we implement a trustAll policy and disable host name verification.
      *
      * @param hostName the bridge IP address.
      * @return true if bridge is online and it supports CLIP 2, or false if it is online and does not support CLIP 2.
@@ -546,10 +549,6 @@ public class Clip2Bridge implements Closeable {
         try {
             URL url = new URI(String.format(FORMAT_URL_CONFIG, hostName)).toURL();
             httpConnection = (HttpURLConnection) url.openConnection();
-            /*
-             * TODO we manually check if the bridge redirects to HTTPS, and if so, since v3 bridges
-             * currently don't provide a full certificate chain we force use of a TrustAllTrustManager
-             */
             httpConnection.setInstanceFollowRedirects(false);
             int status = httpConnection.getResponseCode();
             if (status == 301 || status == 302) {
@@ -559,6 +558,7 @@ public class Clip2Bridge implements Closeable {
                     sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
                     httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL().openConnection();
                     httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                    httpsConnection.setHostnameVerifier((hostname, session) -> true); // don't verify host name
                     try (InputStream in = httpsConnection.getInputStream()) {
                         response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                     }
@@ -620,20 +620,38 @@ public class Clip2Bridge implements Closeable {
     private @Nullable Thread recreateThread;
     private @Nullable Future<?> checkAliveTask;
 
+    private static final String IPV4_PART = "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)";
+    private static final String IPV4_REGEX = "^(" + IPV4_PART + "\\.){3}" + IPV4_PART + "$";
+    private static final Pattern IPV4_PATTERN = Pattern.compile(IPV4_REGEX);
+
     /**
      * Constructor.
      *
      * @param httpClientFactory the OH core HttpClientFactory.
      * @param bridgeHandler the bridge handler.
+     * @param trustManagerProvider the Hue TLS trust manager provider
      * @param hostName the host name (ip address) of the Hue bridge
      * @param applicationKey the application key.
      * @throws ApiException if unable to open Jetty HTTP/2 client.
      */
-    public Clip2Bridge(HttpClientFactory httpClientFactory, Clip2BridgeHandler bridgeHandler, String hostName,
-            String applicationKey) throws ApiException {
+    public Clip2Bridge(HttpClientFactory httpClientFactory, Clip2BridgeHandler bridgeHandler,
+            HueTlsTrustManagerProvider trustManagerProvider, String hostName, String applicationKey)
+            throws ApiException {
         LOGGER.debug("Clip2Bridge()");
         httpClient = httpClientFactory.getCommonHttpClient();
-        http2Client = httpClientFactory.createHttp2Client("hue-clip2", httpClient.getSslContextFactory());
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[] { trustManagerProvider.getTrustManager() }, null);
+            sslContextFactory.setSslContext(sslContext);
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new ApiException("Could not initialize Hue SSL Context", e);
+        }
+        // don't verify host name when using an IP address since Hue certificates don't contain IP SANs
+        if (IPV4_PATTERN.matcher(hostName).matches()) {
+            sslContextFactory.setEndpointIdentificationAlgorithm("");
+        }
+        http2Client = httpClientFactory.createHttp2Client("hue-clip2", sslContextFactory);
         http2Client.setConnectTimeout(Clip2Bridge.TIMEOUT_SECONDS * 1000);
         http2Client.setIdleTimeout(-1);
         startHttp2Client();
