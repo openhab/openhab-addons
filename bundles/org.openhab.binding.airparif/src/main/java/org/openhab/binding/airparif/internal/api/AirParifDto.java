@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.measure.Unit;
 
@@ -87,13 +88,17 @@ public class AirParifDto {
             @SerializedName("date_previ") LocalDate productionDate, //
             @SerializedName("disponible") boolean available, //
             Message bulletin, //
-            Set<PollutantConcentration> concentrations) {
+            @Nullable Set<PollutantConcentration> concentrations) {
         public String dayDescription() {
             return bulletin.fr;
         }
 
         public boolean isToday() {
             return previsionDate.equals(LocalDate.now(DEFAULT_TZ));
+        }
+
+        public Set<PollutantConcentration> concentrations() {
+            return concentrations == null ? Set.of() : concentrations;
         }
     }
 
@@ -105,6 +110,10 @@ public class AirParifDto {
     public record Bulletin( //
             @SerializedName("jour") DailyBulletin today, //
             @SerializedName("demain") DailyBulletin tomorrow) {
+
+        public Stream<DailyBulletin> days() {
+            return Set.of(today, tomorrow).stream();
+        }
     }
 
     public record Episode( //
