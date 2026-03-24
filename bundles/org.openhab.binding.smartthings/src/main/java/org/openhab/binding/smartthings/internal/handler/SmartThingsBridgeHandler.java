@@ -167,8 +167,11 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         } catch (OAuthResponseException e) {
             setStatusToAuthRequired();
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.oauth-failed" + ":" + e.getMessage());
+            Locale locale = Locale.getDefault();
+            Bundle bundle = FrameworkUtil.getBundle(getClass());
+            String text = translationProvider.getText(bundle, "offline.oauth-failed", null, locale);
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, text + ":" + e.getMessage());
         }
     }
 
@@ -227,8 +230,11 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
                             "@text/offline.failed-to-exchange-token");
                 }
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.failed-to-exchange-token: " + e.getMessage());
+                Locale locale = Locale.getDefault();
+                Bundle bundle = FrameworkUtil.getBundle(getClass());
+                String text = translationProvider.getText(bundle, "offline.failed-to-exchange-token", null, locale);
+
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, text + ":" + e.getMessage());
                 throw new SmartThingsException("Token exchange failed:", e);
             }
         }
