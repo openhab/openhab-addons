@@ -206,7 +206,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             getClip2Bridge().testConnectionState();
             updateSelf(); // go online
         } catch (HttpUnauthorizedException unauthorizedException) {
-            logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
+            Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
+            if (config.applicationKey.isBlank()) {
+                logger.debug("checkConnection() no application key configured");
+            } else {
+                logger.debug("checkConnection() {}", unauthorizedException.getMessage(), unauthorizedException);
+            }
             if (applKeyRetriesRemaining > 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.api2.conf-error.press-pairing-button");
@@ -491,6 +496,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private void initializeAssets() {
         logger.debug("initializeAssets() {}", this);
         synchronized (this) {
+            ServiceRegistration<?> temp = trustManagerRegistration;
+            if (temp != null) {
+                temp.unregister();
+                trustManagerRegistration = null;
+            }
+
             Clip2BridgeConfig config = getConfigAs(Clip2BridgeConfig.class);
 
             String ipAddress = config.ipAddress;
@@ -512,10 +523,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            String modelId = thing.getProperties().get(Thing.PROPERTY_MODEL_ID);
-            boolean useSignifyCaCertificateVersion2 = modelId != null && HueBridgeModel.getGeneration(modelId) >= 3;
             HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
-                    config.useSelfSignedCertificate, useSignifyCaCertificateVersion2);
+                    config.useSelfSignedCertificate);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -530,7 +539,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             applicationKey = Objects.nonNull(applicationKey) ? applicationKey : "";
 
             try {
-                clip2Bridge = new Clip2Bridge(httpClientFactory, this, ipAddress, applicationKey);
+                clip2Bridge = new Clip2Bridge(httpClientFactory, this, trustManagerProvider, ipAddress, applicationKey);
             } catch (ApiException e) {
                 logger.trace("initializeAssets() communication error on '{}'", ipAddress, e);
                 setStatusOfflineWithCommunicationError(e);
@@ -751,7 +760,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateThingFromLegacy() {
         if (isInitialized()) {
-            logger.warn("Cannot update bridge thing '{}' from legacy since handler already initialized.",
+            logger.debug("Cannot update bridge thing '{}' from legacy since handler already initialized.",
                     thing.getUID());
             return;
         }
