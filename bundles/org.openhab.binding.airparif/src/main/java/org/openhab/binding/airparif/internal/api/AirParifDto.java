@@ -98,7 +98,8 @@ public class AirParifDto {
         }
 
         public Set<PollutantConcentration> concentrations() {
-            return concentrations == null ? Set.of() : concentrations;
+            Set<PollutantConcentration> local = concentrations;
+            return local == null ? Set.of() : local;
         }
     }
 
