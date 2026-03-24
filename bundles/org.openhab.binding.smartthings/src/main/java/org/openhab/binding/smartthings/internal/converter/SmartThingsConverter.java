@@ -217,7 +217,6 @@ public abstract class SmartThingsConverter {
                         : UpDownType.UP;
 
             case SmartThingsBindingConstants.TYPE_STRING:
-                // temp fixes, need review
                 if (dataFromSmartThings instanceof Double) {
                     return new StringType(((Double) dataFromSmartThings).toString());
                 } else if (dataFromSmartThings instanceof String) {
