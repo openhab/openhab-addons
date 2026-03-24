@@ -139,7 +139,8 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
             return;
         }
 
-        registerOAuth(true);
+        registerOAuth(false);
+
         try {
             registerServlet();
         } catch (SmartThingsException e) {
@@ -188,14 +189,12 @@ public abstract class SmartThingsBridgeHandler extends BaseBridgeHandler
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
     }
 
-    public void registerOAuth(boolean useCli) {
+    public void registerOAuth(boolean forceCli) {
         OAuthClientService oAuthService;
 
         // if no user app created, use the smarthings cli end point to create the app
-        if (useCli) {
-            if ("".equals(config.clientId)) {
-                config.clientId = SmartThingsBindingConstants.CLIENT_ID;
-            }
+        if ("".equals(config.clientId) || forceCli) {
+            config.clientId = SmartThingsBindingConstants.CLIENT_ID;
             oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                     SmartThingsBindingConstants.SMARTTHINGS_API_TOKEN_URL,
                     SmartThingsBindingConstants.SMARTTHINGS_AUTHORIZE_URL, config.clientId, null,
