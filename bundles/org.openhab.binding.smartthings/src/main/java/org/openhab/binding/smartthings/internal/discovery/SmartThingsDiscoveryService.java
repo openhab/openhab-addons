@@ -101,8 +101,6 @@ public class SmartThingsDiscoveryService extends AbstractDiscoveryService
     }
 
     public void registerDevice(SmartThingsDevice device, Boolean addDevice) {
-        String name = device.name;
-
         logger.trace("Find Device : {} / {}", device.name, device.label);
 
         if (device.components == null || device.components.length == 0) {
