@@ -49,7 +49,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
@@ -86,7 +85,7 @@ public class OpenhabGraalJSScriptEngine
         implements Lock {
 
     // see private constant GraalJSScriptEngine.ID
-    private static final String LANGUAGE_ID = "js";
+    static final String LANGUAGE_ID = "js";
 
     private static final Source GLOBAL_SOURCE;
     static {
@@ -125,9 +124,6 @@ public class OpenhabGraalJSScriptEngine
         File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
         System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
     }
-    /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
-    private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
-            .option("engine.WarnInterpreterOnly", "false").build();
     /** Provides unlimited host access as well as custom translations from JS to Java Objects */
     private static final HostAccess HOST_ACCESS = HostAccess.newBuilder(HostAccess.ALL)
             // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
@@ -176,13 +172,13 @@ public class OpenhabGraalJSScriptEngine
      * Creates an implementation of ScriptEngine {@code (& Invocable)}, wrapping the contained engine,
      * that tracks the script lifecycle and provides hooks for scripts to do so too.
      */
-    public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration,
+    public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration, Engine engine,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
         super(null); // delegate depends on fields not yet initialized, so we cannot set it immediately
         this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
-        delegate = GraalJSScriptEngine.create(ENGINE, Context.newBuilder(LANGUAGE_ID) //
+        delegate = GraalJSScriptEngine.create(engine, Context.newBuilder(LANGUAGE_ID) //
                 .allowIO(IOAccess.newBuilder() //
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
                             @Override
@@ -602,14 +598,5 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public Condition newCondition() {
         return lock.newCondition();
-    }
-
-    /**
-     * Gets the Graal language of {@link OpenhabGraalJSScriptEngine}.
-     * 
-     * @return the Graal language of {@link OpenhabGraalJSScriptEngine} or {@code null} if not available
-     */
-    public static @Nullable Language getLanguage() {
-        return ENGINE.getLanguages().get(LANGUAGE_ID);
     }
 }
