@@ -134,8 +134,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
                         .withProperty(HOST, host) //
                         .withProperty(Thing.PROPERTY_MODEL_ID, service.getPropertyString(MDNS_PROPERTY_MODEL_ID)) //
                         .withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial.toLowerCase()) //
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER) //
-                        .withTTL(120L);
+                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER);
 
                 if (Objects.nonNull(legacyThingUID)) {
                     builder = builder.withProperty(PROPERTY_LEGACY_THING_UID, legacyThingUID);
