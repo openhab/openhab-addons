@@ -64,6 +64,7 @@ public class Constants {
     public static final ThingTypeUID THING_TYPE_IGNORE = new ThingTypeUID(BINDING_ID, "ignore");
 
     // Generic Thing Type UIDs which will be configured via devices.json
+    public static final ThingTypeUID THING_TYPE_MATTER_OUTLET = new ThingTypeUID(BINDING_ID, "matter-outlet");
     public static final ThingTypeUID THING_TYPE_MATTER_OCCUPANCY_SENSOR = new ThingTypeUID(BINDING_ID,
             "occupancy-sensor");
     public static final ThingTypeUID THING_TYPE_MATTER_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "light-sensor");
@@ -89,7 +90,8 @@ public class Constants {
             THING_TYPE_AIR_PURIFIER, THING_TYPE_WATER_SENSOR, THING_TYPE_BLIND, THING_TYPE_SWITCH_LIGHT,
             THING_TYPE_MATTER_OCCUPANCY_SENSOR, THING_TYPE_MATTER_LIGHT_SENSOR, THING_TYPE_MATTER_ENVIRONMENT_SENSOR,
             THING_TYPE_MATTER_OPEN_CLOSE_SENSOR, THING_TYPE_MATTER_WATER_LEAK_SENSOR,
-            THING_TYPE_MATTER_2_BUTTON_CONTROLLER, THING_TYPE_MATTER_3_BUTTON_CONTROLLER, THING_TYPE_MATTER_LIGHT);
+            THING_TYPE_MATTER_2_BUTTON_CONTROLLER, THING_TYPE_MATTER_3_BUTTON_CONTROLLER, THING_TYPE_MATTER_LIGHT,
+            THING_TYPE_MATTER_OUTLET);
 
     // Thing types to be ignored for discovery
     public static final Set<ThingTypeUID> IGNORE_THING_TYPES_UIDS = Set.of(THING_TYPE_IGNORE, THING_TYPE_MATTER_UNKNOWN,

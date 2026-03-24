@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.dirigera.internal.ResourceReader;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -293,6 +294,7 @@ public class MatterModel {
             case "OnOffType" -> OnOffType.from(transformed);
             case "OpenClosedType" ->
                 (Boolean.TRUE.toString().equalsIgnoreCase(transformed)) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            case "DateTimeType" -> DateTimeType.valueOf(transformed);
             default -> {
                 logger.warn("MATTER MODEL State conversion: out type '{}' unknown", outType);
                 yield UnDefType.NULL;
@@ -352,6 +354,8 @@ public class MatterModel {
                 case "raw" -> command.toString();
                 case "mapping" -> map(command.toString(), channelConfiguration.getJSONObject(CHANNEL_KEY_MAPPING));
                 case "code" -> "";
+                case "format" -> String.format(Locale.ENGLISH, channelConfiguration.getString(CHANNEL_KEY_FORMAT),
+                        command.toString());
                 default -> {
                     logger.warn("MATTER MODEL Request conversion: unknown transformation {} for target attribute '{}'",
                             transformation, targetAttribute);
@@ -365,6 +369,7 @@ public class MatterModel {
             var commandValue = switch (outType) {
                 case "Boolean" -> Boolean.parseBoolean(commandStringValue);
                 case "String" -> commandStringValue;
+                case "Number" -> Integer.parseInt(commandStringValue);
                 default -> {
                     logger.warn("MATTER MODEL Request conversion: unknown outType {} for target attribute '{}'",
                             outType, targetAttribute);
@@ -398,6 +403,7 @@ public class MatterModel {
         JSONObject deviceConfig = MATTER_DEVICE_CONFIG.optJSONObject(deviceType);
         if (deviceConfig == null) {
             logger.warn("No configuration found for device type {}", deviceType);
+            MATTER_DEVICE_CONFIG.keySet().forEach(key -> logger.warn("Available device type: {}", key));
             return;
         }
 

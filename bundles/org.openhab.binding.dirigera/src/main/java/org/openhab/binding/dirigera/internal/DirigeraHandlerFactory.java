@@ -35,6 +35,7 @@ import org.openhab.binding.dirigera.internal.handler.light.TemperatureLightHandl
 import org.openhab.binding.dirigera.internal.handler.matter.Matter2ButtonController;
 import org.openhab.binding.dirigera.internal.handler.matter.Matter3ButtonController;
 import org.openhab.binding.dirigera.internal.handler.matter.MatterLight;
+import org.openhab.binding.dirigera.internal.handler.matter.MatterOutlet;
 import org.openhab.binding.dirigera.internal.handler.matter.MatterSensor;
 import org.openhab.binding.dirigera.internal.handler.plug.PowerPlugHandler;
 import org.openhab.binding.dirigera.internal.handler.plug.SimplePlugHandler;
@@ -180,6 +181,8 @@ public class DirigeraHandlerFactory extends BaseThingHandlerFactory {
                 || THING_TYPE_MATTER_OPEN_CLOSE_SENSOR.equals(thingTypeUID)
                 || THING_TYPE_MATTER_WATER_LEAK_SENSOR.equals(thingTypeUID)) {
             return new MatterSensor(thing);
+        } else if (THING_TYPE_MATTER_OUTLET.equals(thingTypeUID)) {
+            return new MatterOutlet(thing, timezoneProvider);
         } else if (THING_TYPE_MATTER_2_BUTTON_CONTROLLER.equals(thingTypeUID)) {
             return new Matter2ButtonController(thing);
         } else if (THING_TYPE_MATTER_3_BUTTON_CONTROLLER.equals(thingTypeUID)) {
