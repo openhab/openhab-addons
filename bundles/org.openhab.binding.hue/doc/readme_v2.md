@@ -37,7 +37,7 @@ Bridge hue:bridge-api2:1 [ ipAddress="192.168.0.64", applicationKey="qwertzuiopa
 | useSelfSignedCertificate | Use self-signed certificate for HTTPS connection to Hue Bridge. Default is `false`. **Advanced**   |
 
 When `useSelfSignedCertificate` is true, it will trust whatever certificate is present on the Bridge for securing the HTTPS communication.
-Otherwise, the binding will validate the Bridge's certificate against the official Philips Signifier issuing Certificate Authority.
+Otherwise, the binding will validate the Bridge's certificate against that of the official Philips / Signify issuing Certificate Authority.
 
 ### Devices, Rooms, Zones, and Areas
 
