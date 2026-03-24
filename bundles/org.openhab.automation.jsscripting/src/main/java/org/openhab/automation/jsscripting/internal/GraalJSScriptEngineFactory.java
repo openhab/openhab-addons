@@ -35,6 +35,7 @@ import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 /**
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
@@ -80,8 +81,12 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         this.jsScriptServiceUtil = jsScriptServiceUtil;
         this.configuration = new GraalJSScriptEngineConfiguration(config);
 
-        Engine.Builder engineBuilder = Engine.newBuilder().allowExperimentalOptions(true)
-                .option("engine.WarnInterpreterOnly", "false");
+        Logger engineLogger = LoggerFactory
+                .getLogger(GraalJSScriptEngineFactory.class.getPackageName() + ".org.graalvm.polyglot.Engine");
+        Engine.Builder engineBuilder = Engine.newBuilder().allowExperimentalOptions(true) //
+                .option("engine.WarnInterpreterOnly", "false") //
+                .out(new Slf4jOutputStream(engineLogger, Level.DEBUG)) //
+                .err(new Slf4jOutputStream(engineLogger, Level.DEBUG));
         if (configuration.isDebuggerEnabled()) {
             logger.info("Enabling JavaScript debugger support.");
             engineBuilder //

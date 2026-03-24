@@ -68,6 +68,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.types.QuantityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 
@@ -178,6 +179,8 @@ public class OpenhabGraalJSScriptEngine
         this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
+        Logger contextLogger = LoggerFactory
+                .getLogger(OpenhabGraalJSScriptEngine.class.getPackageName() + ".org.graalvm.polyglot.Context");
         delegate = GraalJSScriptEngine.create(engine, Context.newBuilder(LANGUAGE_ID) //
                 .allowIO(IOAccess.newBuilder() //
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
@@ -253,6 +256,9 @@ public class OpenhabGraalJSScriptEngine
                 .hostClassLoader(getClass().getClassLoader()) //
                 // allow experimental options
                 .allowExperimentalOptions(true) //
+                // redirect OutputStreams from System to Log4j
+                .out(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
+                .err(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
                 // choose the path to look for CommonJS module (i.e. node_modules)
                 .option("js.commonjs-require-cwd", jsDependencyTracker.getLibraryPath().toString()) //
                 // enable Nashorn compat mode as openhab-js relies on accessors, see
