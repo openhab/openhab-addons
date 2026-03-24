@@ -94,7 +94,7 @@
 			<parameter name="useSelfSignedCertificate" type="boolean">
 				<label>Use Self-Signed Certificate</label>
 				<description>Use self-signed certificate for HTTPS connection to Hue Bridge.</description>
-				<default>true</default>
+				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
