@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,6 +37,7 @@ public class DDWRTRadio {
     private String mode = "";
     private boolean enabled = false;
     private int clientCount = 0;
+    private List<String> assoclist = new ArrayList<>();
 
     public DDWRTRadio(String parentDeviceMac, String ifaceName) {
         this.parentDeviceMac = Objects.requireNonNull(parentDeviceMac.toLowerCase().trim());
@@ -75,6 +79,10 @@ public class DDWRTRadio {
         return clientCount;
     }
 
+    public List<String> getAssoclist() {
+        return Objects.requireNonNull(Collections.unmodifiableList(assoclist));
+    }
+
     // ---- Setters ----
 
     public void setSsid(String ssid) {
@@ -95,6 +103,16 @@ public class DDWRTRadio {
 
     public void setClientCount(int clientCount) {
         this.clientCount = clientCount;
+    }
+
+    public void setAssoclist(List<String> assoclist) {
+        this.assoclist = new ArrayList<>(assoclist);
+        this.clientCount = assoclist.size();
+    }
+
+    public void clearAssoclist() {
+        this.assoclist.clear();
+        this.clientCount = 0;
     }
 
     @Override

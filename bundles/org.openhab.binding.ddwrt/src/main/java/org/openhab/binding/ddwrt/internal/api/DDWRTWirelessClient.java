@@ -30,6 +30,8 @@ public class DDWRTWirelessClient {
     private String hostname = "";
     private String ipAddress = "";
     private String apMac = "";
+    private String radioName = "";
+    private String ssid = "";
     private String iface = "";
     private int snr = 0;
     private int signalDbm = 0;
@@ -60,6 +62,14 @@ public class DDWRTWirelessClient {
 
     public String getApMac() {
         return apMac;
+    }
+
+    public String getRadioName() {
+        return radioName;
+    }
+
+    public String getSsid() {
+        return ssid;
     }
 
     public String getIface() {
@@ -114,6 +124,14 @@ public class DDWRTWirelessClient {
 
     public void setApMac(String apMac) {
         this.apMac = Objects.requireNonNull(apMac.toLowerCase().trim());
+    }
+
+    public void setRadioName(String radioName) {
+        this.radioName = radioName;
+    }
+
+    public void setSsid(String ssid) {
+        this.ssid = ssid;
     }
 
     public void setIface(String iface) {

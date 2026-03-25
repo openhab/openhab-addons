@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.handler;
 
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ASSOCLIST;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CHANNEL;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_CLIENT_COUNT;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_ENABLED;
@@ -78,16 +79,28 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
             case CHANNEL_SSID -> radio.getSsid().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(radio.getSsid());
             case CHANNEL_MODE -> radio.getMode().isEmpty() ? UnDefType.UNDEF : StringType.valueOf(radio.getMode());
             case CHANNEL_CLIENT_COUNT -> new DecimalType(radio.getClientCount());
+            case CHANNEL_ASSOCLIST -> {
+                String joined = String.join(",", radio.getAssoclist());
+                yield joined.isEmpty() ? UnDefType.UNDEF : StringType.valueOf(joined);
+            }
             default -> UnDefType.NULL;
         };
     }
 
     @Override
     protected boolean handleCommand(DDWRTNetwork network, DDWRTRadio radio, ChannelUID channelUID, Command command) {
-        // Enable/disable radio will be implemented in Phase 5
         String channelId = channelUID.getIdWithoutGroup();
-        if (CHANNEL_ENABLED.equals(channelId) && command instanceof OnOffType) {
-            logger.info("Radio enable/disable not yet implemented for {}", radio.getInterfaceId());
+        if (CHANNEL_ENABLED.equals(channelId) && command instanceof OnOffType onOff) {
+            boolean enabled = onOff == OnOffType.ON;
+            logger.debug("{} radio {}", enabled ? "Enabling" : "Disabling", radio.getInterfaceId());
+
+            boolean success = network.setRadioEnabled(radio.getParentDeviceMac(), radio.getInterfaceId(), enabled);
+            if (success) {
+                logger.debug("Radio {} command sent successfully", radio.getInterfaceId());
+                // State will be updated on next network refresh cycle
+            } else {
+                logger.warn("Failed to {} radio {}", enabled ? "enable" : "disable", radio.getInterfaceId());
+            }
             return true;
         }
         return false;

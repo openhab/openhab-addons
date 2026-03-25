@@ -44,6 +44,23 @@ public class DDWRTGenericDevice extends DDWRTBaseDevice {
     }
 
     @Override
+    protected List<String> getAssoclistMacs(SshRunner runner, String iface) {
+        String output = runner.execStdout("iw dev " + iface + " station dump");
+        if (output.isEmpty()) {
+            return Objects.requireNonNull(Collections.emptyList());
+        }
+
+        List<String> macs = new ArrayList<>();
+        for (String line : output.split("\n")) {
+            Matcher stationMatcher = STATION_MAC_PATTERN.matcher(line.trim());
+            if (stationMatcher.find()) {
+                macs.add(Objects.requireNonNull(stationMatcher.group(1)).toLowerCase());
+            }
+        }
+        return macs;
+    }
+
+    @Override
     protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
         String output = runner.execStdout("iw dev " + iface + " station dump");
         if (output.isEmpty()) {

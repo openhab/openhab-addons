@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +32,24 @@ public class DDWRTAtherosDevice extends DDWRTBaseDevice {
 
     public DDWRTAtherosDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
+    }
+
+    @Override
+    protected List<String> getAssoclistMacs(SshRunner runner, String iface) {
+        String output = runner.execStdout("wl_atheros -i " + iface + " assoclist");
+        if (output.isEmpty()) {
+            return Objects.requireNonNull(Collections.emptyList());
+        }
+
+        List<String> macs = new ArrayList<>();
+        for (String line : output.split("\n")) {
+            String trimmed = line.trim();
+            // Format: "assoclist XX:XX:XX:XX:XX:XX"
+            if (trimmed.startsWith("assoclist ") && trimmed.length() >= 27) {
+                macs.add(Objects.requireNonNull(trimmed.substring(10).trim().toLowerCase()));
+            }
+        }
+        return macs;
     }
 
     @Override
@@ -71,34 +90,36 @@ public class DDWRTAtherosDevice extends DDWRTBaseDevice {
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
         List<DDWRTRadio> radios = new ArrayList<>();
         // Try common Atheros interface names
-        for (String iface : new String[] { "ath0", "ath1", "ath2" }) {
-            String status = runner.execStdout("wl_atheros -i " + iface + " status");
-            if (!status.isEmpty()) {
-                DDWRTRadio radio = new DDWRTRadio(mac, iface);
-
-                String ssid = safeTrim(runner.execStdout("nvram get " + iface + "_ssid"));
-                if (!ssid.isEmpty()) {
-                    radio.setSsid(ssid);
-                }
-
-                String chStr = safeTrim(runner.execStdout("nvram get " + iface + "_channel"));
-                if (!chStr.isEmpty()) {
-                    try {
-                        radio.setChannel(Integer.parseInt(chStr));
-                    } catch (NumberFormatException e) {
-                        // ignore
-                    }
-                }
-
-                String mode = safeTrim(runner.execStdout("nvram get " + iface + "_net_mode"));
-                if (!mode.isEmpty()) {
-                    radio.setMode(mode);
-                }
-
-                radio.setEnabled(true);
-                radios.add(radio);
-                logger.debug("Found Atheros radio: {}", radio);
+        for (String iface : new String[] { "wlan0", "wlan1", "wlan2" }) {
+            try {
+                runner.exec("wl_atheros -i " + iface + " assoclist");
+            } catch (IOException e) {
+                continue; // interface does not exist
             }
+            DDWRTRadio radio = new DDWRTRadio(mac, iface);
+
+            String ssid = safeTrim(runner.execStdout("nvram get " + iface + "_ssid"));
+            if (!ssid.isEmpty()) {
+                radio.setSsid(ssid);
+            }
+
+            String chStr = safeTrim(runner.execStdout("nvram get " + iface + "_channel"));
+            if (!chStr.isEmpty()) {
+                try {
+                    radio.setChannel(Integer.parseInt(chStr));
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+            }
+
+            String mode = safeTrim(runner.execStdout("nvram get " + iface + "_net_mode"));
+            if (!mode.isEmpty()) {
+                radio.setMode(mode);
+            }
+
+            radio.setEnabled(true);
+            radios.add(radio);
+            logger.debug("Found Atheros radio: {}", radio);
         }
         return radios;
     }

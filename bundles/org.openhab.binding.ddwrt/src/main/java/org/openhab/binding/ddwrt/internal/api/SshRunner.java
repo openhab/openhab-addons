@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.sshd.client.channel.ChannelExec;
 import org.apache.sshd.client.channel.ClientChannelEvent;
@@ -73,11 +74,10 @@ public class SshRunner {
 
     private final Logger logger;
 
-    public SshRunner(ClientSession session, Duration defaultTimeout) {
+    public SshRunner(ClientSession session, Duration defaultTimeout, String hostname) {
         this.session = session;
         this.defaultTimeout = defaultTimeout;
-        this.logger = Objects
-                .requireNonNull(LoggerFactory.getLogger(SshRunner.class.getName() + "." + session.getRemoteAddress()));
+        this.logger = Objects.requireNonNull(LoggerFactory.getLogger(SshRunner.class.getName() + "." + hostname));
     }
 
     /**
@@ -85,19 +85,51 @@ public class SshRunner {
      * Throws {@link IOException} only for session/channel-level failures, never for non-zero exit codes.
      */
     public CommandResult execResult(String command, Duration timeout) throws IOException {
-        try (ChannelExec ch = session.createExecChannel(command)) {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            ByteArrayOutputStream err = new ByteArrayOutputStream();
-            ch.setOut(out);
-            ch.setErr(err);
-            ch.open().verify();
-            ch.waitFor(EnumSet.of(ClientChannelEvent.CLOSED), timeout.toMillis());
-            Integer rc = ch.getExitStatus();
-            String stdout = out.toString(StandardCharsets.UTF_8);
-            String stderr = err.toString(StandardCharsets.UTF_8);
-            logger.debug("{} rc={} stdout={} stderr={}", command, rc, stdout, stderr);
-            return new CommandResult(rc, stdout, stderr);
+        int attempts = 0;
+        final int maxAttempts = 3;
+
+        while (attempts < maxAttempts) {
+            try (ChannelExec ch = session.createExecChannel(command)) {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ByteArrayOutputStream err = new ByteArrayOutputStream();
+                ch.setOut(out);
+                ch.setErr(err);
+                ch.open().verify();
+                Set<ClientChannelEvent> events = ch.waitFor(
+                        EnumSet.of(ClientChannelEvent.CLOSED, ClientChannelEvent.EXIT_STATUS), timeout.toMillis());
+                Integer rc = ch.getExitStatus();
+                String stdout = out.toString(StandardCharsets.UTF_8);
+                String stderr = err.toString(StandardCharsets.UTF_8);
+
+                if (events.contains(ClientChannelEvent.TIMEOUT)) {
+                    logger.debug("{} TIMEOUT rc={} stdout={} stderr={}", command, rc, stdout, stderr);
+                    return new CommandResult(rc, stdout, stderr);
+                } else if (rc == null) {
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        logger.warn("{} rc=null (attempt {}/{}) - retrying in 100ms. stdout='{}' stderr='{}'", command,
+                                attempts, maxAttempts, stdout, stderr);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                        continue;
+                    } else {
+                        logger.error(
+                                "{} rc=null after {} attempts - giving up. stdout='{}' stderr='{}' - SSH session may be corrupted or concurrent channels are interfering",
+                                command, maxAttempts, stdout, stderr);
+                    }
+                } else {
+                    logger.debug("{} rc={} stdout={} stderr={}", command, rc, stdout, stderr);
+                }
+                return new CommandResult(rc, stdout, stderr);
+            }
         }
+
+        // If we get here, all attempts failed
+        return new CommandResult(null, "", "Failed after " + maxAttempts + " attempts");
     }
 
     public CommandResult execResult(String command) throws IOException {
