@@ -12,20 +12,9 @@
 		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="control" typeId="control"></channel>
-			<channel id="closure" typeId="closure">
-				<label>Closure</label>
-				<description>Current closure level of the shutter (0-100%)</description>
-			</channel>
 		</channels>
 		<representation-property>url</representation-property>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>
 	</thing-type>
-
-	<channel-type id="closure">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Closure</label>
-		<description>Indicates the current position of the shutter</description>
-		<state readOnly="true" pattern="%d %%"/>
-	</channel-type>
 
 </thing:thing-descriptions>

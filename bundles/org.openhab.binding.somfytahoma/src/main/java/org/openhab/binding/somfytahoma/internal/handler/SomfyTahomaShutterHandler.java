@@ -15,13 +15,10 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 
 /**
  * The {@link SomfyTahomaShutterHandler} is responsible for handling commands,
@@ -34,21 +31,8 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaShutterHandler(Thing thing) {
         super(thing);
-        // Link Tahoma closure state to the read-only "closure" channel
-        stateNames.put("closure", "core:ClosureState");
-    }
-
-    @Override
-    protected void updateState(String channelID, State state) {
-        // Scale cloud values (0.0-1.0) to openHAB percentage (0-100) for the closure channel
-        if ("closure".equals(channelID) && state instanceof DecimalType) {
-            double value = ((DecimalType) state).doubleValue();
-            if (value <= 1.0) {
-                super.updateState(channelID, new DecimalType(value * 100));
-                return;
-            }
-        }
-        super.updateState(channelID, state);
+        // Octa22: Koppel de status (ClosureState) direct aan het bestaande CONTROL kanaal
+        stateNames.put(CONTROL, "core:ClosureState");
     }
 
     @Override
@@ -61,22 +45,22 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
         if (command instanceof RefreshType) {
             return;
         } else {
-            if (command instanceof DecimalType) {
-                // Send specific percentage to the cloud for RS100 support
-                sendCommand("setClosure", "[" + toInteger(command) + "]");
-            } else {
-                // Standard commands: UP, DOWN, STOP
-                String cmd = getTahomaCommand(command.toString());
-                if (cmd != null) {
-                    sendCommand(cmd);
+            String cmd = getTahomaCommand(command.toString());
+            if (COMMAND_STOP.equals(cmd)) {
+                String executionId = getCurrentExecutions();
+                if (executionId != null) {
+                    cancelExecution(executionId);
                 } else {
-                    getLogger().debug("unsupported command: {}", command);
+                    sendCommand(COMMAND_STOP);
                 }
+            } else {
+                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
+                sendCommand(cmd, param);
             }
         }
     }
 
-    private @Nullable String getTahomaCommand(String command) {
+    protected String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
             case "DOWN":
@@ -89,7 +73,7 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
             case "STOP":
                 return COMMAND_STOP;
             default:
-                return null;
+                return COMMAND_SET_CLOSURE;
         }
     }
 }
