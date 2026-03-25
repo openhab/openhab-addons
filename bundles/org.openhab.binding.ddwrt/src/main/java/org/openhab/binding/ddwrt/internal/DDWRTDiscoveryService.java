@@ -14,12 +14,20 @@ package org.openhab.binding.ddwrt.internal;
 
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_FIREWALL_RULE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_WIRELESS_CLIENT;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ddwrt.internal.api.DDWRTBaseDevice;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
+import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTNetworkBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -40,8 +48,11 @@ import org.slf4j.LoggerFactory;
 public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<DDWRTNetworkBridgeHandler> {
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 120;
+    private static final int BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS = 10;
 
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTDiscoveryService.class));
+
+    private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
 
     public DDWRTDiscoveryService() {
         super(DDWRTNetworkBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
@@ -56,26 +67,38 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             return;
         }
         discoverDevices(net);
+        discoverRadios(net);
+        discoverWirelessClients(net);
+        discoverFirewallRules(net);
     }
 
-    // :TODO: ballle98/openhab-addons#15 Implement Background Discovery
-    // @Override
-    // protected void startBackgroundDiscovery() {
-    // logger.debug("Start DD-WRT device background discovery");
-    // if (DDWRTDiscoveryJob == null || DDWRTDiscoveryJob.isCancelled()) {
-    // DDWRTDiscoveryJob = scheduler.scheduleWithFixedDelay(DDWRTDiscoveryRunnable, 0, refreshInterval,
-    // TimeUnit.SECONDS);
-    // }
-    // }
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Starting DD-WRT background discovery");
+        ScheduledFuture<?> job = backgroundDiscoveryJob;
+        if (job == null || job.isCancelled()) {
+            DDWRTNetwork net = thingHandler.getNetwork();
+            int intervalSeconds = DISCOVERY_TIMEOUT_SECONDS;
+            if (net != null) {
+                DDWRTNetworkConfiguration cfg = net.getConfig();
+                if (cfg != null) {
+                    intervalSeconds = cfg.refreshInterval;
+                }
+            }
+            backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan,
+                    BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS, intervalSeconds, TimeUnit.SECONDS);
+        }
+    }
 
-    // @Override
-    // protected void stopBackgroundDiscovery() {
-    // logger.debug("Stop DDWRT device background discovery");
-    // if (DDWRTDiscoveryJob != null) {
-    // DDWRTDiscoveryJob.cancel(true);
-    // DDWRTDiscoveryJob = null;
-    // }
-    // }
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stopping DD-WRT background discovery");
+        ScheduledFuture<?> job = backgroundDiscoveryJob;
+        if (job != null) {
+            job.cancel(true);
+            backgroundDiscoveryJob = null;
+        }
+    }
 
     private void discoverDevices(DDWRTNetwork net) {
         final ThingUID bridgeUID = thingHandler.getThing().getUID();
@@ -101,6 +124,103 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withLabel(label).withProperties(props).withRepresentationProperty("mac").build();
+
+            thingDiscovered(result);
+        });
+    }
+
+    private void discoverRadios(DDWRTNetwork net) {
+        final ThingUID bridgeUID = thingHandler.getThing().getUID();
+        final DDWRTNetworkCache cache = net.getCache();
+
+        cache.getRadios().forEach(radio -> {
+            // Get parent device for hostname
+            DDWRTBaseDevice device = cache.getDevice(radio.getParentDeviceMac());
+            final String hostname = device != null && !device.getHostname().isEmpty() ? device.getHostname()
+                    : radio.getParentDeviceMac();
+
+            // ID: deviceMac-interface (e.g., 24f5a2c61659-wlan0)
+            final String id = radio.getParentDeviceMac().replace(":", "-") + "-" + radio.getIfaceName();
+            final ThingUID thingUID = new ThingUID(THING_TYPE_RADIO, bridgeUID, id);
+
+            // Label: hostname interface (e.g., "gateway-ap wlan0")
+            final String label = hostname + " " + radio.getIfaceName();
+
+            logger.debug("Discovered radio: '{}'", thingUID);
+
+            final Map<String, Object> props = Map.of("interfaceId", radio.getInterfaceId(), "parentDeviceMac",
+                    radio.getParentDeviceMac(), "ifaceName", radio.getIfaceName());
+
+            final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withLabel(label).withProperties(props).withRepresentationProperty("interfaceId").build();
+
+            thingDiscovered(result);
+        });
+    }
+
+    private void discoverWirelessClients(DDWRTNetwork net) {
+        final ThingUID bridgeUID = thingHandler.getThing().getUID();
+        final DDWRTNetworkCache cache = net.getCache();
+
+        cache.getWirelessClients().forEach(client -> {
+            final boolean hasHostname = !client.getHostname().isEmpty();
+            // Use hostname for thing ID when available to handle MAC randomization;
+            // fall back to MAC for devices without a hostname
+            final String thingId = hasHostname ? client.getHostname().toLowerCase().replaceAll("[^a-z0-9]", "")
+                    : client.getMac().replace(":", "");
+            final ThingUID thingUID = new ThingUID(THING_TYPE_WIRELESS_CLIENT, bridgeUID, thingId);
+
+            final String label = hasHostname ? client.getHostname() : client.getMac();
+            // Use hostname as representationProperty when available for deduplication
+            final String reprProp = hasHostname ? "hostname" : "mac";
+
+            logger.debug("Discovered wireless client: '{}'", thingUID);
+
+            final Map<String, Object> props = new java.util.HashMap<>();
+            props.put("mac", client.getMac());
+            props.put("apMac", client.getApMac());
+            props.put("ssid", client.getSsid());
+            props.put("iface", client.getIface());
+            props.put("radioName", client.getRadioName());
+            props.put("ipAddress", client.getIpAddress());
+            props.put("channel", client.getChannel());
+            props.put("signal", client.getSignalDbm());
+            props.put("snr", client.getSnr());
+            if (hasHostname) {
+                props.put("hostname", client.getHostname());
+            }
+
+            final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withLabel(label).withProperties(props).withRepresentationProperty(reprProp).build();
+
+            logger.debug(
+                    "Submitting discovery result for wireless client: {} ({}) - AP: {}, SSID: {}, Channel: {}, Signal: {}dBm, SNR: {}",
+                    thingUID, label, client.getApMac(), client.getSsid(), client.getChannel(), client.getSignalDbm(),
+                    client.getSnr());
+            logger.debug("Wireless client properties: MAC={}, IP={}, Hostname={}, Interface={}, Radio={}",
+                    client.getMac(), client.getIpAddress(), client.getHostname(), client.getIface(),
+                    client.getRadioName());
+            thingDiscovered(result);
+            logger.debug("Submitted discovery result for wireless client: {}", thingUID);
+        });
+    }
+
+    private void discoverFirewallRules(DDWRTNetwork net) {
+        final ThingUID bridgeUID = thingHandler.getThing().getUID();
+        final DDWRTNetworkCache cache = net.getCache();
+
+        cache.getFirewallRules().forEach(rule -> {
+            final String id = rule.getRuleId().replaceAll("[^a-zA-Z0-9_]", "_");
+            final ThingUID thingUID = new ThingUID(THING_TYPE_FIREWALL_RULE, bridgeUID, id);
+
+            final String label = rule.getDescription().isEmpty() ? rule.getRuleId() : rule.getDescription();
+
+            logger.debug("Discovered firewall rule: '{}'", thingUID);
+
+            final Map<String, Object> props = Map.of("ruleId", rule.getRuleId());
+
+            final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withLabel(label).withProperties(props).withRepresentationProperty("ruleId").build();
 
             thingDiscovered(result);
         });

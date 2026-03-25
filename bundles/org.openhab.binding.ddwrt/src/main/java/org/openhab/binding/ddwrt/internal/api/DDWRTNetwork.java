@@ -13,9 +13,11 @@
 package org.openhab.binding.ddwrt.internal.api;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,6 +49,10 @@ public class DDWRTNetwork {
     // Per-host locks to prevent concurrent createDevice calls for the same hostname
     private final Map<String, Object> hostLocks = new ConcurrentHashMap<>();
 
+    // Failure tracking for backoff logic
+    private final Map<String, Integer> hostFailureCount = new ConcurrentHashMap<>();
+    private final Map<String, Long> hostFailureTimes = new ConcurrentHashMap<>();
+
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetwork.class));
 
     // ---- Configuration ----
@@ -56,31 +62,75 @@ public class DDWRTNetwork {
         if (!Objects.equals(this.config, netCfg)) {
             logger.info("Config changed.");
             this.config = netCfg;
+
+            // Clear failure tracking for retry logic
             failedDeviceConfigs.clear();
+            hostFailureCount.clear();
+            hostFailureTimes.clear();
 
             final List<String> hosts = Objects.requireNonNull(
                     Arrays.stream(netCfg.hostnames.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList());
 
-            hosts.forEach(hostEntry -> {
-                try {
-                    HostSpec spec = parseHostSpec(hostEntry, netCfg);
-                    logger.debug("Discovering device: {} (user={}, port={})", spec.hostname, spec.user, spec.port);
+            // Get list of currently connected devices to preserve them
+            List<String> existingHostnames = cache.getDevices().stream().map(DDWRTBaseDevice::getHostname).toList();
 
+            // Create a set of all hostnames (existing + new config)
+            Set<String> allHostnames = new LinkedHashSet<>(existingHostnames);
+            allHostnames.addAll(hosts);
+
+            // Process all hostnames (preserving existing, adding new from config)
+            allHostnames.forEach(hostname -> {
+                // Check if this is a config device or existing device
+                boolean isFromConfig = hosts.contains(hostname);
+
+                try {
                     DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
-                    devCfg.hostname = spec.hostname;
-                    devCfg.port = spec.port;
-                    devCfg.user = spec.user;
-                    devCfg.password = netCfg.password;
-                    devCfg.refreshInterval = netCfg.refreshInterval;
+
+                    if (isFromConfig) {
+                        // Use config-based settings
+                        HostSpec spec = parseHostSpec(hostname, netCfg);
+                        devCfg.hostname = spec.hostname;
+                        devCfg.port = spec.port;
+                        devCfg.user = spec.user;
+                        devCfg.password = netCfg.password;
+                        devCfg.refreshInterval = netCfg.refreshInterval;
+                        logger.debug("Discovering config device: {} (user={}, port={})", spec.hostname, spec.user,
+                                spec.port);
+                    } else {
+                        // Preserve existing device settings
+                        DDWRTBaseDevice existingDevice = cache.getDevices().stream()
+                                .filter(d -> hostname.equals(d.getHostname())).findFirst().orElse(null);
+                        if (existingDevice != null) {
+                            devCfg.hostname = existingDevice.getHostname();
+                            devCfg.port = existingDevice.getConfig().port;
+                            devCfg.user = existingDevice.getConfig().user;
+                            devCfg.password = existingDevice.getConfig().password;
+                            devCfg.refreshInterval = existingDevice.getConfig().refreshInterval;
+                            logger.debug("Preserving existing device: {}", hostname);
+                        } else {
+                            logger.debug("Skipping unknown device: {}", hostname);
+                            return;
+                        }
+                    }
 
                     DDWRTBaseDevice device = createDeviceLocked(devCfg);
                     if (device != null) {
                         device.startRefresh(netCfg.refreshInterval);
-                    } else {
-                        addFailedDeviceConfig(spec.hostname, devCfg);
+                    } else if (isFromConfig) {
+                        // Only track failures for config devices
+                        addFailedDeviceConfig(hostname, devCfg);
                     }
                 } catch (Exception e) {
-                    logger.debug("SSH to host {} failed: {}", hostEntry, e.getMessage(), e);
+                    logger.debug("SSH to host {} failed: {}", hostname, e.getMessage(), e);
+                    if (isFromConfig) {
+                        DDWRTDeviceConfiguration devCfg = new DDWRTDeviceConfiguration();
+                        devCfg.hostname = hostname;
+                        devCfg.port = 0;
+                        devCfg.user = netCfg.user;
+                        devCfg.password = netCfg.password;
+                        devCfg.refreshInterval = netCfg.refreshInterval;
+                        addFailedDeviceConfig(hostname, devCfg);
+                    }
                 }
             });
         }
@@ -198,22 +248,43 @@ public class DDWRTNetwork {
         logger.debug("Network refresh: {} devices active, {} failed configs pending", cache.getTotalDevices(),
                 failedDeviceConfigs.size());
 
-        // Retry failed device configurations
+        // Retry failed device configurations with backoff
         if (!failedDeviceConfigs.isEmpty()) {
             Map<String, DDWRTDeviceConfiguration> copy = new ConcurrentHashMap<>(failedDeviceConfigs);
             copy.forEach((hostname, cfg) -> {
                 try {
+                    // Check if we should back off this host
+                    Long lastFailureTime = hostFailureTimes.get(hostname);
+                    long currentTime = System.currentTimeMillis();
+                    long backoffMs = calculateBackoffMs(hostFailureCount.getOrDefault(hostname, 0));
+
+                    if (lastFailureTime != null && (currentTime - lastFailureTime) < backoffMs) {
+                        logger.debug("Backing off retry for {} ({}ms remaining)", hostname,
+                                backoffMs - (currentTime - lastFailureTime));
+                        return;
+                    }
+
                     logger.debug("Retrying connection to failed device: {}", hostname);
                     DDWRTBaseDevice device = createDeviceLocked(cfg);
                     if (device != null) {
                         failedDeviceConfigs.remove(hostname);
+                        hostFailureCount.remove(hostname);
+                        hostFailureTimes.remove(hostname);
                         DDWRTNetworkConfiguration netCfg = config;
                         int interval = netCfg != null ? netCfg.refreshInterval : cfg.refreshInterval;
                         device.startRefresh(interval);
                         logger.info("Successfully reconnected to device: {}", hostname);
                     }
                 } catch (Exception e) {
-                    logger.debug("Retry failed for host {}: {}", hostname, e.getMessage());
+                    // Track failure count and time for backoff
+                    int failureCount = hostFailureCount.merge(hostname, 1, Integer::sum);
+                    hostFailureTimes.put(hostname, System.currentTimeMillis());
+                    logger.debug("Retry failed for host {} (attempt {}): {}", hostname, failureCount, e.getMessage());
+
+                    // If too many failures, increase backoff significantly
+                    if (failureCount > 5) {
+                        logger.warn("Host {} has failed {} times, applying extended backoff", hostname, failureCount);
+                    }
                 }
             });
         }
@@ -247,11 +318,34 @@ public class DDWRTNetwork {
         return !failedDeviceConfigs.isEmpty();
     }
 
+    /** Enable or disable a wireless radio on the specified device. */
+    public boolean setRadioEnabled(String deviceMac, String iface, boolean enabled) {
+        DDWRTBaseDevice device = cache.getDevice(deviceMac);
+        if (device == null) {
+            return false;
+        }
+        return device.setRadioEnabled(iface, enabled);
+    }
+
     /** Stop all device thread pools and clear the cache. Called on bridge dispose. */
     public void dispose() {
         cache.getDevices().forEach(DDWRTBaseDevice::dispose);
         cache.clearAll();
         failedDeviceConfigs.clear();
+        hostFailureCount.clear();
+        hostFailureTimes.clear();
         hostLocks.clear();
+    }
+
+    /**
+     * Calculate exponential backoff time based on failure count.
+     * 1st failure: 3s, 2nd: 6s, 3rd: 12s, 4th: 24s, 5th+: 60s max
+     */
+    private long calculateBackoffMs(int failureCount) {
+        if (failureCount <= 0) {
+            return 0;
+        }
+        long backoff = 3000L * (1L << Math.min(failureCount - 1, 4)); // Max 60s
+        return Math.min(backoff, 60000L);
     }
 }
