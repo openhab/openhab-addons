@@ -34,6 +34,11 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     @Override
+    protected List<String> getAssoclistMacs(SshRunner runner, String iface) {
+        return IwinfoParser.parseAssoclistMacs(runner, iface);
+    }
+
+    @Override
     protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
         return IwinfoParser.parseAssoclist(runner, iface, mac);
     }
@@ -325,6 +330,22 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
                 return DDWRTFirewallRule.Protocol.ALL;
             default:
                 return DDWRTFirewallRule.Protocol.ALL;
+        }
+    }
+
+    @Override
+    protected double refreshCpuTemp(SshRunner runner) {
+        // OpenWrt: only check sysfs thermal zones (no /proc/dmu)
+        String tempStr = safeTrim(runner.execStdout("cat /sys/class/thermal/thermal_zone0/temp"));
+        if (tempStr.isEmpty()) {
+            return 0.0;
+        }
+        try {
+            double val = Double.parseDouble(tempStr);
+            // thermal_zone reports millidegrees
+            return val > 1000.0 ? val / 1000.0 : val;
+        } catch (NumberFormatException e) {
+            return 0.0;
         }
     }
 

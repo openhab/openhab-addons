@@ -209,6 +209,6 @@ public class SshClientManager {
 
         @Nullable
         String banner = bannerRef.get();
-        return new SshAuthSession(cs, defaultTimeout, (banner == null || banner.isBlank()) ? null : banner);
+        return new SshAuthSession(cs, defaultTimeout, (banner == null || banner.isBlank()) ? null : banner, host);
     }
 }

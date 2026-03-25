@@ -44,13 +44,15 @@ public class SshAuthSession implements AutoCloseable {
     private final ClientSession session;
     private final Duration defaultTimeout;
     private final @Nullable String welcomeBanner;
+    private final String hostname;
 
-    public SshAuthSession(ClientSession session, Duration defaultTimeout, @Nullable String welcomeBanner) {
+    public SshAuthSession(ClientSession session, Duration defaultTimeout, @Nullable String welcomeBanner,
+            String hostname) {
         this.session = session;
         this.defaultTimeout = defaultTimeout;
         this.welcomeBanner = welcomeBanner;
-        this.logger = Objects.requireNonNull(
-                LoggerFactory.getLogger(SshAuthSession.class.getName() + "." + session.getRemoteAddress()));
+        this.hostname = hostname;
+        this.logger = Objects.requireNonNull(LoggerFactory.getLogger(SshAuthSession.class.getName() + "." + hostname));
     }
 
     /** Exposes the underlying SSHD session for creating additional channels (e.g. log follow). */
@@ -68,7 +70,7 @@ public class SshAuthSession implements AutoCloseable {
 
     /** Convenience: create a runner bound to this authenticated session (runner does not own session lifecycle). */
     public SshRunner createRunner() {
-        return new SshRunner(session, defaultTimeout);
+        return new SshRunner(session, defaultTimeout, hostname);
     }
 
     /** Convenience passthrough for one-off commands. */

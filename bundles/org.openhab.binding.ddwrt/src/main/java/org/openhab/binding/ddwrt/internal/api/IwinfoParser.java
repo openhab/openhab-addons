@@ -47,6 +47,10 @@ public final class IwinfoParser {
     private static final Pattern MAC_LINE = Objects.requireNonNull(
             Pattern.compile("^([0-9A-Fa-f:]{17})\\s+(-?\\d+)\\s+dBm\\s*/\\s*(-?\\d+)\\s+dBm\\s+\\(SNR\\s+(\\d+)\\)"));
 
+    // Interface header line: "phy0-ap0 ESSID: \"MyNetwork\"" — starts at column 0, valid iface name, has ESSID:
+    private static final Pattern IFACE_HEADER = Objects
+            .requireNonNull(Pattern.compile("^([a-zA-Z][a-zA-Z0-9._-]*)\\s+ESSID:\\s*(.*)"));
+
     // RX line: "RX: 72.2 MBit/s, MCS 7, 20MHz 1183866 Pkts."
     private static final Pattern RX_LINE = Objects
             .requireNonNull(Pattern.compile("^\\s*RX:\\s*(.+?)\\s+\\d+\\s+Pkts\\."));
@@ -111,6 +115,26 @@ public final class IwinfoParser {
     }
 
     /**
+     * Parse {@code iwinfo <iface> assoclist} output into a lightweight list of MAC addresses only.
+     */
+    public static List<String> parseAssoclistMacs(SshRunner runner, String iface) {
+        String output = runner.execStdout("iwinfo " + iface + " assoclist");
+        if (output.isEmpty()) {
+            return Objects.requireNonNull(Collections.emptyList());
+        }
+
+        List<String> macs = new ArrayList<>();
+        for (String line : output.split("\n")) {
+            Matcher macMatcher = MAC_LINE.matcher(line.trim());
+            if (macMatcher.find()) {
+                macs.add(Objects.requireNonNull(macMatcher.group(1)).toLowerCase());
+            }
+        }
+        logger.debug("Parsed {} MAC addresses from iwinfo {} assoclist", macs.size(), iface);
+        return macs;
+    }
+
+    /**
      * Enumerate radios using {@code iwinfo} (lists all wireless interfaces).
      */
     public static List<DDWRTRadio> enumerateRadios(SshRunner runner, String deviceMac) {
@@ -124,38 +148,38 @@ public final class IwinfoParser {
         String currentIface = "";
 
         for (String line : output.split("\n")) {
-            String trimmed = line.trim();
-            // Interface lines look like: "phy0-ap0 ESSID: "MyNetwork""
-            if (!trimmed.startsWith("  ") && !trimmed.isEmpty() && !line.startsWith("\t")) {
-                String[] parts = trimmed.split("\\s+", 2);
-                if (parts.length >= 1) {
-                    currentIface = Objects.requireNonNull(parts[0]);
-                    DDWRTRadio radio = new DDWRTRadio(deviceMac, currentIface);
+            // Interface header lines start at column 0 and contain ESSID:
+            // e.g. 'phy0-ap0 ESSID: "magickingdom"'
+            // Detail/continuation lines are indented with spaces or tabs
+            Matcher ifaceMatcher = IFACE_HEADER.matcher(line);
+            if (ifaceMatcher.find()) {
+                currentIface = Objects.requireNonNull(ifaceMatcher.group(1));
+                DDWRTRadio radio = new DDWRTRadio(deviceMac, currentIface);
 
-                    // Extract ESSID if present on same line
-                    if (trimmed.contains("ESSID:")) {
-                        String essid = trimmed.replaceAll(".*ESSID:\\s*\"([^\"]*)\".*", "$1");
-                        if (!essid.equals(trimmed)) {
-                            radio.setSsid(essid);
-                        }
+                // Extract ESSID: value may be quoted '"MySSID"' or 'unknown'
+                String essidRaw = Objects.requireNonNull(ifaceMatcher.group(2)).trim();
+                if (essidRaw.startsWith("\"") && essidRaw.contains("\"")) {
+                    String essid = essidRaw.replaceAll("^\"([^\"]*)\".*", "$1");
+                    if (!essid.isEmpty()) {
+                        radio.setSsid(essid);
                     }
-
-                    radio.setEnabled(true);
-
-                    // Get channel info
-                    String chStr = runner.execStdout(
-                            "iwinfo " + currentIface + " info | grep -i channel | head -1 | grep -oE '[0-9]+'");
-                    if (!chStr.isEmpty()) {
-                        try {
-                            radio.setChannel(Integer.parseInt(chStr.trim().split("\n")[0]));
-                        } catch (NumberFormatException e) {
-                            // ignore
-                        }
-                    }
-
-                    radios.add(radio);
-                    logger.debug("Found iwinfo radio: {}", radio);
                 }
+
+                radio.setEnabled(true);
+
+                // Get channel info
+                String chStr = runner
+                        .execStdout("iwinfo " + currentIface + " info | grep -i channel | head -1 | grep -oE '[0-9]+'");
+                if (!chStr.isEmpty()) {
+                    try {
+                        radio.setChannel(Integer.parseInt(chStr.trim().split("\n")[0]));
+                    } catch (NumberFormatException e) {
+                        // ignore
+                    }
+                }
+
+                radios.add(radio);
+                logger.debug("Found iwinfo radio: {}", radio);
             }
         }
         return radios;

@@ -34,6 +34,26 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
     }
 
     @Override
+    protected List<String> getAssoclistMacs(SshRunner runner, String iface) {
+        String output = runner.execStdout("wl -i " + iface + " assoclist");
+        if (output.isEmpty()) {
+            return Objects.requireNonNull(Collections.emptyList());
+        }
+
+        List<String> macs = new ArrayList<>();
+        for (String line : output.split("\n")) {
+            String trimmed = line.trim();
+            // Format: "assoclist XX:XX:XX:XX:XX:XX"
+            if (trimmed.startsWith("assoclist ") && trimmed.length() >= 27) {
+                String mac = Objects.requireNonNull(trimmed.substring(10).trim().toLowerCase());
+                macs.add(mac);
+            }
+        }
+        logger.debug("Broadcom {}: assoclist returned {} MACs", iface, macs.size());
+        return macs;
+    }
+
+    @Override
     protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
         String output = runner.execStdout("wl -i " + iface + " assoclist");
         if (output.isEmpty()) {
@@ -103,6 +123,75 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
         if (firmware.isEmpty()) {
             firmware = safeTrim(runner.execStdout("grep -i DD-WRT /tmp/loginprompt | cut -d' ' -f-2"));
         }
+        if (cpuModel.isEmpty()) {
+            // First try to get chipset from system type line (FreshTomato style)
+            String systemType = safeTrim(runner.execStdout("grep 'system type' /proc/cpuinfo | cut -d':' -f2 | xargs"));
+            if (!systemType.isEmpty() && systemType.contains("BCM")) {
+                // Extract "Broadcom BCM5357 chip rev 2 pkg 10" -> "Broadcom BCM5357"
+                cpuModel = systemType.replaceAll("(Broadcom BCM\\d+).*", "$1");
+            } else {
+                // Fallback to Hardware line for DD-WRT style
+                cpuModel = safeTrim(runner.execStdout("grep 'Hardware.*:' /proc/cpuinfo | cut -d':' -f2 | xargs"));
+
+                // If we got generic "Northstar" hardware, try to get specific chipset
+                if (cpuModel.contains("Northstar")) {
+                    cpuModel = getBroadcomChipsetModel(runner);
+                }
+            }
+        }
+    }
+
+    /**
+     * Map DD-WRT board type and core revision to specific Broadcom chipset model
+     */
+    private String getBroadcomChipsetModel(SshRunner runner) {
+        String boardType = safeTrim(runner.execStdout("nvram get boardtype"));
+        String coreRev = safeTrim(runner.execStdout("nvram get wl0_corerev"));
+
+        // Map known board types to chipset models
+        if ("0x0665".equals(boardType) && "42".equals(coreRev)) {
+            return "Broadcom BCM4709";
+        } else if ("0x0665".equals(boardType)) {
+            return "Broadcom BCM4708/4709";
+        } else if ("0x0646".equals(boardType)) {
+            return "Broadcom BCM4706";
+        } else if ("0x052b".equals(boardType)) {
+            return "Broadcom BCM5357";
+        } else if ("0x04cf".equals(boardType)) {
+            return "Broadcom BCM4716";
+        } else if ("0x0411".equals(boardType)) {
+            return "Broadcom BCM4718";
+        }
+
+        // Fallback to generic Northstar if we can't map it
+        return "Broadcom Northstar";
+    }
+
+    @Override
+    protected double refreshCpuTemp(SshRunner runner) {
+        // Get CPU temperature using parent method
+        double cpuTemp = super.refreshCpuTemp(runner);
+
+        // Get wireless temperatures using wl commands
+        String wl0TempStr = safeTrim(runner.execStdout("wl -i wl0 phy_tempsense | cut -d' ' -f3"));
+        if (!wl0TempStr.isEmpty()) {
+            try {
+                wl0Temp = Double.parseDouble(wl0TempStr);
+            } catch (NumberFormatException e) {
+                // Keep default 0.0
+            }
+        }
+
+        String wl1TempStr = safeTrim(runner.execStdout("wl -i wl1 phy_tempsense | cut -d' ' -f3"));
+        if (!wl1TempStr.isEmpty()) {
+            try {
+                wl1Temp = Double.parseDouble(wl1TempStr);
+            } catch (NumberFormatException e) {
+                // Keep default 0.0
+            }
+        }
+
+        return cpuTemp;
     }
 
     @Override

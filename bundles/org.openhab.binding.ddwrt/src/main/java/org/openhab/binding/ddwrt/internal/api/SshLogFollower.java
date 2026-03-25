@@ -14,7 +14,6 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.time.Year;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -49,27 +48,36 @@ public class SshLogFollower implements Runnable, AutoCloseable {
     private static final Pattern WIRELESS_MESSAGE = Pattern
             .compile("associated|disassociated|authenticated|deauthenticated|IEEE 802\\.11", Pattern.CASE_INSENSITIVE);
 
+    // DHCP event keywords in message body (to distinguish from dnsmasq warnings/errors)
+    private static final Pattern DHCP_MESSAGE = Pattern.compile(
+            "DHCPACK|DHCPREQUEST|DHCPDISCOVER|DHCPOFFER|DHCPDECLINE|DHCPNAK|DHCPINFORM|DHCPRELEASE|lease|renew|rebind",
+            Pattern.CASE_INSENSITIVE);
+
     // Error-level process/message indicators
     private static final Pattern ERROR_MESSAGE = Pattern.compile("panic|segfault|Oops|out of memory|kernel BUG",
             Pattern.CASE_INSENSITIVE);
 
-    private final Logger logger = LoggerFactory.getLogger(SshLogFollower.class);
+    private Logger logger;
     private final Supplier<@Nullable ClientSession> sessionSupplier;
     private final SyslogParser parser = new SyslogParser();
     private final String command;
     private final @Nullable Pattern devicePattern;
+    private final boolean isLogreadCommand;
 
     private final Object sessionLock = new Object();
 
     private @Nullable SyslogListener listener;
     private volatile boolean running = true;
     private volatile @Nullable ChannelExec current;
+    private long backoffMs = 1000;
 
     public SshLogFollower(Supplier<@Nullable ClientSession> sessionSupplier, String command,
-            @Nullable Pattern devicePattern) {
+            @Nullable Pattern devicePattern, String hostname) {
         this.sessionSupplier = Objects.requireNonNull(sessionSupplier);
         this.command = Objects.requireNonNull(command);
         this.devicePattern = devicePattern;
+        this.logger = Objects.requireNonNull(LoggerFactory.getLogger(SshLogFollower.class.getName() + "." + hostname));
+        this.isLogreadCommand = command.contains("logread") || command.contains("tail -F");
     }
 
     /**
@@ -93,29 +101,91 @@ public class SshLogFollower implements Runnable, AutoCloseable {
                 }
                 continue;
             }
+
             try (ChannelExec ch = session.createExecChannel(command)) {
                 this.current = ch;
-                // Request PTY so remote process receives SIGHUP when channel closes
-                ch.setupSensibleDefaultPty();
+
+                // For logread commands, use PTY to ensure proper cleanup on disconnect
+                if (isLogreadCommand) {
+                    ch.setupSensibleDefaultPty();
+                }
+
                 ch.open().verify();
+                logger.debug("Syslog follower connected: {}", command);
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(ch.getInvertedOut()))) {
                     for (String line; running && (line = br.readLine()) != null;) {
                         dispatchLine(line);
+                        backoffMs = 1000; // reset on successful read
+                    }
+
+                    // Stream ended unexpectedly - log exit info and wait with backoff
+                    if (running) {
+                        Integer exitStatus = ch.getExitStatus();
+
+                        if (exitStatus != null && exitStatus != 0) {
+                            String stderrOutput = readStderr(ch);
+                            logger.warn("Syslog command failed with exit code {} ({}) retrying in {}ms: {}", exitStatus,
+                                    command, backoffMs, stderrOutput);
+                        } else {
+                            logger.warn(
+                                    "Syslog stream ended unexpectedly ({}), command may have crashed or syslogd restarted, retrying in {}ms",
+                                    command, backoffMs);
+                        }
                     }
                 }
             } catch (Exception e) {
                 if (running) {
-                    logger.debug("Log follower disconnected ({}), retrying in 1s: {}", command, e.getMessage());
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
+                    logger.debug("Log follower disconnected ({}), retrying in {}ms: {}", command, backoffMs,
+                            e.getMessage());
                 }
             } finally {
                 this.current = null;
             }
+
+            // Always apply backoff to prevent tight loops
+            if (running) {
+                waitForBackoff();
+            }
         }
+    }
+
+    /**
+     * Read stderr content from the channel.
+     */
+    private String readStderr(ChannelExec ch) {
+        try {
+            // Try to cast to InputStream - if it fails, we'll just return empty string
+            java.io.InputStream errStream = (java.io.InputStream) ch.getAsyncErr();
+            if (errStream != null) {
+                BufferedReader errReader = new BufferedReader(new InputStreamReader(errStream));
+                StringBuilder stderr = new StringBuilder();
+                String line;
+                while ((line = errReader.readLine()) != null) {
+                    if (stderr.length() > 0) {
+                        stderr.append("; ");
+                    }
+                    stderr.append(line);
+                }
+                return stderr.toString();
+            }
+        } catch (ClassCastException e) {
+            // IoInputStream type issue - just return empty string
+        } catch (Exception e) {
+            // Other stderr read errors - ignore and return empty string
+        }
+        return "";
+    }
+
+    /**
+     * Wait with exponential backoff to prevent tight loops.
+     */
+    private void waitForBackoff() {
+        try {
+            Thread.sleep(backoffMs);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        backoffMs = Math.min(backoffMs * 2, 30_000);
     }
 
     /**
@@ -133,15 +203,6 @@ public class SshLogFollower implements Runnable, AutoCloseable {
         wakeUp();
         ChannelExec ch = this.current;
         if (ch != null) {
-            try {
-                // Send Ctrl-C (ETX) via PTY to SIGINT the remote process
-                OutputStream in = ch.getInvertedIn();
-                if (in != null) {
-                    in.write(3); // ETX = Ctrl-C
-                    in.flush();
-                }
-            } catch (Exception ignore) {
-            }
             try {
                 ch.close(false);
             } catch (Exception ignore) {
@@ -167,8 +228,8 @@ public class SshLogFollower implements Runnable, AutoCloseable {
             String proc = event.process.toLowerCase();
             String msg = event.message;
 
-            // Classify by process name first, then by severity, then by message content
-            if (DHCP_PROCESS.matcher(proc).find()) {
+            // Classify by process name and message content
+            if (DHCP_PROCESS.matcher(proc).find() && DHCP_MESSAGE.matcher(msg).find()) {
                 l.onDhcpEvent(event);
             } else if (WIRELESS_PROCESS.matcher(proc).find() || WIRELESS_MESSAGE.matcher(msg).find()) {
                 l.onWirelessEvent(event);

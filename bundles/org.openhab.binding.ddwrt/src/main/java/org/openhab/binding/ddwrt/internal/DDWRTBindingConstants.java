@@ -73,12 +73,14 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_SSID = "ssid";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_CLIENT_COUNT = "clientCount";
+    public static final String CHANNEL_ASSOCLIST = "assoclist";
 
     // List of wireless client channel ids
     public static final String CHANNEL_MAC_ADDRESS = "macAddress";
     public static final String CHANNEL_HOSTNAME = "hostname";
     public static final String CHANNEL_IP_ADDRESS = "ipAddress";
     public static final String CHANNEL_AP = "ap";
+    public static final String CHANNEL_AP_MAC = "apMac";
     public static final String CHANNEL_SNR = "snr";
     public static final String CHANNEL_RX_RATE = "rxRate";
     public static final String CHANNEL_TX_RATE = "txRate";

@@ -21,6 +21,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Central cache for all API objects discovered across the DD-WRT network.
@@ -33,10 +35,14 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class DDWRTNetworkCache {
 
+    private static final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetworkCache.class));
+
     private final Map<String, DDWRTBaseDevice> devicesByMac = new ConcurrentHashMap<>();
     private final Map<String, DDWRTWirelessClient> wirelessClientsByMac = new ConcurrentHashMap<>();
+    private final Map<String, String> hostnameToMac = new ConcurrentHashMap<>();
     private final Map<String, DDWRTRadio> radiosByInterfaceId = new ConcurrentHashMap<>();
     private final Map<String, DDWRTFirewallRule> firewallRulesByRuleId = new ConcurrentHashMap<>();
+    private final Map<String, DDWRTDhcpLease> dhcpLeasesByMac = new ConcurrentHashMap<>();
 
     // ---- Devices ----
 
@@ -69,7 +75,76 @@ public class DDWRTNetworkCache {
     }
 
     public void putWirelessClient(String mac, DDWRTWirelessClient client) {
-        wirelessClientsByMac.put(normalizeMac(mac), client);
+        String normalizedMac = normalizeMac(mac);
+        wirelessClientsByMac.put(normalizedMac, client);
+        // Maintain hostname index
+        if (!client.getHostname().isEmpty()) {
+            hostnameToMac.put(Objects.requireNonNull(client.getHostname().toLowerCase()), normalizedMac);
+        }
+    }
+
+    /**
+     * Thread-safe update of wireless client using compute pattern.
+     * The mapping function is applied atomically with the existing client as input.
+     */
+    public DDWRTWirelessClient computeWirelessClient(String mac,
+            java.util.function.Function<DDWRTWirelessClient, DDWRTWirelessClient> mappingFunction) {
+        return wirelessClientsByMac.compute(normalizeMac(mac), (key, existing) -> {
+            DDWRTWirelessClient client = existing != null ? existing : new DDWRTWirelessClient(key);
+            DDWRTWirelessClient result = mappingFunction.apply(client);
+            // Maintain hostname index
+            if (!result.getHostname().isEmpty()) {
+                hostnameToMac.put(Objects.requireNonNull(result.getHostname().toLowerCase()), key);
+            }
+            return result;
+        });
+    }
+
+    /**
+     * Find a wireless client by hostname. Returns null if no client has this hostname.
+     */
+    public @Nullable DDWRTWirelessClient getWirelessClientByHostname(String hostname) {
+        if (hostname.isEmpty()) {
+            return null;
+        }
+        String mac = hostnameToMac.get(hostname.toLowerCase());
+        return mac != null ? wirelessClientsByMac.get(mac) : null;
+    }
+
+    /**
+     * Get the MAC address currently associated with a hostname.
+     */
+    public @Nullable String getMacForHostname(String hostname) {
+        if (hostname.isEmpty()) {
+            return null;
+        }
+        return hostnameToMac.get(hostname.toLowerCase());
+    }
+
+    /**
+     * Handle MAC randomization: when a new MAC appears with a hostname that already exists
+     * under a different MAC, merge the old client data into the new one and remove the old entry.
+     * Returns the old MAC if a merge occurred, null otherwise.
+     */
+    public @Nullable String mergeRandomizedMac(String newMac, String hostname) {
+        if (hostname.isEmpty()) {
+            return null;
+        }
+        String normalizedNewMac = normalizeMac(newMac);
+        String oldMac = hostnameToMac.get(hostname.toLowerCase());
+        if (oldMac != null && !oldMac.equals(normalizedNewMac)) {
+            DDWRTWirelessClient oldClient = wirelessClientsByMac.get(oldMac);
+            if (oldClient != null && hostname.equalsIgnoreCase(oldClient.getHostname())) {
+                logger.debug("MAC randomization detected for '{}': old MAC={}, new MAC={}", hostname, oldMac,
+                        normalizedNewMac);
+                // Remove old entry
+                wirelessClientsByMac.remove(oldMac);
+                // Update hostname index to point to new MAC
+                hostnameToMac.put(Objects.requireNonNull(hostname.toLowerCase()), normalizedNewMac);
+                return oldMac;
+            }
+        }
+        return null;
     }
 
     public List<DDWRTWirelessClient> getWirelessClients() {
@@ -77,7 +152,11 @@ public class DDWRTNetworkCache {
     }
 
     public void removeWirelessClient(String mac) {
-        wirelessClientsByMac.remove(normalizeMac(mac));
+        DDWRTWirelessClient removed = wirelessClientsByMac.remove(normalizeMac(mac));
+        if (removed != null && !removed.getHostname().isEmpty()) {
+            // Only remove from hostname index if it still points to this MAC
+            hostnameToMac.remove(removed.getHostname().toLowerCase(), normalizeMac(mac));
+        }
     }
 
     // ---- Radios ----
@@ -116,6 +195,24 @@ public class DDWRTNetworkCache {
         firewallRulesByRuleId.remove(ruleId);
     }
 
+    // ---- DHCP Leases ----
+
+    public @Nullable DDWRTDhcpLease getDhcpLease(String mac) {
+        return dhcpLeasesByMac.get(normalizeMac(mac));
+    }
+
+    public void putDhcpLease(String mac, DDWRTDhcpLease lease) {
+        dhcpLeasesByMac.put(normalizeMac(mac), lease);
+    }
+
+    public List<DDWRTDhcpLease> getDhcpLeases() {
+        return Objects.requireNonNull(Collections.unmodifiableList(new ArrayList<>(dhcpLeasesByMac.values())));
+    }
+
+    public void clearDhcpLeases() {
+        dhcpLeasesByMac.clear();
+    }
+
     // ---- Aggregate counts ----
 
     public int getTotalWirelessClients() {
@@ -131,8 +228,10 @@ public class DDWRTNetworkCache {
     public void clearAll() {
         devicesByMac.clear();
         wirelessClientsByMac.clear();
+        hostnameToMac.clear();
         radiosByInterfaceId.clear();
         firewallRulesByRuleId.clear();
+        dhcpLeasesByMac.clear();
     }
 
     private static String normalizeMac(String mac) {

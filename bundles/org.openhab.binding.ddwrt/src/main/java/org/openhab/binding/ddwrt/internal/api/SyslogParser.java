@@ -25,6 +25,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 /**
  * Parses DD-WRT/OpenWrt syslog lines into structured events.
  * Uses device-specific patterns provided by DDWRTBaseDevice subclasses,
@@ -124,6 +128,11 @@ public class SyslogParser {
             return null;
         }
 
+        // Check if this is JSON from ubus subscribe
+        if (sanitized.startsWith("{") && sanitized.contains("\"message\"")) {
+            return parseUbusLine(sanitized);
+        }
+
         // Try device-specific pattern first
         if (devicePattern != null) {
             Matcher deviceMatcher = devicePattern.matcher(sanitized);
@@ -154,10 +163,10 @@ public class SyslogParser {
 
             Instant timestamp = parseTimestamp(timestampStr, currentYear, false);
             if (timestamp != null) {
-                @Nullable
                 FirewallInfo firewall = parseFirewallInfo(message);
                 boolean isWireless = WIRELESS_ASSOC.matcher(message).find();
-                return new SyslogEvent(timestamp, hostname, "kernel", null, message, null, null, firewall, isWireless);
+                return new SyslogEvent(timestamp, Objects.requireNonNull(hostname), "kernel", null,
+                        Objects.requireNonNull(message), null, null, firewall, isWireless);
             }
         }
 
@@ -274,7 +283,9 @@ public class SyslogParser {
                 return dt.atZone(ZoneId.systemDefault()).toInstant();
             } else {
                 // Standard format doesn't include year, so we add it
-                LocalDateTime dt = LocalDateTime.parse(currentYear + " " + timestampStr,
+                // Normalize single-digit days (e.g., "Mar 4" -> "Mar 4") by removing extra space
+                String normalizedTimestamp = timestampStr.replaceFirst("^(\\w{3})  (\\d{1,2})", "$1 $2");
+                LocalDateTime dt = LocalDateTime.parse(currentYear + " " + normalizedTimestamp,
                         DateTimeFormatter.ofPattern("yyyy MMM d HH:mm:ss"));
                 return dt.atZone(ZoneId.systemDefault()).toInstant();
             }
@@ -282,6 +293,106 @@ public class SyslogParser {
             logger.trace("Failed to parse timestamp '{}': {}", timestampStr, e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Parse a single line from {@code ubus subscribe log}.
+     * Format: { "message": {"msg":"process[pid]: text","id":N,"priority":N,"source":N,"time":N} }
+     */
+    private @Nullable SyslogEvent parseUbusLine(String jsonLine) {
+        try {
+            Gson gson = new Gson();
+            JsonObject root = gson.fromJson(jsonLine, JsonObject.class);
+            if (root == null) {
+                return null;
+            }
+            JsonElement msgElement = root.get("message");
+            if (msgElement == null || !msgElement.isJsonObject()) {
+                return null;
+            }
+            JsonObject entry = msgElement.getAsJsonObject();
+
+            String rawMsg = entry.has("msg") ? entry.get("msg").getAsString() : "";
+            if (rawMsg.isEmpty()) {
+                return null;
+            }
+
+            int priority = entry.has("priority") ? entry.get("priority").getAsInt() : 14;
+            String severity = priorityToSeverity(priority);
+            String facility = priorityToFacility(priority);
+
+            long timeMicros = entry.has("time") ? entry.get("time").getAsLong() : 0;
+            Instant timestamp = timeMicros > 0 ? Instant.ofEpochMilli(timeMicros / 1000) : Instant.now();
+
+            // Parse "process[pid]: message" from msg field
+            String process = "unknown";
+            Integer pid = null;
+            String message = rawMsg;
+
+            int bracketOpen = rawMsg.indexOf('[');
+            int bracketClose = rawMsg.indexOf(']');
+            int colonSpace = rawMsg.indexOf(": ");
+
+            if (bracketOpen > 0 && bracketClose > bracketOpen && colonSpace > bracketClose) {
+                process = rawMsg.substring(0, bracketOpen);
+                try {
+                    pid = Integer.parseInt(rawMsg.substring(bracketOpen + 1, bracketClose));
+                } catch (NumberFormatException e) {
+                    // pid not numeric, ignore
+                }
+                message = rawMsg.substring(colonSpace + 2);
+            } else if (colonSpace > 0) {
+                // "process: message" without pid
+                process = rawMsg.substring(0, colonSpace);
+                message = rawMsg.substring(colonSpace + 2);
+            }
+
+            @Nullable
+            FirewallInfo firewall = parseFirewallInfo(message);
+            boolean isWireless = WIRELESS_ASSOC.matcher(message).find();
+
+            return new SyslogEvent(timestamp, "", process, pid, message, facility, severity, firewall, isWireless);
+        } catch (Exception e) {
+            logger.trace("Failed to parse ubus line: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private static String priorityToSeverity(int priority) {
+        int sev = priority & 0x07;
+        return switch (sev) {
+            case 0 -> "emerg";
+            case 1 -> "alert";
+            case 2 -> "crit";
+            case 3 -> "err";
+            case 4 -> "warning";
+            case 5 -> "notice";
+            case 6 -> "info";
+            case 7 -> "debug";
+            default -> "info";
+        };
+    }
+
+    private static String priorityToFacility(int priority) {
+        int fac = (priority >> 3) & 0x1F;
+        return switch (fac) {
+            case 0 -> "kern";
+            case 1 -> "user";
+            case 2 -> "mail";
+            case 3 -> "daemon";
+            case 4 -> "auth";
+            case 5 -> "syslog";
+            case 10 -> "authpriv";
+            case 16 -> "local0";
+            case 17 -> "local1";
+            case 18 -> "local2";
+            case 19 -> "local3";
+            case 20 -> "local4";
+            case 21 -> "local5";
+            case 22 -> "local6";
+            case 23 -> "local7";
+            default -> "user";
+        };
     }
 
     private @Nullable FirewallInfo parseFirewallInfo(String message) {

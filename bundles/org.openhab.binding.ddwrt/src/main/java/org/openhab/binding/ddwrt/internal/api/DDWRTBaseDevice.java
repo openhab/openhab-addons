@@ -19,11 +19,15 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,6 +91,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     protected String firmware = "";
     protected String welcomeBanner = "";
     protected String chipset = "unknown";
+    protected String hardware = "";
 
     // Telemetry (populated during refresh)
     protected long uptimeSeconds = 0;
@@ -95,6 +100,9 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     protected boolean uptimeSinceChanged = false;
     protected double cpuLoad = 0.0;
     protected double cpuTemp = 0.0;
+    protected String cpuModel = "";
+    protected double wl0Temp = 0.0;
+    protected double wl1Temp = 0.0;
     protected String wanIp = "";
     protected long wanIn = 0;
     protected long wanOut = 0;
@@ -113,21 +121,35 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     protected String lastDhcpEvent = "";
     protected String lastWirelessEvent = "";
 
+    // Cached /etc/hosts content for hostname resolution (only on gateway devices)
+    private final Map<String, String> hostsCache = new ConcurrentHashMap<>();
+    private volatile boolean hostsCacheValid = false;
+
+    // Cached DHCP leases - only updated on initial load and DHCP events
+    private volatile boolean dhcpLeasesCacheValid = false;
+
     // Configuration
     protected DDWRTDeviceConfiguration config;
 
     // SSH session (persistent, shared across exec + log channels)
     protected @Nullable SshAuthSession authSession;
 
-    // Per-device thread pool: refresh + syslog watcher
-    private @Nullable ScheduledExecutorService executor;
-    private @Nullable ScheduledFuture<?> refreshJob;
+    // Dedicated refresh thread and scheduler
+    private @Nullable ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> periodicRefreshTrigger;
+    private @Nullable Thread refreshThread;
+    private final ReentrantLock refreshLock = new ReentrantLock();
+    private final Condition refreshSignal = refreshLock.newCondition();
+    private volatile boolean refreshThreadStopped = false;
 
     // Syslog follower for real-time log monitoring
-    private @Nullable SshLogFollower logFollower;
+    private volatile @Nullable SshLogFollower logFollower;
 
     // Updater callback (set by handler)
     protected volatile @Nullable DDWRTThingUpdater updater;
+
+    // Network cache reference (set during createDevice)
+    protected @Nullable DDWRTNetworkCache networkCache;
 
     protected DDWRTBaseDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         this.config = cfg;
@@ -164,10 +186,11 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             // Create a runner for chipset detection
             SshRunner runner = ssh.createRunner();
 
-            // Detect chipset and create appropriate subclass using MOTD and command probing
-            String chipsetType = detectFWandChipset(runner, motd);
-            DDWRTBaseDevice device = createForFWandChipset(chipsetType, cfg, log);
-            device.chipset = chipsetType;
+            // Detect OS and chipset, then create appropriate subclass
+            DetectionResult result = detectFWandChipset(runner, motd);
+            DDWRTBaseDevice device = createForFWandChipset(result.os, result.chipset, cfg, log);
+            device.chipset = result.chipset;
+            device.hardware = result.hardware;
             device.authSession = ssh;
 
             // Now get MAC address using device-specific method
@@ -228,8 +251,15 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             device.refreshIdentity(runner);
 
             device.online = true;
+            device.networkCache = cache;
+
+            // Load hosts cache if this is a gateway device (has WAN IP)
+            if (device.isGateway()) {
+                device.refreshHostsCache(runner);
+            }
+
             cache.putDevice(mac, device);
-            log.info("Created {} device: {} (MAC: {}, model: {})", chipsetType, cfg.hostname, mac, device.model);
+            log.info("Created {} device: {} (MAC: {}, model: {})", result.chipset, cfg.hostname, mac, device.model);
             return device;
         } catch (Exception e) {
             log.warn("Failed to initialize device at {}: {}", cfg.hostname, e.getMessage());
@@ -245,31 +275,104 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
+     * Result of firmware and chipset detection.
+     */
+    private static class DetectionResult {
+        final String os; // openwrt, tomato, dd-wrt, generic
+        final String chipset; // atheros, broadcom, marvell, generic
+        final String hardware;
+
+        DetectionResult(String os, String chipset, String hardware) {
+            this.os = os;
+            this.chipset = chipset;
+            this.hardware = hardware;
+        }
+    }
+
+    /**
      * Detect chipset by probing for known wireless tools and analyzing MOTD.
      */
-    private static String detectFWandChipset(SshRunner runner, String motd) {
+    private static DetectionResult detectFWandChipset(SshRunner runner, String motd) {
         // First try to detect from MOTD
         if (!motd.isEmpty()) {
             String motdLower = motd.toLowerCase();
 
             // Check for OpenWrt in MOTD
             if (motdLower.contains("openwrt")) {
-                return "openwrt";
+                // Try to detect chipset for OpenWrt using DISTRIB_TARGET
+                SshRunner.CommandResult result;
+
+                try {
+                    // Get DISTRIB_TARGET from /etc/openwrt_release
+                    String distribTarget = runner
+                            .execStdout("grep '^DISTRIB_TARGET=' /etc/openwrt_release 2>/dev/null | cut -d\\' -f2");
+                    if (!distribTarget.isEmpty()) {
+                        String target = distribTarget.trim();
+                        String[] parts = target.split("/");
+                        if (parts.length >= 2) {
+                            String vendor = parts[0];
+
+                            // Map OpenWrt target vendors to our chipset names
+                            switch (vendor) {
+                                case "mediatek":
+                                    return new DetectionResult("openwrt", "mediatek", target);
+                                case "qualcomm":
+                                    return new DetectionResult("openwrt", "atheros", target); // Qualcomm Atheros
+                                case "ath79":
+                                case "ar71xx":
+                                    return new DetectionResult("openwrt", "atheros", target);
+                                case "brcm":
+                                case "broadcom":
+                                    return new DetectionResult("openwrt", "broadcom", target);
+                                case "mvebu":
+                                case "armada":
+                                    return new DetectionResult("openwrt", "marvell", target);
+                                case "ramips":
+                                case "rt305x":
+                                    return new DetectionResult("openwrt", "ralink", target);
+                                case "ipq":
+                                    return new DetectionResult("openwrt", "qualcomm", target); // Qualcomm IPQ
+                                default:
+                                    return new DetectionResult("openwrt", vendor, target);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // continue to generic
+                }
+                return new DetectionResult("openwrt", "generic", "");
             }
 
             // Check for Tomato in MOTD
             if (motdLower.contains("tomato")) {
-                return "tomato";
+                return new DetectionResult("tomato", "generic", "");
             }
 
             // Check for DD-WRT in MOTD
             if (motdLower.contains("dd-wrt")) {
-                // Further distinguish by checking for specific tools
+                // Further distinguish by checking hardware and tools
                 SshRunner.CommandResult result;
+
+                // Check /proc/cpuinfo for hardware line and store it
+                try {
+                    result = runner.execResult("grep 'Hardware.*:' /proc/cpuinfo");
+                    if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
+                        String hwLine = result.getStdout().trim();
+                        // Extract hardware name after "Hardware :"
+                        String hwName = hwLine.replaceFirst("^.*Hardware\s*:\s*(.*)$", "$1").trim();
+                        // Check if hardware contains Marvell
+                        if (hwLine.toLowerCase().contains("marvell")) {
+                            return new DetectionResult("dd-wrt", "marvell", hwName);
+                        }
+                    }
+                } catch (Exception e) {
+                    // continue
+                }
+
                 try {
                     result = runner.execResult("which wl_atheros");
                     if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
-                        return "atheros";
+                        return new DetectionResult("dd-wrt", "atheros", "");
                     }
                 } catch (Exception e) {
                     // continue
@@ -278,7 +381,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 try {
                     result = runner.execResult("which wl");
                     if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
-                        return "broadcom";
+                        return new DetectionResult("dd-wrt", "broadcom", "");
                     }
                 } catch (Exception e) {
                     // continue
@@ -287,7 +390,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 try {
                     result = runner.execResult("which iwinfo");
                     if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
-                        return "marvell";
+                        return new DetectionResult("dd-wrt", "marvell", "");
                     }
                 } catch (Exception e) {
                     // continue
@@ -296,12 +399,39 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         }
 
         // Fallback to command probing if MOTD detection failed
-        // Try Atheros (DD-WRT)
         SshRunner.CommandResult result;
+
+        // Check /proc/cpuinfo for hardware line first
+        try {
+            result = runner.execResult("grep 'Hardware.*:' /proc/cpuinfo");
+            if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
+                String hwLine = result.getStdout().trim();
+                // Extract hardware name after "Hardware :"
+                String hwName = hwLine.replaceFirst("^.*Hardware\s*:\s*(.*)$", "$1").trim();
+                // Check if hardware contains Marvell
+                if (hwLine.toLowerCase().contains("marvell")) {
+                    return new DetectionResult("dd-wrt", "marvell", hwName);
+                }
+            }
+        } catch (Exception e) {
+            // continue
+        }
+
+        // Try iwinfo (OpenWrt)
+        try {
+            result = runner.execResult("which iwinfo");
+            if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
+                return new DetectionResult("openwrt", "generic", "");
+            }
+        } catch (Exception e) {
+            // continue
+        }
+
+        // Try Atheros (DD-WRT)
         try {
             result = runner.execResult("which wl_atheros");
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
-                return "atheros";
+                return new DetectionResult("dd-wrt", "atheros", "");
             }
         } catch (Exception e) {
             // continue
@@ -311,22 +441,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         try {
             result = runner.execResult("which wl");
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
-                return "broadcom";
-            }
-        } catch (Exception e) {
-            // continue
-        }
-
-        // Try iwinfo (OpenWrt / Marvell DD-WRT)
-        try {
-            result = runner.execResult("which iwinfo");
-            if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
-                // Distinguish OpenWrt from Marvell DD-WRT
-                SshRunner.CommandResult openwrtCheck = runner.execResult("cat /etc/openwrt_release");
-                if (openwrtCheck.isSuccess() && !openwrtCheck.getStdout().trim().isEmpty()) {
-                    return "openwrt";
-                }
-                return "marvell";
+                return new DetectionResult("dd-wrt", "broadcom", "");
             }
         } catch (Exception e) {
             // continue
@@ -336,7 +451,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         try {
             result = runner.execResult("which iw");
             if (result.isSuccess() && !result.getStdout().trim().isEmpty()) {
-                return "generic";
+                return new DetectionResult("generic", "generic", "");
             }
         } catch (Exception e) {
             // continue
@@ -346,20 +461,24 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         try {
             result = runner.execResult("nvram get os_name");
             if (result.isSuccess() && result.getStdout().toLowerCase().contains("tomato")) {
-                return "tomato";
+                return new DetectionResult("tomato", "generic", "");
             }
         } catch (Exception e) {
             // continue
         }
 
-        return "generic";
+        return new DetectionResult("generic", "generic", "");
     }
 
-    private static DDWRTBaseDevice createForFWandChipset(String chipset, DDWRTDeviceConfiguration cfg, Logger log) {
-        return switch (chipset) {
-            case "atheros" -> new DDWRTAtherosDevice(cfg, log);
-            case "broadcom" -> new DDWRTBroadcomDevice(cfg, log);
-            case "marvell" -> new DDWRTMarvellDevice(cfg, log);
+    private static DDWRTBaseDevice createForFWandChipset(String os, String chipset, DDWRTDeviceConfiguration cfg,
+            Logger log) {
+        return switch (os) {
+            case "dd-wrt" -> switch (chipset) {
+                case "atheros" -> new DDWRTAtherosDevice(cfg, log);
+                case "broadcom" -> new DDWRTBroadcomDevice(cfg, log);
+                case "marvell" -> new DDWRTMarvellDevice(cfg, log);
+                default -> new DDWRTGenericDevice(cfg, log);
+            };
             case "openwrt" -> new DDWRTOpenWrtDevice(cfg, log);
             case "tomato" -> new DDWRTTomatoDevice(cfg, log);
             default -> new DDWRTGenericDevice(cfg, log);
@@ -450,13 +569,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      */
     public void start(DDWRTThingUpdater updater) {
         this.updater = updater;
-        executor = Executors.newScheduledThreadPool(2); // refresh + log watcher
-        refreshJob = executor.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
-
-        // Start syslog follower if enabled
-        startSyslogFollower();
-
-        logger.info("Started device refresh every {} seconds", config.refreshInterval);
+        startRefresh(config.refreshInterval);
     }
 
     /**
@@ -464,14 +577,17 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      * The updater will be set later by the device handler.
      */
     public void startRefresh(int refreshInterval) {
-        if (executor == null) {
-            executor = Executors.newScheduledThreadPool(2); // refresh + log watcher
+        if (scheduler == null) {
+            scheduler = Executors.newScheduledThreadPool(1);
         }
-        if (refreshJob == null) {
-            refreshJob = executor.scheduleWithFixedDelay(this::refresh, 0, refreshInterval, TimeUnit.SECONDS);
-
-            // Start syslog follower if enabled
+        if (refreshThread == null) {
+            // Start syslog follower BEFORE refresh to avoid concurrent SSH channel usage
             startSyslogFollower();
+
+            // Create and start dedicated refresh thread
+            refreshThreadStopped = false;
+            refreshThread = new Thread(new RefreshRunnable(refreshInterval), "DDWRT-Refresh-" + hostname);
+            refreshThread.start();
 
             logger.info("Started device refresh every {} seconds", refreshInterval);
         }
@@ -493,7 +609,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             SshLogFollower follower = new SshLogFollower(() -> {
                 SshAuthSession s = authSession;
                 return s != null ? s.getClientSession() : null;
-            }, command, getSyslogPattern());
+            }, command, getSyslogPattern(), hostname);
             follower.setListener(this);
 
             Thread t = new Thread(follower, "ddwrt-syslog-" + hostname);
@@ -504,6 +620,57 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             logger.info("Started syslog follower for {}: {}", hostname, command);
         } catch (Exception e) {
             logger.warn("Failed to start syslog follower: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Dedicated refresh thread that waits for signals (periodic or immediate).
+     * Ensures only one refresh runs at a time, preventing SSH channel conflicts.
+     */
+    private class RefreshRunnable implements Runnable {
+        private final long refreshIntervalMs;
+
+        RefreshRunnable(int refreshIntervalSeconds) {
+            this.refreshIntervalMs = refreshIntervalSeconds * 1000L;
+        }
+
+        @Override
+        public void run() {
+            logger.debug("Refresh thread started for {}", hostname);
+
+            // Schedule periodic trigger
+            ScheduledExecutorService sched = scheduler;
+            if (sched != null) {
+                periodicRefreshTrigger = sched.scheduleWithFixedDelay(() -> {
+                    refreshLock.lock();
+                    try {
+                        refreshSignal.signal();
+                    } finally {
+                        refreshLock.unlock();
+                    }
+                }, refreshIntervalMs, refreshIntervalMs, TimeUnit.MILLISECONDS);
+            }
+
+            // Main refresh loop
+            while (!refreshThreadStopped) {
+                refreshLock.lock();
+                try {
+                    // Wait for signal (periodic or immediate) with timeout
+                    refreshSignal.await(refreshIntervalMs, TimeUnit.MILLISECONDS);
+
+                    if (!refreshThreadStopped) {
+                        logger.debug("Performing refresh for {}", hostname);
+                        refresh();
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                } finally {
+                    refreshLock.unlock();
+                }
+            }
+
+            logger.debug("Refresh thread stopped for {}", hostname);
         }
     }
 
@@ -527,15 +694,29 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     protected String buildSyslogCommand(SshRunner runner) {
         String fwLower = firmware.toLowerCase();
 
-        // OpenWrt uses procd/logd ring buffer — no need to probe
+        // OpenWrt: prefer ubus subscribe for real-time log streaming (no orphans)
         if (fwLower.contains("openwrt")) {
+            String ubusCheck = safeTrim(runner.execStdout("ubus list log 2>/dev/null"));
+            if (!ubusCheck.isEmpty()) {
+                logger.debug("Using ubus subscribe for log access on OpenWrt");
+                return "ubus subscribe log";
+            }
+            // Fallback to traditional logread
             return "logread -f";
         }
 
         // DD-WRT and Tomato may use BusyBox syslogd with -O <path> for file logging
         if (fwLower.contains("dd-wrt") || fwLower.contains("tomato")) {
-            String syslogdArgs = safeTrim(runner.execStdout(
-                    "ps w | grep '[s]yslogd' | awk '{for(i=1;i<=NF;i++){if($i==\"-O\" && (i+1)<=NF){print $(i+1); exit}}}'"));
+            String syslogdLine = safeTrim(runner.execStdout("ps w | grep '[s]yslogd' | head -1"));
+            String syslogdArgs = "";
+            if (!syslogdLine.isEmpty()) {
+                // Parse the file path from the syslogd line in Java
+                // Example: "1331 root 1264 S syslogd -Z -b 5 -L -O /jffs/log/messages"
+                String[] parts = syslogdLine.split("\\s+-O\\s+");
+                if (parts.length > 1) {
+                    syslogdArgs = parts[1].split("\\s+")[0]; // Get first word after -O
+                }
+            }
             if (!syslogdArgs.isEmpty()) {
                 logger.debug("Detected syslogd file output: {}", syslogdArgs);
                 return "tail -F " + syslogdArgs;
@@ -563,6 +744,12 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         if (u != null) {
             u.updateChannel("lastDhcpEvent", new StringType(event.message));
             u.fireTrigger("newDhcpEvent", event.message);
+        }
+
+        // Invalidate caches on DHCP events (might indicate new lease or host entries)
+        dhcpLeasesCacheValid = false;
+        if (isGateway()) {
+            hostsCacheValid = false;
         }
 
         // Schedule immediate full refresh to pick up new client state
@@ -611,12 +798,15 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Schedule an immediate full refresh (e.g. after DHCP or wireless event).
+     * Trigger an immediate full refresh (e.g. after DHCP or wireless event).
+     * Signals the dedicated refresh thread to wake up and refresh immediately.
      */
     private void scheduleImmediateRefresh() {
-        ScheduledExecutorService exec = executor;
-        if (exec != null && !exec.isShutdown()) {
-            exec.schedule(this::refresh, 1, TimeUnit.SECONDS);
+        refreshLock.lock();
+        try {
+            refreshSignal.signal();
+        } finally {
+            refreshLock.unlock();
         }
     }
 
@@ -627,24 +817,45 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         // Stop syslog follower
         stopSyslogFollower();
 
-        ScheduledFuture<?> rj = refreshJob;
-        refreshJob = null;
-        if (rj != null) {
-            rj.cancel(true);
+        // Stop periodic refresh trigger
+        ScheduledFuture<?> trigger = periodicRefreshTrigger;
+        if (trigger != null) {
+            trigger.cancel(true);
+            periodicRefreshTrigger = null;
         }
 
-        ScheduledExecutorService e = executor;
-        executor = null;
-        if (e != null) {
-            e.shutdown();
+        // Stop scheduler
+        ScheduledExecutorService sched = scheduler;
+        if (sched != null && !sched.isShutdown()) {
+            sched.shutdown();
             try {
-                if (!e.awaitTermination(5, TimeUnit.SECONDS)) {
-                    e.shutdownNow();
+                if (!sched.awaitTermination(5, TimeUnit.SECONDS)) {
+                    sched.shutdownNow();
                 }
-            } catch (InterruptedException ie) {
-                e.shutdownNow();
+            } catch (InterruptedException e) {
+                sched.shutdownNow();
                 Thread.currentThread().interrupt();
             }
+        }
+        scheduler = null;
+
+        // Stop refresh thread
+        refreshLock.lock();
+        try {
+            refreshThreadStopped = true;
+            refreshSignal.signalAll();
+            Thread rt = refreshThread;
+            if (rt != null) {
+                try {
+                    rt.join(5000);
+                } catch (InterruptedException e) {
+                    rt.interrupt();
+                    Thread.currentThread().interrupt();
+                }
+            }
+            refreshThread = null;
+        } finally {
+            refreshLock.unlock();
         }
     }
 
@@ -680,8 +891,15 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
         SshRunner runner = s.createRunner();
         refreshCommon(runner);
-        refreshWirelessClients(runner);
+        refreshDhcpLeases(runner);
+
+        // Refresh hosts cache for gateway devices (contains DNS entries)
+        if (isGateway()) {
+            refreshHostsCache(runner);
+        }
+
         refreshRadios(runner);
+        refreshWirelessClients(runner);
         // Firewall rules only apply to gateway devices; APs have firewall disabled
         if (isGateway()) {
             refreshFirewallRules(runner);
@@ -700,7 +918,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      */
     protected void refreshCommon(SshRunner runner) {
         // Portable uptime in seconds: parse /proc/uptime (works on all Linux including BusyBox)
-        String uptimeSecStr = safeTrim(runner.execStdout("awk '{print int($1)}' /proc/uptime"));
+        String uptimeSecStr = safeTrim(runner.execStdout("cut -d. -f1 /proc/uptime"));
         long parsedSeconds = 0;
         if (!uptimeSecStr.isEmpty()) {
             try {
@@ -714,8 +932,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         Instant currentBootInstant = parsedSeconds > 0 ? Instant.now().minusSeconds(parsedSeconds) : null;
         bootInstant = currentBootInstant;
         // Mark for publication only when boot time moves forward (reboot) or never published
-        if (currentBootInstant != null
-                && (lastPublishedBootInstant == null || currentBootInstant.isAfter(lastPublishedBootInstant))) {
+        Instant lastPublished = lastPublishedBootInstant;
+        if (currentBootInstant != null && (lastPublished == null || currentBootInstant.isAfter(lastPublished))) {
             uptimeSinceChanged = true;
         }
 
@@ -861,14 +1079,197 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Refresh wireless client list. Subclasses parse chipset-specific output.
+     * Refresh DHCP lease list from dnsmasq lease file.
+     * Populates the cache with hostname and IP data keyed by MAC.
+     * Lease file format: {@code expiry mac ip hostname [clientid]}
+     * Only refreshes when cache is invalid (initial load or DHCP events).
      */
-    protected void refreshWirelessClients(SshRunner runner) {
-        // Default no-op; overridden by chipset subclasses
+    protected void refreshDhcpLeases(SshRunner runner) {
+        DDWRTNetworkCache cache = networkCache;
+        if (cache == null) {
+            return;
+        }
+
+        // Skip refresh if cache is valid (not initial load and no DHCP events)
+        if (dhcpLeasesCacheValid) {
+            return;
+        }
+
+        // Find lease file: check dnsmasq config first, then try common paths
+        String output = safeTrim(runner.execStdout(
+                "cat \"$(grep -sh 'dhcp-leasefile=' /tmp/dnsmasq.conf /var/etc/dnsmasq.conf* 2>/dev/null | head -1 | cut -d= -f2)\" 2>/dev/null"
+                        + " || cat /tmp/dnsmasq.leases 2>/dev/null" + " || cat /tmp/dhcp.leases 2>/dev/null"
+                        + " || cat /jffs/dnsmasq.leases 2>/dev/null"));
+        if (output.isEmpty()) {
+            return;
+        }
+
+        for (String line : output.split("\n")) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            String[] parts = trimmed.split("\\s+");
+            // Format: expiry mac ip hostname [clientid]
+            if (parts.length >= 4) {
+                String leaseMac = Objects.requireNonNull(parts[1].toLowerCase().trim());
+                String ip = Objects.requireNonNull(parts[2]);
+                String hostname = Objects.requireNonNull(parts[3]);
+                if ("*".equals(hostname)) {
+                    hostname = "";
+                }
+
+                final String finalHostname = hostname;
+                final String finalIp = ip;
+
+                DDWRTDhcpLease lease = new DDWRTDhcpLease(Objects.requireNonNull(leaseMac));
+                lease.setIpAddress(finalIp);
+                lease.setHostname(finalHostname);
+                try {
+                    lease.setExpiry(Long.parseLong(parts[0]));
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+                cache.putDhcpLease(Objects.requireNonNull(leaseMac), lease);
+
+                // Handle MAC randomization: if this hostname exists under a different MAC, merge
+                if (!finalHostname.isEmpty()) {
+                    cache.mergeRandomizedMac(leaseMac, finalHostname);
+                }
+
+                // Thread-safe update existing wireless client with DHCP info
+                cache.computeWirelessClient(leaseMac, client -> {
+                    boolean changed = false;
+                    if (!finalHostname.isEmpty() && !finalHostname.equals(client.getHostname())) {
+                        client.setHostname(finalHostname);
+                        changed = true;
+                    }
+                    if (!finalIp.isEmpty() && !finalIp.equals(client.getIpAddress())) {
+                        client.setIpAddress(finalIp);
+                        changed = true;
+                    }
+                    if (changed) {
+                        logger.debug("Updated wireless client {} with DHCP info: hostname={}, ip={}", leaseMac,
+                                finalHostname, finalIp);
+                    }
+                    return client;
+                });
+            }
+        }
+        dhcpLeasesCacheValid = true;
+        logger.debug("Refreshed DHCP leases: {} entries", cache.getDhcpLeases().size());
     }
 
     /**
-     * Enumerate firewall rules. Default implementation parses DD-WRT nvram filter rules.
+     * Refresh wireless client list using radio assoclists and DHCP leases.
+     * Creates lightweight client entries without per-client SSH queries for RSSI/rates.
+     */
+    protected void refreshWirelessClients(SshRunner runner) {
+        DDWRTNetworkCache cache = networkCache;
+        if (cache == null) {
+            return;
+        }
+
+        logger.debug("Refreshing wireless clients for {}", hostname);
+        int totalClients = 0;
+
+        // Use radios already in cache (populated by refreshRadios)
+        for (DDWRTRadio radio : cache.getRadios()) {
+            // Only process radios belonging to this device
+            if (!radio.getParentDeviceMac().equals(mac)) {
+                continue;
+            }
+            String radioName = (hostname.isEmpty() ? mac : hostname) + "-" + radio.getIfaceName();
+            for (String clientMac : radio.getAssoclist()) {
+                // Thread-safe update of wireless client (computeWirelessClient handles null case)
+                cache.computeWirelessClient(clientMac, client -> {
+                    // Update device-specific info
+                    client.setApMac(mac);
+                    client.setIface(radio.getIfaceName());
+                    client.setRadioName(radioName);
+                    client.setSsid(radio.getSsid());
+                    client.setOnline(true);
+                    client.setLastSeen(Instant.now());
+
+                    // Populate hostname and IP from DHCP lease if not already set
+                    DDWRTDhcpLease lease = cache.getDhcpLease(clientMac);
+                    if (lease != null) {
+                        if (client.getHostname().isEmpty() && !lease.getHostname().isEmpty()) {
+                            client.setHostname(lease.getHostname());
+                        }
+                        if (client.getIpAddress().isEmpty() && !lease.getIpAddress().isEmpty()) {
+                            client.setIpAddress(lease.getIpAddress());
+                        }
+                    }
+
+                    // If still no hostname, try to resolve from cached /etc/hosts (only on gateway/DNS servers)
+                    if (client.getHostname().isEmpty() && isGateway()) {
+                        // Try by IP address if we have it
+                        if (!client.getIpAddress().isEmpty()) {
+                            String hostsEntry = hostsCache.get(client.getIpAddress());
+                            if (hostsEntry != null && !hostsEntry.isEmpty()) {
+                                client.setHostname(hostsEntry);
+                                logger.debug("Resolved hostname for {} from cached /etc/hosts: {}", clientMac,
+                                        hostsEntry);
+                            }
+                        }
+                    }
+
+                    return client;
+                });
+
+                // Handle MAC randomization: merge old entry if hostname matches a different MAC
+                DDWRTWirelessClient updated = cache.getWirelessClient(clientMac);
+                if (updated != null && !updated.getHostname().isEmpty()) {
+                    cache.mergeRandomizedMac(clientMac, updated.getHostname());
+                }
+
+                totalClients++;
+            }
+        }
+        logger.debug("Refreshed wireless clients: {} total", totalClients);
+    }
+
+    /**
+     * Refresh the cached /etc/hosts content for hostname resolution.
+     * Only called on gateway devices (those with WAN IP).
+     * Only refreshes when cache is invalid (initial load or DHCP events).
+     */
+    protected void refreshHostsCache(SshRunner runner) {
+        // Skip refresh if cache is valid (not initial load and no DHCP events)
+        if (hostsCacheValid) {
+            return;
+        }
+
+        hostsCache.clear();
+        String hostsContent = safeTrim(runner.execStdout("cat /etc/hosts 2>/dev/null"));
+        if (!hostsContent.isEmpty()) {
+            for (String line : hostsContent.split("\n")) {
+                line = line.trim();
+                // Skip comments and empty lines
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                // Parse: IP hostname [alias1 ...]
+                String[] parts = line.split("\\s+");
+                if (parts.length >= 2 && parts[0] != null && parts[1] != null) {
+                    String ip = parts[0];
+                    String hostname = parts[1];
+                    // Skip localhost entries
+                    if (!ip.startsWith("127.") && !"localhost".equals(hostname)
+                            && !"localhost.localdomain".equals(hostname)) {
+                        hostsCache.put(Objects.requireNonNull(ip), Objects.requireNonNull(hostname));
+                    }
+                }
+            }
+            hostsCacheValid = true;
+            logger.debug("Loaded {} entries into hosts cache", hostsCache.size());
+        }
+    }
+
+    /**
+     * Enumerate firewall rules. Default implementation parses DD-WRT nvram filter rules
+     * using a single {@code nvram show | grep filter} command.
      * Only runs on firmware types that support nvram (DD-WRT, Tomato).
      * OpenWrt subclasses should override to use iptables/nftables commands.
      */
@@ -882,12 +1283,21 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             return rules;
         }
 
-        // DD-WRT/Tomato: Parse filter_rule* from nvram
-        for (int i = 1; i <= 20; i++) { // DD-WRT typically supports up to 20 filter rules
-            String ruleKey = "filter_rule" + i;
-            String ruleValue = safeTrim(runner.execStdout("nvram get " + ruleKey));
+        // Single command to get all filter rules at once
+        String output = safeTrim(runner.execStdout("nvram show | grep filter_rule"));
+        if (output.isEmpty()) {
+            return rules;
+        }
 
-            if (!ruleValue.isEmpty() && !"".equals(ruleValue)) {
+        for (String line : output.split("\n")) {
+            String trimmed = line.trim();
+            int eqIdx = trimmed.indexOf('=');
+            if (eqIdx <= 0) {
+                continue;
+            }
+            String ruleKey = Objects.requireNonNull(trimmed.substring(0, eqIdx));
+            String ruleValue = Objects.requireNonNull(trimmed.substring(eqIdx + 1));
+            if (!ruleValue.isEmpty()) {
                 DDWRTFirewallRule rule = parseNvramFilterRule(ruleKey, ruleValue);
                 if (rule != null) {
                     rules.add(rule);
@@ -994,24 +1404,51 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Refresh radio information. Subclasses parse chipset-specific output.
+     * Refresh radio information. Enumerates radios, gets lightweight assoclist MACs, and updates cache.
      */
     protected void refreshRadios(SshRunner runner) {
-        // Default no-op; overridden by chipset subclasses
+        DDWRTNetworkCache cache = networkCache;
+        if (cache == null) {
+            return;
+        }
+
+        List<DDWRTRadio> radios = enumerateRadios(runner);
+        for (DDWRTRadio radio : radios) {
+            List<String> clientMacs = getAssoclistMacs(runner, radio.getIfaceName());
+            radio.setAssoclist(clientMacs);
+            cache.putRadio(radio.getInterfaceId(), radio);
+            logger.debug("Refreshed radio {}: {} clients", radio.getIfaceName(), clientMacs.size());
+        }
     }
 
     /**
-     * Refresh firewall rules from nvram.
+     * Refresh firewall rules from nvram and update cache.
      */
     protected void refreshFirewallRules(SshRunner runner) {
         firewallRules.clear();
-        firewallRules.addAll(enumerateFirewallRules(runner));
+        List<DDWRTFirewallRule> rules = enumerateFirewallRules(runner);
+        firewallRules.addAll(rules);
+
+        DDWRTNetworkCache cache = networkCache;
+        if (cache != null) {
+            for (DDWRTFirewallRule rule : rules) {
+                cache.putFirewallRule(rule.getRuleId(), rule);
+            }
+        }
     }
 
     /**
-     * Get associated wireless clients for a given interface.
+     * Get associated wireless clients for a given interface (detailed info).
      */
     protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
+        return Objects.requireNonNull(Collections.emptyList());
+    }
+
+    /**
+     * Get lightweight list of associated client MAC addresses for a given interface.
+     * Subclasses override to parse chipset-specific assoclist output without per-client queries.
+     */
+    protected List<String> getAssoclistMacs(SshRunner runner, String iface) {
         return Objects.requireNonNull(Collections.emptyList());
     }
 
@@ -1057,13 +1494,33 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
+     * Public method to enable/disable a wireless radio interface.
+     */
+    public boolean setRadioEnabled(String iface, boolean enabled) {
+        SshAuthSession s = authSession;
+        if (s == null) {
+            return false;
+        }
+        try {
+            SshRunner runner = s.createRunner();
+            setRadioEnabled(runner, iface, enabled);
+            return true;
+        } catch (Exception e) {
+            logger.debug("Failed to {} radio {}: {}", enabled ? "enable" : "disable", iface, e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Reboot the device.
      */
     public void reboot() {
         SshAuthSession s = authSession;
         if (s != null) {
             try {
-                String cmd = "root".equals(config.user) ? "reboot" : "sudo reboot";
+                // Get the actual username from the authenticated session
+                String sessionUser = s.getClientSession().getUsername();
+                String cmd = "root".equals(sessionUser) ? "reboot" : "sudo reboot";
                 s.createRunner().execStdout(cmd);
             } catch (Exception e) {
                 logger.warn("Reboot command failed: {}", e.getMessage());
@@ -1152,6 +1609,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         return chipset;
     }
 
+    public String getHardware() {
+        return hardware;
+    }
+
     public @Nullable Instant getBootInstant() {
         return bootInstant;
     }
@@ -1168,6 +1629,18 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
     public double getCpuTemp() {
         return cpuTemp;
+    }
+
+    public String getCpuModel() {
+        return cpuModel;
+    }
+
+    public double getWl0Temp() {
+        return wl0Temp;
+    }
+
+    public double getWl1Temp() {
+        return wl1Temp;
     }
 
     public String getWanIp() {
@@ -1222,10 +1695,10 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     }
 
     /**
-     * Get the per-device executor for scheduling additional tasks (e.g. syslog follower).
+     * Get the per-device scheduler for scheduling additional tasks (e.g. syslog follower).
      */
     public @Nullable ScheduledExecutorService getExecutor() {
-        return executor;
+        return scheduler;
     }
 
     public void dispose() {

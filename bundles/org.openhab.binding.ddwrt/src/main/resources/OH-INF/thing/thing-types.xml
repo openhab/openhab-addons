@@ -160,6 +160,7 @@
 			<channel id="channel" typeId="channel"/>
 			<channel id="mode" typeId="mode"/>
 			<channel id="clientCount" typeId="clientCount"/>
+			<channel id="assoclist" typeId="assoclist"/>
 		</channels>
 
 		<config-description>
@@ -192,7 +193,9 @@
 			<channel id="hostname" typeId="clientHostname"/>
 			<channel id="ipAddress" typeId="ipAddress"/>
 			<channel id="ap" typeId="ap"/>
+			<channel id="apMac" typeId="apMac"/>
 			<channel id="ssid" typeId="ssid"/>
+			<channel id="signal" typeId="signal"/>
 			<channel id="snr" typeId="snr"/>
 			<channel id="rxRate" typeId="rxRate"/>
 			<channel id="txRate" typeId="txRate"/>
@@ -200,9 +203,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="mac" type="text" required="true">
+			<parameter name="mac" type="text" required="false">
 				<label>MAC Address</label>
-				<description>MAC address of the wireless client</description>
+				<description>MAC address of the wireless client (may change due to MAC randomization)</description>
 			</parameter>
 		</config-description>
 
@@ -366,6 +369,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="assoclist">
+		<item-type>String</item-type>
+		<label>Associated Clients</label>
+		<description>Comma-separated list of MAC addresses of associated wireless clients</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<!-- Wireless Client -->
 
 	<channel-type id="macAddress">
@@ -392,8 +402,22 @@
 	<channel-type id="ap">
 		<item-type>String</item-type>
 		<label>Access Point</label>
+		<description>Name of the radio the client is associated with (hostname-interface)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="apMac">
+		<item-type>String</item-type>
+		<label>AP MAC Address</label>
 		<description>MAC address of the access point the client is associated with</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="signal">
+		<item-type>Number</item-type>
+		<label>Signal</label>
+		<description>Signal strength in dBm</description>
+		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 
 	<channel-type id="snr">

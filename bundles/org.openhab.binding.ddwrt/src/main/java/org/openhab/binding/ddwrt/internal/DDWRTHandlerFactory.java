@@ -15,13 +15,17 @@ package org.openhab.binding.ddwrt.internal;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.BRIDGE_TYPE_NETWORK;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_FIREWALL_RULE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_WIRELESS_CLIENT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTDeviceThingHandler;
+import org.openhab.binding.ddwrt.internal.handler.DDWRTFirewallRuleHandler;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTNetworkBridgeHandler;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTRadioThingHandler;
+import org.openhab.binding.ddwrt.internal.handler.DDWRTWirelessClientHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -55,6 +59,10 @@ public class DDWRTHandlerFactory extends BaseThingHandlerFactory {
             return new DDWRTDeviceThingHandler(thing);
         } else if (THING_TYPE_RADIO.equals(thingTypeUID)) {
             return new DDWRTRadioThingHandler(thing);
+        } else if (THING_TYPE_WIRELESS_CLIENT.equals(thingTypeUID)) {
+            return new DDWRTWirelessClientHandler(thing);
+        } else if (THING_TYPE_FIREWALL_RULE.equals(thingTypeUID)) {
+            return new DDWRTFirewallRuleHandler(thing);
         }
 
         return null;
