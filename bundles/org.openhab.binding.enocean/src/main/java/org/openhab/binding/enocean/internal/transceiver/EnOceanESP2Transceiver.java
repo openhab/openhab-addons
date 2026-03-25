@@ -74,6 +74,15 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
             } else {
                 this.worker = worker = new Thread(new Receiver(is, errorListener, scheduler),
                         RX_THREAD_NAME_PREFIX + THREAD_NUM.incrementAndGet());
+                worker.setUncaughtExceptionHandler((t, e) -> {
+                    logger.warn("Uncaught exception in EnOceanSerialTransceiver RX thread ({}): {}", t.getName(),
+                            e.getMessage());
+                    logger.trace("", e);
+                    TransceiverErrorListener listener = this.errorListener;
+                    if (listener != null) {
+                        scheduler.execute(() -> listener.errorOccurred(e));
+                    }
+                });
             }
         }
         if (worker == null) {
@@ -148,7 +157,14 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                 }
                 if (read <= 0) {
                     // Unlike regular InputStreams, the serial port streams occasionally returns -1 even if the
-                    // stream is still "alive", so just accept it and try to read again.
+                    // stream is still "alive", so just accept it and try to read again. Add a short backoff to
+                    // avoid a tight loop and high CPU usage if this happens repeatedly.
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
                     continue;
                 }
                 doRead -= read;
@@ -174,12 +190,18 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                             doRead = 1;
                             break;
                         case READ_HEADER:
-                            state = ReadingState.READ_DATA;
                             doRead = bytes[pos] & 0x1f;
-                            packetStart = pos;
-                            packetLength = (byte) doRead;
-                            packetType = (byte) ((bytes[pos] & 0xff) >> 5);
-                            logger.trace(">> Received header, data length {} packet type {}", doRead, packetType);
+                            if (doRead == 0) {
+                                state = ReadingState.WAIT_FIRST_SYNCBYTE;
+                                doRead = 1;
+                                logger.debug(">> Received header with zero length, ignoring packet");
+                            } else {
+                                state = ReadingState.READ_DATA;
+                                packetStart = pos;
+                                packetLength = (byte) doRead;
+                                packetType = (byte) ((bytes[pos] & 0xff) >> 5);
+                                logger.trace(">> Received header, data length {} packet type {}", doRead, packetType);
+                            }
                             break;
                         case READ_DATA:
                             try {

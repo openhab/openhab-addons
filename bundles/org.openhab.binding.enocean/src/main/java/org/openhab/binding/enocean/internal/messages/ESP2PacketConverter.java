@@ -103,7 +103,8 @@ public class ESP2PacketConverter {
             return buildPacket(type, bytes);
         }
         if (start + length > bytes.length) {
-            throw new IndexOutOfBoundsException(length);
+            throw new IndexOutOfBoundsException("Index out of range: start=" + start + ", length=" + length
+                    + " -> index=" + (start + length) + ", array length=" + bytes.length);
         }
         byte[] packetBytes = new byte[length];
         System.arraycopy(bytes, start, packetBytes, 0, length);

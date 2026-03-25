@@ -374,7 +374,8 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
                             HashSet<PacketListener> pl = listeners.get(s);
                             if (pl != null) {
                                 if (scheduler != null) {
-                                    scheduler.execute(() -> pl.forEach(l -> l.packetReceived(msg)));
+                                    Set<PacketListener> plc = Set.copyOf(pl);
+                                    scheduler.execute(() -> plc.forEach(l -> l.packetReceived(msg)));
                                 } else {
                                     pl.forEach(l -> l.packetReceived(msg));
                                 }

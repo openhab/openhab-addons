@@ -102,9 +102,12 @@ public class EnOceanESP2TransceiverTest {
         trans.addPacketListener(sender5Listener, 5L);
         trans.initialize();
         trans.startReceiving(scheduler);
-        assertThat(sender2Listener.packets, waitUntil(hasSize(31), 10000L));
-        assertThat(sender5Listener.packets, waitUntil(hasSize(31), 10000L));
-        trans.shutDownRx();
+        try {
+            assertThat(sender2Listener.packets, waitUntil(hasSize(31), 10000L));
+            assertThat(sender5Listener.packets, waitUntil(hasSize(31), 10000L));
+        } finally {
+            trans.shutDownRx();
+        }
         assertThat(sender2Listener.packets,
                 hasItem(equalPacket(
                         Objects.requireNonNull(ESP2PacketConverter.buildPacket(ESP2PacketType.RECEIVE_MESSAGE_TELEGRAM,
@@ -128,9 +131,12 @@ public class EnOceanESP2TransceiverTest {
         trans.addPacketListener(sender2Listener, 0x33221320L);
         trans.initialize();
         trans.startReceiving(scheduler);
-        assertThat(sender1Listener.packets, waitUntil(hasSize(6), 10000L));
-        assertThat(sender2Listener.packets, waitUntil(hasSize(3), 10000L));
-        trans.shutDownRx();
+        try {
+            assertThat(sender1Listener.packets, waitUntil(hasSize(6), 10000L));
+            assertThat(sender2Listener.packets, waitUntil(hasSize(3), 10000L));
+        } finally {
+            trans.shutDownRx();
+        }
         assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
                 ESP2PacketType.RECEIVE_RADIO_TELEGRAM, HexFormat.of().parseHex("0B05000000003322111820AE"))))));
         assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
