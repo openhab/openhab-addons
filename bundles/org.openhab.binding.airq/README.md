@@ -13,16 +13,21 @@ This Binding was tested with an `air-Q Pro` device with 14 sensors. It also work
 
 ## Discovery
 
-Auto-discovery is not supported.
+air-Q devices on the local network are discovered automatically via mDNS.
+Discovered devices appear in the openHAB Inbox.
+To add a discovered device, click **OK → EDIT** in the Inbox dialog, then enter the device password in the Configuration section and save.
+The device IP address is filled in automatically by discovery.
+
+If auto-discovery does not work (e.g. due to network segmentation), you can still add the device manually using its IP address.
 
 ## Thing Configuration
 
-The air-Q Thing must be configured with (both mandatory):
+The air-Q Thing must be configured with:
 
-| Parameter | Description                        |
-|-----------|------------------------------------|
-| ipAddress | Network address, e.g. 192.168.0.68 |
-| password  | Password of the air-Q device       |
+| Parameter | Description                        | Required              |
+|-----------|------------------------------------|-----------------------|
+| ipAddress | Network address, e.g. 192.168.0.68 | Yes (auto-filled by discovery) |
+| password  | Password of the air-Q device       | Yes                   |
 
 The Thing provides the following properties:
 
