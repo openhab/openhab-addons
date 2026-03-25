@@ -282,8 +282,8 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
 
-        if (stats.lastAlarm.equalsIgnoreCase(ALARM_TYPE_RESTARTED)) {
-            result.put("Device Alarm", ALARM_TYPE_RESTARTED + " (" + convertTimestamp(stats.lastAlarmTs) + ")");
+        if (stats.lastAlarm.get().equalsIgnoreCase(ALARM_TYPE_RESTARTED)) {
+            result.put("Device Alarm", ALARM_TYPE_RESTARTED + " (" + convertTimestamp(stats.lastAlarmTs.get()) + ")");
         }
         if (getBool(profile.status.overtemperature)) {
             result.put("Device Alarm", ALARM_TYPE_OVERTEMP);
@@ -306,9 +306,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             if ((config.eventsCoIoT) && (profile.settings.coiot != null)) {
                 if ((profile.settings.coiot.enabled != null) && !profile.settings.coiot.enabled) {
                     result.put("CoIoT Status", "COIOT_DISABLED");
-                } else if (stats.protocolMessages == 0) {
+                } else if (stats.protocolMessages.get() == 0) {
                     result.put("CoIoT Discovery", "NO_COIOT_DISCOVERY");
-                } else if (stats.protocolMessages < 2) {
+                } else if (stats.protocolMessages.get() < 2) {
                     result.put("CoIoT Multicast", "NO_COIOT_MULTICAST");
                 }
             }

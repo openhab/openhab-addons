@@ -14,6 +14,9 @@ package org.openhab.binding.shelly.internal.handler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
@@ -25,18 +28,18 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
  */
 @NonNullByDefault
 public class ShellyDeviceStats {
-    public long lastUptime = 0;
-    public long restarts = 0;
-    public long timeoutErrors = 0;
-    public long timeoutsRecorvered = 0;
-    public long remainingWatchdog = 0;
-    public long alarms = 0;
-    public String lastAlarm = "";
-    public long lastAlarmTs = 0;
-    public long protocolMessages = 0;
-    public long protocolErrors = 0;
-    public int wifiRssi = 0;
-    public int maxInternalTemp = 0;
+    public AtomicLong lastUptime = new AtomicLong(0);
+    public AtomicLong restarts = new AtomicLong(0);
+    public AtomicInteger timeoutErrors = new AtomicInteger(0);
+    public AtomicInteger timeoutsRecorvered = new AtomicInteger(0);
+    public AtomicLong remainingWatchdog = new AtomicLong(0);
+    public AtomicLong alarms = new AtomicLong(0);
+    public AtomicReference<String> lastAlarm = new AtomicReference<>("");
+    public AtomicLong lastAlarmTs = new AtomicLong(0);
+    public AtomicLong protocolMessages = new AtomicLong(0);
+    public AtomicInteger protocolErrors = new AtomicInteger(0);
+    public AtomicInteger wifiRssi = new AtomicInteger(0);
+    public AtomicInteger maxInternalTemp = new AtomicInteger(0);
 
     public Map<String, String> asProperties() {
         Map<String, String> prop = new HashMap<>();
@@ -46,11 +49,12 @@ public class ShellyDeviceStats {
         prop.put("timeoutsRecovered", String.valueOf(timeoutsRecorvered));
         prop.put("remainingWatchdog", String.valueOf(remainingWatchdog));
         prop.put("alarmCount", String.valueOf(alarms));
-        prop.put("lastAlarm", lastAlarm);
-        prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(lastAlarmTs));
+        prop.put("lastAlarm", lastAlarm.get());
+        prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(lastAlarmTs.get()));
         prop.put("protocolMessages", String.valueOf(protocolMessages));
         prop.put("protocolErrors", String.valueOf(protocolErrors));
         prop.put("wifiRssi", String.valueOf(wifiRssi));
+        prop.put("maxInternalTemp", String.valueOf(maxInternalTemp.get()));
         return prop;
     }
 }

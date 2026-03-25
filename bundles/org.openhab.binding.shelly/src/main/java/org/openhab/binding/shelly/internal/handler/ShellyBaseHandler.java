@@ -567,7 +567,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 profile.updateFromStatus(status);
                 if (restarted) {
                     logger.debug("{}: Device restart #{} detected", thingName, stats.restarts);
-                    stats.restarts++;
+                    stats.restarts.incrementAndGet();
                     postEvent(ALARM_TYPE_RESTARTED, true);
                 }
 
@@ -730,7 +730,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     private boolean isWatchdogExpired() {
         double delta = now() - watchdog;
         if ((watchdog > 0) && (delta > profile.updatePeriod)) {
-            stats.remainingWatchdog = (long) delta;
+            stats.remainingWatchdog.set((long) delta);
             return true;
         }
         return false;
@@ -759,13 +759,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         // Update uptime and WiFi, internal temp
         ShellyComponents.updateDeviceStatus(this, status);
-        stats.wifiRssi = status.wifiSta != null && status.wifiSta.rssi != null ? status.wifiSta.rssi : 0;
+        stats.wifiRssi.set(status.wifiSta != null && status.wifiSta.rssi != null ? status.wifiSta.rssi : 0);
 
         if (api.isInitialized()) {
-            stats.timeoutErrors = api.getTimeoutErrors();
-            stats.timeoutsRecorvered = api.getTimeoutsRecovered();
+            stats.timeoutErrors.set(api.getTimeoutErrors());
+            stats.timeoutsRecorvered.set(api.getTimeoutsRecovered());
         }
-        stats.remainingWatchdog = watchdog > 0 ? (long) (now() - watchdog) : 0;
+        stats.remainingWatchdog.set(watchdog > 0 ? (long) (now() - watchdog) : 0);
 
         // Check various device indicators like overheating
         if (checkRestarted(status)) {
@@ -781,13 +781,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         State internalTemp = getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP);
         if (internalTemp instanceof Number number) {
             int temp = number.intValue();
-            if (temp > stats.maxInternalTemp) {
-                stats.maxInternalTemp = temp;
+            if (temp > stats.maxInternalTemp.get()) {
+                stats.maxInternalTemp.set(temp);
             }
         }
 
         if (status.uptime != null) {
-            stats.lastUptime = getLong(status.uptime);
+            stats.lastUptime.set(getLong(status.uptime));
         }
 
         if (!alarm.isEmpty()) {
@@ -797,12 +797,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void incProtMessages() {
-        stats.protocolMessages++;
+        stats.protocolMessages.incrementAndGet();
     }
 
     @Override
     public void incProtErrors() {
-        stats.protocolErrors++;
+        stats.protocolErrors.incrementAndGet();
     }
 
     /**
@@ -813,7 +813,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private boolean checkRestarted(ShellySettingsStatus status) {
         if (profile.isInitialized() && profile.alwaysOn /* exclude battery powered devices */
-                && (status.uptime != null && status.uptime < stats.lastUptime
+                && (status.uptime != null && status.uptime < stats.lastUptime.get()
                         || (profile.status.update != null && !getString(profile.status.update.oldVersion).isEmpty()
                                 && !status.update.oldVersion.equals(profile.status.update.oldVersion)))) {
             logger.debug("{}: Device has been restarted, uptime={}/{}, firmware={}/{}", thingName, stats.lastUptime,
@@ -837,7 +837,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
 
         if (force || !lastAlarm.equals(event)
-                || (lastAlarm.equals(event) && now() > stats.lastAlarmTs + HEALTH_CHECK_INTERVAL_SEC)) {
+                || (lastAlarm.equals(event) && now() > stats.lastAlarmTs.get() + HEALTH_CHECK_INTERVAL_SEC)) {
             switch (event.toUpperCase(Locale.ROOT)) {
                 case "":
                 case "0": // DW2 1.8
@@ -858,9 +858,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: {}", thingName, messages.get("event.triggered", event));
                     triggerChannel(channelId, event);
                     cache.updateChannel(channelId, getStringType(event.toUpperCase(Locale.ROOT)));
-                    stats.lastAlarm = event;
-                    stats.lastAlarmTs = (long) now();
-                    stats.alarms++;
+                    stats.lastAlarm.set(event);
+                    stats.lastAlarmTs.set((long) now());
+                    stats.alarms.incrementAndGet();
             }
         }
     }
