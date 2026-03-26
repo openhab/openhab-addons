@@ -207,7 +207,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                             try {
                                 packetBytes = subArray(bytes, packetStart, packetLength + 1);
                                 if (ESP2Packet.validateCheckSum(packetBytes, 0, packetLength)) {
-                                    if (bytes[pos] == ESP2Packet.ENOCEAN_ESP2_INTERNAL_COMMAND_BYTE) {
+                                    if (packetBytes[1] == ESP2Packet.ENOCEAN_ESP2_INTERNAL_COMMAND_BYTE) {
                                         // Internal commands have a structure that we can't decode,
                                         // and they shouldn't be of interest to us
                                         if (logger.isTraceEnabled()) {
