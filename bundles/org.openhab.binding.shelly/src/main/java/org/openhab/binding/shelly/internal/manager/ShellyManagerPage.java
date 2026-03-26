@@ -213,7 +213,7 @@ public class ShellyManagerPage {
         properties.put(ATTRIBUTE_UID, uid);
 
         ShellyDeviceProfile profile = th.getProfile();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
+        ShellyThingConfiguration config = th.getThingConfig();
         ShellyDeviceStats stats = th.getStats();
         properties.putAll(stats.asProperties());
 
@@ -236,7 +236,7 @@ public class ShellyManagerPage {
         }
 
         if (config.getUserId().isEmpty()) {
-            // Get defauls from Binding Config
+            // Get defaults from Binding Config
             properties.put("userId", bindingConfig.defaultUserId);
             properties.put("password", bindingConfig.defaultPassword);
         }
@@ -294,7 +294,7 @@ public class ShellyManagerPage {
         if ((profile.settings.coiot != null) && (profile.settings.coiot.enabled != null)) {
             coiotEnabled = profile.settings.coiot.enabled;
         }
-        properties.put(ATTRIBUTE_COIOT_STATUS, !coiotEnabled ? "Disbaled in settings"
+        properties.put(ATTRIBUTE_COIOT_STATUS, !coiotEnabled ? "Disabled in settings"
                 : "Events are " + (config.getEventsCoIoT() ? "enabled" : "disabled"));
         properties.put(ATTRIBUTE_COIOT_PEER,
                 (profile.settings.coiot != null) && !getString(profile.settings.coiot.peer).isEmpty()
@@ -577,8 +577,7 @@ public class ShellyManagerPage {
     }
 
     protected ShellyThingConfiguration getThingConfig(ShellyManagerInterface th, Map<String, String> properties) {
-        Thing thing = th.getThing();
-        ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
+        ShellyThingConfiguration config = th.getThingConfig();
         if (config.getUserId().isEmpty()) {
             config.setUserId(getString(properties.get("userId")));
             config.setPassword(getString(properties.get("password")));

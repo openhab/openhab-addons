@@ -84,8 +84,29 @@ public class ShellyThingBasicConfig {
         return enableBluGateway;
     }
 
-    public boolean getEnableEnableRangeExtender() {
+    public boolean getEnableRangeExtender() {
         return enableRangeExtender;
+    }
+
+    /*
+     * Those getter/setter need synchronization
+     */
+    public synchronized String getUserId() {
+        String value = userId;
+        return value;
+    }
+
+    public synchronized void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public synchronized String getPassword() {
+        String value = password;
+        return value;
+    }
+
+    public synchronized void setPassword(String password) {
+        this.password = password;
     }
 
     public boolean getEventsButton() {
@@ -110,27 +131,6 @@ public class ShellyThingBasicConfig {
 
     public boolean getEventsCoIoT() {
         return eventsCoIoT;
-    }
-
-    /*
-     * Those getter/setter need synchronization
-     */
-    public synchronized String getUserId() {
-        String value = userId;
-        return value;
-    }
-
-    public synchronized void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public synchronized String getPassword() {
-        String value = password;
-        return value;
-    }
-
-    public synchronized void setPassword(String password) {
-        this.password = password;
     }
 
     public synchronized void disableGen1Events() {

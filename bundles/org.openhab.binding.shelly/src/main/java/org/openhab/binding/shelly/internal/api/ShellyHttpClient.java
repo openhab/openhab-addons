@@ -73,7 +73,7 @@ public class ShellyHttpClient {
     protected volatile boolean basicAuth = false;
 
     // All access must be guarded by "this"
-    protected ShellyThingConfiguration config;
+    protected volatile ShellyThingConfiguration config;
 
     private final ShellyDeviceProfile profile;
 

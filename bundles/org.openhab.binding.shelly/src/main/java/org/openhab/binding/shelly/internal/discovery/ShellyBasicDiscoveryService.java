@@ -127,7 +127,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, Object> properties = new TreeMap<>();
 
         try {
-            ShellyThingConfiguration config = fillConfig(bindingConfig, ipAddress, name);
+            ShellyThingConfiguration config = new ShellyThingConfiguration(bindingConfig, hostname, ipAddress);
             if (gen2) {
                 api = new Shelly2ApiClient(name, config, httpClient);
             } else {
@@ -190,11 +190,6 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         }
 
         return null;
-    }
-
-    public static ShellyThingConfiguration fillConfig(ShellyBindingConfiguration bindingConfig, String address,
-            String realm) {
-        return new ShellyThingConfiguration(bindingConfig, address, realm);
     }
 
     private static void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
