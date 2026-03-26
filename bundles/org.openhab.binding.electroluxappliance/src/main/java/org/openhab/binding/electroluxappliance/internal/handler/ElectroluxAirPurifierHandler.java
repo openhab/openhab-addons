@@ -16,8 +16,8 @@ import static org.openhab.binding.electroluxappliance.internal.ElectroluxApplian
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxAirPurifierHandler.class);
-    private final AtomicBoolean commandInProgress = new AtomicBoolean(false);
+    private @Nullable ScheduledFuture<?> commandGracePeriod;
 
     public ElectroluxAirPurifierHandler(Thing thing, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
@@ -72,52 +72,68 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
             ApplianceDTO dto = getApplianceDTO();
             ElectroluxGroupAPI api = getElectroluxGroupAPI();
             if (api != null && dto != null) {
+                boolean commandSent = false;
                 if (CHANNEL_WORK_MODE.equals(channelUID.getId())) {
                     if (command.toString().equals(COMMAND_WORKMODE_POWEROFF)) {
                         api.workModePowerOff(dto.getApplianceId());
+                        commandSent = true;
                     } else if (command.toString().equals(COMMAND_WORKMODE_AUTO)) {
                         api.workModeAuto(dto.getApplianceId());
+                        commandSent = true;
                     } else if (command.toString().equals(COMMAND_WORKMODE_MANUAL)) {
                         api.workModeManual(dto.getApplianceId());
+                        commandSent = true;
                     }
                 } else if (CHANNEL_FAN_SPEED.equals(channelUID.getId())) {
                     api.setFanSpeedLevel(dto.getApplianceId(), Integer.parseInt(command.toString()));
+                    commandSent = true;
                 } else if (CHANNEL_IONIZER.equals(channelUID.getId())) {
                     if (command == OnOffType.OFF) {
                         api.setIonizer(dto.getApplianceId(), "false");
+                        commandSent = true;
                     } else if (command == OnOffType.ON) {
                         api.setIonizer(dto.getApplianceId(), "true");
+                        commandSent = true;
                     } else {
                         logger.debug("Unknown command! {}", command);
                     }
                 } else if (CHANNEL_UI_LIGHT.equals(channelUID.getId())) {
                     if (command == OnOffType.OFF) {
                         api.setUILight(dto.getApplianceId(), "false");
+                        commandSent = true;
                     } else if (command == OnOffType.ON) {
                         api.setUILight(dto.getApplianceId(), "true");
+                        commandSent = true;
                     } else {
                         logger.debug("Unknown command! {}", command);
                     }
                 } else if (CHANNEL_SAFETY_LOCK.equals(channelUID.getId())) {
                     if (command == OnOffType.OFF) {
                         api.setSafetyLock(dto.getApplianceId(), "false");
+                        commandSent = true;
                     } else if (command == OnOffType.ON) {
                         api.setSafetyLock(dto.getApplianceId(), "true");
+                        commandSent = true;
                     } else {
                         logger.debug("Unknown command! {}", command);
                     }
                 }
 
-                commandInProgress.set(true);
-                scheduler.schedule(() -> commandInProgress.set(false), 5, TimeUnit.SECONDS);
+                if (commandSent) {
+                    ScheduledFuture<?> existing = commandGracePeriod;
+                    if (existing != null) {
+                        existing.cancel(false);
+                    }
+                    commandGracePeriod = scheduler.schedule(() -> commandGracePeriod = null, 5, TimeUnit.SECONDS);
+                }
             }
         }
     }
 
     @Override
     public void update(@Nullable ApplianceDTO dto) {
-        if (commandInProgress.get()) {
-            logger.debug("Skipping state update - command in progress");
+        if (commandGracePeriod != null) {
+            logger.debug("Skipping state update - command grace period active");
             return;
         }
         if (dto != null) {
