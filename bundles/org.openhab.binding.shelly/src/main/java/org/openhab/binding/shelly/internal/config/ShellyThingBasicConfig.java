@@ -24,7 +24,10 @@ public class ShellyThingBasicConfig {
     protected String deviceIp = ""; // ip address of thedevice
     protected String deviceAddress = ""; // IP address or MAC address for BLU devices
 
+    // All access must be guarded by "this"
     protected String userId = ""; // userid for http basic auth
+
+    // All access must be guarded by "this"
     protected String password = ""; // password for http basic auth
 
     protected int updateInterval = 60; // schedule interval for the update job
@@ -35,6 +38,7 @@ public class ShellyThingBasicConfig {
     protected int favoriteDOWN = 0; // Roller position favorite when control channel receives ON, 0=none
 
     // Gen1
+    // All access must be guarded by "this"
     protected boolean eventsButton = false; // true: register for Relay btn_xxx events
     protected boolean eventsSwitch = true; // true: register for device out_xxx events
     protected boolean eventsPush = true; // true: register for short/long push events
@@ -46,16 +50,71 @@ public class ShellyThingBasicConfig {
     protected Boolean enableBluGateway = false;
     protected Boolean enableRangeExtender = true;
 
-    public synchronized String getDeviceIp() {
+    public String getDeviceIp() {
         String value = deviceIp;
         return value;
     }
 
-    public synchronized String getDeviceAddress() {
+    public String getDeviceAddress() {
         String value = deviceAddress;
         return value;
     }
 
+    public int getUpdateInterval() {
+        return updateInterval;
+    }
+
+    public int getLowBattery() {
+        return lowBattery;
+    }
+
+    public boolean getBrightnessAutoOn() {
+        return brightnessAutoOn;
+    }
+
+    public int getFavoriteUP() {
+        return favoriteUP;
+    }
+
+    public int getFavoriteDOWN() {
+        return favoriteDOWN;
+    }
+
+    public boolean getEnableBluGateway() {
+        return enableBluGateway;
+    }
+
+    public boolean getEnableEnableRangeExtender() {
+        return enableRangeExtender;
+    }
+
+    public boolean getEventsButton() {
+        return eventsButton;
+    }
+
+    public boolean getEventsSwitch() {
+        return eventsSwitch;
+    }
+
+    public boolean getEventsPush() {
+        return eventsPush;
+    }
+
+    public boolean getEventsRoller() {
+        return eventsRoller;
+    }
+
+    public boolean getEventsSensorReport() {
+        return eventsSensorReport;
+    }
+
+    public boolean getEventsCoIoT() {
+        return eventsCoIoT;
+    }
+
+    /*
+     * Those getter/setter need synchronization
+     */
     public synchronized String getUserId() {
         String value = userId;
         return value;
@@ -74,55 +133,12 @@ public class ShellyThingBasicConfig {
         this.password = password;
     }
 
-    public synchronized int getUpdateInterval() {
-        return updateInterval;
-    }
-
-    public synchronized int getLowBattery() {
-        return lowBattery;
-    }
-
-    public synchronized boolean getBrightnessAutoOn() {
-        return brightnessAutoOn;
-    }
-
-    public synchronized int getFavoriteUP() {
-        return favoriteUP;
-    }
-
-    public synchronized int getFavoriteDOWN() {
-        return favoriteDOWN;
-    }
-
-    public synchronized boolean getEnableBluGateway() {
-        return enableBluGateway;
-    }
-
-    public synchronized boolean getEnableEnableRangeExtender() {
-        return enableRangeExtender;
-    }
-
-    public synchronized boolean getEventsButton() {
-        return eventsButton;
-    }
-
-    public synchronized boolean getEventsSwitch() {
-        return eventsSwitch;
-    }
-
-    public synchronized boolean getEventsPush() {
-        return eventsPush;
-    }
-
-    public synchronized boolean getEventsRoller() {
-        return eventsRoller;
-    }
-
-    public synchronized boolean getEventsSensorReport() {
-        return eventsSensorReport;
-    }
-
-    public synchronized boolean getEventsCoIoT() {
-        return eventsCoIoT;
+    public synchronized void disableGen1Events() {
+        eventsCoIoT = true;
+        eventsSwitch = false;
+        eventsButton = false;
+        eventsPush = false;
+        eventsRoller = false;
+        eventsSensorReport = false;
     }
 }
