@@ -763,7 +763,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         if (api.isInitialized()) {
             stats.timeoutErrors.set(api.getTimeoutErrors());
-            stats.timeoutsRecorvered.set(api.getTimeoutsRecovered());
+            stats.timeoutsRecovered.set(api.getTimeoutsRecovered());
         }
         stats.remainingWatchdog.set(watchdog > 0 ? (long) (now() - watchdog) : 0);
 

@@ -28,25 +28,25 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
  */
 @NonNullByDefault
 public class ShellyDeviceStats {
-    public AtomicLong lastUptime = new AtomicLong(0);
-    public AtomicLong restarts = new AtomicLong(0);
-    public AtomicInteger timeoutErrors = new AtomicInteger(0);
-    public AtomicInteger timeoutsRecorvered = new AtomicInteger(0);
-    public AtomicLong remainingWatchdog = new AtomicLong(0);
-    public AtomicLong alarms = new AtomicLong(0);
-    public AtomicReference<String> lastAlarm = new AtomicReference<>("");
-    public AtomicLong lastAlarmTs = new AtomicLong(0);
-    public AtomicLong protocolMessages = new AtomicLong(0);
-    public AtomicInteger protocolErrors = new AtomicInteger(0);
-    public AtomicInteger wifiRssi = new AtomicInteger(0);
-    public AtomicInteger maxInternalTemp = new AtomicInteger(0);
+    public final AtomicLong lastUptime = new AtomicLong(0);
+    public final AtomicLong restarts = new AtomicLong(0);
+    public final AtomicInteger timeoutErrors = new AtomicInteger(0);
+    public final AtomicInteger timeoutsRecovered = new AtomicInteger(0);
+    public final AtomicLong remainingWatchdog = new AtomicLong(0);
+    public final AtomicLong alarms = new AtomicLong(0);
+    public final AtomicReference<String> lastAlarm = new AtomicReference<>("");
+    public final AtomicLong lastAlarmTs = new AtomicLong(0);
+    public final AtomicLong protocolMessages = new AtomicLong(0);
+    public final AtomicInteger protocolErrors = new AtomicInteger(0);
+    public final AtomicInteger wifiRssi = new AtomicInteger(0);
+    public final AtomicInteger maxInternalTemp = new AtomicInteger(0);
 
     public Map<String, String> asProperties() {
         Map<String, String> prop = new HashMap<>();
         prop.put("lastUptime", String.valueOf(lastUptime));
         prop.put("deviceRestarts", String.valueOf(restarts));
         prop.put("timeoutErrors", String.valueOf(timeoutErrors));
-        prop.put("timeoutsRecovered", String.valueOf(timeoutsRecorvered));
+        prop.put("timeoutsRecovered", String.valueOf(timeoutsRecovered));
         prop.put("remainingWatchdog", String.valueOf(remainingWatchdog));
         prop.put("alarmCount", String.valueOf(alarms));
         prop.put("lastAlarm", lastAlarm.get());
