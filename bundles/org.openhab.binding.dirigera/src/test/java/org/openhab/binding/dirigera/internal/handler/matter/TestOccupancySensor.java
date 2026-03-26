@@ -135,6 +135,6 @@ class TestOccupancySensor {
         assertNotNull(illuminance);
         assertTrue(illuminance instanceof QuantityType);
         assertTrue(((QuantityType<?>) illuminance).getUnit().equals(Units.LUX));
-        assertEquals(12345, ((QuantityType<?>) illuminance).intValue(), "Lux");
+        assertEquals(17, ((QuantityType<?>) illuminance).intValue(), "Lux");
     }
 }

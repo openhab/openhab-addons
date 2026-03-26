@@ -177,7 +177,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean checkRepresentation(String key) {
         return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.deviceAddress)
-                || key.equalsIgnoreCase(config.realm) || key.equalsIgnoreCase(getThingName());
+                || key.equalsIgnoreCase(config.deviceIp) || key.equalsIgnoreCase(config.realm)
+                || key.equalsIgnoreCase(getThingName());
     }
 
     /**

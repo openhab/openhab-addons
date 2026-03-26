@@ -70,7 +70,7 @@ public class MatterModel {
     public static final String CHANNEL_KEY_REQUEST_JSON = "json";
     public static final String CHANNEL_KEY_MAPPING = "mapping";
     public static final String CHANNEL_KEY_FORMAT = "format";
-    public static final String CHANNEL_KEY_CORRECTION = "correction";
+    public static final String CHANNEL_KEY_CONVERSION = "conversion";
     public static final String CHANNEL_KEY_IN_TYPE = "inType";
     public static final String CHANNEL_KEY_OUT_TYPE = "outType";
 
@@ -224,38 +224,39 @@ public class MatterModel {
      * @return state after transformation, null if it cannot or shouldn't be transformed
      */
     private @Nullable State getState(Object value, JSONObject channelConfiguration) {
-        // correction for numeric values
-        String correctionType = channelConfiguration.optString(CHANNEL_KEY_CORRECTION);
-        var correctedValue = value;
-        if (!correctionType.isBlank() && value instanceof Number num) {
-            double correctionValue = channelConfiguration.getDouble(correctionType);
-            correctedValue = switch (correctionType) {
-                case "factor" -> num.doubleValue() * correctionValue;
-                case "offset" -> num.doubleValue() + correctionValue;
+        // convert value into correct type
+        String inType = channelConfiguration.optString(CHANNEL_KEY_IN_TYPE);
+        var inValue = value;
+        if (!inType.isBlank() && inValue instanceof Number num) {
+            inValue = switch (inType) {
+                case "Number" -> num.doubleValue();
+                case "String" -> value.toString();
                 default -> value;
             };
         }
-        // convert numbers in order to have either Integer or Double values
-        String inType = channelConfiguration.optString(CHANNEL_KEY_IN_TYPE);
-        var inValue = correctedValue;
-        if (!inType.isBlank() && inValue instanceof Number num) {
-            inValue = switch (inType) {
-                case "Integer" -> num.intValue();
-                case "Float" -> num.doubleValue();
-                case "String" -> correctedValue.toString();
-                default -> correctedValue;
-            };
+
+        // apply configured conversion for numeric values
+        String conversionType = channelConfiguration.optString(CHANNEL_KEY_CONVERSION);
+        var convertedValue = inValue;
+        if (!conversionType.isBlank()) {
+            if (value instanceof Number num) {
+                convertedValue = ConversionModel.convert(conversionType, num);
+            } else {
+                logger.warn("MATTER MODEL State conversion: value {} is not a number, cannot apply conversion {}",
+                        value, conversionType);
+            }
         }
 
         // apply transformation
         String transformation = channelConfiguration.optString(CHANNEL_KEY_TRANSFORMATION);
         var transformed = switch (transformation) {
-            case "raw" -> inValue.toString();
-            case "format" -> String.format(Locale.ENGLISH, channelConfiguration.getString(CHANNEL_KEY_FORMAT), inValue);
-            case "mapping" -> map(inValue.toString(), channelConfiguration.getJSONObject(CHANNEL_KEY_MAPPING));
+            case "raw" -> convertedValue.toString();
+            case "format" ->
+                String.format(Locale.ENGLISH, channelConfiguration.getString(CHANNEL_KEY_FORMAT), convertedValue);
+            case "mapping" -> map(convertedValue.toString(), channelConfiguration.getJSONObject(CHANNEL_KEY_MAPPING));
             case "code" -> "";
             default -> {
-                logger.warn("MATTER MODEL State conversion: transformation '{}' unknown", transformation);
+                logger.warn("MATTER MODEL State transformation '{}' unknown", transformation);
                 yield "";
             }
         };

@@ -8,10 +8,10 @@
 				"channel": "battery-level",
 				"channelType": "system.battery-level",
 				"itemType": "Number:Dimensionless",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
-				"format": "%d %%"
+				"format": "%f %%"
 			},
 			{
 				"attribute": "otaStatus",
@@ -53,10 +53,10 @@
 				"channel": "ota-progress",
 				"channelType": "ota-percent",
 				"itemType": "Number:Dimensionless",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
-				"format": "%d %%"
+				"format": "%f %%"
 			},
 			{
 				"attribute": "customName",
@@ -118,7 +118,7 @@
 				"channel": "temperature",
 				"channelType": "system.indoor-temperature",
 				"itemType": "Number:Temperature",
-				"inType": "Float",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
 				"format": "%f °C"
@@ -128,7 +128,7 @@
 				"channel": "humidity",
 				"channelType": "system.atmospheric-humidity",
 				"itemType": "Number:Dimensionless",
-				"inType": "Float",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
 				"format": "%f %%"
@@ -138,27 +138,27 @@
 				"channel": "particulate-matter",
 				"channelType": "pm25",
 				"itemType": "Number:Density",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
-				"format": "%d µg/m³"
+				"format": "%f µg/m³"
 			},
 			{
 				"attribute": "currentCO2",
 				"channel": "co2",
 				"channelType": "co2",
 				"itemType": "Number:Dimensionless",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
-				"format": "%d ppm"
+				"format": "%f ppm"
 			},
 			{
 				"attribute": "vocIndex",
 				"channel": "voc-index",
 				"channelType": "voc",
 				"itemType": "Number",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "Number",
 				"transformation": "raw"
 			}
@@ -246,12 +246,11 @@
 				"channel": "illuminance",
 				"channelType": "illuminance",
 				"itemType": "Number:Illuminance",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
-				"correction": "factor",
-				"factor": 1,
+				"conversion": "illuminance",
 				"transformation": "format",
-				"format": "%d lx"
+				"format": "%f lx"
 			}
 		],
 		"controlProperties": [],
@@ -332,7 +331,7 @@
 				"channel": "brightness",
 				"channelType": "system.brightness",
 				"itemType": "Dimmer",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "PercenType",
 				"transformation": "raw"
 			},
@@ -342,17 +341,17 @@
 				"channelLabel": "Color Temperature Kelvin",
 				"channelType": "system.color-temperature-abs",
 				"itemType": "Number:Temperature",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
-				"format": "%d K"
+				"format": "%f K"
 			},
 			{
 				"attribute": "colorHue",
 				"channel": "color",
 				"channelType": "system.color",
 				"itemType": "Color",
-				"inType": "Float",
+				"inType": "Number",
 				"outType": "HSBType",
 				"transformation": "code"
 			},
@@ -461,10 +460,10 @@
 				"channel": "switch#battery-level",
 				"channelType": "system.battery-level",
 				"itemType": "Number:Dimensionless",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
-				"format": "%d %%"
+				"format": "%f %%"
 			},
 			{
 				"attribute": "otaStatus",
@@ -506,10 +505,10 @@
 				"channel": "switch#ota-progress",
 				"channelType": "ota-percent",
 				"itemType": "Number:Dimensionless",
-				"inType": "Integer",
+				"inType": "Number",
 				"outType": "QuantityType",
 				"transformation": "format",
-				"format": "%d %%"
+				"format": "%f %%"
 			},
 			{
 				"attribute": "customName",
