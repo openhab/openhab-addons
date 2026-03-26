@@ -30,7 +30,7 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
 @NonNullByDefault
 public class ShellyDeviceStats {
 
-    public record Alarm(String message, long timeStamp) {
+    public record ShellyDeviceAlarm(String message, long timeStamp) {
     }
 
     public final AtomicLong lastUptime = new AtomicLong(0);
@@ -39,7 +39,7 @@ public class ShellyDeviceStats {
     public final AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     public final AtomicLong remainingWatchdog = new AtomicLong(0);
     public final AtomicLong alarms = new AtomicLong(0);
-    public final AtomicReference<@Nullable Alarm> lastAlarm = new AtomicReference<>();
+    public final AtomicReference<@Nullable ShellyDeviceAlarm> lastAlarm = new AtomicReference<>();
     public final AtomicLong protocolMessages = new AtomicLong(0);
     public final AtomicInteger protocolErrors = new AtomicInteger(0);
     public final AtomicInteger wifiRssi = new AtomicInteger(0);
@@ -53,7 +53,7 @@ public class ShellyDeviceStats {
         prop.put("timeoutsRecovered", String.valueOf(timeoutsRecovered));
         prop.put("remainingWatchdog", String.valueOf(remainingWatchdog));
         prop.put("alarmCount", String.valueOf(alarms));
-        Alarm alarm = lastAlarm.get();
+        ShellyDeviceAlarm alarm = lastAlarm.get();
         if (alarm != null) {
             prop.put("lastAlarm", alarm.message);
             prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(alarm.timeStamp));

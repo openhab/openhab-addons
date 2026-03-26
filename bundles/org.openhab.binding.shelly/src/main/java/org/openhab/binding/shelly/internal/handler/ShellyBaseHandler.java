@@ -55,7 +55,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
-import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.Alarm;
+import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
@@ -836,7 +836,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         String channelId = mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
         State value = cache.getValue(channelId);
         String lastAlarmMsg = value != UnDefType.NULL ? value.toString() : "";
-        Alarm lastAlarm = stats.lastAlarm.get();
+        ShellyDeviceAlarm lastAlarm = stats.lastAlarm.get();
 
         if (force || !lastAlarmMsg.equals(event) || (lastAlarmMsg.equals(event)
                 && (lastAlarm == null || now() > lastAlarm.timeStamp() + HEALTH_CHECK_INTERVAL_SEC))) {
@@ -861,7 +861,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: {}", thingName, messages.get("event.triggered", event));
                     triggerChannel(channelId, event);
                     cache.updateChannel(channelId, getStringType(event.toUpperCase(Locale.ROOT)));
-                    lastAlarm = new Alarm(event, (long) now());
+                    lastAlarm = new ShellyDeviceAlarm(event, (long) now());
                     stats.lastAlarm.set(lastAlarm);
                     stats.alarms.incrementAndGet();
             }

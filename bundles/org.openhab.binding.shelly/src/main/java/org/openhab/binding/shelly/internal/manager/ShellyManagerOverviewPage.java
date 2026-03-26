@@ -31,7 +31,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
-import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.Alarm;
+import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.ShellyDeviceAlarm;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -283,7 +283,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
 
-        Alarm lastAlarm = stats.lastAlarm.get();
+        ShellyDeviceAlarm lastAlarm = stats.lastAlarm.get();
         if (lastAlarm != null && lastAlarm.message().equalsIgnoreCase(ALARM_TYPE_RESTARTED)) {
             result.put("Device Alarm", ALARM_TYPE_RESTARTED + " (" + convertTimestamp(lastAlarm.timeStamp()) + ")");
         }
