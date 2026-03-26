@@ -432,7 +432,7 @@ public class ElectroluxGroupAPI {
                     String content = response.getContentAsString();
                     logger.trace("API response: {}", content);
 
-                    if (response.getStatus() != HttpStatus.OK_200) {
+                    if (!HttpStatus.isSuccess(response.getStatus())) {
                         logger.debug("sendCommand failed, HTTP status: {}", response.getStatus());
                         refreshToken();
                     } else {
