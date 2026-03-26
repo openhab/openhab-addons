@@ -16,6 +16,8 @@ import static org.openhab.binding.electroluxappliance.internal.ElectroluxApplian
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,6 +57,7 @@ import org.slf4j.LoggerFactory;
 public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxAirPurifierHandler.class);
+    private final AtomicBoolean commandInProgress = new AtomicBoolean(false);
 
     public ElectroluxAirPurifierHandler(Thing thing, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
@@ -106,18 +109,18 @@ public class ElectroluxAirPurifierHandler extends ElectroluxApplianceHandler {
                     }
                 }
 
-                final Bridge bridge = getBridge();
-                if (bridge != null && bridge.getHandler() instanceof ElectroluxApplianceBridgeHandler bridgeHandler) {
-                    bridgeHandler.handleCommand(
-                            new ChannelUID(this.thing.getUID(), ElectroluxApplianceBindingConstants.CHANNEL_STATUS),
-                            RefreshType.REFRESH);
-                }
+                commandInProgress.set(true);
+                scheduler.schedule(() -> commandInProgress.set(false), 5, TimeUnit.SECONDS);
             }
         }
     }
 
     @Override
     public void update(@Nullable ApplianceDTO dto) {
+        if (commandInProgress.get()) {
+            logger.debug("Skipping state update - command in progress");
+            return;
+        }
         if (dto != null) {
             // Update all channels from the updated data
             getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
