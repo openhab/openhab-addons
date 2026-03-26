@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.electroluxappliance.internal.ElectroluxApplianceBindingConstants;
 import org.openhab.binding.electroluxappliance.internal.api.ElectroluxGroupAPI;
 import org.openhab.binding.electroluxappliance.internal.dto.AirPurifierStateDTO;
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
