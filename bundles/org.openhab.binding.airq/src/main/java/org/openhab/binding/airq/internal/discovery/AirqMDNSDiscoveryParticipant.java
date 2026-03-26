@@ -87,12 +87,19 @@ public class AirqMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
 
         Inet4Address[] addresses = serviceInfo.getInet4Addresses();
-        if (addresses.length == 0) {
+        Inet4Address ip4Address = null;
+        for (Inet4Address address : addresses) {
+            if (address != null) {
+                ip4Address = address;
+                break;
+            }
+        }
+        if (ip4Address == null) {
             logger.debug("Discovered air-Q device without IPv4 address, ignoring: {}", serviceInfo.getQualifiedName());
             return null;
         }
 
-        String ipAddress = addresses[0].getHostAddress();
+        String ipAddress = ip4Address.getHostAddress();
         String deviceName = serviceInfo.getPropertyString(MDNS_PROPERTY_DEVICE_NAME);
         String label = deviceName != null && !deviceName.isBlank() ? "air-Q (%s)".formatted(deviceName) : "air-Q";
         String id = serviceInfo.getPropertyString(MDNS_PROPERTY_ID);

@@ -157,4 +157,14 @@ public class AirqMDNSDiscoveryParticipantTest {
 
         assertThat(participant.createResult(serviceInfo), is(nullValue()));
     }
+
+    @Test
+    public void testCreateResultReturnsNullWhenFirstIPv4AddressIsNull() {
+        when(serviceInfo.getPropertyString("device")).thenReturn("air-q");
+        when(serviceInfo.getPropertyString("id")).thenReturn("abc123def456");
+        when(serviceInfo.getQualifiedName()).thenReturn("airq._http._tcp.local.");
+        when(serviceInfo.getInet4Addresses()).thenReturn(new Inet4Address[] { null });
+
+        assertThat(participant.createResult(serviceInfo), is(nullValue()));
+    }
 }
