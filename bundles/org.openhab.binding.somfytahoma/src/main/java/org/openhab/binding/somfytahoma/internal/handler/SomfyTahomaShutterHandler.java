@@ -15,6 +15,8 @@ package org.openhab.binding.somfytahoma.internal.handler;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -31,20 +33,22 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaShutterHandler(Thing thing) {
         super(thing);
-        // Octa22: Koppel de status (ClosureState) direct aan het bestaande CONTROL kanaal
+        // Map the closure state directly to the existing CONTROL channel
         stateNames.put(CONTROL, "core:ClosureState");
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
-        if (!CONTROL.equals(channelUID.getId())) {
+        if (!CONTROL.equals(channelUID.getId()) || command instanceof RefreshType) {
             return;
         }
 
-        if (command instanceof RefreshType) {
-            return;
+        if (command instanceof DecimalType) {
+            // Send percentage values directly
+            sendCommand(COMMAND_SET_CLOSURE, "[" + toInteger(command) + "]");
         } else {
+            // Handle string commands (UP, DOWN, STOP)
             String cmd = getTahomaCommand(command.toString());
             if (COMMAND_STOP.equals(cmd)) {
                 String executionId = getCurrentExecutions();
@@ -53,14 +57,14 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
                 } else {
                     sendCommand(COMMAND_STOP);
                 }
-            } else {
-                String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + toInteger(command) + "]" : "[]";
-                sendCommand(cmd, param);
+            } else if (cmd != null) {
+                // Only send if the command is recognized
+                sendCommand(cmd, "[]");
             }
         }
     }
 
-    protected String getTahomaCommand(String command) {
+    protected @Nullable String getTahomaCommand(String command) {
         switch (command) {
             case "OFF":
             case "DOWN":
@@ -73,7 +77,8 @@ public class SomfyTahomaShutterHandler extends SomfyTahomaBaseThingHandler {
             case "STOP":
                 return COMMAND_STOP;
             default:
-                return COMMAND_SET_CLOSURE;
+                // Return null to ignore unsupported commands like MOVE
+                return null;
         }
     }
 }
