@@ -25,4 +25,5 @@ import org.openhab.core.thing.ThingTypeUID;
 public class AirqBindingConstants {
     private static final String BINDING_ID = "airq";
     public static final ThingTypeUID THING_TYPE_AIRQ = new ThingTypeUID(BINDING_ID, "airq");
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
 }
