@@ -109,7 +109,7 @@ public class OpenhabGraalJSScriptEngine
         }
     }
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
-    private static final String EVENT_CONVERSION_CODE = "this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
+    private static final String EVENT_CONVERSION_CODE = "(this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event);";
     private static final Pattern USE_WRAPPER_DIRECTIVE = Pattern
             .compile("^\\s*([\"'])use wrapper(?:=(?<enabled>true|false))?\\1;?\\s*$");
     /**
@@ -409,7 +409,6 @@ public class OpenhabGraalJSScriptEngine
             for (int i = 0; i < lines.size(); i++) {
                 if (i == lineNumber) {
                     sb.append(EVENT_CONVERSION_CODE);
-                    sb.append(System.lineSeparator());
                 }
                 sb.append(lines.get(i));
                 sb.append(System.lineSeparator());
@@ -419,7 +418,8 @@ public class OpenhabGraalJSScriptEngine
 
         if (useWrapper) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
-            newScript = "(function() {" + System.lineSeparator() + newScript + System.lineSeparator() + "})()";
+            // the line separator after the script is required so the end of the IIFE cannot be "commented out"
+            newScript = "(function() {" + newScript + System.lineSeparator() + "})()";
         }
         return super.onScript(newScript);
     }
