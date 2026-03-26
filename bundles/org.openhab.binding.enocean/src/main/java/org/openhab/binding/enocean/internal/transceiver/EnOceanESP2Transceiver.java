@@ -150,7 +150,9 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                     logger.debug("Unable to read from serial port: {}", e.getMessage());
                     logger.trace("", e);
                     TransceiverErrorListener errorListener = this.errorListener;
-                    if (errorListener != null) {
+                    if (errorListener != null && !thread.isInterrupted()) {
+                        // We don't want to take the Thing offline if an IOException is thrown then the port is closed,
+                        // which is why we check isInterrupted()
                         errorListener.errorOccurred(e);
                     }
                     break;
@@ -258,7 +260,9 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                                 logger.debug("Unable to process message: {}", e.getMessage());
                                 logger.trace("", e);
                                 TransceiverErrorListener errorListener = this.errorListener;
-                                if (errorListener != null) {
+                                if (errorListener != null && !thread.isInterrupted()) {
+                                    // We don't want to take the Thing offline if a RuntimeException is thrown while
+                                    // the Receiver is terminating, which is why we check isInterrupted()
                                     errorListener.errorOccurred(e);
                                 }
                             }
