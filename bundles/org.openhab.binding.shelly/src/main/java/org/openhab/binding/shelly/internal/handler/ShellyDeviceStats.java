@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 /***
@@ -28,14 +29,17 @@ import org.openhab.binding.shelly.internal.util.ShellyUtils;
  */
 @NonNullByDefault
 public class ShellyDeviceStats {
+
+    public record Alarm(String message, long timeStamp) {
+    }
+
     public final AtomicLong lastUptime = new AtomicLong(0);
     public final AtomicLong restarts = new AtomicLong(0);
     public final AtomicInteger timeoutErrors = new AtomicInteger(0);
     public final AtomicInteger timeoutsRecovered = new AtomicInteger(0);
     public final AtomicLong remainingWatchdog = new AtomicLong(0);
     public final AtomicLong alarms = new AtomicLong(0);
-    public final AtomicReference<String> lastAlarm = new AtomicReference<>("");
-    public final AtomicLong lastAlarmTs = new AtomicLong(0);
+    public final AtomicReference<@Nullable Alarm> lastAlarm = new AtomicReference<>();
     public final AtomicLong protocolMessages = new AtomicLong(0);
     public final AtomicInteger protocolErrors = new AtomicInteger(0);
     public final AtomicInteger wifiRssi = new AtomicInteger(0);
@@ -49,8 +53,11 @@ public class ShellyDeviceStats {
         prop.put("timeoutsRecovered", String.valueOf(timeoutsRecovered));
         prop.put("remainingWatchdog", String.valueOf(remainingWatchdog));
         prop.put("alarmCount", String.valueOf(alarms));
-        prop.put("lastAlarm", lastAlarm.get());
-        prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(lastAlarmTs.get()));
+        Alarm alarm = lastAlarm.get();
+        if (alarm != null) {
+            prop.put("lastAlarm", alarm.message);
+            prop.put("lastAlarmTs", ShellyUtils.convertTimestamp(alarm.timeStamp));
+        }
         prop.put("protocolMessages", String.valueOf(protocolMessages));
         prop.put("protocolErrors", String.valueOf(protocolErrors));
         prop.put("wifiRssi", String.valueOf(wifiRssi));

@@ -55,6 +55,7 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
+import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.Alarm;
 import org.openhab.binding.shelly.internal.provider.ShellyChannelDefinitions;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
@@ -834,10 +835,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void postEvent(String event, boolean force) {
         String channelId = mkChannelId(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ALARM);
         State value = cache.getValue(channelId);
-        String lastAlarm = value != UnDefType.NULL ? value.toString() : "";
+        String lastAlarmMsg = value != UnDefType.NULL ? value.toString() : "";
+        Alarm lastAlarm = stats.lastAlarm.get();
 
-        if (force || !lastAlarm.equals(event)
-                || (lastAlarm.equals(event) && now() > stats.lastAlarmTs.get() + HEALTH_CHECK_INTERVAL_SEC)) {
+        if (force || !lastAlarmMsg.equals(event) || (lastAlarmMsg.equals(event)
+                && (lastAlarm == null || now() > lastAlarm.timeStamp() + HEALTH_CHECK_INTERVAL_SEC))) {
             switch (event.toUpperCase(Locale.ROOT)) {
                 case "":
                 case "0": // DW2 1.8
@@ -852,14 +854,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 case Shelly2ApiJsonDTO.SHELLY2_EVENT_OTADONE:
                 case SHELLY_EVENT_ROLLER_CALIB:
                     logger.debug("{}: {}", thingName, messages.get("event.filtered", event));
+                    break;
                 case ALARM_TYPE_NONE:
                     break;
                 default:
                     logger.debug("{}: {}", thingName, messages.get("event.triggered", event));
                     triggerChannel(channelId, event);
                     cache.updateChannel(channelId, getStringType(event.toUpperCase(Locale.ROOT)));
-                    stats.lastAlarm.set(event);
-                    stats.lastAlarmTs.set((long) now());
+                    lastAlarm = new Alarm(event, (long) now());
+                    stats.lastAlarm.set(lastAlarm);
                     stats.alarms.incrementAndGet();
             }
         }

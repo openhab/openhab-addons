@@ -31,6 +31,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats;
+import org.openhab.binding.shelly.internal.handler.ShellyDeviceStats.Alarm;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -282,14 +283,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             }
         }
 
-        String lastAlarm;
-        long lastAlarmTs;
-        synchronized (this) {
-            lastAlarm = stats.lastAlarm.get();
-            lastAlarmTs = stats.lastAlarmTs.get();
-        }
-        if (lastAlarm.equalsIgnoreCase(ALARM_TYPE_RESTARTED)) {
-            result.put("Device Alarm", ALARM_TYPE_RESTARTED + " (" + convertTimestamp(lastAlarmTs) + ")");
+        Alarm lastAlarm = stats.lastAlarm.get();
+        if (lastAlarm != null && lastAlarm.message().equalsIgnoreCase(ALARM_TYPE_RESTARTED)) {
+            result.put("Device Alarm", ALARM_TYPE_RESTARTED + " (" + convertTimestamp(lastAlarm.timeStamp()) + ")");
         }
 
         if (getBool(profile.status.overtemperature)) {
