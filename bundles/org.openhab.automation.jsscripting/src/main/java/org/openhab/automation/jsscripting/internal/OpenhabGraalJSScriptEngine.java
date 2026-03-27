@@ -258,7 +258,7 @@ public class OpenhabGraalJSScriptEngine
                 .allowExperimentalOptions(true) //
                 // redirect context's out/err streams to SLF4J
                 .out(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
-                .err(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
+                .err(new Slf4jOutputStream(contextLogger, Level.WARN)) //
                 // choose the path to look for CommonJS module (i.e. node_modules)
                 .option("js.commonjs-require-cwd", jsDependencyTracker.getLibraryPath().toString()) //
                 // enable Nashorn compat mode as openhab-js relies on accessors, see

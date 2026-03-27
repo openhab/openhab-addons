@@ -116,6 +116,8 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         return Engine.newBuilder().allowExperimentalOptions(true) //
                 .option("engine.WarnInterpreterOnly", "false") //
                 .out(new Slf4jOutputStream(engineLogger, Level.DEBUG)) //
+                // Note: Due to a bug in GraalVM, info messages are logged to the err stream, so hide it for now
+                // https://github.com/oracle/graal/issues/13222
                 .err(new Slf4jOutputStream(engineLogger, Level.DEBUG));
     }
 
