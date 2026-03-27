@@ -33,7 +33,6 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.dahuadoor.internal.DahuaDoorConfiguration;
 import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +51,9 @@ public class DahuaEventClient implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(DahuaEventClient.class);
 
-    private String host;
-    private String username;
-    private String password;
+    private final String host;
+    private final String username;
+    private final String password;
     private int id = 0; // Our Request / Response ID that must be in all requests and initiated by us
     private int sessionId = 0; // Session ID will be returned after successful login
     private String fakeIpAddr = "(null)"; // WebGUI: mask our real IP
@@ -74,17 +73,14 @@ public class DahuaEventClient implements Runnable {
     private static final String SNAPSHOT_PATH = "/cgi-bin/snapshot.cgi";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private final DahuaDoorConfiguration config;
-
     public DahuaEventClient(String host, String username, String password, DHIPEventListener eventListener,
-            Consumer<String> errorInformer, DahuaDoorConfiguration config) {
+            Consumer<String> errorInformer) {
         this.host = host;
         this.username = username;
         this.password = password;
         this.eventListener = eventListener;
         this.errorInformer = errorInformer;
         this.execThread = true;
-        this.config = config;
         ThreadPoolManager.getPool("binding.dahuadoor").submit(this);
     }
 
@@ -354,10 +350,10 @@ public class DahuaEventClient implements Runnable {
         if (qop != null && qop.contains(",")) {
             qop = qop.split(",")[0].trim();
         }
-        String ha1 = md5Hex(config.username + ":" + realm + ":" + config.password);
+        String ha1 = md5Hex(username + ":" + realm + ":" + password);
         String ha2 = md5Hex("GET:" + requestPath);
         StringBuilder auth = new StringBuilder("Digest ");
-        auth.append("username=\"").append(escapeDigestValue(config.username)).append("\"");
+        auth.append("username=\"").append(escapeDigestValue(username)).append("\"");
         auth.append(", realm=\"").append(escapeDigestValue(realm)).append("\"");
         auth.append(", nonce=\"").append(escapeDigestValue(nonce)).append("\"");
         auth.append(", uri=\"").append(requestPath).append("\"");
@@ -492,7 +488,8 @@ public class DahuaEventClient implements Runnable {
             try {
                 send(new Gson().toJson(queryArgs));
             } catch (IOException e) {
-                logger.trace("Error sending keepAlive: {}", e.getMessage());
+                logger.trace("Error sending keepAlive", e);
+                return;
             }
             lastKeepAlive = System.currentTimeMillis();
             boolean keepAliveReceived = false;
@@ -513,7 +510,8 @@ public class DahuaEventClient implements Runnable {
                         }
                     }
                 } catch (IOException e) {
-                    logger.trace("Error receiving keepAlive response: {}", e.getMessage());
+                    logger.trace("Error receiving keepAlive response", e);
+                    return;
                 }
             }
 
@@ -624,22 +622,24 @@ public class DahuaEventClient implements Runnable {
                 // Offset 28-31: Reserved
                 lenRecved = bbuffer.getInt(16);
                 bbuffer.get(header, 0, 32);
-                bbuffer = bbuffer.position(32).slice(); // cut bbuffer by 32 Bytes
+                bbuffer.position(32); // Move to payload start
 
             } else {
                 if (lenRecved > 0) {
                     // Ensure we have the full payload before reading it
                     if (bbuffer.remaining() < lenRecved) {
-                        // Save remaining bytes for next read - include current position
-                        bbuffer.position(bbuffer.position() - 32); // Go back to include header
-                        residualBuffer = ByteBuffer.allocate(bbuffer.remaining());
-                        residualBuffer.put(bbuffer);
+                        // Save from header start to preserve full frame for the next read.
+                        ByteBuffer residualSlice = bbuffer.duplicate();
+                        int headerStartPosition = Math.max(0, bbuffer.position() - 32);
+                        residualSlice.position(headerStartPosition);
+                        residualBuffer = ByteBuffer.allocate(residualSlice.remaining());
+                        residualBuffer.put(residualSlice);
                         residualBuffer.flip();
                         break;
                     }
                     String p2pData = new String(bbuffer.array(), bbuffer.arrayOffset() + bbuffer.position(), lenRecved,
                             StandardCharsets.UTF_8);
-                    bbuffer = bbuffer.position(bbuffer.position() + lenRecved).slice(); // cut bbuffer
+                    bbuffer.position(bbuffer.position() + lenRecved);
                     p2pReturnData.add(p2pData);
                     lenRecved = 0;
                 } else {
@@ -748,9 +748,13 @@ public class DahuaEventClient implements Runnable {
         while (execThread) {
             if (error) {
                 try {
-                    Thread.sleep(60000);
+                    for (int i = 0; i < 12 && execThread; i++) {
+                        Thread.sleep(5000);
+                    }
                 } catch (InterruptedException e) {
                     logger.debug("Thread interrupted during error wait", e);
+                    Thread.currentThread().interrupt();
+                    break;
                 }
             }
             error = true;
@@ -812,7 +816,7 @@ public class DahuaEventClient implements Runnable {
                 keepAlive(this.keepAliveInterval);
                 logger.trace("Failure no keep alive received");
             } catch (Exception e) {
-                logger.trace("Socket open failed: {}", e.getMessage());
+                logger.trace("Socket open failed", e);
             }
         }
         try {
