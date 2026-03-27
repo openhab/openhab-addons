@@ -25,10 +25,9 @@ import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-
-import tech.units.indriya.unit.ProductUnit;
 
 /**
  * {@link AtmoFranceDto} class defines DTO used to interact with server api
@@ -38,8 +37,8 @@ import tech.units.indriya.unit.ProductUnit;
  */
 @NonNullByDefault
 public class AtmoFranceDto {
-    public static final Unit<Density> GRAIN_PER_CUBICMETER = new ProductUnit<>(
-            ImperialUnits.GRAIN.divide(tech.units.indriya.unit.Units.CUBIC_METRE));
+    public static final Unit<Density> GRAIN_PER_CUBICMETER = ImperialUnits.GRAIN.divide(SIUnits.CUBIC_METRE)
+            .asType(Density.class);
     public static final ZoneId DEFAULT_TZ = ZoneId.of("Europe/Paris");
 
     public static record LoginResponse(String token) {
@@ -75,7 +74,7 @@ public class AtmoFranceDto {
     public static record Properties(String name) {
     }
 
-    public static record Feature<T extends BaseProperties> (String type, T properties, Geometry geometry) {
+    public static record Feature<T extends BaseProperties>(String type, T properties, Geometry geometry) {
     }
 
     public static record Geometry(String type, List<Double> coordinates) {

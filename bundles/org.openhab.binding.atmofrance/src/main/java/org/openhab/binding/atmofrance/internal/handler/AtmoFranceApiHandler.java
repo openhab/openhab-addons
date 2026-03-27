@@ -100,7 +100,7 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         }
         this.config = localConfig;
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(this::initiateConnexion);
+        scheduler.execute(this::initiateConnection);
     }
 
     @Override
@@ -111,19 +111,19 @@ public class AtmoFranceApiHandler extends BaseBridgeHandler implements HandlerUt
         super.dispose();
     }
 
-    private void initiateConnexion() {
+    private void initiateConnection() {
         try {
             LoginResponse login = executeUri(LOGIN_URI, LoginResponse.class,
                     deserializer.serialize(Objects.requireNonNull(config)));
             bearer = login.token();
             updateStatus(ThingStatus.ONLINE);
-            schedule("token refresh", this::initiateConnexion, TOKEN_VALIDITY);
+            schedule("token refresh", this::initiateConnection, TOKEN_VALIDITY);
         } catch (AtmoFranceException e) {
             if (e.getStatusDetail() instanceof ThingStatusDetail statusDetail) {
                 updateStatus(ThingStatus.OFFLINE, statusDetail, e.getMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                schedule("reconnect", this::initiateConnexion, Duration.ofHours(1));
+                schedule("reconnect", this::initiateConnection, Duration.ofHours(1));
             }
         }
     }
