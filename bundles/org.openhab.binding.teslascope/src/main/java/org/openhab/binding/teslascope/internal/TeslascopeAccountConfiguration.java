@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TeslascopeAccountConfiguration {
     /**
-      * Teslascope is phasing out support for apiKey in lieu of Personal Access Tokens
-      */
+     * Teslascope is phasing out support for apiKey in lieu of Personal Access Tokens
+     */
     @Deprecated
     public String apiKey = "";
     public String personalAccessToken = "";

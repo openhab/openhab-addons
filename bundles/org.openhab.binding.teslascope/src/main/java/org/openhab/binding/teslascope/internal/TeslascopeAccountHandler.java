@@ -131,9 +131,9 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         TeslascopeAccountConfiguration localConfig = config = getConfigAs(TeslascopeAccountConfiguration.class);
-        if (localConfig.personalAccessToken.isBlank()) {
+        if (localConfig.apiKey.isBlank() && localConfig.personalAccessToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-api-key");
+                    "@text/offline.conf-error.no-personalAccessToken");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
