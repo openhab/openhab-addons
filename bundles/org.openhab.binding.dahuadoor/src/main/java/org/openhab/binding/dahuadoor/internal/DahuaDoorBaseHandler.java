@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -146,7 +147,7 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
-        String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT).format(new Date());
         String filename = localConfig.snapshotPath + "/DoorBell_" + timestamp + ".jpg";
 
         try (FileOutputStream fos = new FileOutputStream(new File(filename))) {

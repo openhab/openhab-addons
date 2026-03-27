@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -307,7 +308,8 @@ public class DahuaEventClient implements Runnable {
         for (int i = 1; i < lines.length; i++) {
             int colon = lines[i].indexOf(':');
             if (colon > 0) {
-                headers.put(lines[i].substring(0, colon).trim().toLowerCase(), lines[i].substring(colon + 1).trim());
+                headers.put(lines[i].substring(0, colon).trim().toLowerCase(Locale.ROOT),
+                        lines[i].substring(colon + 1).trim());
             }
         }
         byte[] body = Arrays.copyOfRange(rawResponse, headerEnd, rawResponse.length);
@@ -339,7 +341,7 @@ public class DahuaEventClient implements Runnable {
     }
 
     private @Nullable String createDigestAuthorizationHeader(String challenge, String requestPath) throws Exception {
-        if (!challenge.toLowerCase().startsWith("digest")) {
+        if (!challenge.toLowerCase(Locale.ROOT).startsWith("digest")) {
             return null;
         }
         Map<String, String> digestParams = parseDigestChallenge(challenge.substring(6).trim());
@@ -394,7 +396,7 @@ public class DahuaEventClient implements Runnable {
             if (equals < 0) {
                 break;
             }
-            String key = challenge.substring(index, equals).trim().toLowerCase();
+            String key = challenge.substring(index, equals).trim().toLowerCase(Locale.ROOT);
             index = equals + 1;
             String value;
             if (index < challenge.length() && challenge.charAt(index) == '"') {
@@ -452,9 +454,9 @@ public class DahuaEventClient implements Runnable {
 
     public String genMd5Hash(String Dahua_random, String Dahua_realm, String username, String password)
             throws Exception {
-        String PWDDB_HASH = md5(username + ":" + Dahua_realm + ":" + password).toUpperCase();
-        String PASS = username + ":" + Dahua_random + ":" + PWDDB_HASH;
-        return md5(PASS).toUpperCase();
+        final String passwordDbHash = md5(String.join(":", username, Dahua_realm, password)).toUpperCase(Locale.ROOT);
+        final String pass = String.join(":", username, Dahua_random, passwordDbHash);
+        return md5(pass).toUpperCase(Locale.ROOT);
     }
 
     /**
@@ -553,7 +555,6 @@ public class DahuaEventClient implements Runnable {
     }
 
     public ArrayList<String> receive() throws IOException {
-
         ArrayList<String> p2pReturnData = new ArrayList<String>();
         byte[] buffer = new byte[8192];
         byte[] header = new byte[32];
@@ -693,14 +694,14 @@ public class DahuaEventClient implements Runnable {
                 return false;
             }
 
-            String RANDOM_HASH = genMd5Hash(random, realm, this.username, this.password);
+            String hashedCredentials = genMd5Hash(random, realm, this.username, this.password);
 
             queryArgs = new HashMap<>();
             queryArgs.put("id", this.id);
             queryArgs.put("magic", "0x1234");
             queryArgs.put("method", "global.login");
             queryArgs.put("session", this.sessionId);
-            queryArgs.put("params", Map.of("userName", this.username, "password", RANDOM_HASH, "clientType",
+            queryArgs.put("params", Map.of("userName", this.username, "password", hashedCredentials, "clientType",
                     this.clientType, "ipAddr", this.fakeIpAddr, "loginType", "Direct", "authorityType", "Default"));
 
             send(new Gson().toJson(queryArgs));
@@ -754,7 +755,6 @@ public class DahuaEventClient implements Runnable {
             }
             error = true;
             try {
-
                 Socket localSock = new Socket(host, 5000);
                 sock = localSock;
                 localSock.setSoTimeout(5000); // Set timeout to 5 seconds

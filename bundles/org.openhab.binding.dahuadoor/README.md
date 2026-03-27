@@ -9,7 +9,6 @@ This binding integrates Dahua VTO Villastation door controllers with openHAB, en
 | VTO2202    | `vto2202` | Dahua VTO2202 outdoor station with single button |
 | VTO3211    | `vto3211` | Dahua VTO3211 outdoor station with dual buttons  |
 
-
 ## Discovery
 
 Automatic discovery is not supported.
@@ -17,7 +16,7 @@ Things must be manually configured.
 
 ## Thing Configuration
 
-### VTO2202/VTO3211 Device 
+### VTO2202/VTO3211 Device
 
 Single-button outdoor station.
 
@@ -27,7 +26,6 @@ Single-button outdoor station.
 | username     | text | Yes      | Username to access the device                                                |
 | password     | text | Yes      | Password to access the device                                                |
 | snapshotPath | text | Yes      | Linux path where image files are stored (e.g., /var/lib/openhab/door-images) |
-
 
 **Note:** Windows paths are not currently supported.
 
