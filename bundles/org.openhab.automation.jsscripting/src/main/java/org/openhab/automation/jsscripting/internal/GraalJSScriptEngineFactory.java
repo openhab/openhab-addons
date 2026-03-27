@@ -83,7 +83,6 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         this.configuration = new GraalJSScriptEngineConfiguration(config);
 
         if (configuration.isDebuggerEnabled()) {
-            logger.info("Debugger support is enabled for JavaScript Scripting.");
             Engine.Builder engineBuilder = createEngineBuilder();
             engineBuilder //
                     .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
@@ -100,6 +99,7 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
                         e);
                 engine = createEngineBuilder().build();
             }
+            logger.info("Debugger support is enabled for JavaScript Scripting.");
             this.engine = engine;
         } else {
             this.engine = createEngineBuilder().build();
