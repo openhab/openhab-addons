@@ -12,8 +12,7 @@ Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/
 |-------------------|-----------|-----------------------------------------------------------------------------------|-----------|----------|
 | token             | text      | Token for energy forecast service to provide forecast data                        | N/A       | yes      |
 | zone              | text      | Bidding zone for price queries                                                    | N/A       | yes      |
-| fixCost           | decimal   | Fix costs in ct/kWh which will be added on top of the forecast price, e.g. 15,3   | 0         | no       |
-| vat               | decimal   | VAT in percent which will be added on top of the forecast price, e.g. 19,0        | 0         | no       |
+| fixCost           | decimal   | Net fix costs in ct/kWh added on top of the forecast price, e.g. 15,3             | 0         | no       |
 | resolution        | text      | Resolution in ISO 8601 Duration format                                            | PT15M     | no       |
 | refreshInterval   | integer   | Refresh interval in minutes. Check with service throttling                        | 180       | no       |
 | errorLimit        | integer   | Limit error percentage values for better visualization                            | 0         | no       |
@@ -26,12 +25,9 @@ Check in beforehand if your [price zone](https://www.energyforecast.de/api-docs/
 
 #### Calculate Gross Price
 
-`fixCost`and `vat` are convenience parameters to calculate the gross price easily.
-The gross price is calculated as ( `series price` + `fixCost` ) * (1 + `vat` / 100). 
-
+`fixCost` shall be net costs which will be added to the net energy price.
 If you've already one or more items holding fix cost values consider to [calculate the future prices in a rule](https://www.openhab.org/addons/bindings/energidataservice/#time-series).
-
-Instead of the `vat` configuration value consider to use the [VAT Transformation Service](https://www.openhab.org/addons/transformations/vat/). 
+Use [VAT Transformation Service](https://www.openhab.org/addons/transformations/vat/) to calculate the gross price. 
 
 ## Channels
 

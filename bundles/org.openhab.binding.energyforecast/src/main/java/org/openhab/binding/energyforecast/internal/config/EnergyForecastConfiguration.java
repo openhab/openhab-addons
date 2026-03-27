@@ -25,7 +25,6 @@ public class EnergyForecastConfiguration {
     public String zone = "";
     public String token = "";
     public double fixCost = 0.0;
-    public double vat = 0.0;
     public String resolution = "PT15M";
     public int refreshInterval = 180;
     public int errorLimit = 0;

@@ -44,12 +44,7 @@
 			</parameter>
 			<parameter name="fixCost" type="decimal" required="false">
 				<label>Energy Forecast Fix Cost</label>
-				<description>Fix costs in ct/kWh which will be added on top of the forecast price, e.g. 15,3</description>
-				<default>0</default>
-			</parameter>
-			<parameter name="vat" type="decimal" required="false">
-				<label>Energy Forecast Value Added Tax</label>
-				<description>VAT in percent which will be added on top of the forecast price, e.g. 19,0</description>
+				<description>Net fix costs in ct/kWh which will be added on top of the forecast price, e.g. 15,3</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="resolution" type="text" required="false">
