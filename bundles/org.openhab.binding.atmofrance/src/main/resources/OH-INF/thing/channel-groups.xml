@@ -31,8 +31,8 @@
 			<channel id="effective-date" typeId="localdate">
 				<label>Effective date</label>
 			</channel>
-			<channel id="diffusion-date" typeId="localdate">
-				<label>Publication date</label>
+			<channel id="release-date" typeId="localdate">
+				<label>Release date</label>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -80,7 +80,7 @@
 			<channel id="effective-date" typeId="localdate">
 				<label>Effective date</label>
 			</channel>
-			<channel id="diffusion-date" typeId="localdate">
+			<channel id="release-date" typeId="localdate">
 				<label>Publication date</label>
 			</channel>
 		</channels>

@@ -39,7 +39,7 @@ public class AtmoFranceBindingConstants {
     // List of all channels
     public static final String CHANNEL_INDEX = "index";
     public static final String CHANNEL_EFFECTIVE_DATE = "effective-date";
-    public static final String CHANNEL_DIFFUSION_DATE = "diffusion-date";
+    public static final String CHANNEL_RELEASE_DATE = "release-date";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_API, THING_TYPE_CITY);
 }

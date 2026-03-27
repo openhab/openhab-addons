@@ -38,7 +38,7 @@ You can add multiple `city`, e.g. for gathering pollen or air quality data for d
 | aq      | pm25-index     | Number         | R          | PM 2.5 (Particulate Matter < 2,5 µm)                     |
 | aq      | timestamp      | DateTime       | R          | Timestamp                                                |
 | aq      | effective-date | DateTime       | R          | Effective Date                                           |
-| aq      | diffusion-date | DateTime       | R          | Publication Date                                         |
+| aq      | release-date   | DateTime       | R          | Release Date                                         |
 | pollens | index          | Number         | R          | Pollen Index                                             |
 | pollens | alder-conc     | Number:Density | R          | Alder concentration                                      |
 | pollens | alder-level    | Number         | R          | Alder Index                                              |
