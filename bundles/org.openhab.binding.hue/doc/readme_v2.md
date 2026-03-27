@@ -144,6 +144,7 @@ The `event_id` can have the following values:
 | SHORT_RELEASE        | 2     |
 | LONG_RELEASE         | 3     |
 | DOUBLE_SHORT_RELEASE | 4     |
+| LONG_PRESS           | 5     |
 
 So (for example) the channel value `1002` ((1 * 1000) + 2) means that the second button in the device had a short release event.
 
