@@ -11,7 +11,7 @@
 		<config-description>
 			<parameter name="apiKey" type="text" required="false">
 				<label>apiKey</label>
-				<description>(deprecated) apiKey provided by Teslascope</description>
+				<description>apiKey provided by Teslascope (Deprecated - use Personal Access Token instead)</description>
 			</parameter>
 			<parameter name="personalAccessToken" type="text" required="true">
 				<label>Personal Access Token</label>
