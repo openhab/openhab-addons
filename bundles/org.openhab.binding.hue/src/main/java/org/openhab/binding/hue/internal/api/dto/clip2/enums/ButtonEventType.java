@@ -25,5 +25,6 @@ public enum ButtonEventType {
     REPEAT,
     SHORT_RELEASE,
     LONG_RELEASE,
-    DOUBLE_SHORT_RELEASE
+    DOUBLE_SHORT_RELEASE,
+    LONG_PRESS
 }
