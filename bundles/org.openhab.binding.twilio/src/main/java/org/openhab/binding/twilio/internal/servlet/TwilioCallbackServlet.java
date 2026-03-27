@@ -93,7 +93,7 @@ public class TwilioCallbackServlet extends HttpServlet {
         try {
             httpClient.start();
         } catch (Exception e) {
-            logger.debug("Failed to start media HttpClient: {}", e.getMessage());
+            throw new IllegalStateException("Failed to start media HttpClient", e);
         }
         cleanupScheduler = Executors
                 .newSingleThreadScheduledExecutor(new NamedThreadFactory(BINDING_ID + "-media-cleanup", true));

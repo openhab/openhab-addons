@@ -14,6 +14,7 @@ package org.openhab.binding.twilio.internal.api;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Map;
@@ -54,7 +55,8 @@ public class TwilioSignatureValidator {
         }
 
         String expectedSignature = computeSignature(url, params, authToken);
-        return signature.equals(expectedSignature);
+        return MessageDigest.isEqual(signature.getBytes(StandardCharsets.UTF_8),
+                expectedSignature.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

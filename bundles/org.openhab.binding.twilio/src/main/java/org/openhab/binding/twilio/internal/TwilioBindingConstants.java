@@ -49,6 +49,7 @@ public class TwilioBindingConstants {
     public static final String CHANNEL_CALL_RECEIVED = "callReceived";
     public static final String CHANNEL_DTMF_RECEIVED = "dtmfReceived";
     public static final String CHANNEL_MESSAGE_STATUS = "messageStatus";
+    public static final String CHANNEL_CALL_STATUS_TRIGGER = "callStatusUpdate";
 
     // Twilio API
     public static final String API_BASE_URL = "https://api.twilio.com/2010-04-01/Accounts/";
@@ -62,7 +63,7 @@ public class TwilioBindingConstants {
     public static final String PROPERTY_STATUS_CALLBACK_URL = "statusCallbackUrl";
 
     // Default TwiML templates
-    public static final String DEFAULT_VOICE_GREETING = "<Response><Gather numDigits=\"1\" action=\"{gatherUrl}\"><Say>Hello. This is the open hab smart home system. Press any key.</Say></Gather><Say>No input received. Goodbye.</Say></Response>";
+    public static final String DEFAULT_VOICE_GREETING = "<Response><Gather numDigits=\"1\" action=\"{gatherUrl}\"><Say>Hello. This is the openHAB smart home system. Press any key.</Say></Gather><Say>No input received. Goodbye.</Say></Response>";
     public static final String DEFAULT_GATHER_RESPONSE = "<Response><Say>Thank you. Goodbye.</Say></Response>";
     public static final String EMPTY_TWIML_RESPONSE = "<Response/>";
 

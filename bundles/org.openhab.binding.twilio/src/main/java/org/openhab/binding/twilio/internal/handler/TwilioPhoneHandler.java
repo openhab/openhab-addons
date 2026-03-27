@@ -318,7 +318,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
             payload.addProperty("callStatus", callStatus);
             payload.addProperty("from", params.getOrDefault("From", ""));
             payload.addProperty("to", params.getOrDefault("To", ""));
-            triggerChannel(CHANNEL_MESSAGE_STATUS, payload.toString());
+            triggerChannel(CHANNEL_CALL_STATUS_TRIGGER, payload.toString());
             logger.debug("Call {} status: {}", callSid, callStatus);
         }
     }

@@ -56,7 +56,7 @@ The default `voiceGreeting` includes a `<Gather>` element that collects one DTMF
 ```xml
 <Response>
   <Gather numDigits="1" action="{gatherUrl}">
-    <Say>Hello. This is the open hab smart home system. Press any key.</Say>
+    <Say>Hello. This is the openHAB smart home system. Press any key.</Say>
   </Gather>
   <Say>No input received. Goodbye.</Say>
 </Response>
@@ -89,11 +89,12 @@ The `{gatherUrl}` placeholder is automatically replaced with the correct webhook
 | callReceived | JSON | Triggered on incoming voice call |
 | dtmfReceived | JSON | Triggered when DTMF digits are gathered |
 | messageStatus | JSON | Triggered on message delivery status change |
+| callStatusUpdate | JSON | Triggered on call status change |
 
 Trigger channel payloads are JSON objects. Example `smsReceived` payload:
 
 ```json
-{"from":"+15559876543","to":"+15551234567","body":"Hello!","messageSid":"SM...","numMedia":"0","mediaUrls":"[]"}
+{"from":"+15559876543","to":"+15551234567","body":"Hello!","messageSid":"SM...","numMedia":"0","mediaUrls":[]}
 ```
 
 ## Rule Actions
@@ -495,10 +496,9 @@ If using a reverse proxy, you must forward this entire path prefix.
 | `/twilio/callback/{thingUID}/gather` | POST | DTMF digit gather callbacks |
 | `/twilio/callback/{thingUID}/status` | POST | Message/call status updates |
 | `/twilio/callback/media/{uuid}` | GET | Temporary media serving (for MMS/WhatsApp attachments) |
-| `/twilio/callback/twiml/{uuid}` | GET/POST | Temporary TwiML serving (for call flow chaining) |
 
 The `{thingUID}` is the full thing UID (e.g. `twilio:phone:myaccount:myphone`).
-The `{uuid}` is a randomly generated identifier for temporary media/TwiML entries.
+The `{uuid}` is a randomly generated identifier for temporary media entries.
 
 **Example full URLs** (assuming `publicUrl` is `https://my.domain.com`):
 

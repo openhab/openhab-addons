@@ -65,6 +65,7 @@
 			<channel id="callReceived" typeId="callReceived"/>
 			<channel id="dtmfReceived" typeId="dtmfReceived"/>
 			<channel id="messageStatus" typeId="messageStatus"/>
+			<channel id="callStatusUpdate" typeId="callStatusUpdate"/>
 		</channels>
 
 		<representation-property>phoneNumber</representation-property>
@@ -204,6 +205,15 @@
 		<label>Message Status</label>
 		<description>Triggered when a message delivery status changes. Payload is a JSON object with messageSid,
 			messageStatus, and to fields.</description>
+		<event/>
+	</channel-type>
+
+	<channel-type id="callStatusUpdate">
+		<kind>trigger</kind>
+		<label>Call Status Update</label>
+		<description>Triggered when a call status changes. Payload is a JSON object with callSid, callStatus, from,
+			and to
+			fields.</description>
 		<event/>
 	</channel-type>
 
