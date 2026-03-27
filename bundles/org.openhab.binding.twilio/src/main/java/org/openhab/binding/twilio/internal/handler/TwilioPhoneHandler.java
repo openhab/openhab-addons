@@ -163,7 +163,6 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         if (publicUrl == null || publicUrl.isBlank()) {
             return null;
         }
-        // Remove trailing slash
         if (publicUrl.endsWith("/")) {
             publicUrl = publicUrl.substring(0, publicUrl.length() - 1);
         }
@@ -205,17 +204,13 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         String messageSid = params.getOrDefault("MessageSid", "");
         String numMedia = params.getOrDefault("NumMedia", "0");
 
-        // Update state channels
         updateState(CHANNEL_LAST_MESSAGE_BODY, new StringType(body));
         updateState(CHANNEL_LAST_MESSAGE_FROM, new StringType(from));
         updateState(CHANNEL_LAST_MESSAGE_DATE, new DateTimeType(ZonedDateTime.now(ZoneId.systemDefault())));
         updateState(CHANNEL_LAST_MESSAGE_SID, new StringType(messageSid));
 
-        // Handle media URLs
         String mediaUrl = params.getOrDefault("MediaUrl0", "");
-        if (!mediaUrl.isEmpty()) {
-            updateState(CHANNEL_LAST_MESSAGE_MEDIA_URL, new StringType(mediaUrl));
-        }
+        updateState(CHANNEL_LAST_MESSAGE_MEDIA_URL, new StringType(mediaUrl));
 
         // Build JSON payload for trigger
         JsonObject payload = new JsonObject();

@@ -259,7 +259,7 @@ public class TwilioCallbackServlet extends HttpServlet {
             TwilioApiClient client = accountHandler.getApiClient();
             if (client != null) {
                 String signature = req.getHeader(TWILIO_SIGNATURE_HEADER);
-                String requestUrl = getFullRequestUrl(req);
+                String requestUrl = getExternalRequestUrl(req, accountHandler);
                 logger.trace("Validating signature: url={}, signature={}", requestUrl, signature);
 
                 if (!TwilioSignatureValidator.validate(requestUrl, params, signature, client.getAuthToken())) {
@@ -449,9 +449,27 @@ public class TwilioCallbackServlet extends HttpServlet {
         return params;
     }
 
-    private String getFullRequestUrl(HttpServletRequest req) {
-        StringBuffer requestUrl = req.getRequestURL();
-        String base = requestUrl != null ? requestUrl.toString() : "";
+    /**
+     * Returns the externally-visible request URL for signature validation.
+     * Uses the configured publicUrl when available to handle reverse proxy / TLS termination
+     * scenarios where req.getRequestURL() returns an internal HTTP URL but Twilio signs
+     * against the external HTTPS URL.
+     */
+    private String getExternalRequestUrl(HttpServletRequest req, TwilioAccountHandler accountHandler) {
+        String publicUrl = accountHandler.getAccountConfig().publicUrl;
+        String base;
+        if (publicUrl != null && !publicUrl.isBlank()) {
+            if (publicUrl.endsWith("/")) {
+                publicUrl = publicUrl.substring(0, publicUrl.length() - 1);
+            }
+            // Reconstruct: publicUrl + servlet path + path info
+            String servletPath = req.getServletPath();
+            String pathInfo = req.getPathInfo();
+            base = publicUrl + (servletPath != null ? servletPath : "") + (pathInfo != null ? pathInfo : "");
+        } else {
+            StringBuffer requestUrl = req.getRequestURL();
+            base = requestUrl != null ? requestUrl.toString() : "";
+        }
         String queryString = req.getQueryString();
         if (queryString != null) {
             return base + "?" + queryString;
