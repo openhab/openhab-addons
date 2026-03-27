@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""Combines build logs from multiple shards into a single unified log file.
+
+Usage: combine-build-logs <input-dir> <output-file>
+
+Each subdirectory of <input-dir> must contain a build.log file.
+The combined log preserves each shard's full output, prefixed by a header,
+and appends a merged Maven reactor summary covering all projects.
+"""
+
+import re
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+def natural_sort_key(path: Path) -> list:
+    """Sort paths with embedded numbers in natural order (shard-1 < shard-2 < shard-10)."""
+    return [int(p) if p.isdigit() else p.lower() for p in re.split(r'(\d+)', path.name)]
+
+
+def get_build_status(log_content: str) -> str:
+    """Return 'SUCCESS', 'FAILURE', or 'UNKNOWN' based on the last status line."""
+    for line in reversed(log_content.splitlines()):
+        if '[INFO] BUILD SUCCESS' in line:
+            return 'SUCCESS'
+        if '[INFO] BUILD FAILURE' in line:
+            return 'FAILURE'
+    return 'UNKNOWN'
+
+
+def extract_reactor_project_lines(log_content: str) -> list[str]:
+    """Extract per-project status lines from the Maven reactor summary.
+
+    Returns lines of the form:
+      [INFO] <module name> ... SUCCESS/FAILURE/SKIPPED [ N.NNN s]
+    """
+    lines = log_content.splitlines()
+    in_reactor = False
+    project_lines = []
+
+    for line in lines:
+        if 'Reactor Summary' in line:
+            in_reactor = True
+            continue
+        if in_reactor:
+            if re.match(r'\[INFO\] .+\.\.\. (SUCCESS|FAILURE|SKIPPED)', line):
+                project_lines.append(line)
+            elif re.match(r'\[INFO\] BUILD (SUCCESS|FAILURE)', line):
+                break
+
+    return project_lines
+
+
+def main() -> None:
+    if len(sys.argv) < 3:
+        print(f'Usage: {sys.argv[0]} <input-dir> <output-file>', file=sys.stderr)
+        sys.exit(1)
+
+    input_dir = Path(sys.argv[1])
+    output_file = Path(sys.argv[2])
+
+    log_dirs = sorted(
+        [d for d in input_dir.iterdir() if d.is_dir()],
+        key=natural_sort_key,
+    )
+
+    output_lines: list[str] = []
+    all_reactor_lines: list[str] = []
+    overall_status = 'SUCCESS'
+    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+
+    output_lines.append(f'=== Combined Build Log - Generated {timestamp} ===')
+    output_lines.append('')
+
+    for log_dir in log_dirs:
+        log_file = log_dir / 'build.log'
+        if not log_file.exists():
+            continue
+
+        shard_name = log_dir.name
+        log_content = log_file.read_text(encoding='utf-8', errors='replace')
+        status = get_build_status(log_content)
+
+        if status != 'SUCCESS':
+            overall_status = 'FAILURE'
+
+        reactor_lines = extract_reactor_project_lines(log_content)
+        all_reactor_lines.extend(reactor_lines)
+
+        border = '=' * 80
+        output_lines.append(border)
+        output_lines.append(f'=== {shard_name} ({status}) ===')
+        output_lines.append(border)
+        output_lines.append('')
+        output_lines.append(log_content)
+        output_lines.append('')
+
+    separator = '-' * 72
+    output_lines.append('=' * 80)
+    output_lines.append('=== COMBINED REACTOR SUMMARY ===')
+    output_lines.append('=' * 80)
+    output_lines.append('[INFO]')
+    output_lines.append('[INFO] Reactor Summary:')
+    output_lines.append('[INFO]')
+    output_lines.extend(all_reactor_lines)
+    output_lines.append(f'[INFO] {separator}')
+    output_lines.append(f'[INFO] BUILD {overall_status}')
+    output_lines.append(f'[INFO] {separator}')
+
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    output_file.write_text('\n'.join(output_lines), encoding='utf-8')
+    print(f'Written combined build log: {output_file} ({len(log_dirs)} shards)')
+
+
+if __name__ == '__main__':
+    main()
