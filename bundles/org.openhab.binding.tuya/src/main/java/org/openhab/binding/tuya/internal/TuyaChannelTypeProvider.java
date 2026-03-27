@@ -262,6 +262,15 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
             configurationRef = "channel-type:tuya:dimmer";
             tags.add(schemaDp.readOnly ? "Status" : "Control");
             tags.add("Brightness");
+        } else if ("bitmap".equals(schemaDp.type)) {
+            acceptedItemType = NUMBER;
+            category = "";
+            configurationRef = "channel-type:tuya:bitmap";
+            tags.add(schemaDp.readOnly ? "Status" : "Control");
+
+            stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create() //
+                    .withReadOnly(schemaDp.readOnly) //
+                    .withPattern("%x");
         } else if ("bool".equals(schemaDp.type)) {
             acceptedItemType = SWITCH;
             category = "switch";
