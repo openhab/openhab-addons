@@ -229,12 +229,14 @@ Otherwise `senderIdOffset` is used and direct `senderId` values are rejected dur
 | environmentalSensor             | receivingEEPId    |                             | A5_13_01 |
 |                                 | enoceanId         | | |
 | centralCommand                  | senderIdOffset    | SenderId used for sending msg. If omitted, nextSenderId of bridge is used | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      | EEP used for sending msg    | A5_38_08_01, A5_38_08_02 |
 |                                 | broadcastMessages | Send broadcast or addressed msg | true, false |
 |                                 | receivingEEPId    |                             | F6_00_00, A5_38_08_02, A5_11_04 |
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00_NODON |
 |                                 | broadcastMessages |                             | true, false |
@@ -242,6 +244,7 @@ Otherwise `senderIdOffset` is used and direct `senderId` values are rejected dur
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON |
 |                                 | receivingEEPId¹   |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON, A5_12_01 |
@@ -253,12 +256,14 @@ Otherwise `senderIdOffset` is used and direct `senderId` values are rejected dur
 | multiFunctionSmokeDetector      | receivingEEPId    |                             | F6_05_02, D2_14_30 |
 |                                 | enoceanId         | | |
 | heatRecoveryVentilation         | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
 |                                 | receivingEEPId    |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | suppressRepeating |                             | true, false |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | sendingEEPId      |                             | F6_02_01, F6_02_02 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | receivingEEPId    |                             | F6_02_01, F6_02_02 |
@@ -458,6 +463,7 @@ These conversion functions can be defined with the help of transformation functi
 |Thing type                       | Parameter         | Meaning                    | Possible Values |
 |---------------------------------|-------------------|----------------------------|---|
 | genericThing                    | senderIdOffset    |                            | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 |                                 | sendingEEPId      | EEP used for sending msg   | F6_FF_FF, A5_FF_FF, D2_FF_FF |
 |                                 | receivingEEPId    | EEP used for receiving msg | F6_FF_FF, A5_FF_FF, D2_FF_FF |

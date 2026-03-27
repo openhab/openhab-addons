@@ -153,7 +153,10 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 return false;
             }
 
-            if (validateSenderIdOffset(getConfiguration().senderIdOffset)) {
+            // Skip offset validation when a full senderId is provided; initializeIdForSending() handles it
+            String senderIdHex = getConfiguration().senderId;
+            boolean hasSenderId = senderIdHex != null && !senderIdHex.isEmpty();
+            if (hasSenderId || validateSenderIdOffset(getConfiguration().senderIdOffset)) {
                 return initializeIdForSending();
             } else {
                 configurationErrorDescription = "Sender Id is not valid for bridge";
