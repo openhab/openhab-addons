@@ -256,7 +256,7 @@ public class OpenhabGraalJSScriptEngine
                 .hostClassLoader(getClass().getClassLoader()) //
                 // allow experimental options
                 .allowExperimentalOptions(true) //
-                // redirect OutputStreams from System to Log4j
+                // redirect context's out/err streams to SLF4J
                 .out(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
                 .err(new Slf4jOutputStream(contextLogger, Level.DEBUG)) //
                 // choose the path to look for CommonJS module (i.e. node_modules)

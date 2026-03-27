@@ -39,7 +39,7 @@ class Slf4jOutputStream extends OutputStream {
     @Override
     public void write(int b) {
         if (b == '\n') {
-            flushToLogger();
+            flush();
         } else {
             buffer.write(b);
         }
@@ -47,11 +47,12 @@ class Slf4jOutputStream extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        flushToLogger();
+        flush();
         super.close();
     }
 
-    private void flushToLogger() {
+    @Override
+    public void flush() {
         if (buffer.size() > 0) {
             logger.atLevel(level).log(buffer.toString());
             buffer.reset();

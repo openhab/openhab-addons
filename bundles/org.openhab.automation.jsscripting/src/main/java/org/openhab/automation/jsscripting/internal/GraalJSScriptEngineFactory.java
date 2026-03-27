@@ -31,6 +31,7 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -81,26 +82,46 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         this.jsScriptServiceUtil = jsScriptServiceUtil;
         this.configuration = new GraalJSScriptEngineConfiguration(config);
 
-        Logger engineLogger = LoggerFactory
-                .getLogger(GraalJSScriptEngineFactory.class.getPackageName() + ".org.graalvm.polyglot.Engine");
-        Engine.Builder engineBuilder = Engine.newBuilder().allowExperimentalOptions(true) //
-                .option("engine.WarnInterpreterOnly", "false") //
-                .out(new Slf4jOutputStream(engineLogger, Level.DEBUG)) //
-                .err(new Slf4jOutputStream(engineLogger, Level.DEBUG));
         if (configuration.isDebuggerEnabled()) {
-            logger.info("Enabling JavaScript debugger support.");
+            logger.info("Debugger support is enabled for JavaScript Scripting.");
+            Engine.Builder engineBuilder = createEngineBuilder();
             engineBuilder //
                     .option("inspect", "0.0.0.0:" + configuration.getDebuggerPort()) //
                     .option("inspect.Suspend", "false") // Don't pause at startup waiting for debugger to attach
                     .option("inspect.WaitAttached", "false") // Don't block code execution waiting for debugger to
                                                              // attach
                     .option("inspect.Secure", "false"); // Disable TLS
+            Engine engine;
+            try {
+                engine = engineBuilder.build();
+            } catch (RuntimeException e) {
+                logger.error(
+                        "Failed to initialize Graal JavaScript engine with debugger support. Continuing without debugger support.",
+                        e);
+                engine = createEngineBuilder().build();
+            }
+            this.engine = engine;
+        } else {
+            this.engine = createEngineBuilder().build();
         }
-        this.engine = engineBuilder.build();
 
         if (getLanguage() == null) {
             logger.error(LANG_NOT_INITIALIZED_MSG);
         }
+    }
+
+    private Engine.Builder createEngineBuilder() {
+        Logger engineLogger = LoggerFactory
+                .getLogger(GraalJSScriptEngineFactory.class.getPackageName() + ".org.graalvm.polyglot.Engine");
+        return Engine.newBuilder().allowExperimentalOptions(true) //
+                .option("engine.WarnInterpreterOnly", "false") //
+                .out(new Slf4jOutputStream(engineLogger, Level.DEBUG)) //
+                .err(new Slf4jOutputStream(engineLogger, Level.DEBUG));
+    }
+
+    @Deactivate
+    public void dispose() {
+        this.engine.close();
     }
 
     @Modified
