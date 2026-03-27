@@ -171,6 +171,8 @@ Each EnOcean gateway supports 127 unique SenderIds.
 The SenderId of a thing can be set manually or determined automatically by the binding.
 In case of an UTE teach-in the next unused SenderId is taken automatically.
 To set this SenderId to a specific one, you have to use the nextSenderId parameter of your gateway.
+For actuator things you can also set a full `senderId` (8 hex chars) directly.
+This option is available as advanced parameter and is only applicable when the bridge parameter `rs485=true` (Eltako RS485 bus).
 
 ## Thing Configuration
 
@@ -179,6 +181,9 @@ Therefore if you do not want to use the UI, a mixed mode configuration approach 
 To determine the EEP and EnOceanId of the device and announce a SenderId to it, you first have to pair an openHAB thing with the EnOcean device.
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
+
+For actuator thing types (`centralCommand`, `classicDevice`, `genericThing`, `measurementSwitch`, `rollershutter`, `thermostat`, `heatRecoveryVentilation`) the optional `senderId` parameter is marked as advanced and only used when the bridge is configured with `rs485=true`.
+Otherwise `senderIdOffset` is used and direct `senderId` values are rejected during validation.
 
 |Thing type                       | Parameter         | Meaning                     | Possible Values |
 |---------------------------------|-------------------|-----------------------------|---|
@@ -224,12 +229,14 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | environmentalSensor             | receivingEEPId    |                             | A5_13_01 |
 |                                 | enoceanId         | | |
 | centralCommand                  | senderIdOffset    | SenderId used for sending msg. If omitted, nextSenderId of bridge is used | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      | EEP used for sending msg    | A5_38_08_01, A5_38_08_02 |
 |                                 | broadcastMessages | Send broadcast or addressed msg | true, false |
 |                                 | receivingEEPId    |                             | F6_00_00, A5_38_08_02, A5_11_04 |
 |                                 | suppressRepeating | Suppress repeating of msg   | true, false |
 | rollershutter                   | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | A5_3F_7F_EltakoFSB, A5_3F_7F_EltakoFRM, A5_38_08_07, D2_05_00_NODON |
 |                                 | broadcastMessages |                             | true, false |
@@ -237,6 +244,7 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 |                                 | suppressRepeating |                             | true, false |
 |                                 | pollingInterval   | Refresh interval in seconds | Integer |
 | measurementSwitch               | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON |
 |                                 | receivingEEPId¹   |                             | D2_01_00-0F, D2_01_11, D2_01_12, D2_01_09_PERMUNDO, D2_01_0F_NODON, D2_01_12_NODON, A5_12_01 |
@@ -248,12 +256,14 @@ If you change the SenderId of your thing, you have to pair again the thing with 
 | multiFunctionSmokeDetector      | receivingEEPId    |                             | F6_05_02, D2_14_30 |
 |                                 | enoceanId         | | |
 | heatRecoveryVentilation         | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | | |
 |                                 | sendingEEPId      |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
 |                                 | receivingEEPId    |                             | D2_50_00, D2_50_01, D2_50_10, D2_50_11 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | suppressRepeating |                             | true, false |
 | classicDevice                   | senderIdOffset    |                             | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | sendingEEPId      |                             | F6_02_01, F6_02_02 |
 |                                 | broadcastMessages |                             | true, false |
 |                                 | receivingEEPId    |                             | F6_02_01, F6_02_02 |
@@ -453,6 +463,7 @@ These conversion functions can be defined with the help of transformation functi
 |Thing type                       | Parameter         | Meaning                    | Possible Values |
 |---------------------------------|-------------------|----------------------------|---|
 | genericThing                    | senderIdOffset    |                            | 1-127 |
+|                                 | senderId          | Full 32-bit Sender Base Id in hex format (advanced, only used when bridge rs485=true) | hex string (8 digits, e.g. FF00AA01) |
 |                                 | enoceanId         | EnOceanId of device this thing belongs to | hex value as string |
 |                                 | sendingEEPId      | EEP used for sending msg   | F6_FF_FF, A5_FF_FF, D2_FF_FF |
 |                                 | receivingEEPId    | EEP used for receiving msg | F6_FF_FF, A5_FF_FF, D2_FF_FF |
