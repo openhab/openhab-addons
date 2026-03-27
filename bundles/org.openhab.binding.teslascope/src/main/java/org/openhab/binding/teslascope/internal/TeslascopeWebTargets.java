@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -43,35 +44,55 @@ public class TeslascopeWebTargets {
         this.httpClient = httpClient;
     }
 
-    public String getVehicleList(String apiKey)
+    public String getVehicleList(String apiKey, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        return invoke(BASE_URI + "vehicles?api_key=" + apiKey);
+        if (personalAccessToken.isBlank()) {
+            return invoke(BASE_URI + "vehicles?api_key=" + apiKey, "");
+        } else {
+            return invoke(BASE_URI + "vehicles", personalAccessToken);
+        }
     }
 
-    public String getDetailedInformation(String publicID, String apiKey)
+    public String getDetailedInformation(String publicID, String apiKey, String personalAccessToken)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey);
+        if (personalAccessToken.isBlank()) {
+            return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey, "");
+        } else {
+            return invoke(BASE_VEHICLE_URI + publicID + "/detailed", personalAccessToken);
+        }
     }
 
-    public void sendCommand(String publicID, String apiKey, String command)
+    public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
+        if (personalAccessToken.isBlank()) {
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey, "");
+        } else {
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command, personalAccessToken);
+        }
         return;
     }
 
-    public void sendCommand(String publicID, String apiKey, String command, String params)
+    public void sendCommand(String publicID, String apiKey, String personalAccessToken, String command, String params)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params);
+        if (personalAccessToken.isBlank()) {
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params, "");
+        } else {
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + params, personalAccessToken);
+        }
         return;
     }
 
-    private String invoke(String uri) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+    private String invoke(String uri, String personalAccessToken)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         logger.debug("Calling url: {}", uri);
         String jsonResponse = "";
         int status = 0;
         try {
             Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
+            if (!personalAccessToken.isBlank()) {
+                request.header(HttpHeader.AUTHORIZATION.asString(), "Bearer " + personalAccessToken);
+            }
             if (logger.isTraceEnabled()) {
                 logger.trace("{} request for {}", HttpMethod.GET, uri);
             }

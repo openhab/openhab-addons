@@ -22,5 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TeslascopeAccountConfiguration {
     public String apiKey = "";
+    public String personalAccessToken = "";
     public int refreshInterval = 60;
 }

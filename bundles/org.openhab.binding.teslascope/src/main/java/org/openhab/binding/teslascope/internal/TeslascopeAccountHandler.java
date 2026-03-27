@@ -65,7 +65,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
             try {
-                return webTargets.getVehicleList(config.apiKey);
+                return webTargets.getVehicleList(config.apiKey, config.personalAccessToken);
             } catch (TeslascopeAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
@@ -81,7 +81,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
             try {
-                return webTargets.getDetailedInformation(publicID, config.apiKey);
+                return webTargets.getDetailedInformation(publicID, config.apiKey, config.personalAccessToken);
             } catch (TeslascopeAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
@@ -97,7 +97,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
             try {
-                webTargets.sendCommand(publicID, config.apiKey, command);
+                webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command);
             } catch (TeslascopeAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
@@ -112,7 +112,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         TeslascopeAccountConfiguration config = this.config;
         if (config != null) {
             try {
-                webTargets.sendCommand(publicID, config.apiKey, command, params);
+                webTargets.sendCommand(publicID, config.apiKey, config.personalAccessToken, command, params);
             } catch (TeslascopeAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Authentication problem: " + e.getMessage());
@@ -131,7 +131,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         TeslascopeAccountConfiguration localConfig = config = getConfigAs(TeslascopeAccountConfiguration.class);
-        if (localConfig.apiKey.isBlank()) {
+        if (localConfig.personalAccessToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-api-key");
             return;
