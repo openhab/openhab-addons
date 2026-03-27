@@ -51,9 +51,8 @@ You can add multiple `city`, e.g. for gathering pollen or air quality data for d
 | pollens | ragweed-level  | Number         | R          | Ragweed Index                                            |
 | pollens | wormwood-conc  | Number:Density | R          | Wormwood concentration                                   |
 | pollens | wormwood-level | Number         | R          | Wormwood Index                                           |
-| pollens | timestamp      | DateTime       | R          | Timestamp                                                |
-| pollens | date-ech       | DateTime       | R          | Value Date                                               |
-| pollens | date-dif       | DateTime       | R          | Publication Date                                         |
+| pollens | effective-date | DateTime       | R          | Effective Date                                           |
+| pollens | release-date   | DateTime       | R          | Release Date                                             |
 
 Air Quality index values:
 
