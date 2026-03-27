@@ -1142,6 +1142,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateState(CHANNEL_2_TEMPERATURE_ENABLED, resource.getEnabledState(), fullUpdate);
                 break;
 
+            case ZGP_CONNECTIVITY:
             case ZIGBEE_CONNECTIVITY:
                 updateConnectivityState(resource);
                 break;
