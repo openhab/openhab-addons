@@ -106,14 +106,14 @@ Actions are available on `phone` things under the `twilio` scope.
 | Action | Parameters | Description |
 |--------|-----------|-------------|
 | `sendSMS` | `String to, String message` | Send a plain SMS |
-| `sendSMS` | `String to, String message, String mediaUrl` | Send an MMS with media |
+| `sendSMS` | `String to, String message, String mediaUrl` | Send an MMS with media. `message` is optional (may be `null`) to send media only. |
 
 ### WhatsApp Actions
 
 | Action | Parameters | Description |
 |--------|-----------|-------------|
 | `sendWhatsApp` | `String to, String message` | Send a WhatsApp message |
-| `sendWhatsApp` | `String to, String message, String mediaUrl` | Send WhatsApp with media |
+| `sendWhatsApp` | `String to, String message, String mediaUrl` | Send WhatsApp with media. `message` is optional (may be `null`) to send media only. |
 
 ### Voice Actions
 
@@ -657,6 +657,43 @@ then
     val mediaUrl = actions.createProxyMediaUrl("http://192.168.1.100/snapshot.jpg")
     if (mediaUrl !== null) {
         actions.sendSMS("+15559876543", "Someone is at the door!", mediaUrl)
+    }
+end
+```
+
+:::
+
+::::
+
+#### Send Image-Only MMS (No Text)
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+rules.when().item('MotionSensor').changed().to('ON').then(event => {
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+    var mediaUrl = twilioActions.createItemMediaUrl('SecurityCamera');
+    if (mediaUrl !== null) {
+        twilioActions.sendSMS('+15559876543', null, mediaUrl);
+    }
+}).build('Motion detected - send snapshot only');
+```
+
+:::
+
+::: tab DSL
+
+```java
+rule "Motion detected - send snapshot only"
+when
+    Item MotionSensor changed to ON
+then
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+    val mediaUrl = actions.createItemMediaUrl("SecurityCamera")
+    if (mediaUrl !== null) {
+        actions.sendSMS("+15559876543", null, mediaUrl)
     }
 end
 ```

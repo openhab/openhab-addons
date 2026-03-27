@@ -62,13 +62,14 @@ public class TwilioActions implements ThingActions {
     @RuleAction(label = "send MMS", description = "Send an MMS message with media")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendSMS(
             @ActionInput(name = "to", label = "To", description = "Recipient phone number (E.164 format)", type = "java.lang.String", required = true) String to,
-            @ActionInput(name = "message", label = "Message", description = "Message body", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "message", label = "Message", description = "Message body (optional for MMS)", type = "java.lang.String", required = false) @Nullable String message,
             @ActionInput(name = "mediaUrl", label = "Media URL", description = "URL of media to attach", type = "java.lang.String") @Nullable String mediaUrl) {
         logger.trace("sendSMS called: to='{}', message='{}', mediaUrl='{}'", to, message, mediaUrl);
         return doSendMessage(getPhoneNumber(), to, message, mediaUrl);
     }
 
-    public static Boolean sendSMS(ThingActions actions, String to, String message, @Nullable String mediaUrl) {
+    public static Boolean sendSMS(ThingActions actions, String to, @Nullable String message,
+            @Nullable String mediaUrl) {
         return ((TwilioActions) actions).sendSMS(to, message, mediaUrl);
     }
 
@@ -88,7 +89,7 @@ public class TwilioActions implements ThingActions {
     @RuleAction(label = "send WhatsApp with media", description = "Send a WhatsApp message with media")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") Boolean sendWhatsApp(
             @ActionInput(name = "to", label = "To", description = "Recipient phone number (E.164 format)", type = "java.lang.String", required = true) String to,
-            @ActionInput(name = "message", label = "Message", description = "Message body", type = "java.lang.String", required = true) String message,
+            @ActionInput(name = "message", label = "Message", description = "Message body (optional with media)", type = "java.lang.String", required = false) @Nullable String message,
             @ActionInput(name = "mediaUrl", label = "Media URL", description = "URL of media to attach", type = "java.lang.String") @Nullable String mediaUrl) {
         logger.trace("sendWhatsApp called: to='{}', message='{}', mediaUrl='{}'", to, message, mediaUrl);
         String whatsappFrom = "whatsapp:" + getPhoneNumber();
@@ -96,7 +97,8 @@ public class TwilioActions implements ThingActions {
         return doSendMessage(whatsappFrom, whatsappTo, message, mediaUrl);
     }
 
-    public static Boolean sendWhatsApp(ThingActions actions, String to, String message, @Nullable String mediaUrl) {
+    public static Boolean sendWhatsApp(ThingActions actions, String to, @Nullable String message,
+            @Nullable String mediaUrl) {
         return ((TwilioActions) actions).sendWhatsApp(to, message, mediaUrl);
     }
 
@@ -243,7 +245,7 @@ public class TwilioActions implements ThingActions {
 
     // --- Private helpers ---
 
-    private Boolean doSendMessage(String from, String to, String message, @Nullable String mediaUrl) {
+    private Boolean doSendMessage(String from, String to, @Nullable String message, @Nullable String mediaUrl) {
         TwilioApiClient client = getApiClient();
         if (client == null) {
             logger.debug("Cannot send message: API client not available");

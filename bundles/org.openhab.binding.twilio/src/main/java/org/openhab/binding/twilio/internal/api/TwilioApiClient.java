@@ -86,12 +86,14 @@ public class TwilioApiClient {
      * @return the message SID if successful
      * @throws TwilioApiException if the API call fails
      */
-    public String sendMessage(String from, String to, String body, @Nullable String mediaUrl,
+    public String sendMessage(String from, String to, @Nullable String body, @Nullable String mediaUrl,
             @Nullable String statusCallback) throws TwilioApiException {
         StringBuilder params = new StringBuilder();
         params.append("From=").append(encode(from));
         params.append("&To=").append(encode(to));
-        params.append("&Body=").append(encode(body));
+        if (body != null && !body.isBlank()) {
+            params.append("&Body=").append(encode(body));
+        }
         if (mediaUrl != null && !mediaUrl.isBlank()) {
             params.append("&MediaUrl=").append(encode(mediaUrl));
         }
