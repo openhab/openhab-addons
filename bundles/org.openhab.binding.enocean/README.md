@@ -182,10 +182,8 @@ To determine the EEP and EnOceanId of the device and announce a SenderId to it, 
 Afterwards you can delete this thing and manage it with its necessary parameters through a configuration file.
 If you change the SenderId of your thing, you have to pair again the thing with your device.
 
-For actuator thing types (`centralCommand`, `classicDevice`, `genericThing`, `measurementSwitch`, `rollershutter`,
-`thermostat`, `heatRecoveryVentilation`) the optional `senderId` parameter is marked as advanced and only used when
-the bridge is configured with `rs485=true`. Otherwise `senderIdOffset` is used and direct `senderId` values are
-rejected during validation.
+For actuator thing types (`centralCommand`, `classicDevice`, `genericThing`, `measurementSwitch`, `rollershutter`, `thermostat`, `heatRecoveryVentilation`) the optional `senderId` parameter is marked as advanced and only used when the bridge is configured with `rs485=true`.
+Otherwise `senderIdOffset` is used and direct `senderId` values are rejected during validation.
 
 |Thing type                       | Parameter         | Meaning                     | Possible Values |
 |---------------------------------|-------------------|-----------------------------|---|
