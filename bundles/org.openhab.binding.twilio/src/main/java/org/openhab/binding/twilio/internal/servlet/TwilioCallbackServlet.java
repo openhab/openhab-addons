@@ -111,8 +111,7 @@ public class TwilioCallbackServlet extends HttpServlet {
         mediaCache.clear();
         try {
             httpClient.stop();
-        } catch (Exception e) {
-            // ignore
+        } catch (Exception ignored) {
         }
     }
 

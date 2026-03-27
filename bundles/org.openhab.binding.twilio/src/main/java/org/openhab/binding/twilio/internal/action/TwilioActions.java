@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.twilio.internal.action;
 
-import static org.openhab.binding.twilio.internal.TwilioBindingConstants.*;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,9 +23,13 @@ import org.openhab.binding.twilio.internal.handler.TwilioPhoneHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemNotFoundException;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.types.State;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -171,9 +175,9 @@ public class TwilioActions implements ThingActions {
         }
 
         try {
-            org.openhab.core.items.Item item = phoneHandler.getItemRegistry().getItem(itemName);
-            org.openhab.core.types.State state = item.getState();
-            if (state instanceof org.openhab.core.library.types.RawType rawType) {
+            Item item = phoneHandler.getItemRegistry().getItem(itemName);
+            State state = item.getState();
+            if (state instanceof RawType rawType) {
                 String uuid = phoneHandler.getCallbackServlet().createMediaEntry(rawType.getBytes(),
                         rawType.getMimeType());
                 return mediaBaseUrl + "/" + uuid;
@@ -182,7 +186,7 @@ public class TwilioActions implements ThingActions {
                         state.getClass().getSimpleName());
                 return null;
             }
-        } catch (org.openhab.core.items.ItemNotFoundException e) {
+        } catch (ItemNotFoundException e) {
             logger.debug("Item '{}' not found", itemName);
             return null;
         }
@@ -218,8 +222,7 @@ public class TwilioActions implements ThingActions {
             @ActionInput(name = "callSid", label = "Call SID", description = "The CallSid from the trigger event", type = "java.lang.String", required = true) String callSid,
             @ActionInput(name = "twiml", label = "TwiML", description = "TwiML response (e.g. <Response><Say>Hello</Say></Response>)", type = "java.lang.String", required = true) String twiml) {
         logger.trace("respondWithTwiml called: callSid='{}', twiml='{}'", callSid, twiml);
-        java.util.concurrent.CompletableFuture<String> future = phoneHandler.getCallbackServlet()
-                .getPendingResponse(callSid);
+        CompletableFuture<String> future = phoneHandler.getCallbackServlet().getPendingResponse(callSid);
         if (future != null) {
             future.complete(twiml);
         } else {

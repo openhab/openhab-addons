@@ -17,6 +17,7 @@ import static org.openhab.binding.twilio.internal.TwilioBindingConstants.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
@@ -227,7 +229,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         } catch (NumberFormatException e) {
             // ignore
         }
-        com.google.gson.JsonArray mediaUrlsArray = new com.google.gson.JsonArray();
+        JsonArray mediaUrlsArray = new JsonArray();
         for (int i = 0; i < mediaCount; i++) {
             mediaUrlsArray.add(params.getOrDefault("MediaUrl" + i, ""));
         }
@@ -352,7 +354,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     }
 
     private void updateWebhookProperties() {
-        Map<String, String> properties = new java.util.HashMap<>(editProperties());
+        Map<String, String> properties = new HashMap<>(editProperties());
         String baseUrl = getWebhookBaseUrl();
         if (baseUrl != null) {
             properties.put(PROPERTY_SMS_WEBHOOK_URL, baseUrl + "/" + WEBHOOK_SMS);

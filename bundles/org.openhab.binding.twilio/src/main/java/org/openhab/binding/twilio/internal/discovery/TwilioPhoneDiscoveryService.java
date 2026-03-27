@@ -22,7 +22,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.twilio.internal.api.TwilioApiClient;
 import org.openhab.binding.twilio.internal.api.TwilioApiException;
-import org.openhab.binding.twilio.internal.dto.TwilioPhoneNumberInfo;
+import org.openhab.binding.twilio.internal.api.TwilioPhoneNumberInfo;
 import org.openhab.binding.twilio.internal.handler.TwilioAccountHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -74,8 +74,7 @@ public class TwilioPhoneDiscoveryService extends AbstractThingHandlerDiscoverySe
                 String thingId = info.phoneNumber.replaceAll("[^a-zA-Z0-9]", "");
                 ThingUID thingUID = new ThingUID(THING_TYPE_PHONE, bridgeUID, thingId);
 
-                String label = info.friendlyName.isEmpty() ? "Twilio: " + info.phoneNumber
-                        : info.friendlyName + " (" + info.phoneNumber + ")";
+                String label = "Twilio: " + (info.friendlyName.isEmpty() ? info.phoneNumber : info.friendlyName);
 
                 DiscoveryResult result = DiscoveryResultBuilder.create(thingUID) //
                         .withBridge(bridgeUID) //

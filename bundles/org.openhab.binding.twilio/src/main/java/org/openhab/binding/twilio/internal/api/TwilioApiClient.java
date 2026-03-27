@@ -14,7 +14,9 @@ package org.openhab.binding.twilio.internal.api;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -139,20 +141,18 @@ public class TwilioApiClient {
      * @return list of phone number info objects
      * @throws TwilioApiException if the API call fails
      */
-    public java.util.List<org.openhab.binding.twilio.internal.dto.TwilioPhoneNumberInfo> listPhoneNumbers()
-            throws TwilioApiException {
+    public List<TwilioPhoneNumberInfo> listPhoneNumbers() throws TwilioApiException {
         String response = get(baseUrl + "IncomingPhoneNumbers.json");
         JsonObject json = JsonParser.parseString(response).getAsJsonObject();
         var numbers = json.getAsJsonArray("incoming_phone_numbers");
-        java.util.List<org.openhab.binding.twilio.internal.dto.TwilioPhoneNumberInfo> result = new java.util.ArrayList<>();
+        List<TwilioPhoneNumberInfo> result = new ArrayList<>();
         if (numbers != null) {
             for (int i = 0; i < numbers.size(); i++) {
                 JsonObject entry = numbers.get(i).getAsJsonObject();
                 String sid = getJsonString(entry, "sid");
                 String phoneNumber = getJsonString(entry, "phone_number");
                 String friendlyName = getJsonString(entry, "friendly_name");
-                result.add(new org.openhab.binding.twilio.internal.dto.TwilioPhoneNumberInfo(sid, phoneNumber,
-                        friendlyName));
+                result.add(new TwilioPhoneNumberInfo(sid, phoneNumber, friendlyName));
             }
         }
         return result;
