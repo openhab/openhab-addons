@@ -12,9 +12,6 @@ See [Data Logger set up](https://www.sunsynk.org/_files/ugd/39fbfb_a325b6884e684
 It's recommended (but not required) to set the gateway's data interval to 60 s in Sun Synk Connect for best latency.
 If you don't have that setting available, you can request it via Sun Synk or your installer, or ask for a [User Level Access Change Request](https://www.sunsynk.org/remote-monitoring).
 
-This binding uses your Sun Synk Connect credentials to access Sun Synk's web services via an openHAB Bridge (SunSynk Account).
-The bridge manages the account authentication and the discovery of SunSynk Inverter Things. Only the Inverter Thing is currently supported.
-
 This binding has been tested and works with inverters:
 
 - [SYNK-3.6-SG04LP1](https://www.sunsynk.org/3-6kw-hybrid-inverter)
