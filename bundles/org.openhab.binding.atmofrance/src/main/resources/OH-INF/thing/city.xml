@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="atmofrance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="city">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>City Report</label>
+		<description>Atmo France air quality report for the given city</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="aq" typeId="aq"/>
+			<channel-group id="pollens" typeId="pollens"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="codeInsee" type="text" required="true">
+				<label>Insee Code</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
