@@ -23,40 +23,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 public class TerEntVigiCru {
-
-    public class VicTerEntVigiCru {
-        @SerializedName("vic:aNMoinsUn")
-        public List<VicANMoinsUn> vicANMoinsUn;
-        /*
-         * Currently unused, maybe interesting in the future
-         *
-         * @SerializedName("@id")
-         * public String id;
-         *
-         * @SerializedName("vic:CdEntVigiCru")
-         * public String vicCdEntVigiCru;
-         *
-         * @SerializedName("vic:TypEntVigiCru")
-         * public String vicTypEntVigiCru;
-         *
-         * @SerializedName("vic:LbEntVigiCru")
-         * public String vicLbEntVigiCru;
-         *
-         * @SerializedName("vic:DtHrCreatEntVigiCru")
-         * public String vicDtHrCreatEntVigiCru;
-         *
-         * @SerializedName("vic:DtHrMajEntVigiCru")
-         * public String vicDtHrMajEntVigiCru;
-         *
-         * @SerializedName("vic:StEntVigiCru")
-         * public String vicStEntVigiCru;
-         * public int count_aNMoinsUn;
-         *
-         * @SerializedName("LinkInfoCru")
-         * public String linkInfoCru;
-         */
-    }
-
-    @SerializedName("vic:TerEntVigiCru")
-    public VicTerEntVigiCru vicTerEntVigiCru;
+    @SerializedName("ListEntVigiCru")
+    public List<ListEntVigiCru> listEntVigiCru;
 }

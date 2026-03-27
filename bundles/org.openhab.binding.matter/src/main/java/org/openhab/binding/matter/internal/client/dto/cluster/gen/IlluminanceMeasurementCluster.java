@@ -28,22 +28,21 @@ public class IlluminanceMeasurementCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0400;
     public static final String CLUSTER_NAME = "IlluminanceMeasurement";
     public static final String CLUSTER_PREFIX = "illuminanceMeasurement";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_MEASURED_VALUE = "measuredValue";
     public static final String ATTRIBUTE_MIN_MEASURED_VALUE = "minMeasuredValue";
     public static final String ATTRIBUTE_MAX_MEASURED_VALUE = "maxMeasuredValue";
     public static final String ATTRIBUTE_TOLERANCE = "tolerance";
     public static final String ATTRIBUTE_LIGHT_SENSOR_TYPE = "lightSensorType";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * Indicates the illuminance in Lux (symbol lx) as follows:
-     * • MeasuredValue &#x3D; 10,000 x log10(illuminance) + 1,
+     * - MeasuredValue &#x3D; 10,000 x log10(illuminance) + 1,
      * where 1 lx &lt;&#x3D; illuminance &lt;&#x3D; 3.576 Mlx, corresponding to a MeasuredValue in the range 1 to
-     * 0xFFFE. The MeasuredValue attribute can take the following values:
-     * • 0 indicates a value of illuminance that is too low to be measured,
-     * • MinMeasuredValue &lt;&#x3D; MeasuredValue &lt;&#x3D; MaxMeasuredValue under normal circumstances,
-     * • null indicates that the illuminance measurement is invalid.
+     * 0xFFFE.
+     * The MeasuredValue attribute can take the following values:
+     * - 0 indicates a value of illuminance that is too low to be measured,
+     * - MinMeasuredValue &lt;&#x3D; MeasuredValue &lt;&#x3D; MaxMeasuredValue under normal circumstances,
+     * - null indicates that the illuminance measurement is invalid.
      * The MeasuredValue attribute is updated continuously as new measurements are made.
      */
     public Integer measuredValue; // 0 uint16 R V
@@ -102,7 +101,6 @@ public class IlluminanceMeasurementCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "measuredValue : " + measuredValue + "\n";
         str += "minMeasuredValue : " + minMeasuredValue + "\n";
         str += "maxMeasuredValue : " + maxMeasuredValue + "\n";

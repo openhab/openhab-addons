@@ -161,7 +161,6 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Thing handler for uid {} added, total things = {}", uid, thingTable.size());
             return handler;
         }
-
         logger.debug("Unable to create Thing Handler instance!");
         return null;
     }

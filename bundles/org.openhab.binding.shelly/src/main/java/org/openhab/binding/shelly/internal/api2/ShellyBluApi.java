@@ -17,6 +17,8 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -66,10 +68,11 @@ public class ShellyBluApi extends Shelly2ApiRpc {
      * @param thingName Symbolic thing name
      * @param thingTable Table of known things (build at runtime)
      * @param thing Thing Handler (ThingHandlerInterface)
+     * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
     public ShellyBluApi(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
-            WebSocketClient webSocketClient) {
-        super(thingName, thingTable, thing, webSocketClient);
+            WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
+        super(thingName, thingTable, thing, webSocketClient, scheduler);
 
         ShellyDeviceProfile profile = thing.getProfile();
         ThingTypeUID uid = thing.getThing().getThingTypeUID();

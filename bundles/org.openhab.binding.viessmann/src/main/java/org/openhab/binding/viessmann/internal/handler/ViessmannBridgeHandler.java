@@ -16,6 +16,7 @@ import static org.openhab.binding.viessmann.internal.ViessmannBindingConstants.*
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -132,10 +133,6 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
     public List<String> getDevicesList() {
         // return a copy of the list, so we don't run into concurrency problems
         return new ArrayList<>(devicesList);
-    }
-
-    public List<Thing> getChildren() {
-        return getThing().getThings().stream().filter(Thing::isEnabled).collect(Collectors.toList());
     }
 
     private void setConfigInstallationGatewayId() {
@@ -384,8 +381,9 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
     }
 
     private void checkResetApiCalls() {
-        LocalTime time = LocalTime.now();
-        if (time.isAfter(LocalTime.of(0, 0, 1)) && (time.isBefore(LocalTime.of(1, 0, 0)))) {
+        LocalTime now = ZonedDateTime.now(ViessmannUtil.getOpenHABZoneId()).toLocalTime();
+
+        if (now.isAfter(RESET_API_CALLS_FROM) && now.isBefore(RESET_API_CALLS_TO)) {
             if (countReset) {
                 logger.debug("Resetting API call counts");
                 apiCalls = 0;

@@ -4,7 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="hue:device">
-
 		<instruction-set targetVersion="1">
 			<add-channel id="motion-last-updated">
 				<type>hue:last-updated-v2</type>
@@ -32,7 +31,66 @@
 				<description>The date and time when the rotary steps were last updated.</description>
 			</add-channel>
 		</instruction-set>
+	</thing-type>
 
+	<thing-type uid="hue:room">
+		<instruction-set targetVersion="1">
+			<add-channel id="motion">
+				<type>system:motion</type>
+			</add-channel>
+			<add-channel id="motion-last-updated">
+				<type>hue:last-updated-v2</type>
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</add-channel>
+			<add-channel id="motion-enabled">
+				<type>hue:sensor-enabled</type>
+				<description>Motion sensor enabled.</description>
+			</add-channel>
+			<add-channel id="light-level">
+				<type>hue:illuminance</type>
+				<description>Current light level.</description>
+			</add-channel>
+			<add-channel id="light-level-last-updated">
+				<type>hue:last-updated-v2</type>
+				<label>Light Level Last Updated</label>
+				<description>The date and time when the light level was last updated.</description>
+			</add-channel>
+			<add-channel id="light-level-enabled">
+				<type>hue:sensor-enabled</type>
+				<description>Light level sensor enabled.</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="hue:zone">
+		<instruction-set targetVersion="1">
+			<add-channel id="motion">
+				<type>system:motion</type>
+			</add-channel>
+			<add-channel id="motion-last-updated">
+				<type>hue:last-updated-v2</type>
+				<label>Motion Last Updated</label>
+				<description>The date and time when the motion value was last updated.</description>
+			</add-channel>
+			<add-channel id="motion-enabled">
+				<type>hue:sensor-enabled</type>
+				<description>Motion sensor enabled.</description>
+			</add-channel>
+			<add-channel id="light-level">
+				<type>hue:illuminance</type>
+				<description>Current light level.</description>
+			</add-channel>
+			<add-channel id="light-level-last-updated">
+				<type>hue:last-updated-v2</type>
+				<label>Light Level Last Updated</label>
+				<description>The date and time when the light level was last updated.</description>
+			</add-channel>
+			<add-channel id="light-level-enabled">
+				<type>hue:sensor-enabled</type>
+				<description>Light level sensor enabled.</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

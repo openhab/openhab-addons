@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -130,6 +132,8 @@ public enum Archetype {
     BARBECUE,
     POOL,
     OTHER;
+
+    public static final Set<Archetype> BRIDGES = Set.of(BRIDGE_V2, BRIDGE_V3);
 
     public static Archetype of(@Nullable String value) {
         if (value != null) {

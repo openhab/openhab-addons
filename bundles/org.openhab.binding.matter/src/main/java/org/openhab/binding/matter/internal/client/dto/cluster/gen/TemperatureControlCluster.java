@@ -32,7 +32,6 @@ public class TemperatureControlCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x0056;
     public static final String CLUSTER_NAME = "TemperatureControl";
     public static final String CLUSTER_PREFIX = "temperatureControl";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_TEMPERATURE_SETPOINT = "temperatureSetpoint";
     public static final String ATTRIBUTE_MIN_TEMPERATURE = "minTemperature";
@@ -41,7 +40,6 @@ public class TemperatureControlCluster extends BaseCluster {
     public static final String ATTRIBUTE_SELECTED_TEMPERATURE_LEVEL = "selectedTemperatureLevel";
     public static final String ATTRIBUTE_SUPPORTED_TEMPERATURE_LEVELS = "supportedTemperatureLevels";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the desired Temperature Setpoint on the device.
@@ -53,9 +51,9 @@ public class TemperatureControlCluster extends BaseCluster {
     public Integer minTemperature; // 1 temperature R V
     /**
      * Indicates the maximum temperature to which the TemperatureSetpoint attribute may be set.
-     * If the Step attribute is supported, this attribute shall be such that MaxTemperature &#x3D; MinTemperature + Step
-     * * n, where n is an integer and n &gt; 0. If the Step attribute is not supported, this attribute shall be such
-     * that MaxTemperature &gt; MinTemperature.
+     * If the Step attribute is supported, this attribute shall be such that MaxTemperature &#x3D; MinTemperature +
+     * (Step * n), where n is an integer and n &gt; 0. If the Step attribute is not supported, this attribute shall be
+     * such that MaxTemperature &gt; MinTemperature.
      */
     public Integer maxTemperature; // 2 temperature R V
     /**
@@ -121,6 +119,9 @@ public class TemperatureControlCluster extends BaseCluster {
     }
 
     // commands
+    /**
+     * This command is used to set the temperature setpoint.
+     */
     public static ClusterCommand setTemperature(Integer targetTemperature, Integer targetTemperatureLevel) {
         Map<String, Object> map = new LinkedHashMap<>();
         if (targetTemperature != null) {
@@ -135,7 +136,6 @@ public class TemperatureControlCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "temperatureSetpoint : " + temperatureSetpoint + "\n";
         str += "minTemperature : " + minTemperature + "\n";

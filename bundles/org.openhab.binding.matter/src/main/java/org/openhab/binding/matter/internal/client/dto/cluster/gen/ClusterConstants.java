@@ -225,91 +225,6 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_AUDIOOUTPUT_CURRENTOUTPUT = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_AUDIOOUTPUT_CURRENTOUTPUT);
 
-    // BallastConfiguration Cluster
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_PHYSICALMINLEVEL = "PhysicalMinLevel";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_PHYSICALMINLEVEL = "Physical Min Level";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_PHYSICALMINLEVEL = "ballastconfiguration-physicalminlevel";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_PHYSICALMINLEVEL = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_PHYSICALMINLEVEL);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_PHYSICALMAXLEVEL = "PhysicalMaxLevel";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_PHYSICALMAXLEVEL = "Physical Max Level";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_PHYSICALMAXLEVEL = "ballastconfiguration-physicalmaxlevel";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_PHYSICALMAXLEVEL = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_PHYSICALMAXLEVEL);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_BALLASTSTATUS = "BallastStatus";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_BALLASTSTATUS = "Ballast Status";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_BALLASTSTATUS = "ballastconfiguration-ballaststatus";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_BALLASTSTATUS = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_BALLASTSTATUS);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_MINLEVEL = "MinLevel";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_MINLEVEL = "Min Level";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_MINLEVEL = "ballastconfiguration-minlevel";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_MINLEVEL = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_MINLEVEL);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_MAXLEVEL = "MaxLevel";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_MAXLEVEL = "Max Level";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_MAXLEVEL = "ballastconfiguration-maxlevel";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_MAXLEVEL = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_MAXLEVEL);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_INTRINSICBALLASTFACTOR = "IntrinsicBallastFactor";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_INTRINSICBALLASTFACTOR = "Intrinsic Ballast Factor";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_INTRINSICBALLASTFACTOR = "ballastconfiguration-intrinsicballastfactor";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_INTRINSICBALLASTFACTOR = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_INTRINSICBALLASTFACTOR);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_BALLASTFACTORADJUSTMENT = "BallastFactorAdjustment";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_BALLASTFACTORADJUSTMENT = "Ballast Factor Adjustment";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_BALLASTFACTORADJUSTMENT = "ballastconfiguration-ballastfactoradjustment";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_BALLASTFACTORADJUSTMENT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_BALLASTFACTORADJUSTMENT);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_LAMPQUANTITY = "LampQuantity";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_LAMPQUANTITY = "Lamp Quantity";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_LAMPQUANTITY = "ballastconfiguration-lampquantity";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_LAMPQUANTITY = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_LAMPQUANTITY);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_LAMPTYPE = "LampType";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_LAMPTYPE = "Lamp Type";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_LAMPTYPE = "ballastconfiguration-lamptype";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_LAMPTYPE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_LAMPTYPE);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_LAMPMANUFACTURER = "LampManufacturer";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_LAMPMANUFACTURER = "Lamp Manufacturer";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_LAMPMANUFACTURER = "ballastconfiguration-lampmanufacturer";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_LAMPMANUFACTURER = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_LAMPMANUFACTURER);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_LAMPRATEDHOURS = "LampRatedHours";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_LAMPRATEDHOURS = "Lamp Rated Hours";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_LAMPRATEDHOURS = "ballastconfiguration-lampratedhours";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_LAMPRATEDHOURS = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_LAMPRATEDHOURS);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_LAMPBURNHOURS = "LampBurnHours";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_LAMPBURNHOURS = "Lamp Burn Hours";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_LAMPBURNHOURS = "ballastconfiguration-lampburnhours";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_LAMPBURNHOURS = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_LAMPBURNHOURS);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_LAMPALARMMODE = "LampAlarmMode";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_LAMPALARMMODE = "Lamp Alarm Mode";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_LAMPALARMMODE = "ballastconfiguration-lampalarmmode";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_LAMPALARMMODE = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_LAMPALARMMODE);
-
-    public static final String CHANNEL_NAME_BALLASTCONFIGURATION_LAMPBURNHOURSTRIPPOINT = "LampBurnHoursTripPoint";
-    public static final String CHANNEL_LABEL_BALLASTCONFIGURATION_LAMPBURNHOURSTRIPPOINT = "Lamp Burn Hours Trip Point";
-    public static final String CHANNEL_ID_BALLASTCONFIGURATION_LAMPBURNHOURSTRIPPOINT = "ballastconfiguration-lampburnhourstrippoint";
-    public static final ChannelTypeUID CHANNEL_BALLASTCONFIGURATION_LAMPBURNHOURSTRIPPOINT = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_BALLASTCONFIGURATION_LAMPBURNHOURSTRIPPOINT);
-
     // BasicInformation Cluster
     public static final String CHANNEL_NAME_BASICINFORMATION_DATAMODELREVISION = "DataModelRevision";
     public static final String CHANNEL_LABEL_BASICINFORMATION_DATAMODELREVISION = "Data Model Revision";
@@ -448,6 +363,12 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_BASICINFORMATION_MAXPATHSPERINVOKE = "basicinformation-maxpathsperinvoke";
     public static final ChannelTypeUID CHANNEL_BASICINFORMATION_MAXPATHSPERINVOKE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_BASICINFORMATION_MAXPATHSPERINVOKE);
+
+    public static final String CHANNEL_NAME_BASICINFORMATION_CONFIGURATIONVERSION = "ConfigurationVersion";
+    public static final String CHANNEL_LABEL_BASICINFORMATION_CONFIGURATIONVERSION = "Configuration Version";
+    public static final String CHANNEL_ID_BASICINFORMATION_CONFIGURATIONVERSION = "basicinformation-configurationversion";
+    public static final ChannelTypeUID CHANNEL_BASICINFORMATION_CONFIGURATIONVERSION = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_BASICINFORMATION_CONFIGURATIONVERSION);
 
     // Binding Cluster
     public static final String CHANNEL_NAME_BINDING_BINDING = "Binding";
@@ -1098,6 +1019,12 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_DESCRIPTOR_TAGLIST = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_DESCRIPTOR_TAGLIST);
 
+    public static final String CHANNEL_NAME_DESCRIPTOR_ENDPOINTUNIQUEID = "EndpointUniqueId";
+    public static final String CHANNEL_LABEL_DESCRIPTOR_ENDPOINTUNIQUEID = "Endpoint Unique Id";
+    public static final String CHANNEL_ID_DESCRIPTOR_ENDPOINTUNIQUEID = "descriptor-endpointuniqueid";
+    public static final ChannelTypeUID CHANNEL_DESCRIPTOR_ENDPOINTUNIQUEID = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_DESCRIPTOR_ENDPOINTUNIQUEID);
+
     // DeviceEnergyManagement Cluster
     public static final String CHANNEL_NAME_DEVICEENERGYMANAGEMENT_ESATYPE = "EsaType";
     public static final String CHANNEL_LABEL_DEVICEENERGYMANAGEMENT_ESATYPE = "Esa Type";
@@ -1391,12 +1318,6 @@ public class ClusterConstants {
     public static final String CHANNEL_ID_DOORLOCK_EXPIRINGUSERTIMEOUT = "doorlock-expiringusertimeout";
     public static final ChannelTypeUID CHANNEL_DOORLOCK_EXPIRINGUSERTIMEOUT = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_DOORLOCK_EXPIRINGUSERTIMEOUT);
-
-    public static final String CHANNEL_NAME_DOORLOCK_ALARMMASK = "AlarmMask";
-    public static final String CHANNEL_LABEL_DOORLOCK_ALARMMASK = "Alarm Mask";
-    public static final String CHANNEL_ID_DOORLOCK_ALARMMASK = "doorlock-alarmmask";
-    public static final ChannelTypeUID CHANNEL_DOORLOCK_ALARMMASK = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_DOORLOCK_ALARMMASK);
 
     public static final String CHANNEL_NAME_DOORLOCK_ALIROREADERVERIFICATIONKEY = "AliroReaderVerificationKey";
     public static final String CHANNEL_LABEL_DOORLOCK_ALIROREADERVERIFICATIONKEY = "Aliro Reader Verification Key";
@@ -2305,6 +2226,13 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_ILLUMINANCEMEASUREMENT_LIGHTSENSORTYPE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_ILLUMINANCEMEASUREMENT_LIGHTSENSORTYPE);
 
+    // JointFabricAdministrator Cluster
+    public static final String CHANNEL_NAME_JOINTFABRICADMINISTRATOR_ADMINISTRATORFABRICINDEX = "AdministratorFabricIndex";
+    public static final String CHANNEL_LABEL_JOINTFABRICADMINISTRATOR_ADMINISTRATORFABRICINDEX = "Administrator Fabric Index";
+    public static final String CHANNEL_ID_JOINTFABRICADMINISTRATOR_ADMINISTRATORFABRICINDEX = "jointfabricadministrator-administratorfabricindex";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICADMINISTRATOR_ADMINISTRATORFABRICINDEX = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICADMINISTRATOR_ADMINISTRATORFABRICINDEX);
+
     // JointFabricDatastore Cluster
     public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_ANCHORROOTCA = "AnchorRootCa";
     public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_ANCHORROOTCA = "Anchor Root Ca";
@@ -2354,13 +2282,42 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_ADMINLIST = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_ADMINLIST);
 
-    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_STATUSENTRY = "StatusEntry";
-    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_STATUSENTRY = "Status Entry";
-    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_STATUSENTRY = "jointfabricdatastore-statusentry";
-    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_STATUSENTRY = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_STATUSENTRY);
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_STATUS = "Status";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_STATUS = "Status";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_STATUS = "jointfabricdatastore-status";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_STATUS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_STATUS);
 
-    // JointFabricPki Cluster
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_ENDPOINTGROUPIDLIST = "EndpointGroupIdList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_ENDPOINTGROUPIDLIST = "Endpoint Group Id List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_ENDPOINTGROUPIDLIST = "jointfabricdatastore-endpointgroupidlist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_ENDPOINTGROUPIDLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_ENDPOINTGROUPIDLIST);
+
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_ENDPOINTBINDINGLIST = "EndpointBindingList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_ENDPOINTBINDINGLIST = "Endpoint Binding List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_ENDPOINTBINDINGLIST = "jointfabricdatastore-endpointbindinglist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_ENDPOINTBINDINGLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_ENDPOINTBINDINGLIST);
+
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_NODEKEYSETLIST = "NodeKeySetList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_NODEKEYSETLIST = "Node Key Set List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_NODEKEYSETLIST = "jointfabricdatastore-nodekeysetlist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_NODEKEYSETLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_NODEKEYSETLIST);
+
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_NODEACLLIST = "NodeAclList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_NODEACLLIST = "Node Acl List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_NODEACLLIST = "jointfabricdatastore-nodeacllist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_NODEACLLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_NODEACLLIST);
+
+    public static final String CHANNEL_NAME_JOINTFABRICDATASTORE_NODEENDPOINTLIST = "NodeEndpointList";
+    public static final String CHANNEL_LABEL_JOINTFABRICDATASTORE_NODEENDPOINTLIST = "Node Endpoint List";
+    public static final String CHANNEL_ID_JOINTFABRICDATASTORE_NODEENDPOINTLIST = "jointfabricdatastore-nodeendpointlist";
+    public static final ChannelTypeUID CHANNEL_JOINTFABRICDATASTORE_NODEENDPOINTLIST = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_JOINTFABRICDATASTORE_NODEENDPOINTLIST);
+
     // KeypadInput Cluster
     // LaundryDryerControls Cluster
     public static final String CHANNEL_NAME_LAUNDRYDRYERCONTROLS_SUPPORTEDDRYNESSLEVELS = "SupportedDrynessLevels";
@@ -3589,14 +3546,6 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_PRESSUREMEASUREMENT_SCALE = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_PRESSUREMEASUREMENT_SCALE);
 
-    // ProxyConfiguration Cluster
-    public static final String CHANNEL_NAME_PROXYCONFIGURATION_CONFIGURATIONLIST = "ConfigurationList";
-    public static final String CHANNEL_LABEL_PROXYCONFIGURATION_CONFIGURATIONLIST = "Configuration List";
-    public static final String CHANNEL_ID_PROXYCONFIGURATION_CONFIGURATIONLIST = "proxyconfiguration-configurationlist";
-    public static final ChannelTypeUID CHANNEL_PROXYCONFIGURATION_CONFIGURATIONLIST = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_PROXYCONFIGURATION_CONFIGURATIONLIST);
-
-    // ProxyDiscovery Cluster
     // PumpConfigurationAndControl Cluster
     public static final String CHANNEL_NAME_PUMPCONFIGURATIONANDCONTROL_MAXPRESSURE = "MaxPressure";
     public static final String CHANNEL_LABEL_PUMPCONFIGURATIONANDCONTROL_MAXPRESSURE = "Max Pressure";
@@ -3888,12 +3837,6 @@ public class ClusterConstants {
 
     // RvcRunMode Cluster
     // ScenesManagement Cluster
-    public static final String CHANNEL_NAME_SCENESMANAGEMENT_LASTCONFIGUREDBY = "LastConfiguredBy";
-    public static final String CHANNEL_LABEL_SCENESMANAGEMENT_LASTCONFIGUREDBY = "Last Configured By";
-    public static final String CHANNEL_ID_SCENESMANAGEMENT_LASTCONFIGUREDBY = "scenesmanagement-lastconfiguredby";
-    public static final ChannelTypeUID CHANNEL_SCENESMANAGEMENT_LASTCONFIGUREDBY = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_SCENESMANAGEMENT_LASTCONFIGUREDBY);
-
     public static final String CHANNEL_NAME_SCENESMANAGEMENT_SCENETABLESIZE = "SceneTableSize";
     public static final String CHANNEL_LABEL_SCENESMANAGEMENT_SCENETABLESIZE = "Scene Table Size";
     public static final String CHANNEL_ID_SCENESMANAGEMENT_SCENETABLESIZE = "scenesmanagement-scenetablesize";
@@ -5134,19 +5077,18 @@ public class ClusterConstants {
     public static final ChannelTypeUID CHANNEL_UNITLOCALIZATION_TEMPERATUREUNIT = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_UNITLOCALIZATION_TEMPERATUREUNIT);
 
+    public static final String CHANNEL_NAME_UNITLOCALIZATION_SUPPORTEDTEMPERATUREUNITS = "SupportedTemperatureUnits";
+    public static final String CHANNEL_LABEL_UNITLOCALIZATION_SUPPORTEDTEMPERATUREUNITS = "Supported Temperature Units";
+    public static final String CHANNEL_ID_UNITLOCALIZATION_SUPPORTEDTEMPERATUREUNITS = "unitlocalization-supportedtemperatureunits";
+    public static final ChannelTypeUID CHANNEL_UNITLOCALIZATION_SUPPORTEDTEMPERATUREUNITS = new ChannelTypeUID(
+            "matter:" + CHANNEL_ID_UNITLOCALIZATION_SUPPORTEDTEMPERATUREUNITS);
+
     // UserLabel Cluster
     public static final String CHANNEL_NAME_USERLABEL_LABELLIST = "LabelList";
     public static final String CHANNEL_LABEL_USERLABEL_LABELLIST = "Label List";
     public static final String CHANNEL_ID_USERLABEL_LABELLIST = "userlabel-labellist";
     public static final ChannelTypeUID CHANNEL_USERLABEL_LABELLIST = new ChannelTypeUID(
             "matter:" + CHANNEL_ID_USERLABEL_LABELLIST);
-
-    // ValidProxies Cluster
-    public static final String CHANNEL_NAME_VALIDPROXIES_VALIDPROXYLIST = "ValidProxyList";
-    public static final String CHANNEL_LABEL_VALIDPROXIES_VALIDPROXYLIST = "Valid Proxy List";
-    public static final String CHANNEL_ID_VALIDPROXIES_VALIDPROXYLIST = "validproxies-validproxylist";
-    public static final ChannelTypeUID CHANNEL_VALIDPROXIES_VALIDPROXYLIST = new ChannelTypeUID(
-            "matter:" + CHANNEL_ID_VALIDPROXIES_VALIDPROXYLIST);
 
     // ValveConfigurationAndControl Cluster
     public static final String CHANNEL_NAME_VALVECONFIGURATIONANDCONTROL_OPENDURATION = "OpenDuration";

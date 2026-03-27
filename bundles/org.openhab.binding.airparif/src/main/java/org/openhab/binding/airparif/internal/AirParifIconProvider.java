@@ -19,15 +19,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.airparif.internal.api.AirParifApi.Appreciation;
-import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
-import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.ui.icon.IconProvider;
 import org.openhab.core.ui.icon.IconSet;
@@ -48,13 +45,9 @@ import org.slf4j.LoggerFactory;
 @Component(service = { IconProvider.class, AirParifIconProvider.class })
 @NonNullByDefault
 public class AirParifIconProvider implements IconProvider {
-    private static final String NEUTRAL_COLOR = "#3d3c3c";
     private static final String DEFAULT_LABEL = "AirParif Icons";
     private static final String AQ_ICON = "aq";
-    private static final String POLLEN_ICON = "pollen";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating air quality levels provided by AirParif";
-    private static final List<String> POLLEN_ICONS = Pollen.AS_SET.stream().map(Pollen::name).map(String::toLowerCase)
-            .toList();
 
     private final Logger logger = LoggerFactory.getLogger(AirParifIconProvider.class);
     private final TranslationProvider i18nProvider;
@@ -74,7 +67,7 @@ public class AirParifIconProvider implements IconProvider {
     @Override
     public Set<IconSet> getIconSets(@Nullable Locale locale) {
         String label = getText("label", DEFAULT_LABEL, locale);
-        String description = getText("decription", DEFAULT_DESCRIPTION, locale);
+        String description = getText("description", DEFAULT_DESCRIPTION, locale);
 
         return Set.of(new IconSet(BINDING_ID, label, description, Set.of(Format.SVG)));
     }
@@ -86,9 +79,7 @@ public class AirParifIconProvider implements IconProvider {
 
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
-        return Format.SVG.equals(format) && iconSetId.equals(BINDING_ID)
-                && (category.equals(AQ_ICON) || category.equals(POLLEN_ICON) || POLLEN_ICONS.contains(category)) ? 0
-                        : null;
+        return Format.SVG.equals(format) && iconSetId.equals(BINDING_ID) && category.equals(AQ_ICON) ? 0 : null;
     }
 
     @Override
@@ -102,8 +93,6 @@ public class AirParifIconProvider implements IconProvider {
         String iconName = "icon/%s.svg".formatted(category);
         if (category.equals(AQ_ICON) && ordinal != -1 && ordinal < Appreciation.values().length - 2) {
             iconName = iconName.replace(".", "-%d.".formatted(ordinal));
-        } else if (category.equals(POLLEN_ICON) && ordinal != -1) {
-            iconName = iconName.replace(".", "-%d.".formatted(ordinal));
         }
 
         String result = "";
@@ -111,15 +100,10 @@ public class AirParifIconProvider implements IconProvider {
         if (iconResource != null) {
             try (InputStream stream = iconResource.openStream()) {
                 result = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
-
-                if (POLLEN_ICONS.contains(category)) {
-                    PollenAlertLevel alertLevel = PollenAlertLevel.valueOf(ordinal);
-                    result = result.replaceAll(NEUTRAL_COLOR, alertLevel.color);
-                }
             } catch (IOException e) {
                 logger.warn("Unable to load ressource '{}': {}", iconResource.getPath(), e.getMessage());
             }
         }
-        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes());
+        return result.isEmpty() ? null : new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8));
     }
 }

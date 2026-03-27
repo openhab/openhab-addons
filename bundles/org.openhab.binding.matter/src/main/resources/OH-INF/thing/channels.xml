@@ -845,4 +845,17 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- OTA Software Update Requestor Channels -->
+	<channel-type id="otasoftwareupdaterequestor-updateavailable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Update Available</label>
+		<description>Indicates if there is a firmware update available for the device. Use the "Start Firmware Update" Thing
+			action to start the update process.</description>
+		<category>Status</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

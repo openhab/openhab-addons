@@ -53,18 +53,20 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
     private final MatterChannelTypeProvider channelGroupTypeProvider;
     private final MatterConfigDescriptionProvider configDescriptionProvider;
     private final TranslationService translationService;
+    private final MatterFirmwareProvider firmwareProvider;
 
     @Activate
     public MatterHandlerFactory(@Reference MatterWebsocketService websocketService,
             @Reference MatterStateDescriptionOptionProvider stateDescriptionProvider,
             @Reference MatterChannelTypeProvider channelGroupTypeProvider,
             @Reference MatterConfigDescriptionProvider configDescriptionProvider,
-            @Reference TranslationService translationService) {
+            @Reference TranslationService translationService, @Reference MatterFirmwareProvider firmwareProvider) {
         this.websocketService = websocketService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelGroupTypeProvider = channelGroupTypeProvider;
         this.configDescriptionProvider = configDescriptionProvider;
         this.translationService = translationService;
+        this.firmwareProvider = firmwareProvider;
     }
 
     @Override
@@ -79,7 +81,7 @@ public class MatterHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
             ControllerHandler controllerHandler = new ControllerHandler((Bridge) thing, websocketService,
-                    translationService);
+                    translationService, firmwareProvider);
             return controllerHandler;
         }
 

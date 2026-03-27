@@ -112,7 +112,7 @@ class TestTemperatureLight {
         State temperatureAbsState = callback.getState("dirigera:temperature-light:test-device:color-temperature-abs");
         assertNotNull(temperatureAbsState);
         assertTrue(temperatureAbsState instanceof QuantityType);
-        assertEquals(4000, ((QuantityType) temperatureAbsState).intValue(), "Temperature Abs");
+        assertEquals(4000, ((QuantityType<?>) temperatureAbsState).intValue(), "Temperature Abs");
 
         State brightnessState = callback.getState("dirigera:temperature-light:test-device:brightness");
         assertNotNull(brightnessState);
