@@ -220,12 +220,13 @@ public class RoundStateProfileTest {
         assertThat(dtResult.doubleValue(), is(23.3));
     }
 
-    private RoundStateProfile createProfile(ProfileCallback callback, Integer precision, Integer scale) {
+    private RoundStateProfile createProfile(ProfileCallback callback, @Nullable Integer precision,
+            @Nullable Integer scale) {
         return createProfile(callback, precision, scale, null);
     }
 
-    private RoundStateProfile createProfile(ProfileCallback callback, Integer precision, Integer scale,
-            @Nullable String mode) {
+    private RoundStateProfile createProfile(ProfileCallback callback, @Nullable Integer precision, 
+            @Nullable Integer scale, @Nullable String mode) {
         ProfileContext context = mock(ProfileContext.class);
         Configuration config = new Configuration();
 
