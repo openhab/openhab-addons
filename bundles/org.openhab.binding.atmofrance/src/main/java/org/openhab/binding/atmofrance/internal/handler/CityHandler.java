@@ -117,7 +117,7 @@ public class CityHandler extends BaseThingHandler implements HandlerUtils {
 
     private void updateCommon(BaseProperties properties, String group) {
         updateState(group, CHANNEL_EFFECTIVE_DATE, properties.getEffectiveDate());
-        updateState(group, CHANNEL_DIFFUSION_DATE, properties.getDiffusionDate());
+        updateState(group, CHANNEL_RELEASE_DATE, properties.getDiffusionDate());
 
         updateProperty("%s-source".formatted(group), properties.source);
     }
