@@ -225,7 +225,7 @@ public class RoundStateProfileTest {
         return createProfile(callback, precision, scale, null);
     }
 
-    private RoundStateProfile createProfile(ProfileCallback callback, @Nullable Integer precision, 
+    private RoundStateProfile createProfile(ProfileCallback callback, @Nullable Integer precision,
             @Nullable Integer scale, @Nullable String mode) {
         ProfileContext context = mock(ProfileContext.class);
         Configuration config = new Configuration();
