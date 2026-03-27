@@ -25,7 +25,6 @@ import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DHIPEventListener;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.core.library.types.OnOffType;
@@ -61,11 +60,9 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
     protected Gson gson = new Gson();
 
     protected @Nullable DahuaEventClient client = null;
-    private final HttpClient httpClient;
 
-    public DahuaDoorBaseHandler(Thing thing, HttpClient httpClient) {
+    public DahuaDoorBaseHandler(Thing thing) {
         super(thing);
-        this.httpClient = httpClient;
     }
 
     @Override
@@ -118,8 +115,8 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
-        client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password, this, scheduler,
-                this::errorInformer, httpClient, localConfig);
+        client = new DahuaEventClient(localConfig.hostname, localConfig.username, localConfig.password, this,
+                this::errorInformer, localConfig);
 
         // Set status to UNKNOWN - will be set to ONLINE when first DHIP event is received
         updateStatus(ThingStatus.UNKNOWN);

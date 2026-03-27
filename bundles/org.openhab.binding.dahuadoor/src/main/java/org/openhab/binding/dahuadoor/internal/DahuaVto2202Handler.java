@@ -13,7 +13,6 @@
 package org.openhab.binding.dahuadoor.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
@@ -29,8 +28,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
 
-    public DahuaVto2202Handler(Thing thing, HttpClient httpClient) {
-        super(thing, httpClient);
+    public DahuaVto2202Handler(Thing thing) {
+        super(thing);
     }
 
     @Override

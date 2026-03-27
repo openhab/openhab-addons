@@ -28,16 +28,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
-import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.openhab.binding.dahuadoor.internal.DahuaDoorConfiguration;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,30 +73,18 @@ public class DahuaEventClient implements Runnable {
     private static final String SNAPSHOT_PATH = "/cgi-bin/snapshot.cgi";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private final HttpClient httpClient;
     private final DahuaDoorConfiguration config;
-    private @Nullable DigestAuthentication digestAuth;
 
     public DahuaEventClient(String host, String username, String password, DHIPEventListener eventListener,
-            ScheduledExecutorService scheduler, Consumer<String> errorInformer, HttpClient httpClient,
-            DahuaDoorConfiguration config) {
+            Consumer<String> errorInformer, DahuaDoorConfiguration config) {
         this.host = host;
         this.username = username;
         this.password = password;
         this.eventListener = eventListener;
         this.errorInformer = errorInformer;
         this.execThread = true;
-        this.httpClient = httpClient;
         this.config = config;
-        try {
-            AuthenticationStore auth = httpClient.getAuthenticationStore();
-            digestAuth = new DigestAuthentication(new java.net.URI("http://" + host), Authentication.ANY_REALM,
-                    username, password);
-            auth.addAuthentication(digestAuth);
-        } catch (Exception e) {
-            logger.warn("Failed to configure digest authentication for {}", host, e);
-        }
-        scheduler.submit(this);
+        ThreadPoolManager.getPool("binding.dahuadoor").submit(this);
     }
 
     public void dispose() {
@@ -113,12 +97,6 @@ public class DahuaEventClient implements Runnable {
             } catch (IOException e) {
                 logger.trace("Error closing socket during dispose: {}", e.getMessage());
             }
-        }
-        // Remove digest authentication from shared HttpClient
-        final DigestAuthentication localDigestAuth = digestAuth;
-        if (localDigestAuth != null) {
-            httpClient.getAuthenticationStore().removeAuthentication(localDigestAuth);
-            digestAuth = null;
         }
     }
 

@@ -13,7 +13,6 @@
 package org.openhab.binding.dahuadoor.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.dahuadoor.internal.dahuaeventhandler.DahuaEventClient;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.Channel;
@@ -30,8 +29,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
 
-    public DahuaVto3211Handler(Thing thing, HttpClient httpClient) {
-        super(thing, httpClient);
+    public DahuaVto3211Handler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -96,7 +95,7 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
             RawType image = new RawType(buffer, "image/jpeg");
             updateState(doorImageChannelId, image);
 
-            // Save snapshot with button number in filename
+            // Save snapshot image
             saveSnapshot(buffer);
         } else {
             logger.warn("Received empty or null image buffer from VTO3211 button {}", lockNumber);

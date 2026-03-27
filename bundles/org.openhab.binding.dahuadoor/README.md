@@ -17,7 +17,7 @@ Things must be manually configured.
 
 ## Thing Configuration
 
-### VTO2202/VTO32011 Device 
+### VTO2202/VTO3211 Device 
 
 Single-button outdoor station.
 

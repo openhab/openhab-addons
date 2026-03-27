@@ -26,8 +26,14 @@
 				<label>Door Image 2</label>
 				<description>Image of door when button 2 is pressed</description>
 			</channel>
-			<channel id="open-door-1" typeId="open-door"/>
-			<channel id="open-door-2" typeId="open-door"/>
+			<channel id="open-door-1" typeId="open-door">
+				<label>Open Door 1</label>
+				<description>Relay control to open door 1</description>
+			</channel>
+			<channel id="open-door-2" typeId="open-door">
+				<label>Open Door 2</label>
+				<description>Relay control to open door 2</description>
+			</channel>
 		</channels>
 
 		<config-description>

@@ -18,18 +18,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.HttpCookieStore;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DahuaDoorHandlerFactory} is responsible for creating things and thing
@@ -42,19 +36,6 @@ import org.osgi.service.component.annotations.Reference;
 public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_VTO2202, THING_TYPE_VTO3211);
-    private final HttpClient httpClient;
-
-    @Activate
-    public DahuaDoorHandlerFactory(@Reference HttpClientFactory httpClientFactory) throws Exception {
-        this.httpClient = httpClientFactory.createHttpClient("dahuadoor");
-        this.httpClient.setCookieStore(new HttpCookieStore.Empty());
-        this.httpClient.start();
-    }
-
-    @Deactivate
-    public void deactivate() throws Exception {
-        httpClient.stop();
-    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -66,9 +47,9 @@ public class DahuaDoorHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_VTO2202.equals(thingTypeUID)) {
-            return new DahuaVto2202Handler(thing, httpClient);
+            return new DahuaVto2202Handler(thing);
         } else if (THING_TYPE_VTO3211.equals(thingTypeUID)) {
-            return new DahuaVto3211Handler(thing, httpClient);
+            return new DahuaVto3211Handler(thing);
         }
 
         return null;
