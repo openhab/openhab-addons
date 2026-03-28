@@ -22,5 +22,5 @@ public class SourceConfig {
     public String url = "";
     public String userName = "";
     public String password = "";
-    public int refreshInterval = 60;;
+    public int refreshInterval = 60;
 }

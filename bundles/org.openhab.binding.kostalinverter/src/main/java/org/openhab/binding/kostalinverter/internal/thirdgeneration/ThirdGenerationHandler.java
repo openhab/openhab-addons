@@ -155,25 +155,34 @@ public class ThirdGenerationHandler extends BaseThingHandler {
         try {
             updateMessageContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                     PROCESSDATA, updateMessageJsonArray, sessionId);
-            if (updateMessageContentResponse.getStatus() == 404) {
-                // Module not found
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        COMMUNICATION_ERROR_INCOMPATIBLE_DEVICE);
-                return;
-            }
-            if (updateMessageContentResponse.getStatus() == 503) {
-                // Communication error (e.g. during initial boot of the SCB)
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        COMMUNICATION_ERROR_HTTP);
-                return;
-            }
-            if (updateMessageContentResponse.getStatus() == 401) {
+            int statusCode = updateMessageContentResponse.getStatus();
+            if (statusCode == 401) {
                 // session not valid (timed out? device rebooted?)
                 logger.info("Session expired - performing retry");
                 authenticate();
                 // Retry
                 updateMessageContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                         PROCESSDATA, updateMessageJsonArray, sessionId);
+                statusCode = updateMessageContentResponse.getStatus();
+            }
+
+            if (statusCode == 404) {
+                // Module not found
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        COMMUNICATION_ERROR_INCOMPATIBLE_DEVICE);
+                return;
+            }
+            if (statusCode == 503) {
+                // Communication error (e.g. during initial boot of the SCB)
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        COMMUNICATION_ERROR_HTTP);
+                return;
+            }
+            if (statusCode != 200) {
+                logger.debug("Could not update values. Device returned status {}", statusCode);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        COMMUNICATION_ERROR_JSON);
+                return;
             }
         } catch (TimeoutException | ExecutionException e) {
             // Communication problem
@@ -184,11 +193,18 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
             return;
         }
-        JsonArray updateMessageResultsJsonArray = ThirdGenerationHttpHelper
-                .getJsonArrayFromResponse(updateMessageContentResponse);
 
-        // Map the returned values back to the channels and update them
-        if (updateMessageResultsJsonArray != null) {
+        try {
+            JsonArray updateMessageResultsJsonArray = ThirdGenerationHttpHelper
+                    .getJsonArrayFromResponse(updateMessageContentResponse);
+
+            if (updateMessageResultsJsonArray == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        COMMUNICATION_ERROR_JSON);
+                return;
+            }
+
+            // Map the returned values back to the channels and update them
             for (int i = 0; i < updateMessageResultsJsonArray.size(); i++) {
                 JsonObject moduleAnswer = updateMessageResultsJsonArray.get(i).getAsJsonObject();
                 String moduleName = moduleAnswer.get("moduleid").getAsString();
@@ -200,11 +216,16 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                     double valueAsDouble = newValueObject.get("value").getAsDouble();
                     ThirdGenerationChannelMappingToWebApi channel = Objects.requireNonNull(channelList.get(moduleName))
                             .stream().filter(c -> c.moduleId.equals(moduleName) && c.processdataId.equals(valueId))
-                            .findFirst().get();
+                            .findFirst().orElseThrow();
                     updateChannelValue(channel.channelUID, channel.dataType, valueAsDouble);
                 }
             }
+        } catch (RuntimeException e) {
+            logger.debug("Could not parse or map update response", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
         }
+
         updateStatus(ThingStatus.ONLINE);
     }
 

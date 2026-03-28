@@ -195,16 +195,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         String jsonDxsEntriesResponse = callURL(dxsEntriesCall, httpClient);
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer = gson.fromJson(jsonDxsEntriesResponse,
                 SecondGenerationDxsEntriesContainerDTO.class);
-
-        String[] channelPosts = new String[23];
-        int channelPostsCounter = 0;
-        if (dxsEntriesContainer != null) {
-            for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
-                channelPosts[channelPostsCounter] = dxsentries.getName();
-                channelPostsCounter++;
-            }
-        }
-        channelPostsTemp = List.of(channelPosts);
+        channelPostsTemp = extractChannelPosts(dxsEntriesContainer, channelConfigs.size(), "dxsEntries");
 
         // Build posts for dxsEntriesExt part
         String dxsEntriesCallExt = inverterConfig.url + "/api/dxs.json?dxsEntries="
@@ -215,15 +206,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt, httpClient);
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExt = gson.fromJson(jsonDxsEntriesResponseExt,
                 SecondGenerationDxsEntriesContainerDTO.class);
-        String[] channelPostsExt = new String[23];
-        int channelPostsCounterExt = 0;
-        if (dxsEntriesContainerExt != null) {
-            for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
-                channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
-                channelPostsCounterExt++;
-            }
-        }
-        channelPostsTempExt = List.of(channelPostsExt);
+        channelPostsTempExt = extractChannelPosts(dxsEntriesContainerExt, channelConfigsExt.size(), "dxsEntriesExt");
 
         // Build posts for dxsEntriesExtExt part
         String dxsEntriesCallExtExt = inverterConfig.url + "/api/dxs.json?dxsEntries="
@@ -234,22 +217,15 @@ public class SecondGenerationHandler extends BaseThingHandler {
         String jsonDxsEntriesResponseExtExt = callURL(dxsEntriesCallExtExt, httpClient);
         SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerExtExt = gson.fromJson(jsonDxsEntriesResponseExtExt,
                 SecondGenerationDxsEntriesContainerDTO.class);
-        String[] channelPostsExtExt = new String[3];
-        int channelPostsCounterExtExt = 0;
-        if (dxsEntriesContainerExtExt != null) {
-            for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
-                channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
-                channelPostsCounterExtExt++;
-            }
-        }
-        channelPostsTempExtExt = List.of(channelPostsExtExt);
+        channelPostsTempExtExt = extractChannelPosts(dxsEntriesContainerExtExt, channelConfigsExtExt.size(),
+                "dxsEntriesExtExt");
 
         // Concatenate posts for all parts except configurable channels
         channelPostsTempAll = combinePostsLists(channelPostsTemp, channelPostsTempExt, channelPostsTempExtExt);
         String[] channelPostsTempAll1 = channelPostsTempAll.toArray(new String[0]);
 
         // Build posts for dxsEntriesConfigureable part
-        String[] channelPostsConfigurable = new String[5];
+        List<String> channelPostsConfigurable = new ArrayList<>();
         if (inverterConfig.hasBattery) {
             String dxsEntriesCallConfigurable = inverterConfig.url + "/api/dxs.json?dxsEntries="
                     + channelConfigsConfigurable.get(0).dxsEntries;
@@ -259,13 +235,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
             String jsonDxsEntriesResponseConfigurable = callURL(dxsEntriesCallConfigurable, httpClient);
             SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerConfigurable = gson
                     .fromJson(jsonDxsEntriesResponseConfigurable, SecondGenerationDxsEntriesContainerDTO.class);
-            int channelPostsCounterConfigurable = 0;
-            if (dxsEntriesContainerConfigurable != null) {
-                for (SecondGenerationDxsEntries dxsentriesConfigurable : dxsEntriesContainerConfigurable.dxsEntries) {
-                    channelPostsConfigurable[channelPostsCounterConfigurable] = dxsentriesConfigurable.getName();
-                    channelPostsCounterConfigurable++;
-                }
-            }
+            channelPostsConfigurable = extractChannelPosts(dxsEntriesContainerConfigurable,
+                    channelConfigsConfigurable.size(), "dxsEntriesConfigurable");
         }
 
         // Create and update actual values for non-configurable channels
@@ -294,7 +265,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
             int channelValuesCounterConfigurable = 0;
             for (SecondGenerationChannelConfiguration cConfig : channelConfigsConfigurable) {
                 String channel = cConfig.id;
-                String value = channelPostsConfigurable[channelValuesCounterConfigurable];
+                String value = channelPostsConfigurable.get(channelValuesCounterConfigurable);
                 int dxsEntriesCheckCounter = 3;
                 if ("33556484".equals(cConfig.dxsEntries)) {
                     dxsEntriesCheckCounter = 1;
@@ -324,7 +295,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
                         channelValuesCounterConfigurable++;
                         break;
                     case 3:
-                        State stateOther = getState(channelPostsConfigurable[channelValuesCounterConfigurable],
+                        State stateOther = getState(channelPostsConfigurable.get(channelValuesCounterConfigurable),
                                 cConfig.unit);
                         updateState(channel, stateOther);
                         channelValuesCounterConfigurable++;
@@ -361,6 +332,28 @@ public class SecondGenerationHandler extends BaseThingHandler {
             logger.debug("Connection to inverter disturbed during scrape");
         }
         return jsonDxsResponse;
+    }
+
+    private List<String> extractChannelPosts(@Nullable SecondGenerationDxsEntriesContainerDTO dxsEntriesContainer,
+            int expectedEntries, String requestName) {
+        if (dxsEntriesContainer == null || dxsEntriesContainer.dxsEntries == null) {
+            throw new IllegalStateException("Missing response payload for " + requestName);
+        }
+        if (dxsEntriesContainer.dxsEntries.size() < expectedEntries) {
+            throw new IllegalStateException("Incomplete response payload for " + requestName + ": expected at least "
+                    + expectedEntries + " entries but got " + dxsEntriesContainer.dxsEntries.size());
+        }
+
+        List<String> channelPosts = new ArrayList<>(expectedEntries);
+        for (int i = 0; i < expectedEntries; i++) {
+            String value = dxsEntriesContainer.dxsEntries.get(i).getName();
+            if (value == null) {
+                throw new IllegalStateException(
+                        "Invalid response payload for " + requestName + ": entry " + i + " has null value");
+            }
+            channelPosts.add(value);
+        }
+        return channelPosts;
     }
 
     // Method getState is used for non-configurable values
