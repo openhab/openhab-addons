@@ -38,19 +38,29 @@ class TimescaleDBSchemaTest {
     private Connection connection;
     private Statement statement;
     private PreparedStatement hypertablePs;
+    private PreparedStatement verifyPs;
     private ResultSet extensionResultSet;
+    private ResultSet verifyResultSet;
 
     @BeforeEach
     void setUp() throws SQLException {
         connection = mock(Connection.class);
         statement = mock(Statement.class);
         hypertablePs = mock(PreparedStatement.class);
+        verifyPs = mock(PreparedStatement.class);
         extensionResultSet = mock(ResultSet.class);
+        verifyResultSet = mock(ResultSet.class);
 
         when(connection.createStatement()).thenReturn(statement);
-        when(connection.prepareStatement(anyString())).thenReturn(hypertablePs);
+        // hypertable PS for create_hypertable; verify PS for schema column check
+        when(connection.prepareStatement(contains("create_hypertable"))).thenReturn(hypertablePs);
+        when(connection.prepareStatement(contains("information_schema.columns"))).thenReturn(verifyPs);
         when(statement.executeQuery(contains("pg_extension"))).thenReturn(extensionResultSet);
         when(extensionResultSet.next()).thenReturn(true); // extension is present by default
+        // Schema verification: both 'value' and 'metadata' columns present by default
+        when(verifyPs.executeQuery()).thenReturn(verifyResultSet);
+        when(verifyResultSet.next()).thenReturn(true, true, false);
+        when(verifyResultSet.getString(1)).thenReturn("value", "metadata");
     }
 
     @Test

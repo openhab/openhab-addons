@@ -166,11 +166,12 @@ public class TimescaleDBSchema {
             LOGGER.debug("Table item_meta ready");
 
             stmt.execute(SQL_MIGRATE_ADD_COLUMNS);
-            LOGGER.debug("Columns item_meta.value and item_meta.metadata ensured");
 
             stmt.execute(SQL_CREATE_ITEMS);
             LOGGER.debug("Table items ready");
         }
+
+        verifyItemMetaSchema(connection);
 
         try (PreparedStatement ps = connection.prepareStatement(SQL_CREATE_HYPERTABLE)) {
             ps.setString(1, chunkInterval);
@@ -185,6 +186,24 @@ public class TimescaleDBSchema {
             stmt.execute(SQL_MIGRATE_ADD_UNIQUE_CONSTRAINT);
             LOGGER.debug("UNIQUE(time, item_id, downsampled) constraint ensured");
         }
+    }
+
+    private static void verifyItemMetaSchema(Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT column_name FROM information_schema.columns "
+                + "WHERE table_name = 'item_meta' AND column_name IN ('value', 'metadata')");
+                ResultSet rs = ps.executeQuery()) {
+            var present = new java.util.HashSet<String>();
+            while (rs.next()) {
+                present.add(rs.getString(1));
+            }
+            if (!present.contains("value") || !present.contains("metadata")) {
+                throw new SQLException("item_meta schema migration incomplete — required columns missing: "
+                        + (present.contains("value") ? "" : "'value' ")
+                        + (present.contains("metadata") ? "" : "'metadata'")
+                        + "— another transaction may be holding a lock. Service will retry on next startup.");
+            }
+        }
+        LOGGER.debug("Columns item_meta.value and item_meta.metadata verified");
     }
 
     private static void setupCompression(Connection connection, int compressionAfterDays) throws SQLException {

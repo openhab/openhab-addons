@@ -875,27 +875,27 @@ class TimescaleDBContainerTest {
     @Test
     @Order(85)
     void schemaMigrationDoesNotBlockWhenAnotherTransactionLocksItemMeta() throws Exception {
-        // Simulate an existing installation with old metadata TEXT column
+        // Simulate the production schema without value/metadata columns
         try (Connection conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.execute("DROP TABLE IF EXISTS items CASCADE");
             stmt.execute("DROP TABLE IF EXISTS item_meta CASCADE");
             stmt.execute("CREATE TABLE item_meta (id SERIAL PRIMARY KEY, name TEXT NOT NULL UNIQUE, "
-                    + "label TEXT, metadata TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+                    + "label TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
         }
 
-        // Open a transaction that holds ACCESS SHARE lock on item_meta — simulates a long-running query
+        // Open a transaction that holds a lock on item_meta — simulates a long-running query
         Connection blockingConn = dataSource.getConnection();
         blockingConn.setAutoCommit(false);
         try (var stmt = blockingConn.createStatement()) {
             stmt.execute("SELECT * FROM item_meta FOR SHARE");
         }
 
-        // Migration must complete within a few seconds despite the blocking transaction.
-        // The lock_timeout in the DO-blocks means it gives up quickly and logs a warning
-        // instead of blocking the service start indefinitely.
+        // initialize() must fail quickly (lock_timeout) instead of blocking indefinitely.
+        // It must throw a SQLException to prevent the service from starting in a broken state.
         long start = System.currentTimeMillis();
         try (Connection conn = dataSource.getConnection()) {
-            TimescaleDBSchema.initialize(conn, "7 days", 0, 0);
+            assertThrows(SQLException.class, () -> TimescaleDBSchema.initialize(conn, "7 days", 0, 0),
+                    "initialize() must throw when migration cannot complete — service must not start with missing columns");
         } finally {
             blockingConn.rollback();
             blockingConn.close();
@@ -903,7 +903,7 @@ class TimescaleDBContainerTest {
         long elapsed = System.currentTimeMillis() - start;
 
         assertTrue(elapsed < 15_000,
-                "Schema initialization must not block indefinitely when item_meta is locked — took " + elapsed + "ms");
+                "Schema initialization must fail quickly, not block indefinitely — took " + elapsed + "ms");
     }
 
     // ------------------------------------------------------------------
