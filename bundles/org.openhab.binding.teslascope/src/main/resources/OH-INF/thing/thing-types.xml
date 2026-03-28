@@ -13,7 +13,7 @@
 				<label>apiKey</label>
 				<description>apiKey provided by Teslascope (Deprecated - use Personal Access Token instead)</description>
 			</parameter>
-			<parameter name="personalAccessToken" type="text" required="true">
+			<parameter name="personalAccessToken" type="text" required="false">
 				<label>Personal Access Token</label>
 				<description>Personal Access Token provided by Teslascope</description>
 			</parameter>
