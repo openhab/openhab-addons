@@ -52,31 +52,20 @@ public class TimescaleDBSchema {
             """;
 
     /**
-     * Migration: adds {@code value TEXT} column to existing installations that predate this column.
-     * No-op when already present (PostgreSQL supports ADD COLUMN IF NOT EXISTS).
+     * Migration: adds {@code value TEXT} and {@code metadata JSONB} columns to existing installations
+     * that predate these columns. Single atomic ALTER TABLE acquires one lock for both columns.
+     * Uses {@code lock_timeout} so the service does not block startup indefinitely if another
+     * transaction holds a lock on {@code item_meta}. On timeout a WARNING is logged and the
+     * migration is retried on the next startup.
      */
-    private static final String SQL_MIGRATE_ADD_VALUE_COLUMN = """
-            ALTER TABLE item_meta ADD COLUMN IF NOT EXISTS value TEXT
-            """;
-
-    /**
-     * Migration: converts {@code metadata TEXT} to {@code JSONB} for installations that have the old TEXT column,
-     * or adds {@code metadata JSONB} for installations that have neither column yet.
-     * Existing TEXT content is discarded (set to NULL) — intentional breaking change in beta stage.
-     */
-    private static final String SQL_MIGRATE_METADATA_TEXT_TO_JSONB = """
+    private static final String SQL_MIGRATE_ADD_COLUMNS = """
             DO $$ BEGIN
-                IF EXISTS (
-                    SELECT 1 FROM information_schema.columns
-                    WHERE table_name = 'item_meta' AND column_name = 'metadata' AND data_type = 'text'
-                ) THEN
-                    ALTER TABLE item_meta ALTER COLUMN metadata TYPE JSONB USING NULL;
-                ELSIF NOT EXISTS (
-                    SELECT 1 FROM information_schema.columns
-                    WHERE table_name = 'item_meta' AND column_name = 'metadata'
-                ) THEN
-                    ALTER TABLE item_meta ADD COLUMN metadata JSONB;
-                END IF;
+                SET LOCAL lock_timeout = '5s';
+                ALTER TABLE item_meta
+                    ADD COLUMN IF NOT EXISTS value    TEXT,
+                    ADD COLUMN IF NOT EXISTS metadata JSONB;
+            EXCEPTION WHEN lock_not_available THEN
+                RAISE WARNING 'item_meta: could not add columns within lock timeout — will retry on next startup';
             END $$
             """;
 
@@ -176,11 +165,8 @@ public class TimescaleDBSchema {
             stmt.execute(SQL_CREATE_ITEM_META);
             LOGGER.debug("Table item_meta ready");
 
-            stmt.execute(SQL_MIGRATE_ADD_VALUE_COLUMN);
-            LOGGER.debug("Column item_meta.value ensured");
-
-            stmt.execute(SQL_MIGRATE_METADATA_TEXT_TO_JSONB);
-            LOGGER.debug("Column item_meta.metadata (JSONB) ensured");
+            stmt.execute(SQL_MIGRATE_ADD_COLUMNS);
+            LOGGER.debug("Columns item_meta.value and item_meta.metadata ensured");
 
             stmt.execute(SQL_CREATE_ITEMS);
             LOGGER.debug("Table items ready");

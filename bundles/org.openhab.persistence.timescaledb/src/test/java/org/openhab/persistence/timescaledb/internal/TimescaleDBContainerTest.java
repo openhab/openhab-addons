@@ -844,7 +844,8 @@ class TimescaleDBContainerTest {
 
     @Test
     @Order(84)
-    void schemaMigrationAddsValueAndMetadataColumnsToExistingTable() throws SQLException {
+    void schemaMigrationAddsValueTextAndMetadataJsonbToProductionSchema() throws SQLException {
+        // Simulate the real production schema: item_meta without value/metadata columns
         try (Connection conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.execute("DROP TABLE IF EXISTS items CASCADE");
             stmt.execute("DROP TABLE IF EXISTS item_meta CASCADE");
@@ -857,18 +858,23 @@ class TimescaleDBContainerTest {
         }
 
         try (Connection conn = dataSource.getConnection();
-                PreparedStatement ps = conn.prepareStatement("SELECT column_name FROM information_schema.columns "
-                        + "WHERE table_name = 'item_meta' AND column_name IN ('value', 'metadata') "
-                        + "ORDER BY column_name");
+                PreparedStatement ps = conn
+                        .prepareStatement("SELECT column_name, data_type " + "FROM information_schema.columns "
+                                + "WHERE table_name = 'item_meta' AND column_name IN ('value', 'metadata') "
+                                + "ORDER BY column_name");
                 ResultSet rs = ps.executeQuery()) {
-            assertTrue(rs.next(), "Migration must have added 'metadata' column");
-            assertTrue(rs.next(), "Migration must have added 'value' column");
+            assertTrue(rs.next(), "metadata column must have been added");
+            assertEquals("metadata", rs.getString("column_name"));
+            assertEquals("jsonb", rs.getString("data_type"), "metadata must be JSONB");
+            assertTrue(rs.next(), "value column must have been added");
+            assertEquals("value", rs.getString("column_name"));
+            assertEquals("text", rs.getString("data_type"), "value must be TEXT");
         }
     }
 
     @Test
     @Order(85)
-    void schemaMigrationConvertsMetadataTextToJsonb() throws SQLException {
+    void schemaMigrationDoesNotBlockWhenAnotherTransactionLocksItemMeta() throws Exception {
         // Simulate an existing installation with old metadata TEXT column
         try (Connection conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
             stmt.execute("DROP TABLE IF EXISTS items CASCADE");
@@ -877,17 +883,146 @@ class TimescaleDBContainerTest {
                     + "label TEXT, metadata TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
         }
 
+        // Open a transaction that holds ACCESS SHARE lock on item_meta — simulates a long-running query
+        Connection blockingConn = dataSource.getConnection();
+        blockingConn.setAutoCommit(false);
+        try (var stmt = blockingConn.createStatement()) {
+            stmt.execute("SELECT * FROM item_meta FOR SHARE");
+        }
+
+        // Migration must complete within a few seconds despite the blocking transaction.
+        // The lock_timeout in the DO-blocks means it gives up quickly and logs a warning
+        // instead of blocking the service start indefinitely.
+        long start = System.currentTimeMillis();
+        try (Connection conn = dataSource.getConnection()) {
+            TimescaleDBSchema.initialize(conn, "7 days", 0, 0);
+        } finally {
+            blockingConn.rollback();
+            blockingConn.close();
+        }
+        long elapsed = System.currentTimeMillis() - start;
+
+        assertTrue(elapsed < 15_000,
+                "Schema initialization must not block indefinitely when item_meta is locked — took " + elapsed + "ms");
+    }
+
+    // ------------------------------------------------------------------
+    // Migration end-to-end: existing data must survive schema changes
+    // ------------------------------------------------------------------
+
+    /**
+     * Simulates the production upgrade path from the earliest schema
+     * (item_meta with only id/name/label/created_at, no value/metadata columns)
+     * to the current schema. Existing rows in item_meta and their linked
+     * items entries must survive the migration intact.
+     */
+    @Test
+    @Order(86)
+    void schemaMigrationPreservesExistingRowsWhenUpgradingFromOriginalSchema() throws SQLException {
+        // @BeforeEach already created the full current schema — insert real data first,
+        // then strip the new columns to simulate a pre-migration production state.
+        int existingId;
+        try (Connection conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
+            // Insert an existing item via the current API
+            existingId = TimescaleDBQuery.getOrCreateItemId(conn, "LegacySensor", "Living Room Temp");
+
+            // Insert a measurement for that item
+            TimescaleDBQuery.insert(conn, existingId, ZonedDateTime.now().minusHours(1),
+                    new TimescaleDBMapper.Row(21.5, null, null));
+
+            // Now simulate the old schema: drop the columns that did not exist originally
+            stmt.execute("ALTER TABLE item_meta DROP COLUMN IF EXISTS value");
+            stmt.execute("ALTER TABLE item_meta DROP COLUMN IF EXISTS metadata");
+        }
+
+        // Run migration — must succeed without error
         try (Connection conn = dataSource.getConnection()) {
             TimescaleDBSchema.initialize(conn, "7 days", 0, 0);
         }
 
-        // metadata column must now be JSONB
+        // Verify: item_meta row survived with correct name and label
         try (Connection conn = dataSource.getConnection();
-                PreparedStatement ps = conn.prepareStatement("SELECT data_type FROM information_schema.columns "
-                        + "WHERE table_name = 'item_meta' AND column_name = 'metadata'");
+                PreparedStatement ps = conn
+                        .prepareStatement("SELECT id, name, label FROM item_meta WHERE name = 'LegacySensor'");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next(), "item_meta row for LegacySensor must survive migration");
+            assertEquals(existingId, rs.getInt("id"), "item_meta.id must not change during migration");
+            assertEquals("Living Room Temp", rs.getString("label"));
+        }
+
+        // Verify: items measurement still referenced by its original item_meta.id
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM items WHERE item_id = ?")) {
+            ps.setInt(1, existingId);
+            ResultSet rs = ps.executeQuery();
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt(1), "items row must survive migration — FK reference must remain valid");
+        }
+
+        // Verify: new columns were added with NULL for old rows
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn
+                        .prepareStatement("SELECT value, metadata FROM item_meta WHERE name = 'LegacySensor'");
                 ResultSet rs = ps.executeQuery()) {
             assertTrue(rs.next());
-            assertEquals("jsonb", rs.getString(1), "metadata column must be JSONB after migration");
+            assertNull(rs.getString("value"), "value must be NULL for rows that predate the migration");
+            assertNull(rs.getString("metadata"), "metadata must be NULL for rows that predate the migration");
+        }
+
+        // Verify: service is fully operational after migration — new store + query round-trip works
+        try (Connection conn = dataSource.getConnection()) {
+            int id = TimescaleDBQuery.getOrCreateItemId(conn, "LegacySensor", "Living Room Temp");
+            assertEquals(existingId, id, "getOrCreateItemId must return the existing row, not create a duplicate");
+
+            TimescaleDBQuery.insert(conn, id, ZonedDateTime.now(), new TimescaleDBMapper.Row(22.0, null, null));
+
+            FilterCriteria filter = new FilterCriteria();
+            filter.setItemName("LegacySensor");
+            NumberItem item = new NumberItem("LegacySensor");
+            List<HistoricItem> results = TimescaleDBQuery.query(conn, item, id, filter);
+            assertFalse(results.isEmpty(), "Query must return results after migration");
+        }
+    }
+
+    /**
+     * initialize() must be idempotent: running it a second time on an already-migrated schema
+     * must not throw, not duplicate rows, and not corrupt existing data.
+     */
+    @Test
+    @Order(87)
+    void schemaInitializeIsIdempotent() throws SQLException {
+        // @BeforeEach already ran initialize() once — insert data
+        int existingId;
+        try (Connection conn = dataSource.getConnection()) {
+            existingId = TimescaleDBQuery.getOrCreateItemId(conn, "IdempotentSensor", "Idempotency Test", "sensor.test",
+                    null);
+            TimescaleDBQuery.insert(conn, existingId, ZonedDateTime.now().minusMinutes(5),
+                    new TimescaleDBMapper.Row(42.0, null, null));
+        }
+
+        // Run initialize() a second time — must not throw
+        assertDoesNotThrow(() -> {
+            try (Connection conn = dataSource.getConnection()) {
+                TimescaleDBSchema.initialize(conn, "7 days", 0, 0);
+            }
+        }, "initialize() must be idempotent — running it twice must not throw");
+
+        // item_meta row must not be duplicated
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn
+                        .prepareStatement("SELECT COUNT(*) FROM item_meta WHERE name = 'IdempotentSensor'");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt(1), "Second initialize() must not duplicate item_meta rows");
+        }
+
+        // items data must still be intact
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM items WHERE item_id = ?")) {
+            ps.setInt(1, existingId);
+            ResultSet rs = ps.executeQuery();
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt(1), "items data must survive second initialize() call");
         }
     }
 

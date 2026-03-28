@@ -63,11 +63,9 @@ class TimescaleDBSchemaTest {
         // Must create item_meta with metadata column
         verify(statement).execute(contains("CREATE TABLE IF NOT EXISTS item_meta"));
 
-        // Must run value column migration
-        verify(statement).execute(contains("item_meta ADD COLUMN IF NOT EXISTS value TEXT"));
-
-        // Must run metadata TEXT→JSONB migration
-        verify(statement).execute(contains("ALTER COLUMN metadata TYPE JSONB"));
+        // Must run single migration adding both value and metadata columns
+        verify(statement).execute(argThat(s -> s.contains("ADD COLUMN IF NOT EXISTS value")
+                && s.contains("ADD COLUMN IF NOT EXISTS metadata JSONB")));
 
         // Must create items table
         verify(statement).execute(contains("CREATE TABLE IF NOT EXISTS items"));
@@ -267,7 +265,7 @@ class TimescaleDBSchemaTest {
     }
 
     @Test
-    void migrationDdlAddsValueColumnToExistingInstallations() throws SQLException {
+    void migrationDdlAddsValueAndMetadataColumnsInSingleStatement() throws SQLException {
         var capturedSql = new java.util.ArrayList<String>();
         doAnswer(inv -> {
             capturedSql.add(inv.getArgument(0));
@@ -276,14 +274,17 @@ class TimescaleDBSchemaTest {
 
         TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
 
+        // Both columns must be added in a single ALTER TABLE statement (one lock acquisition)
         java.util.Optional<String> migrationOpt = capturedSql.stream()
-                .filter(s -> s.contains("ADD COLUMN IF NOT EXISTS value TEXT")).findFirst();
+                .filter(s -> s.contains("ADD COLUMN IF NOT EXISTS value")
+                        && s.contains("ADD COLUMN IF NOT EXISTS metadata JSONB"))
+                .findFirst();
         assertTrue(migrationOpt.isPresent(),
-                "Migration statement for item_meta.value column not found in executed DDL statements");
+                "value and metadata columns must be added in a single ALTER TABLE statement");
     }
 
     @Test
-    void migrationDdlConvertsMetadataTextToJsonb() throws SQLException {
+    void migrationDdlUsesLockTimeoutToPreventBlockingServiceStart() throws SQLException {
         var capturedSql = new java.util.ArrayList<String>();
         doAnswer(inv -> {
             capturedSql.add(inv.getArgument(0));
@@ -292,17 +293,30 @@ class TimescaleDBSchemaTest {
 
         TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
 
-        java.util.Optional<String> migrationOpt = capturedSql.stream()
-                .filter(s -> s.contains("ALTER COLUMN metadata TYPE JSONB")).findFirst();
-        assertTrue(migrationOpt.isPresent(),
-                "Migration DO-block for metadata TEXT→JSONB conversion not found in executed DDL");
-        String migrationSql = migrationOpt.get();
-        assertTrue(migrationSql.contains("information_schema.columns"),
-                "Migration must check column type before altering");
+        long migrationStatementsWithoutLockTimeout = capturedSql.stream()
+                .filter(s -> s.contains("ALTER TABLE item_meta") && !s.contains("lock_timeout")).count();
+        assertEquals(0, migrationStatementsWithoutLockTimeout,
+                "All item_meta DDL migrations must use lock_timeout to prevent blocking service startup indefinitely");
     }
 
     @Test
-    void migrationForValueColumnRunsAfterCreateTableItemMeta() throws SQLException {
+    void migrationDdlHasExceptionHandlerForLockTimeout() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        long migrationsWithoutExceptionHandler = capturedSql.stream()
+                .filter(s -> s.contains("item_meta") && s.contains("ALTER TABLE") && !s.contains("EXCEPTION")).count();
+        assertEquals(0, migrationsWithoutExceptionHandler,
+                "All item_meta migrations must handle lock_not_available gracefully instead of blocking");
+    }
+
+    @Test
+    void migrationRunsAfterCreateTableItemMeta() throws SQLException {
         var capturedSql = new java.util.ArrayList<String>();
         doAnswer(inv -> {
             capturedSql.add(inv.getArgument(0));
@@ -318,13 +332,14 @@ class TimescaleDBSchemaTest {
             if (s.contains("CREATE TABLE IF NOT EXISTS item_meta") && createTableIdx < 0) {
                 createTableIdx = i;
             }
-            if (s.contains("ADD COLUMN IF NOT EXISTS value TEXT") && migrationIdx < 0) {
+            if (s.contains("ADD COLUMN IF NOT EXISTS value") && s.contains("ADD COLUMN IF NOT EXISTS metadata JSONB")
+                    && migrationIdx < 0) {
                 migrationIdx = i;
             }
         }
 
         assertTrue(createTableIdx >= 0, "CREATE TABLE item_meta must be executed");
-        assertTrue(migrationIdx >= 0, "Migration for value column must be executed");
+        assertTrue(migrationIdx >= 0, "Column migration must be executed");
         assertTrue(createTableIdx < migrationIdx,
                 "Migration must run after CREATE TABLE item_meta so that the ALTER runs on an existing table");
     }
