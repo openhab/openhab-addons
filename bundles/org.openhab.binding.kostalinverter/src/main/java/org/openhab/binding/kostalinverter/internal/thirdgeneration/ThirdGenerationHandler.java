@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link ThirdGenerationHandler} is responsible for handling commands, which are
@@ -159,7 +160,14 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             if (statusCode == 401) {
                 // session not valid (timed out? device rebooted?)
                 logger.info("Session expired - performing retry");
-                authenticate();
+                try {
+                    authenticate();
+                } catch (RuntimeException e) {
+                    logger.debug("Re-authentication failed", e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            COMMUNICATION_ERROR_AUTHENTICATION);
+                    return;
+                }
                 // Retry
                 updateMessageContentResponse = ThirdGenerationHttpHelper.executeHttpPost(httpClient, config.url,
                         PROCESSDATA, updateMessageJsonArray, sessionId);
@@ -359,14 +367,34 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
             return;
         }
-        JsonObject authMeResponseJsonObject = Objects
-                .requireNonNull(ThirdGenerationHttpHelper.getJsonObjectFromResponse(authStartResponseContentResponse));
+        JsonObject authMeResponseJsonObject;
+        try {
+            authMeResponseJsonObject = ThirdGenerationHttpHelper
+                    .getJsonObjectFromResponse(authStartResponseContentResponse);
+            if (authMeResponseJsonObject == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        COMMUNICATION_ERROR_JSON);
+                return;
+            }
+        } catch (JsonSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
+        }
 
         // Extract information from the response
-        String salt = authMeResponseJsonObject.get("salt").getAsString();
-        String serverNonce = authMeResponseJsonObject.get("nonce").getAsString();
-        int rounds = authMeResponseJsonObject.get("rounds").getAsInt();
-        String transactionId = authMeResponseJsonObject.get("transactionId").getAsString();
+        String salt;
+        String serverNonce;
+        int rounds;
+        String transactionId;
+        try {
+            salt = authMeResponseJsonObject.get("salt").getAsString();
+            serverNonce = authMeResponseJsonObject.get("nonce").getAsString();
+            rounds = authMeResponseJsonObject.get("rounds").getAsInt();
+            transactionId = authMeResponseJsonObject.get("transactionId").getAsString();
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
+        }
 
         // Do the cryptography stuff (magic happens here)
         byte[] saltedPasswort;
@@ -411,15 +439,29 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                         CONFIGURATION_ERROR_PASSWORD);
                 return;
             }
+            if (authFinishResponseJsonObject == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        COMMUNICATION_ERROR_JSON);
+                return;
+            }
         } catch (InterruptedException | TimeoutException | ExecutionException e3) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
+            return;
+        } catch (JsonSyntaxException e3) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
             return;
         }
 
         // Extract information from the response
-        byte[] signature = Base64.getDecoder()
-                .decode(Objects.requireNonNull(authFinishResponseJsonObject).get("signature").getAsString());
-        String token = authFinishResponseJsonObject.get("token").getAsString();
+        byte[] signature;
+        String token;
+        try {
+            signature = Base64.getDecoder().decode(authFinishResponseJsonObject.get("signature").getAsString());
+            token = authFinishResponseJsonObject.get("token").getAsString();
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
+        }
 
         // Validate provided signature against calculated signature
         if (!java.util.Arrays.equals(serverSignature, signature)) {
@@ -499,6 +541,9 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     COMMUNICATION_ERROR_AUTHENTICATION);
             return;
+        } catch (JsonSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
         }
         // 200 is the desired status code
         if (createSessionResponseContentResponse.getStatus() == 400) {
@@ -508,7 +553,16 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             return;
         }
 
-        sessionId = Objects.requireNonNull(createSessionResponseJsonObject).get("sessionId").getAsString();
+        if (createSessionResponseJsonObject == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
+        }
+        try {
+            sessionId = createSessionResponseJsonObject.get("sessionId").getAsString();
+        } catch (RuntimeException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+            return;
+        }
 
         updateStatus(ThingStatus.ONLINE);
     }
