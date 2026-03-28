@@ -700,7 +700,7 @@ class TimescaleDBContainerTest {
     void serviceActivateInitializesschemaandschedulesjob() throws Exception {
         MetadataRegistry mr = mock(MetadataRegistry.class);
         when(mr.getAll()).thenReturn(Collections.emptyList());
-        TimescaleDBPersistenceService service = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
+        TimescaleDBPersistenceService service = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mr,
                 new TimescaleDBMetadataService(mr));
 
         service.activate(Map.of("url", DB.getJdbcUrl(), "user", DB.getUsername(), "password", DB.getPassword()));
@@ -727,7 +727,7 @@ class TimescaleDBContainerTest {
         NumberItem item = new NumberItem("ServiceSensor");
         when(ir.getItem("ServiceSensor")).thenReturn(item);
 
-        TimescaleDBPersistenceService service = new TimescaleDBPersistenceService(ir,
+        TimescaleDBPersistenceService service = new TimescaleDBPersistenceService(ir, mr,
                 new TimescaleDBMetadataService(mr));
         service.activate(Map.of("url", DB.getJdbcUrl(), "user", DB.getUsername(), "password", DB.getPassword()));
 
@@ -754,7 +754,7 @@ class TimescaleDBContainerTest {
     void serviceDeactivateCancelsscheduledfuture() throws Exception {
         MetadataRegistry mr = mock(MetadataRegistry.class);
         when(mr.getAll()).thenReturn(Collections.emptyList());
-        TimescaleDBPersistenceService service = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
+        TimescaleDBPersistenceService service = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mr,
                 new TimescaleDBMetadataService(mr));
         service.activate(Map.of("url", DB.getJdbcUrl(), "user", DB.getUsername(), "password", DB.getPassword()));
 

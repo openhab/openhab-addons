@@ -27,10 +27,13 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.items.Metadata;
+import org.openhab.core.items.MetadataRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.ModifiablePersistenceService;
@@ -69,7 +72,7 @@ import com.zaxxer.hikari.HikariDataSource;
         TimescaleDBPersistenceService.class }, configurationPid = "org.openhab.timescaledb", configurationPolicy = ConfigurationPolicy.REQUIRE, property = Constants.SERVICE_PID
                 + "=org.openhab.timescaledb")
 @ConfigurableService(category = "persistence", label = "TimescaleDB Persistence Service", description_uri = TimescaleDBPersistenceService.CONFIG_URI)
-public class TimescaleDBPersistenceService implements ModifiablePersistenceService {
+public class TimescaleDBPersistenceService implements ModifiablePersistenceService, RegistryChangeListener<Metadata> {
 
     static final String CONFIG_URI = "persistence:timescaledb";
     static final String CONFIGURATION_PID = "org.openhab.timescaledb";
@@ -84,6 +87,7 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
     private final Map<String, Integer> itemIdCache = new ConcurrentHashMap<>();
 
     private final ItemRegistry itemRegistry;
+    private final MetadataRegistry metadataRegistry;
     private final TimescaleDBMetadataService metadataService;
 
     private @Nullable HikariDataSource dataSource;
@@ -92,15 +96,18 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
 
     @Activate
     public TimescaleDBPersistenceService(final @Reference ItemRegistry itemRegistry,
+            final @Reference MetadataRegistry metadataRegistry,
             final @Reference TimescaleDBMetadataService metadataService) {
         this.itemRegistry = itemRegistry;
+        this.metadataRegistry = metadataRegistry;
         this.metadataService = metadataService;
     }
 
     /** Package-private constructor for unit tests — skips OSGi activation, allows injecting a DataSource. */
-    TimescaleDBPersistenceService(ItemRegistry itemRegistry, TimescaleDBMetadataService metadataService,
-            @Nullable HikariDataSource dataSource) {
+    TimescaleDBPersistenceService(ItemRegistry itemRegistry, MetadataRegistry metadataRegistry,
+            TimescaleDBMetadataService metadataService, @Nullable HikariDataSource dataSource) {
         this.itemRegistry = itemRegistry;
+        this.metadataRegistry = metadataRegistry;
         this.metadataService = metadataService;
         this.dataSource = dataSource;
     }
@@ -159,6 +166,7 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
                 TimeUnit.DAYS.toSeconds(1), TimeUnit.SECONDS);
         LOGGER.info("Downsampling job scheduled: first run in {}s, then every 24h", initialDelay);
 
+        metadataRegistry.addRegistryChangeListener(this);
         LOGGER.info("TimescaleDB persistence service activated");
     }
 
@@ -180,6 +188,7 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
     @Deactivate
     public void deactivate() {
         LOGGER.debug("Deactivating TimescaleDB persistence service");
+        metadataRegistry.removeRegistryChangeListener(this);
         itemIdCache.clear();
 
         ScheduledFuture<?> job = downsampleJob;
@@ -376,6 +385,33 @@ public class TimescaleDBPersistenceService implements ModifiablePersistenceServi
         } catch (SQLException e) {
             LOGGER.error("Failed to remove data for item '{}': {}", itemName, e.getMessage(), e);
             return false;
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // RegistryChangeListener<Metadata>
+    // -------------------------------------------------------------------------
+
+    @Override
+    public void added(Metadata metadata) {
+        invalidateCacheIfTimescaleDb(metadata);
+    }
+
+    @Override
+    public void updated(Metadata oldMetadata, Metadata newMetadata) {
+        invalidateCacheIfTimescaleDb(newMetadata);
+    }
+
+    @Override
+    public void removed(Metadata metadata) {
+        invalidateCacheIfTimescaleDb(metadata);
+    }
+
+    private void invalidateCacheIfTimescaleDb(Metadata metadata) {
+        if (TimescaleDBMetadataService.METADATA_NAMESPACE.equals(metadata.getUID().getNamespace())) {
+            String itemName = metadata.getUID().getItemName();
+            itemIdCache.remove(itemName);
+            LOGGER.debug("Invalidated item_id cache for '{}' due to metadata change", itemName);
         }
     }
 

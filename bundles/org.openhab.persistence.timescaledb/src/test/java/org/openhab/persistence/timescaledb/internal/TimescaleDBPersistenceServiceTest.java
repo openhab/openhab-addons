@@ -67,7 +67,7 @@ class TimescaleDBPersistenceServiceTest {
         private final HikariDataSource injectedDs;
 
         TestableService(ItemRegistry ir, MetadataRegistry mr, HikariDataSource ds) {
-            super(ir, new TimescaleDBMetadataService(mr));
+            super(ir, mr, new TimescaleDBMetadataService(mr));
             this.injectedDs = ds;
         }
 
@@ -361,7 +361,7 @@ class TimescaleDBPersistenceServiceTest {
 
     @Test
     void activateMissingurlDatasourceremainsnull() throws Exception {
-        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
+        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mock(MetadataRegistry.class),
                 new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         realService.activate(Map.of()); // no 'url' key
 
@@ -373,7 +373,7 @@ class TimescaleDBPersistenceServiceTest {
 
     @Test
     void activateInvalidurlDatasourceremainsnull() throws Exception {
-        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
+        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mock(MetadataRegistry.class),
                 new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         // Unreachable host; short timeout so the test does not block long
         realService.activate(
@@ -454,7 +454,7 @@ class TimescaleDBPersistenceServiceTest {
     void runDownsampleNowReturnsFalseWhenNotActivated() {
         // A fresh service with no activate() call has no job instance
         TimescaleDBPersistenceService fresh = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
-                new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
+                mock(MetadataRegistry.class), new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         assertFalse(fresh.runDownsampleNow(), "runDownsampleNow() must return false before activate()");
     }
 
@@ -477,7 +477,7 @@ class TimescaleDBPersistenceServiceTest {
     @Test
     void consoleCommandDownsamplePrintsNotActiveWhenServiceInactive() {
         TimescaleDBPersistenceService fresh = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
-                new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
+                mock(MetadataRegistry.class), new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         var console = mock(org.openhab.core.io.console.Console.class);
         new TimescaleDBConsoleCommandExtension(fresh).execute(new String[] { "downsample" }, console);
         verify(console).println(contains("not active"));
@@ -489,6 +489,90 @@ class TimescaleDBPersistenceServiceTest {
         new TimescaleDBConsoleCommandExtension(service).execute(new String[] { "unknown" }, console);
         // printUsage writes to console — at minimum something must be printed
         verify(console, atLeastOnce()).printUsage(anyString());
+    }
+
+    // ------------------------------------------------------------------
+    // Metadata cache invalidation (RegistryChangeListener)
+    // ------------------------------------------------------------------
+
+    @Test
+    void metadataAddedInvalidatesCacheSoNextStoreRunsUpsert() throws Exception {
+        // Populate the cache via a first store
+        stubItemIdLookup(5);
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Signal metadata added → cache must be invalidated
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor1");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "new.label", Map.of("aggregation", "MAX"));
+        service.added(meta);
+
+        // Stub a fresh upsert for the second store
+        stubItemIdLookup(5);
+        reset(dataSource);
+        when(dataSource.getConnection()).thenReturn(connection);
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(2.0), null);
+
+        // The upsert must have run again (connection obtained)
+        verify(dataSource, atLeastOnce()).getConnection();
+        verify(connection, atLeastOnce()).prepareStatement(contains("INSERT INTO item_meta"));
+    }
+
+    @Test
+    void metadataUpdatedInvalidatesCache() throws Exception {
+        stubItemIdLookup(6);
+        service.store(new NumberItem("Sensor2"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor2");
+        var oldMeta = new org.openhab.core.items.Metadata(metaKey, "old", Map.of());
+        var newMeta = new org.openhab.core.items.Metadata(metaKey, "new", Map.of("aggregation", "MIN"));
+        service.updated(oldMeta, newMeta);
+
+        stubItemIdLookup(6);
+        reset(dataSource);
+        when(dataSource.getConnection()).thenReturn(connection);
+        service.store(new NumberItem("Sensor2"), ZonedDateTime.now(), new DecimalType(3.0), null);
+
+        verify(connection, atLeastOnce()).prepareStatement(contains("INSERT INTO item_meta"));
+    }
+
+    @Test
+    void metadataRemovedInvalidatesCache() throws Exception {
+        stubItemIdLookup(7);
+        service.store(new NumberItem("Sensor3"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor3");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "label", Map.of());
+        service.removed(meta);
+
+        stubItemIdLookup(7);
+        reset(dataSource);
+        when(dataSource.getConnection()).thenReturn(connection);
+        service.store(new NumberItem("Sensor3"), ZonedDateTime.now(), new DecimalType(4.0), null);
+
+        verify(connection, atLeastOnce()).prepareStatement(contains("INSERT INTO item_meta"));
+    }
+
+    @Test
+    void metadataChangeForOtherNamespaceDoesNotInvalidateCache() throws Exception {
+        stubItemIdLookup(8);
+        service.store(new NumberItem("Sensor4"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Metadata change in a different namespace — cache must NOT be invalidated
+        var metaKey = new org.openhab.core.items.MetadataKey("someOtherNamespace", "Sensor4");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "irrelevant", Map.of());
+        service.added(meta);
+
+        // Reset both mocks so only the second store's interactions are counted
+        reset(dataSource, connection);
+        when(dataSource.getConnection()).thenReturn(connection);
+        PreparedStatement insertItemPs = mock(PreparedStatement.class);
+        when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
+        when(insertItemPs.executeUpdate()).thenReturn(1);
+
+        service.store(new NumberItem("Sensor4"), ZonedDateTime.now(), new DecimalType(2.0), null);
+
+        // Cache still valid → upsert must NOT have been called in the second store
+        verify(connection, never()).prepareStatement(contains("INSERT INTO item_meta"));
     }
 
     // ------------------------------------------------------------------
