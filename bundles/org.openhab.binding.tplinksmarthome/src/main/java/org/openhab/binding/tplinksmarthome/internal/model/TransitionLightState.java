@@ -110,8 +110,8 @@ public class TransitionLightState {
         }
     }
 
-    @NonNullByDefault
     @SerializedName("smartlife.iot.smartbulb.lightingservice")
+    @NonNullByDefault
     private LightingService service = new LightingService();
 
     public void setLightState(LightOnOff lightState) {
