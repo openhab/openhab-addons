@@ -111,6 +111,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     private final ShellyThingTable thingTable;
 
     protected volatile boolean initialized = false;
+    protected volatile boolean alwaysOn = false;
     private @Nullable Shelly2RpcSocket rpcSocket;
     private @Nullable Shelly2AuthChallenge authInfo;
     private final WebSocketClient client;
@@ -139,18 +140,28 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     @Override
     public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
         setConfig(thingName, config);
+        alwaysOn = getProfile().alwaysOn;
+
         if (initialized) {
             logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
             disconnect();
         }
-        Shelly2RpcSocket rpcSocket = this.rpcSocket;
-        if (rpcSocket != null) {
-            rpcSocket.disconnect();
+
+        if (getProfile().alwaysOn) {
+            if (initialized) {
+                logger.debug("{}: Disconnect Rpc Socket on initialize", thingName);
+                disconnect();
+            }
+            Shelly2RpcSocket rpcSocket = this.rpcSocket;
+            if (rpcSocket != null) {
+                rpcSocket.disconnect();
+            }
+
+            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client, scheduler);
+            rpcSocket.addMessageHandler(this);
+            this.rpcSocket = rpcSocket;
         }
 
-        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
-        rpcSocket.addMessageHandler(this);
-        this.rpcSocket = rpcSocket;
         initialized = true;
     }
 
@@ -339,14 +350,14 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.settings.ledPowerDisable = "off".equals(getString(dc.led.powerLed));
         }
 
-        if (!profile.initialized && profile.alwaysOn) {
+        if (!profile.initialized && alwaysOn) {
             getStatus(); // make sure profile.status is initialized (e.g,. relay/meter status)
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
         }
         profile.initialized = true;
 
         try {
-            if (profile.alwaysOn && dc.ble != null) {
+            if (alwaysOn && dc.ble != null) {
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                         config.enableBluGateway ? "enabled" : "disabled");
                 if (config.enableBluGateway) {
@@ -768,7 +779,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
             if ("Bye".equalsIgnoreCase(reason)) {
                 logger.debug("{}: Device went to sleep mode or was restarted", thingName);
-            } else if (statusCode == StatusCode.ABNORMAL && getProfile().alwaysOn) {
+            } else if (statusCode == StatusCode.ABNORMAL && alwaysOn) {
                 // e.g. device rebooted
                 if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
                     thingOffline("WebSocket connection closed abnormally");
@@ -790,7 +801,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             }
         }
         ShellyThingInterface thing = this.thing;
-        if (thing != null && thing.getProfile().alwaysOn) {
+        if (thing != null && alwaysOn) {
             thingOffline("WebSocket error");
         }
     }
