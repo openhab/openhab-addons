@@ -140,7 +140,7 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
         }
         if (localConfig.apiKey.isBlank() && localConfig.personalAccessToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error.no-personalAccessToken");
+                    "@text/offline.conf-error.no-credentials");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);

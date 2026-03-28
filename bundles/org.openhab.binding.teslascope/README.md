@@ -18,11 +18,12 @@ Account configuration is necessary.
 The easiest way to do this is from the UI.
 Just add a new Thing, select the Teslascope binding, then Teslascope Account Binding Thing, and enter the personalAccessToken which can be generated from the Teslascope website.
 
-As a minimum, the personalAccessToken is needed:
+As a minimum, the personalAccessToken or API key (deprecated) is needed:
 
 | Thing Parameter     | Default Value | Required | Advanced | Description                                                                          |
 |---------------------|---------------|----------|----------|--------------------------------------------------------------------------------------|
-| personalAccessToken | N/A           | Yes      | No       | Person Access Token generated from the Teslascope website                            |
+| apiKey              | N/A           | No       | No       | API Key from the Teslascope website (deprecated)                                     |
+| personalAccessToken | N/A           | No       | No       | Personal Access Token generated from the Teslascope website                          |
 | refreshInterval     | 60            | No       | Yes      | The frequency with which to refresh information from Teslascope specified in seconds |
 
 ## `vehicle` Thing Configuration

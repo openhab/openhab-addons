@@ -77,7 +77,7 @@ public class TeslascopeWebTargets {
         if (personalAccessToken.isBlank()) {
             invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params, "");
         } else {
-            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + params, personalAccessToken);
+            invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?" + params, personalAccessToken);
         }
         return;
     }
