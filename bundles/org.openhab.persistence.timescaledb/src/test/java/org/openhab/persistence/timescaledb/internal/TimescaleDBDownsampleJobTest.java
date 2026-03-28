@@ -80,7 +80,8 @@ class TimescaleDBDownsampleJobTest {
 
     @Test
     void runSingleitemExecutesinsertanddeleteintransaction() throws SQLException {
-        stubMetadata("SensorA", "AVG", Map.of("downsampleInterval", "1h", "retainRawDays", "5"));
+        stubMetadata("SensorA", "sensor.a",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h", "retainRawDays", "5"));
         stubItemNames(List.of("SensorA"));
         stubItemIdInDb(connection, "SensorA", 42);
 
@@ -99,8 +100,8 @@ class TimescaleDBDownsampleJobTest {
 
     @Test
     void runWithretentiondaysExecutesthreestatements() throws SQLException {
-        stubMetadata("SensorA", "MAX",
-                Map.of("downsampleInterval", "15m", "retainRawDays", "3", "retentionDays", "90"));
+        stubMetadata("SensorA", "sensor.a",
+                Map.of("aggregation", "MAX", "downsampleInterval", "15m", "retainRawDays", "3", "retentionDays", "90"));
         stubItemNames(List.of("SensorA"));
         stubItemIdInDb(connection, "SensorA", 7);
 
@@ -113,7 +114,7 @@ class TimescaleDBDownsampleJobTest {
 
     @Test
     void runItemnotInDbSkipsWithoutDml() throws SQLException {
-        stubMetadata("UnknownItem", "AVG", Map.of("downsampleInterval", "1h"));
+        stubMetadata("UnknownItem", "sensor.u", Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
         stubItemNames(List.of("UnknownItem"));
         // No stubItemIdInDb → SELECT returns empty (default setUp)
 
@@ -127,8 +128,8 @@ class TimescaleDBDownsampleJobTest {
 
     @Test
     void runSqlfailureforoneitemDoesnotabortotheritems() throws SQLException {
-        stubMetadata("SensorA", "AVG", Map.of("downsampleInterval", "1h"));
-        stubMetadata("SensorB", "SUM", Map.of("downsampleInterval", "1d"));
+        stubMetadata("SensorA", "sensor.a", Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+        stubMetadata("SensorB", "sensor.b", Map.of("aggregation", "SUM", "downsampleInterval", "1d"));
         stubItemNames(List.of("SensorA", "SensorB"));
 
         // First connection: SELECT succeeds (item found), INSERT fails
@@ -246,7 +247,8 @@ class TimescaleDBDownsampleJobTest {
 
     @Test
     void runInsertsqlcontainscorrectintervalandfunction() throws SQLException {
-        stubMetadata("Sensor", "MIN", Map.of("downsampleInterval", "6h", "retainRawDays", "3"));
+        stubMetadata("Sensor", "sensor.s",
+                Map.of("aggregation", "MIN", "downsampleInterval", "6h", "retainRawDays", "3"));
         stubItemNames(List.of("Sensor"));
 
         PreparedStatement selectPs = mock(PreparedStatement.class);
@@ -277,7 +279,8 @@ class TimescaleDBDownsampleJobTest {
 
     @Test
     void runDeletesqlreferencesretainrawdays() throws SQLException {
-        stubMetadata("Sensor", "AVG", Map.of("downsampleInterval", "1h", "retainRawDays", "7"));
+        stubMetadata("Sensor", "sensor.s",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h", "retainRawDays", "7"));
         stubItemNames(List.of("Sensor"));
 
         PreparedStatement selectPs = mock(PreparedStatement.class);
@@ -307,7 +310,7 @@ class TimescaleDBDownsampleJobTest {
 
     @Test
     void runRollbackonsqlerror() throws SQLException {
-        stubMetadata("SensorA", "AVG", Map.of("downsampleInterval", "1h"));
+        stubMetadata("SensorA", "sensor.a", Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
         stubItemNames(List.of("SensorA"));
         stubItemIdInDb(connection, "SensorA", 1);
 
@@ -343,14 +346,14 @@ class TimescaleDBDownsampleJobTest {
     }
 
     private void stubItemNames(List<String> names) {
-        var metaList = names.stream()
-                .map(n -> new Metadata(new MetadataKey("timescaledb", n), "AVG", Map.of("downsampleInterval", "1h")))
-                .toList();
+        var metaList = names.stream().map(n -> new Metadata(new MetadataKey("timescaledb", n),
+                "sensor." + n.toLowerCase(), Map.of("aggregation", "AVG", "downsampleInterval", "1h"))).toList();
         when(registry.getAll()).thenAnswer(inv -> metaList);
         for (String name : names) {
             MetadataKey key = new MetadataKey("timescaledb", name);
             if (registry.get(key) == null) {
-                when(registry.get(key)).thenReturn(new Metadata(key, "AVG", Map.of("downsampleInterval", "1h")));
+                when(registry.get(key)).thenReturn(new Metadata(key, "sensor." + name.toLowerCase(),
+                        Map.of("aggregation", "AVG", "downsampleInterval", "1h")));
             }
         }
     }

@@ -57,7 +57,8 @@ class BundleManifestTest {
             "org.w3c.dom.", // Java XML DOM
             "org.xml.sax.", // Java XML SAX
             "org.ietf.jgss.", // Java GSSAPI
-            "io.micrometer." // Micrometer metrics (embedded in openHAB core)
+            "io.micrometer.", // Micrometer metrics (embedded in openHAB core)
+            "com.google.gson." // Gson (embedded in openHAB core)
     );
 
     @Test

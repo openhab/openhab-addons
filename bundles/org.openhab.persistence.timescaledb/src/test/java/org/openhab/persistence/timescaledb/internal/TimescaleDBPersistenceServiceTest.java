@@ -140,7 +140,7 @@ class TimescaleDBPersistenceServiceTest {
 
     @Test
     void storeNormalstateSendsinsert() throws Exception {
-        // item_id cache is empty → getOrCreateItemId will run SELECT then INSERT
+        // item_id cache is empty → getOrCreateItemId will run UPSERT
         stubItemIdLookup(7);
 
         var item = new NumberItem("Sensor1");
@@ -164,16 +164,67 @@ class TimescaleDBPersistenceServiceTest {
         var item = new NumberItem("RealName");
 
         // Capture which PreparedStatements get setString(1, "AliasName")
-        PreparedStatement selectPs = mock(PreparedStatement.class);
-        ResultSet selectRs = mock(ResultSet.class);
-        when(selectRs.next()).thenReturn(false);
-        when(selectPs.executeQuery()).thenReturn(selectRs);
-        when(connection.prepareStatement(contains("SELECT id FROM item_meta"))).thenReturn(selectPs);
+        PreparedStatement upsertPs = mock(PreparedStatement.class);
+        ResultSet upsertRs = mock(ResultSet.class);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(3);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
 
         service.store(item, ZonedDateTime.now(), new DecimalType(1.0), "AliasName");
 
-        // The item_id lookup SELECT must be called with the alias
-        verify(selectPs, atLeastOnce()).setString(eq(1), eq("AliasName"));
+        // The item_id UPSERT must be called with the alias as parameter 1
+        verify(upsertPs, atLeastOnce()).setString(eq(1), eq("AliasName"));
+    }
+
+    @Test
+    void storeValueStringIsPassedToItemMetaUpsert() throws Exception {
+        var upsertPs = mock(PreparedStatement.class);
+        var upsertRs = mock(ResultSet.class);
+        var insertItemPs = mock(PreparedStatement.class);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(10);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
+        when(insertItemPs.executeUpdate()).thenReturn(1);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
+        when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
+
+        // New format: value = "my.sensor" (getValue()), aggregation in config map
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor1");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "my.sensor",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+        when(metadataRegistry.get(metaKey)).thenReturn(meta);
+
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Parameter 3 = value string (getText from getValue())
+        verify(upsertPs).setString(3, "my.sensor");
+    }
+
+    @Test
+    void storeMetadataConfigJsonIsPassedToItemMetaUpsert() throws Exception {
+        var upsertPs = mock(PreparedStatement.class);
+        var upsertRs = mock(ResultSet.class);
+        var insertItemPs = mock(PreparedStatement.class);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(11);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
+        when(insertItemPs.executeUpdate()).thenReturn(1);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
+        when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
+
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor1");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "my.sensor",
+                Map.of("aggregation", "AVG", "location", "kitchen"));
+        when(metadataRegistry.get(metaKey)).thenReturn(meta);
+
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Parameter 4 = metadata JSONB — must use setObject with Types.OTHER and contain a JSON string
+        verify(upsertPs).setObject(eq(4), argThat(arg -> {
+            String s = String.valueOf(arg);
+            return s.contains("aggregation") && s.contains("AVG") && s.contains("location");
+        }), eq(java.sql.Types.OTHER));
     }
 
     // ------------------------------------------------------------------
@@ -445,24 +496,19 @@ class TimescaleDBPersistenceServiceTest {
     // ------------------------------------------------------------------
 
     /**
-     * Stubs the item_id lookup: SELECT returns nothing, INSERT returns the given id.
+     * Stubs the item_id UPSERT: INSERT ... ON CONFLICT DO UPDATE ... RETURNING id returns the given id.
      */
     private void stubItemIdLookup(int itemId) throws Exception {
-        ResultSet selectRs = mock(ResultSet.class);
-        ResultSet insertRs = mock(ResultSet.class);
-        PreparedStatement selectPs = mock(PreparedStatement.class);
-        PreparedStatement insertPs = mock(PreparedStatement.class);
+        ResultSet upsertRs = mock(ResultSet.class);
+        PreparedStatement upsertPs = mock(PreparedStatement.class);
         PreparedStatement insertItemPs = mock(PreparedStatement.class);
 
-        when(selectRs.next()).thenReturn(false);
-        when(insertRs.next()).thenReturn(true);
-        when(insertRs.getInt(1)).thenReturn(itemId);
-        when(selectPs.executeQuery()).thenReturn(selectRs);
-        when(insertPs.executeQuery()).thenReturn(insertRs);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(itemId);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
         when(insertItemPs.executeUpdate()).thenReturn(1);
 
-        when(connection.prepareStatement(contains("SELECT id FROM item_meta"))).thenReturn(selectPs);
-        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(insertPs);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
         when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
     }
 }

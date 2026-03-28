@@ -60,8 +60,14 @@ class TimescaleDBSchemaTest {
         // Must check TimescaleDB extension
         verify(statement).executeQuery(contains("pg_extension"));
 
-        // Must create item_meta
+        // Must create item_meta with metadata column
         verify(statement).execute(contains("CREATE TABLE IF NOT EXISTS item_meta"));
+
+        // Must run value column migration
+        verify(statement).execute(contains("item_meta ADD COLUMN IF NOT EXISTS value TEXT"));
+
+        // Must run metadata TEXT→JSONB migration
+        verify(statement).execute(contains("ALTER COLUMN metadata TYPE JSONB"));
 
         // Must create items table
         verify(statement).execute(contains("CREATE TABLE IF NOT EXISTS items"));
@@ -218,5 +224,108 @@ class TimescaleDBSchemaTest {
                 "Migration must add the new items_time_item_id_downsampled_ukey constraint");
         assertTrue(migrationSql.indexOf("DROP") < migrationSql.indexOf("ADD"),
                 "Migration must DROP the old constraint before ADD-ing the new one");
+    }
+
+    // ------------------------------------------------------------------
+    // item_meta schema — DDL and migration
+    // ------------------------------------------------------------------
+
+    @Test
+    void createTableItemmetaContainsValueTextColumn() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        java.util.Optional<String> createItemMeta = capturedSql.stream()
+                .filter(s -> s.contains("CREATE TABLE IF NOT EXISTS item_meta")).findFirst();
+        assertTrue(createItemMeta.isPresent(), "CREATE TABLE item_meta statement not found");
+        String ddl = createItemMeta.get();
+        assertTrue(ddl.contains("value") && ddl.contains("TEXT"),
+                "CREATE TABLE item_meta must define a 'value TEXT' column");
+    }
+
+    @Test
+    void createTableItemmetaContainsMetadataJsonbColumn() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        java.util.Optional<String> createItemMeta = capturedSql.stream()
+                .filter(s -> s.contains("CREATE TABLE IF NOT EXISTS item_meta")).findFirst();
+        assertTrue(createItemMeta.isPresent(), "CREATE TABLE item_meta statement not found");
+        String ddl = createItemMeta.get();
+        assertTrue(ddl.contains("metadata") && ddl.contains("JSONB"),
+                "CREATE TABLE item_meta must define a 'metadata JSONB' column");
+    }
+
+    @Test
+    void migrationDdlAddsValueColumnToExistingInstallations() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        java.util.Optional<String> migrationOpt = capturedSql.stream()
+                .filter(s -> s.contains("ADD COLUMN IF NOT EXISTS value TEXT")).findFirst();
+        assertTrue(migrationOpt.isPresent(),
+                "Migration statement for item_meta.value column not found in executed DDL statements");
+    }
+
+    @Test
+    void migrationDdlConvertsMetadataTextToJsonb() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        java.util.Optional<String> migrationOpt = capturedSql.stream()
+                .filter(s -> s.contains("ALTER COLUMN metadata TYPE JSONB")).findFirst();
+        assertTrue(migrationOpt.isPresent(),
+                "Migration DO-block for metadata TEXT→JSONB conversion not found in executed DDL");
+        String migrationSql = migrationOpt.get();
+        assertTrue(migrationSql.contains("information_schema.columns"),
+                "Migration must check column type before altering");
+    }
+
+    @Test
+    void migrationForValueColumnRunsAfterCreateTableItemMeta() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        int createTableIdx = -1;
+        int migrationIdx = -1;
+        for (int i = 0; i < capturedSql.size(); i++) {
+            String s = capturedSql.get(i);
+            if (s.contains("CREATE TABLE IF NOT EXISTS item_meta") && createTableIdx < 0) {
+                createTableIdx = i;
+            }
+            if (s.contains("ADD COLUMN IF NOT EXISTS value TEXT") && migrationIdx < 0) {
+                migrationIdx = i;
+            }
+        }
+
+        assertTrue(createTableIdx >= 0, "CREATE TABLE item_meta must be executed");
+        assertTrue(migrationIdx >= 0, "Migration for value column must be executed");
+        assertTrue(createTableIdx < migrationIdx,
+                "Migration must run after CREATE TABLE item_meta so that the ALTER runs on an existing table");
     }
 }

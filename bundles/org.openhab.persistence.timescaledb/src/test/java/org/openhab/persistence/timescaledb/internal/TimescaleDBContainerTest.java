@@ -500,8 +500,8 @@ class TimescaleDBContainerTest {
         }
 
         MetadataRegistry mr = mock(MetadataRegistry.class);
-        Metadata meta = new Metadata(new MetadataKey("timescaledb", "BoundarySensor"), "AVG",
-                Map.of("downsampleInterval", "2h", "retainRawDays", "0"));
+        Metadata meta = new Metadata(new MetadataKey("timescaledb", "BoundarySensor"), "sensor.boundary",
+                Map.of("aggregation", "AVG", "downsampleInterval", "2h", "retainRawDays", "0"));
         when(mr.get(new MetadataKey("timescaledb", "BoundarySensor"))).thenReturn(meta);
         when(mr.getAll()).thenAnswer(inv -> List.of(meta));
 
@@ -554,8 +554,8 @@ class TimescaleDBContainerTest {
 
         // Configure metadata for downsampling with retainRawDays=0
         MetadataRegistry metadataRegistry = mock(MetadataRegistry.class);
-        Metadata meta = new Metadata(new MetadataKey("timescaledb", "DownsampleSensor"), "AVG",
-                Map.of("downsampleInterval", "2h", "retainRawDays", "0"));
+        Metadata meta = new Metadata(new MetadataKey("timescaledb", "DownsampleSensor"), "sensor.downsample",
+                Map.of("aggregation", "AVG", "downsampleInterval", "2h", "retainRawDays", "0"));
         when(metadataRegistry.get(new MetadataKey("timescaledb", "DownsampleSensor"))).thenReturn(meta);
         when(metadataRegistry.getAll()).thenAnswer(inv -> List.of(meta));
 
@@ -610,8 +610,8 @@ class TimescaleDBContainerTest {
 
         MetadataRegistry mr = mock(MetadataRegistry.class);
         // retentionDays=30 → the 60-day-old row should be deleted
-        Metadata meta = new Metadata(new MetadataKey("timescaledb", "RetentionSensor"), "AVG",
-                Map.of("downsampleInterval", "1h", "retainRawDays", "0", "retentionDays", "30"));
+        Metadata meta = new Metadata(new MetadataKey("timescaledb", "RetentionSensor"), "sensor.retention",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h", "retainRawDays", "0", "retentionDays", "30"));
         when(mr.get(new MetadataKey("timescaledb", "RetentionSensor"))).thenReturn(meta);
         when(mr.getAll()).thenAnswer(inv -> List.of(meta));
 
@@ -771,6 +771,125 @@ class TimescaleDBContainerTest {
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
+
+    // ------------------------------------------------------------------
+    // item_meta.value + metadata JSONB (integration)
+    // ------------------------------------------------------------------
+
+    @Test
+    @Order(80)
+    void valueStringIsStoredInItemMetaValueColumn() throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            TimescaleDBQuery.getOrCreateItemId(conn, "ValueSensor", "label", "sensor.temperature", null);
+        }
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement("SELECT value FROM item_meta WHERE name = 'ValueSensor'");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next());
+            assertEquals("sensor.temperature", rs.getString(1));
+        }
+    }
+
+    @Test
+    @Order(81)
+    void valueStringIsUpdatedOnUpsert() throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            TimescaleDBQuery.getOrCreateItemId(conn, "UpdatableSensor", "label", "old.value", null);
+            TimescaleDBQuery.getOrCreateItemId(conn, "UpdatableSensor", "label", "new.value", null);
+        }
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn
+                        .prepareStatement("SELECT value FROM item_meta WHERE name = 'UpdatableSensor'");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next());
+            assertEquals("new.value", rs.getString(1));
+        }
+    }
+
+    @Test
+    @Order(82)
+    void nullValueAndMetadataStoreNulls() throws SQLException {
+        try (Connection conn = dataSource.getConnection()) {
+            TimescaleDBQuery.getOrCreateItemId(conn, "NoMetaSensor", null);
+        }
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn
+                        .prepareStatement("SELECT value, metadata FROM item_meta WHERE name = 'NoMetaSensor'");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next());
+            assertNull(rs.getString(1), "value must be NULL when not provided");
+            assertNull(rs.getString(2), "metadata must be NULL when not provided");
+        }
+    }
+
+    @Test
+    @Order(83)
+    void metadataJsonbIsStoredAndQueryableViaJsonbOperators() throws SQLException {
+        String json = "{\"aggregation\":\"AVG\",\"location\":\"kitchen\"}";
+        try (Connection conn = dataSource.getConnection()) {
+            TimescaleDBQuery.getOrCreateItemId(conn, "JsonSensor", null, "sensor.temp", json);
+        }
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn
+                        .prepareStatement("SELECT name FROM item_meta WHERE metadata->>'location' = 'kitchen'");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next(), "JSONB operator ->> must work for filtering");
+            assertEquals("JsonSensor", rs.getString(1));
+        }
+    }
+
+    @Test
+    @Order(84)
+    void schemaMigrationAddsValueAndMetadataColumnsToExistingTable() throws SQLException {
+        try (Connection conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS items CASCADE");
+            stmt.execute("DROP TABLE IF EXISTS item_meta CASCADE");
+            stmt.execute("CREATE TABLE item_meta (id SERIAL PRIMARY KEY, name TEXT NOT NULL UNIQUE, "
+                    + "label TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+        }
+
+        try (Connection conn = dataSource.getConnection()) {
+            TimescaleDBSchema.initialize(conn, "7 days", 0, 0);
+        }
+
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement("SELECT column_name FROM information_schema.columns "
+                        + "WHERE table_name = 'item_meta' AND column_name IN ('value', 'metadata') "
+                        + "ORDER BY column_name");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next(), "Migration must have added 'metadata' column");
+            assertTrue(rs.next(), "Migration must have added 'value' column");
+        }
+    }
+
+    @Test
+    @Order(85)
+    void schemaMigrationConvertsMetadataTextToJsonb() throws SQLException {
+        // Simulate an existing installation with old metadata TEXT column
+        try (Connection conn = dataSource.getConnection(); var stmt = conn.createStatement()) {
+            stmt.execute("DROP TABLE IF EXISTS items CASCADE");
+            stmt.execute("DROP TABLE IF EXISTS item_meta CASCADE");
+            stmt.execute("CREATE TABLE item_meta (id SERIAL PRIMARY KEY, name TEXT NOT NULL UNIQUE, "
+                    + "label TEXT, metadata TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())");
+        }
+
+        try (Connection conn = dataSource.getConnection()) {
+            TimescaleDBSchema.initialize(conn, "7 days", 0, 0);
+        }
+
+        // metadata column must now be JSONB
+        try (Connection conn = dataSource.getConnection();
+                PreparedStatement ps = conn.prepareStatement("SELECT data_type FROM information_schema.columns "
+                        + "WHERE table_name = 'item_meta' AND column_name = 'metadata'");
+                ResultSet rs = ps.executeQuery()) {
+            assertTrue(rs.next());
+            assertEquals("jsonb", rs.getString(1), "metadata column must be JSONB after migration");
+        }
+    }
 
     @SafeVarargs
     private void storeAndVerify(String itemName, org.openhab.core.items.Item item, State state,

@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Schema overview:
  * <ul>
- * <li>{@code item_meta} — name-to-ID lookup table for items</li>
+ * <li>{@code item_meta} — name-to-ID lookup table for items, stores user-defined value string and full config
+ * JSONB</li>
  * <li>{@code items} — single hypertable for all item states</li>
  * </ul>
  *
@@ -44,8 +45,39 @@ public class TimescaleDBSchema {
                 id         SERIAL PRIMARY KEY,
                 name       TEXT NOT NULL UNIQUE,
                 label      TEXT,
+                value      TEXT,
+                metadata   JSONB,
                 created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             )
+            """;
+
+    /**
+     * Migration: adds {@code value TEXT} column to existing installations that predate this column.
+     * No-op when already present (PostgreSQL supports ADD COLUMN IF NOT EXISTS).
+     */
+    private static final String SQL_MIGRATE_ADD_VALUE_COLUMN = """
+            ALTER TABLE item_meta ADD COLUMN IF NOT EXISTS value TEXT
+            """;
+
+    /**
+     * Migration: converts {@code metadata TEXT} to {@code JSONB} for installations that have the old TEXT column,
+     * or adds {@code metadata JSONB} for installations that have neither column yet.
+     * Existing TEXT content is discarded (set to NULL) — intentional breaking change in beta stage.
+     */
+    private static final String SQL_MIGRATE_METADATA_TEXT_TO_JSONB = """
+            DO $$ BEGIN
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_name = 'item_meta' AND column_name = 'metadata' AND data_type = 'text'
+                ) THEN
+                    ALTER TABLE item_meta ALTER COLUMN metadata TYPE JSONB USING NULL;
+                ELSIF NOT EXISTS (
+                    SELECT 1 FROM information_schema.columns
+                    WHERE table_name = 'item_meta' AND column_name = 'metadata'
+                ) THEN
+                    ALTER TABLE item_meta ADD COLUMN metadata JSONB;
+                END IF;
+            END $$
             """;
 
     private static final String SQL_CREATE_ITEMS = """
@@ -143,6 +175,12 @@ public class TimescaleDBSchema {
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(SQL_CREATE_ITEM_META);
             LOGGER.debug("Table item_meta ready");
+
+            stmt.execute(SQL_MIGRATE_ADD_VALUE_COLUMN);
+            LOGGER.debug("Column item_meta.value ensured");
+
+            stmt.execute(SQL_MIGRATE_METADATA_TEXT_TO_JSONB);
+            LOGGER.debug("Column item_meta.metadata (JSONB) ensured");
 
             stmt.execute(SQL_CREATE_ITEMS);
             LOGGER.debug("Table items ready");
