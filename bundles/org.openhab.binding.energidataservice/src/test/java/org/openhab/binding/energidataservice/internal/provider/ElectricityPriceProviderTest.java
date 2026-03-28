@@ -66,11 +66,11 @@ import org.openhab.core.scheduler.SchedulerRunnable;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ElectricityPriceProviderTest {
 
-    private @NonNullByDefault({}) @Mock Scheduler scheduler;
-    private @NonNullByDefault({}) @Mock ApiController apiController;
-    private @NonNullByDefault({}) @Mock TimeZoneProvider timeZoneProvider;
-    private @NonNullByDefault({}) @Mock MockedListener listener1;
-    private @NonNullByDefault({}) @Mock MockedListener listener2;
+    private @Mock @NonNullByDefault({}) Scheduler scheduler;
+    private @Mock @NonNullByDefault({}) ApiController apiController;
+    private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
+    private @Mock @NonNullByDefault({}) MockedListener listener1;
+    private @Mock @NonNullByDefault({}) MockedListener listener2;
     private @NonNullByDefault({}) ElectricityPriceProvider provider;
 
     @SuppressWarnings("unchecked")
