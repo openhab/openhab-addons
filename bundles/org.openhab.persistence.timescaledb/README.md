@@ -27,7 +27,7 @@ CREATE EXTENSION IF NOT EXISTS timescaledb;
 ## Database Schema
 
 The service **creates all tables automatically on startup** — no manual DDL required.
-Item states are stored in a single hypertable `items` (columns: `time`, `item_id`, `value`, `string`, `unit`, `downsampled`) and a name-lookup table `item_meta`.
+Item states are stored in a single hypertable `items` (columns: `time`, `item_id`, `value`, `string`, `unit`, `downsampled`) and a name-lookup table `item_meta` (columns: `id`, `name`, `label`, `value`, `metadata`).
 
 ## State Type Mapping
 
@@ -77,36 +77,44 @@ Items {
 }
 ```
 
-## Per-Item Downsampling
+## Per-Item Downsampling and Metadata Tags
 
-Downsampling is configured **per item** via item metadata in the `timescaledb` namespace.
+Per-item behaviour is configured via item metadata in the `timescaledb` namespace.
 
 ### Metadata format
 
 ```text
-timescaledb="<operation>" [downsampleInterval="<interval>", retainRawDays="<n>", retentionDays="<n>"]
+timescaledb="<label>" [ aggregation="<fn>", downsampleInterval="<interval>",
+    retainRawDays="<n>", retentionDays="<n>", <custom-tag>="<value>", ... ]
 ```
 
-| Metadata key         | Values                               | Description                                                                                                                                       |
-|----------------------|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| value (main)         | `AVG`, `MAX`, `MIN`, `SUM`, or `" "` | Aggregation function. Use a single space `" "` for retention-only (no downsampling). openHAB rejects a truly empty value, so a space is required. |
-| `downsampleInterval` | e.g. `1h`, `15m`, `1d`               | Time bucket size for aggregation. Required when value is an aggregation function.                                                                 |
-| `retainRawDays`      | integer, default `5`                 | Keep raw data for N days before replacing with aggregated rows.                                                                                   |
-| `retentionDays`      | integer, default `0`                 | Drop all data (raw + downsampled) older than N days. `0` = off.                                                                                   |
+| Metadata key         | Values / default             | Description                                                                                                   |
+|----------------------|------------------------------|---------------------------------------------------------------------------------------------------------------|
+| value (main)         | any string                   | User-defined label stored in `item_meta.value`. Leave blank (single space `" "`) if only retention is needed. |
+| `aggregation`        | `AVG`, `MAX`, `MIN`, `SUM`   | Downsampling aggregation function. Omit if no downsampling is needed.                                         |
+| `downsampleInterval` | e.g. `1h`, `15m`, `1d`       | Time bucket size for aggregation. Required when `aggregation` is set.                                         |
+| `retainRawDays`      | integer, default `5`         | Keep raw data for N days before replacing with aggregated rows.                                               |
+| `retentionDays`      | integer, default `0`         | Drop all data older than N days. `0` = disabled.                                                              |
+| custom tags          | any key=value pairs          | Stored unfiltered as JSONB in `item_meta.metadata`. Queryable via Grafana/SQL JSONB operators.                |
+
+The **entire config map** (all keys including `aggregation`, `downsampleInterval`, etc.) is stored as JSONB in `item_meta.metadata`, enabling flexible SQL/Grafana filtering.
 
 ### Configuration in `.items` files
 
 ```java
+// Downsampling + custom tags for Grafana filtering
 Number:Temperature Sensor_Temperature_Living "Living Room [%.1f °C]" {
-    timescaledb="AVG" [ downsampleInterval="1h", retainRawDays="5" ]
+    timescaledb="sensor.temperature" [ aggregation="AVG", downsampleInterval="1h",
+        retainRawDays="5", location="living_room", kind="temperature" ]
 }
 
 Number:Power Meter_Power_House "House Power [%.1f W]" {
-    timescaledb="AVG" [ downsampleInterval="15m", retainRawDays="3", retentionDays="365" ]
+    timescaledb="meter.power" [ aggregation="AVG", downsampleInterval="15m",
+        retainRawDays="3", retentionDays="365" ]
 }
 
 Number:Energy Meter_Energy_House "House Energy [%.3f kWh]" {
-    timescaledb="SUM" [ downsampleInterval="1h", retainRawDays="7" ]
+    timescaledb="meter.energy" [ aggregation="SUM", downsampleInterval="1h", retainRawDays="7" ]
 }
 
 // Retention-only: no downsampling, just drop data older than 30 days.
@@ -118,12 +126,12 @@ Number:Temperature Sensor_Temp_Outdoor {
 
 ### Configuration in mainUI
 
-**Downsampling + Retention:**
+**Downsampling + Retention + Tags:**
 
 `Item → Metadata → Add Metadata → Enter namespace "timescaledb"`:
 
-- Value: `AVG`
-- Additional config: `downsampleInterval=1h`, `retainRawDays=5`, `retentionDays=365`
+- Value: `sensor.temperature` (or any descriptive label)
+- Additional config: `aggregation=AVG`, `downsampleInterval=1h`, `retainRawDays=5`, `retentionDays=365`, `location=living_room`
 
 **Retention-only (no downsampling):**
 
@@ -204,7 +212,9 @@ This works independently of downsampling: an item can have `retentionDays` set w
 
 ## Grafana Integration
 
-TimescaleDB works natively with the Grafana PostgreSQL data source:
+TimescaleDB works natively with the Grafana PostgreSQL data source.
+
+### Query by item name
 
 ```sql
 -- Raw + downsampled data for a sensor (last 24 h)
@@ -217,6 +227,39 @@ JOIN item_meta ON items.item_id = item_meta.id
 WHERE item_meta.name = 'Sensor_Temperature_Living'
   AND time > NOW() - INTERVAL '24 hours'
 GROUP BY 1
+ORDER BY 1;
+```
+
+### Filter by label (`item_meta.value`)
+
+```sql
+-- All items labelled "sensor.temperature" (last 24 h)
+SELECT
+  time_bucket('5 minutes', time) AS time,
+  item_meta.name                 AS sensor,
+  AVG(value)                     AS temperature
+FROM items
+JOIN item_meta ON items.item_id = item_meta.id
+WHERE item_meta.value = 'sensor.temperature'
+  AND time > NOW() - INTERVAL '24 hours'
+GROUP BY 1, 2
+ORDER BY 1;
+```
+
+### Filter by custom tag (`item_meta.metadata` JSONB)
+
+```sql
+-- All temperature sensors in the living room
+SELECT
+  time_bucket('5 minutes', time) AS time,
+  item_meta.name                 AS sensor,
+  AVG(value)                     AS temperature
+FROM items
+JOIN item_meta ON items.item_id = item_meta.id
+WHERE item_meta.metadata->>'location' = 'living_room'
+  AND item_meta.metadata->>'kind'     = 'temperature'
+  AND time > NOW() - INTERVAL '24 hours'
+GROUP BY 1, 2
 ORDER BY 1;
 ```
 
