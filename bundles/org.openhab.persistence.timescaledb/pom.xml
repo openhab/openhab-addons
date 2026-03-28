@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: TimescaleDB</name>
 
   <properties>
-    <bnd.importpackage>!com.codahale.metrics.*,!io.prometheus.*,!org.checkerframework.*,!org.jetbrains.annotations.*,!org.hibernate.*,!waffle.windows.auth.*,!org.osgi.service.jdbc.*,!com.sun.jna.*,!javassist.*</bnd.importpackage>
+    <bnd.importpackage>!com.codahale.metrics.*,!io.prometheus.*,!org.checkerframework.*,!org.jetbrains.annotations.*,!org.hibernate.*,!waffle.windows.auth.*,!org.osgi.service.jdbc.*,!com.sun.jna.*,!javassist.*,!com.google.errorprone.annotations.*,!sun.misc.*</bnd.importpackage>
     <postgresql.version>42.7.9</postgresql.version>
     <hikari.version>5.1.0</hikari.version>
   </properties>
@@ -31,6 +31,13 @@
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
       <version>${hikari.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
       <scope>compile</scope>
     </dependency>
 

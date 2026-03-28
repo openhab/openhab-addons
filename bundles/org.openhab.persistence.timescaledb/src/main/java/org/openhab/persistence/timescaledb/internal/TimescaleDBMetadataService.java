@@ -14,6 +14,7 @@ package org.openhab.persistence.timescaledb.internal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,18 +28,27 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
- * Reads and parses per-item downsampling configuration from the {@link MetadataRegistry}
- * using the {@code timescaledb} namespace.
+ * Reads per-item configuration from the {@link MetadataRegistry} using the {@code timescaledb} namespace.
  *
  * <p>
  * Example item metadata:
- * 
+ *
  * <pre>
  * Number:Temperature MySensor {
- *     timescaledb="AVG" [ downsampleInterval="1h", retainRawDays="5", retentionDays="365" ]
+ *     timescaledb="sensor.temperature" [ aggregation="AVG", downsampleInterval="1h", retainRawDays="5",
+ *         retentionDays="365", kind="sensor", location="living_room" ]
  * }
  * </pre>
+ *
+ * <ul>
+ * <li>{@code getValue()} — user-defined string (measurement label / filter tag), stored in
+ * {@code item_meta.value}</li>
+ * <li>{@code getConfiguration()} — full config map stored as JSONB in {@code item_meta.metadata}; reserved keys:
+ * {@code aggregation}, {@code downsampleInterval}, {@code retainRawDays}, {@code retentionDays}</li>
+ * </ul>
  *
  * @author René Ulbricht - Initial contribution
  */
@@ -47,6 +57,7 @@ import org.slf4j.LoggerFactory;
 public class TimescaleDBMetadataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimescaleDBMetadataService.class);
+    private static final Gson GSON = new Gson();
 
     /** The metadata namespace used by this persistence service. */
     public static final String METADATA_NAMESPACE = "timescaledb";
@@ -95,13 +106,61 @@ public class TimescaleDBMetadataService {
         return result;
     }
 
+    /**
+     * Returns the user-defined value string from {@code metadata.getValue()}, stored verbatim in
+     * {@code item_meta.value}. Returns {@code null} if no metadata is configured or the value is blank.
+     *
+     * <p>
+     * Example: {@code timescaledb="sensor.temperature" [...]} → returns {@code "sensor.temperature"}.
+     *
+     * @param itemName The item name.
+     * @return The value string, or {@code null}.
+     */
+    public @Nullable String getMetadataValueString(String itemName) {
+        MetadataKey key = new MetadataKey(METADATA_NAMESPACE, itemName);
+        @Nullable
+        Metadata metadata = metadataRegistry.get(key);
+        if (metadata == null) {
+            return null;
+        }
+        String v = metadata.getValue();
+        return v.isBlank() ? null : v;
+    }
+
+    /**
+     * Returns the full {@code getConfiguration()} map serialized as a JSON string, suitable for storage
+     * in {@code item_meta.metadata} (JSONB column). Returns {@code null} if no metadata is configured
+     * or the config map is empty.
+     *
+     * <p>
+     * All config keys are stored unfiltered, including reserved keys ({@code aggregation},
+     * {@code downsampleInterval}, {@code retainRawDays}, {@code retentionDays}) and any user-defined tags.
+     *
+     * @param itemName The item name.
+     * @return JSON string of the config map, or {@code null}.
+     */
+    public @Nullable String getMetadataConfigJson(String itemName) {
+        MetadataKey key = new MetadataKey(METADATA_NAMESPACE, itemName);
+        @Nullable
+        Metadata metadata = metadataRegistry.get(key);
+        if (metadata == null) {
+            return null;
+        }
+        Map<String, Object> config = metadata.getConfiguration();
+        if (config.isEmpty()) {
+            return null;
+        }
+        return GSON.toJson(config);
+    }
+
     private Optional<DownsampleConfig> parseConfig(String itemName, Metadata metadata) {
-        String functionStr = metadata.getValue();
+        var config = metadata.getConfiguration();
+        Object aggObj = config.get("aggregation");
+        String functionStr = aggObj != null ? aggObj.toString().trim() : "";
+
         if (functionStr.isBlank()) {
-            // No aggregation function — check for retention-only config.
-            // Note: openHAB requires a non-empty metadata value, so use a single space (" ")
-            // in item files and the UI when you only want retention without downsampling.
-            int retentionDays = getInt(metadata.getConfiguration(), "retentionDays", DEFAULT_RETENTION_DAYS);
+            // No aggregation function — retention-only config (retentionDays without downsampling).
+            int retentionDays = getInt(config, "retentionDays", DEFAULT_RETENTION_DAYS);
             if (retentionDays < 0) {
                 LOGGER.warn("Item '{}': retentionDays must be >= 0, ignoring negative value {}", itemName,
                         retentionDays);
@@ -123,11 +182,9 @@ public class TimescaleDBMetadataService {
             return Optional.empty();
         }
 
-        var config = metadata.getConfiguration();
-
         String intervalStr = getString(config, "downsampleInterval", null);
         if (intervalStr == null || intervalStr.isBlank()) {
-            LOGGER.warn("Item '{}': timescaledb metadata has function '{}' but no downsampleInterval — skipping",
+            LOGGER.warn("Item '{}': timescaledb metadata has aggregation '{}' but no downsampleInterval — skipping",
                     itemName, functionStr);
             return Optional.empty();
         }
@@ -156,13 +213,12 @@ public class TimescaleDBMetadataService {
         return Optional.of(result);
     }
 
-    private static @Nullable String getString(java.util.Map<String, Object> config, String key,
-            @Nullable String defaultValue) {
+    private static @Nullable String getString(Map<String, Object> config, String key, @Nullable String defaultValue) {
         Object val = config.get(key);
         return val != null ? val.toString() : defaultValue;
     }
 
-    private static int getInt(java.util.Map<String, Object> config, String key, int defaultValue) {
+    private static int getInt(Map<String, Object> config, String key, int defaultValue) {
         Object val = config.get(key);
         if (val == null) {
             return defaultValue;

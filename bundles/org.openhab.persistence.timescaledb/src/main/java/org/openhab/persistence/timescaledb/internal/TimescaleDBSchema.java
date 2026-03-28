@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Schema overview:
  * <ul>
- * <li>{@code item_meta} — name-to-ID lookup table for items</li>
+ * <li>{@code item_meta} — name-to-ID lookup table for items, stores user-defined value string and full config
+ * JSONB</li>
  * <li>{@code items} — single hypertable for all item states</li>
  * </ul>
  *
@@ -44,8 +45,28 @@ public class TimescaleDBSchema {
                 id         SERIAL PRIMARY KEY,
                 name       TEXT NOT NULL UNIQUE,
                 label      TEXT,
+                value      TEXT,
+                metadata   JSONB,
                 created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
             )
+            """;
+
+    /**
+     * Migration: adds {@code value TEXT} and {@code metadata JSONB} columns to existing installations
+     * that predate these columns. Single atomic ALTER TABLE acquires one lock for both columns.
+     * Uses {@code lock_timeout} so the service does not block startup indefinitely if another
+     * transaction holds a lock on {@code item_meta}. On timeout a WARNING is logged and the
+     * migration is retried on the next startup.
+     */
+    private static final String SQL_MIGRATE_ADD_COLUMNS = """
+            DO $$ BEGIN
+                SET LOCAL lock_timeout = '5s';
+                ALTER TABLE item_meta
+                    ADD COLUMN IF NOT EXISTS value    TEXT,
+                    ADD COLUMN IF NOT EXISTS metadata JSONB;
+            EXCEPTION WHEN lock_not_available THEN
+                RAISE WARNING 'item_meta: could not add columns within lock timeout — will retry on next startup';
+            END $$
             """;
 
     private static final String SQL_CREATE_ITEMS = """
@@ -144,9 +165,13 @@ public class TimescaleDBSchema {
             stmt.execute(SQL_CREATE_ITEM_META);
             LOGGER.debug("Table item_meta ready");
 
+            stmt.execute(SQL_MIGRATE_ADD_COLUMNS);
+
             stmt.execute(SQL_CREATE_ITEMS);
             LOGGER.debug("Table items ready");
         }
+
+        verifyItemMetaSchema(connection);
 
         try (PreparedStatement ps = connection.prepareStatement(SQL_CREATE_HYPERTABLE)) {
             ps.setString(1, chunkInterval);
@@ -161,6 +186,24 @@ public class TimescaleDBSchema {
             stmt.execute(SQL_MIGRATE_ADD_UNIQUE_CONSTRAINT);
             LOGGER.debug("UNIQUE(time, item_id, downsampled) constraint ensured");
         }
+    }
+
+    private static void verifyItemMetaSchema(Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT column_name FROM information_schema.columns "
+                + "WHERE table_name = 'item_meta' AND column_name IN ('value', 'metadata')");
+                ResultSet rs = ps.executeQuery()) {
+            var present = new java.util.HashSet<String>();
+            while (rs.next()) {
+                present.add(rs.getString(1));
+            }
+            if (!present.contains("value") || !present.contains("metadata")) {
+                throw new SQLException("item_meta schema migration incomplete — required columns missing: "
+                        + (present.contains("value") ? "" : "'value' ")
+                        + (present.contains("metadata") ? "" : "'metadata'")
+                        + "— another transaction may be holding a lock. Service will retry on next startup.");
+            }
+        }
+        LOGGER.debug("Columns item_meta.value and item_meta.metadata verified");
     }
 
     private static void setupCompression(Connection connection, int compressionAfterDays) throws SQLException {

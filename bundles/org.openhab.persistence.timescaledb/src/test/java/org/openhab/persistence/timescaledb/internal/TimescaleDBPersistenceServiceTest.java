@@ -67,7 +67,7 @@ class TimescaleDBPersistenceServiceTest {
         private final HikariDataSource injectedDs;
 
         TestableService(ItemRegistry ir, MetadataRegistry mr, HikariDataSource ds) {
-            super(ir, new TimescaleDBMetadataService(mr));
+            super(ir, mr, new TimescaleDBMetadataService(mr));
             this.injectedDs = ds;
         }
 
@@ -140,7 +140,7 @@ class TimescaleDBPersistenceServiceTest {
 
     @Test
     void storeNormalstateSendsinsert() throws Exception {
-        // item_id cache is empty → getOrCreateItemId will run SELECT then INSERT
+        // item_id cache is empty → getOrCreateItemId will run UPSERT
         stubItemIdLookup(7);
 
         var item = new NumberItem("Sensor1");
@@ -164,16 +164,67 @@ class TimescaleDBPersistenceServiceTest {
         var item = new NumberItem("RealName");
 
         // Capture which PreparedStatements get setString(1, "AliasName")
-        PreparedStatement selectPs = mock(PreparedStatement.class);
-        ResultSet selectRs = mock(ResultSet.class);
-        when(selectRs.next()).thenReturn(false);
-        when(selectPs.executeQuery()).thenReturn(selectRs);
-        when(connection.prepareStatement(contains("SELECT id FROM item_meta"))).thenReturn(selectPs);
+        PreparedStatement upsertPs = mock(PreparedStatement.class);
+        ResultSet upsertRs = mock(ResultSet.class);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(3);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
 
         service.store(item, ZonedDateTime.now(), new DecimalType(1.0), "AliasName");
 
-        // The item_id lookup SELECT must be called with the alias
-        verify(selectPs, atLeastOnce()).setString(eq(1), eq("AliasName"));
+        // The item_id UPSERT must be called with the alias as parameter 1
+        verify(upsertPs, atLeastOnce()).setString(eq(1), eq("AliasName"));
+    }
+
+    @Test
+    void storeValueStringIsPassedToItemMetaUpsert() throws Exception {
+        var upsertPs = mock(PreparedStatement.class);
+        var upsertRs = mock(ResultSet.class);
+        var insertItemPs = mock(PreparedStatement.class);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(10);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
+        when(insertItemPs.executeUpdate()).thenReturn(1);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
+        when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
+
+        // New format: value = "my.sensor" (getValue()), aggregation in config map
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor1");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "my.sensor",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+        when(metadataRegistry.get(metaKey)).thenReturn(meta);
+
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Parameter 3 = value string (getText from getValue())
+        verify(upsertPs).setString(3, "my.sensor");
+    }
+
+    @Test
+    void storeMetadataConfigJsonIsPassedToItemMetaUpsert() throws Exception {
+        var upsertPs = mock(PreparedStatement.class);
+        var upsertRs = mock(ResultSet.class);
+        var insertItemPs = mock(PreparedStatement.class);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(11);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
+        when(insertItemPs.executeUpdate()).thenReturn(1);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
+        when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
+
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor1");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "my.sensor",
+                Map.of("aggregation", "AVG", "location", "kitchen"));
+        when(metadataRegistry.get(metaKey)).thenReturn(meta);
+
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Parameter 4 = metadata JSONB — must use setObject with Types.OTHER and contain a JSON string
+        verify(upsertPs).setObject(eq(4), argThat(arg -> {
+            String s = String.valueOf(arg);
+            return s.contains("aggregation") && s.contains("AVG") && s.contains("location");
+        }), eq(java.sql.Types.OTHER));
     }
 
     // ------------------------------------------------------------------
@@ -310,7 +361,7 @@ class TimescaleDBPersistenceServiceTest {
 
     @Test
     void activateMissingurlDatasourceremainsnull() throws Exception {
-        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
+        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mock(MetadataRegistry.class),
                 new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         realService.activate(Map.of()); // no 'url' key
 
@@ -322,7 +373,7 @@ class TimescaleDBPersistenceServiceTest {
 
     @Test
     void activateInvalidurlDatasourceremainsnull() throws Exception {
-        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
+        var realService = new TimescaleDBPersistenceService(mock(ItemRegistry.class), mock(MetadataRegistry.class),
                 new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         // Unreachable host; short timeout so the test does not block long
         realService.activate(
@@ -403,7 +454,7 @@ class TimescaleDBPersistenceServiceTest {
     void runDownsampleNowReturnsFalseWhenNotActivated() {
         // A fresh service with no activate() call has no job instance
         TimescaleDBPersistenceService fresh = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
-                new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
+                mock(MetadataRegistry.class), new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         assertFalse(fresh.runDownsampleNow(), "runDownsampleNow() must return false before activate()");
     }
 
@@ -426,7 +477,7 @@ class TimescaleDBPersistenceServiceTest {
     @Test
     void consoleCommandDownsamplePrintsNotActiveWhenServiceInactive() {
         TimescaleDBPersistenceService fresh = new TimescaleDBPersistenceService(mock(ItemRegistry.class),
-                new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
+                mock(MetadataRegistry.class), new TimescaleDBMetadataService(mock(MetadataRegistry.class)));
         var console = mock(org.openhab.core.io.console.Console.class);
         new TimescaleDBConsoleCommandExtension(fresh).execute(new String[] { "downsample" }, console);
         verify(console).println(contains("not active"));
@@ -441,28 +492,107 @@ class TimescaleDBPersistenceServiceTest {
     }
 
     // ------------------------------------------------------------------
+    // Metadata cache invalidation (RegistryChangeListener)
+    // ------------------------------------------------------------------
+
+    @Test
+    void metadataAddedInvalidatesCacheSoNextStoreRunsUpsert() throws Exception {
+        // Populate the cache via a first store
+        stubItemIdLookup(5);
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Signal metadata added → cache must be invalidated
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor1");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "new.label", Map.of("aggregation", "MAX"));
+        service.added(meta);
+
+        // Stub a fresh upsert for the second store
+        stubItemIdLookup(5);
+        reset(dataSource);
+        when(dataSource.getConnection()).thenReturn(connection);
+        service.store(new NumberItem("Sensor1"), ZonedDateTime.now(), new DecimalType(2.0), null);
+
+        // The upsert must have run again (connection obtained)
+        verify(dataSource, atLeastOnce()).getConnection();
+        verify(connection, atLeastOnce()).prepareStatement(contains("INSERT INTO item_meta"));
+    }
+
+    @Test
+    void metadataUpdatedInvalidatesCache() throws Exception {
+        stubItemIdLookup(6);
+        service.store(new NumberItem("Sensor2"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor2");
+        var oldMeta = new org.openhab.core.items.Metadata(metaKey, "old", Map.of());
+        var newMeta = new org.openhab.core.items.Metadata(metaKey, "new", Map.of("aggregation", "MIN"));
+        service.updated(oldMeta, newMeta);
+
+        stubItemIdLookup(6);
+        reset(dataSource);
+        when(dataSource.getConnection()).thenReturn(connection);
+        service.store(new NumberItem("Sensor2"), ZonedDateTime.now(), new DecimalType(3.0), null);
+
+        verify(connection, atLeastOnce()).prepareStatement(contains("INSERT INTO item_meta"));
+    }
+
+    @Test
+    void metadataRemovedInvalidatesCache() throws Exception {
+        stubItemIdLookup(7);
+        service.store(new NumberItem("Sensor3"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        var metaKey = new org.openhab.core.items.MetadataKey("timescaledb", "Sensor3");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "label", Map.of());
+        service.removed(meta);
+
+        stubItemIdLookup(7);
+        reset(dataSource);
+        when(dataSource.getConnection()).thenReturn(connection);
+        service.store(new NumberItem("Sensor3"), ZonedDateTime.now(), new DecimalType(4.0), null);
+
+        verify(connection, atLeastOnce()).prepareStatement(contains("INSERT INTO item_meta"));
+    }
+
+    @Test
+    void metadataChangeForOtherNamespaceDoesNotInvalidateCache() throws Exception {
+        stubItemIdLookup(8);
+        service.store(new NumberItem("Sensor4"), ZonedDateTime.now(), new DecimalType(1.0), null);
+
+        // Metadata change in a different namespace — cache must NOT be invalidated
+        var metaKey = new org.openhab.core.items.MetadataKey("someOtherNamespace", "Sensor4");
+        var meta = new org.openhab.core.items.Metadata(metaKey, "irrelevant", Map.of());
+        service.added(meta);
+
+        // Reset both mocks so only the second store's interactions are counted
+        reset(dataSource, connection);
+        when(dataSource.getConnection()).thenReturn(connection);
+        PreparedStatement insertItemPs = mock(PreparedStatement.class);
+        when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
+        when(insertItemPs.executeUpdate()).thenReturn(1);
+
+        service.store(new NumberItem("Sensor4"), ZonedDateTime.now(), new DecimalType(2.0), null);
+
+        // Cache still valid → upsert must NOT have been called in the second store
+        verify(connection, never()).prepareStatement(contains("INSERT INTO item_meta"));
+    }
+
+    // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
 
     /**
-     * Stubs the item_id lookup: SELECT returns nothing, INSERT returns the given id.
+     * Stubs the item_id UPSERT: INSERT ... ON CONFLICT DO UPDATE ... RETURNING id returns the given id.
      */
     private void stubItemIdLookup(int itemId) throws Exception {
-        ResultSet selectRs = mock(ResultSet.class);
-        ResultSet insertRs = mock(ResultSet.class);
-        PreparedStatement selectPs = mock(PreparedStatement.class);
-        PreparedStatement insertPs = mock(PreparedStatement.class);
+        ResultSet upsertRs = mock(ResultSet.class);
+        PreparedStatement upsertPs = mock(PreparedStatement.class);
         PreparedStatement insertItemPs = mock(PreparedStatement.class);
 
-        when(selectRs.next()).thenReturn(false);
-        when(insertRs.next()).thenReturn(true);
-        when(insertRs.getInt(1)).thenReturn(itemId);
-        when(selectPs.executeQuery()).thenReturn(selectRs);
-        when(insertPs.executeQuery()).thenReturn(insertRs);
+        when(upsertRs.next()).thenReturn(true);
+        when(upsertRs.getInt(1)).thenReturn(itemId);
+        when(upsertPs.executeQuery()).thenReturn(upsertRs);
         when(insertItemPs.executeUpdate()).thenReturn(1);
 
-        when(connection.prepareStatement(contains("SELECT id FROM item_meta"))).thenReturn(selectPs);
-        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(insertPs);
+        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(upsertPs);
         when(connection.prepareStatement(contains("INSERT INTO items"))).thenReturn(insertItemPs);
     }
 }

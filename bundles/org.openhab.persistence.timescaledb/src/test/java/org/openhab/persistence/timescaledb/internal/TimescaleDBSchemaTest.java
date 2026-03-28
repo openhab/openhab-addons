@@ -38,19 +38,29 @@ class TimescaleDBSchemaTest {
     private Connection connection;
     private Statement statement;
     private PreparedStatement hypertablePs;
+    private PreparedStatement verifyPs;
     private ResultSet extensionResultSet;
+    private ResultSet verifyResultSet;
 
     @BeforeEach
     void setUp() throws SQLException {
         connection = mock(Connection.class);
         statement = mock(Statement.class);
         hypertablePs = mock(PreparedStatement.class);
+        verifyPs = mock(PreparedStatement.class);
         extensionResultSet = mock(ResultSet.class);
+        verifyResultSet = mock(ResultSet.class);
 
         when(connection.createStatement()).thenReturn(statement);
-        when(connection.prepareStatement(anyString())).thenReturn(hypertablePs);
+        // hypertable PS for create_hypertable; verify PS for schema column check
+        when(connection.prepareStatement(contains("create_hypertable"))).thenReturn(hypertablePs);
+        when(connection.prepareStatement(contains("information_schema.columns"))).thenReturn(verifyPs);
         when(statement.executeQuery(contains("pg_extension"))).thenReturn(extensionResultSet);
         when(extensionResultSet.next()).thenReturn(true); // extension is present by default
+        // Schema verification: both 'value' and 'metadata' columns present by default
+        when(verifyPs.executeQuery()).thenReturn(verifyResultSet);
+        when(verifyResultSet.next()).thenReturn(true, true, false);
+        when(verifyResultSet.getString(1)).thenReturn("value", "metadata");
     }
 
     @Test
@@ -60,8 +70,12 @@ class TimescaleDBSchemaTest {
         // Must check TimescaleDB extension
         verify(statement).executeQuery(contains("pg_extension"));
 
-        // Must create item_meta
+        // Must create item_meta with metadata column
         verify(statement).execute(contains("CREATE TABLE IF NOT EXISTS item_meta"));
+
+        // Must run single migration adding both value and metadata columns
+        verify(statement).execute(argThat(s -> s.contains("ADD COLUMN IF NOT EXISTS value")
+                && s.contains("ADD COLUMN IF NOT EXISTS metadata JSONB")));
 
         // Must create items table
         verify(statement).execute(contains("CREATE TABLE IF NOT EXISTS items"));
@@ -218,5 +232,125 @@ class TimescaleDBSchemaTest {
                 "Migration must add the new items_time_item_id_downsampled_ukey constraint");
         assertTrue(migrationSql.indexOf("DROP") < migrationSql.indexOf("ADD"),
                 "Migration must DROP the old constraint before ADD-ing the new one");
+    }
+
+    // ------------------------------------------------------------------
+    // item_meta schema — DDL and migration
+    // ------------------------------------------------------------------
+
+    @Test
+    void createTableItemmetaContainsValueTextColumn() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        java.util.Optional<String> createItemMeta = capturedSql.stream()
+                .filter(s -> s.contains("CREATE TABLE IF NOT EXISTS item_meta")).findFirst();
+        assertTrue(createItemMeta.isPresent(), "CREATE TABLE item_meta statement not found");
+        String ddl = createItemMeta.get();
+        assertTrue(ddl.contains("value") && ddl.contains("TEXT"),
+                "CREATE TABLE item_meta must define a 'value TEXT' column");
+    }
+
+    @Test
+    void createTableItemmetaContainsMetadataJsonbColumn() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        java.util.Optional<String> createItemMeta = capturedSql.stream()
+                .filter(s -> s.contains("CREATE TABLE IF NOT EXISTS item_meta")).findFirst();
+        assertTrue(createItemMeta.isPresent(), "CREATE TABLE item_meta statement not found");
+        String ddl = createItemMeta.get();
+        assertTrue(ddl.contains("metadata") && ddl.contains("JSONB"),
+                "CREATE TABLE item_meta must define a 'metadata JSONB' column");
+    }
+
+    @Test
+    void migrationDdlAddsValueAndMetadataColumnsInSingleStatement() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        // Both columns must be added in a single ALTER TABLE statement (one lock acquisition)
+        java.util.Optional<String> migrationOpt = capturedSql.stream()
+                .filter(s -> s.contains("ADD COLUMN IF NOT EXISTS value")
+                        && s.contains("ADD COLUMN IF NOT EXISTS metadata JSONB"))
+                .findFirst();
+        assertTrue(migrationOpt.isPresent(),
+                "value and metadata columns must be added in a single ALTER TABLE statement");
+    }
+
+    @Test
+    void migrationDdlUsesLockTimeoutToPreventBlockingServiceStart() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        long migrationStatementsWithoutLockTimeout = capturedSql.stream()
+                .filter(s -> s.contains("ALTER TABLE item_meta") && !s.contains("lock_timeout")).count();
+        assertEquals(0, migrationStatementsWithoutLockTimeout,
+                "All item_meta DDL migrations must use lock_timeout to prevent blocking service startup indefinitely");
+    }
+
+    @Test
+    void migrationDdlHasExceptionHandlerForLockTimeout() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        long migrationsWithoutExceptionHandler = capturedSql.stream()
+                .filter(s -> s.contains("item_meta") && s.contains("ALTER TABLE") && !s.contains("EXCEPTION")).count();
+        assertEquals(0, migrationsWithoutExceptionHandler,
+                "All item_meta migrations must handle lock_not_available gracefully instead of blocking");
+    }
+
+    @Test
+    void migrationRunsAfterCreateTableItemMeta() throws SQLException {
+        var capturedSql = new java.util.ArrayList<String>();
+        doAnswer(inv -> {
+            capturedSql.add(inv.getArgument(0));
+            return false;
+        }).when(statement).execute(anyString());
+
+        TimescaleDBSchema.initialize(connection, "7 days", 0, 0);
+
+        int createTableIdx = -1;
+        int migrationIdx = -1;
+        for (int i = 0; i < capturedSql.size(); i++) {
+            String s = capturedSql.get(i);
+            if (s.contains("CREATE TABLE IF NOT EXISTS item_meta") && createTableIdx < 0) {
+                createTableIdx = i;
+            }
+            if (s.contains("ADD COLUMN IF NOT EXISTS value") && s.contains("ADD COLUMN IF NOT EXISTS metadata JSONB")
+                    && migrationIdx < 0) {
+                migrationIdx = i;
+            }
+        }
+
+        assertTrue(createTableIdx >= 0, "CREATE TABLE item_meta must be executed");
+        assertTrue(migrationIdx >= 0, "Column migration must be executed");
+        assertTrue(createTableIdx < migrationIdx,
+                "Migration must run after CREATE TABLE item_meta so that the ALTER runs on an existing table");
     }
 }
