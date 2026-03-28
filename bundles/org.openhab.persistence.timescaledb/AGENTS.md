@@ -87,10 +87,15 @@ Grafana can filter via JSONB operators: `WHERE metadata->>'location' = 'living_r
 
 When no value/config is set, both columns are `NULL`.
 
-**Migration:** On startup `TimescaleDBSchema.initialize()` runs:
-1. `ALTER TABLE item_meta ADD COLUMN IF NOT EXISTS value TEXT` — adds the new value column.
-2. A DO-block that converts `metadata TEXT` → `metadata JSONB` (or adds `metadata JSONB` if absent).
-   Existing TEXT content is discarded (NULL) — intentional breaking change in beta stage.
+**Migration:** On startup `TimescaleDBSchema.initialize()` runs a single DO-block that adds both columns atomically:
+
+```sql
+ALTER TABLE item_meta
+    ADD COLUMN IF NOT EXISTS value    TEXT,
+    ADD COLUMN IF NOT EXISTS metadata JSONB;
+```
+
+`IF NOT EXISTS` makes the statement idempotent. A `lock_timeout` of 5 s prevents blocking `@Activate` indefinitely; on timeout a WARNING is logged and the migration is retried on the next startup.
 
 ### Why `unit` is per row, not in `item_meta`
 

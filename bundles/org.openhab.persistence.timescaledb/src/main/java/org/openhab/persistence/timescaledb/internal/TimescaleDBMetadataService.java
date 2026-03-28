@@ -159,9 +159,7 @@ public class TimescaleDBMetadataService {
         String functionStr = aggObj != null ? aggObj.toString().trim() : "";
 
         if (functionStr.isBlank()) {
-            // No aggregation function — check for retention-only config.
-            // Note: openHAB requires a non-empty metadata value, so use a single space (" ")
-            // in item files and the UI when you only want retention without downsampling.
+            // No aggregation function — retention-only config (retentionDays without downsampling).
             int retentionDays = getInt(config, "retentionDays", DEFAULT_RETENTION_DAYS);
             if (retentionDays < 0) {
                 LOGGER.warn("Item '{}': retentionDays must be >= 0, ignoring negative value {}", itemName,
