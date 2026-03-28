@@ -65,14 +65,11 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -83,7 +80,6 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler<CameraDevice> {
-    private final Logger logger = LoggerFactory.getLogger(UnifiProtectCameraHandler.class);
 
     private final UnifiMediaService media;
     private boolean enableWebRTC = true;
@@ -542,16 +538,12 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     public void refreshFromDevice(CameraDevice camera) {
         super.refreshFromDevice(camera);
         addRemoveChannels();
-        updateRtspsChannels();
+        updateRtspsChannels(camera.privateDevice);
         updateFromPublicDevice(camera.publicDevice);
         updateFromPrivateDevice(camera.privateDevice);
     }
 
     protected void updateFromPublicDevice(Camera camera) {
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-
         CameraFeatureFlags flags = camera.featureFlags;
         if (flags != null && flags.hasMic) {
             updateDimmerChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, camera.micVolume);
@@ -952,7 +944,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         return api.getPublicClient().getSnapshot(deviceId, highQuality);
     }
 
-    private void updateRtspsChannels() {
+    private void updateRtspsChannels(org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera privCamera) {
         UniFiProtectHybridClient api = getApiClient();
         if (api == null) {
             return;
@@ -965,36 +957,23 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
 
         // Get static rtspAlias from Private API camera channels
         try {
-            // Get NVR handler to access hostname
             Thing bridge = getBridge();
             String host = null;
-            if (bridge != null && bridge.getHandler() instanceof UnifiProtectNVRHandler) {
-                UnifiProtectNVRHandler nvrHandler = (UnifiProtectNVRHandler) bridge.getHandler();
+            if (bridge != null && bridge.getHandler() instanceof UnifiProtectNVRHandler nvrHandler) {
                 host = nvrHandler.getHostname();
             }
 
-            if (host != null) {
-                org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera privCamera = api
-                        .getPrivateClient().getBootstrap().thenApply(bootstrap -> {
-                            org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera camera = bootstrap.cameras
-                                    .get(deviceId);
-                            if (camera == null) {
-                                throw new IllegalArgumentException("Camera not found: " + deviceId);
-                            }
-                            return camera;
-                        }).join();
-                if (privCamera != null && privCamera.channels != null) {
-                    int port = 7441; // Default rtsps port
-                    for (var channel : privCamera.channels) {
-                        if (channel.rtspAlias != null && channel.isRtspEnabled != null && channel.isRtspEnabled) {
-                            String url = String.format("rtsps://%s:%d/%s", host, port, channel.rtspAlias);
-                            if ("High".equalsIgnoreCase(channel.name)) {
-                                rtspUrlHigh = url;
-                            } else if ("Medium".equalsIgnoreCase(channel.name)) {
-                                rtspUrlMedium = url;
-                            } else if ("Low".equalsIgnoreCase(channel.name)) {
-                                rtspUrlLow = url;
-                            }
+            if (host != null && privCamera.channels != null) {
+                int port = 7441; // Default rtsps port
+                for (var channel : privCamera.channels) {
+                    if (channel.rtspAlias != null && channel.isRtspEnabled != null && channel.isRtspEnabled) {
+                        String url = String.format("rtsps://%s:%d/%s", host, port, channel.rtspAlias);
+                        if ("High".equalsIgnoreCase(channel.name)) {
+                            rtspUrlHigh = url;
+                        } else if ("Medium".equalsIgnoreCase(channel.name)) {
+                            rtspUrlMedium = url;
+                        } else if ("Low".equalsIgnoreCase(channel.name)) {
+                            rtspUrlLow = url;
                         }
                     }
                 }

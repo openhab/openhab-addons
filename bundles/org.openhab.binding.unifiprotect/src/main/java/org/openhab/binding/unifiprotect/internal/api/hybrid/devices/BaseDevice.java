@@ -25,15 +25,15 @@ import org.openhab.binding.unifiprotect.internal.api.pub.dto.Device;
  */
 @NonNullByDefault
 public abstract class BaseDevice<PRIV extends UniFiProtectModel, PUB extends Device> {
-    public PRIV privateDevice;
-    public PUB publicDevice;
+    public final PRIV privateDevice;
+    public final PUB publicDevice;
 
     public BaseDevice(PRIV privateDevice, PUB publicDevice) {
-        this.privateDevice = privateDevice;
-        this.publicDevice = publicDevice;
+        this.privateDevice = Objects.requireNonNull(privateDevice, "privateDevice");
+        this.publicDevice = Objects.requireNonNull(publicDevice, "publicDevice");
     }
 
     public String getId() {
-        return Objects.requireNonNull(privateDevice.id, "id");
+        return Objects.requireNonNull(privateDevice.id, "Device id must not be null");
     }
 }

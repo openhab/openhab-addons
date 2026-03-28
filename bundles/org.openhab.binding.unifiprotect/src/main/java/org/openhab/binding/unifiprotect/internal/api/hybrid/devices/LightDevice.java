@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light;
 
 /**
- * Camera device for the hybrid API.
+ * Light device for the hybrid API.
  *
  * @author Dan Cunningham - Initial contribution
  */

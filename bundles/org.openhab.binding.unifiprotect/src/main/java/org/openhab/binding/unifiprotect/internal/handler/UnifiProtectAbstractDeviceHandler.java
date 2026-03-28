@@ -14,7 +14,6 @@ package org.openhab.binding.unifiprotect.internal.handler;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -58,10 +57,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class UnifiProtectAbstractDeviceHandler<T extends BaseDevice> extends BaseThingHandler {
-    protected final Logger logger = LoggerFactory.getLogger(UnifiProtectAbstractDeviceHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable T device;
     protected String deviceId = "";
-    protected Map<String, State> stateCache = new HashMap<>();
+    protected Map<String, State> stateCache = new ConcurrentHashMap<>();
 
     private Map<String, ScheduledFuture<?>> latchJobs = new ConcurrentHashMap<>();
 
@@ -76,6 +75,9 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends BaseDevice> ex
 
     public void refreshFromDevice(T device) {
         this.device = device;
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     public abstract void handleEvent(BaseEvent event, WSEventType eventType);
@@ -122,11 +124,8 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends BaseDevice> ex
 
     protected @Nullable UniFiProtectHybridClient getApiClient() {
         Thing bridge = getBridge();
-        if (bridge != null) {
-            BaseThingHandler h = (BaseThingHandler) bridge.getHandler();
-            if (h instanceof UnifiProtectNVRHandler) {
-                return ((UnifiProtectNVRHandler) h).getApiClient();
-            }
+        if (bridge != null && bridge.getHandler() instanceof UnifiProtectNVRHandler nvrHandler) {
+            return nvrHandler.getApiClient();
         }
         return null;
     }

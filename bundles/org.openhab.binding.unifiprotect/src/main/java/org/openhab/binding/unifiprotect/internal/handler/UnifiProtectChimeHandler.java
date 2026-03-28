@@ -24,10 +24,8 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link UnifiProtectChimeHandler} is responsible for handling commands for UniFi Protect chimes.
@@ -37,24 +35,25 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<ChimeDevice> {
 
-    private final Logger logger = LoggerFactory.getLogger(UnifiProtectChimeHandler.class);
-
     public UnifiProtectChimeHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            ChimeDevice dev = device;
+            if (dev != null) {
+                updateChimeChannels(dev.privateDevice);
+            }
+            return;
+        }
+
         String channelId = channelUID.getId();
         UniFiProtectHybridClient api = getApiClient();
 
         if (api == null) {
-            logger.debug("Private API not available for chime command");
+            logger.debug("API not available for chime command");
             return;
         }
 
@@ -109,16 +108,7 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
                     break;
 
                 case UnifiProtectBindingConstants.CHANNEL_CHIME_VOLUME:
-                    if (command instanceof PercentType percentCmd) {
-                        int volume = percentCmd.intValue();
-                        privateClient.setChimeVolume(deviceId, volume).thenAccept(updatedChime -> {
-                            logger.debug("Set chime volume to {}", volume);
-                            updateState(channelUID, new PercentType(volume));
-                        }).exceptionally(ex -> {
-                            logger.debug("Failed to set chime volume", ex);
-                            return null;
-                        });
-                    } else if (command instanceof DecimalType decimalCmd) {
+                    if (command instanceof DecimalType decimalCmd) {
                         int volume = decimalCmd.intValue();
                         privateClient.setChimeVolume(deviceId, volume).thenAccept(updatedChime -> {
                             logger.debug("Set chime volume to {}", volume);
@@ -154,12 +144,7 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
     @Override
     public void refreshFromDevice(ChimeDevice device) {
         super.refreshFromDevice(device);
-        // The public API doesn't support chimes
-        // All updates come from Private API
         updateChimeChannels(device.privateDevice);
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
     }
 
     /**
@@ -193,11 +178,6 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
         // Repeat times
         if (chime.repeatTimes != null) {
             updateState(UnifiProtectBindingConstants.CHANNEL_CHIME_REPEAT_TIMES, new DecimalType(chime.repeatTimes));
-        }
-
-        // Update thing status
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 

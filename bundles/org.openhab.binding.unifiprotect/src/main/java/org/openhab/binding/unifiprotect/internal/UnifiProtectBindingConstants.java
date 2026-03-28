@@ -58,6 +58,7 @@ public class UnifiProtectBindingConstants {
     public static final String PROPERTY_IS_THIRD_PARTY_CAMERA = "isThirdPartyCamera";
 
     // NVR Properties
+    public static final String PROPERTY_APPLICATION_VERSION = "applicationVersion";
     public static final String PROPERTY_PROTECT_VERSION = "protectVersion";
     public static final String PROPERTY_UCORE_VERSION = "ucoreVersion";
     public static final String PROPERTY_UI_VERSION = "uiVersion";

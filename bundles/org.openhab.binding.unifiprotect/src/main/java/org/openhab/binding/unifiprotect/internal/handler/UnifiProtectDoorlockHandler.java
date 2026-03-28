@@ -24,10 +24,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link UnifiProtectDoorlockHandler} is responsible for handling commands for UniFi Protect doorlocks.
@@ -37,24 +35,25 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandler<DoorklockDevice> {
 
-    private final Logger logger = LoggerFactory.getLogger(UnifiProtectDoorlockHandler.class);
-
     public UnifiProtectDoorlockHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            DoorklockDevice dev = device;
+            if (dev != null) {
+                updateDoorlockChannels(dev.privateDevice);
+            }
+            return;
+        }
+
         String channelId = channelUID.getId();
         UniFiProtectHybridClient api = getApiClient();
 
         if (api == null) {
-            logger.debug("Private API not available for doorlock command");
+            logger.debug("API not available for doorlock command");
             return;
         }
 
@@ -123,12 +122,8 @@ public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandl
 
     @Override
     public void refreshFromDevice(DoorklockDevice device) {
-        // The public API doesn't support doorlocks
-        // All updates come from Private API
+        super.refreshFromDevice(device);
         updateDoorlockChannels(device.privateDevice);
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
     }
 
     /**
@@ -173,11 +168,6 @@ public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandl
         // Auto-close time
         if (doorlock.autoCloseTime != null) {
             updateState(UnifiProtectBindingConstants.CHANNEL_AUTO_CLOSE_TIME, new DecimalType(doorlock.autoCloseTime));
-        }
-
-        // Update thing status
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 

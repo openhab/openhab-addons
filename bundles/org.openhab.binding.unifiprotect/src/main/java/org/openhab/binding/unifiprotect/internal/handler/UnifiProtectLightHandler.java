@@ -28,11 +28,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Child handler for a UniFi Protect Floodlight.
@@ -41,8 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<LightDevice> {
-
-    private final Logger logger = LoggerFactory.getLogger(UnifiProtectLightHandler.class);
 
     public UnifiProtectLightHandler(Thing thing) {
         super(thing);
@@ -187,9 +182,6 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
                     lds.pirDuration != null ? lds.pirDuration.longValue() : null);
             updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY, lds.pirSensitivity);
             updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_LED_LEVEL, lds.ledLevel);
-        }
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 

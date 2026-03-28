@@ -72,11 +72,11 @@ public class UniFiProtectPrivateClient {
     private final UniFiProtectAuthenticator authenticator;
     private final ScheduledExecutorService scheduler;
 
-    private @Nullable Bootstrap cachedBootstrap;
-    private @Nullable Instant lastBootstrapRefresh;
-    private @Nullable UniFiProtectPrivateWebSocket webSocket;
-    private @Nullable ScheduledFuture<?> bootstrapRefreshTask;
-    private @Nullable CompletableFuture<Bootstrap> inFlightBootstrapRefresh;
+    private volatile @Nullable Bootstrap cachedBootstrap;
+    private volatile @Nullable Instant lastBootstrapRefresh;
+    private volatile @Nullable UniFiProtectPrivateWebSocket webSocket;
+    private volatile @Nullable ScheduledFuture<?> bootstrapRefreshTask;
+    private volatile @Nullable CompletableFuture<Bootstrap> inFlightBootstrapRefresh;
 
     /**
      * Create a new UniFi Protect client
@@ -205,9 +205,11 @@ public class UniFiProtectPrivateClient {
 
             String wsUrl = baseUrl.replace("https://", "wss://").replace("http://", "ws://")
                     + "/proxy/protect/ws/updates";
-
-            webSocket = new UniFiProtectPrivateWebSocket(wsUrl, authenticator.getAuthCookie(), updateHandler, this,
-                    httpClient);
+            String cookie = authenticator.getAuthCookie();
+            if (cookie == null) {
+                return CompletableFuture.failedFuture(new IllegalStateException("Not authenticated"));
+            }
+            webSocket = new UniFiProtectPrivateWebSocket(wsUrl, cookie, updateHandler, this, httpClient);
             return webSocket.connect();
         });
     }

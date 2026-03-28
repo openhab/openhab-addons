@@ -101,7 +101,7 @@ public class UniFiProtectPrivateWebSocket {
     /**
      * Connect to WebSocket
      */
-    public CompletableFuture<Void> connect() {
+    public synchronized CompletableFuture<Void> connect() {
         CompletableFuture<Void> existingFuture = connectFuture;
         if (existingFuture != null && !existingFuture.isDone()) {
             return existingFuture;

@@ -54,9 +54,9 @@ public class UniFiProtectAuthenticator {
     private final String password;
     private @Nullable SessionPersistence sessionPersistence;
 
-    private @Nullable String authCookie;
-    private @Nullable String csrfToken;
-    private @Nullable String userId;
+    private volatile @Nullable String authCookie;
+    private volatile @Nullable String csrfToken;
+    private volatile @Nullable String userId;
 
     public UniFiProtectAuthenticator(HttpClient httpClient, String baseUrl, String username, String password,
             boolean enableSessionPersistence) {

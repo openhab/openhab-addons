@@ -13,8 +13,8 @@
 package org.openhab.binding.unifiprotect.internal.api.priv.dto.gson;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.base.UniFiProtectModel;
 
@@ -52,7 +52,7 @@ public class DeviceListToMapAdapter<T extends UniFiProtectModel> extends TypeAda
 
     @Override
     public Map<String, T> read(JsonReader in) throws IOException {
-        Map<String, T> map = new HashMap<>();
+        Map<String, T> map = new ConcurrentHashMap<>();
 
         if (in.peek() == JsonToken.NULL) {
             in.nextNull();

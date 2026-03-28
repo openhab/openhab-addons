@@ -66,8 +66,11 @@ public class UniFiProtectHybridClient implements Closeable {
     @Override
     public void close() throws IOException {
         logger.debug("Closing hybrid client");
-        publicClient.close();
-        privateClient.close();
+        try {
+            publicClient.close();
+        } finally {
+            privateClient.close();
+        }
     }
 
     /**
