@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -31,6 +32,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link ThirdGenerationHttpHelper} is handling http communication with the device
@@ -38,6 +40,7 @@ import com.google.gson.JsonObject;
  *
  * @author René Stakemeier - Initial contribution
  */
+@NonNullByDefault
 final class ThirdGenerationHttpHelper {
 
     private ThirdGenerationHttpHelper() {
@@ -140,7 +143,7 @@ final class ThirdGenerationHttpHelper {
      * @param reponse the HTTP response
      * @return the JSON object
      */
-    static JsonArray getJsonArrayFromResponse(ContentResponse reponse) {
+    static @Nullable JsonArray getJsonArrayFromResponse(ContentResponse reponse) throws JsonSyntaxException {
         return GSON.fromJson(reponse.getContentAsString(), JsonArray.class);
     }
 
@@ -151,7 +154,7 @@ final class ThirdGenerationHttpHelper {
      * @param reponse the HTTP response
      * @return the JSON object
      */
-    static JsonObject getJsonObjectFromResponse(ContentResponse reponse) {
+    static @Nullable JsonObject getJsonObjectFromResponse(ContentResponse reponse) throws JsonSyntaxException {
         return GSON.fromJson(reponse.getContentAsString(), JsonObject.class);
     }
 }

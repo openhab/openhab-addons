@@ -24,6 +24,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -89,8 +90,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshScheduler;
 
-    private @Nullable HttpClient httpClient;
-
+    private HttpClient httpClient;
     private ThirdGenerationInverterTypes inverterType;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -115,9 +115,10 @@ public class ThirdGenerationHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> refreshScheduler = this.refreshScheduler;
         if (refreshScheduler != null) {
             refreshScheduler.cancel(true);
-            refreshScheduler = null;
+            this.refreshScheduler = null;
         }
         super.dispose();
     }
@@ -187,19 +188,21 @@ public class ThirdGenerationHandler extends BaseThingHandler {
                 .getJsonArrayFromResponse(updateMessageContentResponse);
 
         // Map the returned values back to the channels and update them
-        for (int i = 0; i < updateMessageResultsJsonArray.size(); i++) {
-            JsonObject moduleAnswer = updateMessageResultsJsonArray.get(i).getAsJsonObject();
-            String moduleName = moduleAnswer.get("moduleid").getAsString();
-            JsonArray processdata = moduleAnswer.get("processdata").getAsJsonArray();
-            for (int j = 0; j < processdata.size(); j++) {
-                // Update the channels with their new value
-                JsonObject newValueObject = processdata.get(j).getAsJsonObject();
-                String valueId = newValueObject.get("id").getAsString();
-                double valueAsDouble = newValueObject.get("value").getAsDouble();
-                ThirdGenerationChannelMappingToWebApi channel = channelList.get(moduleName).stream()
-                        .filter(c -> c.moduleId.equals(moduleName) && c.processdataId.equals(valueId)).findFirst()
-                        .get();
-                updateChannelValue(channel.channelUID, channel.dataType, valueAsDouble);
+        if (updateMessageResultsJsonArray != null) {
+            for (int i = 0; i < updateMessageResultsJsonArray.size(); i++) {
+                JsonObject moduleAnswer = updateMessageResultsJsonArray.get(i).getAsJsonObject();
+                String moduleName = moduleAnswer.get("moduleid").getAsString();
+                JsonArray processdata = moduleAnswer.get("processdata").getAsJsonArray();
+                for (int j = 0; j < processdata.size(); j++) {
+                    // Update the channels with their new value
+                    JsonObject newValueObject = processdata.get(j).getAsJsonObject();
+                    String valueId = Objects.requireNonNull(newValueObject.get("id")).getAsString();
+                    double valueAsDouble = newValueObject.get("value").getAsDouble();
+                    ThirdGenerationChannelMappingToWebApi channel = Objects.requireNonNull(channelList.get(moduleName))
+                            .stream().filter(c -> c.moduleId.equals(moduleName) && c.processdataId.equals(valueId))
+                            .findFirst().get();
+                    updateChannelValue(channel.channelUID, channel.dataType, valueAsDouble);
+                }
             }
         }
         updateStatus(ThingStatus.ONLINE);
@@ -277,7 +280,8 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             moduleJsonObject.addProperty("moduleid", moduleId.getKey());
 
             JsonArray processdataNames = new JsonArray();
-            for (ThirdGenerationChannelMappingToWebApi processdata : channelList.get(moduleId.getKey())) {
+            for (ThirdGenerationChannelMappingToWebApi processdata : Objects
+                    .requireNonNull(channelList.get(moduleId.getKey()))) {
                 processdataNames.add(processdata.processdataId);
             }
             moduleJsonObject.add("processdataids", processdataNames);
@@ -334,8 +338,8 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP);
             return;
         }
-        JsonObject authMeResponseJsonObject = ThirdGenerationHttpHelper
-                .getJsonObjectFromResponse(authStartResponseContentResponse);
+        JsonObject authMeResponseJsonObject = Objects
+                .requireNonNull(ThirdGenerationHttpHelper.getJsonObjectFromResponse(authStartResponseContentResponse));
 
         // Extract information from the response
         String salt = authMeResponseJsonObject.get("salt").getAsString();
@@ -392,7 +396,8 @@ public class ThirdGenerationHandler extends BaseThingHandler {
         }
 
         // Extract information from the response
-        byte[] signature = Base64.getDecoder().decode(authFinishResponseJsonObject.get("signature").getAsString());
+        byte[] signature = Base64.getDecoder()
+                .decode(Objects.requireNonNull(authFinishResponseJsonObject).get("signature").getAsString());
         String token = authFinishResponseJsonObject.get("token").getAsString();
 
         // Validate provided signature against calculated signature
@@ -482,7 +487,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             return;
         }
 
-        sessionId = createSessionResponseJsonObject.get("sessionId").getAsString();
+        sessionId = Objects.requireNonNull(createSessionResponseJsonObject).get("sessionId").getAsString();
 
         updateStatus(ThingStatus.ONLINE);
     }

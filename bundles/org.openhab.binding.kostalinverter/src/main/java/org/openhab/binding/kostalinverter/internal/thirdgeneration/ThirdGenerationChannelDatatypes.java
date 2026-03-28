@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.kostalinverter.internal.thirdgeneration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ThirdGenerationChannelDatatypes} enumeration contains the data types provided by the device
  *
  * @author René Stakemeier - Initial contribution
  */
+@NonNullByDefault
 enum ThirdGenerationChannelDatatypes {
     INTEGER,
     PERCEMTAGE,

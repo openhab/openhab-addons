@@ -198,9 +198,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
         String[] channelPosts = new String[23];
         int channelPostsCounter = 0;
-        for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
-            channelPosts[channelPostsCounter] = dxsentries.getName();
-            channelPostsCounter++;
+        if (dxsEntriesContainer != null) {
+            for (SecondGenerationDxsEntries dxsentries : dxsEntriesContainer.dxsEntries) {
+                channelPosts[channelPostsCounter] = dxsentries.getName();
+                channelPostsCounter++;
+            }
         }
         channelPostsTemp = List.of(channelPosts);
 
@@ -215,9 +217,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 SecondGenerationDxsEntriesContainerDTO.class);
         String[] channelPostsExt = new String[23];
         int channelPostsCounterExt = 0;
-        for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
-            channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
-            channelPostsCounterExt++;
+        if (dxsEntriesContainerExt != null) {
+            for (SecondGenerationDxsEntries dxsentriesExt : dxsEntriesContainerExt.dxsEntries) {
+                channelPostsExt[channelPostsCounterExt] = dxsentriesExt.getName();
+                channelPostsCounterExt++;
+            }
         }
         channelPostsTempExt = List.of(channelPostsExt);
 
@@ -232,9 +236,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 SecondGenerationDxsEntriesContainerDTO.class);
         String[] channelPostsExtExt = new String[3];
         int channelPostsCounterExtExt = 0;
-        for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
-            channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
-            channelPostsCounterExtExt++;
+        if (dxsEntriesContainerExtExt != null) {
+            for (SecondGenerationDxsEntries dxsentriesExtExt : dxsEntriesContainerExtExt.dxsEntries) {
+                channelPostsExtExt[channelPostsCounterExtExt] = dxsentriesExtExt.getName();
+                channelPostsCounterExtExt++;
+            }
         }
         channelPostsTempExtExt = List.of(channelPostsExtExt);
 
@@ -254,9 +260,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
             SecondGenerationDxsEntriesContainerDTO dxsEntriesContainerConfigurable = gson
                     .fromJson(jsonDxsEntriesResponseConfigurable, SecondGenerationDxsEntriesContainerDTO.class);
             int channelPostsCounterConfigurable = 0;
-            for (SecondGenerationDxsEntries dxsentriesConfigurable : dxsEntriesContainerConfigurable.dxsEntries) {
-                channelPostsConfigurable[channelPostsCounterConfigurable] = dxsentriesConfigurable.getName();
-                channelPostsCounterConfigurable++;
+            if (dxsEntriesContainerConfigurable != null) {
+                for (SecondGenerationDxsEntries dxsentriesConfigurable : dxsEntriesContainerConfigurable.dxsEntries) {
+                    channelPostsConfigurable[channelPostsCounterConfigurable] = dxsentriesConfigurable.getName();
+                    channelPostsCounterConfigurable++;
+                }
             }
         }
 
