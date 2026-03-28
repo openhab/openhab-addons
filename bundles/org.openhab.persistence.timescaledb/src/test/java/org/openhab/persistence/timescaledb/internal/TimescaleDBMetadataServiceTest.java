@@ -49,18 +49,19 @@ class TimescaleDBMetadataServiceTest {
     }
 
     // ------------------------------------------------------------------
-    // getDownsampleConfig — happy paths
+    // getDownsampleConfig — happy paths (aggregation now in config map)
     // ------------------------------------------------------------------
 
     @ParameterizedTest
     @CsvSource({ "AVG,1h,1 hour", "MAX,15m,15 minutes", "MIN,1d,1 day", "SUM,30m,30 minutes" })
-    void getDownsampleConfigValidfunctionandinterval(String function, String interval, String expectedSql) {
-        stubMetadata("MySensor", function, Map.of("downsampleInterval", interval));
+    void getDownsampleConfigValidaggregationandinterval(String aggregation, String interval, String expectedSql) {
+        stubMetadata("MySensor", "sensor.temperature",
+                Map.of("aggregation", aggregation, "downsampleInterval", interval));
 
         var config = service.getDownsampleConfig("MySensor");
 
         assertTrue(config.isPresent());
-        assertEquals(AggregationFunction.valueOf(function), config.get().function());
+        assertEquals(AggregationFunction.valueOf(aggregation), config.get().function());
         assertEquals(expectedSql, config.get().sqlInterval());
         assertEquals(5, config.get().retainRawDays()); // default
         assertEquals(0, config.get().retentionDays()); // default
@@ -68,8 +69,8 @@ class TimescaleDBMetadataServiceTest {
 
     @Test
     void getDownsampleConfigCustomretainrawandretentiondays() {
-        stubMetadata("MySensor", "AVG",
-                Map.of("downsampleInterval", "1h", "retainRawDays", "7", "retentionDays", "365"));
+        stubMetadata("MySensor", "sensor.temperature",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h", "retainRawDays", "7", "retentionDays", "365"));
 
         var config = service.getDownsampleConfig("MySensor").orElseThrow();
 
@@ -80,7 +81,8 @@ class TimescaleDBMetadataServiceTest {
     @Test
     void getDownsampleConfigAllsupportedintervals() {
         for (Map.Entry<String, String> entry : DownsampleConfig.INTERVAL_MAP.entrySet()) {
-            stubMetadata("Item_" + entry.getKey(), "AVG", Map.of("downsampleInterval", entry.getKey()));
+            stubMetadata("Item_" + entry.getKey(), "my.sensor",
+                    Map.of("aggregation", "AVG", "downsampleInterval", entry.getKey()));
             var config = service.getDownsampleConfig("Item_" + entry.getKey());
             assertTrue(config.isPresent(), "Should parse interval: " + entry.getKey());
             assertEquals(entry.getValue(), config.get().sqlInterval());
@@ -88,7 +90,7 @@ class TimescaleDBMetadataServiceTest {
     }
 
     // ------------------------------------------------------------------
-    // getDownsampleConfig — no / empty metadata
+    // getDownsampleConfig — no / empty aggregation
     // ------------------------------------------------------------------
 
     @Test
@@ -99,9 +101,9 @@ class TimescaleDBMetadataServiceTest {
     }
 
     @Test
-    void getDownsampleConfigBlankfunctionWithretentiondaysReturnsretentiononlyconfig() {
-        // Blank value + retentionDays → retention-only config (no downsampling)
-        stubMetadata("MySensor", " ", Map.of("retentionDays", "30"));
+    void getDownsampleConfigNoAggregationKeyWithRetentiondaysReturnsRetentiononlyconfig() {
+        // No aggregation key + retentionDays → retention-only config
+        stubMetadata("MySensor", "my.sensor", Map.of("retentionDays", "30"));
 
         Optional<DownsampleConfig> result = service.getDownsampleConfig("MySensor");
         assertTrue(result.isPresent());
@@ -112,11 +114,21 @@ class TimescaleDBMetadataServiceTest {
     }
 
     @Test
-    void getDownsampleConfigBlankfunctionWithoutretentiondaysReturnsempty() {
-        // Blank value + no retentionDays → nothing to do, skip item
-        stubMetadata("MySensor", " ", Map.of());
+    void getDownsampleConfigNoAggregationKeyWithoutRetentiondaysReturnsempty() {
+        // No aggregation key + no retentionDays → nothing to do
+        stubMetadata("MySensor", "my.sensor", Map.of());
 
         assertTrue(service.getDownsampleConfig("MySensor").isEmpty());
+    }
+
+    @Test
+    void getDownsampleConfigBlankValueFieldDoesNotAffectAggregationParsing() {
+        // getValue() is now user-defined label — a blank value must not affect aggregation parsing
+        stubMetadata("MySensor", " ", Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+
+        Optional<DownsampleConfig> result = service.getDownsampleConfig("MySensor");
+        assertTrue(result.isPresent());
+        assertEquals(AggregationFunction.AVG, result.get().function());
     }
 
     // ------------------------------------------------------------------
@@ -127,33 +139,32 @@ class TimescaleDBMetadataServiceTest {
     @ValueSource(strings = { "2h30m", "3m", "1w", "invalid", "" })
     void getDownsampleConfigInvalidintervalReturnsempty(String badInterval) {
         if (badInterval.isBlank()) {
-            // handled by the missing-interval branch
-            stubMetadata("MySensor", "AVG", Map.of());
+            stubMetadata("MySensor", "s", Map.of("aggregation", "AVG"));
         } else {
-            stubMetadata("MySensor", "AVG", Map.of("downsampleInterval", badInterval));
+            stubMetadata("MySensor", "s", Map.of("aggregation", "AVG", "downsampleInterval", badInterval));
         }
 
         assertTrue(service.getDownsampleConfig("MySensor").isEmpty());
     }
 
     @Test
-    void getDownsampleConfigInvalidfunctionReturnsempty() {
-        stubMetadata("MySensor", "MEDIAN", Map.of("downsampleInterval", "1h"));
+    void getDownsampleConfigInvalidaggregationReturnsempty() {
+        stubMetadata("MySensor", "s", Map.of("aggregation", "MEDIAN", "downsampleInterval", "1h"));
 
         assertTrue(service.getDownsampleConfig("MySensor").isEmpty());
     }
 
     @Test
     void getDownsampleConfigMissingintervalReturnsempty() {
-        // Function present but no interval → cannot downsample
-        stubMetadata("MySensor", "AVG", Map.of());
+        stubMetadata("MySensor", "s", Map.of("aggregation", "AVG"));
 
         assertTrue(service.getDownsampleConfig("MySensor").isEmpty());
     }
 
     @Test
     void getDownsampleConfigInvalidretainrawdaysUsesdefault() {
-        stubMetadata("MySensor", "AVG", Map.of("downsampleInterval", "1h", "retainRawDays", "not-a-number"));
+        stubMetadata("MySensor", "s",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h", "retainRawDays", "not-a-number"));
 
         var config = service.getDownsampleConfig("MySensor").orElseThrow();
         assertEquals(5, config.retainRawDays()); // falls back to default
@@ -181,11 +192,12 @@ class TimescaleDBMetadataServiceTest {
 
     @Test
     void getConfiguredItemNamesReturnsallTimescaledbitemsRegardlessofvalue() {
-        Metadata withFunction = metadata("SensorA", "AVG", Map.of("downsampleInterval", "1h"));
-        Metadata retentionOnly = metadata("SensorB", " ", Map.of("retentionDays", "30"));
+        Metadata withAggregation = metadata("SensorA", "sensor.a",
+                Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+        Metadata retentionOnly = metadata("SensorB", "sensor.b", Map.of("retentionDays", "30"));
         Metadata otherNamespace = new Metadata(new MetadataKey("influxdb", "SensorC"), "some", Map.of());
 
-        when(registry.getAll()).thenAnswer(inv -> List.of(withFunction, retentionOnly, otherNamespace));
+        when(registry.getAll()).thenAnswer(inv -> List.of(withAggregation, retentionOnly, otherNamespace));
 
         List<String> names = service.getConfiguredItemNames();
 
@@ -199,6 +211,86 @@ class TimescaleDBMetadataServiceTest {
     void getConfiguredItemNamesEmptyregistryReturnsemptylist() {
         when(registry.getAll()).thenReturn(List.of());
         assertTrue(service.getConfiguredItemNames().isEmpty());
+    }
+
+    // ------------------------------------------------------------------
+    // getMetadataValueString
+    // ------------------------------------------------------------------
+
+    @Test
+    void getMetadataValueStringNometadataReturnsNull() {
+        when(registry.get(new MetadataKey("timescaledb", "Unknown"))).thenReturn(null);
+
+        assertNull(service.getMetadataValueString("Unknown"));
+    }
+
+    @Test
+    void getMetadataValueStringReturnsValueField() {
+        stubMetadata("MySensor", "sensor.temperature", Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+
+        assertEquals("sensor.temperature", service.getMetadataValueString("MySensor"));
+    }
+
+    @Test
+    void getMetadataValueStringBlankValueReturnsNull() {
+        stubMetadata("MySensor", " ", Map.of("retentionDays", "30"));
+
+        assertNull(service.getMetadataValueString("MySensor"),
+                "Blank getValue() must be treated as absent and return null");
+    }
+
+    @Test
+    void getMetadataValueStringDoesNotUseConfigKeys() {
+        // The value field is getValue(), not any config key — aggregation must NOT appear here
+        stubMetadata("MySensor", "sensor.temperature", Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+
+        assertEquals("sensor.temperature", service.getMetadataValueString("MySensor"));
+        assertNotEquals("AVG", service.getMetadataValueString("MySensor"),
+                "getMetadataValueString must return getValue(), not the aggregation config key");
+    }
+
+    // ------------------------------------------------------------------
+    // getMetadataConfigJson
+    // ------------------------------------------------------------------
+
+    @Test
+    void getMetadataConfigJsonNometadataReturnsNull() {
+        when(registry.get(new MetadataKey("timescaledb", "Unknown"))).thenReturn(null);
+
+        assertNull(service.getMetadataConfigJson("Unknown"));
+    }
+
+    @Test
+    void getMetadataConfigJsonEmptyConfigReturnsNull() {
+        stubMetadata("MySensor", "sensor.temperature", Map.of());
+
+        assertNull(service.getMetadataConfigJson("MySensor"));
+    }
+
+    @Test
+    void getMetadataConfigJsonReturnsSerializedMap() {
+        stubMetadata("MySensor", "sensor.temperature", Map.of("aggregation", "AVG", "downsampleInterval", "1h"));
+
+        String json = service.getMetadataConfigJson("MySensor");
+        assertNotNull(json);
+        assertTrue(json.startsWith("{"), "Must be a JSON object");
+        assertTrue(json.contains("\"aggregation\""), "Must contain aggregation key");
+        assertTrue(json.contains("\"AVG\""), "Must contain aggregation value");
+        assertTrue(json.contains("\"downsampleInterval\""), "Must contain downsampleInterval key");
+    }
+
+    @Test
+    void getMetadataConfigJsonIncludesAllConfigKeys() {
+        // All config keys must be stored — no filtering
+        stubMetadata("MySensor", "sensor.temperature", Map.of("aggregation", "AVG", "downsampleInterval", "1h",
+                "retainRawDays", "5", "retentionDays", "365", "location", "living_room", "kind", "sensor"));
+
+        String json = service.getMetadataConfigJson("MySensor");
+        assertNotNull(json);
+        assertTrue(json.contains("\"location\""), "User-defined tag 'location' must be stored");
+        assertTrue(json.contains("\"kind\""), "User-defined tag 'kind' must be stored");
+        assertTrue(json.contains("\"retainRawDays\""), "Reserved key retainRawDays must be stored");
+        assertTrue(json.contains("\"retentionDays\""), "Reserved key retentionDays must be stored");
     }
 
     // ------------------------------------------------------------------

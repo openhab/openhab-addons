@@ -59,7 +59,9 @@ public class TimescaleDBQuery {
     // --- item_meta lookup / insert ---
     private static final String SQL_SELECT_ITEM_ID = "SELECT id FROM item_meta WHERE name = ?";
 
-    private static final String SQL_INSERT_ITEM_META = "INSERT INTO item_meta (name, label) VALUES (?, ?) ON CONFLICT (name) DO UPDATE SET label = EXCLUDED.label RETURNING id";
+    // value = user-defined string from metadata.getValue() (stored as TEXT)
+    // metadata = full config map serialized as JSON (stored as JSONB via ::jsonb cast)
+    private static final String SQL_UPSERT_ITEM_META = "INSERT INTO item_meta (name, label, value, metadata) VALUES (?, ?, ?, ?::jsonb) ON CONFLICT (name) DO UPDATE SET label = EXCLUDED.label, value = EXCLUDED.value, metadata = EXCLUDED.metadata RETURNING id";
 
     // --- SELECT base ---
     private static final String SQL_SELECT_BASE = "SELECT time, value, string, unit FROM items WHERE item_id = ?";
@@ -100,38 +102,45 @@ public class TimescaleDBQuery {
     }
 
     /**
-     * Returns the item_id for the given name, or inserts a new {@code item_meta} row and returns its id.
+     * Returns the item_id for the given name, inserting or updating the {@code item_meta} row as needed.
      *
      * @param connection The JDBC connection.
      * @param name The item name.
-     * @param label The item label (may be null; stored for informational purposes).
+     * @param label The item label (may be null).
+     * @param value The user-defined value string from {@code metadata.getValue()} (may be null), stored in
+     *            {@code item_meta.value}.
+     * @param metadataJson The full config map serialized as JSON (may be null), stored in
+     *            {@code item_meta.metadata} as JSONB.
      * @return The item_id.
      * @throws SQLException on any database error.
      */
-    public static int getOrCreateItemId(Connection connection, String name, @Nullable String label)
-            throws SQLException {
-        // Try SELECT first (fast path for known items)
-        try (PreparedStatement ps = connection.prepareStatement(SQL_SELECT_ITEM_ID)) {
-            ps.setString(1, name);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        }
-        // Not found: INSERT with ON CONFLICT DO UPDATE so concurrent calls are safe
-        try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT_ITEM_META)) {
+    public static int getOrCreateItemId(Connection connection, String name, @Nullable String label,
+            @Nullable String value, @Nullable String metadataJson) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement(SQL_UPSERT_ITEM_META)) {
             ps.setString(1, name);
             ps.setString(2, label);
+            ps.setString(3, value);
+            // JSONB parameter: use setObject with Types.OTHER so the driver passes it as-is
+            // to the ?::jsonb cast in the SQL; setString would bind it as VARCHAR which PostgreSQL
+            // accepts with the explicit cast, but setObject is the idiomatic approach for non-standard types.
+            ps.setObject(4, metadataJson, Types.OTHER);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     int id = rs.getInt(1);
-                    LOGGER.debug("Registered new item '{}' with item_id={}", name, id);
+                    LOGGER.debug("Registered/updated item '{}' with item_id={}", name, id);
                     return id;
                 }
             }
         }
         throw new SQLException("Failed to get or create item_meta entry for item '" + name + "'");
+    }
+
+    /**
+     * Convenience overload without value or metadata (both default to {@code null}).
+     */
+    public static int getOrCreateItemId(Connection connection, String name, @Nullable String label)
+            throws SQLException {
+        return getOrCreateItemId(connection, name, label, null, null);
     }
 
     /**

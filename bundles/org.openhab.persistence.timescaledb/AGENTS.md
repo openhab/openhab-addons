@@ -49,6 +49,8 @@ CREATE TABLE item_meta (
     id         SERIAL PRIMARY KEY,
     name       TEXT NOT NULL UNIQUE,
     label      TEXT,
+    value      TEXT,
+    metadata   JSONB,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -64,6 +66,36 @@ CREATE TABLE items (
 SELECT create_hypertable('items', 'time');
 CREATE INDEX ON items (item_id, time DESC);
 ```
+
+### `item_meta.value` and `item_meta.metadata`
+
+`value TEXT` stores `metadata.getValue()` — a free user-defined string (measurement label, filter tag, etc.).
+`metadata JSONB` stores the **complete** `metadata.getConfiguration()` map serialized as JSON — unfiltered,
+including reserved keys (`aggregation`, `downsampleInterval`, `retainRawDays`, `retentionDays`) and any
+user-defined tags (`location`, `kind`, etc.).
+
+```
+Number:Temperature MySensor {
+    timescaledb="sensor.temperature" [ aggregation="AVG", downsampleInterval="1h",
+        location="living_room", kind="sensor" ]
+}
+-- item_meta.value    = 'sensor.temperature'
+-- item_meta.metadata = '{"aggregation":"AVG","downsampleInterval":"1h","location":"living_room","kind":"sensor"}'
+```
+
+Grafana can filter via JSONB operators: `WHERE metadata->>'location' = 'living_room'`
+
+When no value/config is set, both columns are `NULL`.
+
+**Migration:** On startup `TimescaleDBSchema.initialize()` runs a single DO-block that adds both columns atomically:
+
+```sql
+ALTER TABLE item_meta
+    ADD COLUMN IF NOT EXISTS value    TEXT,
+    ADD COLUMN IF NOT EXISTS metadata JSONB;
+```
+
+`IF NOT EXISTS` makes the statement idempotent. A `lock_timeout` of 5 s prevents blocking `@Activate` indefinitely; on timeout a WARNING is logged and the migration is retried on the next startup.
 
 ### Why `unit` is per row, not in `item_meta`
 
@@ -134,16 +166,21 @@ private Optional<Metadata> getItemMetadata(String itemName) {
 ```
 
 `Metadata` has:
-- `getValue()` → main value string, e.g. `"AVG"`, `"MAX"`, `"MIN"`, `"SUM"`, or `""` (no aggregation)
-- `getConfiguration()` → `Map<String, Object>` with keys like `"downsampleInterval"`, `"retainRawDays"`, `"retentionDays"`
+- `getValue()` → user-defined string (e.g. `"sensor.temperature"`), stored in `item_meta.value`
+- `getConfiguration()` → `Map<String, Object>` with keys like `"aggregation"`, `"downsampleInterval"`, `"retainRawDays"`, `"retentionDays"`, plus user-defined tags
 
 ### Metadata format (configured by users in .items files)
 
 ```java
 Number:Temperature MySensor {
-    timescaledb="AVG" [ downsampleInterval="1h", retainRawDays="5", retentionDays="365" ]
+    timescaledb="sensor.temperature" [ aggregation="AVG", downsampleInterval="1h",
+        retainRawDays="5", retentionDays="365", location="living_room" ]
 }
 ```
+
+- `getValue()` = user-defined string stored in `item_meta.value` (e.g. measurement label for Grafana)
+- `aggregation` in config = downsampling function (replaces the old `getValue()` = `"AVG"` pattern)
+- All config keys are stored unfiltered as JSONB in `item_meta.metadata`
 
 ### Parsing the metadata
 
@@ -249,7 +286,7 @@ Location: `src/test/java/org/openhab/persistence/timescaledb/internal/`
 - `TimescaleDBMetadataServiceTest` — parsing of metadata values and config keys
 - `TimescaleDBDownsampleJobTest` — SQL generation for aggregation/delete, interval allowlist validation
 
-Run with `mvn test` — last result: **183 tests, 0 failures** (2026-03-13).
+Run with `mvn test` — last result: **228 tests, 0 failures** (2026-03-28).
 
 ### Integration Tests (requires Docker + TimescaleDB)
 
