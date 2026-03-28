@@ -108,41 +108,54 @@ class TimescaleDBQueryTest {
     }
 
     // ------------------------------------------------------------------
-    // getOrCreateItemId — existing item (SELECT path)
+    // getOrCreateItemId — UPSERT behaviour
     // ------------------------------------------------------------------
 
     @Test
-    void getOrCreateItemIdExistingitemReturnsfromselect() throws Exception {
+    void getOrCreateItemIdUsesUpsertAndReturnsId() throws Exception {
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(42);
 
         int id = TimescaleDBQuery.getOrCreateItemId(connection, "MySensor", "My Sensor Label");
 
         assertEquals(42, id);
-        // Only one PreparedStatement needed (the SELECT)
-        verify(connection, times(1)).prepareStatement(contains("SELECT id FROM item_meta"));
+        verify(connection, times(1)).prepareStatement(contains("INSERT INTO item_meta"));
+        verify(connection, times(1)).prepareStatement(contains("ON CONFLICT"));
+        verify(connection, times(1)).prepareStatement(contains("RETURNING id"));
     }
 
     @Test
-    void getOrCreateItemIdNewitemInsertsandreturns() throws Exception {
-        // First call (SELECT) returns no rows; second (INSERT) returns the new id
-        ResultSet selectRs = mock(ResultSet.class);
-        ResultSet insertRs = mock(ResultSet.class);
-        PreparedStatement selectPs = mock(PreparedStatement.class);
-        PreparedStatement insertPs = mock(PreparedStatement.class);
+    void getOrCreateItemIdSetsValueParameter() throws Exception {
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(7);
 
-        when(selectRs.next()).thenReturn(false);
-        when(insertRs.next()).thenReturn(true);
-        when(insertRs.getInt(1)).thenReturn(99);
-        when(selectPs.executeQuery()).thenReturn(selectRs);
-        when(insertPs.executeQuery()).thenReturn(insertRs);
+        TimescaleDBQuery.getOrCreateItemId(connection, "Sensor", "label", "sensor.temperature", null);
 
-        when(connection.prepareStatement(contains("SELECT id FROM item_meta"))).thenReturn(selectPs);
-        when(connection.prepareStatement(contains("INSERT INTO item_meta"))).thenReturn(insertPs);
+        // Parameter 3 = value (TEXT)
+        verify(preparedStatement).setString(3, "sensor.temperature");
+    }
 
-        int id = TimescaleDBQuery.getOrCreateItemId(connection, "NewSensor", null);
+    @Test
+    void getOrCreateItemIdSetsMetadataJsonParameter() throws Exception {
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(7);
 
-        assertEquals(99, id);
+        String json = "{\"aggregation\":\"AVG\"}";
+        TimescaleDBQuery.getOrCreateItemId(connection, "Sensor", "label", "sensor.temperature", json);
+
+        // Parameter 4 = metadata JSONB — must use setObject with Types.OTHER
+        verify(preparedStatement).setObject(eq(4), eq(json), eq(java.sql.Types.OTHER));
+    }
+
+    @Test
+    void getOrCreateItemIdNullValueAndMetadataPassedAsNull() throws Exception {
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(5);
+
+        TimescaleDBQuery.getOrCreateItemId(connection, "Sensor", null);
+
+        verify(preparedStatement).setString(3, null);
+        verify(preparedStatement).setObject(eq(4), isNull(), eq(java.sql.Types.OTHER));
     }
 
     // ------------------------------------------------------------------
