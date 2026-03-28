@@ -373,12 +373,12 @@ public class ThirdGenerationHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable byte[] getRequiredBase64OrOffline(JsonObject jsonObject, String fieldName) {
+    private byte[] getRequiredBase64OrOffline(JsonObject jsonObject, String fieldName) {
         try {
             return Base64.getDecoder().decode(jsonObject.get(fieldName).getAsString());
         } catch (RuntimeException e) {
             setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
-            return null;
+            return new byte[0];
         }
     }
 
@@ -506,7 +506,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
 
         byte[] signature = getRequiredBase64OrOffline(authFinishResponseJsonObject, "signature");
         String token = getRequiredStringOrOffline(authFinishResponseJsonObject, "token");
-        if (signature == null || token == null) {
+        if (signature.length == 0 || token == null) {
             return null;
         }
 
