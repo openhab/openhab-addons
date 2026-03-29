@@ -59,7 +59,7 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
     private final ChannelUID intensityChannelUID;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private Optional<PointType> location = Optional.empty();
+    private @Nullable PointType location;
 
     public RainForecastHandler(Thing thing) {
         super(thing);
@@ -81,7 +81,7 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
         ForecastConfiguration config = getConfigAs(ForecastConfiguration.class);
 
         try {
-            this.location = Optional.of(new PointType(config.location));
+            this.location = new PointType(config.location);
         } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Incorrect 'location' value.");
             return;
@@ -110,21 +110,19 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
 
     private void updateAndPublish() {
         getBridgeHandler().ifPresentOrElse(handler -> {
-            location.ifPresent(loc -> {
-                RainForecast forecast = handler.getRainForecast(loc);
-                if (forecast != null) {
-                    updateStatus(ThingStatus.ONLINE);
-                    setProperties(forecast.properties);
-                    updateDate(UPDATE_TIME, forecast.updateTime);
-                }
-            });
-        }, () -> logger.warn("No viable bridge"));
+            if (location instanceof PointType loc && handler.getRainForecast(loc) instanceof RainForecast forecast) {
+                updateStatus(ThingStatus.ONLINE);
+                setProperties(forecast.properties);
+                updateDate(UPDATE_TIME, forecast.updateTime);
+            }
+        }, () -> logger.warn("No bridge found"));
     }
 
     private void setProperties(@Nullable Properties forecastProps) {
         if (forecastProps == null) {
             return;
         }
+
         Map<String, String> properties = editProperties();
         properties.put("altitude", "%d m".formatted(forecastProps.altitude));
         properties.put("name", forecastProps.name);
@@ -132,32 +130,35 @@ public class RainForecastHandler extends BaseThingHandler implements MeteoFrance
         properties.put("department", forecastProps.frenchDepartment);
         properties.put("timezone", forecastProps.timezone);
         properties.put("comfidence", "%d".formatted(forecastProps.confidence));
-        this.updateProperties(properties);
+        updateProperties(properties);
 
         setForecast(forecastProps.forecast);
     }
 
-    private void setForecast(List<Forecast> forecast) {
-        TimeSeries timeSeries = new TimeSeries(REPLACE);
-        ZonedDateTime now = ZonedDateTime.now();
-
+    private void setForecast(@Nullable List<Forecast> forecast) {
         State currentState = null;
         long untilNextRun = 0;
-        for (Forecast prevision : forecast) {
-            State state = prevision.rainIntensity() != RainIntensity.UNKNOWN
-                    ? new DecimalType(prevision.rainIntensity().ordinal())
-                    : UnDefType.UNDEF;
-            if (currentState == null) {
-                currentState = state;
-                if (prevision.time().isAfter(now)) {
-                    untilNextRun = now.until(prevision.time(), ChronoUnit.SECONDS);
-                }
-            }
-            timeSeries.add(prevision.time().toInstant(), state);
-        }
-        updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
-        sendTimeSeries(intensityChannelUID, timeSeries);
 
+        if (forecast != null) {
+            TimeSeries timeSeries = new TimeSeries(REPLACE);
+            ZonedDateTime now = ZonedDateTime.now();
+            for (Forecast prevision : forecast) {
+                State state = RainIntensity.UNKNOWN.equals(prevision.rainIntensity()) ? UnDefType.UNDEF
+                        : new DecimalType(prevision.rainIntensity().ordinal());
+                if (currentState == null) {
+                    currentState = state;
+                    if (prevision.time().isAfter(now)) {
+                        untilNextRun = now.until(prevision.time(), ChronoUnit.SECONDS);
+                    }
+                }
+                timeSeries.add(prevision.time().toInstant(), state);
+            }
+            sendTimeSeries(intensityChannelUID, timeSeries);
+        } else {
+            logger.info("No rain forecast provided, new attempt on next schedule");
+        }
+
+        updateState(intensityChannelUID, currentState == null ? UnDefType.UNDEF : currentState);
         untilNextRun = untilNextRun != 0 ? untilNextRun : 300;
 
         logger.debug("Refresh rain intensity forecast in: {}s", untilNextRun);

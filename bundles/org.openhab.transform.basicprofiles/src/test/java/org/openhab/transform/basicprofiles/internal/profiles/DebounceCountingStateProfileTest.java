@@ -113,8 +113,8 @@ class DebounceCountingStateProfileTest {
         });
     }
 
-    private @NonNullByDefault({}) @Mock ProfileCallback mockCallback;
-    private @NonNullByDefault({}) @Mock ProfileContext mockContext;
+    private @Mock @NonNullByDefault({}) ProfileCallback mockCallback;
+    private @Mock @NonNullByDefault({}) ProfileContext mockContext;
 
     @Test
     public void testWrongParameterLower() {

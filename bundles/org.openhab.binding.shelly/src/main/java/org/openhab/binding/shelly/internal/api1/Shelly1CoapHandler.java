@@ -20,6 +20,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -185,7 +186,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     if (devid.contains("#") && profile.device.mac != null) {
                         // Format: <device type>#<mac address>#<coap version>
                         String macid = substringBetween(devid, "#", "#");
-                        if (getString(profile.device.mac).toUpperCase().contains(macid.toUpperCase())) {
+                        if (getString(profile.device.mac).toUpperCase(Locale.ROOT)
+                                .contains(macid.toUpperCase(Locale.ROOT))) {
                             match = true;
                             break;
                         }

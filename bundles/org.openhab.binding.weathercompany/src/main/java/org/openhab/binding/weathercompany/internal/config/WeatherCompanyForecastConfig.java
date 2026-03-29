@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class WeatherCompanyForecastConfig {
     /**
-     * Type of location (postal, geocode, etc.)
+     * Type of location (postalCode, geocode, iataCode)
      */
     public @Nullable String locationType;
 

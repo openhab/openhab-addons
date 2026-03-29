@@ -18,12 +18,15 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.discovery.HomekitMdnsDiscoveryParticipant;
 import org.openhab.binding.homekit.internal.handler.HomekitAccessoryHandler;
 import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -55,18 +58,30 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     private final HomekitKeyStore keyStore;
     private final TranslationProvider i18nProvider;
     private final Bundle bundle;
+    private final ManagedThingProvider managedThingProvider;
+    private final HomekitMdnsDiscoveryParticipant discoveryParticipant;
 
+    /**
+     * Constructor.
+     * <p>
+     * Note that it imports an OSGi reference to a {@link MDNSDiscoveryParticipant} service instance with
+     * a very specific target filter on it, to ensure it is indeed a {@link HomekitMdnsDiscoveryParticipant}
+     * service instance.
+     */
     @Activate
     public HomekitHandlerFactory(@Reference HomekitTypeProvider typeProvider,
             @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore,
-            @Reference TranslationProvider translationProvider) {
+            @Reference TranslationProvider translationProvider, @Reference ManagedThingProvider managedThingProvider,
+            @Reference(target = "(class.id=homekit)") MDNSDiscoveryParticipant mdnsDiscoveryParticipant) {
         this.typeProvider = typeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.keyStore = keyStore;
         this.i18nProvider = translationProvider;
         this.bundle = FrameworkUtil.getBundle(getClass());
+        this.managedThingProvider = managedThingProvider;
+        this.discoveryParticipant = (HomekitMdnsDiscoveryParticipant) mdnsDiscoveryParticipant;
     }
 
     @Override
@@ -77,11 +92,11 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, typeProvider, keyStore, i18nProvider, bundle);
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID) && thing instanceof Bridge bridge) {
+            return new HomekitBridgeHandler(bridge, typeProvider, keyStore, i18nProvider, bundle, discoveryParticipant);
         } else if (THING_TYPE_BRIDGED_ACCESSORY.equals(thingTypeUID) || THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry,
-                    keyStore, i18nProvider, bundle);
+                    keyStore, i18nProvider, bundle, managedThingProvider, discoveryParticipant);
         }
         return null;
     }

@@ -69,8 +69,8 @@ public class Characteristic {
     public @NonNullByDefault({}) String description;
     public @NonNullByDefault({}) Boolean ev; // e.g. true (events requested)
     public @NonNullByDefault({}) Long aid; // e.g. 10
-    public @NonNullByDefault({}) @SerializedName("valid-values") List<Integer> validValues;
-    public @NonNullByDefault({}) @SerializedName("valid-values-range") List<Integer> validValuesRange;
+    public @SerializedName("valid-values") @NonNullByDefault({}) List<Integer> validValues;
+    public @SerializedName("valid-values-range") @NonNullByDefault({}) List<Integer> validValuesRange;
     public @NonNullByDefault({}) Integer status;
 
     /**

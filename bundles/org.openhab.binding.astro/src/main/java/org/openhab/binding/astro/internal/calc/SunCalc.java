@@ -98,7 +98,7 @@ public class SunCalc {
         double a = getRightAscension(lsun);
         double th = getSiderealTime(j, lw);
 
-        double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d));
+        double azimuth = Math.toDegrees(getAzimuth(th, a, phi, d)) + 180;
         double elevation = Math.toDegrees(getElevation(th, a, phi, d));
         return new Position(azimuth, elevation);
     }

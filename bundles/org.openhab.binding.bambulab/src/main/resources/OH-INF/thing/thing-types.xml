@@ -95,6 +95,10 @@
 				<label>Current Layer Number</label>
 				<description>Current layer being printed.</description>
 			</channel>
+			<channel id="layer-total" typeId="number">
+				<label>Total Layer Number</label>
+				<description>Total number of layers to print.</description>
+			</channel>
 			<channel id="speed-level" typeId="speed-level"/>
 			<channel id="time-laps" typeId="boolean">
 				<label>time-lapse Enabled</label>

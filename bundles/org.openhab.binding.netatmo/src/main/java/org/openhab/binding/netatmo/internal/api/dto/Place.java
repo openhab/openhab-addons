@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 
 @NonNullByDefault
-public class Place implements LocationEx {
+public class Place implements Location {
     private @Nullable String city;
     private @Nullable String country;
     private @Nullable String timezone;
@@ -36,14 +36,12 @@ public class Place implements LocationEx {
         return Optional.ofNullable(city);
     }
 
-    @Override
     public Optional<String> getCountry() {
         return Optional.ofNullable(country);
     }
 
-    @Override
-    public @Nullable String getTimezone() {
-        return timezone;
+    public Optional<String> getTimezone() {
+        return Optional.ofNullable(timezone);
     }
 
     @Override

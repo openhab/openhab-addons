@@ -35,8 +35,8 @@ import org.openhab.binding.plex.internal.config.PlexServerConfiguration;
  */
 @NonNullByDefault
 public class PlexApiConnectorTest {
-    private @NonNullByDefault({}) @Mock ScheduledExecutorService scheduler;
-    private @NonNullByDefault({}) @Mock HttpClient httpClient;
+    private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduler;
+    private @Mock @NonNullByDefault({}) HttpClient httpClient;
 
     private @NonNullByDefault({}) PlexApiConnector plexApiConnector;
 

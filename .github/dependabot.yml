@@ -45,6 +45,7 @@ updates:
       - dependency-name: "org.eclipse.jdt:ecj" # eclipse compiler
       - dependency-name: "org.apache.ftpserver:*" # ftpserver
       - dependency-name: "org.apache.mina:mina-core" # ftpserver
+      - dependency-name: "org.rrd4j:rrd4j" # rrd4j persistence
     ignore:
       - dependency-name: "com.github.jaxb-xew-plugin:jaxb-xew-plugin" # updated with core
       - dependency-name: "com.diffplug.spotless:spotless-maven-plugin" # updated together with SAT

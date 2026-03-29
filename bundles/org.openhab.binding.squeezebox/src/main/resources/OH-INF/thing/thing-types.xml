@@ -101,6 +101,7 @@
 
 		<config-description>
 			<parameter name="mac" type="text" required="true">
+				<context>mac-address</context>
 				<label>MAC Address</label>
 				<description>SqueezeBox Players are identified by their MAC address.</description>
 			</parameter>

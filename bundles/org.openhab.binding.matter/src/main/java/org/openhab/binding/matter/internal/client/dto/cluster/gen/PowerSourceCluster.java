@@ -29,7 +29,6 @@ public class PowerSourceCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x002F;
     public static final String CLUSTER_NAME = "PowerSource";
     public static final String CLUSTER_PREFIX = "powerSource";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_STATUS = "status";
     public static final String ATTRIBUTE_ORDER = "order";
@@ -64,7 +63,6 @@ public class PowerSourceCluster extends BaseCluster {
     public static final String ATTRIBUTE_ACTIVE_BAT_CHARGE_FAULTS = "activeBatChargeFaults";
     public static final String ATTRIBUTE_ENDPOINT_LIST = "endpointList";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the participation of this power source in providing power to the Node as specified in
@@ -74,7 +72,7 @@ public class PowerSourceCluster extends BaseCluster {
     /**
      * Indicates the relative preference with which the Node will select this source to provide power. A source with a
      * lower order shall be selected by the Node to provide power before any other source with a higher order, if the
-     * lower order source is available (see Status).
+     * lower order source is available (see Section 11.7.7.1, “Status Attribute”).
      * Note, Order is read-only and therefore NOT intended to allow clients control over power source selection.
      */
     public Integer order; // 1 uint8 R V
@@ -142,8 +140,8 @@ public class PowerSourceCluster extends BaseCluster {
      * provide power to the Node. Values are expressed in half percent units, ranging from 0 to 200. E.g. a value of 48
      * is equivalent to 24%. A value of NULL shall indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batPercentRemaining; // 12 uint8 R V
@@ -151,8 +149,8 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the estimated time in seconds before the battery will no longer be able to provide power to the Node. A
      * value of NULL shall indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batTimeRemaining; // 13 uint32 R V
@@ -168,7 +166,7 @@ public class PowerSourceCluster extends BaseCluster {
      */
     public Boolean batReplacementNeeded; // 15 bool R V
     /**
-     * This attribute shall indicate the replaceability of the battery as specified in BatReplaceabilityEnum.
+     * Indicates the replaceability of the battery as specified in BatReplaceabilityEnum.
      */
     public BatReplaceabilityEnum batReplaceability; // 16 BatReplaceabilityEnum R V
     /**
@@ -224,8 +222,8 @@ public class PowerSourceCluster extends BaseCluster {
      * Indicates the estimated time in seconds before the battery source will be at full charge. A value of NULL shall
      * indicate the Node is currently unable to assess the value.
      * Changes to this attribute shall only be marked as reportable in the following cases:
-     * • At most once every 10 seconds, or
-     * • When it changes from null to any other value and vice versa.
+     * - At most once every 10 seconds, or
+     * - When it changes from null to any other value and vice versa.
      * Since reporting consumes power, devices SHOULD be careful not to over-report.
      */
     public Integer batTimeToFullCharge; // 27 uint32 R V
@@ -259,6 +257,15 @@ public class PowerSourceCluster extends BaseCluster {
      * A cluster instance with a non-empty list shall include the endpoint, upon which the cluster instance resides.
      * The above rules allow that some endpoints can have an unknown power source, and therefore would not be indicated
      * by any instance of this cluster.
+     * ### Legacy Implementations
+     * Legacy implementations of this cluster before revision 2, before this attribute was defined, would have
+     * implemented this cluster on an application endpoint without indicating it in EndpointList (since that attribute
+     * did not exist in revision 1), because it represented a power source for the endpoint, not the entire node.
+     * For example: Bridge implementations support endpoints for bridged devices that have different power sources.
+     * Such implementations followed device type requirements and semantics outside of this cluster, because this
+     * attribute did not exist.
+     * Future updates of such a cluster instance on the same endpoint, would allow that same endpoint to be an entry in
+     * the EndpointList attribute. Therefore it is valid to list the endpoint upon which the cluster instance exists.
      * Typically, there is one power source for the node. Also common is mains power for the node with battery backup
      * power for the node. In both these common cases, for each cluster instance described, the list is empty.
      * A node has a mains power source with Order as 0 (zero), but some application endpoints (not all) have a battery
@@ -731,7 +738,6 @@ public class PowerSourceCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "status : " + status + "\n";
         str += "order : " + order + "\n";

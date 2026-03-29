@@ -104,13 +104,13 @@ If you encounter problems with this binding follow the instructions from [Troubl
 
 State
 
-- 0 : Locked
-- 1 : Unlocked
+- 2 : Locked
+- 0 : Unlocked
 
 Command
 
-- 0 : Lock
-- 1 : Unlock
+- 2 : Lock
+- 0 : Unlock
 
 Triggers `DOORSLOCK` and `DOORSUNLOCK` from [Command Name Mapping](#command-name-mapping)
 

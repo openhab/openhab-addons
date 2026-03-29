@@ -185,6 +185,15 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         return getItems();
     }
 
+    @Override
+    public @Nullable PersistenceItemInfo getItemInfo(String itemName, @Nullable String alias) {
+        Item item = itemRegistry.get(itemName);
+        if (item == null) {
+            return null;
+        }
+        return getItem(item, alias);
+    }
+
     /**
      * Queries the {@link PersistenceService} for data with a given filter
      * criteria

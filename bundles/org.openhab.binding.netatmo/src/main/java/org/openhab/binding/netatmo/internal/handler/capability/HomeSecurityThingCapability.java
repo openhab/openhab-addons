@@ -32,7 +32,7 @@ import org.openhab.binding.netatmo.internal.servlet.WebhookServlet;
  *
  */
 @NonNullByDefault
-public class HomeSecurityThingCapability extends Capability {
+public abstract class HomeSecurityThingCapability extends Capability {
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final EventChannelHelper eventHelper;
 
@@ -53,8 +53,7 @@ public class HomeSecurityThingCapability extends Capability {
     protected Optional<SecurityCapability> getSecurityCapability() {
         if (securityCapability == null) {
             handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> securityCapability = cap);
-            ApiBridgeHandler accountHandler = handler.getAccountHandler();
-            if (accountHandler != null) {
+            if (handler.getAccountHandler() instanceof ApiBridgeHandler accountHandler) {
                 webhookServlet = null;
                 accountHandler.getWebHookServlet().ifPresent(servlet -> {
                     webhookServlet = servlet;
@@ -74,10 +73,14 @@ public class HomeSecurityThingCapability extends Capability {
 
     @Override
     public void dispose() {
-        WebhookServlet webhook = this.webhookServlet;
-        if (webhook != null) {
+        if (webhookServlet instanceof WebhookServlet webhook) {
             webhook.unregisterDataListener(handler.getId());
+            webhookServlet = null;
         }
         super.dispose();
+    }
+
+    protected boolean pullMode() {
+        return webhookServlet == null;
     }
 }

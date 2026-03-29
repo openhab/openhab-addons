@@ -12,6 +12,9 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="event" typeId="eventGroup"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 		<config-description>
 			<parameter name="username" type="text" required="false">
 				<label>User Name</label>
@@ -69,6 +72,7 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -96,6 +100,7 @@
 		<channel-groups>
 			<channel-group id="control" typeId="controlGroup"/>
 		</channel-groups>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -124,6 +129,10 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -152,6 +161,10 @@
 			<channel-group id="control" typeId="controlGroup"/>
 			<channel-group id="status" typeId="deviceStatus"/>
 		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+		<representation-property>id</representation-property>
 		<config-description>
 			<parameter name="id" type="text">
 				<label>ID</label>
@@ -184,6 +197,8 @@
 		<description>Device Status Information</description>
 		<channels>
 			<channel id="battery" typeId="battery"/>
+			<channel id="snapshot" typeId="snapshot"/>
+			<channel id="snapshot-timestamp" typeId="snapshot-timestamp"/>
 		</channels>
 	</channel-group-type>
 
@@ -196,6 +211,7 @@
 			<channel id="kind" typeId="kind"/>
 			<channel typeId="doorbotId" id="doorbotId"></channel>
 			<channel typeId="doorbotDescription" id="doorbotDescription"></channel>
+			<channel id="extendedDescription" typeId="extendedDescription"/>
 		</channels>
 	</channel-group-type>
 
@@ -246,6 +262,15 @@
 			<tag>Info</tag>
 		</tags>
 	</channel-type>
+	<channel-type id="extendedDescription">
+		<item-type>String</item-type>
+		<label>Extended Description</label>
+		<description>Extended description, similar to notifications from the Ring app</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+	</channel-type>
 	<channel-type id="enabled">
 		<item-type>Switch</item-type>
 		<label>Enable Polling</label>
@@ -253,6 +278,24 @@
 		<tags>
 			<tag>Switch</tag>
 			<tag>Info</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="light">
+		<item-type>Switch</item-type>
+		<label>Light Status</label>
+		<description>Current status of the light</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
+	<channel-type id="siren">
+		<item-type>Switch</item-type>
+		<label>Siren Status</label>
+		<description>Current status of the siren</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Noise</tag>
 		</tags>
 	</channel-type>
 	<channel-type id="battery">
@@ -264,5 +307,25 @@
 			<tag>Level</tag>
 		</tags>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot">
+		<item-type>Image</item-type>
+		<label>Snapshot</label>
+		<description>Snapshot image from camera</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="snapshot-timestamp">
+		<item-type>DateTime</item-type>
+		<label>Snapshot DateTime</label>
+		<description>The date and time the snapshot was created</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state pattern="%1$tF %1$tR" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

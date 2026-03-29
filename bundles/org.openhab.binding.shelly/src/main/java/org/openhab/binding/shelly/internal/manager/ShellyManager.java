@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -91,7 +92,7 @@ public class ShellyManager {
 
     public ShellyMgrResponse generateContent(String path, Map<String, String[]> parameters) throws ShellyApiException {
         for (Map.Entry<String, ShellyManagerPage> page : pages.entrySet()) {
-            if (path.toLowerCase().startsWith(page.getKey())) {
+            if (path.toLowerCase(Locale.ROOT).startsWith(page.getKey())) {
                 ShellyManagerPage p = page.getValue();
                 return p.generateContent(path, parameters);
             }

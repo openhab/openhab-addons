@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -28,17 +29,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ShellyBluHandler extends ShellyBaseHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShellyBluHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ShellyBluHandler.class);
 
     public ShellyBluHandler(final Thing thing, final ShellyTranslationProvider translationProvider,
             final ShellyBindingConfiguration bindingConfig, final ShellyThingTable thingTable,
-            final Shelly1CoapServer coapServer, final HttpClient httpClient) {
-        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient);
+            final Shelly1CoapServer coapServer, final HttpClient httpClient, WebSocketClient webSocketClient) {
+        super(thing, translationProvider, bindingConfig, thingTable, coapServer, httpClient, webSocketClient);
     }
 
     @Override
     public void initialize() {
-        LOGGER.debug("Thing is using  {}", this.getClass());
+        logger.debug("Thing is using  {}", this.getClass());
         super.initialize();
     }
 }

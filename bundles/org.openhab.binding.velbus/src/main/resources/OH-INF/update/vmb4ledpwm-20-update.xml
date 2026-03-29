@@ -6,10 +6,10 @@
 	<thing-type uid="velbus:vmb4ledpwm-20">
 		<instruction-set targetVersion="1">
 			<add-channel id="VL1" groupIds="virtual-light">
-				<type>system.color</type>
+				<type>system:color</type>
 			</add-channel>
 			<add-channel id="DW1" groupIds="dim-white">
-				<type>system.brightness</type>
+				<type>system:brightness</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

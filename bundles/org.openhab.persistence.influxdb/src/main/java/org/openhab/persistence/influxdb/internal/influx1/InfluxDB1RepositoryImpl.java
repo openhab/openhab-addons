@@ -16,7 +16,6 @@ import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -229,7 +228,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     }
 
     @Override
-    public Map<String, Integer> getStoredItemsCount() {
-        return Collections.emptyMap();
+    public Map<String, Integer> getStoredItemsCount() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("getItemInfo not supported for persistence service influxDB1");
     }
 }

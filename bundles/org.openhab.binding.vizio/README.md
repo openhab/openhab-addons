@@ -5,7 +5,7 @@ The TV must support the Vizio SmartCast API that is found on 2016 and later mode
 
 ## Supported Things
 
-There is currently only one supported thing type, which represents a Vizio TV using the `vizio_tv` id.
+There is currently only one supported Thing type, which represents a Vizio TV using the `vizio_tv` id.
 Multiple Things can be added if more than one Vizio TV is to be controlled.
 
 ## Discovery
@@ -16,7 +16,7 @@ When the TV is discovered, a pairing process to obtain an authentication token f
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter   | Description                                                                                                                          |
 |-------------|--------------------------------------------------------------------------------------------------------------------------------------|
@@ -36,7 +36,7 @@ Start Pairing:
 openhab:vizio <thingUID> start_pairing <deviceName>
 ```
 
-Substitute `<thingUID>` with thing's id, ie: `vizio_tv:00bc3e711660`
+Substitute `<thingUID>` with Thing's id, ie: `vizio_tv:00bc3e711660`
 Substitute `<deviceName>` the desired device name that will appear in the TV's settings, under Mobile Devices, ie: `Vizio-openHAB`
 
 Submit Pairing Code:
@@ -45,7 +45,7 @@ Submit Pairing Code:
 openhab:vizio <thingUID> submit_code <pairingCode>
 ```
 
-Substitute `<thingUID>` with the same thing id used above
+Substitute `<thingUID>` with the same Thing id used above
 Substitute `<pairingCode>` with the 4-digit pairing code displayed on the TV, ie: `1234`
 
 The console should then indicate that pairing was successful (token will be displayed) and that the token was saved to the Thing configuration.

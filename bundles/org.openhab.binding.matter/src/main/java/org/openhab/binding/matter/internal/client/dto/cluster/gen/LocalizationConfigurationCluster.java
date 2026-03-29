@@ -29,11 +29,9 @@ public class LocalizationConfigurationCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x002B;
     public static final String CLUSTER_NAME = "LocalizationConfiguration";
     public static final String CLUSTER_PREFIX = "localizationConfiguration";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_ACTIVE_LOCALE = "activeLocale";
     public static final String ATTRIBUTE_SUPPORTED_LOCALES = "supportedLocales";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     /**
      * The ActiveLocale attribute shall represent the locale that the Node is currently configured to use when conveying
      * information. The ActiveLocale attribute shall be a Language Tag as defined by BCP47. The ActiveLocale attribute
@@ -61,7 +59,6 @@ public class LocalizationConfigurationCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "activeLocale : " + activeLocale + "\n";
         str += "supportedLocales : " + supportedLocales + "\n";
         return str;

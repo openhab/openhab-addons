@@ -38,4 +38,28 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="boschshc:thermostat">
+		<instruction-set targetVersion="1">
+			<add-channel id="temperature-offset">
+				<type>boschshc:temperature-offset</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="boschshc:thermostat-2">
+		<instruction-set targetVersion="1">
+			<add-channel id="temperature-offset">
+				<type>boschshc:temperature-offset</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="boschshc:thermostat-2-matter">
+		<instruction-set targetVersion="1">
+			<add-channel id="temperature-offset">
+				<type>boschshc:temperature-offset</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
 </update:update-descriptions>

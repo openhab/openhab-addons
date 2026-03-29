@@ -26,8 +26,8 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,32 +49,27 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.airparif.internal.AirParifException;
-import org.openhab.binding.airparif.internal.api.AirParifApi.Pollen;
+import org.openhab.binding.airparif.internal.api.AirParifDto;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Bulletin;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Episode;
 import org.openhab.binding.airparif.internal.api.AirParifDto.ItineraireResponse;
 import org.openhab.binding.airparif.internal.api.AirParifDto.KeyInfo;
-import org.openhab.binding.airparif.internal.api.AirParifDto.PollensResponse;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Route;
 import org.openhab.binding.airparif.internal.api.AirParifDto.Version;
-import org.openhab.binding.airparif.internal.api.PollenAlertLevel;
 import org.openhab.binding.airparif.internal.api.Pollutant;
 import org.openhab.binding.airparif.internal.config.BridgeConfiguration;
 import org.openhab.binding.airparif.internal.deserialization.AirParifDeserializer;
 import org.openhab.binding.airparif.internal.discovery.AirParifDiscoveryService;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +86,6 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(30);
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String AQ_JOB = "Air Quality Bulletin";
-    private static final String POLLENS_JOB = "Pollens Update";
     private static final String EPISODE_JOB = "Episode";
 
     private final Logger logger = LoggerFactory.getLogger(AirParifBridgeHandler.class);
@@ -100,7 +94,6 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     private final HttpClient httpClient;
 
     private BridgeConfiguration config = new BridgeConfiguration();
-    private @Nullable PollensResponse pollens;
 
     public AirParifBridgeHandler(Bridge bridge, HttpClient httpClient, AirParifDeserializer deserializer) {
         super(bridge);
@@ -153,6 +146,9 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
                 return content;
             } else if (statusCode == Code.FORBIDDEN) {
                 throw new AirParifException("@text/offline.config-error-invalid-apikey");
+            } else if (statusCode == Code.SERVICE_UNAVAILABLE) {
+                logger.debug("{}, returning empty DTO", statusCode.getMessage());
+                return "{}";
             }
             throw new AirParifException("Error '%s' requesting: %s", statusCode.getMessage(), uri.toString());
         } catch (TimeoutException | ExecutionException e) {
@@ -196,43 +192,15 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
 
         thing.setProperty("api-version", version.version());
         thing.setProperty("key-expiration", keyInfo.expiration().toString());
-        thing.setProperty("scopes", keyInfo.scopes().stream().map(e -> e.name()).collect(Collectors.joining(",")));
+        thing.setProperty("scopes", keyInfo.scopes().stream().map(Enum::name).collect(Collectors.joining(",")));
         logger.debug("The api key is valid until {}", keyInfo.expiration().toString());
         updateStatus(ThingStatus.ONLINE);
 
         ThingUID thingUID = thing.getUID();
 
-        schedule(POLLENS_JOB, () -> updatePollens(new ChannelGroupUID(thingUID, GROUP_POLLENS)), Duration.ofSeconds(1));
         schedule(AQ_JOB, () -> updateDailyAQBulletin(new ChannelGroupUID(thingUID, GROUP_AQ_BULLETIN),
                 new ChannelGroupUID(thingUID, GROUP_AQ_BULLETIN_TOMORROW)), Duration.ofSeconds(2));
         schedule(EPISODE_JOB, () -> updateEpisode(new ChannelGroupUID(thingUID, GROUP_DAILY)), Duration.ofSeconds(3));
-    }
-
-    private void updatePollens(ChannelGroupUID pollensGroupUID) {
-        PollensResponse localPollens;
-        try {
-            localPollens = executeUri(POLLENS_URI, PollensResponse.class);
-        } catch (AirParifException e) {
-            logger.warn("Error updating pollens data: {}", e.getMessage());
-            return;
-        }
-
-        updateState(new ChannelUID(pollensGroupUID, CHANNEL_COMMENT), Objects.requireNonNull(
-                localPollens.getComment().map(comment -> (State) new StringType(comment)).orElse(UnDefType.NULL)));
-        updateState(new ChannelUID(pollensGroupUID, CHANNEL_BEGIN_VALIDITY), Objects.requireNonNull(
-                localPollens.getBeginValidity().map(begin -> (State) new DateTimeType(begin)).orElse(UnDefType.NULL)));
-        updateState(new ChannelUID(pollensGroupUID, CHANNEL_END_VALIDITY), Objects.requireNonNull(
-                localPollens.getEndValidity().map(end -> (State) new DateTimeType(end)).orElse(UnDefType.NULL)));
-
-        long delay = localPollens.getValidityDuration().getSeconds();
-        // if delay is null, update in 3600 seconds
-        delay += delay == 0 ? 3600 : 60;
-        schedule(POLLENS_JOB, () -> updatePollens(pollensGroupUID), Duration.ofSeconds(delay));
-
-        // Send pollens information to childs
-        getThing().getThings().stream().map(Thing::getHandler).filter(LocationHandler.class::isInstance)
-                .map(LocationHandler.class::cast).forEach(locHand -> locHand.setPollens(localPollens));
-        pollens = localPollens;
     }
 
     private void updateDailyAQBulletin(ChannelGroupUID todayGroupUID, ChannelGroupUID tomorrowGroupUID) {
@@ -244,14 +212,14 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
             return;
         }
 
-        Set.of(bulletin.today(), bulletin.tomorrow()).stream().forEach(aq -> {
+        bulletin.days().forEach(aq -> {
             ChannelGroupUID groupUID = aq.isToday() ? todayGroupUID : tomorrowGroupUID;
             updateState(new ChannelUID(groupUID, CHANNEL_COMMENT),
-                    !aq.available() ? UnDefType.NULL : new StringType(aq.bulletin().fr()));
+                    aq.available() ? new StringType(aq.bulletin().fr()) : UnDefType.NULL);
 
             aq.concentrations().forEach(measure -> {
                 Pollutant pollutant = measure.pollutant();
-                String cName = pollutant.name().toLowerCase() + "-";
+                String cName = pollutant.name().toLowerCase(Locale.ROOT) + "-";
                 updateState(new ChannelUID(groupUID, cName + "min"),
                         aq.available() ? measure.getMin() : UnDefType.NULL);
                 updateState(new ChannelUID(groupUID, cName + "max"),
@@ -281,15 +249,15 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
     }
 
     private Duration untilTomorrowMorning() {
-        return Duration.between(ZonedDateTime.now(),
-                ZonedDateTime.now().plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1));
+        ZonedDateTime now = ZonedDateTime.now(AirParifDto.DEFAULT_TZ);
+        return Duration.between(now, now.plusDays(1).truncatedTo(ChronoUnit.DAYS).plusMinutes(1));
     }
 
     public @Nullable Route getConcentrations(String location) {
         String[] elements = location.split(",");
         if (elements.length >= 2) {
-            String req = "{\"itineraires\": [{\"date\": \"%s\",\"longlats\": [[%s,%s]]}],\"polluants\": [\"indice\",\"no2\",\"o3\",\"pm25\",\"pm10\"]}";
-            req = req.formatted(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS), elements[1], elements[0]);
+            String req = INTINERAIRES_REQUEST.formatted(
+                    LocalDateTime.now(AirParifDto.DEFAULT_TZ).truncatedTo(ChronoUnit.HOURS), elements[1], elements[0]);
             try {
                 ItineraireResponse result = executeUri(HORAIR_URI, ItineraireResponse.class, req);
                 return result.routes()[0];
@@ -300,11 +268,6 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
             logger.warn("Wrong localisation as input : {}", location);
         }
         return null;
-    }
-
-    public Map<Pollen, PollenAlertLevel> requestPollens(String department) {
-        PollensResponse localPollens = pollens;
-        return localPollens != null ? localPollens.getDepartment(department) : Map.of();
     }
 
     @Override

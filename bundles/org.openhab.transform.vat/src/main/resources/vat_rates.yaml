@@ -419,7 +419,12 @@
 # Malawi
 - country: "MW"
   vatPeriod:
-    - percentage: 16.5
+    - start: null
+      end: 2025-12-31T22:00:00Z
+      percentage: 16.5
+    - start: 2025-12-31T22:00:00Z
+      end: null
+      percentage: 17.5
 # Malaysia
 - country: "MY"
   vatPeriod:
@@ -543,7 +548,12 @@
 # Russia
 - country: "RU"
   vatPeriod:
-    - percentage: 20
+    - start: null
+      end: 2025-12-31T21:00:00Z
+      percentage: 20
+    - start: 2025-12-31T21:00:00Z
+      end: null
+      percentage: 22
 # Rwanda
 - country: "RW"
   vatPeriod:
@@ -687,4 +697,9 @@
 # Zimbabwe
 - country: "ZW"
   vatPeriod:
-    - percentage: 15
+    - start: null
+      end: 2025-12-31T22:00:00Z
+      percentage: 15
+    - start: 2025-12-31T22:00:00Z
+      end: null
+      percentage: 15.5

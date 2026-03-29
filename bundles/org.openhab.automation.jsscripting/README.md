@@ -146,6 +146,7 @@ This table gives an overview over the `event` object:
 | `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                                                   | N/A                    |                             |
 | `eventName`       | all                                                 | simple Java class name of the triggering event, e.g. `ExecutionEvent`                                  | N/A                    | `type`                      |
 | `eventClass`      | all                                                 | full Java class name of the triggering event, e.g. `org.openhab.core.automation.events.ExecutionEvent` | N/A                    |                             |
+| `eventTopic`      | all                                                 | topic of the triggering event, e.g. `openhab/execution/29d999f4c4/triggered`                           | N/A                    | `topic`                     |
 | `eventSource`     | all                                                 | structured source identifier of the sender of the event, not all senders will set the source           | N/A                    |                             |
 | `module`          | all                                                 | (user-defined or auto-generated) name of trigger                                                       | N/A                    |                             |
 | `raw`             | all                                                 | Original contents of the event including data passed from a calling rule                               | N/A                    |                             |
@@ -219,12 +220,12 @@ The JS Scripting binding supports the standard `console` object for logging.
 Script logging is enabled by default at the `INFO` level (messages from `console.debug` and `console.trace` won't be displayed), but can be configured using the [openHAB console](https://www.openhab.org/docs/administration/console.html):
 
 ```text
-log:set DEBUG org.openhab.automation.script
-log:set TRACE org.openhab.automation.script
-log:set DEFAULT org.openhab.automation.script
+log:set DEBUG org.openhab.automation.jsscripting
+log:set TRACE org.openhab.automation.jsscripting
+log:set DEFAULT org.openhab.automation.jsscripting
 ```
 
-The default logger name consists of the prefix `org.openhab.automation.script` and the script’s individual part `.file.filename` or `.ui.ruleUID`.
+The default logger name consists of the prefix `org.openhab.automation.jsscripting` and the script’s individual part `.file.<filename>`, `.rule.<ruleUID>`, or `.transformation.<transformationUID>`.
 This logger name can be changed by assigning a new string to the `loggerName` property of the console:
 
 ```javascript
@@ -1301,18 +1302,6 @@ var floatValue = qty.float;
 For the string the same rules apply as described above.
 
 See [openhab-js : Quantity](https://openhab.github.io/openhab-js/Quantity.html) for full API documentation.
-
-### Log
-
-By default, the JS Scripting binding supports console logging like `console.log()` and `console.debug()` to the openHAB default log.
-Additionally, scripts may create their own native openHAB logger using the log namespace.
-
-```javascript
-var logger = log('my_logger');
-
-//prints "Hello World!"
-logger.debug("Hello {}!", "world");
-```
 
 ### Utils
 

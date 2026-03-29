@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhase;
@@ -427,6 +428,17 @@ public class SunCalcTest {
         Sun sun = Objects.requireNonNull(sunCalc).getSunInfo(tDate, 53.524695, -2.4, 0.0, true, AMSTERDAM_TIME_ZONE,
                 Locale.ROOT);
         assertEquals(SunPhase.DAYLIGHT, sun.getSunPhase());
+    }
+
+    @Test
+    public void testAzimuthRange() {
+        for (int hour = 0; hour < 23; hour++) {
+            Calendar noonCalendar = SunCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, hour, 0, AMSTERDAM_TIME_ZONE);
+            Position position = Objects.requireNonNull(sunCalc).getPosition(noonCalendar, AMSTERDAM_LATITUDE,
+                    AMSTERDAM_LONGITUDE);
+            double azimuth = position.getAzimuthAsDouble();
+            assertTrue(azimuth >= 0 && azimuth < 360, "Azimuth should be >=0 and <360");
+        }
     }
 
     /***

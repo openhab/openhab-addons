@@ -40,6 +40,7 @@
     <module>org.openhab.transform.jinja</module>
     <module>org.openhab.transform.jsonpath</module>
     <module>org.openhab.transform.map</module>
+    <module>org.openhab.transform.math</module>
     <module>org.openhab.transform.regex</module>
     <module>org.openhab.transform.rollershutterposition</module>
     <module>org.openhab.transform.scale</module>
@@ -68,6 +69,7 @@
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.asuswrt</module>
     <module>org.openhab.binding.atlona</module>
+    <module>org.openhab.binding.atmofrance</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
@@ -297,7 +299,6 @@
     <module>org.openhab.binding.mqtt.fpp</module>
     <module>org.openhab.binding.mqtt.ruuvigateway</module>
     <module>org.openhab.binding.mspa</module>
-    <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
     <module>org.openhab.binding.mystrom</module>
@@ -503,6 +504,7 @@
     <module>org.openhab.persistence.mapdb</module>
     <module>org.openhab.persistence.mongodb</module>
     <module>org.openhab.persistence.rrd4j</module>
+    <module>org.openhab.persistence.timescaledb</module>
     <!-- voice -->
     <module>org.openhab.voice.googlestt</module>
     <module>org.openhab.voice.googletts</module>
@@ -597,7 +599,7 @@
         <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karaf.maven.plugin.version}</version>
+          <version>${karaf.version}</version>
           <extensions>true</extensions>
           <configuration>
             <startLevel>80</startLevel>
@@ -676,7 +678,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.10.0</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>

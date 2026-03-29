@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +46,6 @@ import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigParser;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -81,26 +79,23 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final HttpService httpService;
     private final OAuthFactory oAuthFactory;
-    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
             final @Reference HttpClientFactory factory, final @Reference NADeserializer deserializer,
             final @Reference HttpService httpService, final @Reference OAuthFactory oAuthFactory,
-            final @Reference TimeZoneProvider timeZoneProvider, Map<String, @Nullable Object> config) {
+            Map<String, @Nullable Object> config) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = factory.getCommonHttpClient();
         this.deserializer = deserializer;
         this.httpService = httpService;
         this.oAuthFactory = oAuthFactory;
-        this.timeZoneProvider = timeZoneProvider;
         configChanged(config);
     }
 
     @Modified
     public void configChanged(Map<String, @Nullable Object> config) {
-        BindingConfiguration newConf = ConfigParser.configurationAs(config, BindingConfiguration.class);
-        if (newConf != null) {
+        if (ConfigParser.configurationAs(config, BindingConfiguration.class) instanceof BindingConfiguration newConf) {
             configuration.update(newConf);
         }
     }
@@ -122,12 +117,9 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return new ApiBridgeHandler((Bridge) thing, httpClient, deserializer, configuration, httpService,
                     oAuthFactory);
         }
-        CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing, timeZoneProvider)
-                : new ModuleHandler(thing, timeZoneProvider);
+        CommonInterface handler = moduleType.isABridge() ? new DeviceHandler((Bridge) thing) : new ModuleHandler(thing);
 
-        List<ChannelHelper> helpers = new ArrayList<>();
-
-        helpers.addAll(moduleType.channelGroups.stream().map(ChannelGroup::getHelperInstance).toList());
+        List<ChannelHelper> helpers = moduleType.channelGroups.stream().map(ChannelGroup::getHelperInstance).toList();
 
         moduleType.capabilities.forEach(capability -> {
             Capability newCap = null;

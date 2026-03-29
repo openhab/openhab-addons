@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
-import org.openhab.binding.homewizard.internal.devices.HomeWizardBatteriesSubHandler;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardHandlerTest;
 import org.openhab.binding.homewizard.internal.dto.DataUtil;
 import org.openhab.core.library.unit.Units;
@@ -85,17 +85,17 @@ public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
                         HomeWizardBindingConstants.CHANNEL_APPARENT_POWER), //
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_FREQUENCY),
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_COUNT), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_POWER), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_TARGET_POWER), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_CONSUMPTION), //
-                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
+                mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_BATTERIES,
                         HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_PRODUCTION)
 
         );
@@ -107,14 +107,14 @@ public class HomeWizardKwhMeterHandlerTest extends HomeWizardHandlerTest {
     private static HomeWizardKwhMeterHandlerMock createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
         final HomeWizardKwhMeterHandlerMock handler = spy(new HomeWizardKwhMeterHandlerMock(thing));
-        handler.batteriesHandler = spy(new HomeWizardBatteriesSubHandler(handler));
 
         try {
             doReturn(DataUtil.fromFile("response-device-information-kwh3-meter.json")).when(handler)
                     .getDeviceInformationData();
             doReturn(DataUtil.fromFile("response-measurement-kwh-meter.json")).when(handler).getMeasurementData();
-            doReturn(DataUtil.fromFile("response-batteries.json")).when(handler.batteriesHandler).getBatteriesData();
-        } catch (Exception e) {
+            doReturn(DataUtil.fromFile("response-batteries.json")).when(handler).getBatteriesData();
+            doReturn(DataUtil.fromFile("response-system.json")).when(handler).getSystemData();
+        } catch (IOException ex) {
             assertFalse(true);
         }
 

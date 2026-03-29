@@ -38,12 +38,6 @@ public class PowerPlugHandler extends SimplePlugHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        // update of values is handled in super class
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
         String channel = channelUID.getIdWithoutGroup();
@@ -67,8 +61,8 @@ public class PowerPlugHandler extends SimplePlugHandler {
         // handle reachable flag
         super.handleUpdate(update);
         // now device specific
-        if (update.has(Model.ATTRIBUTES)) {
-            JSONObject attributes = update.getJSONObject(Model.ATTRIBUTES);
+        if (update.has(Model.JSON_KEY_ATTRIBUTES)) {
+            JSONObject attributes = update.getJSONObject(Model.JSON_KEY_ATTRIBUTES);
             Iterator<String> attributesIterator = attributes.keys();
             while (attributesIterator.hasNext()) {
                 String key = attributesIterator.next();

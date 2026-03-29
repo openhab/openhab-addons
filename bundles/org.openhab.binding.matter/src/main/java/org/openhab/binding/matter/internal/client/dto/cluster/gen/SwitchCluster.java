@@ -28,21 +28,20 @@ public class SwitchCluster extends BaseCluster {
     public static final int CLUSTER_ID = 0x003B;
     public static final String CLUSTER_NAME = "Switch";
     public static final String CLUSTER_PREFIX = "switch";
-    public static final String ATTRIBUTE_CLUSTER_REVISION = "clusterRevision";
     public static final String ATTRIBUTE_FEATURE_MAP = "featureMap";
     public static final String ATTRIBUTE_NUMBER_OF_POSITIONS = "numberOfPositions";
     public static final String ATTRIBUTE_CURRENT_POSITION = "currentPosition";
     public static final String ATTRIBUTE_MULTI_PRESS_MAX = "multiPressMax";
 
-    public Integer clusterRevision; // 65533 ClusterRevision
     public FeatureMap featureMap; // 65532 FeatureMap
     /**
      * Indicates the maximum number of positions the switch has. Any kind of switch has a minimum of 2 positions. Also
-     * see Multi Position Details for the case NumberOfPositions&gt;2.
+     * see Section 1.13.10, “Multi Position Details” for the case NumberOfPositions&gt;2.
      */
     public Integer numberOfPositions; // 0 uint8 R V
     /**
-     * Indicates the position of the switch. The valid range is zero to NumberOfPositions - 1.
+     * Indicates the position of the switch.
+     * The valid range is zero to NumberOfPositions - 1.
      * CurrentPosition value 0 shall be assigned to the default position of the switch: for example the &quot;open&quot;
      * state of a rocker switch, or the &quot;idle&quot; state of a push button switch.
      */
@@ -53,11 +52,11 @@ public class SwitchCluster extends BaseCluster {
      * For example, a momentary switch supporting single press, double press and triple press, but not quad press and
      * beyond, would return the value 3.
      * When more than MultiPressMax presses are detected within a multi-press sequence:
-     * • The server for cluster revision &lt; 2 SHOULD generate a MultiPressComplete event with the
+     * - The server for cluster revision &lt; 2 SHOULD generate a MultiPressComplete event with the
      * TotalNumberOfPressesCounted field set to the value of the MultiPressMax attribute, and avoid generating any
      * further InitialPress and MultiPressOngoing events until the switch has become fully idle (i.e. no longer in the
      * process of counting presses within the multipress).
-     * • The server for cluster revision &gt;&#x3D; 2 shall generate a MultiPressComplete event with the
+     * - The server for cluster revision &gt;&#x3D; 2 shall generate a MultiPressComplete event with the
      * TotalNumberOfPressesCounted field set to zero (indicating an aborted sequence), and shall NOT generate any
      * further InitialPress and MultiPressOngoing events until the switch has become fully idle (i.e. no longer in the
      * process of counting presses within the multipress).
@@ -100,17 +99,17 @@ public class SwitchCluster extends BaseCluster {
     /**
      * This event shall be generated when the momentary switch has been pressed for a &quot;long&quot; time. The time
      * interval constituting a &quot;long&quot; time is manufacturer-determined, since it depends on the switch physics.
-     * • When the AS feature flag is set, this event:
-     * ◦ shall NOT be generated during a multi-press sequence (since a long press is a separate cycle from any
+     * - When the AS feature flag is set, this event:
+     * - shall NOT be generated during a multi-press sequence (since a long press is a separate cycle from any
      * multi-press cycles);
-     * ◦ shall only be generated after the first InitialPress following a MultiPressComplete when a long press is
+     * - shall only be generated after the first InitialPress following a MultiPressComplete when a long press is
      * detected after the idle time.
-     * • Else, when the MSM feature flag is set, this event:
-     * ◦ shall NOT be generated during a multi-press sequence (since a long press is a separate cycle from any
+     * - Else, when the MSM feature flag is set, this event:
+     * - shall NOT be generated during a multi-press sequence (since a long press is a separate cycle from any
      * multi-press cycles);
-     * ◦ shall only be generated after the first InitialPress following a MultiPressComplete when a long press is
+     * - shall only be generated after the first InitialPress following a MultiPressComplete when a long press is
      * detected after the idle time;
-     * ◦ shall NOT be generated after a MultiPressOngoing event without an intervening MultiPressComplete event.
+     * - shall NOT be generated after a MultiPressOngoing event without an intervening MultiPressComplete event.
      * The above constraints imply that for a given activity detection cycle of a switch having MSM and/or MSL feature
      * flags set, the entire activity is either a single long press detection cycle of (InitialPress, LongPress,
      * LongRelease), or a single multi-press detection cycle (ending in MultiPressComplete), where presses that would
@@ -135,11 +134,11 @@ public class SwitchCluster extends BaseCluster {
      * setting the Action Switch feature flag forbids the Momentary Switch ShortRelease (MSR) feature flag from being
      * set. Otherwise, the following paragraphs describe the situations where this event is generated.
      * This event shall be generated, when the momentary switch has been released (after debouncing).
-     * • If the server has the Momentary Switch LongPress (MSL) feature flag set, then this event shall be generated
+     * - If the server has the Momentary Switch LongPress (MSL) feature flag set, then this event shall be generated
      * when the switch is released if no LongPress event had been generated since the previous InitialPress event.
-     * • If the server does not have the Momentary Switch LongPress (MSL) feature flag set, this event shall be
+     * - If the server does not have the Momentary Switch LongPress (MSL) feature flag set, this event shall be
      * generated when the switch is released - even when the switch was pressed for a long time.
-     * • Also see Section 1.13.7, “Sequence of generated events”.
+     * - Also see Section 1.13.7, “Sequence of generated events”.
      */
     public static class ShortRelease {
         /**
@@ -173,7 +172,7 @@ public class SwitchCluster extends BaseCluster {
      * If the server has the Action Switch (AS) feature flag set, this event shall NOT be generated at all. Otherwise,
      * the following paragraphs describe the situations where this event is generated.
      * This event shall be generated to indicate how many times the momentary switch has been pressed in a multi-press
-     * sequence, during that sequence. See Multi Press Details below.
+     * sequence, during that sequence. See Section 1.13.8, “Sequence of events for MultiPress”.
      */
     public static class MultiPressOngoing {
         /**
@@ -182,9 +181,9 @@ public class SwitchCluster extends BaseCluster {
         public Integer newPosition; // uint8
         /**
          * This field shall contain:
-         * • a value of 2 when the second press of a multi-press sequence has been detected,
-         * • a value of 3 when the third press of a multi-press sequence has been detected,
-         * • a value of N when the Nth press of a multi-press sequence has been detected.
+         * - a value of 2 when the second press of a multi-press sequence has been detected,
+         * - a value of 3 when the third press of a multi-press sequence has been detected,
+         * - a value of N when the Nth press of a multi-press sequence has been detected.
          */
         public Integer currentNumberOfPressesCounted; // uint8
 
@@ -196,17 +195,18 @@ public class SwitchCluster extends BaseCluster {
 
     /**
      * This event shall be generated to indicate how many times the momentary switch has been pressed in a multi-press
-     * sequence, after it has been detected that the sequence has ended. See Multi Press Details.
+     * sequence, after it has been detected that the sequence has ended. See Section 1.13.8, “Sequence of events for
+     * MultiPress”.
      * The PreviousPosition field shall indicate the previous value of the CurrentPosition attribute, i.e. just prior to
      * release.
      * The TotalNumberOfPressesCounted field shall contain:
-     * • a value of 0 when there was an aborted multi-press sequence, where the number of presses goes beyond
+     * - a value of 0 when there was an aborted multi-press sequence, where the number of presses goes beyond
      * MultiPressMax presses,
-     * • a value of 1 when there was exactly one press in a multi-press sequence (and the sequence has ended), i.e.
+     * - a value of 1 when there was exactly one press in a multi-press sequence (and the sequence has ended), i.e.
      * there was no double press (or more),
-     * • a value of 2 when there were exactly two presses in a multi-press sequence (and the sequence has ended),
-     * • a value of 3 when there were exactly three presses in a multi-press sequence (and the sequence has ended),
-     * • a value of N when there were exactly N presses in a multi-press sequence (and the sequence has ended).
+     * - a value of 2 when there were exactly two presses in a multi-press sequence (and the sequence has ended),
+     * - a value of 3 when there were exactly three presses in a multi-press sequence (and the sequence has ended),
+     * - a value of N when there were exactly N presses in a multi-press sequence (and the sequence has ended).
      * &gt; [!NOTE]
      * &gt; The introduction of TotalNumberOfPressesCounted supporting the value 0 may impact clients of switches using
      * cluster revision 1 since such servers would not use this value of TotalNumberOfPressesCounted to indicate an
@@ -254,8 +254,8 @@ public class SwitchCluster extends BaseCluster {
         public boolean momentarySwitchMultiPress;
         /**
          * 
-         * This feature flag indicates simplified handling of events for multi-press-capable switches. See Multi Press
-         * Details.
+         * This feature flag indicates simplified handling of events for multi-press-capable switches. See Section
+         * 1.13.8, “Sequence of events for MultiPress”.
          */
         public boolean actionSwitch;
 
@@ -281,7 +281,6 @@ public class SwitchCluster extends BaseCluster {
     @Override
     public @NonNull String toString() {
         String str = "";
-        str += "clusterRevision : " + clusterRevision + "\n";
         str += "featureMap : " + featureMap + "\n";
         str += "numberOfPositions : " + numberOfPositions + "\n";
         str += "currentPosition : " + currentPosition + "\n";

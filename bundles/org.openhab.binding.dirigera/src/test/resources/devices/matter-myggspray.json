@@ -1,0 +1,109 @@
+[
+	{
+		"id": "d6ee92fc-682a-4af0-9097-c73ed70b59fd_1",
+		"relationId": "d6ee92fc-682a-4af0-9097-c73ed70b59fd",
+		"type": "unknown",
+		"deviceType": "lightSensor",
+		"createdAt": "2026-01-09T12:24:38.000Z",
+		"isReachable": true,
+		"lastSeen": "2026-01-11T22:56:11.000Z",
+		"attributes": {
+			"identifyPeriod": 0,
+			"identifyStarted": "2026-01-08T16:30:27.000Z",
+			"illuminance": 12345,
+			"maxIlluminance": 40001,
+			"minIlluminance": 1,
+			"customName": "MYGGSPRAY wrlss mtn sensor",
+			"firmwareVersion": "1.0.7",
+			"hardwareVersion": "P2.0",
+			"manufacturer": "IKEA of Sweden",
+			"model": "MYGGSPRAY wrlss mtn sensor",
+			"productCode": "E2494",
+			"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+			"discriminator": -1,
+			"permittingJoin": false,
+			"qrCode": "",
+			"setupCode": "",
+			"windowOpen": false,
+			"otaPolicy": "autoUpdate",
+			"otaProgress": 0,
+			"otaScheduleEnd": "00:00",
+			"otaScheduleStart": "00:00",
+			"otaState": "readyToCheck",
+			"otaStatus": "upToDate",
+			"batteryPercentage": 96
+		},
+		"capabilities": {
+			"canSend": [],
+			"canReceive": [
+				"customName",
+				"windowOpen"
+			]
+		},
+		"deviceSet": [],
+		"remoteLinks": [],
+		"isHidden": false
+	},
+	{
+		"id": "d6ee92fc-682a-4af0-9097-c73ed70b59fd_2",
+		"relationId": "d6ee92fc-682a-4af0-9097-c73ed70b59fd",
+		"type": "sensor",
+		"deviceType": "occupancySensor",
+		"createdAt": "2026-01-09T12:24:38.000Z",
+		"isReachable": true,
+		"lastSeen": "2026-01-11T22:56:11.000Z",
+		"customIcon": "products_matter_wrlss_mtn_sensor",
+		"attributes": {
+			"identifyPeriod": 0,
+			"identifyStarted": "2026-01-08T16:30:27.000Z",
+			"isDetected": false,
+			"customName": "MYGGSPRAY wrlss mtn senso",
+			"firmwareVersion": "1.0.7",
+			"hardwareVersion": "P2.0",
+			"manufacturer": "IKEA of Sweden",
+			"model": "MYGGSPRAY wrlss mtn sensor",
+			"productCode": "E2494",
+			"serialNumber": "UNKNOWN_SERIAL_NUMBER",
+			"discriminator": -1,
+			"permittingJoin": false,
+			"qrCode": "",
+			"setupCode": "",
+			"windowOpen": false,
+			"otaPolicy": "autoUpdate",
+			"otaProgress": 0,
+			"otaScheduleEnd": "00:00",
+			"otaScheduleStart": "00:00",
+			"otaState": "readyToCheck",
+			"otaStatus": "upToDate",
+			"batteryPercentage": 96,
+			"sensorConfig": {
+				"scheduleOn": true,
+				"onDuration": 600,
+				"schedule": {
+					"onCondition": {
+						"time": "20:00"
+					},
+					"offCondition": {
+						"time": "07:00"
+					}
+				}
+			}
+		},
+		"capabilities": {
+			"canSend": [],
+			"canReceive": [
+				"customName",
+				"windowOpen"
+			]
+		},
+		"room": {
+			"id": "2abdfb7b-d080-4b00-b576-0c6fb73e9b3b",
+			"name": "Lobby HWR",
+			"color": "ikea_pink_no_4",
+			"icon": "rooms_drill"
+		},
+		"deviceSet": [],
+		"remoteLinks": [],
+		"isHidden": false
+	}
+]
