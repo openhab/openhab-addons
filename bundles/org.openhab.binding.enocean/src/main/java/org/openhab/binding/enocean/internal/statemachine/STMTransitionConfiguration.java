@@ -46,8 +46,9 @@ public class STMTransitionConfiguration<A extends Enum<A>, S extends Enum<S>> {
     public static class BlindTransitions {
 
         public static final STMTransitionConfiguration<BlindAction, BlindState> FSB14_BLINDS = new STMTransitionConfiguration<>(
-                List.of(new STMTransition<>(BlindState.IDLE, BlindAction.POSITION_REQUEST_UP,
-                        BlindState.MOVEMENT_POSITION_UP),
+                List.<STMTransition<BlindAction, BlindState>> of(
+                        new STMTransition<>(BlindState.IDLE, BlindAction.POSITION_REQUEST_UP,
+                                BlindState.MOVEMENT_POSITION_UP),
                         new STMTransition<>(BlindState.IDLE, BlindAction.POSITION_REQUEST_DOWN,
                                 BlindState.MOVEMENT_POSITION_DOWN),
                         new STMTransition<>(BlindState.IDLE, BlindAction.SLATS_POS_REQUEST, BlindState.MOVEMENT_SLATS),
@@ -75,8 +76,9 @@ public class STMTransitionConfiguration<A extends Enum<A>, S extends Enum<S>> {
                                 BlindState.INVALID)));
 
         public static final STMTransitionConfiguration<BlindAction, BlindState> FSB14_ROLLERSHUTTER = new STMTransitionConfiguration<>(
-                List.of(new STMTransition<>(BlindState.IDLE, BlindAction.POSITION_REQUEST_UP,
-                        BlindState.MOVEMENT_POSITION_UP),
+                List.<STMTransition<BlindAction, BlindState>> of(
+                        new STMTransition<>(BlindState.IDLE, BlindAction.POSITION_REQUEST_UP,
+                                BlindState.MOVEMENT_POSITION_UP),
                         new STMTransition<>(BlindState.IDLE, BlindAction.POSITION_REQUEST_DOWN,
                                 BlindState.MOVEMENT_POSITION_DOWN),
                         new STMTransition<>(BlindState.MOVEMENT_POSITION_UP, BlindAction.POSITION_DONE,

@@ -566,7 +566,7 @@ When `configMode="blinds"` is set, three channels are available:
 |---------|------|-------------|
 | rollershutter | Rollershutter | Height control (0-100%), requires autoupdate="false" |
 | dimmer | Dimmer | Slat angle control (0-100%), requires autoupdate="false" |
-| statemachine | String | Current state (IDLE, MOVEMENT_*, POSITION_REACHED, INVALID) |
+| state-machine | String | Current state (IDLE, MOVEMENT_*, POSITION_REACHED, INVALID) |
 
 ### Channel Configuration Parameters
 
@@ -574,18 +574,17 @@ When `configMode="blinds"` is set, three channels are available:
 |-----------|------|-------------|
 | shutTime | int | Full travel time in seconds (required) |
 | swapTime | int | Slat rotation time in 100ms units (e.g., 14 = 1.4s) |
-| configMode | String | Set to "blinds" or "rollershutter" for advanced control with state machine |
-|  |  | Omit parameter or set to "legacy" for simple rollershutter control without state machine |
+| configMode | String | Set to "blinds" or "rollershutter" for advanced control with state machine; omit or set to "legacy" for simple rollershutter control without state machine |
 
 ### Calibration
 
 On first use, the state machine must be calibrated. Two methods are available:
 
 1. **Automatic:** Send an UP or DOWN command via openHAB to move the blind/rollershutter to an end position
-2. **Manual:** Physically operate the blind/rollershutter (e.g., via wall switch) until it reaches an end stop
+1. **Manual:** Physically operate the blind/rollershutter (e.g., via wall switch) until it reaches an end stop
 
 In both cases, the state machine transitions from INVALID to IDLE state once calibration is complete.
-The calibration state is persisted in Thing properties and restored after restart.
+The calibration state is persisted via the linked state-machine item and restored after restart using openHAB's persistence layer.
 
 ### Hardware Requirements
 
