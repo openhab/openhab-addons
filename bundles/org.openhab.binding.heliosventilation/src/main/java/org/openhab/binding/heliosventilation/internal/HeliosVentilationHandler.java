@@ -440,7 +440,9 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                     updateStatus(ThingStatus.ONLINE);
                     pollCounter = 0;
 
-                    updateState(datapoint.getName(), datapoint.asState(val));
+                    // This is a workaround to rename the channel "adjustInveral" to "adjustInterval" without breaking
+                    // existing installations.
+                    updateState(datapoint.getName().replace("adjustInveral", "adjustInterval"), datapoint.asState(val));
                     datapoint = datapoint.next();
                 } while (datapoint != null);
 
