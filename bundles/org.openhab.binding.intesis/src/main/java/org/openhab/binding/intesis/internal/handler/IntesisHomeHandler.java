@@ -308,10 +308,16 @@ public class IntesisHomeHandler extends BaseThingHandler {
     }
 
     public void addChannel(String channelId, String itemType, @Nullable final Collection<String> options) {
+        addChannel(channelId, null, itemType, options != null ? new ArrayList<>(options) : null);
+    }
+
+    public void addChannel(String channelId, @Nullable String channelTypeId, String itemType,
+            @Nullable final Collection<String> options) {
         if (thing.getChannel(channelId) == null) {
             logger.trace("Channel '{}' for UID to be added", channelId);
             ThingBuilder thingBuilder = editThing();
-            final ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+            final ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID,
+                    channelTypeId != null ? channelTypeId : channelId);
             Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelId), itemType)
                     .withType(channelTypeUID).withKind(ChannelKind.STATE).build();
             thingBuilder.withChannel(channel);
@@ -474,9 +480,9 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                     addChannel(channelId, itemType, null);
                                     break;
                                 case 14:
-                                    channelId = CHANNEL_TYPE_ERRORSTATUS_SWITCH;
+                                    channelId = CHANNEL_ID_ERRORSTATUS;
                                     itemType = "Switch";
-                                    addChannel(channelId, itemType, null);
+                                    addChannel(channelId, CHANNEL_TYPE_ERRORSTATUS_SWITCH, null);
                                     break;
                                 case 15:
                                     channelId = CHANNEL_TYPE_ERRORCODE;
@@ -584,7 +590,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 updateState(CHANNEL_TYPE_AMBIENTTEMP, stateValue);
                                 break;
                             case 14:
-                                updateState(CHANNEL_TYPE_ERRORSTATUS_SWITCH,
+                                updateState(CHANNEL_ID_ERRORSTATUS,
                                         OnOffType.from(!"0".equals(String.valueOf(element.value))));
                                 break;
                             case 15:
