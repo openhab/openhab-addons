@@ -17,9 +17,6 @@ import static org.openhab.binding.dahuadoor.internal.DahuaDoorBindingConstants.*
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -147,6 +144,13 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             return;
         }
 
+        // Ensure snapshot directory exists
+        File snapshotDir = new File(localConfig.snapshotPath);
+        if (!snapshotDir.exists() && !snapshotDir.mkdirs()) {
+            logger.warn("Could not create snapshot directory '{}', check permissions", localConfig.snapshotPath);
+            return;
+        }
+
         String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ROOT).format(new Date());
         String filename = localConfig.snapshotPath + "/DoorBell_" + timestamp + ".jpg";
 
@@ -156,12 +160,13 @@ public abstract class DahuaDoorBaseHandler extends BaseThingHandler implements D
             logger.warn("Could not write image to file '{}', check permissions and path", filename, e);
         }
 
+        // Write buffer directly to latest snapshot file (avoids copy-from-source failures)
         String latestSnapshotFilename = localConfig.snapshotPath + "/Doorbell.jpg";
-        try {
-            Files.copy(Paths.get(filename), Paths.get(latestSnapshotFilename), StandardCopyOption.REPLACE_EXISTING);
+        try (FileOutputStream fos = new FileOutputStream(new File(latestSnapshotFilename))) {
+            fos.write(buffer);
         } catch (IOException e) {
-            logger.warn("Could not copy file from '{}' to '{}', check permissions and path", filename,
-                    latestSnapshotFilename, e);
+            logger.warn("Could not write latest snapshot to '{}', check permissions and path", latestSnapshotFilename,
+                    e);
         }
     }
 

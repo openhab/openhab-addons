@@ -50,7 +50,7 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
     protected void onButtonPressed(int lockNumber) {
         logger.debug("Button pressed on VTO2202 (lockNumber ignored, single button)");
 
-        // Trigger bell button channel
+        // Trigger bell button channel synchronously (fast, no blocking)
         Channel channel = this.getThing().getChannel(DahuaDoorBindingConstants.CHANNEL_BELL_BUTTON);
         if (channel == null) {
             logger.warn("Bell button channel not found");
@@ -58,23 +58,25 @@ public class DahuaVto2202Handler extends DahuaDoorBaseHandler {
         }
         triggerChannel(channel.getUID(), "PRESSED");
 
-        // Retrieve and update door image
+        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
         DahuaEventClient localClient = client;
         if (localClient == null) {
             logger.warn("Client not initialized, cannot retrieve doorbell image");
             return;
         }
 
-        byte[] buffer = localClient.requestImage();
-        if (buffer != null && buffer.length > 0) {
-            // Update image channel
-            RawType image = new RawType(buffer, "image/jpeg");
-            updateState(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, image);
+        scheduler.submit(() -> {
+            byte[] buffer = localClient.requestImage();
+            if (buffer != null && buffer.length > 0) {
+                // Update image channel
+                RawType image = new RawType(buffer, "image/jpeg");
+                updateState(DahuaDoorBindingConstants.CHANNEL_DOOR_IMAGE, image);
 
-            // Save snapshot
-            saveSnapshot(buffer);
-        } else {
-            logger.warn("Received empty or null image buffer from VTO2202");
-        }
+                // Save snapshot
+                saveSnapshot(buffer);
+            } else {
+                logger.warn("Received empty or null image buffer from VTO2202");
+            }
+        });
     }
 }

@@ -82,23 +82,26 @@ public class DahuaVto3211Handler extends DahuaDoorBaseHandler {
         }
         triggerChannel(bellChannel.getUID(), "PRESSED");
 
-        // Retrieve and update door image
+        // Retrieve image asynchronously to avoid blocking the keepAlive event loop
         DahuaEventClient localClient = client;
         if (localClient == null) {
             logger.warn("Client not initialized, cannot retrieve doorbell image");
             return;
         }
 
-        byte[] buffer = localClient.requestImage();
-        if (buffer != null && buffer.length > 0) {
-            // Update image channel for the specific button
-            RawType image = new RawType(buffer, "image/jpeg");
-            updateState(doorImageChannelId, image);
+        final String doorImageChannelIdFinal = doorImageChannelId;
+        scheduler.submit(() -> {
+            byte[] buffer = localClient.requestImage();
+            if (buffer != null && buffer.length > 0) {
+                // Update image channel for the specific button
+                RawType image = new RawType(buffer, "image/jpeg");
+                updateState(doorImageChannelIdFinal, image);
 
-            // Save snapshot image
-            saveSnapshot(buffer);
-        } else {
-            logger.warn("Received empty or null image buffer from VTO3211 button {}", lockNumber);
-        }
+                // Save snapshot image
+                saveSnapshot(buffer);
+            } else {
+                logger.warn("Received empty or null image buffer from VTO3211 button {}", lockNumber);
+            }
+        });
     }
 }
