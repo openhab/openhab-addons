@@ -184,7 +184,9 @@ public class Websocket extends RestApi {
     private boolean sendMessage() {
         if (!commandQueue.isEmpty()) {
             ClientMessage message = commandQueue.remove(0);
-            logger.trace("Send Message {}", message.getAllFields());
+            if (logger.isTraceEnabled()) {
+                logger.trace("Send Message {}", message.getAllFields());
+            }
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 message.writeTo(baos);

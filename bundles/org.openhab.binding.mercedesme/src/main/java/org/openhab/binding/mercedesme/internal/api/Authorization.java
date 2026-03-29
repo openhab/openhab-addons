@@ -146,8 +146,11 @@ public class Authorization {
                 logger.warn("Failed to refresh token {} {}", tokenResponseStatus, tokenResponse);
             }
             listener.onAccessTokenResponse(token);
-        } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException
-                | JsonSyntaxException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Token refresh interrupted: {}", e.getMessage());
+            return;
+        } catch (TimeoutException | ExecutionException | UnsupportedEncodingException | JsonSyntaxException e) {
             if (logger.isTraceEnabled()) {
                 logger.warn("Failed to refresh token", e);
             } else {
@@ -514,7 +517,10 @@ public class Authorization {
     protected ContentResponse send(Request request) throws MercedesMeApiException {
         try {
             return request.timeout(Constants.REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new MercedesMeApiException(request.getPath() + request.getQuery() + " - " + e.getMessage());
+        } catch (TimeoutException | ExecutionException e) {
             logger.warn("Failed request {}{} - {}", request.getPath(), request.getQuery(), e.getMessage());
             throw new MercedesMeApiException(request.getPath() + request.getQuery() + " - " + e.getMessage());
         }
