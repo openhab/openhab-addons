@@ -482,7 +482,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 case 14:
                                     channelId = CHANNEL_ID_ERRORSTATUS;
                                     itemType = "Switch";
-                                    addChannel(channelId, CHANNEL_TYPE_ERRORSTATUS_SWITCH, null);
+                                    addChannel(channelId, CHANNEL_TYPE_ERRORSTATUS_SWITCH, itemType, null);
                                     break;
                                 case 15:
                                     channelId = CHANNEL_TYPE_ERRORCODE;

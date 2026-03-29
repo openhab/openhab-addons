@@ -32,7 +32,7 @@ public class IntesisBindingConstants {
     public static final ThingTypeUID THING_TYPE_INTESISHOME = new ThingTypeUID(BINDING_ID, "intesisHome");
     public static final ThingTypeUID THING_TYPE_INTESISBOX = new ThingTypeUID(BINDING_ID, "intesisBox");
 
-    // Liost if all Channel Ids
+    // List of all Channel Ids
     public static final String CHANNEL_ID_ERRORSTATUS = "errorStatus";
 
     // List of all Channel Type Ids (at many place also used as Channel Ids)
