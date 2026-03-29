@@ -448,10 +448,10 @@ public class DahuaEventClient implements Runnable {
     private record OpenDoorHttpResponse(int statusCode, @Nullable String wwwAuthenticate) {
     }
 
-    public String genMd5Hash(String Dahua_random, String Dahua_realm, String username, String password)
+    public String generateMd5Hash(String dahuaRandom, String dahuaRealm, String username, String password)
             throws Exception {
-        final String passwordDbHash = md5(String.join(":", username, Dahua_realm, password)).toUpperCase(Locale.ROOT);
-        final String pass = String.join(":", username, Dahua_random, passwordDbHash);
+        final String passwordDbHash = md5(String.join(":", username, dahuaRealm, password)).toUpperCase(Locale.ROOT);
+        final String pass = String.join(":", username, dahuaRandom, passwordDbHash);
         return md5(pass).toUpperCase(Locale.ROOT);
     }
 
@@ -509,6 +509,9 @@ public class DahuaEventClient implements Runnable {
                             }
                         }
                     }
+                } catch (SocketTimeoutException e) {
+                    // Read timeout: no data yet, keep waiting until the keep-alive deadline.
+                    logger.trace("keepAlive receive timeout, continuing to wait");
                 } catch (IOException e) {
                     logger.trace("Error receiving keepAlive response", e);
                     return;
@@ -620,9 +623,9 @@ public class DahuaEventClient implements Runnable {
                 // Offset 20-23: Reserved
                 // Offset 24-27: Expected length for multi-part messages
                 // Offset 28-31: Reserved
-                lenRecved = bbuffer.getInt(16);
-                bbuffer.get(header, 0, 32);
-                bbuffer.position(32); // Move to payload start
+                int frameStart = bbuffer.position();
+                lenRecved = bbuffer.getInt(frameStart + 16);
+                bbuffer.get(header, 0, 32); // advances position by 32 to payload start
 
             } else {
                 if (lenRecved > 0) {
@@ -694,7 +697,7 @@ public class DahuaEventClient implements Runnable {
                 return false;
             }
 
-            String hashedCredentials = genMd5Hash(random, realm, this.username, this.password);
+            String hashedCredentials = generateMd5Hash(random, realm, this.username, this.password);
 
             queryArgs = new HashMap<>();
             queryArgs.put("id", this.id);
@@ -759,7 +762,8 @@ public class DahuaEventClient implements Runnable {
             }
             error = true;
             try {
-                Socket localSock = new Socket(host, 5000);
+                Socket localSock = new Socket();
+                localSock.connect(new InetSocketAddress(host, 5000), 5000); // 5s connect timeout
                 sock = localSock;
                 localSock.setSoTimeout(5000); // Set timeout to 5 seconds
                 error = false;
@@ -767,7 +771,7 @@ public class DahuaEventClient implements Runnable {
                 if (!login()) {
                     loginTries++;
                     if (loginTries > 4) {
-                        errorInformer.accept("can't login, check host setting and credentials");
+                        errorInformer.accept("Login failed. Verify the host configuration and credentials.");
                         execThread = false;
                     }
                     try {
