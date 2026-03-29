@@ -189,7 +189,7 @@ public class ThirdGenerationHandler extends BaseThingHandler {
             }
             if (statusCode != HttpStatus.OK_200) {
                 logger.debug("Could not update values. Device returned status {}", statusCode);
-                setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_JSON);
+                setOffline(OFFLINE.COMMUNICATION_ERROR, COMMUNICATION_ERROR_HTTP_UNEXPECTED);
                 return;
             }
         } catch (TimeoutException | ExecutionException e) {
