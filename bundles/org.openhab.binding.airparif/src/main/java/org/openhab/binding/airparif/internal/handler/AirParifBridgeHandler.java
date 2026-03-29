@@ -212,10 +212,10 @@ public class AirParifBridgeHandler extends BaseBridgeHandler implements HandlerU
             return;
         }
 
-        Set.of(bulletin.today(), bulletin.tomorrow()).stream().forEach(aq -> {
+        bulletin.days().forEach(aq -> {
             ChannelGroupUID groupUID = aq.isToday() ? todayGroupUID : tomorrowGroupUID;
             updateState(new ChannelUID(groupUID, CHANNEL_COMMENT),
-                    !aq.available() ? UnDefType.NULL : new StringType(aq.bulletin().fr()));
+                    aq.available() ? new StringType(aq.bulletin().fr()) : UnDefType.NULL);
 
             aq.concentrations().forEach(measure -> {
                 Pollutant pollutant = measure.pollutant();

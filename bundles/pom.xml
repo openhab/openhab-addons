@@ -69,6 +69,7 @@
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.asuswrt</module>
     <module>org.openhab.binding.atlona</module>
+    <module>org.openhab.binding.atmofrance</module>
     <module>org.openhab.binding.autelis</module>
     <module>org.openhab.binding.automower</module>
     <module>org.openhab.binding.avmfritz</module>
@@ -503,6 +504,7 @@
     <module>org.openhab.persistence.mapdb</module>
     <module>org.openhab.persistence.mongodb</module>
     <module>org.openhab.persistence.rrd4j</module>
+    <module>org.openhab.persistence.timescaledb</module>
     <!-- voice -->
     <module>org.openhab.voice.googlestt</module>
     <module>org.openhab.voice.googletts</module>

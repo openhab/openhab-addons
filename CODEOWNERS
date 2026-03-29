@@ -34,6 +34,7 @@
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.asuswrt/ @wildcs
 /bundles/org.openhab.binding.atlona/ @mlobstein
+/bundles/org.openhab.binding.atmofrance/ @clinique
 /bundles/org.openhab.binding.autelis/ @digitaldan
 /bundles/org.openhab.binding.automower/ @maxpg
 /bundles/org.openhab.binding.avmfritz/ @cweitkamp
@@ -472,6 +473,7 @@
 /bundles/org.openhab.persistence.mapdb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.mongodb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.rrd4j/ @openhab/add-ons-maintainers
+/bundles/org.openhab.persistence.timescaledb/ @ulbi
 /bundles/org.openhab.transform.basicprofiles/ @cweitkamp @J-N-K
 /bundles/org.openhab.transform.bin2json/ @paulianttila
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers

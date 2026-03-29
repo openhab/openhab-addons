@@ -82,8 +82,8 @@ import com.google.gson.JsonParseException;
 @ConfigurableService(category = "io", label = "Matter Bridge", description_uri = MatterBridge.CONFIG_URI)
 public class MatterBridge implements MatterClientListener {
     private final Logger logger = LoggerFactory.getLogger(MatterBridge.class);
-    private static final String CONFIG_PID = "org.openhab.matter";
-    private static final String CONFIG_URI = "io:matter";
+    protected static final String CONFIG_PID = "org.openhab.matter";
+    protected static final String CONFIG_URI = "io:matter";
 
     // Matter Bridge Device Info *Basic Information Cluster*
     private static final String VENDOR_NAME = "openHAB";

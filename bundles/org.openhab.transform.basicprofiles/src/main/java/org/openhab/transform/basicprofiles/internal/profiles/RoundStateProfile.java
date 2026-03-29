@@ -14,9 +14,12 @@ package org.openhab.transform.basicprofiles.internal.profiles;
 
 import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.ROUND_UID;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.profiles.ProfileCallback;
@@ -43,25 +46,37 @@ public class RoundStateProfile implements TimeSeriesProfile {
 
     private final Logger logger = LoggerFactory.getLogger(RoundStateProfile.class);
 
+    public static final String PARAM_PRECISION = "precision";
     public static final String PARAM_SCALE = "scale";
     public static final String PARAM_MODE = "mode";
 
     private final ProfileCallback callback;
 
-    final int scale;
+    final @Nullable Integer precision;
+    final @Nullable Integer scale;
     final RoundingMode roundingMode;
 
     public RoundStateProfile(ProfileCallback callback, ProfileContext context) {
         this.callback = callback;
-        RoundStateProfileConfig config = context.getConfiguration().as(RoundStateProfileConfig.class);
-        logger.debug("Configuring profile with parameters: [{scale='{}', mode='{}']", config.scale, config.mode);
 
-        int localScale = 0;
-        Integer configScale = config.scale;
-        if (configScale != null) {
-            localScale = configScale.intValue();
+        RoundStateProfileConfig config = context.getConfiguration().as(RoundStateProfileConfig.class);
+        logger.debug("Configuring profile with parameters: [scale='{}', precision='{}', mode='{}']", config.scale,
+                config.precision, config.mode);
+
+        Integer localScale = null;
+        if (config.scale != null) {
+            localScale = config.scale;
         } else {
             logger.error("Parameter 'scale' is not of type String or Number.");
+        }
+
+        Integer localPrecision = null;
+        if (config.precision != null) {
+            if (config.precision.intValue() > 0) {
+                localPrecision = config.precision;
+            } else {
+                logger.warn("Parameter 'precision' must be > 0: '{}'. Ignoring it.", config.precision);
+            }
         }
 
         RoundingMode localRoundingMode = RoundingMode.HALF_UP;
@@ -75,6 +90,7 @@ public class RoundStateProfile implements TimeSeriesProfile {
             logger.error("Parameter 'mode' is not of type String.");
         }
 
+        this.precision = localPrecision;
         this.scale = localScale;
         this.roundingMode = localRoundingMode;
     }
@@ -114,20 +130,31 @@ public class RoundStateProfile implements TimeSeriesProfile {
 
     private Type applyRound(Type state) {
         if (state instanceof UnDefType) {
-            // we cannot round UNDEF or NULL values, thus we simply return them without reporting an error or warning
             return state;
         }
 
-        Type result = UnDefType.UNDEF;
         if (state instanceof QuantityType<?> qtState) {
-            result = new QuantityType<>(qtState.toBigDecimal().setScale(scale, roundingMode), qtState.getUnit());
+            BigDecimal rounded = roundNumber(qtState.toBigDecimal());
+            return new QuantityType<>(rounded, qtState.getUnit());
         } else if (state instanceof DecimalType dtState) {
-            result = new DecimalType(dtState.toBigDecimal().setScale(scale, roundingMode));
+            BigDecimal rounded = roundNumber(dtState.toBigDecimal());
+            return new DecimalType(rounded);
         } else {
             logger.warn(
                     "Round cannot be applied to the incompatible state '{}' sent from the binding. Returning original state.",
                     state);
-            result = state;
+            return state;
+        }
+    }
+
+    private BigDecimal roundNumber(BigDecimal value) {
+        BigDecimal result = value;
+
+        if (precision != null) {
+            result = result.round(new MathContext(precision.intValue(), roundingMode));
+        }
+        if (scale != null) {
+            result = result.setScale(scale.intValue(), roundingMode);
         }
         return result;
     }

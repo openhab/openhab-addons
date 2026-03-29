@@ -1,4 +1,16 @@
 {
 	"errors": [],
-	"data": []
+	"data": [
+		{
+			"id": "f18e62c1-2e9c-4e75-9748-6aa624e55068",
+			"id_v1": "/sensors/68",
+			"owner": {
+				"rid": "99b49b89-ff4b-4c7c-8b76-88fedc24c10f",
+				"rtype": "device"
+			},
+			"status": "unidirectional_incoming",
+			"source_id": "00:00:00:00:01:75:e3:83",
+			"type": "zgp_connectivity"
+		}
+	]
 }
