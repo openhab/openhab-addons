@@ -52,7 +52,7 @@ import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecor
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.api.filter.DatahubTariffFilterFactory;
 import org.openhab.binding.energidataservice.internal.config.DatahubPriceConfiguration;
-import org.openhab.binding.energidataservice.internal.config.EnergiDataServiceConfiguration;
+import org.openhab.binding.energidataservice.internal.config.ServiceConfiguration;
 import org.openhab.binding.energidataservice.internal.exception.DataServiceException;
 import org.openhab.binding.energidataservice.internal.provider.Co2EmissionProvider;
 import org.openhab.binding.energidataservice.internal.provider.ElectricityPriceProvider;
@@ -105,7 +105,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
     private final DatahubTariffFilterFactory datahubTariffFilterFactory;
     private final Set<Subscription> activeSubscriptions = new HashSet<>();
 
-    private EnergiDataServiceConfiguration config;
+    private ServiceConfiguration config;
 
     public EnergiDataServiceHandler(final Thing thing, final HttpClient httpClient,
             final TimeZoneProvider timeZoneProvider, final ElectricityPriceProvider electricityPriceProvider,
@@ -117,9 +117,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
         this.electricityPriceProvider = electricityPriceProvider;
         this.co2EmissionProvider = co2EmissionProvider;
         this.datahubTariffFilterFactory = datahubTariffFilterFactory;
-
-        // Default configuration
-        this.config = new EnergiDataServiceConfiguration();
+        config = ServiceConfiguration.DEFAULT;
     }
 
     @Override
@@ -140,9 +138,9 @@ public class EnergiDataServiceHandler extends BaseThingHandler
 
     @Override
     public void initialize() {
-        config = getConfigAs(EnergiDataServiceConfiguration.class);
+        config = getConfigAs(ServiceConfiguration.class);
 
-        if (config.priceArea.isBlank()) {
+        if (config.priceArea().isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-price-area");
             return;
@@ -197,14 +195,14 @@ public class EnergiDataServiceHandler extends BaseThingHandler
                 updateChannelFromCache(subscription, channelId);
             }
         } else if (CO2_EMISSION_CHANNELS.contains(channelId)) {
-            if ("DK1".equals(config.priceArea) || "DK2".equals(config.priceArea)) {
+            if ("DK1".equals(config.priceArea()) || "DK2".equals(config.priceArea())) {
                 Subscription subscription = getChannelSubscription(channelId);
                 if (subscribe(subscription)) {
                     logger.debug("First item linked to channel '{}', starting {}", channelId, subscription);
                 }
             } else {
                 logger.warn("Item linked to channel '{}', but price area {} is not supported for this channel",
-                        channelId, config.priceArea);
+                        channelId, config.priceArea());
             }
         }
     }
@@ -293,7 +291,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
                         getDatahubTariffFilter(tariff)))
                 .forEach(this::subscribe);
 
-        if ("DK1".equals(config.priceArea) || "DK2".equals(config.priceArea)) {
+        if ("DK1".equals(config.priceArea()) || "DK2".equals(config.priceArea())) {
             CO2_EMISSION_CHANNELS.stream().filter(this::isLinked)
                     .forEach(channelId -> subscribe(getChannelSubscription(channelId)));
         }
@@ -328,11 +326,11 @@ public class EnergiDataServiceHandler extends BaseThingHandler
 
     private Subscription getChannelSubscription(String channelId) {
         if (CHANNEL_SPOT_PRICE.equals(channelId)) {
-            return SpotPriceSubscription.of(config.priceArea, config.getCurrency());
+            return SpotPriceSubscription.of(config.priceArea(), config.getCurrency());
         } else if (CHANNEL_CO2_EMISSION_PROGNOSIS.equals(channelId)) {
-            return Co2EmissionSubscription.of(config.priceArea, Co2EmissionSubscription.Type.Prognosis);
+            return Co2EmissionSubscription.of(config.priceArea(), Co2EmissionSubscription.Type.Prognosis);
         } else if (CHANNEL_CO2_EMISSION_REALTIME.equals(channelId)) {
-            return Co2EmissionSubscription.of(config.priceArea, Co2EmissionSubscription.Type.Realtime);
+            return Co2EmissionSubscription.of(config.priceArea(), Co2EmissionSubscription.Type.Realtime);
         } else {
             DatahubTariff tariff = CHANNEL_ID_TO_DATAHUB_TARIFF.get(channelId);
 
@@ -376,21 +374,21 @@ public class EnergiDataServiceHandler extends BaseThingHandler
     private DatahubTariffFilter getGridTariffFilter() {
         Channel channel = getThing().getChannel(CHANNEL_GRID_TARIFF);
         if (channel == null) {
-            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
+            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN());
         }
 
         DatahubPriceConfiguration datahubPriceConfiguration = channel.getConfiguration()
                 .as(DatahubPriceConfiguration.class);
 
         if (!datahubPriceConfiguration.hasAnyFilterOverrides()) {
-            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
+            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN());
         }
 
         DateQueryParameter start = datahubPriceConfiguration.getStart();
         if (start == null) {
             logger.warn("Invalid channel configuration parameter 'start' or 'offset': {} (offset: {})",
-                    datahubPriceConfiguration.start, datahubPriceConfiguration.offset);
-            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN);
+                    datahubPriceConfiguration.start(), datahubPriceConfiguration.offset());
+            return datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN());
         }
 
         Set<ChargeTypeCode> chargeTypeCodes = datahubPriceConfiguration.getChargeTypeCodes();
@@ -401,7 +399,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
             filter = new DatahubTariffFilter(chargeTypeCodes, notes, start);
         } else {
             // Only override start date in pre-configured filter.
-            filter = new DatahubTariffFilter(datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN),
+            filter = new DatahubTariffFilter(datahubTariffFilterFactory.getGridTariffByGLN(config.gridCompanyGLN()),
                     start);
         }
 
@@ -448,7 +446,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
             LocalDate dayAheadFirstDate = DAY_AHEAD_TRANSITION_DATE.plusDays(1);
 
             if (startDate.isBefore(dayAheadFirstDate)) {
-                ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea, currency,
+                ElspotpriceRecord[] spotPriceRecords = apiController.getSpotPrices(config.priceArea(), currency,
                         DateQueryParameter.of(startDate),
                         DateQueryParameter
                                 .of((endDate.isBefore(dayAheadFirstDate) ? endDate.plusDays(1) : dayAheadFirstDate)),
@@ -464,7 +462,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
                 }
             }
             if (!endDate.isBefore(dayAheadFirstDate)) {
-                DayAheadPriceRecord[] spotPriceRecords = apiController.getDayAheadPrices(config.priceArea, currency,
+                DayAheadPriceRecord[] spotPriceRecords = apiController.getDayAheadPrices(config.priceArea(), currency,
                         DateQueryParameter.of(startDate.isBefore(dayAheadFirstDate) ? dayAheadFirstDate : startDate),
                         DateQueryParameter.of(endDate.plusDays(1)), properties);
                 for (DayAheadPriceRecord record : Arrays.stream(spotPriceRecords)
@@ -606,6 +604,6 @@ public class EnergiDataServiceHandler extends BaseThingHandler
      * @return true if reduced electricity tax applies
      */
     public boolean isReducedElectricityTax() {
-        return config.reducedElectricityTax;
+        return config.reducedElectricityTax();
     }
 }
