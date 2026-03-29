@@ -149,8 +149,7 @@ public class AccountController {
     public long checkExpireTime() throws SunSynkAuthenticateException, SunSynkTokenException {
         long expiresIn = this.sunAccount.getExpiresIn();
         long issuedAt = this.sunAccount.getIssuedAt();
-        long expiresFromNow = (issuedAt + expiresIn) - Instant.now().getEpochSecond();
-        return expiresFromNow;
+        return (issuedAt + expiresIn) - Instant.now().getEpochSecond();
     }
 
     private void httpGetPublicKey(String endpoint) throws SunSynkClientAuthenticateException, JsonSyntaxException {
