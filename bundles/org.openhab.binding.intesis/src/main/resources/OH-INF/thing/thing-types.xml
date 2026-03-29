@@ -45,7 +45,7 @@
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
 			<channel id="ambientTemperature" typeId="ambientTemperature"/>
 			<channel id="errorCode" typeId="errorCode"/>
-			<channel id="errorStatus" typeId="errorStatus"/>
+			<channel id="errorStatus" typeId="errorStatusString"/>
 		</channels>
 		<properties>
 			<property name="thingTypeVersion">1</property>
