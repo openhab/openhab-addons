@@ -42,6 +42,7 @@ public class IntesisBindingConstants {
     public static final String CHANNEL_TYPE_AMBIENTTEMP = "ambientTemperature";
     public static final String CHANNEL_TYPE_OUTDOORTEMP = "outdoorTemperature";
     public static final String CHANNEL_TYPE_ERRORCODE = "errorCode";
-    public static final String CHANNEL_TYPE_ERRORSTATUS = "errorStatus";
+    public static final String CHANNEL_TYPE_ERRORSTATUS_STRING = "errorStatusString";
+    public static final String CHANNEL_TYPE_ERRORSTATUS_SWITCH = "errorStatusSwitch";
     public static final String CHANNEL_TYPE_RSSI = "wifiSignal";
 }

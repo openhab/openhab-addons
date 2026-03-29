@@ -81,10 +81,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="errorStatus">
+	<channel-type id="errorStatusSwitch">
 		<item-type>Switch</item-type>
-		<label>@text/channel-type.intesis.errorStatus.label</label>
-		<description>@text/channel-type.intesis.errorStatus.description</description>
+		<label>@text/channel-type.intesis.errorStatusSwitch.label</label>
+		<description>@text/channel-type.intesis.errorStatusSwitch.description</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

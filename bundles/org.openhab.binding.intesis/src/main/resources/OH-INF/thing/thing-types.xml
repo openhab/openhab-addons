@@ -12,6 +12,9 @@
 			<channel id="power" typeId="system.power"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>@text/thing-type.config.intesis.ipAddress.label</label>
@@ -46,6 +49,9 @@
 			<channel id="errorCode" typeId="errorCode"/>
 			<channel id="errorStatus" typeId="errorStatus"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>@text/thing-type.config.intesis.ipAddress.label</label>
@@ -87,10 +93,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="errorStatus">
+	<channel-type id="errorStatusString">
 		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.errorStatus.label</label>
-		<description>@text/channel-type.intesis.errorStatus.description</description>
+		<label>@text/channel-type.intesis.errorStatusString.label</label>
+		<description>@text/channel-type.intesis.errorStatusString.description</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

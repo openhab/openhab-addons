@@ -474,7 +474,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                     addChannel(channelId, itemType, null);
                                     break;
                                 case 14:
-                                    channelId = CHANNEL_TYPE_ERRORSTATUS;
+                                    channelId = CHANNEL_TYPE_ERRORSTATUS_SWITCH;
                                     itemType = "Switch";
                                     addChannel(channelId, itemType, null);
                                     break;
@@ -584,7 +584,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 updateState(CHANNEL_TYPE_AMBIENTTEMP, stateValue);
                                 break;
                             case 14:
-                                updateState(CHANNEL_TYPE_ERRORSTATUS,
+                                updateState(CHANNEL_TYPE_ERRORSTATUS_SWITCH,
                                         OnOffType.from(!"0".equals(String.valueOf(element.value))));
                                 break;
                             case 15:
