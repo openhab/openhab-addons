@@ -17,21 +17,19 @@
 		</properties>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<label>@text/thing-type.config.intesis.ipAddress.label</label>
-				<description>@text/thing-type.config.intesis.ipAddress.description</description>
+				<label>IP Address</label>
+				<description>IP Address of the Intesis device.</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<label>@text/thing-type.config.intesisHome.password.label</label>
-				<description>@text/thing-type.config.intesisHome.password.description</description>
+				<label>Password</label>
+				<description>Password to log into the IntesisHome device Web-Server.</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="pollingInterval" type="decimal" min="30" unit="s">
 				<label>Polling Interval</label>
 				<description>
-					Defines the time in seconds to poll the
-					state of the connected devices. The minimum is 30
-					seconds.
+					Defines the time in seconds to poll the state of the connected devices. The minimum is 30 seconds.
 				</description>
 				<default>30</default>
 			</parameter>
@@ -54,8 +52,8 @@
 		</properties>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<label>@text/thing-type.config.intesis.ipAddress.label</label>
-				<description>@text/thing-type.config.intesis.ipAddress.description</description>
+				<label>IP Address</label>
+				<description>IP Address of the Intesis device.</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
@@ -77,8 +75,8 @@
 
 	<channel-type id="ambientTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.intesis.ambientTemperature.label</label>
-		<description>@text/channel-type.intesis.ambientTemperature.description</description>
+		<label>Ambient Temperature</label>
+		<description>Shows actual room temperature.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
@@ -88,15 +86,18 @@
 
 	<channel-type id="errorCode">
 		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.errorCode.label</label>
-		<description>@text/channel-type.intesis.errorCode.description</description>
+		<label>Error Code</label>
+		<description>Shows the Air Conditioners error code if an error was found.</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="errorStatusString">
 		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.errorStatusString.label</label>
-		<description>@text/channel-type.intesis.errorStatusString.description</description>
+		<label>Error Status</label>
+		<description>Indicates if the Air Conditioner has encountered an error.</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 
