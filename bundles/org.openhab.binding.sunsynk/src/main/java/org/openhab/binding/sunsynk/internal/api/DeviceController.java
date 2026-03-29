@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +40,7 @@ import org.openhab.binding.sunsynk.internal.api.exception.SunSynkDeviceControlle
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkGetStatusException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkSendCommandException;
 import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +72,7 @@ public class DeviceController {
     private Grid grid = new Grid();
     private Daytemps inverterDayTemperatures = new Daytemps();
     private RealTimeInData realTimeDataIn = new RealTimeInData();
+    private final TimeZoneProvider timeZoneProvider;
     public static final int COMMONSETTINGS = 1 << 0;
     public static final int GRIDREALTIME = 1 << 1;
     public static final int BATTERYREALTIME = 1 << 2;
@@ -90,20 +91,19 @@ public class DeviceController {
     public Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
     public PlantSummary plantSummary = new PlantSummary();
 
-    public DeviceController() {
-    }
-
     /**
      * Sets the identity of the device (inverter) according to the configuration parameters;
-     * serial number and alias.
+     * serial number and alias. Connects TimeZoneProvider service form the openHAB framework.
      * 
      * @param config
+     * @param TimeZoneProvider service is injected by the openHAB framework
      */
-    public DeviceController(SunSynkInverterConfig config) {
+    public DeviceController(SunSynkInverterConfig config, TimeZoneProvider timeZoneProvider) {
         this.sn = config.getSerialnumber();
         this.alias = config.getAlias();
         this.plantId = config.getPlantId();
         this.plantName = config.getPlantName();
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     /**
@@ -364,6 +364,6 @@ public class DeviceController {
     }
 
     private String getAPIFormatDate() {
-        return LocalDate.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return LocalDate.now(timeZoneProvider.getTimeZone()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }
