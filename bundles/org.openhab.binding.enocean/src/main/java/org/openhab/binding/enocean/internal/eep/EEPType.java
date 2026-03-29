@@ -730,7 +730,11 @@ public enum EEPType {
 
     public boolean isChannelSupported(String channelId, String channelTypeId) {
         return supportedChannels.containsKey(channelId) || VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)
-                || supportedChannels.values().stream().anyMatch(c -> c.channelTypeUID.getId().equals(channelTypeId));
+                || supportedChannels.values().stream().anyMatch(c -> {
+                    String supportedChannelTypeId = c.channelTypeUID.getId();
+                    return supportedChannelTypeId.equals(channelTypeId)
+                            || supportedChannelTypeId.endsWith(":" + channelTypeId);
+                });
     }
 
     public @Nullable ThingTypeUID getThingTypeUID() {
