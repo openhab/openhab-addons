@@ -271,8 +271,8 @@ public class EnOceanDatagramInjectorHandler extends EnOceanBaseThingHandler {
     private boolean sendMessage(InjectorProfileType profileType, String channelId, String channelTypeId,
             Command command, @Nullable Configuration channelConfig) {
         EEP eep = EEPFactory.createEEP(profileType.getSendingEEPType());
-        if (eep.convertFromCommand(channelId, channelTypeId, command, id -> getCurrentState(id), channelConfig)
-                .hasData()) {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+        if (eep.convertFromCommand(getThing(), channelUID, command, id -> getCurrentState(id), null).hasData()) {
             BasePacket msg = eep.setSenderId(senderId).setDestinationId(destinationId)
                     .setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
             if (msg == null) {
