@@ -191,6 +191,7 @@ public class Websocket extends RestApi {
                 Session localSession = session;
                 if (localSession != null) {
                     localSession.getRemote().sendBytes(ByteBuffer.wrap(baos.toByteArray()));
+                    logger.trace("Send Message {} done", message.getAllFields());
                     return true;
                 } else {
                     logger.warn("Cannot send message {} - no session available", message.getAllFields());
@@ -199,7 +200,6 @@ public class Websocket extends RestApi {
             } catch (IOException e) {
                 logger.warn("Error sending message {} : {}", message.getAllFields(), e.getMessage());
             }
-            logger.info("Send Message {} done", message.getAllFields());
         }
         return false;
     }

@@ -148,7 +148,11 @@ public class Authorization {
             listener.onAccessTokenResponse(token);
         } catch (InterruptedException | TimeoutException | ExecutionException | UnsupportedEncodingException
                 | JsonSyntaxException e) {
-            logger.info("Failed to refresh token {}", e.getMessage());
+            if (logger.isTraceEnabled()) {
+                logger.warn("Failed to refresh token", e);
+            } else {
+                logger.warn("Failed to refresh token {}", e.getMessage());
+            }
         }
     }
 
@@ -456,10 +460,14 @@ public class Authorization {
         String tokenResponseString = tokenResponse.getContentAsString();
         if (status == HttpStatus.OK_200) {
             storeToken(tokenResponseString);
-            logger.info("Successfully resumed login");
+            logger.debug("Successfully resumed login");
         } else {
             handleInvalidToken();
-            logger.info("Failed resume login {} {}", status, tokenResponse.getContentAsString());
+            if (logger.isTraceEnabled()) {
+                logger.warn("Failed resume login {} {}", status, tokenResponseString);
+            } else {
+                logger.warn("Failed resume login {}", status);
+            }
         }
     }
 
