@@ -57,6 +57,8 @@ public class Camera extends UniFiProtectAdoptableDevice {
     // Video settings
     public Boolean hdrMode;
     public VideoMode videoMode;
+    public String hdrType;
+    public Integer activePatrolSlot;
 
     // Doorbell specific
     public Integer chimeDuration;
@@ -346,6 +348,7 @@ public class Camera extends UniFiProtectAdoptableDevice {
         public Boolean hasWifi;
         public Boolean isDoorbell;
         public Boolean hasPtz;
+        public Boolean isPtz;
         public Boolean hasAutoICROnly;
         public Boolean hasLensDistortionCorrection;
         public List<Integer> videoModeMaxFps;

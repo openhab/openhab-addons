@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.ChimeDevice;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Chime;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -33,7 +33,7 @@ import org.openhab.core.types.RefreshType;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<ChimeDevice> {
+public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<Chime> {
 
     public UnifiProtectChimeHandler(Thing thing) {
         super(thing);
@@ -42,9 +42,9 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            ChimeDevice dev = device;
+            Chime dev = device;
             if (dev != null) {
-                updateChimeChannels(dev.privateDevice);
+                updateChimeChannels(dev);
             }
             return;
         }
@@ -142,9 +142,9 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
     }
 
     @Override
-    public void refreshFromDevice(ChimeDevice device) {
+    public void refreshFromDevice(Chime device) {
         super.refreshFromDevice(device);
-        updateChimeChannels(device.privateDevice);
+        updateChimeChannels(device);
     }
 
     /**

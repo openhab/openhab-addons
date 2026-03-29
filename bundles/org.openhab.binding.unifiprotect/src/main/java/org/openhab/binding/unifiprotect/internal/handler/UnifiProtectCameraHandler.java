@@ -30,19 +30,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.CameraDevice;
-import org.openhab.binding.unifiprotect.internal.api.pub.client.UniFiProtectPublicClient;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.ApiValueEnum;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.Camera;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.CameraFeatureFlags;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.ChannelQuality;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.HdrType;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.LcdMessage;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.LedSettings;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.OsdSettings;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.RtspsStreams;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.TalkbackSession;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.VideoMode;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.CameraSmartDetectAudioEvent;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.CameraSmartDetectLineEvent;
@@ -71,7 +63,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonNull;
 
 /**
  * Child handler for a UniFi Protect Camera.
@@ -79,7 +71,7 @@ import com.google.gson.JsonObject;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler<CameraDevice> {
+public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler<Camera> {
 
     private final UnifiMediaService media;
     private boolean enableWebRTC = true;
@@ -135,51 +127,70 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                         break;
                     }
                     volume = Math.max(0, Math.min(100, volume));
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("micVolume", volume);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().setCameraMicVolume(deviceId, volume).whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            logger.debug("Failed to set mic volume", ex);
+                        }
+                    });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_HDR_TYPE: {
                     String value = command.toString();
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("hdrType", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().updateCamera(deviceId, Map.of("hdrType", value))
+                            .whenComplete((result, ex) -> {
+                                if (ex != null) {
+                                    logger.debug("Failed to set HDR type", ex);
+                                }
+                            });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_VIDEO_MODE: {
                     String value = command.toString();
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("videoMode", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().setCameraVideoMode(deviceId, value).whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            logger.debug("Failed to set video mode", ex);
+                        }
+                    });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_OSD_NAME: {
                     boolean value = OnOffType.ON.equals(command);
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("osdSettings.isNameEnabled", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().updateCamera(deviceId, Map.of("osdSettings", Map.of("isNameEnabled", value)))
+                            .whenComplete((result, ex) -> {
+                                if (ex != null) {
+                                    logger.debug("Failed to set OSD name", ex);
+                                }
+                            });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_OSD_DATE: {
                     boolean value = OnOffType.ON.equals(command);
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("osdSettings.isDateEnabled", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().updateCamera(deviceId, Map.of("osdSettings", Map.of("isDateEnabled", value)))
+                            .whenComplete((result, ex) -> {
+                                if (ex != null) {
+                                    logger.debug("Failed to set OSD date", ex);
+                                }
+                            });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_OSD_LOGO: {
                     boolean value = OnOffType.ON.equals(command);
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("osdSettings.isLogoEnabled", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().updateCamera(deviceId, Map.of("osdSettings", Map.of("isLogoEnabled", value)))
+                            .whenComplete((result, ex) -> {
+                                if (ex != null) {
+                                    logger.debug("Failed to set OSD logo", ex);
+                                }
+                            });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE: {
                     String value = command.toString();
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("lcdMessage.text", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().updateCamera(deviceId, Map.of("lcdMessage", Map.of("text", value)))
+                            .whenComplete((result, ex) -> {
+                                if (ex != null) {
+                                    logger.debug("Failed to set doorbell message", ex);
+                                }
+                            });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT: {
@@ -188,16 +199,23 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     if (value != null && value <= 0) {
                         value = null;
                     }
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("lcdMessage.resetAt", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    java.util.HashMap<String, Object> resetAtMap = new java.util.HashMap<>();
+                    resetAtMap.put("resetAt", value != null ? value : JsonNull.INSTANCE);
+                    api.getPrivateClient().updateCamera(deviceId, Map.of("lcdMessage", resetAtMap))
+                            .whenComplete((result, ex) -> {
+                                if (ex != null) {
+                                    logger.debug("Failed to set doorbell message reset timeout", ex);
+                                }
+                            });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_LED_ENABLED: {
                     boolean value = OnOffType.ON.equals(command);
-                    JsonObject patch = UniFiProtectPublicClient.buildPatch("ledSettings.isEnabled", value);
-                    Camera updated = api.getPublicClient().patchCamera(deviceId, patch);
-                    updateFromPublicDevice(updated);
+                    api.getPrivateClient().setCameraStatusLight(deviceId, value).whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            logger.debug("Failed to set LED enabled", ex);
+                        }
+                    });
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT: {
@@ -535,67 +553,53 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     }
 
     @Override
-    public void refreshFromDevice(CameraDevice camera) {
+    public void refreshFromDevice(Camera camera) {
         super.refreshFromDevice(camera);
         addRemoveChannels();
-        updateRtspsChannels(camera.privateDevice);
-        updateFromPublicDevice(camera.publicDevice);
-        updateFromPrivateDevice(camera.privateDevice);
-    }
-
-    protected void updateFromPublicDevice(Camera camera) {
-        CameraFeatureFlags flags = camera.featureFlags;
-        if (flags != null && flags.hasMic) {
-            updateDimmerChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, camera.micVolume);
-        }
-
-        OsdSettings osd = camera.osdSettings;
-        if (osd != null) {
-            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_OSD_NAME, osd.isNameEnabled);
-            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_OSD_DATE, osd.isDateEnabled);
-            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_OSD_LOGO, osd.isLogoEnabled);
-        }
-
-        LedSettings led = camera.ledSettings;
-        if (led != null) {
-            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_LED_ENABLED, led.isEnabled);
-        }
-
-        LcdMessage lcd = camera.lcdMessage;
-        if (lcd != null && lcd.text != null) {
-            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE, lcd.text);
-            updateTimeChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT, lcd.resetAt);
-        }
-
-        HdrType hdr = camera.hdrType;
-        if (hdr != null) {
-            updateApiValueChannel(UnifiProtectBindingConstants.CHANNEL_HDR_TYPE, hdr);
-        }
-
-        VideoMode videoMode = camera.videoMode;
-        if (videoMode != null) {
-            updateApiValueChannel(UnifiProtectBindingConstants.CHANNEL_VIDEO_MODE, videoMode);
-        }
-
-        if (camera.activePatrolSlot != null) {
-            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, camera.activePatrolSlot);
-        }
-
-        // Update basic device info (available from Public API)
-        if (camera.name != null) {
-            updateProperty(UnifiProtectBindingConstants.PROPERTY_NAME, camera.name);
-        }
-        if (camera.state != null) {
-            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_DEVICE_STATE, camera.state.toString());
-        }
+        updateRtspsChannels(camera);
+        updateFromPrivateDevice(camera);
     }
 
     /**
-     * Internal method to update all Private API channels from camera data
+     * Internal method to update all channels from camera data
      */
-    protected void updateFromPrivateDevice(
-            org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera privCamera) {
+    protected void updateFromPrivateDevice(Camera privCamera) {
         logger.debug("Updating from private device: {}", privCamera);
+
+        // Settings previously read from public API
+        if (privCamera.featureFlags != null && Boolean.TRUE.equals(privCamera.featureFlags.hasMic)) {
+            updateDimmerChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, privCamera.micVolume);
+        }
+        if (privCamera.osdSettings != null) {
+            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_OSD_NAME, privCamera.osdSettings.isNameEnabled);
+            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_OSD_DATE, privCamera.osdSettings.isDateEnabled);
+            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_OSD_LOGO, privCamera.osdSettings.isLogoEnabled);
+        }
+        if (privCamera.ledSettings != null) {
+            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_LED_ENABLED, privCamera.ledSettings.isEnabled);
+        }
+        if (privCamera.lcdMessage != null && privCamera.lcdMessage.text != null) {
+            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE,
+                    privCamera.lcdMessage.text);
+            updateTimeChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT,
+                    privCamera.lcdMessage.resetAt != null ? privCamera.lcdMessage.resetAt.toEpochMilli() : null);
+        }
+        if (privCamera.hdrType != null) {
+            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_HDR_TYPE, privCamera.hdrType);
+        }
+        if (privCamera.videoMode != null) {
+            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_VIDEO_MODE, privCamera.videoMode.toString());
+        }
+        if (privCamera.activePatrolSlot != null) {
+            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, privCamera.activePatrolSlot);
+        }
+        if (privCamera.name != null) {
+            updateProperty(UnifiProtectBindingConstants.PROPERTY_NAME, privCamera.name);
+        }
+        if (privCamera.state != null) {
+            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_DEVICE_STATE, privCamera.state.toString());
+        }
+
         // Device status flags
         if (privCamera.isMotionDetected != null) {
             updateState(UnifiProtectBindingConstants.CHANNEL_IS_MOTION_DETECTED,
@@ -1052,8 +1056,8 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     }
 
     private void addRemoveChannels() {
-        CameraDevice camera = device;
-        if (camera == null || camera.privateDevice.featureFlags == null || camera.publicDevice.featureFlags == null) {
+        Camera camera = device;
+        if (camera == null || camera.featureFlags == null) {
             logger.debug("Camera or feature flags are null, skipping channel addition");
             return;
         }
@@ -1102,17 +1106,16 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     UnifiProtectBindingConstants.CHANNEL_WEBRTC_URL_PACKAGE_LABEL);
         }
 
-        CameraFeatureFlags flags = Objects.requireNonNull(camera.publicDevice.featureFlags,
-                "Feature flags are required");
-        if (flags.hasMic) {
+        Camera.CameraFeatureFlags flags = Objects.requireNonNull(camera.featureFlags, "Feature flags are required");
+        if (Boolean.TRUE.equals(flags.hasMic)) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, CoreItemFactory.DIMMER,
                     UnifiProtectBindingConstants.CHANNEL_MIC_VOLUME, channelAdd, activeChannelIds);
         }
-        if (flags.hasLedStatus) {
+        if (Boolean.TRUE.equals(flags.hasLedStatus)) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_LED_ENABLED, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_LED_ENABLED, channelAdd, activeChannelIds);
         }
-        if (flags.hasHdr) {
+        if (Boolean.TRUE.equals(flags.hasHdr)) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_HDR_TYPE, CoreItemFactory.STRING,
                     UnifiProtectBindingConstants.CHANNEL_HDR_TYPE, channelAdd, activeChannelIds);
         }
@@ -1207,7 +1210,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     UnifiProtectBindingConstants.CHANNEL_SNAPSHOT, channelAdd, activeChannelIds,
                     UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_AUDIO_SNAPSHOT_LABEL);
         }
-        if (camera.publicDevice.osdSettings != null) {
+        if (camera.osdSettings != null) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_OSD_NAME, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_OSD_NAME, channelAdd, activeChannelIds);
             addChannel(UnifiProtectBindingConstants.CHANNEL_OSD_DATE, CoreItemFactory.SWITCH,
@@ -1215,12 +1218,12 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             addChannel(UnifiProtectBindingConstants.CHANNEL_OSD_LOGO, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_OSD_LOGO, channelAdd, activeChannelIds);
         }
-        if (camera.publicDevice.activePatrolSlot != null) {
+        if (camera.activePatrolSlot != null) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, CoreItemFactory.NUMBER,
                     UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, channelAdd, activeChannelIds);
         }
 
-        if (camera.privateDevice.isDoorbell()) {
+        if (camera.isDoorbell()) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_RING_VOLUME, CoreItemFactory.DIMMER,
                     UnifiProtectBindingConstants.CHANNEL_DOORBELL_RING_VOLUME, channelAdd, activeChannelIds);
             addChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_CHIME_DURATION, "Number:Time",
@@ -1248,7 +1251,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT_LABEL);
         }
 
-        if (camera.privateDevice.featureFlags.hasPtz != null && camera.privateDevice.featureFlags.hasPtz) {
+        if (camera.featureFlags.hasPtz != null && camera.featureFlags.hasPtz) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_PTZ_RELATIVE_PAN, CoreItemFactory.NUMBER,
                     UnifiProtectBindingConstants.CHANNEL_PTZ_RELATIVE_PAN, channelAdd, activeChannelIds);
             addChannel(UnifiProtectBindingConstants.CHANNEL_PTZ_RELATIVE_TILT, CoreItemFactory.NUMBER,
@@ -1283,17 +1286,17 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_ANIMAL_ENABLED, channelAdd, activeChannelIds);
         }
 
-        if (flags.hasMic) {
+        if (Boolean.TRUE.equals(flags.hasMic)) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_MIC_ENABLED, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_MIC_ENABLED, channelAdd, activeChannelIds);
         }
 
-        if (camera.privateDevice.featureFlags.hasLedIr != null && camera.privateDevice.featureFlags.hasLedIr) {
+        if (camera.featureFlags.hasLedIr != null && camera.featureFlags.hasLedIr) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_IR_MODE, CoreItemFactory.STRING,
                     UnifiProtectBindingConstants.CHANNEL_IR_MODE, channelAdd, activeChannelIds);
         }
 
-        if (flags.hasHdr) {
+        if (Boolean.TRUE.equals(flags.hasHdr)) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_HDR_ENABLED, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_HDR_ENABLED, channelAdd, activeChannelIds);
         }
@@ -1302,40 +1305,39 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     UnifiProtectBindingConstants.CHANNEL_HIGH_FPS_ENABLED, channelAdd, activeChannelIds);
         }
 
-        if (flags.hasSpeaker) {
+        if (Boolean.TRUE.equals(flags.hasSpeaker)) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_CAMERA_SPEAKER_VOLUME, CoreItemFactory.DIMMER,
                     UnifiProtectBindingConstants.CHANNEL_CAMERA_SPEAKER_VOLUME, channelAdd, activeChannelIds);
         }
 
-        if (camera.privateDevice.featureFlags.canOpticalZoom != null
-                && camera.privateDevice.featureFlags.canOpticalZoom) {
+        if (camera.featureFlags.canOpticalZoom != null && camera.featureFlags.canOpticalZoom) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_CAMERA_ZOOM_LEVEL, CoreItemFactory.DIMMER,
                     UnifiProtectBindingConstants.CHANNEL_CAMERA_ZOOM_LEVEL, channelAdd, activeChannelIds);
         }
-        if (camera.privateDevice.ispSettings != null && camera.privateDevice.ispSettings.wdr != null) {
+        if (camera.ispSettings != null && camera.ispSettings.wdr != null) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_CAMERA_WDR_LEVEL, CoreItemFactory.NUMBER,
                     UnifiProtectBindingConstants.CHANNEL_CAMERA_WDR_LEVEL, channelAdd, activeChannelIds);
         }
 
-        if (camera.privateDevice.isDark != null) {
+        if (camera.isDark != null) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_IS_DARK, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_IS_DARK, channelAdd, activeChannelIds);
         }
-        if (camera.privateDevice.lastSmart != null) {
+        if (camera.lastSmart != null) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_LAST_SMART, "DateTime",
                     UnifiProtectBindingConstants.CHANNEL_LAST_SMART, channelAdd, activeChannelIds);
         }
-        if (camera.privateDevice.isLiveHeatmapEnabled != null) {
+        if (camera.isLiveHeatmapEnabled != null) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_IS_LIVE_HEATMAP_ENABLED, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_IS_LIVE_HEATMAP_ENABLED, channelAdd, activeChannelIds);
         }
-        if (camera.privateDevice.videoReconfigurationInProgress != null) {
+        if (camera.videoReconfigurationInProgress != null) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_VIDEO_RECONFIGURATION_IN_PROGRESS, CoreItemFactory.SWITCH,
                     UnifiProtectBindingConstants.CHANNEL_VIDEO_RECONFIGURATION_IN_PROGRESS, channelAdd,
                     activeChannelIds);
         }
 
-        if (camera.privateDevice.hasWifi != null && camera.privateDevice.hasWifi) {
+        if (camera.hasWifi != null && camera.hasWifi) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_PHY_RATE, CoreItemFactory.NUMBER,
                     UnifiProtectBindingConstants.CHANNEL_PHY_RATE, channelAdd, activeChannelIds);
             addChannel(UnifiProtectBindingConstants.CHANNEL_IS_PROBING_FOR_WIFI, CoreItemFactory.SWITCH,
@@ -1355,7 +1357,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
 
         }
 
-        if (camera.privateDevice.hasBattery != null && camera.privateDevice.hasBattery) {
+        if (camera.hasBattery != null && camera.hasBattery) {
             addChannel(UnifiProtectBindingConstants.CHANNEL_VOLTAGE, "Number:ElectricPotential",
                     UnifiProtectBindingConstants.CHANNEL_VOLTAGE, channelAdd, activeChannelIds);
             addChannel(UnifiProtectBindingConstants.CHANNEL_BATTERY_PERCENTAGE, "Number:Dimensionless",

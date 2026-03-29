@@ -12,16 +12,12 @@
  */
 package org.openhab.binding.unifiprotect.internal.handler;
 
-import java.io.IOException;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.LightDevice;
-import org.openhab.binding.unifiprotect.internal.api.pub.client.UniFiProtectPublicClient;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.Light;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.LightDeviceSettings;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.LightModeSettings;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.EventType;
 import org.openhab.core.library.types.DecimalType;
@@ -37,7 +33,7 @@ import org.openhab.core.types.RefreshType;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<LightDevice> {
+public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<Light> {
 
     public UnifiProtectLightHandler(Thing thing) {
         super(thing);
@@ -61,10 +57,9 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
     }
 
     @Override
-    public void refreshFromDevice(LightDevice light) {
+    public void refreshFromDevice(Light light) {
         super.refreshFromDevice(light);
-        updateFromPublicDevice(light.publicDevice);
-        updateFromPrivateDevice(light.privateDevice);
+        updateLightChannels(light);
     }
 
     @Override
@@ -80,112 +75,121 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
             return;
         }
 
-        try {
-            switch (id) {
-                case UnifiProtectBindingConstants.CHANNEL_LIGHT: {
-                    boolean value = OnOffType.ON.equals(command);
-                    // Force light on/off
-                    var patch = UniFiProtectPublicClient.buildPatch("isLightForceEnabled", value);
-                    Light updated = api.getPublicClient().patchLight(deviceId, patch);
-                    updateFromPublicDevice(updated);
-                    break;
-                }
-                case UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE: {
-                    String value = command.toString();
-                    var patch = UniFiProtectPublicClient.buildPatch("lightModeSettings.mode", value);
-                    Light updated = api.getPublicClient().patchLight(deviceId, patch);
-                    updateFromPublicDevice(updated);
-                    break;
-                }
-                case UnifiProtectBindingConstants.CHANNEL_ENABLE_AT: {
-                    String value = command.toString();
-                    var patch = UniFiProtectPublicClient.buildPatch("lightModeSettings.enableAt", value);
-                    Light updated = api.getPublicClient().patchLight(deviceId, patch);
-                    updateFromPublicDevice(updated);
-                    break;
-                }
-                case UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED: {
-                    boolean value = OnOffType.ON.equals(command);
-                    var patch = UniFiProtectPublicClient.buildPatch("lightDeviceSettings.isIndicatorEnabled", value);
-                    Light updated = api.getPublicClient().patchLight(deviceId, patch);
-                    updateFromPublicDevice(updated);
-                    break;
-                }
-                case UnifiProtectBindingConstants.CHANNEL_PIR_DURATION: {
-                    Long value = timeToMilliseconds(command);
-                    var patch = UniFiProtectPublicClient.buildPatch("lightDeviceSettings.pirDuration", value);
-                    Light updated = api.getPublicClient().patchLight(deviceId, patch);
-                    updateFromPublicDevice(updated);
-                    break;
-                }
-                case UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY: {
-                    int value;
-                    try {
-                        value = ((DecimalType) command).intValue();
-                    } catch (Exception e) {
-                        logger.debug("Error parsing PIR sensitivity command", e);
-                        break;
+        switch (id) {
+            case UnifiProtectBindingConstants.CHANNEL_LIGHT: {
+                api.getPrivateClient().setLight(deviceId, OnOffType.ON.equals(command)).whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        logger.debug("Failed to set light", ex);
                     }
-                    value = Math.max(0, Math.min(100, value));
-                    var patch = UniFiProtectPublicClient.buildPatch("lightDeviceSettings.pirSensitivity", value);
-                    Light updated = api.getPublicClient().patchLight(deviceId, patch);
-                    updateFromPublicDevice(updated);
-                    break;
-                }
-                case UnifiProtectBindingConstants.CHANNEL_LED_LEVEL: {
-                    int value;
-                    try {
-                        value = ((DecimalType) command).intValue();
-                    } catch (Exception e) {
-                        logger.debug("Error parsing LED level command", e);
-                        break;
+                });
+                break;
+            }
+            case UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE: {
+                api.getPrivateClient().setLightMode(deviceId, command.toString(), null).whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        logger.debug("Failed to set light mode", ex);
                     }
-                    value = Math.max(1, Math.min(6, value));
-                    var patch = UniFiProtectPublicClient.buildPatch("lightDeviceSettings.ledLevel", value);
-                    Light updated = api.getPublicClient().patchLight(deviceId, patch);
-                    updateFromPublicDevice(updated);
-                    break;
-                }
-                // Private API Commands
-                case UnifiProtectBindingConstants.CHANNEL_DEVICE_REBOOT: {
-                    if (command == OnOffType.ON) {
-                        api.getPrivateClient().rebootDevice("light", deviceId).whenComplete((result, ex) -> {
+                });
+                break;
+            }
+            case UnifiProtectBindingConstants.CHANNEL_ENABLE_AT: {
+                api.getPrivateClient()
+                        .updateLight(deviceId, Map.of("lightModeSettings", Map.of("enableAt", command.toString())))
+                        .whenComplete((result, ex) -> {
                             if (ex != null) {
-                                logger.debug("Failed to reboot light", ex);
+                                logger.debug("Failed to set enable at", ex);
                             }
                         });
-                    }
+                break;
+            }
+            case UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED: {
+                api.getPrivateClient()
+                        .updateLight(deviceId,
+                                Map.of("lightDeviceSettings",
+                                        Map.of("isIndicatorEnabled", OnOffType.ON.equals(command))))
+                        .whenComplete((result, ex) -> {
+                            if (ex != null) {
+                                logger.debug("Failed to set indicator enabled", ex);
+                            }
+                        });
+                break;
+            }
+            case UnifiProtectBindingConstants.CHANNEL_PIR_DURATION: {
+                Long value = timeToMilliseconds(command);
+                api.getPrivateClient().setLightDuration(deviceId, value != null ? value.intValue() : 0)
+                        .whenComplete((result, ex) -> {
+                            if (ex != null) {
+                                logger.debug("Failed to set PIR duration", ex);
+                            }
+                        });
+                break;
+            }
+            case UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY: {
+                int value;
+                try {
+                    value = ((DecimalType) command).intValue();
+                } catch (Exception e) {
+                    logger.debug("Error parsing PIR sensitivity command", e);
                     break;
                 }
-                default:
+                value = Math.max(0, Math.min(100, value));
+                api.getPrivateClient().setLightPirSensitivity(deviceId, value).whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        logger.debug("Failed to set PIR sensitivity", ex);
+                    }
+                });
+                break;
+            }
+            case UnifiProtectBindingConstants.CHANNEL_LED_LEVEL: {
+                int value;
+                try {
+                    value = ((DecimalType) command).intValue();
+                } catch (Exception e) {
+                    logger.debug("Error parsing LED level command", e);
                     break;
+                }
+                value = Math.max(1, Math.min(6, value));
+                api.getPrivateClient().updateLight(deviceId, Map.of("lightDeviceSettings", Map.of("ledLevel", value)))
+                        .whenComplete((result, ex) -> {
+                            if (ex != null) {
+                                logger.debug("Failed to set LED level", ex);
+                            }
+                        });
+                break;
             }
-        } catch (IOException e) {
-            logger.debug("Error handling light command", e);
+            case UnifiProtectBindingConstants.CHANNEL_DEVICE_REBOOT: {
+                if (command == OnOffType.ON) {
+                    api.getPrivateClient().rebootDevice("light", deviceId).whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            logger.debug("Failed to reboot light", ex);
+                        }
+                    });
+                }
+                break;
+            }
+            default:
+                break;
         }
     }
 
-    private void updateFromPublicDevice(Light light) {
-        LightModeSettings lms = light.lightModeSettings;
-        if (lms != null) {
-            if (lms.mode != null) {
-                updateStringChannel(UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE, lms.mode.getApiValue());
+    protected void updateLightChannels(Light light) {
+        if (light.lightModeSettings != null) {
+            if (light.lightModeSettings.mode != null) {
+                updateStringChannel(UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE,
+                        light.lightModeSettings.mode.toString());
             }
-            if (lms.enableAt != null) {
-                updateStringChannel(UnifiProtectBindingConstants.CHANNEL_ENABLE_AT, lms.enableAt.getApiValue());
+            if (light.lightModeSettings.enableAt != null) {
+                updateStringChannel(UnifiProtectBindingConstants.CHANNEL_ENABLE_AT, light.lightModeSettings.enableAt);
             }
         }
-        LightDeviceSettings lds = light.lightDeviceSettings;
-        if (lds != null) {
-            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED, lds.isIndicatorEnabled);
-            updateTimeChannel(UnifiProtectBindingConstants.CHANNEL_PIR_DURATION,
-                    lds.pirDuration != null ? lds.pirDuration.longValue() : null);
-            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY, lds.pirSensitivity);
-            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_LED_LEVEL, lds.ledLevel);
+        if (light.lightDeviceSettings != null) {
+            updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED,
+                    light.lightDeviceSettings.isIndicatorEnabled);
+            updateTimeChannel(UnifiProtectBindingConstants.CHANNEL_PIR_DURATION, light.lightDeviceSettings.pirDuration);
+            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY,
+                    light.lightDeviceSettings.pirSensitivity);
+            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_LED_LEVEL, light.lightDeviceSettings.ledLevel);
         }
-    }
-
-    private void updateFromPrivateDevice(org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light light) {
         updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_IS_DARK, light.isDark);
         updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_LIGHT, light.isLightOn);
         if (light.lastMotion != null) {

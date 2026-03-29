@@ -99,13 +99,16 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
 
         NativeHelper nativeHelper = new NativeHelper(BIN_DIR, config.downloadBinaries, httpClient);
         try {
-            // Ensure binaries exist
+            // Pre-warm binaries; failure is non-fatal — they are resolved again per-NVR
             nativeHelper.ensureFfmpeg();
             nativeHelper.ensureGo2Rtc();
-
+        } catch (IOException e) {
+            logger.warn("Failed to pre-download binaries, will retry per-NVR: {}", e.getMessage());
+        }
+        try {
             httpService.registerServlet(playBasePath, new PlayStreamServlet(this, httpClient), null, null);
             httpService.registerServlet(imageBasePath, new ImageServlet(this), null, null);
-        } catch (IOException | ServletException | NamespaceException e) {
+        } catch (ServletException | NamespaceException e) {
             logger.debug("Failed to activate WebRtcMediaServiceImpl", e);
             throw new IllegalStateException("Failed to activate WebRtcMediaServiceImpl", e);
         }
@@ -288,7 +291,7 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             managers.put(uid, manager);
             manager.startIfNeeded();
         } catch (IOException e) {
-            logger.debug("Failed to create go2rtc manager for {}", uid, e);
+            logger.warn("Failed to create go2rtc manager for {}: {}", uid, e.getMessage());
         }
     }
 

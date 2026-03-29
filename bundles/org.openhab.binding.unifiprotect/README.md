@@ -3,7 +3,7 @@
 This binding integrates Ubiquiti UniFi Protect into openHAB.
 It connects to your Protect NVR/CloudKey/UNVR and provides live events and configurable settings for Cameras, Floodlights, Sensors, Doorlocks, and Chimes.
 
-It uses both the official Protect Integration API (Public API) and the Private API for comprehensive device control and monitoring.
+It primarily uses the Private API for device control and monitoring, with the official Protect Integration API (Public API) used for real-time event streaming, WebRTC/RTSPS streams, and talkback sessions.
 The binding automatically manages API authentication, including auto-creation of API keys when needed.
 
 ## Features
@@ -127,149 +127,148 @@ Some camera channels are created dynamically depending on device capabilities.
 
 The NVR bridge provides comprehensive monitoring channels for system health, storage, and configuration.
 
-| Channel ID                       | Item Type          | RW | API    | Description                                      | Advanced |
-|----------------------------------|--------------------|----|--------|--------------------------------------------------|----------|
-| storage-total                    | Number:DataAmount  | R  | Private| Total storage capacity                           | false    |
-| storage-used                     | Number:DataAmount  | R  | Private| Used storage                                     | false    |
-| storage-available                | Number:DataAmount  | R  | Private| Available storage                                | false    |
-| storage-utilization              | Number:Dimensionless| R | Private| Storage utilization percentage                   | false    |
-| recording-retention              | Number:Time        | R  | Private| Recording retention duration                     | false    |
-| nvr-storage-device-healthy       | Switch             | R  | Private| All storage devices healthy                      | false    |
-| nvr-camera-utilization           | Number             | R  | Private| Camera capacity utilization percentage           | false    |
-| nvr-recording-mode               | String             | R  | Private| Global camera recording mode                     | false    |
-| nvr-recording-disabled           | Switch             | R  | Private| Recording globally disabled                      | false    |
-| nvr-recording-motion-only        | Switch             | R  | Private| Recording motion only                            | false    |
-| nvr-is-away                      | Switch             | R  | Private| NVR away mode status                             | false    |
-| nvr-geofencing-enabled           | Switch             | R  | Private| Geofencing enabled                               | false    |
-| nvr-smart-detection-available    | Switch             | R  | Private| Smart detection available                        | false    |
-| nvr-insights-enabled             | Switch             | R  | Private| Insights enabled                                 | false    |
-| nvr-can-auto-update              | Switch             | R  | Private| Can auto-update                                  | false    |
-| nvr-last-update-at               | DateTime           | R  | Private| Last update timestamp                            | false    |
-| nvr-protect-updatable            | Switch             | R  | Private| Protect is updatable                             | false    |
+| Channel ID                       | Item Type          | RW | Description                                      | Advanced |
+|----------------------------------|--------------------|----|--------------------------------------------------|----------|
+| storage-total                    | Number:DataAmount  | R  | Total storage capacity                           | false    |
+| storage-used                     | Number:DataAmount  | R  | Used storage                                     | false    |
+| storage-available                | Number:DataAmount  | R  | Available storage                                | false    |
+| storage-utilization              | Number:Dimensionless| R | Storage utilization percentage                   | false    |
+| recording-retention              | Number:Time        | R  | Recording retention duration                     | false    |
+| nvr-storage-device-healthy       | Switch             | R  | All storage devices healthy                      | false    |
+| nvr-camera-utilization           | Number             | R  | Camera capacity utilization percentage           | false    |
+| nvr-recording-mode               | String             | R  | Global camera recording mode                     | false    |
+| nvr-recording-disabled           | Switch             | R  | Recording globally disabled                      | false    |
+| nvr-recording-motion-only        | Switch             | R  | Recording motion only                            | false    |
+| nvr-is-away                      | Switch             | R  | NVR away mode status                             | false    |
+| nvr-geofencing-enabled           | Switch             | R  | Geofencing enabled                               | false    |
+| nvr-smart-detection-available    | Switch             | R  | Smart detection available                        | false    |
+| nvr-insights-enabled             | Switch             | R  | Insights enabled                                 | false    |
+| nvr-can-auto-update              | Switch             | R  | Can auto-update                                  | false    |
+| nvr-last-update-at               | DateTime           | R  | Last update timestamp                            | false    |
+| nvr-protect-updatable            | Switch             | R  | Protect is updatable                             | false    |
 
 ### `camera` Channels
 
 - The following are dynamically created depending on the supported features.
 - Advanced channels are hidden by default in the MainUI, select "Show Advanced" to see them.
-- **API Column**: Indicates whether the channel uses the Public or Private API.
 
 #### Basic Control & Settings
 
-| Channel ID                             | Item Type   | RW | API    | Description                                                                                          | Advanced |
-|----------------------------------------|-------------|----|--------|------------------------------------------------------------------------------------------------------|----------|
-| mic-volume                             | Dimmer      | RW | Public | Microphone volume (0-100)                                                                            | false    |
-| video-mode                             | String      | RW | Public | Camera video mode (e.g., `default`, `highFps`, `sport`, `slowShutter`, `lprReflex`, `lprNoneReflex`) | false    |
-| hdr-type                               | String      | RW | Public | HDR mode (`auto`, `on`, `off`)                                                                       | false    |
-| osd-name                               | Switch      | RW | Public | Show name on OSD                                                                                     | false    |
-| osd-date                               | Switch      | RW | Public | Show date on OSD                                                                                     | false    |
-| osd-logo                               | Switch      | RW | Public | Show logo on OSD                                                                                     | false    |
-| led-enabled                            | Switch      | RW | Public | Enable/disable camera status LED                                                                     | false    |
-| active-patrol-slot                     | Number      | RW | Public | Active PTZ patrol slot (set 0 to stop)                                                               | false    |
+| Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
+|----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
+| mic-volume                             | Dimmer      | RW | Microphone volume (0-100)                                                                            | false    |
+| video-mode                             | String      | RW | Camera video mode (e.g., `default`, `highFps`, `sport`, `slowShutter`, `lprReflex`, `lprNoneReflex`) | false    |
+| hdr-type                               | String      | RW | HDR mode (`auto`, `on`, `off`)                                                                       | false    |
+| osd-name                               | Switch      | RW | Show name on OSD                                                                                     | false    |
+| osd-date                               | Switch      | RW | Show date on OSD                                                                                     | false    |
+| osd-logo                               | Switch      | RW | Show logo on OSD                                                                                     | false    |
+| led-enabled                            | Switch      | RW | Enable/disable camera status LED                                                                     | false    |
+| active-patrol-slot                     | Number      | RW | Active PTZ patrol slot (set 0 to stop)                                                               | false    |
 
 #### Streaming URLs
 
-| Channel ID                             | Item Type   | RW | API     | Description                                                                                          | Advanced |
-|----------------------------------------|-------------|----|---------|------------------------------------------------------------------------------------------------------|----------|
-| webrtc-url-high                        | String      | R  | Public  | WebRTC stream URL for high quality                                                                   | true     |
-| webrtc-url-medium                      | String      | R  | Public  | WebRTC stream URL for medium quality                                                                 | true     |
-| webrtc-url-low                         | String      | R  | Public  | WebRTC stream URL for low quality                                                                    | true     |
-| webrtc-url-package                     | String      | R  | Public  | WebRTC stream URL for package quality                                                                | true     |
-| rtsp-url-high                          | String      | R  | Private | RTSP stream URL for high quality                                                                     | true     |
-| rtsp-url-medium                        | String      | R  | Private | RTSP stream URL for medium quality                                                                   | true     |
-| rtsp-url-low                           | String      | R  | Private | RTSP stream URL for low quality                                                                      | true     |
-| rtsp-url-package                       | String      | R  | Private | RTSP stream URL for package quality                                                                  | true     |
+| Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
+|----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
+| webrtc-url-high                        | String      | R  | WebRTC stream URL for high quality                                                                   | true     |
+| webrtc-url-medium                      | String      | R  | WebRTC stream URL for medium quality                                                                 | true     |
+| webrtc-url-low                         | String      | R  | WebRTC stream URL for low quality                                                                    | true     |
+| webrtc-url-package                     | String      | R  | WebRTC stream URL for package quality                                                                | true     |
+| rtsp-url-high                          | String      | R  | RTSP stream URL for high quality                                                                     | true     |
+| rtsp-url-medium                        | String      | R  | RTSP stream URL for medium quality                                                                   | true     |
+| rtsp-url-low                           | String      | R  | RTSP stream URL for low quality                                                                      | true     |
+| rtsp-url-package                       | String      | R  | RTSP stream URL for package quality                                                                  | true     |
 
 #### Snapshots & Images
 
-| Channel ID                             | Item Type   | RW | API    | Description                                                                                          | Advanced |
-|----------------------------------------|-------------|----|--------|------------------------------------------------------------------------------------------------------|----------|
-| snapshot                               | Image       | R  | Public | Snapshot image. Send a `REFRESH` command to update.                                                  | false    |
-| snapshot-url                           | String      | R  | Public | Snapshot image URL                                                                                   | true     |
-| motion-snapshot                        | Image       | R  | Public | Snapshot captured around motion event                                                                | false    |
-| smart-detect-audio-snapshot            | Image       | R  | Public | Snapshot captured around smart audio detection                                                       | false    |
-| smart-detect-zone-snapshot             | Image       | R  | Public | Snapshot captured around smart zone detection                                                        | false    |
-| smart-detect-line-snapshot             | Image       | R  | Public | Snapshot captured around smart line detection                                                        | false    |
-| smart-detect-loiter-snapshot           | Image       | R  | Public | Snapshot captured around smart loiter detection                                                      | false    |
-| motion-thumbnail                       | Image       | R  | Private| Motion event thumbnail image                                                                         | false    |
-| motion-heatmap                         | Image       | R  | Private| Motion event heatmap image                                                                           | true     |
+| Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
+|----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
+| snapshot                               | Image       | R  | Snapshot image. Send a `REFRESH` command to update.                                                  | false    |
+| snapshot-url                           | String      | R  | Snapshot image URL                                                                                   | true     |
+| motion-snapshot                        | Image       | R  | Snapshot captured around motion event                                                                | false    |
+| smart-detect-audio-snapshot            | Image       | R  | Snapshot captured around smart audio detection                                                       | false    |
+| smart-detect-zone-snapshot             | Image       | R  | Snapshot captured around smart zone detection                                                        | false    |
+| smart-detect-line-snapshot             | Image       | R  | Snapshot captured around smart line detection                                                        | false    |
+| smart-detect-loiter-snapshot           | Image       | R  | Snapshot captured around smart loiter detection                                                      | false    |
+| motion-thumbnail                       | Image       | R  | Motion event thumbnail image                                                                         | false    |
+| motion-heatmap                         | Image       | R  | Motion event heatmap image                                                                           | true     |
 
 #### Motion & Detection
 
-| Channel ID                             | Item Type   | RW | API    | Description                                                                                          | Advanced |
-|----------------------------------------|-------------|----|--------|------------------------------------------------------------------------------------------------------|----------|
-| motion-contact                         | Contact     | R  | Public | Motion state (OPEN = motion detected)                                                                | false    |
-| smart-detect-audio-contact             | Contact     | R  | Public | Smart audio detection active state                                                                   | false    |
-| smart-detect-zone-contact              | Contact     | R  | Public | Smart zone detection active state                                                                    | false    |
-| smart-detect-line-contact              | Contact     | R  | Public | Smart line detection active state                                                                    | false    |
-| smart-detect-loiter-contact            | Contact     | R  | Public | Smart loiter detection active state                                                                  | false    |
-| is-motion-detected                     | Switch      | R  | Private| Motion currently detected                                                                            | false    |
-| last-motion                            | DateTime    | R  | Private| Timestamp of last motion                                                                             | false    |
-| last-smart-detect                      | DateTime    | R  | Private| Timestamp of last smart detection                                                                    | false    |
-| last-smart-detect-types                | String      | R  | Private| Types of last smart detection (comma-separated)                                                      | false    |
+| Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
+|----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
+| motion-contact                         | Contact     | R  | Motion state (OPEN = motion detected)                                                                | false    |
+| smart-detect-audio-contact             | Contact     | R  | Smart audio detection active state                                                                   | false    |
+| smart-detect-zone-contact              | Contact     | R  | Smart zone detection active state                                                                    | false    |
+| smart-detect-line-contact              | Contact     | R  | Smart line detection active state                                                                    | false    |
+| smart-detect-loiter-contact            | Contact     | R  | Smart loiter detection active state                                                                  | false    |
+| is-motion-detected                     | Switch      | R  | Motion currently detected                                                                            | false    |
+| last-motion                            | DateTime    | R  | Timestamp of last motion                                                                             | false    |
+| last-smart-detect                      | DateTime    | R  | Timestamp of last smart detection                                                                    | false    |
+| last-smart-detect-types                | String      | R  | Types of last smart detection (comma-separated)                                                      | false    |
 
 #### Doorbell
 
-| Channel ID                             | Item Type   | RW | API    | Description                                                                                          | Advanced |
-|----------------------------------------|-------------|----|--------|------------------------------------------------------------------------------------------------------|----------|
-| doorbell-default-message               | String      | RW | Public | Default doorbell LCD message text configured on the NVR                                              | false    |
-| doorbell-default-message-reset-timeout | Number:Time | RW | Public | Default doorbell LCD message reset timeout                                                           | false    |
-| doorbell-ringing                       | Contact     | R  | Private| Doorbell currently ringing                                                                           | false    |
-| last-ring                              | DateTime    | R  | Private| Timestamp of last doorbell ring                                                                      | false    |
+| Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
+|----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
+| doorbell-default-message               | String      | RW | Default doorbell LCD message text configured on the NVR                                              | false    |
+| doorbell-default-message-reset-timeout | Number:Time | RW | Default doorbell LCD message reset timeout                                                           | false    |
+| doorbell-ringing                       | Contact     | R  | Doorbell currently ringing                                                                           | false    |
+| last-ring                              | DateTime    | R  | Timestamp of last doorbell ring                                                                      | false    |
 
 #### Device Status & Health
 
-| Channel ID                             | Item Type          | RW | API     | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|---------|------------------------------------------------------------------------------------------------------|----------|
-| is-connected                           | Switch             | R  | Private | Camera is connected                                                                                  | false    |
-| is-dark                                | Switch             | R  | Private | Scene is currently dark                                                                              | false    |
-| connection-host                        | String             | R  | Private | Connection host address                                                                              | true     |
-| uptime                                 | Number:Time        | R  | Private | Device uptime                                                                                        | false    |
-| uptime-since                           | DateTime           | R  | Private | Device up since timestamp                                                                            | true     |
-| last-seen                              | DateTime           | R  | Private | Last seen timestamp                                                                                  | false    |
-| last-disconnect                        | DateTime           | R  | Private | Last disconnect timestamp                                                                            | true     |
-| connection-state                       | String             | R  | Private | Connection state                                                                                     | true     |
-| state                                  | String             | R  | Private | Device state                                                                                         | true     |
-| wired-connection-state                 | String             | R  | Private | Wired connection state                                                                               | true     |
-| physical-connection-rate               | Number:DataTransferRate | R | Private | Physical connection rate                                                                          | true     |
+| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
+|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
+| is-connected                           | Switch             | R  | Camera is connected                                                                                  | false    |
+| is-dark                                | Switch             | R  | Scene is currently dark                                                                              | false    |
+| connection-host                        | String             | R  | Connection host address                                                                              | true     |
+| uptime                                 | Number:Time        | R  | Device uptime                                                                                        | false    |
+| uptime-since                           | DateTime           | R  | Device up since timestamp                                                                            | true     |
+| last-seen                              | DateTime           | R  | Last seen timestamp                                                                                  | false    |
+| last-disconnect                        | DateTime           | R  | Last disconnect timestamp                                                                            | true     |
+| connection-state                       | String             | R  | Connection state                                                                                     | true     |
+| state                                  | String             | R  | Device state                                                                                         | true     |
+| wired-connection-state                 | String             | R  | Wired connection state                                                                               | true     |
+| physical-connection-rate               | Number:DataTransferRate | R | Physical connection rate                                                                          | true     |
 
 #### Network & WiFi
 
-| Channel ID                             | Item Type          | RW | API     | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|---------|------------------------------------------------------------------------------------------------------|----------|
-| ap-mac                                 | String             | R  | Private | Access point MAC address                                                                             | true     |
-| wifi-channel                           | Number             | R  | Private | WiFi channel number                                                                                  | true     |
-| wifi-frequency                         | Number:Frequency   | R  | Private | WiFi frequency                                                                                       | true     |
-| wifi-quality                           | Number:Dimensionless| R | Private | WiFi signal quality percentage                                                                       | false    |
-| wifi-signal-strength                   | Number:Power       | R  | Private | WiFi signal strength (dBm)                                                                           | false    |
+| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
+|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
+| ap-mac                                 | String             | R  | Access point MAC address                                                                             | true     |
+| wifi-channel                           | Number             | R  | WiFi channel number                                                                                  | true     |
+| wifi-frequency                         | Number:Frequency   | R  | WiFi frequency                                                                                       | true     |
+| wifi-quality                           | Number:Dimensionless| R | WiFi signal quality percentage                                                                       | false    |
+| wifi-signal-strength                   | Number:Power       | R  | WiFi signal strength (dBm)                                                                           | false    |
 
 #### Storage & Recording
 
-| Channel ID                             | Item Type          | RW | API     | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|---------|------------------------------------------------------------------------------------------------------|----------|
-| storage-used                           | Number:DataAmount  | R  | Private | Storage used by this camera                                                                          | false    |
-| storage-rate                           | Number:DataTransferRate | R | Private | Recording storage rate                                                                           | true     |
+| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
+|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
+| storage-used                           | Number:DataAmount  | R  | Storage used by this camera                                                                          | false    |
+| storage-rate                           | Number:DataTransferRate | R | Recording storage rate                                                                           | true     |
 
 #### Power & Battery
 
-| Channel ID                             | Item Type          | RW | API     | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|---------|------------------------------------------------------------------------------------------------------|----------|
-| voltage                                | Number:ElectricPotential | R | Private | Input voltage                                                                                  | false    |
-| battery-percentage                     | Number:Dimensionless| R | Private | Battery charge percentage                                                                            | false    |
+| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
+|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
+| voltage                                | Number:ElectricPotential | R | Input voltage                                                                                  | false    |
+| battery-percentage                     | Number:Dimensionless| R | Battery charge percentage                                                                            | false    |
 
 #### Advanced Camera Controls (Private API)
 
-| Channel ID                             | Item Type   | RW | API     | Description                                                                                          | Advanced |
-|----------------------------------------|-------------|----|---------|------------------------------------------------------------------------------------------------------|----------|
-| ptz-control                            | String      | W  | Private | PTZ control commands                                                                                 | true     |
-| ptz-zoom                               | Number      | RW | Private | PTZ zoom level                                                                                       | true     |
-| recording-mode                         | String      | RW | Private | Recording mode                                                                                       | false    |
-| recording-enabled                      | Switch      | RW | Private | Recording enabled                                                                                    | false    |
-| ir-led-mode                            | String      | RW | Private | IR LED mode                                                                                          | false    |
-| status-light-enabled                   | Switch      | RW | Private | Status light enabled                                                                                 | false    |
-| speaker-volume                         | Dimmer      | RW | Private | Speaker volume (0-100)                                                                               | false    |
-| smart-detect-types                     | String      | RW | Private | Smart detection types (comma-separated)                                                              | false    |
-| device-reboot                          | Switch      | W  | Private | Reboot device (send ON command)                                                                      | true     |
-| locate-device                          | Switch      | W  | Private | Locate device (flashes LED, send ON)                                                                 | true     |
+| Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
+|----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
+| ptz-control                            | String      | W  | PTZ control commands                                                                                 | true     |
+| ptz-zoom                               | Number      | RW | PTZ zoom level                                                                                       | true     |
+| recording-mode                         | String      | RW | Recording mode                                                                                       | false    |
+| recording-enabled                      | Switch      | RW | Recording enabled                                                                                    | false    |
+| ir-led-mode                            | String      | RW | IR LED mode                                                                                          | false    |
+| status-light-enabled                   | Switch      | RW | Status light enabled                                                                                 | false    |
+| speaker-volume                         | Dimmer      | RW | Speaker volume (0-100)                                                                               | false    |
+| smart-detect-types                     | String      | RW | Smart detection types (comma-separated)                                                              | false    |
+| device-reboot                          | Switch      | W  | Reboot device (send ON command)                                                                      | true     |
+| locate-device                          | Switch      | W  | Locate device (flashes LED, send ON)                                                                 | true     |
 
 Trigger channels (for rules):
 
@@ -305,54 +304,54 @@ This delay can be configured via the contact channel configuration through textu
 
 ### Floodlight (`light`)
 
-| Channel ID        | Item Type   | RW | API    | Description                                | Advanced |
-|-------------------|-------------|----| -------|--------------------------------------------| ---------|
-| light             | Switch      | RW | Public | Main floodlight on/off (forces light)      | false    |
-| is-dark           | Switch      | R  | Public | Scene is currently dark                    | false    |
-| pir-motion        | Trigger     | -  | Public | PIR motion event                           | false    |
-| last-motion       | DateTime    | R  | Public | Timestamp of last motion                   | false    |
-| light-mode        | String      | RW | Public | Light mode (`always`, `motion`, `off`)     | false    |
-| enable-at         | String      | RW | Public | When mode is relevant (`fulltime`, `dark`) | false    |
-| indicator-enabled | Switch      | RW | Public | Status LED indicator on floodlight         | false    |
-| pir-duration      | Number:Time | RW | Public | How long the light stays on after motion   | false    |
-| pir-sensitivity   | Number:Dimensionless | RW | Public | PIR motion sensitivity (0-100)        | false    |
-| led-level         | Number      | RW | Public | LED brightness level (1-6)                 | false    |
-| light-mode-advanced | String    | RW | Private| Advanced light mode settings               | true     |
-| device-reboot     | Switch      | W  | Private| Reboot device (send ON command)            | true     |
+| Channel ID        | Item Type   | RW | Description                                | Advanced |
+|-------------------|-------------|----|--------------------------------------------| ---------|
+| light             | Switch      | RW | Main floodlight on/off (forces light)      | false    |
+| is-dark           | Switch      | R  | Scene is currently dark                    | false    |
+| pir-motion        | Trigger     | -  | PIR motion event                           | false    |
+| last-motion       | DateTime    | R  | Timestamp of last motion                   | false    |
+| light-mode        | String      | RW | Light mode (`always`, `motion`, `off`)     | false    |
+| enable-at         | String      | RW | When mode is relevant (`fulltime`, `dark`) | false    |
+| indicator-enabled | Switch      | RW | Status LED indicator on floodlight         | false    |
+| pir-duration      | Number:Time | RW | How long the light stays on after motion   | false    |
+| pir-sensitivity   | Number:Dimensionless | RW | PIR motion sensitivity (0-100)        | false    |
+| led-level         | Number      | RW | LED brightness level (1-6)                 | false    |
+| light-mode-advanced | String    | RW | Advanced light mode settings               | true     |
+| device-reboot     | Switch      | W  | Reboot device (send ON command)            | true     |
 
 ### Sensor (`sensor`)
 
-| Channel ID         | Item Type          | RW | API    | Description                              | Advanced |
-|--------------------|--------------------|----|--------|------------------------------------------| ---------|
-| battery            | Number             | R  | Public | Battery charge level (%)                 | false    |
-| contact            | Contact            | R  | Public | Contact state (OPEN/CLOSED)              | false    |
-| temperature        | Number:Temperature | R  | Public | Ambient temperature                      | false    |
-| humidity           | Number             | R  | Public | Ambient humidity                         | false    |
-| illuminance        | Number:Illuminance | R  | Public | Ambient light (Lux)                      | false    |
-| alarm-contact      | Contact            | R  | Public | Smoke/CO alarm contact (OPEN = alarming) | false    |
-| water-leak-contact | Contact            | R  | Public | Water leak contact (OPEN = leak)         | false    |
-| tamper-contact     | Contact            | R  | Public | Tamper contact (OPEN = tampering)        | false    |
-| sensor-tamper-reset| Switch             | W  | Private| Reset tamper status (send ON)            | true     |
-| device-reboot      | Switch             | W  | Private| Reboot device (send ON command)          | true     |
+| Channel ID         | Item Type          | RW | Description                              | Advanced |
+|--------------------|--------------------|----|------------------------------------------| ---------|
+| battery            | Number             | R  | Battery charge level (%)                 | false    |
+| contact            | Contact            | R  | Contact state (OPEN/CLOSED)              | false    |
+| temperature        | Number:Temperature | R  | Ambient temperature                      | false    |
+| humidity           | Number             | R  | Ambient humidity                         | false    |
+| illuminance        | Number:Illuminance | R  | Ambient light (Lux)                      | false    |
+| alarm-contact      | Contact            | R  | Smoke/CO alarm contact (OPEN = alarming) | false    |
+| water-leak-contact | Contact            | R  | Water leak contact (OPEN = leak)         | false    |
+| tamper-contact     | Contact            | R  | Tamper contact (OPEN = tampering)        | false    |
+| sensor-tamper-reset| Switch             | W  | Reset tamper status (send ON)            | true     |
+| device-reboot      | Switch             | W  | Reboot device (send ON command)          | true     |
 
 ### Doorlock (`doorlock`)
 
-| Channel ID         | Item Type          | RW | API     | Description                              | Advanced |
-|--------------------|--------------------|----|---------|------------------------------------------| ---------|
-| lock               | Switch             | RW | Private | Lock control (ON=locked, OFF=unlocked)   | false    |
-| lock-status        | String             | R  | Private | Current lock status                      | false    |
-| calibrate          | Switch             | W  | Private | Calibrate lock (send ON)                 | true     |
-| auto-close-time    | Number:Time        | RW | Private | Auto-close time in seconds               | false    |
-| battery-percentage | Number:Dimensionless| R | Private | Battery charge percentage                | false    |
+| Channel ID         | Item Type          | RW | Description                              | Advanced |
+|--------------------|--------------------|----|------------------------------------------| ---------|
+| lock               | Switch             | RW | Lock control (ON=locked, OFF=unlocked)   | false    |
+| lock-status        | String             | R  | Current lock status                      | false    |
+| calibrate          | Switch             | W  | Calibrate lock (send ON)                 | true     |
+| auto-close-time    | Number:Time        | RW | Auto-close time in seconds               | false    |
+| battery-percentage | Number:Dimensionless| R | Battery charge percentage                | false    |
 
 ### Chime (`chime`)
 
-| Channel ID         | Item Type          | RW | API     | Description                              | Advanced |
-|--------------------|--------------------|----|---------|------------------------------------------| ---------|
-| play-chime         | Switch             | W  | Private | Play chime sound (send ON)               | false    |
-| play-buzzer        | Switch             | W  | Private | Play buzzer sound (send ON)              | false    |
-| volume             | Dimmer             | RW | Private | Chime volume (0-100)                     | false    |
-| repeat-times       | Number             | RW | Private | Number of times to repeat sound          | false    |
+| Channel ID         | Item Type          | RW | Description                              | Advanced |
+|--------------------|--------------------|----|------------------------------------------| ---------|
+| play-chime         | Switch             | W  | Play chime sound (send ON)               | false    |
+| play-buzzer        | Switch             | W  | Play buzzer sound (send ON)              | false    |
+| volume             | Dimmer             | RW | Chime volume (0-100)                     | false    |
+| repeat-times       | Number             | RW | Number of times to repeat sound          | false    |
 
 Trigger channels (for rules):
 

@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.DoorklockDevice;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Doorlock;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.core.library.types.DecimalType;
@@ -33,7 +32,7 @@ import org.openhab.core.types.RefreshType;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandler<DoorklockDevice> {
+public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandler<Doorlock> {
 
     public UnifiProtectDoorlockHandler(Thing thing) {
         super(thing);
@@ -42,9 +41,9 @@ public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandl
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            DoorklockDevice dev = device;
+            Doorlock dev = device;
             if (dev != null) {
-                updateDoorlockChannels(dev.privateDevice);
+                updateDoorlockChannels(dev);
             }
             return;
         }
@@ -121,9 +120,9 @@ public class UnifiProtectDoorlockHandler extends UnifiProtectAbstractDeviceHandl
     }
 
     @Override
-    public void refreshFromDevice(DoorklockDevice device) {
+    public void refreshFromDevice(Doorlock device) {
         super.refreshFromDevice(device);
-        updateDoorlockChannels(device.privateDevice);
+        updateDoorlockChannels(device);
     }
 
     /**

@@ -24,8 +24,7 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.BaseDevice;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.ApiValueEnum;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.base.UniFiProtectModel;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectContactConfiguration;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectDeviceConfiguration;
@@ -56,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public abstract class UnifiProtectAbstractDeviceHandler<T extends BaseDevice> extends BaseThingHandler {
+public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectModel> extends BaseThingHandler {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable T device;
     protected String deviceId = "";
@@ -148,10 +147,6 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends BaseDevice> ex
 
     protected void updateStringChannel(String channelId, @Nullable String value) {
         updateState(channelId, value == null ? UnDefType.NULL : new StringType(value));
-    }
-
-    protected void updateApiValueChannel(String channelId, ApiValueEnum value) {
-        updateStringChannel(channelId, value.getApiValue());
     }
 
     protected void updateDateTimeChannel(String channelId, long epochMillis) {

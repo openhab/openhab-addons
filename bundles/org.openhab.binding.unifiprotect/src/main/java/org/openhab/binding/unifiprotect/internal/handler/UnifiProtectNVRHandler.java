@@ -30,11 +30,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.UnifiProtectDiscoveryService;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.CameraDevice;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.ChimeDevice;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.DoorklockDevice;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.LightDevice;
-import org.openhab.binding.unifiprotect.internal.api.hybrid.devices.SensorDevice;
 import org.openhab.binding.unifiprotect.internal.api.priv.client.UniFiProtectPrivateClient;
 import org.openhab.binding.unifiprotect.internal.api.priv.client.UniFiProtectPrivateWebSocket.WebSocketUpdate;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Chime;
@@ -43,9 +38,7 @@ import org.openhab.binding.unifiprotect.internal.api.priv.dto.gson.JsonUtil;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.ApiKey;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.Bootstrap;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.types.ModelType;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.Camera;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.DeviceState;
-import org.openhab.binding.unifiprotect.internal.api.pub.dto.ProtectVersionInfo;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.BaseEvent;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.events.EventType;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.gson.DeviceTypeAdapterFactory;
@@ -235,13 +228,16 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     }
                     switch (add.item.modelKey) {
                         case CAMERA:
-                            discoveryService.discoverCameras(apiClient);
+                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
+                                    UnifiProtectBindingConstants.THING_TYPE_CAMERA, "Camera");
                             break;
                         case LIGHT:
-                            discoveryService.discoverLights(apiClient);
+                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
+                                    UnifiProtectBindingConstants.THING_TYPE_LIGHT, "Light");
                             break;
                         case SENSOR:
-                            discoveryService.discoverSensors(apiClient);
+                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
+                                    UnifiProtectBindingConstants.THING_TYPE_SENSOR, "Sensor");
                             break;
                         default:
                             // ignore
@@ -365,28 +361,22 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             Bootstrap bootstrap = apiClient.getPrivateClient().getBootstrap().get();
             if (handler instanceof UnifiProtectCameraHandler cameraHandler && bootstrap.cameras.get(
                     deviceId) instanceof org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera privCamera) {
-                Camera publicCamera = apiClient.getPublicClient().getCamera(deviceId);
-                cameraHandler.refreshFromDevice(new CameraDevice(privCamera, publicCamera));
+                cameraHandler.refreshFromDevice(privCamera);
             } else if (handler instanceof UnifiProtectLightHandler lightHandler && bootstrap.lights.get(
                     deviceId) instanceof org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light privLight) {
-                lightHandler
-                        .refreshFromDevice(new LightDevice(privLight, apiClient.getPublicClient().getLight(deviceId)));
+                lightHandler.refreshFromDevice(privLight);
             } else if (handler instanceof UnifiProtectSensorHandler sensorHandler && bootstrap.sensors.get(
                     deviceId) instanceof org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Sensor privSensor) {
-                sensorHandler.refreshFromDevice(
-                        new SensorDevice(privSensor, apiClient.getPublicClient().getSensor(deviceId)));
+                sensorHandler.refreshFromDevice(privSensor);
             } else if (handler instanceof UnifiProtectDoorlockHandler doorlockHandler
                     && bootstrap.doorlocks.get(deviceId) instanceof Doorlock privDoorlock) {
-                org.openhab.binding.unifiprotect.internal.api.pub.dto.Doorlock pubStub = new org.openhab.binding.unifiprotect.internal.api.pub.dto.Doorlock();
-                pubStub.id = deviceId;
-                doorlockHandler.refreshFromDevice(new DoorklockDevice(privDoorlock, pubStub));
+                doorlockHandler.refreshFromDevice(privDoorlock);
             } else if (handler instanceof UnifiProtectChimeHandler chimeHandler
                     && bootstrap.chimes.get(deviceId) instanceof Chime privChime) {
-                chimeHandler
-                        .refreshFromDevice(new ChimeDevice(privChime, apiClient.getPublicClient().getChime(deviceId)));
+                chimeHandler.refreshFromDevice(privChime);
             }
             cancelChildRefreshRetry(deviceId);
-        } catch (IOException | InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             logger.debug("Failed to refresh child {} from API", deviceId, e);
             handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     Objects.requireNonNull(e.getMessage(), "Failed to refresh child from API"));
@@ -432,65 +422,60 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
             return;
         }
         try {
-            ProtectVersionInfo meta = apiClient.getPublicClient().getMetaInfo();
-            if (meta.applicationVersion != null) {
-                updateProperty(UnifiProtectBindingConstants.PROPERTY_APPLICATION_VERSION, meta.applicationVersion);
-            }
-        } catch (IOException e) {
-            logger.debug("Failed to read meta info", e);
-            setOfflineAndReconnect();
-            return;
-        }
-
-        try {
             UnifiProtectDiscoveryService discoveryService = Objects.requireNonNull(this.discoveryService,
                     "Discovery service not set");
             Bootstrap bootstrap = apiClient.getPrivateClient().getBootstrap().get();
-            apiClient.getPublicClient().listCameras().forEach(camera -> {
-                UnifiProtectCameraHandler ch = findChildHandler(camera.id, UnifiProtectCameraHandler.class);
-                if (ch != null && bootstrap.cameras.get(
-                        camera.id) instanceof org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera privCamera) {
-                    ch.refreshFromDevice(new CameraDevice(privCamera, camera));
+
+            // NVR version (previously from public API getMetaInfo)
+            if (bootstrap.nvr != null && bootstrap.nvr.version != null) {
+                updateProperty(UnifiProtectBindingConstants.PROPERTY_APPLICATION_VERSION, bootstrap.nvr.version);
+            }
+
+            // Sync cameras from Bootstrap
+            bootstrap.cameras.forEach((id, privCamera) -> {
+                UnifiProtectCameraHandler ch = findChildHandler(id, UnifiProtectCameraHandler.class);
+                if (ch != null) {
+                    ch.refreshFromDevice(privCamera);
                 } else {
-                    discoveryService.discoverCamera(camera);
+                    discoveryService.discoverDevice(id, privCamera.name, privCamera.type,
+                            UnifiProtectBindingConstants.THING_TYPE_CAMERA, "Camera");
                 }
             });
-            apiClient.getPublicClient().listLights().forEach(light -> {
-                UnifiProtectLightHandler lh = findChildHandler(light.id, UnifiProtectLightHandler.class);
-                if (lh != null && bootstrap.lights.get(
-                        light.id) instanceof org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light privLight) {
-                    lh.refreshFromDevice(new LightDevice(privLight, light));
+            // Sync lights from Bootstrap
+            bootstrap.lights.forEach((id, privLight) -> {
+                UnifiProtectLightHandler lh = findChildHandler(id, UnifiProtectLightHandler.class);
+                if (lh != null) {
+                    lh.refreshFromDevice(privLight);
                 } else {
-                    discoveryService.discoverLight(light);
+                    discoveryService.discoverDevice(id, privLight.name, privLight.type,
+                            UnifiProtectBindingConstants.THING_TYPE_LIGHT, "Light");
                 }
             });
-            apiClient.getPublicClient().listSensors().forEach(sensor -> {
-                UnifiProtectSensorHandler sh = findChildHandler(sensor.id, UnifiProtectSensorHandler.class);
-                if (sh != null && bootstrap.sensors.get(
-                        sensor.id) instanceof org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Sensor privSensor) {
-                    sh.refreshFromDevice(new SensorDevice(privSensor, sensor));
+            // Sync sensors from Bootstrap
+            bootstrap.sensors.forEach((id, privSensor) -> {
+                UnifiProtectSensorHandler sh = findChildHandler(id, UnifiProtectSensorHandler.class);
+                if (sh != null) {
+                    sh.refreshFromDevice(privSensor);
                 } else {
-                    discoveryService.discoverSensor(sensor);
+                    discoveryService.discoverDevice(id, privSensor.name, privSensor.type,
+                            UnifiProtectBindingConstants.THING_TYPE_SENSOR, "Sensor");
                 }
             });
-            // Sync doorlocks (private API only, no public API endpoint)
+            // Sync doorlocks from Bootstrap
             bootstrap.doorlocks.forEach((id, privDoorlock) -> {
                 UnifiProtectDoorlockHandler dlh = findChildHandler(id, UnifiProtectDoorlockHandler.class);
                 if (dlh != null) {
-                    org.openhab.binding.unifiprotect.internal.api.pub.dto.Doorlock pubStub = new org.openhab.binding.unifiprotect.internal.api.pub.dto.Doorlock();
-                    pubStub.id = id;
-                    dlh.refreshFromDevice(new DoorklockDevice(privDoorlock, pubStub));
+                    dlh.refreshFromDevice(privDoorlock);
                 }
             });
-            // Sync chimes
-            apiClient.getPublicClient().listChimes().forEach(chime -> {
-                UnifiProtectChimeHandler ch = findChildHandler(chime.id, UnifiProtectChimeHandler.class);
-                if (ch != null && bootstrap.chimes.get(
-                        chime.id) instanceof org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Chime privChime) {
-                    ch.refreshFromDevice(new ChimeDevice(privChime, chime));
+            // Sync chimes from Bootstrap
+            bootstrap.chimes.forEach((id, privChime) -> {
+                UnifiProtectChimeHandler ch = findChildHandler(id, UnifiProtectChimeHandler.class);
+                if (ch != null) {
+                    ch.refreshFromDevice(privChime);
                 }
             });
-        } catch (IOException | InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             logger.debug("Initial sync failed", e);
         }
     }
@@ -617,9 +602,31 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                     }
                     break;
                 case LIGHT:
+                    UnifiProtectLightHandler lightHandler = findChildHandler(deviceId, UnifiProtectLightHandler.class);
+                    if (lightHandler != null) {
+                        org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light light = gson.fromJson(
+                                update.data,
+                                org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Light.class);
+                        if (light != null) {
+                            logger.trace("Private API light real-time update for device {} (action: {})", deviceId,
+                                    update.action);
+                            lightHandler.updateLightChannels(light);
+                        }
+                    }
+                    break;
                 case SENSOR:
-                    logger.trace("Private API {} real-time update for device {} (action: {})", update.modelType,
-                            deviceId, update.action);
+                    UnifiProtectSensorHandler sensorHandler = findChildHandler(deviceId,
+                            UnifiProtectSensorHandler.class);
+                    if (sensorHandler != null) {
+                        org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Sensor sensor = gson.fromJson(
+                                update.data,
+                                org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Sensor.class);
+                        if (sensor != null) {
+                            logger.trace("Private API sensor real-time update for device {} (action: {})", deviceId,
+                                    update.action);
+                            sensorHandler.refreshFromDevice(sensor);
+                        }
+                    }
                     break;
                 default:
                     break;

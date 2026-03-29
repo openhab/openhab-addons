@@ -21,14 +21,29 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum LightModeType {
     @SerializedName("off")
-    OFF,
+    OFF("off"),
 
     @SerializedName("motion")
-    MOTION,
+    MOTION("motion"),
 
     @SerializedName("on")
-    ON,
+    ON("on"),
 
     @SerializedName("when-dark")
-    WHEN_DARK
+    WHEN_DARK("when-dark");
+
+    private final String value;
+
+    LightModeType(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }
