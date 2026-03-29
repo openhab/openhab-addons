@@ -67,7 +67,7 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
 
     protected @Nullable ScheduledFuture<?> responseFuture = null;
 
-    public @Nullable STMStateMachine<?, ?> stm = null;
+    protected @Nullable STMStateMachine<?, ?> stm = null;
 
     public EnOceanBaseSensorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
         super(thing, itemChannelLinkRegistry);

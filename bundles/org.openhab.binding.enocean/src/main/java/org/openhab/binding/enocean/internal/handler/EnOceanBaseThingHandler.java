@@ -198,7 +198,7 @@ public abstract class EnOceanBaseThingHandler extends ConfigStatusThingHandler {
         return UnDefType.UNDEF;
     }
 
-    public void setState(ChannelUID channelUID, State state) {
+    protected void setState(ChannelUID channelUID, State state) {
         updateState(channelUID, state);
     }
 

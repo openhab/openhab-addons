@@ -13,6 +13,7 @@
 package org.openhab.binding.enocean.internal.statemachine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +37,6 @@ public class STMTransitionConfiguration<A extends Enum<A>, S extends Enum<S>> {
     }
 
     public List<STMTransition<A, S>> getTransitions() {
-        return transitions;
+        return Collections.unmodifiableList(transitions);
     }
 }

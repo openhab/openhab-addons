@@ -243,7 +243,6 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     @Override
     protected void sendRequestResponse() {
-        // sendMessage(VIRTUALCHANNEL_SEND_COMMAND, VIRTUALCHANNEL_SEND_COMMAND, OnOffType.ON, null);
         sendMessage(new ChannelUID(thing.getUID(), VIRTUALCHANNEL_SEND_COMMAND), OnOffType.ON);
     }
 

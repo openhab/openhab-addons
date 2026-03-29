@@ -80,23 +80,28 @@ public abstract class EEP {
     public EEP convertFromCommand(Thing thing, ChannelUID channelUID, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable STMStateMachine<?, ?> stm) {
 
+        String channelId = channelUID.getId();
         Channel channel = thing.getChannel(channelUID);
-        if (channel != null) {
-            Configuration config = channel.getConfiguration();
-            String channelId = channelUID.getId();
-            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-            String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+        // Virtual channels (e.g. sendCommand) are not registered as real Thing channels.
+        // Allow those through; for any other unknown channel, log and bail out.
+        if (channel == null && !VIRTUALCHANNEL_SEND_COMMAND.equals(channelId)) {
+            logger.debug("Channel {} not found on thing {}; ignoring command {}", channelUID, thing.getUID(), command);
+            return this;
+        }
 
-            if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
-                throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
-                        command.toString(), channelId, channelTypeId));
-            }
+        ChannelTypeUID channelTypeUID = (channel != null) ? channel.getChannelTypeUID() : null;
+        String channelTypeId = (channelTypeUID != null) ? channelTypeUID.getId() : "";
+        Configuration config = (channel != null) ? channel.getConfiguration() : new Configuration();
 
-            if (channelTypeId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
-                teachInQueryImpl(config);
-            } else {
-                convertFromCommandImpl(thing, channelUID, command, getCurrentStateFunc, stm);
-            }
+        if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
+            throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
+                    command.toString(), channelId, channelTypeId));
+        }
+
+        if (channelTypeId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
+            teachInQueryImpl(config);
+        } else {
+            convertFromCommandImpl(thing, channelUID, command, getCurrentStateFunc, stm);
         }
         return this;
     }
@@ -129,7 +134,7 @@ public abstract class EEP {
     }
 
     public @Nullable String convertToEvent(String channelId, String channelTypeId, @Nullable String lastEvent,
-            Configuration config, @Nullable STMStateMachine stm) {
+            Configuration config, @Nullable STMStateMachine<?, ?> stm) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
             throw new IllegalArgumentException(
                     String.format("Channel %s(%s) is not supported", channelId, channelTypeId));
