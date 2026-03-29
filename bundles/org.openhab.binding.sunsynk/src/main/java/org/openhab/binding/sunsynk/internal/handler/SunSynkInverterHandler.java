@@ -14,8 +14,7 @@ package org.openhab.binding.sunsynk.internal.handler;
 
 import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -65,7 +64,7 @@ import com.google.gson.JsonSyntaxException;
 public class SunSynkInverterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkInverterHandler.class);
-    private @Nullable ZonedDateTime lockoutTimer = null;
+    private @Nullable Instant lockoutTimer = null;
     private @Nullable DeviceController inverter;
     private @Nullable ScheduledFuture<?> refreshTask;
     private boolean batterySettingsUpdated = false;
@@ -270,14 +269,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     }
 
     public void refreshStateAndUpdate() {
-        ZonedDateTime lockoutTimer = this.lockoutTimer;
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
-        if (lockoutTimer != null && lockoutTimer.isAfter(now)) { // lockout calls that come
-                                                                 // too fast
+        Instant lockoutTimer = this.lockoutTimer;
+        if (lockoutTimer != null && lockoutTimer.isAfter(Instant.now())) { // lockout calls that come too fast
             logger.debug("API call too frequent, ignored {} ", lockoutTimer);
             return;
         }
-        this.lockoutTimer = now.plusMinutes(1); // lockout time 1 min
+        this.lockoutTimer =Instant.now(). plusSeconds(60); // lockout time 1 min
 
         Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
         if (!checkBridge.isPresent()) {
