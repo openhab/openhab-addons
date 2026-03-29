@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum PowerStatus {
+    OFFLINE(-1),
     STANDBY(0x00),
     ON(0x01),
     WARMUP(0x02),
