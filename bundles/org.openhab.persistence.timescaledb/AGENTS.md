@@ -74,7 +74,7 @@ CREATE INDEX ON items (item_id, time DESC);
 including reserved keys (`aggregation`, `downsampleInterval`, `retainRawDays`, `retentionDays`) and any
 user-defined tags (`location`, `kind`, etc.).
 
-```
+```java
 Number:Temperature MySensor {
     timescaledb="sensor.temperature" [ aggregation="AVG", downsampleInterval="1h",
         location="living_room", kind="sensor" ]
@@ -166,6 +166,7 @@ private Optional<Metadata> getItemMetadata(String itemName) {
 ```
 
 `Metadata` has:
+
 - `getValue()` → user-defined string (e.g. `"sensor.temperature"`), stored in `item_meta.value`
 - `getConfiguration()` → `Map<String, Object>` with keys like `"aggregation"`, `"downsampleInterval"`, `"retainRawDays"`, `"retentionDays"`, plus user-defined tags
 
@@ -244,6 +245,7 @@ WHERE item_id = ?
 ```
 
 **Important:**
+
 - `<interval>`, `<AGG_FN>`, `<retainRawDays>`, `<retentionDays>` are formatted into the SQL string — **never from user input directly**. Validate interval against allowlist, validate function against enum. Use `?` for `item_id`.
 - `last(unit, time)` is a TimescaleDB hyperfuction — verify it is available, otherwise use `MAX(unit)` as fallback.
 - Run steps 1+2 in a transaction per item to avoid partial state.
@@ -321,11 +323,11 @@ See `PERFORMANCE_TESTS.md` for SLOs, scale constants, and the heavy 18-month sce
 ## Common Pitfalls
 
 1. **TimescaleDB extension not installed**: check on startup with `SELECT extname FROM pg_extension WHERE extname='timescaledb'`, fail with a clear error if missing.
-2. **`last()` availability**: `last(unit, time)` requires the TimescaleDB Toolkit — check availability, fall back to `MAX(unit)` otherwise.
-3. **Compression + INSERT conflict**: compressed chunks are read-only. The downsampling INSERT must target the uncompressed region (data newer than `compressionAfterDays`). Ensure `retainRawDays < compressionAfterDays`.
-4. **Interval allowlist is mandatory**: `time_bucket('1h', time)` is dynamically formatted — any non-allowlisted value must throw before it reaches SQL.
-5. **`ON CONFLICT DO NOTHING`** on the aggregation INSERT: the job may run twice if interrupted; duplicate bucket rows must be prevented.
-6. **`QuantityType` unit changes**: never update `item_meta` with a unit — the unit lives on each row. On read, take the `unit` value from the row.
+1. **`last()` availability**: `last(unit, time)` requires the TimescaleDB Toolkit — check availability, fall back to `MAX(unit)` otherwise.
+1. **Compression + INSERT conflict**: compressed chunks are read-only. The downsampling INSERT must target the uncompressed region (data newer than `compressionAfterDays`). Ensure `retainRawDays < compressionAfterDays`.
+1. **Interval allowlist is mandatory**: `time_bucket('1h', time)` is dynamically formatted — any non-allowlisted value must throw before it reaches SQL.
+1. **`ON CONFLICT DO NOTHING`** on the aggregation INSERT: the job may run twice if interrupted; duplicate bucket rows must be prevented.
+1. **`QuantityType` unit changes**: never update `item_meta` with a unit — the unit lives on each row. On read, take the `unit` value from the row.
 
 ---
 
@@ -346,4 +348,3 @@ See `PERFORMANCE_TESTS.md` for SLOs, scale constants, and the heavy 18-month sce
 - [Compression](https://docs.timescale.com/use-timescale/latest/compression/)
 - InfluxDB persistence (metadata pattern): `bundles/org.openhab.persistence.influxdb/src/main/java/.../InfluxDBMetadataService.java`
 - Existing downsampling logic (Python/MongoDB): `DOWNSAMPLE_IMPLEMENTATION_GUIDE.md` in this bundle
-
