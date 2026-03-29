@@ -93,4 +93,3 @@ This binding has its own IconProvider and makes available the following list of 
 | oh:atmofrance:grasses  |   Yes   | ![Grasses](doc/images/grasses.svg)       |
 | oh:atmofrance:ragweed  |   Yes   | ![Ragweed](doc/images/ragweed.svg)       |
 | oh:atmofrance:wormwood |   Yes   | ![Wormwood](doc/images/wormwood.svg)     |
-
