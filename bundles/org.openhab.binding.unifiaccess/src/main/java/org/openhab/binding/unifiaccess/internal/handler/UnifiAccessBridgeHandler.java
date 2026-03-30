@@ -1,0 +1,384 @@
+/*
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.unifiaccess.internal.handler;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.unifiaccess.internal.UnifiAccessBindingConstants;
+import org.openhab.binding.unifiaccess.internal.UnifiAccessDiscoveryService;
+import org.openhab.binding.unifiaccess.internal.api.UniFiAccessApiClient;
+import org.openhab.binding.unifiaccess.internal.config.UnifiAccessBridgeConfiguration;
+import org.openhab.binding.unifiaccess.internal.dto.Device;
+import org.openhab.binding.unifiaccess.internal.dto.Door;
+import org.openhab.binding.unifiaccess.internal.dto.DoorEmergencySettings;
+import org.openhab.binding.unifiaccess.internal.dto.UniFiAccessApiException;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+/**
+ * Bridge handler that manages the UniFi Access API client, WebSocket
+ * notifications, and periodic device polling.
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
+@NonNullByDefault
+public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(UnifiAccessBridgeHandler.class);
+    private static final int MAX_RECONNECT_DELAY_SECONDS = 300;
+
+    final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    final Map<String, String> remoteViewRequestToDeviceId = new ConcurrentHashMap<>();
+
+    private final HttpClient httpClient;
+    private @Nullable UniFiAccessApiClient apiClient;
+    private UnifiAccessBridgeConfiguration config = new UnifiAccessBridgeConfiguration();
+    private @Nullable ScheduledFuture<?> reconnectFuture;
+    private @Nullable ScheduledFuture<?> pollingFuture;
+    private @Nullable UnifiAccessDiscoveryService discoveryService;
+    private @Nullable UnifiAccessNotificationRouter notificationRouter;
+    private int reconnectAttempt = 0;
+
+    public UnifiAccessBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
+        super(bridge);
+        httpClient = httpClientFactory.createHttpClient(UnifiAccessBindingConstants.BINDING_ID,
+                new SslContextFactory.Client(true));
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(UnifiAccessDiscoveryService.class);
+    }
+
+    @Override
+    public void initialize() {
+        logger.debug("Initializing bridge handler");
+        config = getConfigAs(UnifiAccessBridgeConfiguration.class);
+        notificationRouter = new UnifiAccessNotificationRouter(gson, this, remoteViewRequestToDeviceId);
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(this::connect);
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing bridge handler");
+        cancelPolling();
+        try {
+            UniFiAccessApiClient client = this.apiClient;
+            if (client != null) {
+                client.close();
+            }
+        } catch (Exception e) {
+            logger.debug("Failed to close notifications WebSocket: {}", e.getMessage());
+        }
+        cancelReconnect();
+        try {
+            httpClient.stop();
+        } catch (Exception ignored) {
+        }
+        super.dispose();
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            scheduler.execute(this::syncDevices);
+            return;
+        }
+        String channelId = channelUID.getId();
+        if (UnifiAccessBindingConstants.CHANNEL_BRIDGE_EMERGENCY_STATUS.equals(channelId)) {
+            UniFiAccessApiClient api = this.apiClient;
+            if (api == null) {
+                return;
+            }
+            String value = command.toString().toLowerCase(java.util.Locale.ROOT);
+            DoorEmergencySettings des = new DoorEmergencySettings();
+            String status = "normal";
+            if ("lockdown".equals(value)) {
+                des.lockdown = Boolean.TRUE;
+                des.evacuation = Boolean.FALSE;
+                status = "lockdown";
+            } else if ("evacuation".equals(value)) {
+                des.lockdown = Boolean.FALSE;
+                des.evacuation = Boolean.TRUE;
+                status = "evacuation";
+            } else {
+                des.lockdown = Boolean.FALSE;
+                des.evacuation = Boolean.FALSE;
+            }
+            try {
+                api.setEmergencySettings(des);
+                updateState(UnifiAccessBindingConstants.CHANNEL_BRIDGE_EMERGENCY_STATUS, new StringType(status));
+            } catch (UniFiAccessApiException e) {
+                logger.debug("Failed to set emergency settings: {}", e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        super.childHandlerInitialized(childHandler, childThing);
+        logger.debug("Child handler initialized: {}", childHandler);
+        if (childHandler instanceof UnifiAccessBaseHandler && getThing().getStatus() == ThingStatus.ONLINE) {
+            syncDevices();
+        }
+    }
+
+    private synchronized void connect() {
+        UniFiAccessApiClient client = this.apiClient;
+        if (client != null) {
+            client.close();
+        }
+        if (!httpClient.isStarted()) {
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                logger.debug("Failed to start HTTP client: {}", e.getMessage());
+                setOfflineAndReconnect(e.getMessage());
+                return;
+            }
+        }
+        client = new UniFiAccessApiClient(httpClient, config.host, gson, config.username, config.password, scheduler);
+        this.apiClient = client;
+        UnifiAccessNotificationRouter router = this.notificationRouter;
+        try {
+            client.openNotifications(() -> {
+                logger.debug("Notifications WebSocket opened");
+                reconnectAttempt = 0;
+                updateStatus(ThingStatus.ONLINE);
+                startPolling();
+                scheduler.execute(UnifiAccessBridgeHandler.this::syncDevices);
+            }, notification -> {
+                if (router != null) {
+                    router.routeNotification(notification);
+                }
+            }, error -> {
+                logger.debug("Notifications error: {}", error.getMessage());
+                setOfflineAndReconnect(error.getMessage());
+            }, (statusCode, reason) -> {
+                logger.debug("Notifications closed: {} - {}", statusCode, reason);
+                setOfflineAndReconnect(reason);
+            });
+        } catch (UniFiAccessApiException e) {
+            logger.debug("Failed to open notifications WebSocket", e);
+            if (e.isAuthFailure()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication failed - check API token");
+            } else {
+                setOfflineAndReconnect("Failed to open notifications WebSocket");
+            }
+        }
+    }
+
+    public void setDiscoveryService(UnifiAccessDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
+
+    private void setOfflineAndReconnect(@Nullable String message) {
+        ScheduledFuture<?> reconnectFuture = this.reconnectFuture;
+        if (reconnectFuture != null && !reconnectFuture.isDone()) {
+            return;
+        }
+        cancelPolling();
+        String msg = message != null ? message : "Unknown error";
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);
+
+        int delay = Math.min((int) Math.pow(2, reconnectAttempt) * 5, MAX_RECONNECT_DELAY_SECONDS);
+        reconnectAttempt++;
+        logger.debug("Scheduling reconnect in {} seconds (attempt {})", delay, reconnectAttempt);
+
+        this.reconnectFuture = scheduler.schedule(() -> {
+            try {
+                scheduler.execute(this::connect);
+            } catch (Exception ex) {
+                logger.debug("Reconnect attempt failed to schedule connect: {}", ex.getMessage());
+            }
+        }, delay, TimeUnit.SECONDS);
+    }
+
+    private void cancelReconnect() {
+        try {
+            ScheduledFuture<?> f = reconnectFuture;
+            if (f != null) {
+                f.cancel(true);
+            }
+        } catch (Exception ignored) {
+        } finally {
+            reconnectFuture = null;
+        }
+    }
+
+    private void startPolling() {
+        cancelPolling();
+        int interval = config.refreshInterval;
+        if (interval > 0) {
+            pollingFuture = scheduler.scheduleWithFixedDelay(this::syncDevices, interval, interval, TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelPolling() {
+        ScheduledFuture<?> f = pollingFuture;
+        if (f != null) {
+            f.cancel(true);
+            pollingFuture = null;
+        }
+    }
+
+    synchronized void syncDevices() {
+        UniFiAccessApiClient client = this.apiClient;
+        if (client == null) {
+            return;
+        }
+        try {
+            List<Door> doors = client.getDoors();
+            List<Device> devices = client.getDevices();
+
+            // For discovery: exclude devices whose locationId matches a door (avoid duplicate things).
+            // For state sync: update ALL devices that have handlers, regardless of locationId.
+            List<Device> discoveryDevices = devices.stream()
+                    .filter(device -> device.locationId == null
+                            || !doors.stream().anyMatch(door -> door.id.equals(device.locationId)))
+                    .collect(Collectors.toList());
+
+            UnifiAccessDiscoveryService discoveryService = this.discoveryService;
+            if (discoveryService != null) {
+                discoveryService.discoverDoors(doors);
+                discoveryService.discoverDevices(discoveryDevices);
+            }
+            logger.trace("Polled UniFi Access: {} doors, {} devices", doors.size(), devices.size());
+            for (Door door : doors) {
+                logger.trace("Checking door: {}", door.id);
+                UnifiAccessDoorHandler dh = getDoorHandler(door.id);
+                if (dh != null) {
+                    logger.trace("Updating door: {}", dh.deviceId);
+                    dh.updateFromDoor(door);
+                }
+            }
+            for (Device device : devices) {
+                String devId = device.id;
+                if (devId == null || device.isHub()) {
+                    continue;
+                }
+                UnifiAccessDeviceHandler dh = getDeviceHandler(devId);
+                if (dh != null) {
+                    logger.debug("Syncing device {} (type={}, online={}, locationId={})", device.id, device.type,
+                            device.isOnline, device.locationId);
+                    // Set online/offline based on device status, independent of settings
+                    boolean online = !Boolean.FALSE.equals(device.isOnline);
+                    dh.updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_ONLINE,
+                            online ? OnOffType.ON : OnOffType.OFF);
+                    if (!online) {
+                        dh.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                "Device reported as offline");
+                    } else if (dh.getThing().getStatus() != ThingStatus.ONLINE) {
+                        dh.setOnline();
+                    }
+                    // Update thing properties from device metadata
+                    dh.updateDeviceProperties(device);
+                    // Cross-populate door state for devices linked to a door
+                    if (device.locationId != null) {
+                        doors.stream().filter(d -> d.id.equals(device.locationId)).findFirst()
+                                .ifPresent(dh::updateFromDoor);
+                    }
+                    // Store configs and build settings from bootstrap
+                    dh.updateConfigMap(device.configMap);
+                    if (!device.configMap.isEmpty()) {
+                        var settings = UniFiAccessApiClient.buildSettingsFromConfigs(device.configMap);
+                        dh.updateFromSettings(settings);
+                    }
+                }
+            }
+        } catch (UniFiAccessApiException e) {
+            logger.debug("Polling error: {}", e.getMessage());
+            if (e.isAuthFailure()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication failed - check API token");
+                cancelPolling();
+            }
+        }
+    }
+
+    public @Nullable UniFiAccessApiClient getApiClient() {
+        return apiClient;
+    }
+
+    public @Nullable UnifiAccessBridgeConfiguration getUaConfig() {
+        return config;
+    }
+
+    // -- Package-private handler lookup methods used by NotificationRouter --
+
+    @Nullable
+    UnifiAccessDoorHandler getDoorHandler(String doorId) {
+        if (getBaseHandler(doorId) instanceof UnifiAccessDoorHandler dh) {
+            return dh;
+        }
+        return null;
+    }
+
+    @Nullable
+    UnifiAccessDeviceHandler getDeviceHandler(String deviceId) {
+        if (getBaseHandler(deviceId) instanceof UnifiAccessDeviceHandler dh) {
+            return dh;
+        }
+        return null;
+    }
+
+    @Nullable
+    UnifiAccessBaseHandler getBaseHandler(String deviceId) {
+        for (Thing t : getThing().getThings()) {
+            if (t.getHandler() instanceof UnifiAccessBaseHandler bh && bh.deviceId.equals(deviceId)) {
+                return bh;
+            }
+        }
+        return null;
+    }
+
+    // -- Package-private bridge channel helpers used by NotificationRouter --
+
+    void fireTriggerChannel(String channelId, String payload) {
+        triggerChannel(channelId, payload);
+    }
+
+    void updateBridgeState(String channelId, State state) {
+        updateState(channelId, state);
+    }
+}
