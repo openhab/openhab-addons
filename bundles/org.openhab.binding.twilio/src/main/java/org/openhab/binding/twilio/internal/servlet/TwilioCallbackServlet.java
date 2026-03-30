@@ -258,7 +258,7 @@ public class TwilioCallbackServlet extends HttpServlet {
             TwilioApiClient client = accountHandler.getApiClient();
             if (client != null) {
                 String signature = req.getHeader(TWILIO_SIGNATURE_HEADER);
-                String requestUrl = getExternalRequestUrl(req, accountHandler);
+                String requestUrl = getExternalRequestUrl(req, accountHandler, handler, endpoint);
                 logger.trace("Validating signature: url={}, signature={}", requestUrl, signature);
 
                 if (!TwilioSignatureValidator.validate(requestUrl, params, signature, client.getAuthToken())) {
@@ -450,11 +450,21 @@ public class TwilioCallbackServlet extends HttpServlet {
 
     /**
      * Returns the externally-visible request URL for signature validation.
-     * Uses the configured publicUrl when available to handle reverse proxy / TLS termination
-     * scenarios where req.getRequestURL() returns an internal HTTP URL but Twilio signs
-     * against the external HTTPS URL.
+     * Checks cloud webhook URLs first, then falls back to publicUrl, then to
+     * the raw request URL. This handles reverse proxy, TLS termination, and
+     * cloud webhook scenarios.
      */
-    private String getExternalRequestUrl(HttpServletRequest req, TwilioAccountHandler accountHandler) {
+    private String getExternalRequestUrl(HttpServletRequest req, TwilioAccountHandler accountHandler,
+            TwilioPhoneHandler handler, String endpoint) {
+        // Check for cloud webhook URL first — Twilio signs against exactly the URL
+        // it was given, which is the bare cloud webhook URL with no query string.
+        // The cloud proxy may add an empty "?" to the local request, so we ignore
+        // the query string entirely for cloud webhooks.
+        String cloudUrl = handler.getCloudWebhookUrl(endpoint);
+        if (cloudUrl != null) {
+            return cloudUrl;
+        }
+
         String publicUrl = accountHandler.getAccountConfig().publicUrl;
         String base;
         if (publicUrl != null && !publicUrl.isBlank()) {

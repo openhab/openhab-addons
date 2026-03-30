@@ -30,9 +30,16 @@
 			<parameter name="autoConfigureWebhooks" type="boolean" required="false">
 				<label>Auto-Configure Webhooks</label>
 				<description>When enabled, automatically configures webhook URLs on Twilio phone numbers via the API. Requires
-					Public URL to be set.</description>
-				<default>false</default>
+					Public URL or Cloud Webhook to be configured.</description>
+				<default>true</default>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="useCloudWebhook" type="boolean" required="false">
+				<label>Use openHAB Cloud Webhooks</label>
+				<description>When enabled, uses the openHAB Cloud service to provide publicly-reachable webhook URLs for receiving
+					incoming messages and calls. Requires the openHAB Cloud Connector add-on to be installed and connected. This
+					eliminates the need for port forwarding or a reverse proxy.</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

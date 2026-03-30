@@ -35,12 +35,14 @@ The account bridge itself must be created manually with your [Twilio Console](ht
 | authToken | text | Twilio Auth Token | N/A | yes | no |
 | publicUrl | text | Public-facing base URL for webhooks (e.g. `https://my.domain.com`) | N/A | no | yes |
 | autoConfigureWebhooks | boolean | Automatically set webhook URLs on Twilio phone numbers via API | false | no | yes |
+| useCloudWebhook | boolean | Use openHAB Cloud for webhook callbacks (no port forwarding needed) | false | no | yes |
 
 The Account SID and Auth Token can be found in the [Twilio Console](https://console.twilio.com/).
 
-The `publicUrl` is required to receive incoming messages and calls.
-Your openHAB instance must be reachable from the internet at this URL.
-You can use a reverse proxy, port forwarding, or a service like ngrok.
+To receive incoming messages and calls, you need **one** of the following:
+
+- **openHAB Cloud Webhooks** (recommended): Set `useCloudWebhook` to `true`. Requires the openHAB Cloud Connector add-on to be installed and connected. No port forwarding or reverse proxy needed.
+- **Public URL**: Set `publicUrl` to a publicly-reachable URL for your openHAB instance. You can use a reverse proxy, port forwarding, or a service like ngrok.
 
 ### `phone` Thing Configuration
 
@@ -482,6 +484,33 @@ The timeout is configurable per phone thing via the `responseTimeout` advanced p
 ## Webhook Setup
 
 To receive incoming messages and calls, you need to configure webhooks so Twilio can reach your openHAB instance.
+There are three options, from simplest to most advanced.
+
+### Option 1: openHAB Cloud Webhooks (Recommended)
+
+The simplest approach is to use the openHAB Cloud service to provide publicly-reachable webhook URLs.
+This eliminates the need for port forwarding, reverse proxies, or a public IP address.
+
+**Requirements:**
+
+- The [openHAB Cloud Connector](https://www.openhab.org/addons/integrations/openhabcloud/) add-on must be installed and connected
+
+**Setup:**
+
+1. Enable `useCloudWebhook` on the bridge (set to `true`)
+2. Optionally enable `autoConfigureWebhooks` to have the binding automatically set the webhook URLs on your Twilio phone numbers
+3. If not using auto-configure, copy the webhook URLs from the phone thing properties in the UI and paste them into the [Twilio Console](https://console.twilio.com/)
+
+The binding will register cloud webhook URLs (e.g. `https://myopenhab.org/api/hooks/{uuid}`) for each endpoint.
+These URLs are shown in the phone thing properties.
+
+**Note:** Sending MMS or WhatsApp messages with media attachments still requires `publicUrl` to be set, since Twilio needs to download the media from your openHAB instance. Cloud webhooks handle incoming callbacks only.
+
+```java
+Bridge twilio:account:myaccount "Twilio Account" [ accountSid="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", authToken="your_auth_token", useCloudWebhook=true, autoConfigureWebhooks=true ] {
+    Thing phone myphone "My Twilio Number" [ phoneNumber="+15551234567" ]
+}
+```
 
 ### URL Structure
 
@@ -524,7 +553,7 @@ location /twilio/callback/ {
 }
 ```
 
-### Option 1: Manual Configuration
+### Option 2: Manual Configuration (Public URL)
 
 1. Set the `publicUrl` on the bridge (e.g. `https://my.domain.com`)
 2. Create a phone thing — the webhook URLs will appear as thing properties in the UI
@@ -532,7 +561,7 @@ location /twilio/callback/ {
    - **Messaging > A Message Comes In**: paste the `smsWebhookUrl` property value
    - **Voice & Fax > A Call Comes In**: paste the `voiceWebhookUrl` property value
 
-### Option 2: Auto-Configure
+### Option 3: Auto-Configure (Public URL)
 
 1. Set the `publicUrl` on the bridge
 2. Enable `autoConfigureWebhooks` on the bridge

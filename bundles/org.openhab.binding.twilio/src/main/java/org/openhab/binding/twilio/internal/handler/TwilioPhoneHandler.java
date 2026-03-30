@@ -20,6 +20,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,10 +61,16 @@ public class TwilioPhoneHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TwilioPhoneHandler.class);
 
+    private static final long WEBHOOK_REFRESH_INTERVAL_HOURS = 24;
+    private static final String WEBHOOK_SERVICE_CLASS = "org.openhab.io.openhabcloud.WebhookService";
+
     private final TwilioCallbackServlet callbackServlet;
     private final ItemRegistry itemRegistry;
+
     private TwilioPhoneConfiguration config = new TwilioPhoneConfiguration();
     private @Nullable String phoneNumber;
+    private final Map<String, String> cloudWebhookUrls = new ConcurrentHashMap<>();
+    private @Nullable ScheduledFuture<?> webhookRefreshTask;
 
     public TwilioPhoneHandler(Thing thing, TwilioCallbackServlet callbackServlet, ItemRegistry itemRegistry) {
         super(thing);
@@ -91,7 +100,13 @@ public class TwilioPhoneHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> task = webhookRefreshTask;
+        if (task != null) {
+            task.cancel(true);
+            webhookRefreshTask = null;
+        }
         callbackServlet.unregisterHandler(thing.getUID().getAsString());
+        removeCloudWebhooks();
         super.dispose();
     }
 
@@ -154,9 +169,39 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns the webhook base URL for this phone thing, or null if publicUrl is not configured.
+     * Returns the webhook URL for a specific endpoint. Checks cloud webhook URLs first,
+     * then falls back to publicUrl-based URLs.
+     *
+     * @param endpoint the webhook endpoint (e.g. "sms", "voice", "gather", "status")
+     * @return the full webhook URL, or null if no public URL is available
      */
-    public @Nullable String getWebhookBaseUrl() {
+    public @Nullable String getWebhookUrl(String endpoint) {
+        String cloudUrl = cloudWebhookUrls.get(endpoint);
+        if (cloudUrl != null) {
+            return cloudUrl;
+        }
+        String baseUrl = getPublicUrlBase();
+        return baseUrl != null ? baseUrl + "/" + endpoint : null;
+    }
+
+    /**
+     * Returns the cloud webhook URL for a specific endpoint, if registered.
+     */
+    public @Nullable String getCloudWebhookUrl(String endpoint) {
+        return cloudWebhookUrls.get(endpoint);
+    }
+
+    /**
+     * Returns true if cloud webhooks are active for this phone.
+     */
+    public boolean isUsingCloudWebhooks() {
+        return !cloudWebhookUrls.isEmpty();
+    }
+
+    /**
+     * Returns the webhook base URL using the configured publicUrl, or null if not configured.
+     */
+    private @Nullable String getPublicUrlBase() {
         TwilioAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
             return null;
@@ -172,10 +217,17 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns the media serving base URL, or null if publicUrl is not configured.
-     * Media URLs don't include the thingUID since UUIDs are globally unique.
+     * Returns the media serving base URL. Checks cloud webhook URL first,
+     * then falls back to publicUrl. The returned URL can have media UUIDs
+     * appended as sub-paths (e.g. {@code baseUrl + "/" + mediaUuid}).
+     *
+     * @return the media base URL, or null if neither cloud webhook nor publicUrl is available
      */
     public @Nullable String getMediaBaseUrl() {
+        String cloudUrl = cloudWebhookUrls.get(WEBHOOK_MEDIA);
+        if (cloudUrl != null) {
+            return cloudUrl;
+        }
         TwilioAccountHandler accountHandler = getAccountHandler();
         if (accountHandler == null) {
             return null;
@@ -338,9 +390,9 @@ public class TwilioPhoneHandler extends BaseThingHandler {
      * Replaces {gatherUrl} placeholder in TwiML with the actual gather webhook URL.
      */
     public String replaceTwimlPlaceholders(String twiml) {
-        String baseUrl = getWebhookBaseUrl();
-        if (baseUrl != null) {
-            return twiml.replace("{gatherUrl}", baseUrl + "/" + WEBHOOK_GATHER);
+        String gatherUrl = getWebhookUrl(WEBHOOK_GATHER);
+        if (gatherUrl != null) {
+            return twiml.replace("{gatherUrl}", gatherUrl);
         }
         return twiml;
     }
@@ -349,17 +401,18 @@ public class TwilioPhoneHandler extends BaseThingHandler {
      * Returns the status callback URL, or null if not available.
      */
     public @Nullable String getStatusCallbackUrl() {
-        String baseUrl = getWebhookBaseUrl();
-        return baseUrl != null ? baseUrl + "/" + WEBHOOK_STATUS : null;
+        return getWebhookUrl(WEBHOOK_STATUS);
     }
 
     private void updateWebhookProperties() {
         Map<String, String> properties = new HashMap<>(editProperties());
-        String baseUrl = getWebhookBaseUrl();
-        if (baseUrl != null) {
-            properties.put(PROPERTY_SMS_WEBHOOK_URL, baseUrl + "/" + WEBHOOK_SMS);
-            properties.put(PROPERTY_VOICE_WEBHOOK_URL, baseUrl + "/" + WEBHOOK_VOICE);
-            properties.put(PROPERTY_STATUS_CALLBACK_URL, baseUrl + "/" + WEBHOOK_STATUS);
+        String smsUrl = getWebhookUrl(WEBHOOK_SMS);
+        String voiceUrl = getWebhookUrl(WEBHOOK_VOICE);
+        String statusUrl = getWebhookUrl(WEBHOOK_STATUS);
+        if (smsUrl != null) {
+            properties.put(PROPERTY_SMS_WEBHOOK_URL, smsUrl);
+            properties.put(PROPERTY_VOICE_WEBHOOK_URL, voiceUrl != null ? voiceUrl : "");
+            properties.put(PROPERTY_STATUS_CALLBACK_URL, statusUrl != null ? statusUrl : "");
         } else {
             String localBase = "http://localhost:8080" + SERVLET_PATH + "/" + thing.getUID().getAsString();
             properties.put(PROPERTY_SMS_WEBHOOK_URL, localBase + "/" + WEBHOOK_SMS + " (local only)");
@@ -385,32 +438,176 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         // Register with the callback servlet
         callbackServlet.registerHandler(thing.getUID().getAsString(), this);
 
+        // Manage cloud webhooks based on config
+        TwilioAccountConfiguration accountConfig = accountHandler.getAccountConfig();
+        if (accountConfig.useCloudWebhook) {
+            registerCloudWebhooks();
+        } else {
+            removeCloudWebhooks();
+        }
+
         // Set webhook URL properties
         updateWebhookProperties();
 
         // Auto-configure webhooks if enabled
-        TwilioAccountConfiguration accountConfig = accountHandler.getAccountConfig();
-        if (accountConfig.autoConfigureWebhooks) {
-            String baseUrl = getWebhookBaseUrl();
-            String localPhoneNumber = phoneNumber;
-            if (baseUrl != null && localPhoneNumber != null) {
-                try {
-                    String phoneSid = client.lookupPhoneNumberSid(localPhoneNumber);
-                    if (phoneSid != null) {
-                        client.configureWebhooks(phoneSid, baseUrl + "/" + WEBHOOK_SMS, baseUrl + "/" + WEBHOOK_VOICE,
-                                baseUrl + "/" + WEBHOOK_STATUS);
-                        logger.debug("Auto-configured webhooks for phone number {}", phoneNumber);
-                    } else {
-                        logger.debug("Could not find phone number SID for {}", phoneNumber);
-                    }
-                } catch (TwilioApiException e) {
-                    logger.debug("Failed to auto-configure webhooks: {}", e.getMessage());
-                }
-            } else {
-                logger.debug("Cannot auto-configure webhooks: publicUrl not set on bridge");
-            }
-        }
+        configureWebhooksOnTwilio();
 
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    /**
+     * Dynamically looks up the WebhookService from the OSGi service registry via reflection.
+     * Avoids any compile-time or class-loading dependency on the openHAB Cloud package,
+     * so the binding works regardless of whether the cloud add-on is installed.
+     *
+     * @return the service object, or null if not available
+     */
+    private @Nullable Object getWebhookService() {
+        try {
+            org.osgi.framework.BundleContext ctx = org.osgi.framework.FrameworkUtil.getBundle(getClass())
+                    .getBundleContext();
+            if (ctx == null) {
+                return null;
+            }
+            org.osgi.framework.ServiceReference<?>[] refs = ctx.getAllServiceReferences(WEBHOOK_SERVICE_CLASS, null);
+            if (refs == null || refs.length == 0) {
+                return null;
+            }
+            return ctx.getService(refs[0]);
+        } catch (Exception e) {
+            logger.debug("Could not look up WebhookService: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Calls requestWebhook(localPath) on the WebhookService via reflection.
+     * Returns the webhook URL, or null on failure.
+     */
+    @SuppressWarnings("unchecked")
+    private @Nullable String invokeRequestWebhook(Object webhookService, String localPath) {
+        try {
+            java.lang.reflect.Method method = webhookService.getClass().getMethod("requestWebhook", String.class);
+            java.util.concurrent.CompletableFuture<String> future = (java.util.concurrent.CompletableFuture<String>) method
+                    .invoke(webhookService, localPath);
+            return future.get(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        } catch (Exception e) {
+            logger.debug("Failed to request cloud webhook for {}: {}", localPath, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Calls removeWebhook(localPath) on the WebhookService via reflection.
+     */
+    private void invokeRemoveWebhook(Object webhookService, String localPath) {
+        try {
+            java.lang.reflect.Method method = webhookService.getClass().getMethod("removeWebhook", String.class);
+            method.invoke(webhookService, localPath);
+        } catch (Exception e) {
+            logger.debug("Failed to remove cloud webhook for {}: {}", localPath, e.getMessage());
+        }
+    }
+
+    private void registerCloudWebhooks() {
+        Object ws = getWebhookService();
+        if (ws == null) {
+            logger.debug("Cloud webhook requested but WebhookService not available. Install the openHAB Cloud add-on.");
+            return;
+        }
+
+        refreshCloudWebhooks(ws);
+
+        // Schedule daily refresh to keep the 30-day TTL from expiring
+        webhookRefreshTask = scheduler.scheduleWithFixedDelay(() -> {
+            Object refreshWs = getWebhookService();
+            if (refreshWs != null) {
+                refreshCloudWebhooks(refreshWs);
+            }
+        }, WEBHOOK_REFRESH_INTERVAL_HOURS, WEBHOOK_REFRESH_INTERVAL_HOURS, TimeUnit.HOURS);
+    }
+
+    private void refreshCloudWebhooks(Object ws) {
+        String thingUID = thing.getUID().getAsString();
+        // Per-phone endpoints (path includes thingUID)
+        String[] phoneEndpoints = { WEBHOOK_SMS, WEBHOOK_VOICE, WEBHOOK_GATHER, WEBHOOK_STATUS };
+        for (String endpoint : phoneEndpoints) {
+            String localPath = SERVLET_PATH + "/" + thingUID + "/" + endpoint;
+            String webhookUrl = invokeRequestWebhook(ws, localPath);
+            if (webhookUrl != null) {
+                cloudWebhookUrls.put(endpoint, webhookUrl);
+                logger.debug("Registered cloud webhook for {}: {}", endpoint, webhookUrl);
+            }
+        }
+        // Media endpoint (shared path, sub-paths appended by callers)
+        String mediaLocalPath = SERVLET_PATH + "/" + WEBHOOK_MEDIA;
+        String mediaUrl = invokeRequestWebhook(ws, mediaLocalPath);
+        if (mediaUrl != null) {
+            cloudWebhookUrls.put(WEBHOOK_MEDIA, mediaUrl);
+            logger.debug("Registered cloud webhook for media: {}", mediaUrl);
+        }
+        // Update Twilio with the current webhook URLs
+        updateWebhookProperties();
+        configureWebhooksOnTwilio();
+    }
+
+    private void configureWebhooksOnTwilio() {
+        TwilioAccountHandler accountHandler = getAccountHandler();
+        if (accountHandler == null) {
+            return;
+        }
+        TwilioAccountConfiguration accountConfig = accountHandler.getAccountConfig();
+        if (!accountConfig.autoConfigureWebhooks) {
+            return;
+        }
+        TwilioApiClient client = accountHandler.getApiClient();
+        if (client == null) {
+            return;
+        }
+        String smsUrl = getWebhookUrl(WEBHOOK_SMS);
+        String voiceUrl = getWebhookUrl(WEBHOOK_VOICE);
+        String statusUrl = getWebhookUrl(WEBHOOK_STATUS);
+        String localPhoneNumber = phoneNumber;
+        if (smsUrl != null && voiceUrl != null && statusUrl != null && localPhoneNumber != null) {
+            try {
+                String phoneSid = client.lookupPhoneNumberSid(localPhoneNumber);
+                if (phoneSid != null) {
+                    client.configureWebhooks(phoneSid, smsUrl, voiceUrl, statusUrl);
+                    logger.debug("Auto-configured webhooks for phone number {}", phoneNumber);
+                } else {
+                    logger.debug("Could not find phone number SID for {}", phoneNumber);
+                }
+            } catch (TwilioApiException e) {
+                logger.debug("Failed to auto-configure webhooks: {}", e.getMessage());
+            }
+        } else {
+            logger.debug("Cannot auto-configure webhooks: no webhook URLs available");
+        }
+    }
+
+    private void removeCloudWebhooks() {
+        // Cancel the refresh task
+        ScheduledFuture<?> task = webhookRefreshTask;
+        if (task != null) {
+            task.cancel(true);
+            webhookRefreshTask = null;
+        }
+        if (cloudWebhookUrls.isEmpty()) {
+            return;
+        }
+        Object ws = getWebhookService();
+        if (ws != null) {
+            String thingUID = thing.getUID().getAsString();
+            String[] endpoints = { WEBHOOK_SMS, WEBHOOK_VOICE, WEBHOOK_GATHER, WEBHOOK_STATUS };
+            for (String endpoint : endpoints) {
+                String localPath = SERVLET_PATH + "/" + thingUID + "/" + endpoint;
+                invokeRemoveWebhook(ws, localPath);
+            }
+            invokeRemoveWebhook(ws, SERVLET_PATH + "/" + WEBHOOK_MEDIA);
+        }
+        cloudWebhookUrls.clear();
     }
 }

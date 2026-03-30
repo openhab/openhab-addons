@@ -26,5 +26,6 @@ public class TwilioAccountConfiguration {
     public @Nullable String accountSid;
     public @Nullable String authToken;
     public @Nullable String publicUrl;
-    public boolean autoConfigureWebhooks = false;
+    public boolean autoConfigureWebhooks = true;
+    public boolean useCloudWebhook = false;
 }
