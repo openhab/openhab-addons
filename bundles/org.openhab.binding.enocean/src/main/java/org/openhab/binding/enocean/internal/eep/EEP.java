@@ -106,6 +106,20 @@ public abstract class EEP {
         return this;
     }
 
+    public EEP convertFromCommand(String channelId, String channelTypeId, Command command,
+            Function<String, State> getCurrentStateFunc, @Nullable Configuration channelConfig) {
+        if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {
+            throw new IllegalArgumentException(String.format("Command %s of channel %s(%s) is not supported",
+                    command.toString(), channelId, channelTypeId));
+        }
+        if (channelTypeId.equals(CHANNEL_TEACHINCMD) && command == OnOffType.ON) {
+            teachInQueryImpl(channelConfig);
+        } else {
+            convertFromCommandImpl(channelId, channelTypeId, command, getCurrentStateFunc, channelConfig);
+        }
+        return this;
+    }
+
     public State convertToState(String channelId, String channelTypeId, Configuration config,
             Function<String, @Nullable State> getCurrentStateFunc, @Nullable STMStateMachine<?, ?> stm) {
         if (!getEEPType().isChannelSupported(channelId, channelTypeId)) {

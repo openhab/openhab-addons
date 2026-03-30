@@ -102,7 +102,7 @@ public class EnOceanBindingConstants {
 
     public static final String CHANNEL_DIMMER = "dimmer";
     public static final String CHANNEL_ROLLERSHUTTER = "rollershutter";
-    public static final String CHANNEL_STATEMACHINESTATE = "statemachine";
+    public static final String CHANNEL_STATEMACHINESTATE = "state-machine";
     public static final String CHANNEL_ANGLE = "angle";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";

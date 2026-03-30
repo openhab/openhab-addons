@@ -336,31 +336,34 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     /**
      * Callback invoked when the state machine changes state.
-     * Updates the state channel and persists the state to Thing properties.
+     * Updates the state channel. Persistence across restarts is delegated to the openHAB item
+     * persistence layer: link the state machine channel to a String item and configure a persistence
+     * service (e.g. mapdb with restoreOnStartup) to survive restarts.
      *
      * @param newState the new state
      */
     private void onStateChanged(Enum<?> newState) {
         updateState(CHANNEL_STATEMACHINESTATE, new StringType(newState.name()));
-        updateProperty("lastSTMState", newState.name());
-        logger.debug("STM state changed to {}, persisted to Thing properties", newState);
+        logger.debug("STM state changed to {}", newState);
     }
 
     /**
-     * Restores the state machine state from Thing properties after restart.
+     * Restores the state machine state from the linked item's persisted state after restart.
+     * If a String item is linked to the state machine channel and a persistence service with
+     * restoreOnStartup is configured, the last known state is restored into the state machine.
      * Note: State restoration requires the state machine to be initialized first.
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void restoreStateMachineState() {
-        String lastState = getThing().getProperties().get("lastSTMState");
-        if (lastState != null && stm != null) {
+        if (getCurrentState(CHANNEL_STATEMACHINESTATE) instanceof StringType stringState && stm != null) {
+            String lastState = stringState.toString();
             try {
                 // Get the state enum class from the state machine's current state
                 Enum<?> currentState = stm.getState();
                 Class<? extends Enum> stateClass = currentState.getDeclaringClass();
                 Enum<?> restoredState = Enum.valueOf(stateClass, lastState);
                 ((STMStateMachine) stm).restoreState(restoredState);
-                logger.debug("Restored STM state from properties: {}", restoredState);
+                logger.debug("Restored STM state from linked item: {}", restoredState);
             } catch (IllegalArgumentException e) {
                 logger.debug("Could not restore STM state '{}', using initial state", lastState);
             }

@@ -46,7 +46,7 @@ public class ExampleTransitions {
      * Simple three-state workflow demonstrating basic state machine functionality.
      */
     public static final STMTransitionConfiguration<ExampleAction, ExampleState> SIMPLE = new STMTransitionConfiguration<>(
-            Arrays.asList(
+            Arrays.<STMTransition<ExampleAction, ExampleState>> asList(
                     // IDLE → WARMUP when START action occurs
                     new STMTransition<>(ExampleState.IDLE, ExampleAction.START, ExampleState.WARMUP),
                     // WARMUP → ACTIVE when READY action occurs

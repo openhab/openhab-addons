@@ -79,7 +79,7 @@
 	</channel-type>
 
 	<!-- State Machine State Channel -->
-	<channel-type id="statemachine" advanced="true">
+	<channel-type id="state-machine" advanced="true">
 		<item-type>String</item-type>
 		<label>State Machine State</label>
 		<description>Current state of the internal state machine</description>
