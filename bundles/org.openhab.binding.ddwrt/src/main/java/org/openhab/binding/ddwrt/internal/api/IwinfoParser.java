@@ -21,7 +21,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Shared parser for {@code iwinfo <iface> assoclist} output used by
@@ -40,8 +39,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public final class IwinfoParser {
-
-    private static final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(IwinfoParser.class));
 
     // MAC line: "60:32:B1:49:21:64 -61 dBm / -89 dBm (SNR 28) 310 ms ago"
     private static final Pattern MAC_LINE = Objects.requireNonNull(
@@ -65,7 +62,8 @@ public final class IwinfoParser {
     /**
      * Parse {@code iwinfo <iface> assoclist} output into wireless client objects.
      */
-    public static List<DDWRTWirelessClient> parseAssoclist(SshRunner runner, String iface, String apMac) {
+    public static List<DDWRTWirelessClient> parseAssoclist(Logger logger, SshRunner runner, String iface,
+            String apMac) {
         String output = runner.execStdout("iwinfo " + iface + " assoclist");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
@@ -117,7 +115,7 @@ public final class IwinfoParser {
     /**
      * Parse {@code iwinfo <iface> assoclist} output into a lightweight list of MAC addresses only.
      */
-    public static List<String> parseAssoclistMacs(SshRunner runner, String iface) {
+    public static List<String> parseAssoclistMacs(Logger logger, SshRunner runner, String iface) {
         String output = runner.execStdout("iwinfo " + iface + " assoclist");
         if (output.isEmpty()) {
             return Objects.requireNonNull(Collections.emptyList());
@@ -137,7 +135,7 @@ public final class IwinfoParser {
     /**
      * Enumerate radios using {@code iwinfo} (lists all wireless interfaces).
      */
-    public static List<DDWRTRadio> enumerateRadios(SshRunner runner, String deviceMac) {
+    public static List<DDWRTRadio> enumerateRadios(Logger logger, SshRunner runner, String deviceMac) {
         // iwinfo without args lists interfaces with their ESSID and channel
         String output = runner.execStdout("iwinfo");
         if (output.isEmpty()) {

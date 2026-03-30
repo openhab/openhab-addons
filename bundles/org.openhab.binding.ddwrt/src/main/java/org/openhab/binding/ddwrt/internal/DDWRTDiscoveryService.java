@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.api.DDWRTBaseDevice;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
+import org.openhab.binding.ddwrt.internal.api.RefreshListener;
 import org.openhab.binding.ddwrt.internal.handler.DDWRTNetworkBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -45,7 +46,8 @@ import org.slf4j.LoggerFactory;
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = DDWRTDiscoveryService.class)
 @NonNullByDefault
-public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<DDWRTNetworkBridgeHandler> {
+public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<DDWRTNetworkBridgeHandler>
+        implements RefreshListener {
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 120;
     private static final int BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS = 10;
@@ -53,6 +55,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTDiscoveryService.class));
 
     private @Nullable ScheduledFuture<?> backgroundDiscoveryJob;
+    private @Nullable ScheduledFuture<?> refreshTriggeredScan;
 
     public DDWRTDiscoveryService() {
         super(DDWRTNetworkBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS);
@@ -60,16 +63,20 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     @Override
     protected void startScan() {
-        logger.debug("Starting DD-WRT discovery scan");
+        try {
+            logger.debug("Starting DD-WRT discovery scan");
 
-        final DDWRTNetwork net = thingHandler.getNetwork();
-        if (net == null) {
-            return;
+            final DDWRTNetwork net = thingHandler.getNetwork();
+            if (net == null) {
+                return;
+            }
+            discoverDevices(net);
+            discoverRadios(net);
+            discoverWirelessClients(net);
+            discoverFirewallRules(net);
+        } catch (Exception e) {
+            logger.warn("Error during DD-WRT discovery scan: {}", e.getMessage(), e);
         }
-        discoverDevices(net);
-        discoverRadios(net);
-        discoverWirelessClients(net);
-        discoverFirewallRules(net);
     }
 
     @Override
@@ -77,16 +84,14 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
         logger.debug("Starting DD-WRT background discovery");
         ScheduledFuture<?> job = backgroundDiscoveryJob;
         if (job == null || job.isCancelled()) {
-            DDWRTNetwork net = thingHandler.getNetwork();
             int intervalSeconds = DISCOVERY_TIMEOUT_SECONDS;
-            if (net != null) {
-                DDWRTNetworkConfiguration cfg = net.getConfig();
-                if (cfg != null) {
-                    intervalSeconds = cfg.refreshInterval;
-                }
-            }
             backgroundDiscoveryJob = scheduler.scheduleWithFixedDelay(this::startScan,
                     BACKGROUND_DISCOVERY_INITIAL_DELAY_SECONDS, intervalSeconds, TimeUnit.SECONDS);
+        }
+        // Register as refresh listener so discovery runs immediately after device refresh
+        DDWRTNetwork net = thingHandler.getNetwork();
+        if (net != null) {
+            net.addRefreshListener(this);
         }
     }
 
@@ -98,6 +103,28 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             job.cancel(true);
             backgroundDiscoveryJob = null;
         }
+        ScheduledFuture<?> pending = refreshTriggeredScan;
+        if (pending != null) {
+            pending.cancel(false);
+            refreshTriggeredScan = null;
+        }
+        // Unregister refresh listener
+        DDWRTNetwork net = thingHandler.getNetwork();
+        if (net != null) {
+            net.removeRefreshListener(this);
+        }
+    }
+
+    @Override
+    public void onRefreshComplete(DDWRTBaseDevice device) {
+        // Debounce: schedule a scan 2s from now, replacing any pending scan.
+        // This coalesces rapid refresh events (e.g., multiple devices refreshing)
+        // into a single discovery scan.
+        ScheduledFuture<?> pending = refreshTriggeredScan;
+        if (pending != null) {
+            pending.cancel(false);
+        }
+        refreshTriggeredScan = scheduler.schedule((Runnable) this::startScan, 2, TimeUnit.SECONDS);
     }
 
     private void discoverDevices(DDWRTNetwork net) {

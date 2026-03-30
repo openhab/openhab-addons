@@ -14,10 +14,13 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DDWRTNetworkCache {
 
-    private static final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetworkCache.class));
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetworkCache.class));
 
     private final Map<String, DDWRTBaseDevice> devicesByMac = new ConcurrentHashMap<>();
     private final Map<String, DDWRTWirelessClient> wirelessClientsByMac = new ConcurrentHashMap<>();
@@ -43,6 +46,82 @@ public class DDWRTNetworkCache {
     private final Map<String, DDWRTRadio> radiosByInterfaceId = new ConcurrentHashMap<>();
     private final Map<String, DDWRTFirewallRule> firewallRulesByRuleId = new ConcurrentHashMap<>();
     private final Map<String, DDWRTDhcpLease> dhcpLeasesByMac = new ConcurrentHashMap<>();
+    private final Map<String, String> dhcpHostnameToMac = new ConcurrentHashMap<>();
+
+    // MACs that have been merged away by MAC randomization detection.
+    // These should not be re-created as wireless clients by refreshDhcpLeases.
+    private final java.util.Set<String> mergedAwayMacs = ConcurrentHashMap.newKeySet();
+
+    // Listeners keyed by normalized lookup key (lowercase hostname or MAC)
+    private final Map<String, List<CacheChangeListener>> listenersByKey = new ConcurrentHashMap<>();
+
+    // ---- Listeners ----
+
+    /**
+     * Register a listener to be notified when an entity matching the given key changes.
+     * The key should be a lowercase hostname (for MAC-randomizing clients) or normalized MAC.
+     */
+    public void addChangeListener(String key, CacheChangeListener listener) {
+        listenersByKey.computeIfAbsent(key.toLowerCase(), k -> new CopyOnWriteArrayList<>()).add(listener);
+    }
+
+    /**
+     * Unregister a previously registered listener.
+     */
+    public void removeChangeListener(String key, CacheChangeListener listener) {
+        List<CacheChangeListener> listeners = listenersByKey.get(key.toLowerCase());
+        if (listeners != null) {
+            listeners.remove(listener);
+            if (listeners.isEmpty()) {
+                listenersByKey.remove(key.toLowerCase(), listeners);
+            }
+        }
+    }
+
+    /**
+     * Fire change notifications for all keys associated with an entity.
+     * Notifies listeners registered under the MAC and/or hostname.
+     */
+    private void fireChange(String mac, String hostname) {
+        // Collect unique listeners across all keys to avoid notifying the same handler twice
+        // (e.g. handler registered under both MAC and sanitized hostname)
+        Set<CacheChangeListener> unique = Collections.newSetFromMap(new IdentityHashMap<>());
+        collectListeners(mac, unique);
+        if (!hostname.isEmpty()) {
+            String sanitized = hostname.toLowerCase().replaceAll("[^a-z0-9]", "");
+            collectListeners(hostname.toLowerCase(), unique);
+            if (!sanitized.equals(hostname.toLowerCase())) {
+                collectListeners(sanitized, unique);
+            }
+        }
+        for (CacheChangeListener listener : unique) {
+            try {
+                listener.onCacheChanged();
+            } catch (Exception e) {
+                logger.debug("Error notifying cache listener: {}", e.getMessage());
+            }
+        }
+    }
+
+    private void collectListeners(String key, Set<CacheChangeListener> dest) {
+        List<CacheChangeListener> listeners = listenersByKey.get(key);
+        if (listeners != null) {
+            dest.addAll(listeners);
+        }
+    }
+
+    private void notifyListenersForKey(String key) {
+        List<CacheChangeListener> listeners = listenersByKey.get(key);
+        if (listeners != null) {
+            for (CacheChangeListener listener : listeners) {
+                try {
+                    listener.onCacheChanged();
+                } catch (Exception e) {
+                    logger.debug("Error notifying cache listener for key '{}': {}", key, e.getMessage());
+                }
+            }
+        }
+    }
 
     // ---- Devices ----
 
@@ -81,6 +160,7 @@ public class DDWRTNetworkCache {
         if (!client.getHostname().isEmpty()) {
             hostnameToMac.put(Objects.requireNonNull(client.getHostname().toLowerCase()), normalizedMac);
         }
+        fireChange(normalizedMac, client.getHostname());
     }
 
     /**
@@ -89,26 +169,41 @@ public class DDWRTNetworkCache {
      */
     public DDWRTWirelessClient computeWirelessClient(String mac,
             java.util.function.Function<DDWRTWirelessClient, DDWRTWirelessClient> mappingFunction) {
-        return wirelessClientsByMac.compute(normalizeMac(mac), (key, existing) -> {
-            DDWRTWirelessClient client = existing != null ? existing : new DDWRTWirelessClient(key);
-            DDWRTWirelessClient result = mappingFunction.apply(client);
-            // Maintain hostname index
-            if (!result.getHostname().isEmpty()) {
-                hostnameToMac.put(Objects.requireNonNull(result.getHostname().toLowerCase()), key);
-            }
-            return result;
-        });
+        DDWRTWirelessClient result = Objects
+                .requireNonNull(wirelessClientsByMac.compute(normalizeMac(mac), (key, existing) -> {
+                    DDWRTWirelessClient client = existing != null ? existing : new DDWRTWirelessClient(key);
+                    DDWRTWirelessClient updated = mappingFunction.apply(client);
+                    // Maintain hostname index
+                    if (!updated.getHostname().isEmpty()) {
+                        hostnameToMac.put(Objects.requireNonNull(updated.getHostname().toLowerCase()), key);
+                    }
+                    return updated;
+                }));
+        // Fire change notification after compute completes
+        fireChange(normalizeMac(mac), result.getHostname());
+        return result;
     }
 
     /**
-     * Find a wireless client by hostname. Returns null if no client has this hostname.
+     * Find a wireless client by hostname. Tries exact lowercase match first,
+     * then falls back to sanitized form (letters and digits only) to match thing IDs.
      */
     public @Nullable DDWRTWirelessClient getWirelessClientByHostname(String hostname) {
         if (hostname.isEmpty()) {
             return null;
         }
+        // Try exact lowercase match first (e.g., "lee-pixel-8a")
         String mac = hostnameToMac.get(hostname.toLowerCase());
-        return mac != null ? wirelessClientsByMac.get(mac) : null;
+        if (mac != null) {
+            return wirelessClientsByMac.get(mac);
+        }
+        // Try sanitized form to match thing IDs (e.g., "leepixel8a" -> "lee-pixel-8a")
+        for (Map.Entry<String, String> entry : hostnameToMac.entrySet()) {
+            if (entry.getKey().replaceAll("[^a-z0-9]", "").equals(hostname.toLowerCase())) {
+                return wirelessClientsByMac.get(entry.getValue());
+            }
+        }
+        return null;
     }
 
     /**
@@ -137,14 +232,45 @@ public class DDWRTNetworkCache {
             if (oldClient != null && hostname.equalsIgnoreCase(oldClient.getHostname())) {
                 logger.debug("MAC randomization detected for '{}': old MAC={}, new MAC={}", hostname, oldMac,
                         normalizedNewMac);
-                // Remove old entry
+
+                // Carry AP info from old client to new client if new client lacks it
+                DDWRTWirelessClient newClient = wirelessClientsByMac.get(normalizedNewMac);
+                if (newClient != null && newClient.getApMac().isEmpty() && !oldClient.getApMac().isEmpty()) {
+                    newClient.setApMac(oldClient.getApMac());
+                    newClient.setIface(oldClient.getIface());
+                    newClient.setRadioName(oldClient.getRadioName());
+                    newClient.setSsid(oldClient.getSsid());
+                    if (oldClient.getChannel() > 0) {
+                        newClient.setChannel(oldClient.getChannel());
+                    }
+                    logger.debug("Carried AP info from old MAC {} to new MAC {}: ap={}, ssid={}", oldMac,
+                            normalizedNewMac, oldClient.getApMac(), oldClient.getSsid());
+                }
+
+                // Track old MAC as merged-away so refreshDhcpLeases won't re-create it
+                mergedAwayMacs.add(oldMac);
+                // The new MAC is now active — un-merge it if it was previously merged away
+                mergedAwayMacs.remove(normalizedNewMac);
+
+                // Remove old entry and update hostname index
                 wirelessClientsByMac.remove(oldMac);
-                // Update hostname index to point to new MAC
                 hostnameToMac.put(Objects.requireNonNull(hostname.toLowerCase()), normalizedNewMac);
+
+                // Notify listeners under both old and new MAC, and hostname
+                fireChange(oldMac, hostname);
+                fireChange(normalizedNewMac, hostname);
                 return oldMac;
             }
         }
         return null;
+    }
+
+    /**
+     * Check if a MAC has been merged away by MAC randomization detection.
+     * Merged-away MACs should not be re-created as separate wireless client entries.
+     */
+    public boolean isMergedAwayMac(String mac) {
+        return mergedAwayMacs.contains(normalizeMac(mac));
     }
 
     public List<DDWRTWirelessClient> getWirelessClients() {
@@ -167,6 +293,7 @@ public class DDWRTNetworkCache {
 
     public void putRadio(String interfaceId, DDWRTRadio radio) {
         radiosByInterfaceId.put(Objects.requireNonNull(interfaceId.toLowerCase()), radio);
+        notifyListenersForKey(interfaceId.toLowerCase());
     }
 
     public List<DDWRTRadio> getRadios() {
@@ -202,7 +329,23 @@ public class DDWRTNetworkCache {
     }
 
     public void putDhcpLease(String mac, DDWRTDhcpLease lease) {
-        dhcpLeasesByMac.put(normalizeMac(mac), lease);
+        String normalizedMac = normalizeMac(mac);
+        dhcpLeasesByMac.put(normalizedMac, lease);
+        // Maintain hostname index for DHCP leases
+        if (!lease.getHostname().isEmpty()) {
+            dhcpHostnameToMac.put(Objects.requireNonNull(lease.getHostname().toLowerCase()), normalizedMac);
+        }
+    }
+
+    /**
+     * Find a DHCP lease by hostname. Returns null if no lease has this hostname.
+     */
+    public @Nullable DDWRTDhcpLease getDhcpLeaseByHostname(String hostname) {
+        if (hostname.isEmpty()) {
+            return null;
+        }
+        String mac = dhcpHostnameToMac.get(hostname.toLowerCase());
+        return mac != null ? dhcpLeasesByMac.get(mac) : null;
     }
 
     public List<DDWRTDhcpLease> getDhcpLeases() {
@@ -211,6 +354,7 @@ public class DDWRTNetworkCache {
 
     public void clearDhcpLeases() {
         dhcpLeasesByMac.clear();
+        dhcpHostnameToMac.clear();
     }
 
     // ---- Aggregate counts ----
@@ -232,6 +376,7 @@ public class DDWRTNetworkCache {
         radiosByInterfaceId.clear();
         firewallRulesByRuleId.clear();
         dhcpLeasesByMac.clear();
+        dhcpHostnameToMac.clear();
     }
 
     private static String normalizeMac(String mac) {

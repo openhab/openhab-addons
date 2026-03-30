@@ -19,6 +19,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_E
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_MODE;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SSID;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -104,5 +105,13 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected List<String> getCacheKeys() {
+        if (!config.interfaceId.isEmpty()) {
+            return List.of(config.interfaceId.toLowerCase());
+        }
+        return List.of();
     }
 }
