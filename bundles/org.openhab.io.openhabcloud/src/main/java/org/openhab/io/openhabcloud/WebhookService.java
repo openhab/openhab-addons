@@ -44,7 +44,7 @@ public interface WebhookService {
 
     /**
      * Request a webhook URL for the given local path. The cloud service will generate
-     * a unique URL like {@code https://cloud.org/api/hooks/{uuid}} that proxies
+     * a unique URL like {@code https://myopenhab.org/api/hooks/{uuid}} that proxies
      * incoming requests to the specified local path on this openHAB instance.
      *
      * <p>
