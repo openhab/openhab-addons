@@ -115,7 +115,6 @@ public class ShellyHttpClient {
         ShellyApiResult apiResult;
         int retries = 3;
         boolean timeout = false;
-
         while (retries > 0) {
             try {
                 apiResult = innerRequest(HttpMethod.GET, uri, null, "");
@@ -184,8 +183,9 @@ public class ShellyHttpClient {
                     authHeader = formatAuthResponse(uri, buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, password));
                 } else {
                     if (basicAuth) {
-                        authHeader = HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder()
-                                .encodeToString(config.credentials.get().bearer.getBytes(StandardCharsets.UTF_8));
+                        String bearer = config.credentials.get().bearer;
+                        authHeader = HTTP_AUTH_TYPE_BASIC + " "
+                                + Base64.getEncoder().encodeToString(bearer.getBytes(StandardCharsets.UTF_8));
                     }
                 }
                 if (!authHeader.isEmpty()) {

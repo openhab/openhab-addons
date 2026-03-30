@@ -328,6 +328,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
+        Shelly1CoapHandler coap = this.coap;
         if (coap != null && apiConfig.enableCoIOT.get() && !profile.alwaysOn) {
             coap.start();
         }
@@ -392,7 +393,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         checkRangeExtender(tmpPrf);
 
         startCoap(apiConfig, tmpPrf);
-        if (!gen2 && !blu) {
+        if (!gen2 && !apiConfig.enableCoIOT.get()) {
             api.setActionURLs(); // register event urls
         }
 
@@ -642,9 +643,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
                 profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
                 profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
-                profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
-                profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
-                profile.inColor, profile.alwaysOn, profile.updatePeriod, apiConfig.enableBluGateway);
+                profile.hasBattery,
+                profile.hasBattery ? " (low battery threshold=" + config.getLowBattery() + "%)" : "", profile.isSense,
+                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
+                profile.alwaysOn, profile.updatePeriod, apiConfig.enableBluGateway);
         if (profile.status.extTemperature != null || profile.status.extHumidity != null
                 || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
             logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
@@ -1055,7 +1057,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
         }
 
-        int updateInterval = config.updateInterval;
+        int updateInterval = config.getUpdateInterval();
         if (updateInterval == 0) {
             updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
         }

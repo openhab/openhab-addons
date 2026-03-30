@@ -98,7 +98,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellySettingsDevice getDeviceInfo() throws ShellyApiException {
         ShellySettingsDevice info = new ShellySettingsDevice();
-        info.hostname = getString(config.realm.get());
+        info.hostname = config.realm.get();
         info.fw = "";
         info.type = "BLU";
         info.mac = config.deviceAddress;

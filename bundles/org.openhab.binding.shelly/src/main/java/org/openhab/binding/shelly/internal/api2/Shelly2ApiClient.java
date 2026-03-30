@@ -262,7 +262,9 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
         ShellySettingsDevice device = profile.device;
         if (config.realm.get().isBlank()) {
             config.realm.set(getString(profile.device.hostname));
-            logger.trace("{}: {} is used as realm", thingName, config.realm.get());
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}: {} is used as realm", thingName, config.realm.get());
+            }
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");

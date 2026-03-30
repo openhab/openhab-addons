@@ -48,12 +48,12 @@ public class ShellyApiConfiguration {
 
     public class ShellyApiUrls {
         public final String deviceApi;
-        public final String websocket;
+        public final String websocketCallback;
         public final String eventCallback;
 
         public ShellyApiUrls(String localIp, String localPort, String deviceIp) {
             deviceApi = "http://" + deviceIp;
-            websocket = "ws://" + localIp + ":" + localPort + "/shelly/wsevent";
+            websocketCallback = "ws://" + localIp + ":" + localPort + "/shelly/wsevent";
             eventCallback = "http://" + localIp + ":" + localPort + SHELLY1_CALLBACK_URI + "/";
         }
     }
@@ -101,26 +101,26 @@ public class ShellyApiConfiguration {
 
         // deviceIP can be, an IP address, IP address:port or a FQDN, which needs to be resolved
         // deviceAddress is the MAC address for BLU device or the resolved IP address
-        if (!thingConfig.deviceAddress.isEmpty()) {
+        if (!thingConfig.getDeviceAddress().isEmpty()) {
             // BLU: remove : from MAC address and convert to lower case
-            deviceAddress = thingConfig.deviceAddress.toLowerCase(Locale.ROOT).replace(":", "");
+            deviceAddress = thingConfig.getDeviceAddress().toLowerCase(Locale.ROOT).replace(":", "");
             deviceIp = "";
         } else {
-            deviceIp = deviceAddress = resolveIp(thingConfig.deviceIp);
+            deviceIp = deviceAddress = resolveIp(thingConfig.getDeviceIp());
         }
 
         credentials.set(new ShellyAuthCredentials(gen2 ? "admin" : bindingConfig.defaultUserId,
-                bindingConfig.defaultPassword, thingConfig.userId, thingConfig.password));
+                bindingConfig.defaultPassword, thingConfig.getUserId(), thingConfig.getPassword()));
 
-        enableBluGateway = thingConfig.enableBluGateway;
-        enableRangeExtender = thingConfig.enableRangeExtender;
+        enableBluGateway = thingConfig.getEnableBluGateway();
+        enableRangeExtender = thingConfig.getEnableRangeExtender();
 
-        enableCoIOT.set(gen2 ? false : thingConfig.eventsCoIoT);
-        eventsButton = thingConfig.eventsButton;
-        eventsSwitch = thingConfig.eventsSwitch;
-        eventsPush = thingConfig.eventsPush;
-        eventsRoller = thingConfig.eventsRoller;
-        eventsSensorReport = thingConfig.eventsSensorReport;
+        enableCoIOT.set(gen2 ? false : thingConfig.getEventsCoIoT());
+        eventsButton = thingConfig.getEventsButton();
+        eventsSwitch = thingConfig.getEventsSwitch();
+        eventsPush = thingConfig.getEventsPush();
+        eventsRoller = thingConfig.getEventsRoller();
+        eventsSensorReport = thingConfig.getEventsSensorReport();
 
         urls = new ShellyApiUrls(localIp, localPort, deviceIp);
     }

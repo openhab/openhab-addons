@@ -568,11 +568,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     private void setSensorEventUrls() throws ShellyApiException, ShellyApiException {
-        if (config.enableCoIOT.get()) {
-            // CoIOT enabled = event urls disabled
-            return;
-        }
-
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
             setEventUrl(config.eventsSensorReport, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
@@ -589,11 +584,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
      * @throws ShellyApiException
      */
     private void setEventUrls(Integer index) throws ShellyApiException {
-        if (config.enableCoIOT.get()) {
-            // CoIOT enabled = event urls disabled
-            return;
-        }
-
         if (profile.isRoller) {
             setEventUrl(EVENT_TYPE_ROLLER, 0, config.eventsRoller, SHELLY_EVENT_ROLLER_OPEN, SHELLY_EVENT_ROLLER_CLOSE,
                     SHELLY_EVENT_ROLLER_STOP);
@@ -618,11 +608,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
-        if (config.enableCoIOT.get()) {
-            // CoIOT enabled = event urls disabled
-            return;
-        }
-
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
                 // H&T adds the type=xx to report_url itself, so we need to ommit here
@@ -647,11 +632,6 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     private void setEventUrl(String deviceClass, Integer index, boolean enabled, String... eventTypes)
             throws ShellyApiException {
-        if (config.enableCoIOT.get()) {
-            // CoIOT enabled = event urls disabled
-            return;
-        }
-
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
                 String callBackUrl = config.urls.eventCallback + profile.thingName + "/" + deviceClass + "/" + index
