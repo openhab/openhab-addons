@@ -294,7 +294,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
      * Close the connection with the Kaleidescape component
      */
     private synchronized void closeConnection() {
-        updateState(SYSTEM_READINESS_STATE, new StringType("Offline"));
+        if (getThing().getChannel(SYSTEM_READINESS_STATE) != null) {
+            updateState(SYSTEM_READINESS_STATE, new StringType("Offline"));
+        }
 
         if (connector.isConnected()) {
             connector.close();
