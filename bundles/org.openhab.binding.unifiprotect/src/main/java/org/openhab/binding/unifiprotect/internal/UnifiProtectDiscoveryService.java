@@ -14,6 +14,7 @@ package org.openhab.binding.unifiprotect.internal;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,7 +69,7 @@ public class UnifiProtectDiscoveryService extends AbstractThingHandlerDiscoveryS
             return;
         }
         try {
-            Bootstrap bootstrap = client.getPrivateClient().getBootstrap().get();
+            Bootstrap bootstrap = client.getPrivateClient().getBootstrap().get(30, TimeUnit.SECONDS);
             bootstrap.cameras.forEach((id, camera) -> {
                 discoverDevice(id, camera.name, camera.type, UnifiProtectBindingConstants.THING_TYPE_CAMERA, "Camera");
             });

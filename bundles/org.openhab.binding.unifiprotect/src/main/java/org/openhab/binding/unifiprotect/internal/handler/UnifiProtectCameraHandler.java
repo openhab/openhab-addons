@@ -17,6 +17,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.UnifiProtectBindingConstants;
 import org.openhab.binding.unifiprotect.internal.api.hybrid.UniFiProtectHybridClient;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera;
+import org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.ApiValueEnum;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.ChannelQuality;
 import org.openhab.binding.unifiprotect.internal.api.pub.dto.RtspsStreams;
@@ -199,7 +201,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     if (value != null && value <= 0) {
                         value = null;
                     }
-                    java.util.HashMap<String, Object> resetAtMap = new java.util.HashMap<>();
+                    HashMap<String, Object> resetAtMap = new HashMap<>();
                     resetAtMap.put("resetAt", value != null ? value : JsonNull.INSTANCE);
                     api.getPrivateClient().updateCamera(deviceId, Map.of("lcdMessage", resetAtMap))
                             .whenComplete((result, ex) -> {
@@ -767,22 +769,19 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
 
         // Smart detection settings
         if (privCamera.smartDetectSettings != null && privCamera.smartDetectSettings.objectTypes != null) {
-            List<org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType> types = privCamera.smartDetectSettings.objectTypes;
-            updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_PERSON_ENABLED, OnOffType.from(types.contains(
-                    org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType.PERSON)));
+            List<SmartDetectObjectType> types = privCamera.smartDetectSettings.objectTypes;
+            updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_PERSON_ENABLED,
+                    OnOffType.from(types.contains(SmartDetectObjectType.PERSON)));
             updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_VEHICLE_ENABLED,
-                    OnOffType.from(types.contains(
-                            org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType.VEHICLE)));
-            updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_FACE_ENABLED, OnOffType.from(types.contains(
-                    org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType.FACE)));
+                    OnOffType.from(types.contains(SmartDetectObjectType.VEHICLE)));
+            updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_FACE_ENABLED,
+                    OnOffType.from(types.contains(SmartDetectObjectType.FACE)));
             updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LICENSE_PLATE_ENABLED,
-                    OnOffType.from(types.contains(
-                            org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType.LICENSE_PLATE)));
+                    OnOffType.from(types.contains(SmartDetectObjectType.LICENSE_PLATE)));
             updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_PACKAGE_ENABLED,
-                    OnOffType.from(types.contains(
-                            org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType.PACKAGE)));
-            updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_ANIMAL_ENABLED, OnOffType.from(types.contains(
-                    org.openhab.binding.unifiprotect.internal.api.priv.dto.types.SmartDetectObjectType.ANIMAL)));
+                    OnOffType.from(types.contains(SmartDetectObjectType.PACKAGE)));
+            updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_ANIMAL_ENABLED,
+                    OnOffType.from(types.contains(SmartDetectObjectType.ANIMAL)));
         }
 
         // IR Mode
@@ -948,7 +947,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         return api.getPublicClient().getSnapshot(deviceId, highQuality);
     }
 
-    private void updateRtspsChannels(org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera privCamera) {
+    private void updateRtspsChannels(Camera privCamera) {
         UniFiProtectHybridClient api = getApiClient();
         if (api == null) {
             return;

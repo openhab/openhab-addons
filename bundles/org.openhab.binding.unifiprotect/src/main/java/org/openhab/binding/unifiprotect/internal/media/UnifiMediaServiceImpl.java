@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -73,9 +74,9 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
     private final Map<ThingUID, Integer> apiPorts = new ConcurrentHashMap<>();
     private final Map<ThingUID, Integer> webrtcPorts = new ConcurrentHashMap<>();
     private final Map<ThingUID, Integer> rtspPorts = new ConcurrentHashMap<>();
-    private int nextApiPort = 1984;
-    private int nextRtspPort = 8554;
-    private int nextWebrtcPort = 8555;
+    private final AtomicInteger nextApiPort = new AtomicInteger(1984);
+    private final AtomicInteger nextRtspPort = new AtomicInteger(8554);
+    private final AtomicInteger nextWebrtcPort = new AtomicInteger(8555);
 
     private UnifiProtectConfiguration config = new UnifiProtectConfiguration();
     private HttpService httpService;
@@ -103,7 +104,7 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             nativeHelper.ensureFfmpeg();
             nativeHelper.ensureGo2Rtc();
         } catch (IOException e) {
-            logger.warn("Failed to pre-download binaries, will retry per-NVR: {}", e.getMessage());
+            logger.debug("Failed to pre-download binaries, will retry per-NVR: {}", e.getMessage());
         }
         try {
             httpService.registerServlet(playBasePath, new PlayStreamServlet(this, httpClient), null, null);
@@ -133,20 +134,24 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             managers.values().forEach(m -> {
                 try {
                     m.destroy();
-                } catch (Exception ignored) {
+                } catch (Exception e) {
+                    logger.debug("Error destroying go2rtc manager", e);
                 }
             });
             managers.clear();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.debug("Error cleaning up managers", e);
         }
         try {
             httpClient.stop();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.debug("Error stopping HTTP client", e);
         }
         try {
             httpService.unregister(playBasePath);
             httpService.unregister(imageBasePath);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.debug("Error unregistering servlets", e);
         }
     }
 
@@ -258,13 +263,9 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             return;
         }
         // Allocate ports
-        int apiPort = nextApiPort;
-        int rtspPort = nextRtspPort;
-        int webrtcPort = nextWebrtcPort;
-        // increment in pairs to keep rtsp even, webrtc odd, aligned
-        nextApiPort += 2;
-        nextRtspPort += 2;
-        nextWebrtcPort += 2;
+        int apiPort = nextApiPort.getAndAdd(2);
+        int rtspPort = nextRtspPort.getAndAdd(2);
+        int webrtcPort = nextWebrtcPort.getAndAdd(2);
         apiPorts.put(uid, apiPort);
         webrtcPorts.put(uid, webrtcPort);
         rtspPorts.put(uid, rtspPort);
@@ -291,7 +292,7 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             managers.put(uid, manager);
             manager.startIfNeeded();
         } catch (IOException e) {
-            logger.warn("Failed to create go2rtc manager for {}: {}", uid, e.getMessage());
+            logger.debug("Failed to create go2rtc manager for {}: {}", uid, e.getMessage());
         }
     }
 

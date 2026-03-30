@@ -65,8 +65,7 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
                     if (command == OnOffType.ON) {
                         // Get current volume and repeat times from the chime
                         privateClient.getBootstrap().thenApply(bootstrap -> {
-                            org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Chime chime = bootstrap.chimes
-                                    .get(deviceId);
+                            Chime chime = bootstrap.chimes.get(deviceId);
                             if (chime == null) {
                                 throw new IllegalArgumentException("Chime not found: " + deviceId);
                             }
@@ -150,7 +149,7 @@ public class UnifiProtectChimeHandler extends UnifiProtectAbstractDeviceHandler<
     /**
      * Update chime channels from Private API data
      */
-    public void updateChimeChannels(org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Chime chime) {
+    public void updateChimeChannels(Chime chime) {
         // Device properties
         if (chime.name != null) {
             updateProperty(UnifiProtectBindingConstants.PROPERTY_NAME, chime.name);

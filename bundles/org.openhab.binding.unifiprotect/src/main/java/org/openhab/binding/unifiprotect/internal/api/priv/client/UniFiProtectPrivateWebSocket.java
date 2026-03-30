@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,7 +66,7 @@ public class UniFiProtectPrivateWebSocket {
     private volatile @Nullable Session session;
     private volatile @Nullable CompletableFuture<Void> connectFuture;
     private volatile boolean shouldReconnect = true;
-    private volatile int reconnectAttempts = 0;
+    private final AtomicInteger reconnectAttempts = new AtomicInteger(0);
     private static final int MAX_RECONNECT_ATTEMPTS = 10;
     private static final int INITIAL_RECONNECT_DELAY_MS = 1_000;
     private static final int MAX_RECONNECT_DELAY_MS = 60_000;
@@ -124,7 +125,7 @@ public class UniFiProtectPrivateWebSocket {
             CompletableFuture.runAsync(() -> {
                 try {
                     session = future.get(10, TimeUnit.SECONDS);
-                    reconnectAttempts = 0;
+                    reconnectAttempts.set(0);
                     logger.debug("WebSocket connected");
                     newFuture.complete(null);
                 } catch (Exception ex) {
@@ -174,24 +175,24 @@ public class UniFiProtectPrivateWebSocket {
             return;
         }
 
-        reconnectAttempts++;
+        int attempts = reconnectAttempts.incrementAndGet();
         int delayMs;
 
-        if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
+        if (attempts <= MAX_RECONNECT_ATTEMPTS) {
             // Exponential backoff: 1s, 2s, 4s, 8s, ... capped at 60s
-            delayMs = Math.min(INITIAL_RECONNECT_DELAY_MS * (1 << (reconnectAttempts - 1)), MAX_RECONNECT_DELAY_MS);
+            delayMs = Math.min(INITIAL_RECONNECT_DELAY_MS * (1 << (attempts - 1)), MAX_RECONNECT_DELAY_MS);
         } else {
             // Circuit breaker: probe every 5 minutes
             delayMs = CIRCUIT_BREAKER_DELAY_MS;
         }
 
-        logger.debug("Scheduling WebSocket reconnection attempt {} in {}ms", reconnectAttempts, delayMs);
+        logger.debug("Scheduling WebSocket reconnection attempt {} in {}ms", attempts, delayMs);
 
         CompletableFuture.delayedExecutor(delayMs, TimeUnit.MILLISECONDS).execute(() -> {
             if (shouldReconnect) {
-                logger.debug("Attempting WebSocket reconnection (attempt {})", reconnectAttempts);
+                logger.debug("Attempting WebSocket reconnection (attempt {})", reconnectAttempts.get());
                 connect().exceptionally(ex -> {
-                    logger.debug("Reconnection attempt {} failed", reconnectAttempts, ex);
+                    logger.debug("Reconnection attempt {} failed", reconnectAttempts.get(), ex);
                     return null;
                 });
             }

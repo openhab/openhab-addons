@@ -117,15 +117,15 @@ public class BootstrapDeserializer implements JsonDeserializer<Bootstrap> {
                             String id = itemObj.get("id").getAsString();
                             map.put(id, item);
                         } else {
-                            logger.warn("Item in '{}' array has no 'id' field", field);
+                            logger.debug("Item in '{}' array has no 'id' field", field);
                         }
                     }
                 } catch (Exception e) {
-                    logger.warn("Failed to deserialize item in '{}' array: {}", field, e.getMessage(), e);
+                    logger.debug("Failed to deserialize item in '{}' array: {}", field, e.getMessage(), e);
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to process '{}' array: {}", field, e.getMessage(), e);
+            logger.debug("Failed to process '{}' array: {}", field, e.getMessage(), e);
         }
 
         return map;

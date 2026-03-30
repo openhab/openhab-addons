@@ -311,7 +311,7 @@ public class UniFiProtectPrivateClient {
                                     T parsed = JsonUtil.fromJson(content, responseType);
                                     future.complete(parsed);
                                 } catch (Exception parseEx) {
-                                    logger.error("Failed to parse response as {}: {}", responseType.getSimpleName(),
+                                    logger.debug("Failed to parse response as {}: {}", responseType.getSimpleName(),
                                             parseEx.getMessage(), parseEx);
                                     future.completeExceptionally(parseEx);
                                 }
