@@ -85,7 +85,7 @@ mvn clean install karaf:kar -pl :org.openhab.binding.astro
 To improve build times you can add the following options to the command:
 
 | Option                        | Description                                         |
-| ----------------------------- | --------------------------------------------------- |
+|-------------------------------|-----------------------------------------------------|
 | `-DskipChecks`                | Skip the static analysis (Checkstyle, FindBugs)     |
 | `-DskipTests`                 | Skip the execution of tests                         |
 | `-Dmaven.test.skip=true`      | Skip the compilation and execution of tests         |
@@ -94,6 +94,7 @@ To improve build times you can add the following options to the command:
 | `-o`                          | Work offline so Maven does not download any updates |
 | `-T 1C`                       | Build in parallel, using 1 thread per core          |
 | `-pl :<add-on directory>`     | Build a single add-on                               |
+| `-Dmarkdownlint.skip=true`    | Skip the Markdown linting                           |
 
 For example you can skip checks and tests during development with:
 
