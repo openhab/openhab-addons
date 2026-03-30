@@ -134,8 +134,10 @@ public class Shelly2EventServlet extends WebSocketServlet {
 
         @Override
         public Object createWebSocket(@Nullable ServletUpgradeRequest req, @Nullable ServletUpgradeResponse resp) {
-            String host = req != null ? req.getRemoteHostName() : "";
-            logger.debug("WebSocket: Inbound servlet request from {}", host);
+            if (logger.isDebugEnabled()) {
+                String host = req != null ? req.getRemoteHostName() : "";
+                logger.debug("WebSocket: Inbound servlet request from {}", host);
+            }
             return new Shelly2RpcSocket(thingTable, true, webSocketClient, scheduler);
         }
     }
