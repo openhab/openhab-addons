@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.energyforecast.internal;
 
+import java.time.Clock;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,4 +47,6 @@ public class EnergyForecastBindingConstants {
     public static final String CHANNEL_METRIC_PERCENT_ERROR = "percent-error";
     public static final String CHANNEL_METRIC_MAE = "mean-abs";
     public static final String CHANNEL_METRIC_MAPE = "mean-abs-percent";
+
+    public static Clock clock = Clock.systemDefaultZone();
 }

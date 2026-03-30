@@ -133,7 +133,7 @@ public class PriceInfo {
     }
 
     public synchronized void consolidate() {
-        Instant startOfDay = LocalDate.now(tzp.getTimeZone()).atStartOfDay(tzp.getTimeZone()).toInstant();
+        Instant startOfDay = LocalDate.now(clock).atStartOfDay(tzp.getTimeZone()).toInstant();
         priceSeries = priceSeries.tailMap(startOfDay);
         originSeries = originSeries.tailMap(startOfDay);
         forecastSeries = forecastSeries.tailMap(startOfDay);

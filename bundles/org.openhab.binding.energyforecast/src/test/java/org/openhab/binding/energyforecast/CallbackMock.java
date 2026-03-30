@@ -43,8 +43,9 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
 /**
- * The {@link CallbackMock} class defines common constants, which are
- * used across the whole binding.
+ * Test implementation of {@link ThingHandlerCallback} used by the energyforecast binding
+ * to verify interactions in unit and integration tests. It records state updates, triggers
+ * and time series sent by handlers so that tests can assert on them.
  *
  * @author Bernd Weymann - Initial contribution
  */

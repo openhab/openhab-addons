@@ -51,7 +51,7 @@ If you don't have a database installed [InMemory persistence](https://www.openha
 ### Group `metric`
 
 Metrics for AI price forecasts.
-Calculation is done on net prices without configured `fixCost` and `VAT` from configuration.
+Calculation is done on net prices without configured `fixCost` and any VAT applied via transformations/rules.
 See [Future Forecasting](https://www.future-forecasting.de/en/wiki/fehlermass/) for further description.
 
 **Note: After first installation these values will stay empty up to 1,5 days!**
@@ -73,14 +73,14 @@ If market price is 0.001 and forecast was 0.006 the percentage error is *high* w
 For visualization you can limit these values with configuration `errorLimit`.
 
 `mean-abs` shows the average of all absolute `forecast-error` calculations as one value.
-`mean-percent` shows the average of all absolute `percent-error` calculations as one value.
+`mean-abs-percent` shows the average of all absolute `percent-error` calculations as one value.
   
 ## Full Example
 
 ### `demo.things`
 
 ```java
-Thing energyforecast:price-forecast:UID "Energy Forecast" [zone="YOUR_BIDDING_ZONE", token="YOUR_TOKEN", fixCost=12.3, vat=19.0, resolution="PT15M", refreshInterval=180, errorLimit=0] 
+Thing energyforecast:price-forecast:UID "Energy Forecast" [zone="YOUR_BIDDING_ZONE", token="YOUR_TOKEN", fixCost=12.3, resolution="PT15M", refreshInterval=180, errorLimit=0] 
 ```
 
 ### `demo.items`
@@ -93,5 +93,5 @@ Number:EnergyPrice      Energy_Forecast_Forecast                "Forecast"      
 Number:EnergyPrice      Energy_Forecast_Forecast_Error          "Forecast Error"            {channel="energyforecast:price-forecast:UID:metric#forecast-error"}
 Number:Dimensionless    Energy_Forecast_Percent_Error           "Percent Error"             {channel="energyforecast:price-forecast:UID:metric#percent-error"}
 Number:EnergyPrice      Energy_Forecast_Mean_Absolute           "Mean Absolute"             {channel="energyforecast:price-forecast:UID:metric#mean-abs"}
-Number:Dimensionless    Energy_Forecast_Mean_Absolute_Percent   "Mean Absolute Percent"     {channel="energyforecast:price-forecastt:UID:metric#mean-abs-percent"}
+Number:Dimensionless    Energy_Forecast_Mean_Absolute_Percent   "Mean Absolute Percent"     {channel="energyforecast:price-forecast:UID:metric#mean-abs-percent"}
 ```

@@ -20,6 +20,8 @@ import static org.openhab.binding.energyforecast.internal.EnergyForecastBindingC
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -35,6 +37,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.energyforecast.internal.EnergyForecastBindingConstants;
 import org.openhab.binding.energyforecast.internal.handler.EnergyForecastHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -63,6 +66,8 @@ class HandlerTest {
 
     @BeforeAll
     static void setup() {
+        String fixedInstant = "2026-02-26T15:00:00Z";
+        EnergyForecastBindingConstants.clock = Clock.fixed(Instant.parse(fixedInstant), ZoneId.of("Europe/Berlin"));
         CurrencyUnits.addUnit(CurrencyUnits.createCurrency("EUR", "Euro"));
     }
 

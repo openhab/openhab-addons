@@ -117,7 +117,9 @@ public class EnergyForecastHandler extends BaseThingHandler {
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob != null) {
             localRefreshJob.cancel(true);
+            refreshJob = null;
         }
+        super.dispose();
     }
 
     @Override
@@ -132,8 +134,8 @@ public class EnergyForecastHandler extends BaseThingHandler {
     private void refreshData() {
         if (!config.token.isBlank()) {
             if (fetchEnergyForecastPrices()) {
-                updatePriceChannels();
                 getPriceInfo().consolidate();
+                updatePriceChannels();
             }
         }
     }
@@ -212,7 +214,9 @@ public class EnergyForecastHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return true;
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, response.toString());
+                String reason = response.getReason();
+                String statusMessage = "HTTP " + status + (!reason.isEmpty() ? " " + reason : "");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
                 return false;
             }
         } catch (InterruptedException e) {
