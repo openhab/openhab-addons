@@ -117,6 +117,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
 
     // Map of all device types from the api
     private Map<String, SenseEnergyApiDevice> senseDevices = Collections.emptyMap();
+    private boolean senseDevicesDirty = false;
     // DeviceTypes deduced from the senseDevices
     private Map<String, DeviceType> senseDevicesType = new HashMap<String, DeviceType>();
     // Keep track of which devices are on so we can send trigger when devices are turned on/off
@@ -366,14 +367,24 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
      */
     private void refreshDevices() {
         logger.trace("refreshDevices");
-        try {
-            senseDevices = getApi().getDevices(id);
+        Map<String, SenseEnergyApiDevice> newSenseDevices = Collections.emptyMap();
 
-            senseDevices.entrySet().stream() //
+        try {
+            newSenseDevices = getApi().getDevices(id);
+
+            newSenseDevices.entrySet().stream() //
                     .filter(e -> !senseDevicesType.containsKey(e.getKey())) //
                     .forEach(e -> senseDevicesType.put(e.getKey(), deduceDeviceType(e.getValue())));
         } catch (SenseEnergyApiException e) {
             handleApiException(e);
+        }
+
+        if (!newSenseDevices.equals(senseDevices)) {
+            senseDevices = newSenseDevices;
+            senseDevicesDirty = true;
+            logger.debug("Device list updated, device count: {}", senseDevices.size());
+        } else {
+            logger.trace("Device list refreshed but no change detected");
         }
     }
 
@@ -388,10 +399,14 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
                 .requireNonNull(channelGroupTypeRegistry.getChannelGroupType(CHANNEL_GROUP_TYPE_DEVICE_TEMPLATE));
         List<ChannelDefinition> channelDefinitions = channelGroupType.getChannelDefinitions();
 
+        if (!senseDevicesDirty) {
+            return;
+        }
+
         Set<String> senseIDs = new HashSet<>(senseDevices.keySet());
         senseIDs.remove("solar"); // don't create solar as a separate channel
 
-        logger.trace("Reconciling channels with Sense device, channel count: {}", senseIDs.size());
+        logger.debug("Reconciling channels with Sense device, channel count: {}", senseIDs.size());
 
         boolean channelsUpdated = false;
         ThingBuilder localBuilder = (thingBuilder != null) ? thingBuilder : editThing();
@@ -433,6 +448,7 @@ public class SenseEnergyMonitorHandler extends BaseBridgeHandler
         if (thingBuilder == null) {
             updateThing(localBuilder.build());
         }
+        senseDevicesDirty = false;
 
         if (channelsUpdated) {
             triggerChannel(new ChannelUID(getThing().getUID(), CHANNEL_GROUP_GENERAL, CHANNEL_DEVICES_UPDATED_TRIGGER));
