@@ -55,7 +55,7 @@ Examples are MYGGSPRAY as `occupancy-sensor` which also provides a `light-sensor
 | `two-button-switch`   | Controller with 2 programmable buttons                    | [Controller](#two-button-switch)          | BILRESA dual button                       |
 | `three-button-switch` | Controller with 3 programmable buttons                    | [Controller](#three-button-switch)        | BILRESA scroll wheel                      |
 | `matter-light`        | LED light (based on Matter standard)                      | [Lights](#matter-light)                   | KAJPLATS series                           |
-| `matter-outlet`       | Power plug with electricity measurements                  | [Plugs](#matter-outlet)                   | GRILLPLATS, TOFSMYGGA                     |
+| `matter-outlet`       | Power plug with electricity measurements                  | [Plugs](#smart-power-plug-matter)         | GRILLPLATS, TOFSMYGGA                     |
 
 ## Discovery
 
@@ -415,8 +415,7 @@ Smart plug provides `energy-total` measuring energy consumption over lifetime an
 Channel `reset-date` is writable and will set the date time to the timestamp of command execution.
 Past and future timestamps are not possible and will be ignored.
 
-
-## Smart Power Plug (Matter)
+## Smart Power Plug Matter
 
 Smart plug based on Matter standard.
 Same as [Smart Power Plug](#smart-power-plug).
