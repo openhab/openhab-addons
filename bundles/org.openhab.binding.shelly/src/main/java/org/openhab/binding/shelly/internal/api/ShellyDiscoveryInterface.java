@@ -15,7 +15,7 @@ package org.openhab.binding.shelly.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -25,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public interface ShellyDiscoveryInterface {
-    void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException;
+    void initialize(String thingName, ShellyApiConfiguration config) throws ShellyApiException;
 
     ShellySettingsDevice getDeviceInfo() throws ShellyApiException;
 

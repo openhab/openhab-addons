@@ -31,8 +31,8 @@ import org.openhab.binding.shelly.internal.api.ShellyDiscoveryInterface;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiClient;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
@@ -127,7 +127,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
         Map<String, String> properties = new HashMap<>();
 
         try {
-            ShellyThingConfiguration config = new ShellyThingConfiguration(bindingConfig, hostname, ipAddress);
+            ShellyApiConfiguration config = new ShellyApiConfiguration(bindingConfig, hostname, ipAddress);
             if (gen2) {
                 api = new Shelly2ApiClient(name, config, httpClient);
             } else {
@@ -140,7 +140,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
             auth = getBool(devInfo.auth);
             if (name.isEmpty() || name.startsWith(SERVICE_NAME_SHELLYPLUSRANGE_PREFIX)) {
                 name = getString(devInfo.hostname);
-                config.setRealm(name);
+                config.realm.set(name);
             }
 
             thingType = name.contains("-") ? substringBeforeLast(name, "-") : name;
