@@ -450,7 +450,12 @@ public class EpsonProjectorHandler extends BaseThingHandler {
             try {
                 logger.debug("Closing connection to device '{}'", this.thing.getUID());
                 device.get().disconnect();
+                isPowerOn = false;
+
                 updateStatus(ThingStatus.OFFLINE);
+                if (isLinked(CHANNEL_TYPE_POWERSTATE)) {
+                    updateState(CHANNEL_TYPE_POWERSTATE, new StringType(PowerStatus.OFFLINE.toString()));
+                }
             } catch (EpsonProjectorException e) {
                 logger.debug("Error occurred when closing connection to device '{}'", this.thing.getUID(), e);
             }

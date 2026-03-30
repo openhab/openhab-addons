@@ -4,7 +4,7 @@ Binding supporting the DIRIGERA Gateway from IKEA.
 
 ## Supported Things
 
-The DIRIGERA `bridge` is providing the connection to all devices and scenes.  
+The DIRIGERA `bridge` is providing the connection to all devices and scenes.
 
 Refer to below sections which devices are supported and are covered by `things` connected to the DIRIGERA bridge.
 
@@ -41,9 +41,9 @@ Each thing depends on the underlying hardware and channels are created based on 
 - `ota` channels for devices which can receive updates
 - `battery` channels for battery powered devices
 - `link` channels if device can be linked to a controller or sensor
-- `startup` channel if device _power on_ behavior can be configured 
+- `startup` channel if device _power on_ behavior can be configured
 
-Examples are MYGGSPRAY as `occupancy-sensor` which also provides a `light-sensor` or TIMMERFLOTTE as `environment-sensor` delivers temperature and humidity while ALPSTUGA also measures CO2 and particulate matter. 
+Examples are MYGGSPRAY as `occupancy-sensor` which also provides a `light-sensor` or TIMMERFLOTTE as `environment-sensor` delivers temperature and humidity while ALPSTUGA also measures CO2 and particulate matter.
 
 | ThingTypeUID          | Description                                               | Section                                   | Products                                  |
 |-----------------------|-----------------------------------------------------------|-------------------------------------------|-------------------------------------------|
@@ -293,7 +293,6 @@ Configuration contains
 | `fadeSequence`        | integer | Define sequence if several light parameters are changed at once | 0       | yes      |
 | `colorTemperatureMin` | integer | Overwrite minimum color temperature from light device in kelvin | N/A     | no       |
 | `colorTemperatureMax` | integer | Overwrite maximum color temperature from light device in kelvin | N/A     | no       |
-
 
 `fadeTime` adjust fading time according to your device.
 Current behavior shows commands are acknowledged while device is fading  but not executed correctly.
@@ -607,7 +606,7 @@ State will switch to `Undef` after countdown.
 ## Occupancy Sensor
 
 Sensor to detect presence of people.
-Currently IKEA's product portfolio provides only motion sensors without additional presence detection. 
+Currently IKEA's product portfolio provides only motion sensors without additional presence detection.
 Nevertheless they are registered as _occupancy_ which is a bit misleading.
 Maybe there will be extensions in the future.
 
@@ -627,7 +626,6 @@ Sensor measuring illuminance.
 | Channel               | Type                  | Read/Write | Description                                  |
 |-----------------------|-----------------------|------------|----------------------------------------------|
 | `illuminance`         | Number:Illuminance    | R          | Illuminance in Lux                           |
-
 
 ## Environment Sensor
 
@@ -679,8 +677,7 @@ In addition this controller provides switching between 3 groups.
 Group names are
 
 - `switch-1`, `switch-2` and `switch-3` for trigger and link channels
-- `switch` group covers general device information like `ota` and `battery` information 
-
+- `switch` group covers general device information like `ota` and `battery` information
 
 | Channel               | Type                  | Read/Write | Description                                  | Advanced  |
 |-----------------------|-----------------------|------------|----------------------------------------------|-----------|
@@ -696,7 +693,7 @@ Trigger channels providing `SINGLE_PRESS`, `DOUBLE_PRESS` and `LONG_PRESS` as tr
 Pitfalls and problems:
 
 - be careful with _Add Equipment to Model_ and item names. Ensure item name for each group is different, otherwise item is connected to all group channels.
-- before linking the controller to other devices like lights ensure the `control-mode` fits 
+- before linking the controller to other devices like lights ensure the `control-mode` fits
 - right now triggers are **not** exposed so you cannot used them to control devices outside of DIRIGERA
 
 ## Matter Light
