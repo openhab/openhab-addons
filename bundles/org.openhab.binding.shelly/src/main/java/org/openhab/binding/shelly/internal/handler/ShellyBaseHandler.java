@@ -49,8 +49,8 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.api2.ShellyBluApi;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingBasicConfig;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
@@ -103,6 +103,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     private final ShellyBindingConfiguration bindingConfig;
     protected final ShellyThingConfiguration config;
+    protected final ShellyApiConfiguration apiConfig;
     private final ShellyTranslationProvider messages;
     private final ShellyChannelCache cache;
     private final int cacheCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
@@ -158,26 +159,29 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         blu = ShellyDeviceProfile.isBluSeries(thingTypeUID);
         gen2 = ShellyDeviceProfile.isGeneration2(thingTypeUID);
-        if (blu) {
-            this.api = new ShellyBluApi(thingName, thingTable, this, webSocketClient, scheduler);
-        } else if (gen2) {
-            this.api = new Shelly2ApiRpc(thingName, thingTable, this, webSocketClient, scheduler);
-        } else {
-            this.api = new Shelly1HttpApi(thingName, this);
-        }
 
+        // Create API config
         Map<String, String> properties = getThing().getProperties();
         String realm = getString(properties.get(PROPERTY_SERVICE_NAME));
-        ShellyThingBasicConfig persistentConfig = getConfigAs(ShellyThingBasicConfig.class);
-        config = new ShellyThingConfiguration(thingName, persistentConfig, bindingConfig, realm, gen2);
+        this.config = getConfigAs(ShellyThingConfiguration.class);
+        this.apiConfig = new ShellyApiConfiguration(config, bindingConfig, realm, gen2);
 
-        coap = config.getEventsCoIoT() ? new Shelly1CoapHandler(this, thingName, config, coapServer) : null;
+        // Create API instance
+        if (blu) {
+            this.api = new ShellyBluApi(thingName, thingTable, this, apiConfig, webSocketClient, scheduler);
+        } else if (gen2) {
+            this.api = new Shelly2ApiRpc(thingName, thingTable, this, apiConfig, webSocketClient, scheduler);
+        } else {
+            this.api = new Shelly1HttpApi(thingName, apiConfig, this);
+        }
+
+        coap = apiConfig.enableCoIOT.get() ? new Shelly1CoapHandler(this, thingName, apiConfig, coapServer) : null;
     }
 
     @Override
     public boolean checkRepresentation(String key) {
-        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(config.getDeviceAddress())
-                || key.equalsIgnoreCase(config.getDeviceIp()) || key.equalsIgnoreCase(config.getRealm())
+        return key.equalsIgnoreCase(getUID()) || key.equalsIgnoreCase(apiConfig.deviceAddress)
+                || key.equalsIgnoreCase(apiConfig.deviceIp) || key.equalsIgnoreCase(apiConfig.realm.get())
                 || key.equalsIgnoreCase(getThingName());
     }
 
@@ -245,8 +249,14 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public synchronized ShellyThingConfiguration getThingConfig() {
+    public ShellyThingConfiguration getThingConfig() {
         ShellyThingConfiguration cfg = config;
+        return cfg;
+    }
+
+    @Override
+    public ShellyApiConfiguration getApiConfig() {
+        ShellyApiConfiguration cfg = apiConfig;
         return cfg;
     }
 
@@ -299,9 +309,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         profile.initFromThingType(thing.getThingTypeUID());
         logger.debug(
                 "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
-                thingName, getThing().getLabel(), thingType, config.getDeviceAddress().toUpperCase(Locale.ROOT), gen2,
-                profile.isBlu, profile.alwaysOn, profile.hasBattery, config.getEventsCoIoT());
-        if (config.getDeviceAddress().isEmpty()) {
+                thingName, getThing().getLabel(), thingType, apiConfig.deviceAddress.toUpperCase(Locale.ROOT), gen2,
+                profile.isBlu, profile.alwaysOn, profile.hasBattery, apiConfig.enableCoIOT.get());
+        if (apiConfig.deviceAddress.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
                     "config-status.error.missing-device-address");
             return false;
@@ -318,21 +328,20 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
-        Shelly1CoapHandler coap = this.coap;
-        if (coap != null && config.getEventsCoIoT() && !profile.alwaysOn) {
+        if (coap != null && apiConfig.enableCoIOT.get() && !profile.alwaysOn) {
             coap.start();
         }
 
         // Initialize API access, exceptions will be catched by initialize()
-        api.initialize(thingName, config);
+        api.initialize(thingName, apiConfig);
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
-        if (getBool(device.auth) && config.getPassword().isEmpty()) {
+        if (getBool(device.auth) && apiConfig.credentials.get().password.isEmpty()) {
             setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
-        if (config.getRealm().isEmpty()) {
-            config.setRealm(getString(device.hostname).toLowerCase(Locale.ROOT));
-            api.setConfig(thingName, config); // update config
+        if (apiConfig.realm.get().isEmpty()) {
+            apiConfig.realm.set(getString(device.hostname).toLowerCase(Locale.ROOT));
+            api.setConfig(thingName, apiConfig); // update config
         }
 
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thing.getThingTypeUID(), profile.device);
@@ -382,7 +391,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Check for Range Extender mode, add secondary device to Inbox
         checkRangeExtender(tmpPrf);
 
-        startCoap(config, tmpPrf);
+        startCoap(apiConfig, tmpPrf);
         if (!gen2 && !blu) {
             api.setActionURLs(); // register event urls
         }
@@ -608,10 +617,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void checkRangeExtender(ShellyDeviceProfile prf) {
-        if (getBool(prf.settings.rangeExtender) && config.getEnableRangeExtender() && prf.status.rangeExtender != null
+        if (getBool(prf.settings.rangeExtender) && apiConfig.enableRangeExtender && prf.status.rangeExtender != null
                 && prf.status.rangeExtender.apClients != null) {
             for (Shelly2APClient client : profile.status.rangeExtender.apClients) {
-                String secondaryIp = config.getDeviceIp() + ":" + client.mport.toString();
+                String secondaryIp = apiConfig.deviceIp + ":" + client.mport.toString();
                 String name = SERVICE_NAME_SHELLYPLUSRANGE_PREFIX + "-" + client.mac.replaceAll(":", "");
                 DiscoveryResult result = ShellyBasicDiscoveryService.createResult(true, name, secondaryIp,
                         bindingConfig, httpClient, messages, thingTable);
@@ -633,10 +642,9 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 + ",alwaysOn:{}, updatePeriod:{}sec", thingName, profile.hasRelays, profile.numRelays, profile.isRoller,
                 profile.numRollers, profile.isDimmer, profile.numMeters, profile.isEMeter,
                 profile.settings.extSwitch != null ? "installed" : "n/a", profile.isSensor, profile.isDW,
-                profile.hasBattery,
-                profile.hasBattery ? " (low battery threshold=" + config.getLowBattery() + "%)" : "", profile.isSense,
-                profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2, profile.inColor,
-                profile.alwaysOn, profile.updatePeriod, config.getEnableBluGateway());
+                profile.hasBattery, profile.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
+                profile.isSense, profile.isMotion, profile.isLight, profile.isBulb, profile.isDuo, profile.isRGBW2,
+                profile.inColor, profile.alwaysOn, profile.updatePeriod, apiConfig.enableBluGateway);
         if (profile.status.extTemperature != null || profile.status.extHumidity != null
                 || profile.status.extVoltage != null || profile.status.extAnalogInput != null) {
             logger.debug("{}: Shelly Add-On detected with at least 1 external sensor", thingName);
@@ -887,8 +895,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public boolean onEvent(String address, String deviceName, String deviceIndex, String type,
             Map<String, String> parameters) {
-        if (thingName.equalsIgnoreCase(deviceName) || config.getDeviceAddress().equals(address)
-                || config.getRealm().equals(deviceName)) {
+        if (thingName.equalsIgnoreCase(deviceName) || apiConfig.deviceAddress.equals(address)
+                || apiConfig.realm.get().equals(deviceName)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
             int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) : 1;
@@ -1023,15 +1031,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             thingName = getString(thingType + "-" + getString(getThing().getUID().getId())).toLowerCase(Locale.ROOT);
         }
 
-        if (config.getDeviceAddress().isEmpty()) {
+        if (apiConfig.deviceAddress.isEmpty()) {
             // may not be set in .things file
             logger.debug("{}: IP/MAC address for the device must not be empty", thingName);
             return false;
         }
 
-        if (config.getLocalIp().startsWith("169.254")) {
+        if (apiConfig.localIp.startsWith("169.254")) {
             setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
-                    config.getLocalIp());
+                    apiConfig.localIp);
             return false;
         }
 
@@ -1047,8 +1055,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             }
         }
 
-        skipCount = config.getUpdateInterval() / UPDATE_STATUS_INTERVAL_SECONDS;
-        logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, config.getUpdateInterval(), skipCount);
+        int updateInterval = config.updateInterval;
+        if (updateInterval == 0) {
+            updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
+        }
+        if (updateInterval < UPDATE_MIN_DELAY) {
+            updateInterval = UPDATE_MIN_DELAY;
+        }
+        skipCount = updateInterval / UPDATE_STATUS_INTERVAL_SECONDS;
+        logger.trace("{}: updateInterval = {}s -> skipCount = {}", thingName, updateInterval, skipCount);
 
         return true;
     }
@@ -1070,7 +1085,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
         if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
                 || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
-            if (!config.getEventsCoIoT()) {
+            if (!apiConfig.enableCoIOT.get()) {
                 logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             }
             autoCoIoT = true;
@@ -1090,13 +1105,13 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
     }
 
-    public void startCoap(ShellyThingConfiguration config, ShellyDeviceProfile profile) throws ShellyApiException {
-        if (coap == null || !config.getEventsCoIoT()) {
+    public void startCoap(ShellyApiConfiguration config, ShellyDeviceProfile profile) throws ShellyApiException {
+        if (coap == null || !apiConfig.enableCoIOT.get()) {
             return;
         }
         if (profile.settings.coiot != null && profile.settings.coiot.enabled != null) {
             String devpeer = getString(profile.settings.coiot.peer);
-            String ourpeer = config.getLocalIp() + ":" + Shelly1CoapJSonDTO.COIOT_PORT;
+            String ourpeer = apiConfig.localIp + ":" + Shelly1CoapJSonDTO.COIOT_PORT;
             if (!profile.settings.coiot.enabled || (profile.isMotion && devpeer.isEmpty())) {
                 try {
                     api.setCoIoTPeer(ourpeer);
@@ -1107,6 +1122,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             } else if (!devpeer.isEmpty() && !devpeer.equals(ourpeer)) {
                 logger.warn("{}: CoIoT peer in device settings does not point this to this host", thingName);
             }
+        }
+        if (autoCoIoT) {
+            logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
+            config.enableCoIOT.set(false);
+            api.setConfig(thingName, config);
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
@@ -1343,7 +1363,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void updateProperties(ShellyDeviceProfile profile, ShellySettingsStatus status) {
         Map<String, Object> properties = fillDeviceProperties(profile);
         String deviceName = getString(profile.settings.name);
-        properties.put(PROPERTY_SERVICE_NAME, config.getRealm());
+        properties.put(PROPERTY_SERVICE_NAME, apiConfig.realm.get());
         properties.put(PROPERTY_DEV_AUTH, getBool(profile.device.auth) ? "yes" : "no");
         if (!deviceName.isEmpty()) {
             properties.put(PROPERTY_DEV_NAME, deviceName);

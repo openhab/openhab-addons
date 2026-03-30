@@ -190,7 +190,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     private void updateBrightnessChannel(int lightId, OnOffType power, int brightness) throws ShellyApiException {
         updateChannel(CHANNEL_COLOR_WHITE, CHANNEL_BRIGHTNESS + "$Switch", power);
         if (brightness > 0) {
-            api.setBrightness(lightId, brightness, config.getBrightnessAutoOn());
+            api.setBrightness(lightId, brightness, config.brightnessAutoOn);
         } else {
             api.setLightTurn(lightId, power == OnOffType.ON ? SHELLY_API_ON : SHELLY_API_OFF);
             if (brightness >= 0) { // ignore -1
@@ -240,10 +240,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             if (command == UpDownType.UP || command == OnOffType.ON
                     || ((command instanceof DecimalType decimalCommand) && (decimalCommand.intValue() == 100))) {
                 logger.debug("{}: Open roller", thingName);
-                int shpos = profile.getRollerFav(config.getFavoriteUP() - 1);
+                int shpos = profile.getRollerFav(config.favoriteUP - 1);
                 if (shpos > 0) {
-                    logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName,
-                            config.getFavoriteUP(), shpos);
+                    logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName, config.favoriteUP,
+                            shpos);
                     api.setRollerPos(index, shpos);
                     position = shpos;
                 } else {
@@ -252,11 +252,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             } else if (command == UpDownType.DOWN || command == OnOffType.OFF
                     || ((command instanceof DecimalType decimalCommand) && (decimalCommand.intValue() == 0))) {
                 logger.debug("{}: Closing roller", thingName);
-                int shpos = profile.getRollerFav(config.getFavoriteDOWN() - 1);
+                int shpos = profile.getRollerFav(config.favoriteDOWN - 1);
                 if (shpos > 0) {
                     // use favorite position
                     logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
-                            config.getFavoriteDOWN(), shpos);
+                            config.favoriteDOWN, shpos);
                     api.setRollerPos(index, shpos);
                     position = shpos;
                 } else {

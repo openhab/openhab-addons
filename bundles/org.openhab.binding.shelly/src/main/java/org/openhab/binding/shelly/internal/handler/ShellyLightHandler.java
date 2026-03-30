@@ -218,7 +218,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                 }
 
                 // send changed colors to the device
-                sendColors(profile, lightId, oldCol, col, config.getBrightnessAutoOn());
+                sendColors(profile, lightId, oldCol, col, config.brightnessAutoOn);
             }
             return true;
         } catch (ShellyApiException e) {

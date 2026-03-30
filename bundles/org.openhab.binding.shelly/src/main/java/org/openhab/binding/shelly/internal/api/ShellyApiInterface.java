@@ -24,7 +24,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyShortLig
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusLight;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSensor;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 
 /**
  * The {@link ShellyApiInterface} Defines device API
@@ -35,7 +35,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 public interface ShellyApiInterface extends ShellyDiscoveryInterface {
     boolean isInitialized();
 
-    void setConfig(String thingName, ShellyThingConfiguration config);
+    void setConfig(String thingName, ShellyApiConfiguration config);
 
     ShellySettingsStatus getStatus() throws ShellyApiException;
 

@@ -43,7 +43,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiResult.ShellyApiResultBu
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthRsp;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,25 +73,25 @@ public class ShellyHttpClient {
     protected volatile boolean basicAuth = false;
 
     // All access must be guarded by "this"
-    protected volatile ShellyThingConfiguration config;
+    protected volatile ShellyApiConfiguration config;
 
     private final ShellyDeviceProfile profile;
 
-    public ShellyHttpClient(String thingName, ShellyThingInterface thing) {
+    public ShellyHttpClient(String thingName, ShellyApiConfiguration config, ShellyThingInterface thing) {
         this.thingName = thingName;
-        this.config = thing.getThingConfig();
+        this.config = config;
         this.httpClient = thing.getHttpClient();
         this.profile = thing.getProfile();
     }
 
-    public ShellyHttpClient(String thingName, ShellyThingConfiguration config, HttpClient httpClient) {
+    public ShellyHttpClient(String thingName, ShellyApiConfiguration config, HttpClient httpClient) {
         this.thingName = thingName;
         this.config = config;
         this.httpClient = httpClient;
         this.profile = new ShellyDeviceProfile();
     }
 
-    public synchronized void setConfig(String thingName, ShellyThingConfiguration config) {
+    public synchronized void setConfig(String thingName, ShellyApiConfiguration config) {
         this.thingName = thingName;
         this.config = config;
     }
@@ -128,7 +128,8 @@ public class ShellyHttpClient {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !config.getPassword().isBlank()) {
+                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth
+                        && !config.credentials.get().password.isBlank()) {
                     logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
                     basicAuth = true;
                     apiResult = innerRequest(HttpMethod.GET, uri, null, "");
@@ -164,18 +165,15 @@ public class ShellyHttpClient {
 
     private ShellyApiResult innerRequest(HttpMethod method, String uri, @Nullable Shelly2AuthChallenge auth,
             String data) throws ShellyApiException {
-        String deviceIp = config.getDeviceIp();
-        String userId = config.getUserId();
-        String password = config.getPassword();
-
         Request request = null;
-        String url = "http://" + deviceIp + uri;
+        String url = "http://" + config.deviceIp + uri;
         ShellyApiResultBuilder builder = ShellyApiResult.builder(method.toString(), url);
 
         try {
             request = httpClient.newRequest(url).method(method.toString()).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
 
+            String password = config.credentials.get().password;
             if (!uri.equals(SHELLY_URL_DEVINFO) && !password.isBlank()) { // not for /shelly or no password
                                                                           // configured
                 // Add Auth info
@@ -186,9 +184,8 @@ public class ShellyHttpClient {
                     authHeader = formatAuthResponse(uri, buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, password));
                 } else {
                     if (basicAuth) {
-                        String bearer = userId + ":" + password;
-                        authHeader = HTTP_AUTH_TYPE_BASIC + " "
-                                + Base64.getEncoder().encodeToString(bearer.getBytes(StandardCharsets.UTF_8));
+                        authHeader = HTTP_AUTH_TYPE_BASIC + " " + Base64.getEncoder()
+                                .encodeToString(config.credentials.get().bearer.getBytes(StandardCharsets.UTF_8));
                     }
                 }
                 if (!authHeader.isEmpty()) {
