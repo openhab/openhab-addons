@@ -27,6 +27,8 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_T
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,6 +141,19 @@ public class DDWRTWirelessClientHandler
             return OnOffType.OFF;
         }
         return UnDefType.UNDEF;
+    }
+
+    @Override
+    protected List<String> getCacheKeys() {
+        List<String> keys = new ArrayList<>();
+        // Register by thing ID (sanitized hostname) — primary key for MAC-randomizing clients
+        String thingId = getThing().getUID().getId();
+        keys.add(thingId);
+        // Also register by configured MAC if available
+        if (!config.mac.isEmpty()) {
+            keys.add(config.mac.toLowerCase());
+        }
+        return keys;
     }
 
     /**

@@ -17,10 +17,13 @@ import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ddwrt.internal.api.CacheChangeListener;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetwork;
 import org.openhab.binding.ddwrt.internal.api.DDWRTNetworkCache;
 import org.openhab.binding.ddwrt.internal.api.DDWRTThingUpdater;
@@ -47,7 +50,8 @@ import org.slf4j.LoggerFactory;
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler implements DDWRTThingUpdater {
+public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler
+        implements DDWRTThingUpdater, CacheChangeListener {
 
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTBaseHandler.class));
 
@@ -76,6 +80,40 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler implements
                 updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
             } else {
                 updateStatus(ONLINE);
+            }
+            // Register as cache listener for this entity's keys
+            registerCacheListeners();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        unregisterCacheListeners();
+        super.dispose();
+    }
+
+    // ---- CacheChangeListener ----
+
+    @Override
+    public void onCacheChanged() {
+        refresh();
+    }
+
+    private void registerCacheListeners() {
+        final DDWRTNetworkCache cache = getCache();
+        if (cache != null) {
+            for (String key : getCacheKeys()) {
+                cache.addChangeListener(key, this);
+                logger.debug("Registered cache listener for key '{}'", key);
+            }
+        }
+    }
+
+    private void unregisterCacheListeners() {
+        final DDWRTNetworkCache cache = getCache();
+        if (cache != null) {
+            for (String key : getCacheKeys()) {
+                cache.removeChangeListener(key, this);
             }
         }
     }
@@ -214,6 +252,15 @@ public abstract class DDWRTBaseHandler<E, C> extends BaseThingHandler implements
      */
     protected State getDefaultState(String channelId) {
         return UnDefType.UNDEF;
+    }
+
+    /**
+     * Return the cache keys this handler should listen to for changes.
+     * Subclasses override to provide entity-specific keys (hostname, MAC, interfaceId).
+     * Default returns empty list (no cache listening).
+     */
+    protected List<String> getCacheKeys() {
+        return Collections.emptyList();
     }
 
     /**

@@ -166,21 +166,16 @@ public class SshClientManager {
             return false;
         }
         String name = file.getName();
-        // Skip known non-key files
-        if (name.endsWith(".pub") || name.startsWith("known_hosts") || name.startsWith("config")
-                || name.startsWith("authorized_keys") || name.endsWith("~")) {
-            return false;
-        }
-        // Accept files starting with "id_" (id_rsa, id_ed25519, id_ecdsa, id_dsa)
-        // or any other file without a common non-key extension
-        return true;
+        // Skip known non-key files; accept files starting with "id_" or any other file
+        // without a common non-key extension
+        return !name.endsWith(".pub") && !name.startsWith("known_hosts") && !name.startsWith("config")
+                && !name.startsWith("authorized_keys") && !name.endsWith("~");
     }
 
     @SuppressWarnings("null")
     public SshAuthSession openAuthSession(String host, int port, String user, @Nullable String password,
             @Nullable String privateKeyRef, @Nullable String pinnedFingerprint, Duration defaultTimeout)
             throws IOException {
-
         // Pass empty string when user is not configured so the HostConfigEntryResolver
         // can fill it from ~/.ssh/config User directive. The resolver falls back to the
         // system username if SSH config also has no User for the host.

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,6 +55,9 @@ public class DDWRTNetwork {
     private final Map<String, Long> hostFailureTimes = new ConcurrentHashMap<>();
 
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(DDWRTNetwork.class));
+
+    // Refresh listeners (e.g., discovery service)
+    private final List<RefreshListener> refreshListeners = new CopyOnWriteArrayList<>();
 
     // ---- Configuration ----
 
@@ -304,7 +308,11 @@ public class DDWRTNetwork {
                 logger.debug("Device already exists for {}, skipping createDevice", cfg.hostname);
                 return existing;
             }
-            return DDWRTBaseDevice.createDevice(cache, cfg);
+            DDWRTBaseDevice device = DDWRTBaseDevice.createDevice(cache, cfg);
+            if (device != null) {
+                device.setNetwork(this);
+            }
+            return device;
         }
     }
 
@@ -321,10 +329,31 @@ public class DDWRTNetwork {
     /** Enable or disable a wireless radio on the specified device. */
     public boolean setRadioEnabled(String deviceMac, String iface, boolean enabled) {
         DDWRTBaseDevice device = cache.getDevice(deviceMac);
-        if (device == null) {
-            return false;
+        return device != null && device.setRadioEnabled(iface, enabled);
+    }
+
+    // ---- Refresh listeners ----
+
+    public void addRefreshListener(RefreshListener listener) {
+        refreshListeners.add(listener);
+    }
+
+    public void removeRefreshListener(RefreshListener listener) {
+        refreshListeners.remove(listener);
+    }
+
+    /**
+     * Called by a device after a successful refresh cycle.
+     * Notifies all registered listeners that new data is available in the cache.
+     */
+    public void fireRefreshComplete(DDWRTBaseDevice device) {
+        for (RefreshListener listener : refreshListeners) {
+            try {
+                listener.onRefreshComplete(device);
+            } catch (Exception e) {
+                logger.debug("Refresh listener error: {}", e.getMessage());
+            }
         }
-        return device.setRadioEnabled(iface, enabled);
     }
 
     /** Stop all device thread pools and clear the cache. Called on bridge dispose. */

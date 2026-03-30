@@ -45,8 +45,9 @@ public class SshLogFollower implements Runnable, AutoCloseable {
             Pattern.CASE_INSENSITIVE);
 
     // Wireless event keywords in message body (for kernel or generic processes)
-    private static final Pattern WIRELESS_MESSAGE = Pattern
-            .compile("associated|disassociated|authenticated|deauthenticated|IEEE 802\\.11", Pattern.CASE_INSENSITIVE);
+    private static final Pattern WIRELESS_MESSAGE = Pattern.compile(
+            "associated|disassociated|authenticated|deauthenticated|IEEE 802\\.11|\\bSTA\\b.*\\bMLME\\b",
+            Pattern.CASE_INSENSITIVE);
 
     // DHCP event keywords in message body (to distinguish from dnsmasq warnings/errors)
     private static final Pattern DHCP_MESSAGE = Pattern.compile(
@@ -59,7 +60,7 @@ public class SshLogFollower implements Runnable, AutoCloseable {
 
     private Logger logger;
     private final Supplier<@Nullable ClientSession> sessionSupplier;
-    private final SyslogParser parser = new SyslogParser();
+    private final SyslogParser parser;
     private final String command;
     private final @Nullable Pattern devicePattern;
     private final boolean isLogreadCommand;
@@ -77,6 +78,7 @@ public class SshLogFollower implements Runnable, AutoCloseable {
         this.command = Objects.requireNonNull(command);
         this.devicePattern = devicePattern;
         this.logger = Objects.requireNonNull(LoggerFactory.getLogger(SshLogFollower.class.getName() + "." + hostname));
+        this.parser = new SyslogParser(this.logger);
         this.isLogreadCommand = command.contains("logread") || command.contains("tail -F");
     }
 
