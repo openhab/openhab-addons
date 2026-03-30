@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ddwrt.internal.DDWRTDeviceConfiguration;
 import org.slf4j.Logger;
 
@@ -28,6 +29,12 @@ import org.slf4j.Logger;
  */
 @NonNullByDefault
 public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
+
+    // Candidate interfaces to probe on first enumeration
+    private static final String[] BROADCOM_IFACES = { "eth1", "eth2", "wl0", "wl1" };
+
+    // After first successful enumeration, only probe these interfaces
+    private volatile String @Nullable [] discoveredIfaces;
 
     public DDWRTBroadcomDevice(DDWRTDeviceConfiguration cfg, Logger logger) {
         super(cfg, logger);
@@ -90,8 +97,13 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
         List<DDWRTRadio> radios = new ArrayList<>();
-        // Try common Broadcom interface names
-        for (String iface : new String[] { "eth1", "eth2", "wl0", "wl1" }) {
+        // Use cached interfaces if available, otherwise probe all candidates
+        String[] ifaces = discoveredIfaces;
+        if (ifaces == null) {
+            ifaces = BROADCOM_IFACES;
+        }
+        List<String> foundIfaces = new ArrayList<>();
+        for (String iface : ifaces) {
             String ssid = safeTrim(runner.execStdout("wl -i " + iface + " ssid | awk -F'\"' '{print $2}'"));
             if (!ssid.isEmpty()) {
                 DDWRTRadio radio = new DDWRTRadio(Objects.requireNonNull(mac), iface);
@@ -109,8 +121,14 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
 
                 radio.setEnabled(true);
                 radios.add(radio);
+                foundIfaces.add(iface);
                 logger.debug("Found Broadcom radio: {}", radio);
             }
+        }
+        // Cache discovered interfaces to avoid probing non-existent ones on subsequent refreshes
+        if (!foundIfaces.isEmpty() && discoveredIfaces == null) {
+            discoveredIfaces = foundIfaces.toArray(new String[0]);
+            logger.debug("Cached Broadcom interfaces: {}", foundIfaces);
         }
         return radios;
     }
@@ -172,22 +190,24 @@ public class DDWRTBroadcomDevice extends DDWRTBaseDevice {
         // Get CPU temperature using parent method
         double cpuTemp = super.refreshCpuTemp(runner);
 
-        // Get wireless temperatures using wl commands
-        String wl0TempStr = safeTrim(runner.execStdout("wl -i wl0 phy_tempsense | cut -d' ' -f3"));
-        if (!wl0TempStr.isEmpty()) {
-            try {
-                wl0Temp = Double.parseDouble(wl0TempStr);
-            } catch (NumberFormatException e) {
-                // Keep default 0.0
-            }
-        }
-
-        String wl1TempStr = safeTrim(runner.execStdout("wl -i wl1 phy_tempsense | cut -d' ' -f3"));
-        if (!wl1TempStr.isEmpty()) {
-            try {
-                wl1Temp = Double.parseDouble(wl1TempStr);
-            } catch (NumberFormatException e) {
-                // Keep default 0.0
+        // Get wireless temperatures using discovered radio interfaces (populated by refreshRadios)
+        // Only query interfaces that actually exist on this device, avoiding "adapter not found" errors
+        List<String> ifaces = radioIfaceNames;
+        for (int i = 0; i < ifaces.size(); i++) {
+            String iface = ifaces.get(i);
+            String tempStr = safeTrim(runner.execStdout("wl -i " + iface + " phy_tempsense | cut -d' ' -f1"));
+            if (!tempStr.isEmpty()) {
+                try {
+                    // Broadcom phy_tempsense returns raw sensor value; convert to Celsius: raw / 2 + 20
+                    double temp = Double.parseDouble(tempStr) / 2.0 + 20.0;
+                    if (i == 0) {
+                        wl0Temp = temp;
+                    } else if (i == 1) {
+                        wl1Temp = temp;
+                    }
+                } catch (NumberFormatException e) {
+                    // Keep default 0.0
+                }
             }
         }
 

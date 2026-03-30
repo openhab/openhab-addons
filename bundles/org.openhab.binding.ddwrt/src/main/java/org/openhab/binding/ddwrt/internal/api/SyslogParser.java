@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -39,7 +38,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class SyslogParser {
 
-    private static final Logger logger = LoggerFactory.getLogger(SyslogParser.class);
+    private final Logger logger;
 
     private static final Pattern ANSI_ESCAPE = Pattern.compile("\u001B\\[[;?0-9]*[ -/]*[@-~]");
     private static final Pattern OSC_SEQUENCE = Pattern.compile("\u001B\\].*?(\u0007|\u001B\\\\)");
@@ -65,6 +64,10 @@ public class SyslogParser {
             .compile(".*wireless.*(?:associated|disassociated|authenticated|deauthenticated).*");
 
     private final DateTimeFormatter isoDateFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+    public SyslogParser(Logger logger) {
+        this.logger = logger;
+    }
 
     /**
      * Parsed syslog event.

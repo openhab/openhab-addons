@@ -35,17 +35,17 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
     @Override
     protected List<String> getAssoclistMacs(SshRunner runner, String iface) {
-        return IwinfoParser.parseAssoclistMacs(runner, iface);
+        return IwinfoParser.parseAssoclistMacs(logger, runner, iface);
     }
 
     @Override
     protected List<DDWRTWirelessClient> getAssociatedClients(SshRunner runner, String iface) {
-        return IwinfoParser.parseAssoclist(runner, iface, mac);
+        return IwinfoParser.parseAssoclist(logger, runner, iface, mac);
     }
 
     @Override
     protected List<DDWRTRadio> enumerateRadios(SshRunner runner) {
-        return IwinfoParser.enumerateRadios(runner, mac);
+        return IwinfoParser.enumerateRadios(logger, runner, mac);
     }
 
     @Override
@@ -129,7 +129,6 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
             if (!iptablesOutput.isEmpty()) {
                 rules.addAll(parseIptablesRules(iptablesOutput));
             }
-
         } catch (Exception e) {
             logger.debug("Failed to enumerate OpenWrt firewall rules: {}", e.getMessage());
         }
@@ -283,7 +282,6 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
 
             return new DDWRTFirewallRule(ruleId, type, direction, proto, source, destIp, null, destPort, null, true,
                     description, mac, 0, 0);
-
         } catch (Exception e) {
             logger.trace("Error parsing iptables line: {}", e.getMessage());
             return null;

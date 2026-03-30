@@ -291,19 +291,25 @@ public class DDWRTFirewallRule {
             sb.append(", type=").append(type);
             sb.append(", direction=").append(direction);
             sb.append(", protocol=").append(protocol);
-            if (sourceIp != null)
+            if (sourceIp != null) {
                 sb.append(", src=").append(sourceIp);
-            if (sourcePort != null)
+            }
+            if (sourcePort != null) {
                 sb.append(":").append(sourcePort);
-            if (destIp != null)
+            }
+            if (destIp != null) {
                 sb.append(", dst=").append(destIp);
-            if (destPort != null)
+            }
+            if (destPort != null) {
                 sb.append(":").append(destPort);
-            if (interfaceName != null)
+            }
+            if (interfaceName != null) {
                 sb.append(", iface=").append(interfaceName);
+            }
             sb.append(", enabled=").append(enabled);
-            if (hitCount > 0)
+            if (hitCount > 0) {
                 sb.append(", hits=").append(hitCount);
+            }
             sb.append('}');
             return sb.toString();
         }

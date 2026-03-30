@@ -119,8 +119,6 @@ public class SshAuthSession implements AutoCloseable {
         } catch (Exception e) {
             logger.debug("Failed to capture MOTD: {}", e.getMessage());
             return "";
-        } finally {
-            // Channel cleanup handled by SSHD
         }
     }
 
