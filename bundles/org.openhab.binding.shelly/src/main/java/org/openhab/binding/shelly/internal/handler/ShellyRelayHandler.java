@@ -230,8 +230,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 if ((command == UpDownType.UP && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_OPEN))
                         || (command == UpDownType.DOWN
                                 && getString(rstatus.state).equals(SHELLY_ALWD_ROLLER_TURN_CLOSE))) {
-                    logger.debug("{}: Roller is already in requested position ({}), ignore command {}", thingName,
-                            getString(rstatus.state), command);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{}: Roller is already in requested position ({}), ignore command {}", thingName,
+                                getString(rstatus.state), command);
+                    }
                     requestUpdates(1, false);
                     return;
                 }
@@ -242,8 +244,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Open roller", thingName);
                 int shpos = profile.getRollerFav(config.getFavoriteUP() - 1);
                 if (shpos > 0) {
-                    logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName,
-                            config.getFavoriteUP(), shpos);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{}: Use favoriteUP id {} for positioning roller({}%)", thingName,
+                                config.getFavoriteUP(), shpos);
+                    }
                     api.setRollerPos(index, shpos);
                     position = shpos;
                 } else {
@@ -255,8 +259,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 int shpos = profile.getRollerFav(config.getFavoriteDOWN() - 1);
                 if (shpos > 0) {
                     // use favorite position
-                    logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
-                            config.getFavoriteDOWN(), shpos);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{}: Use favoriteDOWN id {} for positioning roller ({}%)", thingName,
+                                config.getFavoriteDOWN(), shpos);
+                    }
                     api.setRollerPos(index, shpos);
                     position = shpos;
                 } else {
@@ -264,10 +270,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 }
             }
         } else if (command == StopMoveType.STOP) {
-            logger.debug("{}: Stop roller", thingName);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Stop roller", thingName);
+            }
             api.setRollerTurn(index, SHELLY_ALWD_ROLLER_TURN_STOP);
         } else {
-            logger.debug("{}: Set roller to position {}", thingName, command);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Set roller to position {}", thingName, command);
+            }
             if (command instanceof PercentType percentCommand) {
                 position = percentCommand.intValue();
             } else if (command instanceof DecimalType decimalCommand) {
@@ -283,7 +293,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             position = isControl ? SHELLY_MAX_ROLLER_POS - position : position;
             validateRange("roller position", position, SHELLY_MIN_ROLLER_POS, SHELLY_MAX_ROLLER_POS);
 
-            logger.debug("{}: Changing roller position to {}", thingName, position);
+            if (logger.isDebugEnabled()) {
+                logger.debug("{}: Changing roller position to {}", thingName, position);
+            }
             api.setRollerPos(index, position);
         }
     }

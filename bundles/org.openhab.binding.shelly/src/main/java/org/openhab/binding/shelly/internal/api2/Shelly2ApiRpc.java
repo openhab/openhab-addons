@@ -89,7 +89,7 @@ import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptLi
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptListResponse.ShellyScriptListEntry;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptPutCodeParams;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.ShellyScriptResponse;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
@@ -130,8 +130,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
      * @param scheduler the {@link ScheduledExecutorService} to use for scheduling.
      */
     public Shelly2ApiRpc(String thingName, ShellyThingTable thingTable, ShellyThingInterface thing,
-            WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
-        super(thingName, thing);
+            ShellyApiConfiguration config, WebSocketClient webSocketClient, ScheduledExecutorService scheduler) {
+        super(thingName, config, thing);
         this.thingTable = thingTable;
         this.client = webSocketClient;
         this.scheduler = scheduler;
@@ -139,12 +139,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void initialize(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
+    public void initialize(String thingName, ShellyApiConfiguration config) throws ShellyApiException {
         setConfig(thingName, config);
 
         if (alwaysOn) {
             disconnect();
-            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client, scheduler);
+            rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
             rpcSocket.addMessageHandler(this);
         }
 
@@ -160,7 +160,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void startScan() {
         try {
             if (getProfile().isBlu) {
-                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
+                installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
             }
         } catch (ShellyApiException e) {
         }
@@ -216,9 +216,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
 
         ShellySettingsDevice device = profile.device;
-        if (config.getRealm().isBlank()) {
-            config.setRealm(getString(profile.device.hostname));
-            logger.trace("{}: {} is used as realm", thingName, config.getRealm());
+        if (config.realm.get().isBlank()) {
+            config.realm.set(profile.device.hostname);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}: {} is used as realm", thingName, config.realm.get());
+            }
         }
         profile.settings.fw = getString(device.fw);
         profile.fwDate = substringBefore(substringBefore(device.fw, "/"), "-");
@@ -344,7 +346,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         try {
             if (alwaysOn && dc.ble != null) {
-                boolean enableBluGateway = config.getEnableBluGateway();
+                boolean enableBluGateway = config.enableBluGateway;
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                         enableBluGateway ? "enabled" : "disabled");
                 if (enableBluGateway) {
@@ -381,9 +383,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void checkSetWsCallback() throws ShellyApiException {
         Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
-        String url = "ws://" + config.getLocalIp() + ":" + config.getLocalPort() + "/shelly/wsevent";
-        if (!config.getLocalIp().isEmpty() && !getBool(wsConfig.enable)
-                || !url.equalsIgnoreCase(getString(wsConfig.server))) {
+        String url = config.urls.websocketCallback;
+        if (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
             wsConfig.enable = true;
             wsConfig.server = url;
@@ -1054,7 +1055,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellySettingsLogin setLoginCredentials(String user, String password) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams();
         params.user = "admin";
-        params.realm = config.getRealm();
+        params.realm = config.realm.get();
         params.ha1 = sha256(params.user + ":" + params.realm + ":" + password);
         apiRequest(SHELLYRPC_METHOD_AUTHSET, params, String.class);
 

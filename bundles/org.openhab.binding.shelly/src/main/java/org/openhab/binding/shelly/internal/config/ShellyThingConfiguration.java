@@ -12,17 +12,7 @@
  */
 package org.openhab.binding.shelly.internal.config;
 
-import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
-
-import java.lang.reflect.Field;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Locale;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ShellyThingConfiguration} class contains fields mapping thing configuration parameters.
@@ -30,101 +20,97 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-public class ShellyThingConfiguration extends ShellyThingBasicConfig {
-    private final Logger logger = LoggerFactory.getLogger(ShellyThingConfiguration.class);
+public class ShellyThingConfiguration {
+    private String deviceIp = ""; // IP address of thedevice
+    private String deviceAddress = ""; // IP address or MAC address for BLU devices
+    private String userId = ""; // userid for http basic auth
+    private String password = ""; // password for http basic auth
 
-    // All access must be guarded by "this"
-    private String realm;
+    private int updateInterval = 60; // schedule interval for the update job
+    private int lowBattery = 15; // threshold for battery value
+    private boolean brightnessAutoOn = true; // true: turn on device if brightness > 0 is set
 
-    private final String localIp; // local ip addresses used to create callback url
-    private final String localPort;
+    private int favoriteUP = 0; // Roller position favorite when control channel receives ON, 0=none
+    private int favoriteDOWN = 0; // Roller position favorite when control channel receives OFF, 0=none
 
-    public ShellyThingConfiguration(String thingName, ShellyThingBasicConfig basicConfig,
-            ShellyBindingConfiguration bindingConfig, String realm, boolean gen2) {
-        for (Field field : ShellyThingBasicConfig.class.getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                field.set(this, field.get(basicConfig));
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to copy field: " + field.getName(), e);
-            }
-        }
+    // Gen1
+    private boolean eventsButton = false; // true: register for Relay btn_xxx events
+    private boolean eventsSwitch = true; // true: register for device out_xxx events
+    private boolean eventsPush = true; // true: register for short/long push events
+    private boolean eventsRoller = true; // true: register for short/long push events
+    private boolean eventsSensorReport = true; // true: register for sensor events
+    private boolean eventsCoIoT = false; // true: use CoIoT events (based on COAP)
 
-        if (deviceAddress.isEmpty()) {
-            if (!deviceIp.isEmpty()) {
-                try {
-                    String ip = deviceIp.contains(":") ? substringBefore(deviceIp, ":") : deviceIp;
-                    String port = deviceIp.contains(":") ? substringAfter(deviceIp, ":") : "";
-                    InetAddress addr = InetAddress.getByName(ip);
-                    String saddr = addr.getHostAddress();
-                    if (!ip.equals(saddr)) {
-                        logger.debug("{}: hostname {} resolved to IP address {}", thingName, deviceIp, saddr);
-                        deviceIp = saddr + (port.isEmpty() ? "" : ":" + port);
-                    }
-                } catch (UnknownHostException e) {
-                    logger.debug("{}: Unable to resolve hostname {}", thingName, deviceIp);
-                }
-            }
+    // Gen2
+    private Boolean enableBluGateway = false;
+    private Boolean enableRangeExtender = true;
 
-            deviceAddress = deviceIp;
-        } else {
-            // remove : from MAC address and convert to lower case
-            deviceAddress = deviceAddress.toLowerCase(Locale.ROOT).replace(":", "");
-        }
-
-        if (!gen2 && userId.isEmpty() && !bindingConfig.defaultUserId.isEmpty()) {
-            // Gen2 has hard coded user "admin"
-            userId = bindingConfig.defaultUserId;
-            logger.debug("{}: Using default user id '{}' from binding configuration", thingName, userId);
-        }
-        if (password.isEmpty() && !bindingConfig.defaultPassword.isEmpty()) {
-            password = bindingConfig.defaultPassword;
-            logger.debug("{}: Using default password from binding configuration", thingName);
-        }
-
-        if (updateInterval == 0) {
-            updateInterval = UPDATE_STATUS_INTERVAL_SECONDS * UPDATE_SKIP_COUNT;
-        }
-        if (updateInterval < UPDATE_MIN_DELAY) {
-            updateInterval = UPDATE_MIN_DELAY;
-        }
-
-        if (gen2) {
-            eventsCoIoT = false;
-        }
-        if (eventsCoIoT) {
-            logger.debug("{}: Auto-CoIoT is enabled, disabling action urls", thingName);
-            disableGen1Events();
-        }
-
-        this.localIp = bindingConfig.localIP;
-        this.localPort = String.valueOf(bindingConfig.httpPort != -1 ? bindingConfig.httpPort : DEFAULT_LOCAL_PORT);
-        this.realm = getString(realm);
+    public String getDeviceIp() {
+        return deviceIp;
     }
 
-    public ShellyThingConfiguration(ShellyBindingConfiguration bindingConfig, String realm, String deviceIp) {
-        this.realm = realm; // mDNS service name or hostname provided by /shelly
-        this.deviceIp = deviceIp;
-        this.userId = getString(bindingConfig.defaultUserId);
-        this.password = getString(bindingConfig.defaultPassword);
-        this.localIp = getString(bindingConfig.localIP);
-        this.localPort = String.valueOf(bindingConfig.httpPort != -1 ? bindingConfig.httpPort : DEFAULT_LOCAL_PORT);
+    public String getDeviceAddress() {
+        return deviceAddress;
     }
 
-    public String getLocalIp() {
-        return localIp;
+    public String getUserId() {
+        return userId;
     }
 
-    public String getLocalPort() {
-        return localPort;
+    public String getPassword() {
+        return password;
     }
 
-    public synchronized String getRealm() {
-        return realm;
+    public int getUpdateInterval() {
+        return updateInterval;
     }
 
-    public synchronized void setRealm(String realm) {
-        this.realm = realm;
+    public int getLowBattery() {
+        return lowBattery;
+    }
+
+    public boolean getBrightnessAutoOn() {
+        return brightnessAutoOn;
+    }
+
+    public int getFavoriteUP() {
+        return favoriteUP;
+    }
+
+    public int getFavoriteDOWN() {
+        return favoriteDOWN;
+    }
+
+    public boolean getEventsButton() {
+        return eventsButton;
+    }
+
+    public boolean getEventsSwitch() {
+        return eventsSwitch;
+    }
+
+    public boolean getEventsPush() {
+        return eventsPush;
+    }
+
+    public boolean getEventsRoller() {
+        return eventsRoller;
+    }
+
+    public boolean getEventsSensorReport() {
+        return eventsSensorReport;
+    }
+
+    public boolean getEventsCoIoT() {
+        return eventsCoIoT;
+    }
+
+    public boolean getEnableBluGateway() {
+        return enableBluGateway;
+    }
+
+    public boolean getEnableRangeExtender() {
+        return enableRangeExtender;
     }
 
     @Override

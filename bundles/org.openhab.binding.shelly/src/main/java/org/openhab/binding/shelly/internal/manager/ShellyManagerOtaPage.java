@@ -37,7 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyApiException;
 import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsUpdate;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
+import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -85,13 +85,13 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
         ShellyManagerInterface th = getThingHandlers().get(uid);
         if (th != null) {
             properties = fillProperties(new HashMap<>(), uid, th);
-            ShellyThingConfiguration config = getThingConfig(th, properties);
+            ShellyApiConfiguration config = getThingConfig(th, properties);
             ShellyDeviceProfile profile = th.getProfile();
             String deviceType = getDeviceType(properties);
 
             String mode = getString(profile.device.mode);
             String uri = !url.isEmpty() && connection.equals(CONNECTION_TYPE_CUSTOM) ? url
-                    : getFirmwareUrl(config.getDeviceIp(), deviceType, mode, version,
+                    : getFirmwareUrl(config.deviceIp, deviceType, mode, version,
                             connection.equals(CONNECTION_TYPE_LOCAL));
             if (connection.equalsIgnoreCase(CONNECTION_TYPE_INTERNET)) {
                 // If target

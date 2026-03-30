@@ -29,7 +29,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -139,7 +138,6 @@ public class ShellyMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant 
                 bindingConfig.updateFromProperties(serviceConfig.getProperties());
             }
 
-            ShellyThingConfiguration config = new ShellyThingConfiguration(bindingConfig, serviceName, address);
             String gen = getString(service.getPropertyString("gen"));
             boolean gen2 = "2".equals(gen) || "3".equals(gen) || "4".equals(gen)
                     || ShellyDeviceProfile.isGeneration2(serviceName);
