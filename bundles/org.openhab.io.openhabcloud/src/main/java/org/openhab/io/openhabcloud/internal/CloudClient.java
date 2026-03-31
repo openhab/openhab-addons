@@ -906,6 +906,10 @@ public class CloudClient {
             data.put("localPath", localPath);
             socket.emit(eventName, data, (io.socket.client.Ack) args -> {
                 try {
+                    if (args == null || args.length == 0 || !(args[0] instanceof JSONObject)) {
+                        future.completeExceptionally(new IOException("Missing or invalid response from openHAB Cloud"));
+                        return;
+                    }
                     JSONObject response = (JSONObject) args[0];
                     if (response.optBoolean("success")) {
                         future.complete(successHandler.apply(response));

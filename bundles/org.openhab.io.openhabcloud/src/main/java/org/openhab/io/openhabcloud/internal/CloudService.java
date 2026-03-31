@@ -330,6 +330,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     @Override
     public CompletableFuture<String> requestWebhook(String localPath) {
         CompletableFuture<String> future = new CompletableFuture<>();
+        if (localPath.isBlank() || !localPath.startsWith("/")) {
+            future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
+            return future;
+        }
         if (cloudClient != null && cloudClient.isConnected()) {
             cloudClient.registerWebhook(localPath, future);
         } else {
@@ -341,6 +345,10 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     @Override
     public CompletableFuture<Void> removeWebhook(String localPath) {
         CompletableFuture<Void> future = new CompletableFuture<>();
+        if (localPath.isBlank() || !localPath.startsWith("/")) {
+            future.completeExceptionally(new IllegalArgumentException("localPath must start with '/'"));
+            return future;
+        }
         if (cloudClient != null && cloudClient.isConnected()) {
             cloudClient.removeWebhook(localPath, future);
         } else {

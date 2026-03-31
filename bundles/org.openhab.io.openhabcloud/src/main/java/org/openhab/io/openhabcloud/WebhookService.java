@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Usage example:
  *
  * <pre>
- * {@code @Reference}(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+ * {@code @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)}
  * protected void setWebhookService(WebhookService service) {
  *     this.webhookService = service;
  * }
