@@ -1303,7 +1303,7 @@ public class Shelly2ApiClient extends ShellyHttpClient implements ShellyDiscover
             String uid = thing.getThing().getUID().getAsString();
             suffix = substringAfterLast(uid, ":");
         } else {
-            suffix = config.localIp; // use a unique identifier;
+            suffix = config.getLocalIp(); // use a unique identifier;
         }
 
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();

@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.config;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.SHELLY2_DEFAULT_USERID;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.net.InetAddress;
@@ -40,7 +41,7 @@ public class ShellyApiConfiguration {
         public final String bearer;
 
         public ShellyAuthCredentials(String defaultUserId, String defaultPassword, String userId, String password) {
-            this.userId = userId.isBlank() ? defaultPassword : userId;
+            this.userId = userId.isBlank() ? defaultUserId : userId;
             this.password = password.isBlank() ? defaultPassword : password;
             this.bearer = this.userId + ":" + this.password;
         }
@@ -58,23 +59,23 @@ public class ShellyApiConfiguration {
         }
     }
 
-    public final String deviceIp; // device ip address
-    public final String deviceAddress; // resolved IP address or MAC adress for BLU devices
-    public final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(); // auth credentials
-    public final ShellyApiUrls urls;
+    private final String deviceIp; // device ip address
+    private final String deviceAddress; // resolved IP address or MAC adress for BLU devices
+    private final AtomicReference<ShellyAuthCredentials> credentials = new AtomicReference<>(); // auth credentials
+    private final ShellyApiUrls urls;
 
-    public final boolean eventsButton; // true: register for Relay btn_xxx events
-    public final boolean eventsSwitch; // true: register for device out_xxx events
-    public final boolean eventsPush; // true: register for short/long push events
-    public final boolean eventsRoller; // true: register for short/long push events
-    public final boolean eventsSensorReport; // true: register for sensor events
+    private final boolean eventsButton; // true: register for Relay btn_xxx events
+    private final boolean eventsSwitch; // true: register for device out_xxx events
+    private final boolean eventsPush; // true: register for short/long push events
+    private final boolean eventsRoller; // true: register for short/long push events
+    private final boolean eventsSensorReport; // true: register for sensor events
 
     // Gen2
-    public final boolean enableBluGateway;
-    public final boolean enableRangeExtender;
+    private final boolean enableBluGateway;
+    private final boolean enableRangeExtender;
 
-    public final String localIp; // local ip addresses used to create callback url
-    public final String localPort; // local port, used by callbacks through servlet
+    private final String localIp; // local ip addresses used to create callback url
+    private final String localPort; // local port, used by callbacks through servlet
 
     /*
      * Those values are updated after device settings has been read
@@ -109,7 +110,7 @@ public class ShellyApiConfiguration {
             deviceIp = deviceAddress = resolveIp(thingConfig.getDeviceIp());
         }
 
-        credentials.set(new ShellyAuthCredentials(gen2 ? "admin" : bindingConfig.defaultUserId,
+        credentials.set(new ShellyAuthCredentials(gen2 ? SHELLY2_DEFAULT_USERID : bindingConfig.defaultUserId,
                 bindingConfig.defaultPassword, thingConfig.getUserId(), thingConfig.getPassword()));
 
         enableBluGateway = thingConfig.getEnableBluGateway();
@@ -172,6 +173,75 @@ public class ShellyApiConfiguration {
             logger.debug("{}: Device IP is missing or invalid", realm);
         }
         return resolvedIp;
+    }
+
+    public String getDeviceIp() {
+        return deviceIp;
+    }
+
+    public String getDeviceAddress() {
+        return deviceAddress;
+    }
+
+    public String getUserId() {
+        return credentials.get().userId;
+    }
+
+    public String getPassword() {
+        return credentials.get().password;
+    }
+
+    public void setCredentials(String userId, String password) {
+        ShellyAuthCredentials cred = new ShellyAuthCredentials("", "", userId, password);
+        credentials.set(cred);
+    }
+
+    public String getBearer() {
+        return credentials.get().bearer;
+    }
+
+    public boolean getEventsButton() {
+        return eventsButton;
+    }
+
+    public boolean getEventsSwitch() {
+        return eventsSwitch;
+    }
+
+    public boolean getEventsPush() {
+        return eventsPush;
+    }
+
+    public boolean getEventsRoller() {
+        return eventsRoller;
+    }
+
+    public boolean getEventsSensorReport() {
+        return eventsSensorReport;
+    }
+
+    public String getDeviceApiUrl() {
+        return urls.deviceApi;
+    }
+
+    public String getEventCallbackUrl() {
+        return urls.eventCallback;
+    }
+
+    public String getWebSocketCallback() {
+        return urls.websocketCallback;
+    }
+
+    public boolean getEnableBluGateway() {
+        return enableBluGateway;
+    }
+
+    public boolean getEnableRangeExtender() {
+        return enableRangeExtender;
+    }
+
+    public String getLocalIp() {
+        return localIp;
     }
 
     @Override
