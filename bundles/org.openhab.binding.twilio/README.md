@@ -149,10 +149,10 @@ When an incoming call arrives or DTMF digits are pressed, the binding holds the 
 **How it works:**
 
 1. Twilio sends a webhook (incoming call or DTMF digits)
-2. The binding fires a trigger channel (`callReceived` or `dtmfReceived`)
-3. The binding waits up to `responseTimeout` seconds (default: 10) for a rule to call `respondWithTwiml`
-4. If the rule responds in time, that TwiML is returned to Twilio
-5. If the timeout expires, the default TwiML from the thing config is used as fallback
+1. The binding fires a trigger channel (`callReceived` or `dtmfReceived`)
+1. The binding waits up to `responseTimeout` seconds (default: 10) for a rule to call `respondWithTwiml`
+1. If the rule responds in time, that TwiML is returned to Twilio
+1. If the timeout expires, the default TwiML from the thing config is used as fallback
 
 The `{gatherUrl}` placeholder can be used in your TwiML to create multi-step menus.
 It is automatically replaced with the correct URL for the phone thing's gather endpoint.
@@ -183,7 +183,7 @@ This eliminates the need for port forwarding, reverse proxies, or a public IP ad
 **Setup:**
 
 1. Enable `useCloudWebhook` on the bridge (set to `true`)
-2. If not using auto-configure, copy the webhook URLs from the phone thing properties in the UI and paste them into the [Twilio Console](https://console.twilio.com/)
+1. If not using auto-configure, copy the webhook URLs from the phone thing properties in the UI and paste them into the [Twilio Console](https://console.twilio.com/)
 
 The binding will register cloud webhook URLs (e.g. `https://myopenhab.org/api/hooks/{uuid}`) for each endpoint.
 These URLs are shown in the phone thing properties.
@@ -197,7 +197,7 @@ Bridge twilio:account:myaccount "Twilio Account" [ accountSid="ACxxxxxxxxxxxxxxx
 ### Option 2: Public URL
 
 1. Set the `publicUrl` on the bridge (e.g. `https://my.domain.com`)
-2. The binding will automatically configure the webhook URLs on your Twilio phone numbers via the API
+1. The binding will automatically configure the webhook URLs on your Twilio phone numbers via the API
 
 If you disable `autoConfigureWebhooks`, you can manually copy the webhook URLs from the phone thing properties in the UI and paste them into the [Twilio Console](https://console.twilio.com/):
 
