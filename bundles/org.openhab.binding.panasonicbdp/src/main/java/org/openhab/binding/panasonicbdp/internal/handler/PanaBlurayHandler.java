@@ -80,11 +80,11 @@ public class PanaBlurayHandler extends BaseThingHandler {
     private boolean authEnabled = false;
     private Object sequenceLock = new Object();
     private ThingTypeUID thingTypeUID = THING_TYPE_BD_PLAYER;
-    private StringType offlineStr = new StringType(EMPTY);
 
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
     private final @Nullable Bundle bundle;
+    private final StringType offlineStr;
 
     public PanaBlurayHandler(Thing thing, HttpClient httpClient, @Reference TranslationProvider translationProvider,
             @Reference LocaleProvider localeProvider) {
@@ -93,6 +93,9 @@ public class PanaBlurayHandler extends BaseThingHandler {
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;
         this.bundle = FrameworkUtil.getBundle(PanaBlurayHandler.class);
+
+        offlineStr = new StringType(
+                translationProvider.getText(bundle, "status.offline", "Offline", localeProvider.getLocale()));
     }
 
     @Override
@@ -104,9 +107,6 @@ public class PanaBlurayHandler extends BaseThingHandler {
 
         final String host = config.hostName;
         final String playerKey = config.playerKey;
-
-        offlineStr = new StringType(
-                translationProvider.getText(bundle, "status.offline", "Offline", localeProvider.getLocale()));
 
         if (!host.isBlank()) {
             urlStr = urlStr.replace("%host%", host);
