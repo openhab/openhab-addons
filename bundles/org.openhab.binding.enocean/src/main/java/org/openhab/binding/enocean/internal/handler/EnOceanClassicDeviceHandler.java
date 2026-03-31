@@ -33,6 +33,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -62,8 +63,9 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     @Nullable
     ScheduledFuture<?> releaseFuture = null;
 
-    public EnOceanClassicDeviceHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        super(thing, itemChannelLinkRegistry);
+    public EnOceanClassicDeviceHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry,
+            StorageService storageService) {
+        super(thing, itemChannelLinkRegistry, storageService);
     }
 
     @Override

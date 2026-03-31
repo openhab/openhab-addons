@@ -33,6 +33,8 @@ import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -68,8 +70,14 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob; // used for polling current status of thing
 
-    public EnOceanBaseActuatorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
+    private final Storage<String> storage;
+
+    private static final String STORAGE_KEY_STM_STATE = "stmstate";
+
+    public EnOceanBaseActuatorHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry,
+            StorageService storageService) {
         super(thing, itemChannelLinkRegistry);
+        this.storage = storageService.getStorage(thing.getUID().toString(), String.class.getClassLoader());
     }
 
     /**
@@ -336,37 +344,42 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
 
     /**
      * Callback invoked when the state machine changes state.
-     * Updates the state channel. Persistence across restarts is delegated to the openHAB item
-     * persistence layer: link the state machine channel to a String item and configure a persistence
-     * service (e.g. mapdb with restoreOnStartup) to survive restarts.
+     * Updates the state channel for UI visibility and persists the new state
+     * using the openHAB {@link StorageService} (JSON file in userdata).
+     * No item linking or persistence service configuration is required.
      *
      * @param newState the new state
      */
     private void onStateChanged(Enum<?> newState) {
         updateState(CHANNEL_STATEMACHINESTATE, new StringType(newState.name()));
+        storage.put(STORAGE_KEY_STM_STATE, newState.name());
         logger.debug("STM state changed to {}", newState);
     }
 
     /**
-     * Restores the state machine state from the linked item's persisted state after restart.
-     * If a String item is linked to the state machine channel and a persistence service with
-     * restoreOnStartup is configured, the last known state is restored into the state machine.
-     * Note: State restoration requires the state machine to be initialized first.
+     * Restores the state machine state from the StorageService after a restart.
+     * The state is automatically persisted to a JSON file in the openHAB userdata
+     * directory whenever the state machine transitions. No item linking or
+     * persistence service configuration is required.
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void restoreStateMachineState() {
-        if (getCurrentState(CHANNEL_STATEMACHINESTATE) instanceof StringType stringState && stm != null) {
-            String lastState = stringState.toString();
-            try {
-                // Get the state enum class from the state machine's current state
-                Enum<?> currentState = stm.getState();
-                Class<? extends Enum> stateClass = currentState.getDeclaringClass();
-                Enum<?> restoredState = Enum.valueOf(stateClass, lastState);
-                ((STMStateMachine) stm).restoreState(restoredState);
-                logger.debug("Restored STM state from linked item: {}", restoredState);
-            } catch (IllegalArgumentException e) {
-                logger.debug("Could not restore STM state '{}', using initial state", lastState);
-            }
+        STMStateMachine<?, ?> localStm = stm;
+        if (localStm == null) {
+            return;
+        }
+        String lastState = storage.get(STORAGE_KEY_STM_STATE);
+        if (lastState == null) {
+            return;
+        }
+        try {
+            Enum<?> currentState = localStm.getState();
+            Class<? extends Enum> stateClass = currentState.getDeclaringClass();
+            Enum<?> restoredState = Enum.valueOf(stateClass, lastState);
+            ((STMStateMachine) localStm).restoreState(restoredState);
+            logger.debug("Restored STM state from storage: {}", restoredState);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Could not restore STM state '{}', using initial state", lastState);
         }
     }
 
