@@ -32,6 +32,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletAsyncSupported;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletName;
 import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardServletPattern;
 import org.slf4j.Logger;
@@ -66,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
+@HttpWhiteboardServletAsyncSupported
 @HttpWhiteboardServletName(SERVLET_PATH)
 @HttpWhiteboardServletPattern(SERVLET_PATH + "/*")
 @Component(immediate = true, service = { Servlet.class, TwilioCallbackServlet.class })
@@ -271,83 +274,96 @@ public class TwilioCallbackServlet extends HttpServlet {
         }
 
         // Route to the appropriate handler method and get TwiML response
-        String twimlResponse;
         switch (endpoint) {
             case WEBHOOK_SMS:
             case WEBHOOK_WHATSAPP:
                 handler.handleIncomingSms(params);
-                twimlResponse = EMPTY_TWIML_RESPONSE;
+                sendTwimlResponse(resp, handler, EMPTY_TWIML_RESPONSE, endpoint);
                 break;
             case WEBHOOK_VOICE:
-                twimlResponse = handleWithPendingResponse(params, handler, handler.getVoiceGreetingTwiml(),
-                        () -> handler.handleIncomingCall(params));
+                handleWithPendingResponse(req, resp, params, handler, handler.getVoiceGreetingTwiml(),
+                        () -> handler.handleIncomingCall(params), endpoint);
                 break;
             case WEBHOOK_GATHER:
-                twimlResponse = handleWithPendingResponse(params, handler, handler.getGatherResponseTwiml(),
-                        () -> handler.handleDtmfInput(params));
+                handleWithPendingResponse(req, resp, params, handler, handler.getGatherResponseTwiml(),
+                        () -> handler.handleDtmfInput(params), endpoint);
                 break;
             case WEBHOOK_STATUS:
                 handler.handleStatusCallback(params);
-                twimlResponse = "";
+                sendTwimlResponse(resp, handler, "", endpoint);
                 break;
             default:
                 logger.trace("POST response: 404 (unknown endpoint: {})", endpoint);
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Unknown endpoint: " + endpoint);
                 return;
         }
-
-        // Apply placeholder replacement and send TwiML response
-        twimlResponse = handler.replaceTwimlPlaceholders(twimlResponse);
-        logger.trace("POST response: 200, endpoint={}, twiml={}", endpoint, twimlResponse);
-        resp.setContentType(CONTENT_TYPE_XML);
-        resp.setStatus(HttpServletResponse.SC_OK);
-        if (!twimlResponse.isEmpty()) {
-            PrintWriter writer = resp.getWriter();
-            writer.print(twimlResponse);
-            writer.flush();
-        }
     }
 
     // --- Private helpers ---
 
     /**
-     * Handles a voice/gather request with the hold-and-wait pattern. Creates a pending
-     * response future, fires the handler (which triggers rules), then waits for a rule
-     * to call respondWithTwiml. Falls back to default TwiML on timeout.
+     * Handles a voice/gather request using async I/O. Creates a pending response future,
+     * fires the handler (which triggers rules), then completes the HTTP response
+     * asynchronously when a rule calls respondWithTwiml or the timeout expires.
      */
-    private String handleWithPendingResponse(Map<String, String> params, TwilioPhoneHandler handler,
-            String defaultTwiml, Runnable handlerAction) {
+    private void handleWithPendingResponse(HttpServletRequest req, HttpServletResponse resp, Map<String, String> params,
+            TwilioPhoneHandler handler, String defaultTwiml, Runnable handlerAction, String endpoint) {
         String callSid = params.get("CallSid");
         if (callSid == null || callSid.isBlank()) {
             logger.trace("No CallSid in request, using default TwiML");
             handlerAction.run();
-            return defaultTwiml;
+            sendTwimlResponse(resp, handler, defaultTwiml, endpoint);
+            return;
         }
 
-        logger.trace("Creating pending response for CallSid={}, timeout={}s", callSid, handler.getResponseTimeout());
-        CompletableFuture<String> future = createPendingResponse(callSid);
-        try {
-            // Fire the handler — this triggers channels and rules start executing
-            handlerAction.run();
+        int timeout = handler.getResponseTimeout();
+        logger.trace("Creating async pending response for CallSid={}, timeout={}s", callSid, timeout);
 
-            // Wait for a rule to call respondWithTwiml, or timeout
-            int timeout = handler.getResponseTimeout();
-            String result = future.get(timeout, TimeUnit.SECONDS);
-            logger.trace("Rule responded with TwiML for CallSid={}: {}", callSid, result);
-            return result;
-        } catch (TimeoutException e) {
-            logger.debug("No TwiML response received within timeout for CallSid {}, using default", callSid);
-            logger.trace("Timeout for CallSid={}, default TwiML: {}", callSid, defaultTwiml);
-            return defaultTwiml;
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            logger.trace("Interrupted waiting for CallSid={}", callSid);
-            return defaultTwiml;
-        } catch (ExecutionException e) {
-            logger.debug("Error waiting for TwiML response for CallSid {}: {}", callSid, e.getMessage());
-            return defaultTwiml;
-        } finally {
-            pendingResponses.remove(callSid);
+        AsyncContext asyncContext = req.startAsync(req, resp);
+        asyncContext.setTimeout(0); // we manage our own timeout via the future
+
+        CompletableFuture<String> future = createPendingResponse(callSid);
+
+        // Fire the handler — this triggers channels and rules start executing
+        handlerAction.run();
+
+        // Complete the response asynchronously when the future resolves or times out
+        future.orTimeout(timeout, TimeUnit.SECONDS).whenComplete((result, ex) -> {
+            try {
+                String twiml;
+                if (ex != null) {
+                    if (ex instanceof TimeoutException) {
+                        logger.debug("No TwiML response within timeout for CallSid {}, using default", callSid);
+                    } else {
+                        logger.debug("Error waiting for TwiML for CallSid {}: {}", callSid, ex.getMessage());
+                    }
+                    twiml = defaultTwiml;
+                } else {
+                    logger.trace("Rule responded with TwiML for CallSid={}: {}", callSid, result);
+                    twiml = result;
+                }
+                sendTwimlResponse((HttpServletResponse) asyncContext.getResponse(), handler, twiml, endpoint);
+            } finally {
+                pendingResponses.remove(callSid);
+                asyncContext.complete();
+            }
+        });
+    }
+
+    private void sendTwimlResponse(HttpServletResponse resp, TwilioPhoneHandler handler, String twimlResponse,
+            String endpoint) {
+        String twiml = handler.replaceTwimlPlaceholders(twimlResponse);
+        logger.trace("POST response: 200, endpoint={}, twiml={}", endpoint, twiml);
+        resp.setContentType(CONTENT_TYPE_XML);
+        resp.setStatus(HttpServletResponse.SC_OK);
+        if (!twiml.isEmpty()) {
+            try {
+                PrintWriter writer = resp.getWriter();
+                writer.print(twiml);
+                writer.flush();
+            } catch (IOException e) {
+                logger.debug("Failed to write TwiML response: {}", e.getMessage());
+            }
         }
     }
 
