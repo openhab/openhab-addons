@@ -533,7 +533,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
     private void refreshCloudWebhooks(Object ws) {
         String thingUID = thing.getUID().getAsString();
         // Per-phone endpoints (path includes thingUID)
-        String[] phoneEndpoints = { WEBHOOK_SMS, WEBHOOK_VOICE, WEBHOOK_GATHER, WEBHOOK_STATUS };
+        String[] phoneEndpoints = { WEBHOOK_SMS, WEBHOOK_WHATSAPP, WEBHOOK_VOICE, WEBHOOK_GATHER, WEBHOOK_STATUS };
         for (String endpoint : phoneEndpoints) {
             String localPath = SERVLET_PATH + "/" + thingUID + "/" + endpoint;
             String webhookUrl = invokeRequestWebhook(ws, localPath);
@@ -601,7 +601,7 @@ public class TwilioPhoneHandler extends BaseThingHandler {
         Object ws = getWebhookService();
         if (ws != null) {
             String thingUID = thing.getUID().getAsString();
-            String[] endpoints = { WEBHOOK_SMS, WEBHOOK_VOICE, WEBHOOK_GATHER, WEBHOOK_STATUS };
+            String[] endpoints = { WEBHOOK_SMS, WEBHOOK_WHATSAPP, WEBHOOK_VOICE, WEBHOOK_GATHER, WEBHOOK_STATUS };
             for (String endpoint : endpoints) {
                 String localPath = SERVLET_PATH + "/" + thingUID + "/" + endpoint;
                 invokeRemoveWebhook(ws, localPath);

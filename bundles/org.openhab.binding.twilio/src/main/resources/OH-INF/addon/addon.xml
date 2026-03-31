@@ -8,5 +8,6 @@
 	<description>Integrates with Twilio for sending and receiving SMS, MMS, and WhatsApp messages, as well as making
 		and
 		receiving voice calls with text-to-speech and DTMF input support.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
