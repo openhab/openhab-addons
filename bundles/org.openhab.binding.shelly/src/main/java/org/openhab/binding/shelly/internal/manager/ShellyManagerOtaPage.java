@@ -91,7 +91,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
             String mode = getString(profile.device.mode);
             String uri = !url.isEmpty() && connection.equals(CONNECTION_TYPE_CUSTOM) ? url
-                    : getFirmwareUrl(config.deviceIp, deviceType, mode, version,
+                    : getFirmwareUrl(config.getDeviceIp(), deviceType, mode, version,
                             connection.equals(CONNECTION_TYPE_LOCAL));
             if (connection.equalsIgnoreCase(CONNECTION_TYPE_INTERNET)) {
                 // If target

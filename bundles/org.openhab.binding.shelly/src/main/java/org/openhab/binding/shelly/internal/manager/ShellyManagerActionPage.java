@@ -34,7 +34,6 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettings
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
 import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration;
-import org.openhab.binding.shelly.internal.config.ShellyApiConfiguration.ShellyAuthCredentials;
 import org.openhab.binding.shelly.internal.handler.ShellyManagerInterface;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -116,9 +115,8 @@ public class ShellyManagerActionPage extends ShellyManagerPage {
                     break;
                 case ACTION_PROTECT:
                     // Get device settings
-                    ShellyAuthCredentials credentials = config.credentials.get();
-                    String userId = credentials.userId;
-                    String password = credentials.password;
+                    String userId = config.getUserId();
+                    String password = config.getPassword();
                     if (userId.isEmpty() || password.isEmpty()) {
                         message = getMessageP("action.protect.id-missing", MCWARNING);
                         break;

@@ -173,6 +173,8 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_POWERLED_MATCH = "match_output";
     public static final String SHELLY2_POWERLED_INVERT = "inverted_output";
 
+    public static final String SHELLY2_DEFAULT_USERID = "admin"; // Gen2 devices only accept user admin
+
     public static class Shelly2DevConfigBle {
         public static class Shelly2DevConfigBleRpc {
             public Boolean enable;
