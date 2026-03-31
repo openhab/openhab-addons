@@ -48,7 +48,8 @@ public class UnifiProtectDiscoveryService extends AbstractThingHandlerDiscoveryS
 
     public UnifiProtectDiscoveryService() {
         super(UnifiProtectNVRHandler.class, Set.of(UnifiProtectBindingConstants.THING_TYPE_CAMERA,
-                UnifiProtectBindingConstants.THING_TYPE_LIGHT, UnifiProtectBindingConstants.THING_TYPE_SENSOR), 30,
+                UnifiProtectBindingConstants.THING_TYPE_LIGHT, UnifiProtectBindingConstants.THING_TYPE_SENSOR,
+                UnifiProtectBindingConstants.THING_TYPE_DOORLOCK, UnifiProtectBindingConstants.THING_TYPE_CHIME), 30,
                 false);
     }
 
@@ -78,6 +79,13 @@ public class UnifiProtectDiscoveryService extends AbstractThingHandlerDiscoveryS
             });
             bootstrap.sensors.forEach((id, sensor) -> {
                 discoverDevice(id, sensor.name, sensor.type, UnifiProtectBindingConstants.THING_TYPE_SENSOR, "Sensor");
+            });
+            bootstrap.doorlocks.forEach((id, doorlock) -> {
+                discoverDevice(id, doorlock.name, doorlock.type, UnifiProtectBindingConstants.THING_TYPE_DOORLOCK,
+                        "Doorlock");
+            });
+            bootstrap.chimes.forEach((id, chime) -> {
+                discoverDevice(id, chime.name, chime.type, UnifiProtectBindingConstants.THING_TYPE_CHIME, "Chime");
             });
         } catch (Exception e) {
             logger.trace("Discovery scan failed", e);

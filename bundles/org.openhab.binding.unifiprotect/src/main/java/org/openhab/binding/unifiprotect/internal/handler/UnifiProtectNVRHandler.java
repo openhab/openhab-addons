@@ -93,6 +93,8 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
     private static final long WS_UPDATE_DEBOUNCE_MS = 500; // inactivity window
     private static final long WS_UPDATE_MAX_WAIT_MS = 2000; // max wait per burst
     private static final long CHILD_REFRESH_RETRY_DELAY_SECONDS = 10; // retry delay for failed child refresh
+    private static final int WS_CONNECT_MAX_RETRIES = 3;
+    private static final long WS_CONNECT_RETRY_DELAY_MS = 2000;
     private final Map<String, PendingUpdate> pendingEventUpdates = new ConcurrentHashMap<>();
     private final Map<String, ScheduledFuture<?>> childRefreshRetryTasks = new ConcurrentHashMap<>();
 
@@ -213,63 +215,8 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
 
                 this.apiClient = apiClient;
 
-                apiClient.getPublicClient().subscribeEvents(add -> {
-                    routePublicApiEvent(add.item, WSEventType.ADD);
-                }, update -> {
-                    handleUpdateEvent(update.item);
-                }, () -> {
-                    updateStatus(ThingStatus.ONLINE);
-                    scheduler.execute(() -> syncDevices());
-                }, (code, reason) -> {
-                    logger.debug("Event WS closed: {} {}", code, reason);
-                    setOfflineAndReconnect();
-                }, err -> logger.debug("Event WS error", err)).get();
-
-                apiClient.getPublicClient().subscribeDevices(add -> {
-                    UnifiProtectDiscoveryService discoveryService = this.discoveryService;
-                    if (discoveryService == null) {
-                        logger.debug("Discovery service not set");
-                        return;
-                    }
-                    switch (add.item.modelKey) {
-                        case CAMERA:
-                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
-                                    UnifiProtectBindingConstants.THING_TYPE_CAMERA, "Camera");
-                            break;
-                        case LIGHT:
-                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
-                                    UnifiProtectBindingConstants.THING_TYPE_LIGHT, "Light");
-                            break;
-                        case SENSOR:
-                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
-                                    UnifiProtectBindingConstants.THING_TYPE_SENSOR, "Sensor");
-                            break;
-                        default:
-                            // ignore
-                    }
-                }, update -> {
-                    scheduler.execute(() -> {
-                        if (update.item == null || update.item.id == null) {
-                            return;
-                        }
-                        DeviceState state = update.item.state;
-                        if (state != null) {
-                            setChildStatus(update.item.id, state);
-                        }
-                    });
-                }, remove -> {
-                    scheduler.execute(() -> {
-                        if (remove.item == null || remove.item.id == null) {
-                            return;
-                        }
-                        markChildGone(remove.item.id);
-                    });
-                }, () -> {
-                    // ignore on-open
-                }, (code, reason) -> {
-                    logger.debug("Device WS closed: {} {}", code, reason);
-                    setOfflineAndReconnect();
-                }, err -> logger.debug("Device WS error", err)).get();
+                connectEventWebSocket(apiClient);
+                connectDeviceWebSocket(apiClient);
                 logger.debug("Enabling Private API WebSocket for real-time updates");
                 apiClient.getPrivateClient().enableWebSocket(update -> {
                     scheduler.execute(() -> {
@@ -495,6 +442,96 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
         stopApiClient();
         stopTasks();
         this.reconnectTask = scheduler.schedule(this::initialize, 5, TimeUnit.SECONDS);
+    }
+
+    private void connectEventWebSocket(UniFiProtectHybridClient apiClient)
+            throws InterruptedException, ExecutionException {
+        for (int attempt = 1; attempt <= WS_CONNECT_MAX_RETRIES; attempt++) {
+            try {
+                apiClient.getPublicClient().subscribeEvents(add -> {
+                    routePublicApiEvent(add.item, WSEventType.ADD);
+                }, update -> {
+                    handleUpdateEvent(update.item);
+                }, () -> {
+                    updateStatus(ThingStatus.ONLINE);
+                    scheduler.execute(() -> syncDevices());
+                }, (code, reason) -> {
+                    logger.debug("Event WS closed: {} {}", code, reason);
+                    setOfflineAndReconnect();
+                }, err -> logger.debug("Event WS error", err)).get();
+                return;
+            } catch (ExecutionException e) {
+                if (attempt < WS_CONNECT_MAX_RETRIES) {
+                    logger.debug("Event WebSocket connect attempt {} failed, retrying in {}ms", attempt,
+                            WS_CONNECT_RETRY_DELAY_MS, e);
+                    Thread.sleep(WS_CONNECT_RETRY_DELAY_MS);
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    private void connectDeviceWebSocket(UniFiProtectHybridClient apiClient)
+            throws InterruptedException, ExecutionException {
+        for (int attempt = 1; attempt <= WS_CONNECT_MAX_RETRIES; attempt++) {
+            try {
+                apiClient.getPublicClient().subscribeDevices(add -> {
+                    UnifiProtectDiscoveryService discoveryService = this.discoveryService;
+                    if (discoveryService == null) {
+                        logger.debug("Discovery service not set");
+                        return;
+                    }
+                    switch (add.item.modelKey) {
+                        case CAMERA:
+                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
+                                    UnifiProtectBindingConstants.THING_TYPE_CAMERA, "Camera");
+                            break;
+                        case LIGHT:
+                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
+                                    UnifiProtectBindingConstants.THING_TYPE_LIGHT, "Light");
+                            break;
+                        case SENSOR:
+                            discoveryService.discoverDevice(add.item.id, add.item.name, null,
+                                    UnifiProtectBindingConstants.THING_TYPE_SENSOR, "Sensor");
+                            break;
+                        default:
+                            // ignore
+                    }
+                }, update -> {
+                    scheduler.execute(() -> {
+                        if (update.item == null || update.item.id == null) {
+                            return;
+                        }
+                        DeviceState state = update.item.state;
+                        if (state != null) {
+                            setChildStatus(update.item.id, state);
+                        }
+                    });
+                }, remove -> {
+                    scheduler.execute(() -> {
+                        if (remove.item == null || remove.item.id == null) {
+                            return;
+                        }
+                        markChildGone(remove.item.id);
+                    });
+                }, () -> {
+                    // ignore on-open
+                }, (code, reason) -> {
+                    logger.debug("Device WS closed: {} {}", code, reason);
+                    setOfflineAndReconnect();
+                }, err -> logger.debug("Device WS error", err)).get();
+                return;
+            } catch (ExecutionException e) {
+                if (attempt < WS_CONNECT_MAX_RETRIES) {
+                    logger.debug("Device WebSocket connect attempt {} failed, retrying in {}ms", attempt,
+                            WS_CONNECT_RETRY_DELAY_MS, e);
+                    Thread.sleep(WS_CONNECT_RETRY_DELAY_MS);
+                } else {
+                    throw e;
+                }
+            }
+        }
     }
 
     private void routePublicApiEvent(BaseEvent event, WSEventType eventType) {

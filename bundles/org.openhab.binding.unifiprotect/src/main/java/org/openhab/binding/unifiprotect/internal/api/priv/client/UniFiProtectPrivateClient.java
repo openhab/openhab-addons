@@ -93,7 +93,7 @@ public class UniFiProtectPrivateClient {
         this.httpClient = httpClient;
         this.scheduler = scheduler;
         this.baseUrl = "https://" + host + ":" + port;
-        this.authenticator = new UniFiProtectAuthenticator(httpClient, baseUrl, username, password, true);
+        this.authenticator = new UniFiProtectAuthenticator(httpClient, scheduler, baseUrl, username, password, true);
     }
 
     /**

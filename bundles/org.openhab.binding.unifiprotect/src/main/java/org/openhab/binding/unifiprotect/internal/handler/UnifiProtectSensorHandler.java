@@ -67,6 +67,7 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
                             logger.debug("Failed to clear sensor tamper", ex);
                         }
                     });
+                    updateState(channelUID, OnOffType.OFF);
                 }
                 break;
             }
@@ -77,6 +78,7 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
                             logger.debug("Failed to reboot sensor", ex);
                         }
                     });
+                    updateState(channelUID, OnOffType.OFF);
                 }
                 break;
             }

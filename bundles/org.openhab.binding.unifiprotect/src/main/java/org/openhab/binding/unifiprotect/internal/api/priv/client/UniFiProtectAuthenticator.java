@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,6 +50,7 @@ public class UniFiProtectAuthenticator {
     private static final String COOKIE_UOS_TOKEN = "UOS_TOKEN";
 
     private final HttpClient httpClient;
+    private final Executor executor;
     private final String baseUrl;
     private final String username;
     private final String password;
@@ -58,9 +60,10 @@ public class UniFiProtectAuthenticator {
     private volatile @Nullable String csrfToken;
     private volatile @Nullable String userId;
 
-    public UniFiProtectAuthenticator(HttpClient httpClient, String baseUrl, String username, String password,
-            boolean enableSessionPersistence) {
+    public UniFiProtectAuthenticator(HttpClient httpClient, Executor executor, String baseUrl, String username,
+            String password, boolean enableSessionPersistence) {
         this.httpClient = httpClient;
+        this.executor = executor;
         this.baseUrl = baseUrl;
         this.username = username;
         this.password = password;
@@ -132,10 +135,12 @@ public class UniFiProtectAuthenticator {
                     logger.debug("Got CSRF token: {}", csrfToken);
                 }
 
-                String setCookieHeader = response.getHeaders().get("Set-Cookie");
-                if (setCookieHeader != null) {
-                    parseCookie(setCookieHeader);
-                    logger.debug("Got auth cookie");
+                List<String> setCookieHeaders = response.getHeaders().getValuesList("Set-Cookie");
+                if (setCookieHeaders != null && !setCookieHeaders.isEmpty()) {
+                    for (String setCookieHeader : setCookieHeaders) {
+                        parseCookie(setCookieHeader);
+                    }
+                    logger.debug("Got auth cookie(s) from {} Set-Cookie header(s)", setCookieHeaders.size());
                 }
 
                 if (authCookie == null) {
@@ -157,7 +162,7 @@ public class UniFiProtectAuthenticator {
             } catch (Exception e) {
                 throw new AuthenticationException("Authentication failed", e);
             }
-        });
+        }, executor);
     }
 
     /**

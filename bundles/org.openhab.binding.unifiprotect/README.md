@@ -71,7 +71,6 @@ The binding requires a local UniFi Protect username and password to access both 
 
 - **API Key (Token)**: If not provided, the binding will automatically create an API key named `openHAB-<thing-id>` for the Public API.
   The key is stored in your thing configuration and reused on restarts.
-  
 - **Private API**: Uses cookie-based authentication with the provided username/password.
   Session cookies are persisted and automatically refreshed when needed.
 
@@ -80,7 +79,7 @@ The binding requires a local UniFi Protect username and password to access both 
 If you prefer to manually create an API key:
 
 1. In the UniFi Protect UI, go to Settings → Control Plane → Integrations and create an API token.
-2. Copy the token and paste it into the `token` field in the NVR bridge configuration.
+1. Copy the token and paste it into the `token` field in the NVR bridge configuration.
 
 ![Protect API key creation](doc/keys.png)
 

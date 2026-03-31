@@ -164,6 +164,7 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
                             logger.debug("Failed to reboot light", ex);
                         }
                     });
+                    updateState(channelUID, OnOffType.OFF);
                 }
                 break;
             }

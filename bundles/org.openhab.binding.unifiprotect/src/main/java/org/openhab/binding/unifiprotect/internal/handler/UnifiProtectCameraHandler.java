@@ -420,6 +420,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                                 logger.debug("Failed to reboot camera", ex);
                             }
                         });
+                        updateState(channelUID, OnOffType.OFF);
                     }
                     break;
                 }
