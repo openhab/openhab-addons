@@ -131,7 +131,6 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
      * @param action the action to apply
      * @return this state machine for fluent usage
      */
-    @SuppressWarnings("null")
     public synchronized STMStateMachine<A, S> apply(A action) {
         for (STMTransition<A, S> transition : transitions) {
             boolean currentStateMatches = transition.getFrom().equals(state);
@@ -144,13 +143,15 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
                 state = transition.getTo();
 
                 // Execute action-specific callback if registered
-                if (callbackActions.containsKey(action)) {
-                    callbackActions.get(action).run();
+                Runnable actionCallback = callbackActions.get(action);
+                if (actionCallback != null) {
+                    actionCallback.run();
                 }
 
                 // Notify state change via callback
-                if (stateChangeCallback != null) {
-                    stateChangeCallback.accept(state);
+                Consumer<S> callback = stateChangeCallback;
+                if (callback != null) {
+                    callback.accept(state);
                 }
 
                 break;
@@ -168,9 +169,9 @@ public class STMStateMachine<A extends Enum<A>, S extends Enum<S>> {
      * @param runnable the task to execute
      * @param delayMs delay in milliseconds
      */
-    @SuppressWarnings("null")
     public synchronized void scheduleDelayed(Runnable runnable, long delayMs) {
-        if (responseFuture == null || responseFuture.isDone()) {
+        ScheduledFuture<?> future = responseFuture;
+        if (future == null || future.isDone()) {
             this.responseFuture = scheduler.schedule(runnable, delayMs, TimeUnit.MILLISECONDS);
         }
     }

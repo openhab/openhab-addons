@@ -53,7 +53,6 @@ import org.openhab.core.util.HexUtils;
  * @author Sven Schad - added state machine for blinds/rollershutter
  *         This class defines base functionality for sending eep messages. This class extends EnOceanBaseSensorHandler
  *         class as most actuator things send status or response messages, too.
- *
  */
 @NonNullByDefault
 public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
@@ -372,7 +371,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
         if (localStm == null) {
             return;
         }
+        @Nullable
         Enum<?> persistedState = null;
+        @Nullable
         String lastState = storage.get(STORAGE_KEY_STM_STATE);
         if (lastState != null) {
             try {
@@ -382,6 +383,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                 logger.debug("Could not parse persisted STM state '{}', passing null to provider", lastState);
             }
         }
+        @Nullable
         Enum<?> startupState = ((StateMachineProvider) stmEEP).getStateOnStartup(persistedState);
         if (startupState != null) {
             ((STMStateMachine) localStm).restoreState(startupState);
@@ -399,7 +401,9 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
             return;
         }
 
+        @Nullable
         String channel = stateMachine.getStoredChannel();
+        @Nullable
         Command command = stateMachine.getStoredCommand();
 
         if (channel != null && command != null) {
