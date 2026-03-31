@@ -223,7 +223,7 @@ The `{uuid}` is a randomly generated identifier for temporary media entries.
 
 **Example full URLs** (assuming `publicUrl` is `https://my.domain.com`):
 
-```
+```text
 https://my.domain.com/twilio/callback/twilio:phone:myaccount:myphone/sms
 https://my.domain.com/twilio/callback/twilio:phone:myaccount:myphone/voice
 https://my.domain.com/twilio/callback/media/550e8400-e29b-41d4-a716-446655440000
