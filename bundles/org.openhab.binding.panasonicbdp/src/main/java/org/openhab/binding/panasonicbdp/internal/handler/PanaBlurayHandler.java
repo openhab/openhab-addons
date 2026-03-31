@@ -80,6 +80,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
     private boolean authEnabled = false;
     private Object sequenceLock = new Object();
     private ThingTypeUID thingTypeUID = THING_TYPE_BD_PLAYER;
+    private StringType offlineStr = new StringType(EMPTY);
 
     private final TranslationProvider translationProvider;
     private final LocaleProvider localeProvider;
@@ -103,6 +104,9 @@ public class PanaBlurayHandler extends BaseThingHandler {
 
         final String host = config.hostName;
         final String playerKey = config.playerKey;
+
+        offlineStr = new StringType(
+                translationProvider.getText(bundle, "status.offline", "Offline", localeProvider.getLocale()));
 
         if (!host.isBlank()) {
             urlStr = urlStr.replace("%host%", host);
@@ -235,7 +239,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
             this.refreshJob = null;
         }
 
-        setPlayerStatusOffline();
+        updateState(PLAYER_STATUS, offlineStr);
     }
 
     @Override
@@ -336,7 +340,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
             logger.debug("Error executing command: {}, {}", fields.getNames().iterator().next(), e.getMessage());
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.exception");
-            setPlayerStatusOffline();
+            updateState(PLAYER_STATUS, offlineStr);
         } catch (InterruptedException e) {
             logger.debug("InterruptedException executing command: {}, {}", fields.getNames().iterator().next(),
                     e.getMessage());
@@ -361,14 +365,6 @@ public class PanaBlurayHandler extends BaseThingHandler {
                     || isLinked(CHAPTER_TOTAL);
         }
         return isLinked(TIME_ELAPSED);
-    }
-
-    /*
-     * Sets the player-status channel to the translated Offline string
-     */
-    private void setPlayerStatusOffline() {
-        updateState(PLAYER_STATUS, new StringType(
-                translationProvider.getText(bundle, "status.offline", "Offline", localeProvider.getLocale())));
     }
 
     @Override
