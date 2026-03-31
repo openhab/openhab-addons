@@ -33,6 +33,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 public class UpnpControlBindingConstants {
 
     public static final String BINDING_ID = "upnpcontrol";
+    public static final String BINDING_LABEL = "Upnp";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_RENDERER = new ThingTypeUID(BINDING_ID, "upnprenderer");
