@@ -76,52 +76,27 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
         }
 
         switch (id) {
-            case UnifiProtectBindingConstants.CHANNEL_LIGHT: {
-                api.getPrivateClient().setLight(deviceId, OnOffType.ON.equals(command)).whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        logger.debug("Failed to set light", ex);
-                    }
-                });
+            case UnifiProtectBindingConstants.CHANNEL_LIGHT:
+                logOnFailure(api.getPrivateClient().setLight(deviceId, OnOffType.ON.equals(command)), "set light");
                 break;
-            }
-            case UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE: {
-                api.getPrivateClient().setLightMode(deviceId, command.toString(), null).whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        logger.debug("Failed to set light mode", ex);
-                    }
-                });
+            case UnifiProtectBindingConstants.CHANNEL_LIGHT_MODE:
+                logOnFailure(api.getPrivateClient().setLightMode(deviceId, command.toString(), null), "set light mode");
                 break;
-            }
-            case UnifiProtectBindingConstants.CHANNEL_ENABLE_AT: {
-                api.getPrivateClient()
-                        .updateLight(deviceId, Map.of("lightModeSettings", Map.of("enableAt", command.toString())))
-                        .whenComplete((result, ex) -> {
-                            if (ex != null) {
-                                logger.debug("Failed to set enable at", ex);
-                            }
-                        });
+            case UnifiProtectBindingConstants.CHANNEL_ENABLE_AT:
+                logOnFailure(api.getPrivateClient().updateLight(deviceId,
+                        Map.of("lightModeSettings", Map.of("enableAt", command.toString()))), "set enable at");
                 break;
-            }
-            case UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED: {
-                api.getPrivateClient()
-                        .updateLight(deviceId,
+            case UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED:
+                logOnFailure(
+                        api.getPrivateClient().updateLight(deviceId,
                                 Map.of("lightDeviceSettings",
-                                        Map.of("isIndicatorEnabled", OnOffType.ON.equals(command))))
-                        .whenComplete((result, ex) -> {
-                            if (ex != null) {
-                                logger.debug("Failed to set indicator enabled", ex);
-                            }
-                        });
+                                        Map.of("isIndicatorEnabled", OnOffType.ON.equals(command)))),
+                        "set indicator enabled");
                 break;
-            }
             case UnifiProtectBindingConstants.CHANNEL_PIR_DURATION: {
                 Long value = timeToMilliseconds(command);
-                api.getPrivateClient().setLightDuration(deviceId, value != null ? value.intValue() : 0)
-                        .whenComplete((result, ex) -> {
-                            if (ex != null) {
-                                logger.debug("Failed to set PIR duration", ex);
-                            }
-                        });
+                logOnFailure(api.getPrivateClient().setLightDuration(deviceId, value != null ? value.intValue() : 0),
+                        "set PIR duration");
                 break;
             }
             case UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY: {
@@ -133,11 +108,7 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
                     break;
                 }
                 value = Math.max(0, Math.min(100, value));
-                api.getPrivateClient().setLightPirSensitivity(deviceId, value).whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        logger.debug("Failed to set PIR sensitivity", ex);
-                    }
-                });
+                logOnFailure(api.getPrivateClient().setLightPirSensitivity(deviceId, value), "set PIR sensitivity");
                 break;
             }
             case UnifiProtectBindingConstants.CHANNEL_LED_LEVEL: {
@@ -149,25 +120,16 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
                     break;
                 }
                 value = Math.max(1, Math.min(6, value));
-                api.getPrivateClient().updateLight(deviceId, Map.of("lightDeviceSettings", Map.of("ledLevel", value)))
-                        .whenComplete((result, ex) -> {
-                            if (ex != null) {
-                                logger.debug("Failed to set LED level", ex);
-                            }
-                        });
+                logOnFailure(api.getPrivateClient().updateLight(deviceId,
+                        Map.of("lightDeviceSettings", Map.of("ledLevel", value))), "set LED level");
                 break;
             }
-            case UnifiProtectBindingConstants.CHANNEL_DEVICE_REBOOT: {
+            case UnifiProtectBindingConstants.CHANNEL_DEVICE_REBOOT:
                 if (command == OnOffType.ON) {
-                    api.getPrivateClient().rebootDevice("light", deviceId).whenComplete((result, ex) -> {
-                        if (ex != null) {
-                            logger.debug("Failed to reboot light", ex);
-                        }
-                    });
+                    logOnFailure(api.getPrivateClient().rebootDevice("light", deviceId), "reboot light");
                     updateState(channelUID, OnOffType.OFF);
                 }
                 break;
-            }
             default:
                 break;
         }

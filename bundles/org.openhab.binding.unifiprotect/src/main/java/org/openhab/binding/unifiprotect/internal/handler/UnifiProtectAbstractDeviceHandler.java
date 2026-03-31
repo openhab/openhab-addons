@@ -15,6 +15,7 @@ package org.openhab.binding.unifiprotect.internal.handler;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -127,6 +128,17 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends UniFiProtectMo
             return nvrHandler.getApiClient();
         }
         return null;
+    }
+
+    /**
+     * Attach a whenComplete handler that logs failures at debug level.
+     */
+    protected <T> void logOnFailure(CompletableFuture<T> future, String action) {
+        future.whenComplete((result, ex) -> {
+            if (ex != null) {
+                logger.debug("Failed to {}", action, ex);
+            }
+        });
     }
 
     protected boolean hasChannel(String channelId) {

@@ -34,6 +34,7 @@ import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Camera;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Chime;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Doorlock;
@@ -276,7 +277,7 @@ public class UniFiProtectPrivateClient {
                             Response response = result.getResponse();
                             int status = response.getStatus();
 
-                            if (status == 401 || status == 403) {
+                            if (status == HttpStatus.UNAUTHORIZED_401 || status == HttpStatus.FORBIDDEN_403) {
                                 logger.debug("Authentication error, will retry: {}", status);
                                 authenticator.clearAuth();
                                 future.completeExceptionally(

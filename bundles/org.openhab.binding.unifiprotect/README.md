@@ -48,8 +48,8 @@ See [Binding Configuration](#binding-configuration) to enable/disable downloadin
 
 | Name             | Type    | Description                                                                                                                                                                                                                                                                         | Required |
 |------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| downloadBinaries | boolean | Download binaries if they are not on the system PATH. This setting controls whether the binding should download the native binaries if they are not found. By default, the binding will download the binaries if they are not on the system PATH for supported platforms | yes      |
-| useStun          | boolean | Use STUN for external IP discovery. This will allow camera streams to work behind NATs when outside your local network (e.g. when using the openHAB cloud service) and is enabled by default.                                                                                      | yes      |
+| downloadBinaries | boolean | Download binaries if they are not on the system PATH. This setting controls whether the binding should download the native binaries if they are not found. By default, the binding will download the binaries if they are not on the system PATH for supported platforms            | yes      |
+| useStun          | boolean | Use STUN for external IP discovery. This will allow camera streams to work behind NATs when outside your local network (e.g. when using the openHAB cloud service) and is enabled by default.                                                                                       | yes      |
 
 Note: Enabling STUN will incur an approximately 5-second delay delivering the stream to clients as it discovers your external IP and pins a port on your router for streams. If you are not using the openHAB cloud service with cameras, disabling STUN will allow for near-instant stream starts (video will start within a second of loading) on your local network or over a VPN.
 
@@ -113,8 +113,8 @@ You can disable WebRTC by setting `enableWebRTC` to `false`.
 
 ### `chime` Configuration
 
-| Name     | Type | Description                          | Required |
-|----------|------|--------------------------------------|----------|
+| Name     | Type | Description                           | Required |
+|----------|------|---------------------------------------|----------|
 | deviceId | text | Unique device identifier of the chime | yes      |
 
 ## Channels
@@ -126,25 +126,25 @@ Some camera channels are created dynamically depending on device capabilities.
 
 The NVR bridge provides comprehensive monitoring channels for system health, storage, and configuration.
 
-| Channel ID                       | Item Type          | RW | Description                                      | Advanced |
-|----------------------------------|--------------------|----|--------------------------------------------------|----------|
-| storage-total                    | Number:DataAmount  | R  | Total storage capacity                           | false    |
-| storage-used                     | Number:DataAmount  | R  | Used storage                                     | false    |
-| storage-available                | Number:DataAmount  | R  | Available storage                                | false    |
-| storage-utilization              | Number:Dimensionless| R | Storage utilization percentage                   | false    |
-| recording-retention              | Number:Time        | R  | Recording retention duration                     | false    |
-| nvr-storage-device-healthy       | Switch             | R  | All storage devices healthy                      | false    |
-| nvr-camera-utilization           | Number             | R  | Camera capacity utilization percentage           | false    |
-| nvr-recording-mode               | String             | R  | Global camera recording mode                     | false    |
-| nvr-recording-disabled           | Switch             | R  | Recording globally disabled                      | false    |
-| nvr-recording-motion-only        | Switch             | R  | Recording motion only                            | false    |
-| nvr-is-away                      | Switch             | R  | NVR away mode status                             | false    |
-| nvr-geofencing-enabled           | Switch             | R  | Geofencing enabled                               | false    |
-| nvr-smart-detection-available    | Switch             | R  | Smart detection available                        | false    |
-| nvr-insights-enabled             | Switch             | R  | Insights enabled                                 | false    |
-| nvr-can-auto-update              | Switch             | R  | Can auto-update                                  | false    |
-| nvr-last-update-at               | DateTime           | R  | Last update timestamp                            | false    |
-| nvr-protect-updatable            | Switch             | R  | Protect is updatable                             | false    |
+| Channel ID                       | Item Type            | RW | Description                          | Advanced |
+|----------------------------------|----------------------|----|--------------------------------------|----------|
+| storage-total                    | Number:DataAmount    | R  | Total storage capacity               | false    |
+| storage-used                     | Number:DataAmount    | R  | Used storage                         | false    |
+| storage-available                | Number:DataAmount    | R  | Available storage                    | false    |
+| storage-utilization              | Number:Dimensionless | R  | Storage utilization percentage       | false    |
+| recording-retention              | Number:Time          | R  | Recording retention duration         | false    |
+| nvr-storage-device-healthy       | Switch               | R  | All storage devices healthy          | false    |
+| nvr-camera-utilization           | Number               | R  | Camera capacity utilization          | false    |
+| nvr-recording-mode               | String               | R  | Global camera recording mode         | false    |
+| nvr-recording-disabled           | Switch               | R  | Recording globally disabled          | false    |
+| nvr-recording-motion-only        | Switch               | R  | Recording motion only                | false    |
+| nvr-is-away                      | Switch               | R  | NVR away mode status                 | false    |
+| nvr-geofencing-enabled           | Switch               | R  | Geofencing enabled                   | false    |
+| nvr-smart-detection-available    | Switch               | R  | Smart detection available            | false    |
+| nvr-insights-enabled             | Switch               | R  | Insights enabled                     | false    |
+| nvr-can-auto-update              | Switch               | R  | Can auto-update                      | false    |
+| nvr-last-update-at               | DateTime             | R  | Last update timestamp                | false    |
+| nvr-protect-updatable            | Switch               | R  | Protect is updatable                 | false    |
 
 ### `camera` Channels
 
@@ -216,43 +216,43 @@ The NVR bridge provides comprehensive monitoring channels for system health, sto
 
 #### Device Status & Health
 
-| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
-| is-connected                           | Switch             | R  | Camera is connected                                                                                  | false    |
-| is-dark                                | Switch             | R  | Scene is currently dark                                                                              | false    |
-| connection-host                        | String             | R  | Connection host address                                                                              | true     |
-| uptime                                 | Number:Time        | R  | Device uptime                                                                                        | false    |
-| uptime-since                           | DateTime           | R  | Device up since timestamp                                                                            | true     |
-| last-seen                              | DateTime           | R  | Last seen timestamp                                                                                  | false    |
-| last-disconnect                        | DateTime           | R  | Last disconnect timestamp                                                                            | true     |
-| connection-state                       | String             | R  | Connection state                                                                                     | true     |
-| state                                  | String             | R  | Device state                                                                                         | true     |
-| wired-connection-state                 | String             | R  | Wired connection state                                                                               | true     |
-| physical-connection-rate               | Number:DataTransferRate | R | Physical connection rate                                                                          | true     |
+| Channel ID                             | Item Type               | RW | Description                        | Advanced |
+|----------------------------------------|-------------------------|----|----------------------------------  |----------|
+| is-connected                           | Switch                  | R  | Camera is connected                | false    |
+| is-dark                                | Switch                  | R  | Scene is currently dark            | false    |
+| connection-host                        | String                  | R  | Connection host address            | true     |
+| uptime                                 | Number:Time             | R  | Device uptime                      | false    |
+| uptime-since                           | DateTime                | R  | Device up since timestamp          | true     |
+| last-seen                              | DateTime                | R  | Last seen timestamp                | false    |
+| last-disconnect                        | DateTime                | R  | Last disconnect timestamp          | true     |
+| connection-state                       | String                  | R  | Connection state                   | true     |
+| state                                  | String                  | R  | Device state                       | true     |
+| wired-connection-state                 | String                  | R  | Wired connection state             | true     |
+| physical-connection-rate               | Number:DataTransferRate | R  | Physical connection rate           | true     |
 
 #### Network & WiFi
 
-| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
-| ap-mac                                 | String             | R  | Access point MAC address                                                                             | true     |
-| wifi-channel                           | Number             | R  | WiFi channel number                                                                                  | true     |
-| wifi-frequency                         | Number:Frequency   | R  | WiFi frequency                                                                                       | true     |
-| wifi-quality                           | Number:Dimensionless| R | WiFi signal quality percentage                                                                       | false    |
-| wifi-signal-strength                   | Number:Power       | R  | WiFi signal strength (dBm)                                                                           | false    |
+| Channel ID                             | Item Type               | RW | Description                        | Advanced |
+|----------------------------------------|-------------------------|----|----------------------------------  |----------|
+| ap-mac                                 | String                  | R  | Access point MAC address           | true     |
+| wifi-channel                           | Number                  | R  | WiFi channel number                | true     |
+| wifi-frequency                         | Number:Frequency        | R  | WiFi frequency                     | true     |
+| wifi-quality                           | Number:Dimensionless    | R  | WiFi signal quality percentage     | false    |
+| wifi-signal-strength                   | Number:Power            | R  | WiFi signal strength (dBm)         | false    |
 
 #### Storage & Recording
 
-| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
-| storage-used                           | Number:DataAmount  | R  | Storage used by this camera                                                                          | false    |
-| storage-rate                           | Number:DataTransferRate | R | Recording storage rate                                                                           | true     |
+| Channel ID                             | Item Type               | RW | Description                        | Advanced |
+|----------------------------------------|-------------------------|----|----------------------------------  |----------|
+| storage-used                           | Number:DataAmount       | R  | Storage used by this camera        | false    |
+| storage-rate                           | Number:DataTransferRate | R  | Recording storage rate             | true     |
 
 #### Power & Battery
 
-| Channel ID                             | Item Type          | RW | Description                                                                                          | Advanced |
-|----------------------------------------|--------------------|----|------------------------------------------------------------------------------------------------------|----------|
-| voltage                                | Number:ElectricPotential | R | Input voltage                                                                                  | false    |
-| battery-percentage                     | Number:Dimensionless| R | Battery charge percentage                                                                            | false    |
+| Channel ID         | Item Type                | RW | Description               | Advanced |
+|--------------------|--------------------------|----|---------------------------|----------|
+| voltage            | Number:ElectricPotential | R  | Input voltage             | false    |
+| battery-percentage | Number:Dimensionless     | R  | Battery charge percentage | false    |
 
 #### Advanced Camera Controls (Private API)
 
@@ -303,20 +303,20 @@ This delay can be configured via the contact channel configuration through textu
 
 ### Floodlight (`light`)
 
-| Channel ID        | Item Type   | RW | Description                                | Advanced |
-|-------------------|-------------|----|--------------------------------------------| ---------|
-| light             | Switch      | RW | Main floodlight on/off (forces light)      | false    |
-| is-dark           | Switch      | R  | Scene is currently dark                    | false    |
-| pir-motion        | Trigger     | -  | PIR motion event                           | false    |
-| last-motion       | DateTime    | R  | Timestamp of last motion                   | false    |
-| light-mode        | String      | RW | Light mode (`always`, `motion`, `off`)     | false    |
-| enable-at         | String      | RW | When mode is relevant (`fulltime`, `dark`) | false    |
-| indicator-enabled | Switch      | RW | Status LED indicator on floodlight         | false    |
-| pir-duration      | Number:Time | RW | How long the light stays on after motion   | false    |
-| pir-sensitivity   | Number:Dimensionless | RW | PIR motion sensitivity (0-100)        | false    |
-| led-level         | Number      | RW | LED brightness level (1-6)                 | false    |
-| light-mode-advanced | String    | RW | Advanced light mode settings               | true     |
-| device-reboot     | Switch      | W  | Reboot device (send ON command)            | true     |
+| Channel ID          | Item Type            | RW | Description                                | Advanced |
+|---------------------|----------------------|----|--------------------------------------------|----------|
+| light               | Switch               | RW | Main floodlight on/off (forces light)      | false    |
+| is-dark             | Switch               | R  | Scene is currently dark                    | false    |
+| pir-motion          | Trigger              | -  | PIR motion event                           | false    |
+| last-motion         | DateTime             | R  | Timestamp of last motion                   | false    |
+| light-mode          | String               | RW | Light mode (`always`, `motion`, `off`)     | false    |
+| enable-at           | String               | RW | When mode is relevant (`fulltime`, `dark`) | false    |
+| indicator-enabled   | Switch               | RW | Status LED indicator on floodlight         | false    |
+| pir-duration        | Number:Time          | RW | How long the light stays on after motion   | false    |
+| pir-sensitivity     | Number:Dimensionless | RW | PIR motion sensitivity (0-100)             | false    |
+| led-level           | Number               | RW | LED brightness level (1-6)                 | false    |
+| light-mode-advanced | String               | RW | Advanced light mode settings               | true     |
+| device-reboot       | Switch               | W  | Reboot device (send ON command)            | true     |
 
 ### Sensor (`sensor`)
 
@@ -335,13 +335,13 @@ This delay can be configured via the contact channel configuration through textu
 
 ### Doorlock (`doorlock`)
 
-| Channel ID         | Item Type          | RW | Description                              | Advanced |
-|--------------------|--------------------|----|------------------------------------------| ---------|
-| lock               | Switch             | RW | Lock control (ON=locked, OFF=unlocked)   | false    |
-| lock-status        | String             | R  | Current lock status                      | false    |
-| calibrate          | Switch             | W  | Calibrate lock (send ON)                 | true     |
-| auto-close-time    | Number:Time        | RW | Auto-close time in seconds               | false    |
-| battery-percentage | Number:Dimensionless| R | Battery charge percentage                | false    |
+| Channel ID         | Item Type            | RW | Description                            | Advanced |
+|--------------------|----------------------|----|----------------------------------------|----------|
+| lock               | Switch               | RW | Lock control (ON=locked, OFF=unlocked) | false    |
+| lock-status        | String               | R  | Current lock status                    | false    |
+| calibrate          | Switch               | W  | Calibrate lock (send ON)               | true     |
+| auto-close-time    | Number:Time          | RW | Auto-close time in seconds             | false    |
+| battery-percentage | Number:Dimensionless | R  | Battery charge percentage              | false    |
 
 ### Chime (`chime`)
 

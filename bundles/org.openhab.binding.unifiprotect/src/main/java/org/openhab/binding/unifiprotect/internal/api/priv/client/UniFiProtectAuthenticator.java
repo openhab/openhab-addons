@@ -17,7 +17,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +29,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.gson.JsonUtil;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.system.LoginResponse;
 import org.openhab.binding.unifiprotect.internal.api.priv.exception.AuthenticationException;
@@ -46,6 +50,7 @@ public class UniFiProtectAuthenticator {
     private final Logger logger = LoggerFactory.getLogger(UniFiProtectAuthenticator.class);
     private static final String AUTH_PATH = "/api/auth/login";
     private static final Duration SESSION_EXPIRY = Duration.ofHours(24);
+    private static final long REQUEST_TIMEOUT_SECONDS = 30;
     private static final String COOKIE_TOKEN = "TOKEN";
     private static final String COOKIE_UOS_TOKEN = "UOS_TOKEN";
 
@@ -106,11 +111,12 @@ public class UniFiProtectAuthenticator {
                 String url = baseUrl + AUTH_PATH;
                 Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                         .header("Content-Type", "application/json")
-                        .content(new StringContentProvider(loginData.toString()));
+                        .content(new StringContentProvider(loginData.toString()))
+                        .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
                 ContentResponse response = request.send();
 
-                if (response.getStatus() != 200) {
+                if (response.getStatus() != HttpStatus.OK_200) {
                     throw new AuthenticationException(
                             "Authentication failed: " + response.getStatus() + " " + response.getReason());
                 }
@@ -190,32 +196,32 @@ public class UniFiProtectAuthenticator {
     private void fetchUserIdFromSelf() {
         try {
             String url = baseUrl + "/api/users/self";
-            Request request = httpClient.newRequest(url).method(HttpMethod.GET);
+            Request request = httpClient.newRequest(url).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_SECONDS,
+                    TimeUnit.SECONDS);
 
             addAuthHeaders(request);
 
             ContentResponse response = request.send();
 
-            if (response.getStatus() == 200) {
+            if (response.getStatus() == HttpStatus.OK_200) {
                 String responseBody = response.getContentAsString();
                 logger.debug("/users/self response: {}", responseBody);
 
-                try {
-                    LoginResponse userInfo = JsonUtil.getGson().fromJson(responseBody, LoginResponse.class);
-                    if (userInfo != null && userInfo.id != null) {
-                        this.userId = userInfo.id;
-                        logger.debug("Fetched user ID from /users/self: {}", userId);
-                    } else {
-                        logger.debug("/users/self response did not contain user ID");
-                    }
-                } catch (Exception e) {
-                    logger.debug("Failed to parse /users/self response for user ID", e);
+                LoginResponse userInfo = JsonUtil.getGson().fromJson(responseBody, LoginResponse.class);
+                if (userInfo != null && userInfo.id != null) {
+                    this.userId = userInfo.id;
+                    logger.debug("Fetched user ID from /users/self: {}", userId);
+                } else {
+                    logger.debug("/users/self response did not contain user ID");
                 }
             } else {
                 logger.debug("Failed to fetch user info from /users/self: {} {}", response.getStatus(),
                         response.getReason());
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.debug("Interrupted while fetching user ID from /users/self", e);
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Error fetching user ID from /users/self", e);
         }
     }
