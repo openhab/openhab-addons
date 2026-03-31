@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -505,7 +506,7 @@ public class UpnpXMLParser {
     }
 
     private static String inferMediaTypeFromUri(String uri) {
-        String lc = uri.toLowerCase();
+        String lc = uri.toLowerCase(Locale.ROOT);
         if (lc.contains(".mp3")) {
             return "mp3";
         } else if (lc.contains(".wav") || lc.contains(".wave")) {
@@ -525,7 +526,7 @@ public class UpnpXMLParser {
     }
 
     private static String buildProtocolInfo(String mediaType) {
-        String type = mediaType.toLowerCase();
+        String type = mediaType.toLowerCase(Locale.ROOT);
         switch (type) {
             case "mp3":
                 return "http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;";

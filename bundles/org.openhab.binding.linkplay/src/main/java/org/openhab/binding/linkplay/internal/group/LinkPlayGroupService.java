@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.linkplay.internal.group;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -253,12 +254,12 @@ public class LinkPlayGroupService {
     }
 
     public @Nullable Slave findSlaveByUDN(String udn) {
-        String formattedUdn = udn.replace("-", "").toUpperCase();
+        String formattedUdn = udn.replace("-", "").toUpperCase(Locale.ROOT);
         logger.debug("Finding slave by UDN: {} formatted: {} # of Slaves: {}", udn, formattedUdn,
                 groups.values().stream().flatMap(slaves -> slaves.stream()).count());
         return groups.values().stream().flatMap(slaves -> slaves.stream())
-                .filter(slave -> slave.uuid != null && formattedUdn.contains(slave.uuid.toUpperCase())).findFirst()
-                .orElse(null);
+                .filter(slave -> slave.uuid != null && formattedUdn.contains(slave.uuid.toUpperCase(Locale.ROOT)))
+                .findFirst().orElse(null);
     }
 
     private void unregisterGroup(LinkPlayGroupParticipant leader) {

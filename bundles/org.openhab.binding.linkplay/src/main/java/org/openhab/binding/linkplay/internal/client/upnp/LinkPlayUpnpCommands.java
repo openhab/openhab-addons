@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.linkplay.internal.client.upnp;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -954,7 +955,7 @@ public class LinkPlayUpnpCommands {
         int hours = seconds / 3600;
         int minutes = (seconds % 3600) / 60;
         int secs = seconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, secs);
+        return String.format(Locale.ROOT, "%02d:%02d:%02d", hours, minutes, secs);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,8 @@
 package org.openhab.binding.linkplay.internal.client.http;
 
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -22,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.linkplay.internal.client.http.adaptors.BtPairStatusAdapter;
 import org.openhab.binding.linkplay.internal.client.http.adaptors.PlayerStatusAdapter;
@@ -40,6 +41,7 @@ import org.openhab.binding.linkplay.internal.client.http.dto.StaticIpInfo;
 import org.openhab.binding.linkplay.internal.client.http.dto.StatusResponse;
 import org.openhab.binding.linkplay.internal.client.http.dto.TrackMetadata;
 import org.openhab.binding.linkplay.internal.client.http.dto.WlanConnectState;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.FieldNamingPolicy;
@@ -362,8 +364,8 @@ public class LinkPlayHTTPClient {
      */
     public CompletableFuture<String> setAlarmClock(int number, int trigger, int operation, String time, String day,
             String url) {
-        String path = String.format("setAlarmClock:%d:%d:%d:%s:%s:%s", number, trigger, operation, time, day,
-                encode(url));
+        String path = String.format(Locale.ROOT, "setAlarmClock:%d:%d:%d:%s:%s:%s", number, trigger, operation, time,
+                day, encode(url));
         return sendGetRequest(path, String.class);
     }
 
@@ -457,7 +459,7 @@ public class LinkPlayHTTPClient {
             throw new IllegalArgumentException("Balance must be between -1.0 and 1.0");
         }
         // format to avoid scientific notation
-        String value = String.format(java.util.Locale.US, "%s", balance);
+        String value = String.format(Locale.US, "%s", balance);
         return sendGetRequest("setChannelBalance:" + value, String.class);
     }
 
@@ -605,8 +607,9 @@ public class LinkPlayHTTPClient {
      */
     public CompletableFuture<String> setLightOperationBrightConfig(int autoSenseEnable, int defaultBright,
             int disable) {
-        String json = String.format("%%7B\"auto_sense_enable\":%d,\"default_bright\":%d,\"disable\":%d%%7D",
-                autoSenseEnable, defaultBright, disable);
+        String json = String.format(Locale.ROOT,
+                "%%7B\"auto_sense_enable\":%d,\"default_bright\":%d,\"disable\":%d%%7D", autoSenseEnable, defaultBright,
+                disable);
         return sendGetRequest("setLightOperationBrightConfig:" + json, String.class);
     }
 
@@ -796,7 +799,7 @@ public class LinkPlayHTTPClient {
         }
         Executor executor = httpClient.getExecutor();
         return CompletableFuture.supplyAsync(() -> {
-            String url = String.format("%s://%s:%d/httpapi.asp?command=%s",
+            String url = String.format(Locale.ROOT, "%s://%s:%d/httpapi.asp?command=%s",
                     String.valueOf(port).endsWith("443") ? "https" : "http", host, port, command);
             try {
                 logger.trace("Sending GET request to {}", url);
