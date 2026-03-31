@@ -74,6 +74,7 @@ public class OppoBindingConstants {
     public static final String COLON = ":";
     public static final String ON = "ON";
     public static final String OFF = "OFF";
+    public static final String OFFLINE = "OFFLINE";
     public static final String ONE = "1";
     public static final String ZERO = "0";
     public static final String UNDEF = "UNDEF";

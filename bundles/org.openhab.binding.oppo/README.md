@@ -93,13 +93,13 @@ The following channels are available:
 | volume            | Dimmer      | Control the volume for the player (0-100%)                                                                                            |
 | mute              | Switch      | Mute or unmute the volume on the player                                                                                               |
 | source            | Number      | Select the source input for the player (0-6; number of available options varies by model)                                             |
-| play_mode         | String      | Indicates the current playback mode of the player (ReadOnly)                                                                          |
+| play_mode         | String      | Indicates the current playback mode of the player or OFFLINE when the Thing is offline (ReadOnly)                                     |
 | control           | Player      | Simulate pressing the transport control buttons on the remote control (play/pause/next/previous/rew/ffwd)                             |
 | time_mode         | String      | Sets the time information display mode on the player (T= Title Elapsed, X= Title Remaining, C= Chapter Elapsed, K= Chapter Remaining) |
 | time_display      | Number:Time | The playback time elapsed/remaining in seconds (ReadOnly)                                                                             |
 | current_title     | Number      | The current title or track number playing (ReadOnly)                                                                                  |
 | total_title       | Number      | The total number of titles or tracks on the disc (ReadOnly)                                                                           |
-| current_chapter   | Number      | The current chapter number (ReadOnly)                                                                                                  |
+| current_chapter   | Number      | The current chapter number (ReadOnly)                                                                                                 |
 | total_chapter     | Number      | The total number of chapters in the current title (ReadOnly)                                                                          |
 | repeat_mode       | String      | Sets the current repeat mode (00-06)                                                                                                  |
 | zoom_mode         | String      | Sets the current zoom mode (00-12)                                                                                                    |
