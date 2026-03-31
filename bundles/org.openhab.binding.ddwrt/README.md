@@ -19,8 +19,8 @@ Features include:
 | `network`       | DD-WRT Network   | Bridge representing the network of managed devices                  |
 | `device`        | DD-WRT Device    | A DD-WRT, OpenWrt, Tomato, or compatible Linux device managed via SSH |
 | `radio`         | Wireless Radio   | A wireless radio interface on a device (e.g. `wl0`, `wlan0`)       |
-| `wirelessClient`| Wireless Client  | A wireless client associated with the network                      |
-| `firewallRule`  | Firewall Rule    | A GUI-configured firewall filter rule from DD-WRT nvram             |
+| `wireless-client`| Wireless Client  | A wireless client associated with the network                     |
+| `firewall-rule`  | Firewall Rule    | A GUI-configured firewall filter rule from DD-WRT nvram           |
 
 The binding auto-detects the chipset and firmware variant during the first SSH connection.
 Tested firmware includes DD-WRT, OpenWrt, FreshTomato, and generic Linux with `iw`/`iwconfig`.
@@ -81,7 +81,7 @@ If no port is configured (port = 0), the binding defers to `~/.ssh/config` or po
 | interfaceId     | text    | Wireless interface identifier (e.g. `wl0`, `wlan0`)   | N/A     | yes      | no       |
 | parentDeviceMac | text    | MAC address of the parent device                      | N/A     | no       | yes      |
 
-### `wirelessClient` Thing Configuration
+### `wireless-client` Thing Configuration
 
 | Name | Type | Description                                                       | Default | Required | Advanced |
 |------|------|-------------------------------------------------------------------|---------|----------|----------|
@@ -91,7 +91,7 @@ The thing ID is derived from the client's sanitized hostname (e.g. `Lee-Pixel-8a
 If the client uses MAC randomization, the binding tracks it by hostname rather than MAC address.
 When a new randomized MAC appears with the same DHCP hostname, the binding merges it with the existing client.
 
-### `firewallRule` Thing Configuration
+### `firewall-rule` Thing Configuration
 
 | Name   | Type | Description                        | Default | Required | Advanced |
 |--------|------|------------------------------------|---------|----------|----------|
@@ -103,9 +103,9 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 
 | Channel          | Type   | Read/Write | Description                                     |
 |------------------|--------|------------|-------------------------------------------------|
-| totalClients     | Number | RO         | Total clients connected across all devices       |
-| wirelessClients  | Number | RO         | Wireless clients connected across all devices    |
-| wiredClients     | Number | RO         | Wired clients connected across all devices       |
+| total-clients     | Number | RO         | Total clients connected across all devices      |
+| wireless-clients  | Number | RO         | Wireless clients connected across all devices   |
+| wired-clients     | Number | RO         | Wired clients connected across all devices      |
 
 ### Device Channels
 
@@ -113,29 +113,29 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 |--------------------|--------------------|------------|----------------------------------------------------------|
 | online             | Switch             | RO         | Whether the device is reachable via SSH                  |
 | uptime             | DateTime           | RO         | System boot time (updates only on reboot)                |
-| cpuLoad            | Number             | RO         | 1-minute load average                                    |
-| cpuTemp            | Number:Temperature | RO         | CPU temperature                                          |
-| wanIp              | String             | RO         | External WAN IP address (gateway devices only)           |
-| wanIn              | Number:DataAmount  | RO         | Total bytes received on WAN (gateway devices only)       |
-| wanOut             | Number:DataAmount  | RO         | Total bytes sent on WAN (gateway devices only)           |
-| ifIn               | Number:DataAmount  | RO         | Total bytes received on LAN bridge (br0)                 |
-| ifOut              | Number:DataAmount  | RO         | Total bytes sent on LAN bridge (br0)                     |
+| cpu-load           | Number             | RO         | 1-minute load average                                    |
+| cpu-temp           | Number:Temperature | RO         | CPU temperature                                          |
+| wan-ip             | String             | RO         | External WAN IP address (gateway devices only)           |
+| wan-in             | Number:DataAmount  | RO         | Total bytes received on WAN (gateway devices only)       |
+| wan-out            | Number:DataAmount  | RO         | Total bytes sent on WAN (gateway devices only)           |
+| if-in              | Number:DataAmount  | RO         | Total bytes received on LAN bridge (br0)                 |
+| if-out             | Number:DataAmount  | RO         | Total bytes sent on LAN bridge (br0)                     |
 | reboot             | Switch             | RW         | Turn ON to reboot the device; automatically resets to OFF|
-| lastWarningEvent   | String             | RO         | Last warning-level syslog line                           |
-| lastErrorEvent     | String             | RO         | Last error-level syslog line                             |
-| warningEvents      | Number             | RO         | Warning event count since startup                        |
-| errorEvents        | Number             | RO         | Error event count since startup                          |
-| lastDhcpEvent      | String             | RO         | Last DHCP lease/renewal/release event                    |
-| lastWirelessEvent  | String             | RO         | Last wireless association/deassociation event            |
+| last-warning-event  | String             | RO         | Last warning-level syslog line                          |
+| last-error-event    | String             | RO         | Last error-level syslog line                            |
+| warning-events      | Number             | RO         | Warning event count since startup                       |
+| error-events        | Number             | RO         | Error event count since startup                         |
+| last-dhcp-event     | String             | RO         | Last DHCP lease/renewal/release event                   |
+| last-wireless-event | String             | RO         | Last wireless association/deassociation event            |
 
 ### Device Trigger Channels
 
 | Channel            | Kind    | Description                                          |
 |--------------------|---------|------------------------------------------------------|
-| newWarningEvent    | Trigger | Fires when a new warning-level syslog event arrives  |
-| newErrorEvent      | Trigger | Fires when a new error-level syslog event arrives    |
-| newDhcpEvent       | Trigger | Fires when a DHCP lease/renewal/release is detected  |
-| newWirelessEvent   | Trigger | Fires when a wireless assoc/deassoc is detected      |
+| new-warning-event  | Trigger | Fires when a new warning-level syslog event arrives  |
+| new-error-event    | Trigger | Fires when a new error-level syslog event arrives    |
+| new-dhcp-event     | Trigger | Fires when a DHCP lease/renewal/release is detected  |
+| new-wireless-event | Trigger | Fires when a wireless assoc/deassoc is detected      |
 
 ### Radio Channels
 
@@ -145,7 +145,7 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 | ssid        | String | RO         | Wireless network name                                   |
 | channel     | Number | RO         | Wireless channel number                                 |
 | mode        | String | RO         | Wireless mode (e.g. Master, Client, Ad-Hoc)             |
-| clientCount | Number | RO         | Number of clients associated with this radio            |
+| client-count | Number | RO         | Number of clients associated with this radio           |
 | assoclist   | String | RO         | Comma-separated MACs of associated clients              |
 
 ### Wireless Client Channels
@@ -153,16 +153,16 @@ When a new randomized MAC appears with the same DHCP hostname, the binding merge
 | Channel    | Type     | Read/Write | Description                                              |
 |------------|----------|------------|----------------------------------------------------------|
 | online     | Switch   | RO         | Whether the client is currently connected                |
-| macAddress | String   | RO         | Current MAC address of the client                        |
-| hostname   | String   | RO         | Hostname from DHCP lease                                 |
-| ipAddress  | String   | RO         | IP address from DHCP lease                               |
+| mac-address | String   | RO         | Current MAC address of the client                       |
+| hostname    | String   | RO         | Hostname from DHCP lease                                |
+| ip-address  | String   | RO         | IP address from DHCP lease                              |
 | ap         | String   | RO         | Name of the radio the client is associated with          |
-| apMac      | String   | RO         | MAC address of the access point                          |
+| ap-mac     | String   | RO         | MAC address of the access point                          |
 | ssid       | String   | RO         | SSID the client is connected to                          |
 | snr        | Number   | RO         | Signal-to-noise ratio in dB                              |
-| rxRate     | Number   | RO         | Receive rate in Mbit/s                                   |
-| txRate     | Number   | RO         | Transmit rate in Mbit/s                                  |
-| lastSeen   | DateTime | RO         | Timestamp when the client was last seen online           |
+| rx-rate    | Number   | RO         | Receive rate in Mbit/s                                   |
+| tx-rate    | Number   | RO         | Transmit rate in Mbit/s                                  |
+| last-seen  | DateTime | RO         | Timestamp when the client was last seen online           |
 
 ### Firewall Rule Channels
 
@@ -197,11 +197,11 @@ Bridge ddwrt:network:home "Home Network" [ hostnames="gateway-ap,lodge-ap,cabin-
     Thing radio lodge_wlan0   "Lodge 2.4GHz"     [ interfaceId="wlan0" ]
     Thing radio lodge_wlan1   "Lodge 5GHz"       [ interfaceId="wlan1" ]
 
-    Thing wirelessClient leepixel8a   "Lee's Phone"      [ mac="c2:af:b0:aa:9c:ef" ]
-    Thing wirelessClient delldesktop  "Dell Desktop"     [ mac="b0:8b:a8:7f:99:2c" ]
+    Thing wireless-client leepixel8a   "Lee's Phone"      [ mac="c2:af:b0:aa:9c:ef" ]
+    Thing wireless-client delldesktop  "Dell Desktop"     [ mac="b0:8b:a8:7f:99:2c" ]
 
-    Thing firewallRule bedtime10 "Bedtime 10-12" [ ruleId="filter_rule3" ]
-    Thing firewallRule bedtime12 "Bedtime 12-6"  [ ruleId="filter_rule4" ]
+    Thing firewall-rule bedtime10 "Bedtime 10-12" [ ruleId="filter_rule3" ]
+    Thing firewall-rule bedtime12 "Bedtime 12-6"  [ ruleId="filter_rule4" ]
 }
 ```
 
@@ -211,30 +211,30 @@ Bridge ddwrt:network:home "Home Network" [ hostnames="gateway-ap,lodge-ap,cabin-
 // Device telemetry
 Switch   GatewayOnline     "Gateway Online [%s]"         { channel="ddwrt:device:home:gateway:online" }
 DateTime GatewayUptime     "Gateway Uptime [%1$tF %1$tR]" { channel="ddwrt:device:home:gateway:uptime" }
-Number   GatewayCpuLoad    "Gateway CPU [%.2f]"           { channel="ddwrt:device:home:gateway:cpuLoad" }
-Number:Temperature GatewayCpuTemp "Gateway Temp [%.1f %unit%]" { channel="ddwrt:device:home:gateway:cpuTemp" }
-String   GatewayWanIp      "WAN IP [%s]"                  { channel="ddwrt:device:home:gateway:wanIp" }
+Number   GatewayCpuLoad    "Gateway CPU [%.2f]"           { channel="ddwrt:device:home:gateway:cpu-load" }
+Number:Temperature GatewayCpuTemp "Gateway Temp [%.1f %unit%]" { channel="ddwrt:device:home:gateway:cpu-temp" }
+String   GatewayWanIp      "WAN IP [%s]"                  { channel="ddwrt:device:home:gateway:wan-ip" }
 Switch   GatewayReboot     "Reboot Gateway"               { channel="ddwrt:device:home:gateway:reboot" }
 
 // Syslog events
-String   GatewayLastDhcp   "Last DHCP [%s]"               { channel="ddwrt:device:home:gateway:lastDhcpEvent" }
-String   GatewayLastWifi   "Last Wireless [%s]"            { channel="ddwrt:device:home:gateway:lastWirelessEvent" }
+String   GatewayLastDhcp   "Last DHCP [%s]"               { channel="ddwrt:device:home:gateway:last-dhcp-event" }
+String   GatewayLastWifi   "Last Wireless [%s]"            { channel="ddwrt:device:home:gateway:last-wireless-event" }
 
 // Radio
 String   Gateway24Ssid     "2.4GHz SSID [%s]"             { channel="ddwrt:radio:home:gateway_wl0:ssid" }
 Number   Gateway24Channel  "2.4GHz Channel [%d]"           { channel="ddwrt:radio:home:gateway_wl0:channel" }
-Number   Gateway24Clients  "2.4GHz Clients [%d]"           { channel="ddwrt:radio:home:gateway_wl0:clientCount" }
+Number   Gateway24Clients  "2.4GHz Clients [%d]"           { channel="ddwrt:radio:home:gateway_wl0:client-count" }
 
 // Wireless client
-Switch   PhoneOnline       "Phone Online [%s]"             { channel="ddwrt:wirelessClient:home:leepixel8a:online" }
-String   PhoneAp           "Phone AP [%s]"                 { channel="ddwrt:wirelessClient:home:leepixel8a:ap" }
-String   PhoneSsid         "Phone SSID [%s]"               { channel="ddwrt:wirelessClient:home:leepixel8a:ssid" }
-Number   PhoneSnr          "Phone SNR [%d dB]"             { channel="ddwrt:wirelessClient:home:leepixel8a:snr" }
-DateTime PhoneLastSeen     "Phone Last Seen [%1$tF %1$tR]" { channel="ddwrt:wirelessClient:home:leepixel8a:lastSeen" }
+Switch   PhoneOnline       "Phone Online [%s]"             { channel="ddwrt:wireless-client:home:leepixel8a:online" }
+String   PhoneAp           "Phone AP [%s]"                 { channel="ddwrt:wireless-client:home:leepixel8a:ap" }
+String   PhoneSsid         "Phone SSID [%s]"               { channel="ddwrt:wireless-client:home:leepixel8a:ssid" }
+Number   PhoneSnr          "Phone SNR [%d dB]"             { channel="ddwrt:wireless-client:home:leepixel8a:snr" }
+DateTime PhoneLastSeen     "Phone Last Seen [%1$tF %1$tR]" { channel="ddwrt:wireless-client:home:leepixel8a:last-seen" }
 
 // Firewall
-Switch   Bedtime10         "Bedtime 10-12 [%s]"            { channel="ddwrt:firewallRule:home:bedtime10:enabled" }
-Switch   Bedtime12         "Bedtime 12-6 [%s]"             { channel="ddwrt:firewallRule:home:bedtime12:enabled" }
+Switch   Bedtime10         "Bedtime 10-12 [%s]"            { channel="ddwrt:firewall-rule:home:bedtime10:enabled" }
+Switch   Bedtime12         "Bedtime 12-6 [%s]"             { channel="ddwrt:firewall-rule:home:bedtime12:enabled" }
 ```
 
 ### Sitemap Configuration
@@ -293,4 +293,4 @@ If a client has no DHCP hostname (some IoT devices), the binding generates a syn
 ## Multi-AP Roaming
 
 The binding aggregates wireless clients across all managed access points.
-When a client roams from one AP to another, the syslog follower detects the association/deassociation events and updates the client's `ap`, `apMac`, and `ssid` channels in real time.
+When a client roams from one AP to another, the syslog follower detects the association/deassociation events and updates the client's `ap`, `ap-mac`, and `ssid` channels in real time.
