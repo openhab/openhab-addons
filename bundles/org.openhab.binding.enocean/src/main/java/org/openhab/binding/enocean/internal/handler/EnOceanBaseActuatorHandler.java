@@ -28,6 +28,7 @@ import org.openhab.binding.enocean.internal.config.EnOceanActuatorConfig;
 import org.openhab.binding.enocean.internal.eep.EEP;
 import org.openhab.binding.enocean.internal.eep.EEPFactory;
 import org.openhab.binding.enocean.internal.eep.EEPType;
+import org.openhab.binding.enocean.internal.eep.StateMachineProvider;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.statemachine.STMStateMachine;
 import org.openhab.core.config.core.Configuration;
@@ -361,25 +362,30 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
      * The state is automatically persisted to a JSON file in the openHAB userdata
      * directory whenever the state machine transitions. No item linking or
      * persistence service configuration is required.
+     * <p>
+     * The provider's {@link StateMachineProvider#getStateOnStartup} method is responsible
+     * for deciding which state to restore (e.g. replacing unsafe transient states).
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void restoreStateMachineState() {
+    private void restoreStateMachineState(StateMachineProvider<?, ?> stmEEP) {
         STMStateMachine<?, ?> localStm = stm;
         if (localStm == null) {
             return;
         }
+        Enum<?> persistedState = null;
         String lastState = storage.get(STORAGE_KEY_STM_STATE);
-        if (lastState == null) {
-            return;
+        if (lastState != null) {
+            try {
+                Class<? extends Enum> stateClass = localStm.getState().getDeclaringClass();
+                persistedState = Enum.valueOf(stateClass, lastState);
+            } catch (IllegalArgumentException e) {
+                logger.debug("Could not parse persisted STM state '{}', passing null to provider", lastState);
+            }
         }
-        try {
-            Enum<?> currentState = localStm.getState();
-            Class<? extends Enum> stateClass = currentState.getDeclaringClass();
-            Enum<?> restoredState = Enum.valueOf(stateClass, lastState);
-            ((STMStateMachine) localStm).restoreState(restoredState);
-            logger.debug("Restored STM state from storage: {}", restoredState);
-        } catch (IllegalArgumentException e) {
-            logger.debug("Could not restore STM state '{}', using initial state", lastState);
+        Enum<?> startupState = ((StateMachineProvider) stmEEP).getStateOnStartup(persistedState);
+        if (startupState != null) {
+            ((STMStateMachine) localStm).restoreState(startupState);
+            logger.debug("STM startup state: {}", startupState);
         }
     }
 

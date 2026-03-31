@@ -65,4 +65,18 @@ public interface StateMachineProvider<A extends Enum<A>, S extends Enum<S>> {
      * @return set of channel IDs to remove (empty if none should be removed)
      */
     Set<String> getChannelsToRemove(Thing thing);
+
+    /**
+     * Returns the state to use when the state machine is initialized after a (re)start.
+     * <p>
+     * The handler reads the previously persisted state (if any) from storage and passes it here.
+     * The implementation decides how to handle startup: it may restore the persisted state,
+     * replace unsafe transient states (e.g. an interrupted movement) with a safe fallback,
+     * or ignore the persisted state entirely.
+     *
+     * @param persistedState the state loaded from storage, or null if no state was persisted
+     * @return the state to restore the STM to, or null to leave the STM at its initial state
+     */
+    @Nullable
+    S getStateOnStartup(@Nullable S persistedState);
 }
