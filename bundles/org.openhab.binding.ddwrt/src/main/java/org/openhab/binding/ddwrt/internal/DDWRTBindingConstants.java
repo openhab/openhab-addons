@@ -37,8 +37,8 @@ public class DDWRTBindingConstants {
     public static final ThingTypeUID BRIDGE_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_RADIO = new ThingTypeUID(BINDING_ID, "radio");
-    public static final ThingTypeUID THING_TYPE_WIRELESS_CLIENT = new ThingTypeUID(BINDING_ID, "wirelessClient");
-    public static final ThingTypeUID THING_TYPE_FIREWALL_RULE = new ThingTypeUID(BINDING_ID, "firewallRule");
+    public static final ThingTypeUID THING_TYPE_WIRELESS_CLIENT = new ThingTypeUID(BINDING_ID, "wireless-client");
+    public static final ThingTypeUID THING_TYPE_FIREWALL_RULE = new ThingTypeUID(BINDING_ID, "firewall-rule");
 
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Objects.requireNonNull(
             Set.of(THING_TYPE_DEVICE, THING_TYPE_RADIO, THING_TYPE_WIRELESS_CLIENT, THING_TYPE_FIREWALL_RULE));
@@ -49,22 +49,22 @@ public class DDWRTBindingConstants {
     }
 
     // List of network (bridge) channel ids
-    public static final String CHANNEL_TOTAL_CLIENTS = "totalClients";
-    public static final String CHANNEL_WIRELESS_CLIENTS = "wirelessClients";
-    public static final String CHANNEL_WIRED_CLIENTS = "wiredClients";
+    public static final String CHANNEL_TOTAL_CLIENTS = "total-clients";
+    public static final String CHANNEL_WIRELESS_CLIENTS = "wireless-clients";
+    public static final String CHANNEL_WIRED_CLIENTS = "wired-clients";
 
     // List of common channel ids
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_UPTIME = "uptime";
 
     // List of device channel ids
-    public static final String CHANNEL_CPU_LOAD = "cpuLoad";
-    public static final String CHANNEL_CPU_TEMP = "cpuTemp";
-    public static final String CHANNEL_WAN_IP = "wanIp";
-    public static final String CHANNEL_WAN_IN = "wanIn";
-    public static final String CHANNEL_WAN_OUT = "wanOut";
-    public static final String CHANNEL_IF_IN = "ifIn";
-    public static final String CHANNEL_IF_OUT = "ifOut";
+    public static final String CHANNEL_CPU_LOAD = "cpu-load";
+    public static final String CHANNEL_CPU_TEMP = "cpu-temp";
+    public static final String CHANNEL_WAN_IP = "wan-ip";
+    public static final String CHANNEL_WAN_IN = "wan-in";
+    public static final String CHANNEL_WAN_OUT = "wan-out";
+    public static final String CHANNEL_IF_IN = "if-in";
+    public static final String CHANNEL_IF_OUT = "if-out";
     public static final String CHANNEL_REBOOT = "reboot";
 
     // List of radio channel ids
@@ -72,34 +72,34 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_CHANNEL = "channel";
     public static final String CHANNEL_SSID = "ssid";
     public static final String CHANNEL_MODE = "mode";
-    public static final String CHANNEL_CLIENT_COUNT = "clientCount";
+    public static final String CHANNEL_CLIENT_COUNT = "client-count";
     public static final String CHANNEL_ASSOCLIST = "assoclist";
 
     // List of wireless client channel ids
-    public static final String CHANNEL_MAC_ADDRESS = "macAddress";
+    public static final String CHANNEL_MAC_ADDRESS = "mac-address";
     public static final String CHANNEL_HOSTNAME = "hostname";
-    public static final String CHANNEL_IP_ADDRESS = "ipAddress";
+    public static final String CHANNEL_IP_ADDRESS = "ip-address";
     public static final String CHANNEL_AP = "ap";
-    public static final String CHANNEL_AP_MAC = "apMac";
+    public static final String CHANNEL_AP_MAC = "ap-mac";
     public static final String CHANNEL_SNR = "snr";
-    public static final String CHANNEL_RX_RATE = "rxRate";
-    public static final String CHANNEL_TX_RATE = "txRate";
-    public static final String CHANNEL_LAST_SEEN = "lastSeen";
+    public static final String CHANNEL_RX_RATE = "rx-rate";
+    public static final String CHANNEL_TX_RATE = "tx-rate";
+    public static final String CHANNEL_LAST_SEEN = "last-seen";
 
     // List of firewall rule channel ids
     public static final String CHANNEL_DESCRIPTION = "description";
 
     // List of syslog event channel ids (modeled after logreader binding)
-    public static final String CHANNEL_LAST_WARNING_EVENT = "lastWarningEvent";
-    public static final String CHANNEL_LAST_ERROR_EVENT = "lastErrorEvent";
-    public static final String CHANNEL_WARNING_EVENTS = "warningEvents";
-    public static final String CHANNEL_ERROR_EVENTS = "errorEvents";
-    public static final String CHANNEL_LAST_DHCP_EVENT = "lastDhcpEvent";
-    public static final String CHANNEL_LAST_WIRELESS_EVENT = "lastWirelessEvent";
-    public static final String CHANNEL_NEW_WARNING_EVENT = "newWarningEvent";
-    public static final String CHANNEL_NEW_ERROR_EVENT = "newErrorEvent";
-    public static final String CHANNEL_NEW_DHCP_EVENT = "newDhcpEvent";
-    public static final String CHANNEL_NEW_WIRELESS_EVENT = "newWirelessEvent";
+    public static final String CHANNEL_LAST_WARNING_EVENT = "last-warning-event";
+    public static final String CHANNEL_LAST_ERROR_EVENT = "last-error-event";
+    public static final String CHANNEL_WARNING_EVENTS = "warning-events";
+    public static final String CHANNEL_ERROR_EVENTS = "error-events";
+    public static final String CHANNEL_LAST_DHCP_EVENT = "last-dhcp-event";
+    public static final String CHANNEL_LAST_WIRELESS_EVENT = "last-wireless-event";
+    public static final String CHANNEL_NEW_WARNING_EVENT = "new-warning-event";
+    public static final String CHANNEL_NEW_ERROR_EVENT = "new-error-event";
+    public static final String CHANNEL_NEW_DHCP_EVENT = "new-dhcp-event";
+    public static final String CHANNEL_NEW_WIRELESS_EVENT = "new-wireless-event";
 
     // List of all configuration parameters
     public static final String HOSTNAME = "hostname";

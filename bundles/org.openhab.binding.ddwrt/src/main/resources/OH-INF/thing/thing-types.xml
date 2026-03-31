@@ -12,9 +12,9 @@
 		<description>A network of DD-WRT compatible devices managed via SSH</description>
 
 		<channels>
-			<channel id="totalClients" typeId="totalClients"/>
-			<channel id="wirelessClients" typeId="wirelessClients"/>
-			<channel id="wiredClients" typeId="wiredClients"/>
+			<channel id="total-clients" typeId="total-clients"/>
+			<channel id="wireless-clients" typeId="wireless-clients"/>
+			<channel id="wired-clients" typeId="wired-clients"/>
 		</channels>
 
 		<config-description>
@@ -62,24 +62,24 @@
 		<channels>
 			<channel id="online" typeId="online"/>
 			<channel id="uptime" typeId="uptime"/>
-			<channel id="cpuLoad" typeId="cpuLoad"/>
-			<channel id="cpuTemp" typeId="cpuTemp"/>
-			<channel id="wanIp" typeId="wanIp"/>
-			<channel id="wanIn" typeId="wanIn"/>
-			<channel id="wanOut" typeId="wanOut"/>
-			<channel id="ifIn" typeId="ifIn"/>
-			<channel id="ifOut" typeId="ifOut"/>
+			<channel id="cpu-load" typeId="cpu-load"/>
+			<channel id="cpu-temp" typeId="cpu-temp"/>
+			<channel id="wan-ip" typeId="wan-ip"/>
+			<channel id="wan-in" typeId="wan-in"/>
+			<channel id="wan-out" typeId="wan-out"/>
+			<channel id="if-in" typeId="if-in"/>
+			<channel id="if-out" typeId="if-out"/>
 			<channel id="reboot" typeId="reboot"/>
-			<channel id="lastWarningEvent" typeId="lastWarningEvent"/>
-			<channel id="lastErrorEvent" typeId="lastErrorEvent"/>
-			<channel id="warningEvents" typeId="warningEvents"/>
-			<channel id="errorEvents" typeId="errorEvents"/>
-			<channel id="lastDhcpEvent" typeId="lastDhcpEvent"/>
-			<channel id="lastWirelessEvent" typeId="lastWirelessEvent"/>
-			<channel id="newWarningEvent" typeId="newWarningEvent"/>
-			<channel id="newErrorEvent" typeId="newErrorEvent"/>
-			<channel id="newDhcpEvent" typeId="newDhcpEvent"/>
-			<channel id="newWirelessEvent" typeId="newWirelessEvent"/>
+			<channel id="last-warning-event" typeId="last-warning-event"/>
+			<channel id="last-error-event" typeId="last-error-event"/>
+			<channel id="warning-events" typeId="warning-events"/>
+			<channel id="error-events" typeId="error-events"/>
+			<channel id="last-dhcp-event" typeId="last-dhcp-event"/>
+			<channel id="last-wireless-event" typeId="last-wireless-event"/>
+			<channel id="new-warning-event" typeId="new-warning-event"/>
+			<channel id="new-error-event" typeId="new-error-event"/>
+			<channel id="new-dhcp-event" typeId="new-dhcp-event"/>
+			<channel id="new-wireless-event" typeId="new-wireless-event"/>
 		</channels>
 
 		<properties>
@@ -159,7 +159,7 @@
 			<channel id="ssid" typeId="ssid"/>
 			<channel id="channel" typeId="channel"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="clientCount" typeId="clientCount"/>
+			<channel id="client-count" typeId="client-count"/>
 			<channel id="assoclist" typeId="assoclist"/>
 		</channels>
 
@@ -179,7 +179,7 @@
 
 	<!-- ==================== Wireless Client ==================== -->
 
-	<thing-type id="wirelessClient">
+	<thing-type id="wireless-client">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
@@ -189,17 +189,17 @@
 
 		<channels>
 			<channel id="online" typeId="online"/>
-			<channel id="macAddress" typeId="macAddress"/>
-			<channel id="hostname" typeId="clientHostname"/>
-			<channel id="ipAddress" typeId="ipAddress"/>
+			<channel id="mac-address" typeId="mac-address"/>
+			<channel id="hostname" typeId="client-hostname"/>
+			<channel id="ip-address" typeId="ip-address"/>
 			<channel id="ap" typeId="ap"/>
-			<channel id="apMac" typeId="apMac"/>
+			<channel id="ap-mac" typeId="ap-mac"/>
 			<channel id="ssid" typeId="ssid"/>
 			<channel id="signal" typeId="signal"/>
 			<channel id="snr" typeId="snr"/>
-			<channel id="rxRate" typeId="rxRate"/>
-			<channel id="txRate" typeId="txRate"/>
-			<channel id="lastSeen" typeId="lastSeen"/>
+			<channel id="rx-rate" typeId="rx-rate"/>
+			<channel id="tx-rate" typeId="tx-rate"/>
+			<channel id="last-seen" typeId="last-seen"/>
 		</channels>
 
 		<config-description>
@@ -213,7 +213,7 @@
 
 	<!-- ==================== Firewall Rule ==================== -->
 
-	<thing-type id="firewallRule">
+	<thing-type id="firewall-rule">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="network"/>
 		</supported-bridge-type-refs>
@@ -255,21 +255,21 @@
 
 	<!-- Network bridge -->
 
-	<channel-type id="totalClients">
+	<channel-type id="total-clients">
 		<item-type>Number</item-type>
 		<label>Total Clients</label>
 		<description>Total number of clients connected across all devices</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wirelessClients">
+	<channel-type id="wireless-clients">
 		<item-type>Number</item-type>
 		<label>Wireless Clients</label>
 		<description>Number of wireless clients connected across all devices</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wiredClients">
+	<channel-type id="wired-clients">
 		<item-type>Number</item-type>
 		<label>Wired Clients</label>
 		<description>Number of wired clients connected across all devices</description>
@@ -278,49 +278,49 @@
 
 	<!-- Device telemetry -->
 
-	<channel-type id="cpuLoad">
+	<channel-type id="cpu-load">
 		<item-type>Number</item-type>
 		<label>CPU Load</label>
 		<description>1-minute load average</description>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
-	<channel-type id="cpuTemp">
+	<channel-type id="cpu-temp">
 		<item-type>Number:Temperature</item-type>
 		<label>CPU Temperature</label>
 		<description>CPU temperature in degrees Celsius</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="wanIp">
+	<channel-type id="wan-ip">
 		<item-type>String</item-type>
 		<label>WAN IP</label>
 		<description>External WAN IP address (only available on gateway devices)</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wanIn">
+	<channel-type id="wan-in">
 		<item-type>Number:DataAmount</item-type>
 		<label>WAN In</label>
 		<description>Total bytes received on the WAN interface (only available on gateway devices)</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="wanOut">
+	<channel-type id="wan-out">
 		<item-type>Number:DataAmount</item-type>
 		<label>WAN Out</label>
 		<description>Total bytes sent on the WAN interface (only available on gateway devices)</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ifIn">
+	<channel-type id="if-in">
 		<item-type>Number:DataAmount</item-type>
 		<label>LAN In</label>
 		<description>Total bytes received on the LAN bridge interface (br0)</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ifOut">
+	<channel-type id="if-out">
 		<item-type>Number:DataAmount</item-type>
 		<label>LAN Out</label>
 		<description>Total bytes sent on the LAN bridge interface (br0)</description>
@@ -362,7 +362,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="clientCount">
+	<channel-type id="client-count">
 		<item-type>Number</item-type>
 		<label>Client Count</label>
 		<description>Number of clients associated with this radio</description>
@@ -378,21 +378,21 @@
 
 	<!-- Wireless Client -->
 
-	<channel-type id="macAddress">
+	<channel-type id="mac-address">
 		<item-type>String</item-type>
 		<label>MAC Address</label>
 		<description>MAC address of the wireless client</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="clientHostname">
+	<channel-type id="client-hostname">
 		<item-type>String</item-type>
 		<label>Hostname</label>
 		<description>Hostname of the wireless client</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ipAddress">
+	<channel-type id="ip-address">
 		<item-type>String</item-type>
 		<label>IP Address</label>
 		<description>IP address of the wireless client</description>
@@ -406,7 +406,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="apMac">
+	<channel-type id="ap-mac">
 		<item-type>String</item-type>
 		<label>AP MAC Address</label>
 		<description>MAC address of the access point the client is associated with</description>
@@ -427,21 +427,21 @@
 		<state readOnly="true" pattern="%d dB"/>
 	</channel-type>
 
-	<channel-type id="rxRate">
+	<channel-type id="rx-rate">
 		<item-type>Number</item-type>
 		<label>RX Rate</label>
 		<description>Receive rate in Mbit/s</description>
 		<state readOnly="true" pattern="%.1f Mbit/s"/>
 	</channel-type>
 
-	<channel-type id="txRate">
+	<channel-type id="tx-rate">
 		<item-type>Number</item-type>
 		<label>TX Rate</label>
 		<description>Transmit rate in Mbit/s</description>
 		<state readOnly="true" pattern="%.1f Mbit/s"/>
 	</channel-type>
 
-	<channel-type id="lastSeen">
+	<channel-type id="last-seen">
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Timestamp when the client was last seen online</description>
@@ -459,67 +459,67 @@
 
 	<!-- Syslog Events (modeled after logreader binding) -->
 
-	<channel-type id="lastWarningEvent">
+	<channel-type id="last-warning-event">
 		<item-type>String</item-type>
 		<label>Last Warning Event</label>
 		<description>Last warning-level syslog line</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastErrorEvent">
+	<channel-type id="last-error-event">
 		<item-type>String</item-type>
 		<label>Last Error Event</label>
 		<description>Last error-level syslog line</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="warningEvents">
+	<channel-type id="warning-events">
 		<item-type>Number</item-type>
 		<label>Warning Events</label>
 		<description>Number of warning-level syslog events since startup</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="errorEvents">
+	<channel-type id="error-events">
 		<item-type>Number</item-type>
 		<label>Error Events</label>
 		<description>Number of error-level syslog events since startup</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastDhcpEvent">
+	<channel-type id="last-dhcp-event">
 		<item-type>String</item-type>
 		<label>Last DHCP Event</label>
 		<description>Last DHCP lease, renewal, or release event</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="lastWirelessEvent">
+	<channel-type id="last-wireless-event">
 		<item-type>String</item-type>
 		<label>Last Wireless Event</label>
 		<description>Last wireless association or deassociation event</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="newWarningEvent">
+	<channel-type id="new-warning-event">
 		<kind>trigger</kind>
 		<label>New Warning Event</label>
 		<description>Fires when a new warning-level syslog event is detected</description>
 	</channel-type>
 
-	<channel-type id="newErrorEvent">
+	<channel-type id="new-error-event">
 		<kind>trigger</kind>
 		<label>New Error Event</label>
 		<description>Fires when a new error-level syslog event is detected</description>
 	</channel-type>
 
-	<channel-type id="newDhcpEvent">
+	<channel-type id="new-dhcp-event">
 		<kind>trigger</kind>
 		<label>New DHCP Event</label>
 		<description>Fires when a DHCP lease, renewal, or release is detected</description>
 	</channel-type>
 
-	<channel-type id="newWirelessEvent">
+	<channel-type id="new-wireless-event">
 		<kind>trigger</kind>
 		<label>New Wireless Event</label>
 		<description>Fires when a wireless association or deassociation is detected</description>

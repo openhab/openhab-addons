@@ -776,8 +776,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
         DDWRTThingUpdater u = updater;
         if (u != null) {
-            u.updateChannel("lastDhcpEvent", new StringType(event.message));
-            u.fireTrigger("newDhcpEvent", event.message);
+            u.updateChannel("last-dhcp-event", new StringType(event.message));
+            u.fireTrigger("new-dhcp-event", event.message);
         }
 
         // Invalidate caches so next periodic refresh picks up full state
@@ -831,8 +831,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
         DDWRTThingUpdater u = updater;
         if (u != null) {
-            u.updateChannel("lastWirelessEvent", new StringType(event.message));
-            u.fireTrigger("newWirelessEvent", event.message);
+            u.updateChannel("last-wireless-event", new StringType(event.message));
+            u.fireTrigger("new-wireless-event", event.message);
         }
 
         // Try to parse AP-STA-CONNECTED/DISCONNECTED and update cache directly
@@ -945,9 +945,9 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
         DDWRTThingUpdater u = updater;
         if (u != null) {
-            u.updateChannel("warningEvents", new DecimalType(warningEventCount));
-            u.updateChannel("lastWarningEvent", new StringType(event.message));
-            u.fireTrigger("newWarningEvent", event.message);
+            u.updateChannel("warning-events", new DecimalType(warningEventCount));
+            u.updateChannel("last-warning-event", new StringType(event.message));
+            u.fireTrigger("new-warning-event", event.message);
         }
     }
 
@@ -958,9 +958,9 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
 
         DDWRTThingUpdater u = updater;
         if (u != null) {
-            u.updateChannel("errorEvents", new DecimalType(errorEventCount));
-            u.updateChannel("lastErrorEvent", new StringType(event.message));
-            u.fireTrigger("newErrorEvent", event.message);
+            u.updateChannel("error-events", new DecimalType(errorEventCount));
+            u.updateChannel("last-error-event", new StringType(event.message));
+            u.fireTrigger("new-error-event", event.message);
         }
     }
 
@@ -1227,15 +1227,15 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             uptimeSinceChanged = false;
         }
         u.updateChannel("online", online ? OnOffType.ON : OnOffType.OFF);
-        u.updateChannel("cpuLoad", new DecimalType(cpuLoad));
-        u.updateChannel("cpuTemp", new QuantityType<>(cpuTemp, SIUnits.CELSIUS));
+        u.updateChannel("cpu-load", new DecimalType(cpuLoad));
+        u.updateChannel("cpu-temp", new QuantityType<>(cpuTemp, SIUnits.CELSIUS));
         if (isGateway()) {
-            u.updateChannel("wanIp", new StringType(wanIp));
-            u.updateChannel("wanIn", new DecimalType(wanIn));
-            u.updateChannel("wanOut", new DecimalType(wanOut));
+            u.updateChannel("wan-ip", new StringType(wanIp));
+            u.updateChannel("wan-in", new DecimalType(wanIn));
+            u.updateChannel("wan-out", new DecimalType(wanOut));
         }
-        u.updateChannel("ifIn", new DecimalType(ifIn));
-        u.updateChannel("ifOut", new DecimalType(ifOut));
+        u.updateChannel("if-in", new DecimalType(ifIn));
+        u.updateChannel("if-out", new DecimalType(ifOut));
     }
 
     // ---- Chipset-specific methods (overridden by subclasses) ----
