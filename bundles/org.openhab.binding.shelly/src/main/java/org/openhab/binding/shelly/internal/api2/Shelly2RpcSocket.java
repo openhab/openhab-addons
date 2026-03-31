@@ -201,8 +201,8 @@ public class Shelly2RpcSocket implements WriteCallback {
         try {
             thing = thingTable.getThing(deviceIp);
         } catch (IllegalArgumentException e) { // unknown thing
-            logger.debug("{}: RPC connection error for {} (unknown/disabled thing? - {}), closing socket", thingName,
-                    deviceIp, e.getMessage(), e);
+            logger.debug("{}: Inbout request from {}, but unknown/disabled thing - {}, closing socket", thingName,
+                    deviceIp, e.getMessage());
             session.close(StatusCode.SHUTDOWN, "Thing not active");
             return;
         }

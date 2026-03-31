@@ -148,7 +148,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             rpcSocket.disconnect();
         }
 
-        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.deviceIp, client, scheduler);
+        rpcSocket = new Shelly2RpcSocket(thingName, thingTable, config.getDeviceIp(), client, scheduler);
         rpcSocket.addMessageHandler(this);
         this.rpcSocket = rpcSocket;
         initialized = true;
@@ -163,7 +163,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void startScan() {
         try {
             if (getProfile().isBlu) {
-                installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway);
+                installScript(SHELLY2_BLU_GWSCRIPT, config.getEnableBluGateway());
             }
         } catch (ShellyApiException e) {
         }
@@ -349,7 +349,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
         try {
             if (profile.alwaysOn && dc.ble != null) {
-                boolean enableBluGateway = config.enableBluGateway;
+                boolean enableBluGateway = config.getEnableBluGateway();
                 logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                         enableBluGateway ? "enabled" : "disabled");
                 if (enableBluGateway) {
@@ -386,7 +386,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void checkSetWsCallback() throws ShellyApiException {
         Shelly2ConfigParms wsConfig = apiRequest(SHELLYRPC_METHOD_WSGETCONFIG, null, Shelly2ConfigParms.class);
-        String url = config.urls.websocketCallback;
+        String url = config.getWebSocketCallback();
         if (!getBool(wsConfig.enable) || !url.equalsIgnoreCase(getString(wsConfig.server))) {
             logger.debug("{}: A battery device was detected without correct callback, fix it", thingName);
             wsConfig.enable = true;
@@ -736,7 +736,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                     getThing().postEvent(ALARM_TYPE_RESTARTED, true);
                     break;
                 case SHELLY2_EVENT_SLEEP:
-                    logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
+                    logger.debug("{}: Device signaled sleep mode", thingName);
                     break;
                 case SHELLY2_EVENT_WIFICONNFAILED:
                     logger.debug("{}: WiFi connect failed, check setup, reason {}", thingName, getInteger(e.reason));

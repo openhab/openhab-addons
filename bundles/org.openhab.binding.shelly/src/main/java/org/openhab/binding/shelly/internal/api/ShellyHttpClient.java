@@ -121,14 +121,15 @@ public class ShellyHttpClient {
 
                 // If call doesn't throw an exception the device is reachable == no timeout
                 if (timeout) {
-                    logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors, timeoutsRecovered,
-                            apiResult.getUrl());
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("{}: API timeout #{}/{} recovered ({})", thingName, timeoutErrors,
+                                timeoutsRecovered, apiResult.getUrl());
+                    }
                     timeoutsRecovered.incrementAndGet();
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth
-                        && !config.credentials.get().password.isBlank()) {
+                if (e.isHttpAccessUnauthorized() && !profile.isGen2 && !basicAuth && !config.getPassword().isBlank()) {
                     logger.debug("{}: Access is unauthorized, auto-activate basic auth", thingName);
                     basicAuth = true;
                     apiResult = innerRequest(HttpMethod.GET, uri, null, "");
@@ -146,7 +147,7 @@ public class ShellyHttpClient {
                 timeout = true;
                 timeoutErrors.incrementAndGet(); // count the retries
                 retries--;
-                if (profile.alwaysOn) {
+                if (profile.alwaysOn && logger.isDebugEnabled()) {
                     logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
                 }
             }
@@ -165,14 +166,14 @@ public class ShellyHttpClient {
     private ShellyApiResult innerRequest(HttpMethod method, String uri, @Nullable Shelly2AuthChallenge auth,
             String data) throws ShellyApiException {
         Request request = null;
-        String url = "http://" + config.deviceIp + uri;
+        String url = config.getDeviceApiUrl() + uri;
         ShellyApiResultBuilder builder = ShellyApiResult.builder(method.toString(), url);
 
         try {
             request = httpClient.newRequest(url).method(method.toString()).timeout(SHELLY_API_TIMEOUT_MS,
                     TimeUnit.MILLISECONDS);
 
-            String password = config.credentials.get().password;
+            String password = config.getPassword();
             if (!uri.equals(SHELLY_URL_DEVINFO) && !password.isBlank()) { // not for /shelly or no password
                                                                           // configured
                 // Add Auth info
@@ -183,7 +184,7 @@ public class ShellyHttpClient {
                     authHeader = formatAuthResponse(uri, buildAuthResponse(uri, auth, SHELLY2_AUTHDEF_USER, password));
                 } else {
                     if (basicAuth) {
-                        String bearer = config.credentials.get().bearer;
+                        String bearer = config.getBearer();
                         authHeader = HTTP_AUTH_TYPE_BASIC + " "
                                 + Base64.getEncoder().encodeToString(bearer.getBytes(StandardCharsets.UTF_8));
                     }
@@ -193,14 +194,18 @@ public class ShellyHttpClient {
                 }
             }
             fillPostData(request, data);
-            logger.trace("{}: HTTP {} {}\n{}\n{}", thingName, method, url, request.getHeaders(), data);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}: HTTP {} {}\n{}\n{}", thingName, method, url, request.getHeaders(), data);
+            }
 
             // Do request and get response
             ContentResponse contentResponse = request.send();
             builder = ShellyApiResult.builder(contentResponse);
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
-            logger.trace("{}: HTTP Response {}: {}\n{}", thingName, contentResponse.getStatus(), response,
-                    contentResponse.getHeaders());
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}: HTTP Response {}: {}\n{}", thingName, contentResponse.getStatus(), response,
+                        contentResponse.getHeaders());
+            }
 
             if (response.contains("\"error\":{")) { // Gen2
                 Shelly2RpcBaseMessage message = gson.fromJson(response, Shelly2RpcBaseMessage.class);
@@ -229,10 +234,10 @@ public class ShellyHttpClient {
             }
         } catch (ExecutionException | InterruptedException | TimeoutException | IllegalArgumentException e) {
             ShellyApiException ex = new ShellyApiException(builder.build(), e);
-            if (!ex.isConnectionError() && !ex.isTimeout()) { // will be handled by the caller
+            if (!ex.isConnectionError() && !ex.isTimeout() && logger.isTraceEnabled()) {
                 logger.trace("{}: API call returned exception", thingName, ex);
             }
-            throw ex;
+            throw ex; // will be handled by the caller
         }
         return builder.build();
     }
