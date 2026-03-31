@@ -229,13 +229,13 @@ public class PanaBlurayHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        setPlayerStatusOffline();
-
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
             this.refreshJob = null;
         }
+
+        setPlayerStatusOffline();
     }
 
     @Override
