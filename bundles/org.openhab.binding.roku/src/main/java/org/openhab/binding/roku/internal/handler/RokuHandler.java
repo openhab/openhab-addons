@@ -139,9 +139,12 @@ public class RokuHandler extends BaseThingHandler {
                 if (thingTypeUID.equals(THING_TYPE_ROKU_TV) || !deviceInfoLoaded) {
                     try {
                         deviceInfo = communicator.getDeviceInfo();
-                        String powerMode = deviceInfo.getPowerMode();
-                        updateState(POWER_STATE, new StringType(powerMode));
-                        updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
+
+                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                            final String powerMode = deviceInfo.getPowerMode();
+                            updateState(POWER_STATE, new StringType(powerMode));
+                            updateState(POWER, OnOffType.from(POWER_ON.equalsIgnoreCase(powerMode)));
+                        }
 
                         if (!deviceInfoLoaded) {
                             thing.setProperty(PROPERTY_MODEL_NAME, deviceInfo.getModelName());
@@ -154,6 +157,10 @@ public class RokuHandler extends BaseThingHandler {
                             deviceInfoLoaded = true;
                         }
                     } catch (RokuHttpException e) {
+                        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+                            updateState(POWER_STATE, new StringType(OFFLINE));
+                        }
+
                         logger.debug("Unable to retrieve Roku device-info.", e);
                     }
                 }
@@ -182,7 +189,7 @@ public class RokuHandler extends BaseThingHandler {
                     tvActive = false;
                 }
             } catch (RokuUnknownHostException e) {
-                logger.debug("Unable to resolve hostname: {}", e.getMessage(), e);
+                logger.debug("Unable to resolve host name: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to resolve host name");
                 return;
             } catch (RokuHttpException e) {
@@ -351,6 +358,10 @@ public class RokuHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+            updateState(POWER_STATE, new StringType(OFFLINE));
+        }
+
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
