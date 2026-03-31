@@ -300,9 +300,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
         if (connector.isConnected()) {
             connector.close();
-            connector.removeEventListener(this);
             logger.debug("closeConnection(): disconnected");
         }
+        connector.removeEventListener(this);
     }
 
     @Override
