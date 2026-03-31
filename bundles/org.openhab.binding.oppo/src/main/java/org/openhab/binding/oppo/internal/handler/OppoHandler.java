@@ -263,8 +263,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             if (command == OnOffType.OFF) {
                                 isPowerOn = false;
                                 isInitialQuery = false;
-                                currentPlayMode = OFF;
-                                updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                                if (!OFF.equals(currentPlayMode)) {
+                                    currentPlayMode = OFF;
+                                    updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                                    clearStatusChannels();
+                                }
                             }
                         }
                         break;
@@ -442,8 +445,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case QPW:
                         updateChannelState(CHANNEL_POWER, updateData);
                         if (OFF.equals(updateData)) {
-                            currentPlayMode = OFF;
-                            updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                            if (!OFF.equals(currentPlayMode)) {
+                                currentPlayMode = OFF;
+                                updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                                clearStatusChannels();
+                            }
                             isPowerOn = false;
                         } else {
                             isPowerOn = true;
@@ -452,8 +458,11 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case UPW:
                         updateChannelState(CHANNEL_POWER, ONE.equals(updateData) ? ON : OFF);
                         if (ZERO.equals(updateData)) {
-                            currentPlayMode = OFF;
-                            updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                            if (!OFF.equals(currentPlayMode)) {
+                                currentPlayMode = OFF;
+                                updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+                                clearStatusChannels();
+                            }
                             isPowerOn = false;
                             isInitialQuery = false;
                         } else {
@@ -502,15 +511,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
                         if (NO_DISC.equals(currentPlayMode) || LOADING.equals(currentPlayMode)
                                 || OPEN.equals(currentPlayMode) || CLOSE.equals(currentPlayMode)
-                                || STOP.equals(currentPlayMode) || OFF.equals(currentPlayMode)
-                                || OFFLINE.equals(currentPlayMode)) {
-                            updateChannelState(CHANNEL_CURRENT_TITLE, ZERO);
-                            updateChannelState(CHANNEL_TOTAL_TITLE, ZERO);
-                            updateChannelState(CHANNEL_CURRENT_CHAPTER, ZERO);
-                            updateChannelState(CHANNEL_TOTAL_CHAPTER, ZERO);
-                            updateChannelState(CHANNEL_TIME_DISPLAY, UNDEF);
-                            updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
-                            updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
+                                || STOP.equals(currentPlayMode)) {
+                            clearStatusChannels();
                         }
                         updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
                         updateState(CHANNEL_CONTROL,
@@ -599,6 +601,19 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 logger.debug("Exception processing event from player: {}", e.getMessage());
             }
         }
+    }
+
+    /**
+     * Clears the status channels
+     */
+    private void clearStatusChannels() {
+        updateChannelState(CHANNEL_CURRENT_TITLE, ZERO);
+        updateChannelState(CHANNEL_TOTAL_TITLE, ZERO);
+        updateChannelState(CHANNEL_CURRENT_CHAPTER, ZERO);
+        updateChannelState(CHANNEL_TOTAL_CHAPTER, ZERO);
+        updateChannelState(CHANNEL_TIME_DISPLAY, UNDEF);
+        updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
+        updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
     }
 
     /**
