@@ -318,6 +318,7 @@
 				<option value="PowerOn">Power On</option>
 				<option value="DisplayOff">Display Off</option>
 				<option value="Ready">Ready</option>
+				<option value="Offline">Offline</option>
 			</options>
 		</state>
 	</channel-type>

@@ -358,10 +358,6 @@ public class RokuHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
-            updateState(POWER_STATE, new StringType(OFFLINE));
-        }
-
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
@@ -372,6 +368,10 @@ public class RokuHandler extends BaseThingHandler {
         if (appListJob != null) {
             appListJob.cancel(true);
             this.appListJob = null;
+        }
+
+        if (thingTypeUID.equals(THING_TYPE_ROKU_TV)) {
+            updateState(POWER_STATE, new StringType(OFFLINE));
         }
     }
 
