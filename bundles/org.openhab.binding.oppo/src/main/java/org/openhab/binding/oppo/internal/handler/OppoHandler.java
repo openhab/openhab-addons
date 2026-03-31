@@ -371,8 +371,10 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
      * Close the connection with the Oppo player
      */
     private synchronized void closeConnection() {
-        currentPlayMode = OFFLINE;
-        updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+        if (!OFFLINE.equals(currentPlayMode)) {
+            currentPlayMode = OFFLINE;
+            updateChannelState(CHANNEL_PLAY_MODE, currentPlayMode);
+        }
 
         if (connector.isConnected()) {
             connector.close();
