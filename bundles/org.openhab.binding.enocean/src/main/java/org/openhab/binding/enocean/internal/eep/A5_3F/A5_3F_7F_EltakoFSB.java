@@ -423,6 +423,14 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage implements StateMachineProvi
     }
 
     @Override
+    public @Nullable BlindState getStateOnStartup(@Nullable BlindState persistedState) {
+        if (persistedState == BlindState.MOVEMENT_POSITION_UP || persistedState == BlindState.MOVEMENT_POSITION_DOWN) {
+            return BlindState.INVALID;
+        }
+        return persistedState;
+    }
+
+    @Override
     public Set<BlindAction> getRequiredCallbackActions(Thing thing) {
         ConfigMode mode = getConfigMode(thing);
         if (mode == null || mode == ConfigMode.LEGACY) {

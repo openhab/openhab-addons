@@ -257,7 +257,7 @@ public class EnOceanBaseActuatorHandler extends EnOceanBaseSensorHandler {
                     STMTransitionConfiguration<?, ?> transConfig = stmEEP.getTransitionConfiguration(getThing());
                     if (transConfig != null) {
                         stm = buildStateMachine(stmEEP, transConfig);
-                        restoreStateMachineState();
+                        restoreStateMachineState(stmEEP);
                     }
                 }
                 return initializeIdForSending();
