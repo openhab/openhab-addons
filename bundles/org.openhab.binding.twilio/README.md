@@ -13,9 +13,9 @@ Typical use cases include:
 
 ## Supported Things
 
-| Thing Type | Description |
-|------------|-------------|
-| `account`  | A Twilio account (bridge). Holds API credentials and shared settings. |
+| Thing Type | Description                                                                             |
+| ---------- | --------------------------------------------------------------------------------------- |
+| `account`  | A Twilio account (bridge). Holds API credentials and shared settings.                   |
 | `phone`    | A Twilio phone number. Sends/receives messages and calls. Requires an `account` bridge. |
 
 ## Discovery
@@ -29,13 +29,13 @@ The account bridge itself must be created manually with your [Twilio Console](ht
 
 ### `account` Bridge Configuration
 
-| Name | Type | Description | Default | Required | Advanced |
-|------|------|-------------|---------|----------|----------|
-| accountSid | text | Twilio Account SID (starts with AC) | N/A | yes | no |
-| authToken | text | Twilio Auth Token | N/A | yes | no |
-| publicUrl | text | Public-facing base URL for webhooks (e.g. `https://my.domain.com`) | N/A | no | yes |
-| autoConfigureWebhooks | boolean | Automatically set webhook URLs on Twilio phone numbers via API | false | no | yes |
-| useCloudWebhook | boolean | Use openHAB Cloud for webhook callbacks (no port forwarding needed) | false | no | yes |
+| Name                  | Type    | Description                                                         | Default | Required | Advanced |
+| --------------------- | ------- | ------------------------------------------------------------------- | ------- | -------- | -------- |
+| accountSid            | text    | Twilio Account SID (starts with AC)                                 | N/A     | yes      | no       |
+| authToken             | text    | Twilio Auth Token                                                   | N/A     | yes      | no       |
+| publicUrl             | text    | Public-facing base URL for webhooks (e.g. `https://my.domain.com`)  | N/A     | no       | yes      |
+| autoConfigureWebhooks | boolean | Automatically set webhook URLs on Twilio phone numbers via API      | true    | no       | yes      |
+| useCloudWebhook       | boolean | Use openHAB Cloud for webhook callbacks (no port forwarding needed) | false   | no       | yes      |
 
 The Account SID and Auth Token can be found in the [Twilio Console](https://console.twilio.com/).
 
@@ -46,12 +46,12 @@ To receive incoming messages and calls, you need **one** of the following:
 
 ### `phone` Thing Configuration
 
-| Name | Type | Description | Default | Required | Advanced |
-|------|------|-------------|---------|----------|----------|
-| phoneNumber | text | Twilio phone number in E.164 format (e.g. +15551234567) | N/A | yes | no |
-| voiceGreeting | text | TwiML template for incoming voice calls | See below | no | yes |
-| gatherResponse | text | TwiML returned after DTMF digits are gathered (fallback) | `<Response><Say>Thank you. Goodbye.</Say></Response>` | no | yes |
-| responseTimeout | integer | Seconds to wait for a rule to respond with TwiML (1-14) | 10 | no | yes |
+| Name            | Type    | Description                                              | Default                                               | Required | Advanced |
+| --------------- | ------- | -------------------------------------------------------- | ----------------------------------------------------- | -------- | -------- |
+| phoneNumber     | text    | Twilio phone number in E.164 format (e.g. +15551234567)  | N/A                                                   | yes      | no       |
+| voiceGreeting   | text    | TwiML template for incoming voice calls                  | See below                                             | no       | yes      |
+| gatherResponse  | text    | TwiML returned after DTMF digits are gathered (fallback) | `<Response><Say>Thank you. Goodbye.</Say></Response>` | no       | yes      |
+| responseTimeout | integer | Seconds to wait for a rule to respond with TwiML (1-14)  | 10                                                    | no       | yes      |
 
 The default `voiceGreeting` includes a `<Gather>` element that collects one DTMF digit:
 
@@ -70,28 +70,28 @@ The `{gatherUrl}` placeholder is automatically replaced with the correct webhook
 
 ### State Channels
 
-| Channel | Type | Description |
-|---------|------|-------------|
-| lastMessageBody | String | Body text of the last received SMS/WhatsApp message |
-| lastMessageFrom | String | Phone number of the last message sender |
-| lastMessageDate | DateTime | Timestamp of the last received message |
-| lastMessageMediaUrl | String | URL of the first media attachment (MMS/WhatsApp) |
-| lastMessageSid | String | Twilio Message SID of the last received message |
-| lastCallFrom | String | Phone number of the last incoming caller |
-| lastCallStatus | String | Status of the last call (ringing, in-progress, completed) |
-| lastCallDate | DateTime | Timestamp of the last incoming call |
-| lastDtmfDigits | String | Last DTMF digits received from a caller |
+| Channel             | Type     | Description                                               |
+| ------------------- | -------- | --------------------------------------------------------- |
+| lastMessageBody     | String   | Body text of the last received SMS/WhatsApp message       |
+| lastMessageFrom     | String   | Phone number of the last message sender                   |
+| lastMessageDate     | DateTime | Timestamp of the last received message                    |
+| lastMessageMediaUrl | String   | URL of the first media attachment (MMS/WhatsApp)          |
+| lastMessageSid      | String   | Twilio Message SID of the last received message           |
+| lastCallFrom        | String   | Phone number of the last incoming caller                  |
+| lastCallStatus      | String   | Status of the last call (ringing, in-progress, completed) |
+| lastCallDate        | DateTime | Timestamp of the last incoming call                       |
+| lastDtmfDigits      | String   | Last DTMF digits received from a caller                   |
 
 ### Trigger Channels
 
-| Channel | Payload | Description |
-|---------|---------|-------------|
-| smsReceived | JSON | Triggered on incoming SMS/MMS |
-| whatsappReceived | JSON | Triggered on incoming WhatsApp message |
-| callReceived | JSON | Triggered on incoming voice call |
-| dtmfReceived | JSON | Triggered when DTMF digits are gathered |
-| messageStatus | JSON | Triggered on message delivery status change |
-| callStatusUpdate | JSON | Triggered on call status change |
+| Channel          | Payload | Description                                 |
+| ---------------- | ------- | ------------------------------------------- |
+| smsReceived      | JSON    | Triggered on incoming SMS/MMS               |
+| whatsappReceived | JSON    | Triggered on incoming WhatsApp message      |
+| callReceived     | JSON    | Triggered on incoming voice call            |
+| dtmfReceived     | JSON    | Triggered when DTMF digits are gathered     |
+| messageStatus    | JSON    | Triggered on message delivery status change |
+| callStatusUpdate | JSON    | Triggered on call status change             |
 
 Trigger channel payloads are JSON objects. Example `smsReceived` payload:
 
@@ -105,32 +105,32 @@ Actions are available on `phone` things under the `twilio` scope.
 
 ### SMS Actions
 
-| Action | Parameters | Description |
-|--------|-----------|-------------|
-| `sendSMS` | `String to, String message` | Send a plain SMS |
+| Action    | Parameters                                   | Description                                                                       |
+| --------- | -------------------------------------------- | --------------------------------------------------------------------------------- |
+| `sendSMS` | `String to, String message`                  | Send a plain SMS                                                                  |
 | `sendSMS` | `String to, String message, String mediaUrl` | Send an MMS with media. `message` is optional (may be `null`) to send media only. |
 
 ### WhatsApp Actions
 
-| Action | Parameters | Description |
-|--------|-----------|-------------|
-| `sendWhatsApp` | `String to, String message` | Send a WhatsApp message |
+| Action         | Parameters                                   | Description                                                                         |
+| -------------- | -------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `sendWhatsApp` | `String to, String message`                  | Send a WhatsApp message                                                             |
 | `sendWhatsApp` | `String to, String message, String mediaUrl` | Send WhatsApp with media. `message` is optional (may be `null`) to send media only. |
 
 ### Voice Actions
 
-| Action | Parameters | Description |
-|--------|-----------|-------------|
-| `makeCall` | `String to, String twiml` | Make a call with raw TwiML |
-| `makeTTSCall` | `String to, String text` | Make a call with text-to-speech |
-| `makeTTSCall` | `String to, String text, String voice` | TTS with voice selection (e.g. "alice", "Polly.Joanna") |
-| `respondWithTwiml` | `String callSid, String twiml` | Respond to an active call with TwiML (see Dynamic Voice below) |
+| Action             | Parameters                             | Description                                                    |
+| ------------------ | -------------------------------------- | -------------------------------------------------------------- |
+| `makeCall`         | `String to, String twiml`              | Make a call with raw TwiML                                     |
+| `makeTTSCall`      | `String to, String text`               | Make a call with text-to-speech                                |
+| `makeTTSCall`      | `String to, String text, String voice` | TTS with voice selection (e.g. "alice", "Polly.Joanna")        |
+| `respondWithTwiml` | `String callSid, String twiml`         | Respond to an active call with TwiML (see Dynamic Voice below) |
 
 ### Media URL Actions
 
-| Action | Parameters | Returns | Description |
-|--------|-----------|---------|-------------|
-| `createItemMediaUrl` | `String itemName` | `String` (URL) | Create a temporary public URL from an openHAB Image item |
+| Action                | Parameters         | Returns        | Description                                                     |
+| --------------------- | ------------------ | -------------- | --------------------------------------------------------------- |
+| `createItemMediaUrl`  | `String itemName`  | `String` (URL) | Create a temporary public URL from an openHAB Image item        |
 | `createProxyMediaUrl` | `String sourceUrl` | `String` (URL) | Create a temporary public URL that proxies a local/internal URL |
 
 These actions create time-limited (5 minute) public URLs for media that Twilio can fetch.
@@ -157,320 +157,6 @@ When an incoming call arrives or DTMF digits are pressed, the binding holds the 
 The `{gatherUrl}` placeholder can be used in your TwiML to create multi-step menus.
 It is automatically replaced with the correct URL for the phone thing's gather endpoint.
 
-### Example: Security Panel IVR
-
-:::: tabs
-
-::: tab JavaScript
-
-```javascript
-rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().then(event => {
-    var payload = JSON.parse(event.receivedEvent);
-    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
-
-    if (payload.from !== '+15559876543' && payload.from !== '+15551112222') {
-        twilioActions.respondWithTwiml(payload.callSid,
-            '<Response><Say>Access denied.</Say></Response>');
-        return;
-    }
-
-    var alarmState = items.AlarmSystem.state;
-    twilioActions.respondWithTwiml(payload.callSid,
-        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-        '<Say>Security panel. Alarm is ' + alarmState + '. ' +
-        'Press 1 to arm. Press 2 to disarm. Press 3 for sensor status. ' +
-        'Press 4 for temperature. Press 9 to repeat.</Say>' +
-        '</Gather><Say>No input. Goodbye.</Say></Response>');
-}).build('Security panel - incoming call');
-
-rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
-    var payload = JSON.parse(event.receivedEvent);
-    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
-
-    switch (payload.digits) {
-        case '1':
-            items.AlarmSystem.sendCommand('ARM');
-            twilioActions.respondWithTwiml(payload.callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Alarm armed. Press 9 for main menu.</Say></Gather></Response>');
-            break;
-        case '2':
-            items.AlarmSystem.sendCommand('DISARM');
-            twilioActions.respondWithTwiml(payload.callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Alarm disarmed. Press 9 for main menu.</Say></Gather></Response>');
-            break;
-        case '3':
-            twilioActions.respondWithTwiml(payload.callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Front door is ' + items.FrontDoor.state + '. ' +
-                'Back door is ' + items.BackDoor.state + '. ' +
-                'Motion sensor is ' + items.MotionSensor.state + '. Press 9 for main menu.</Say>' +
-                '</Gather></Response>');
-            break;
-        case '4':
-            twilioActions.respondWithTwiml(payload.callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Temperature is ' + items.IndoorTemp.state + ' degrees. ' +
-                'Humidity is ' + items.IndoorHumidity.state + ' percent. Press 9 for main menu.</Say>' +
-                '</Gather></Response>');
-            break;
-        case '9':
-            twilioActions.respondWithTwiml(payload.callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Main menu. Alarm is ' + items.AlarmSystem.state + '. ' +
-                'Press 1 to arm. Press 2 to disarm. Press 3 for sensors. Press 4 for temperature.</Say>' +
-                '</Gather></Response>');
-            break;
-        default:
-            twilioActions.respondWithTwiml(payload.callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Invalid option. Press 9 for main menu.</Say></Gather></Response>');
-    }
-}).build('Security panel - DTMF handler');
-```
-
-:::
-
-::: tab DSL
-
-```java
-rule "Handle incoming call - security panel"
-when
-    Channel "twilio:phone:myaccount:myphone:callReceived" triggered
-then
-    val json = receivedEvent.getEvent()
-    val callSid = transform("JSONPATH", "$.callSid", json)
-    val from = transform("JSONPATH", "$.from", json)
-    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
-
-    if (from != "+15559876543" && from != "+15551112222") {
-        actions.respondWithTwiml(callSid,
-            '<Response><Say>Access denied.</Say></Response>')
-        return
-    }
-
-    val alarmState = AlarmSystem.state.toString()
-    actions.respondWithTwiml(callSid,
-        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-        '<Say>Security panel. Alarm is ' + alarmState + '. ' +
-        'Press 1 to arm. Press 2 to disarm. Press 3 for sensor status. ' +
-        'Press 4 for temperature. Press 9 to repeat.</Say>' +
-        '</Gather><Say>No input. Goodbye.</Say></Response>')
-end
-
-rule "Handle DTMF - security panel"
-when
-    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
-then
-    val json = receivedEvent.getEvent()
-    val digits = transform("JSONPATH", "$.digits", json)
-    val callSid = transform("JSONPATH", "$.callSid", json)
-    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
-
-    switch (digits) {
-        case "1": {
-            AlarmSystem.sendCommand("ARM")
-            actions.respondWithTwiml(callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Alarm armed. Press 9 for main menu.</Say></Gather></Response>')
-        }
-        case "2": {
-            AlarmSystem.sendCommand("DISARM")
-            actions.respondWithTwiml(callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Alarm disarmed. Press 9 for main menu.</Say></Gather></Response>')
-        }
-        case "3": {
-            actions.respondWithTwiml(callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Front door is ' + FrontDoor.state.toString() + '. ' +
-                'Back door is ' + BackDoor.state.toString() + '. ' +
-                'Motion sensor is ' + MotionSensor.state.toString() + '. Press 9 for main menu.</Say>' +
-                '</Gather></Response>')
-        }
-        case "4": {
-            actions.respondWithTwiml(callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Temperature is ' + IndoorTemp.state.toString() + ' degrees. ' +
-                'Humidity is ' + IndoorHumidity.state.toString() + ' percent. Press 9 for main menu.</Say>' +
-                '</Gather></Response>')
-        }
-        case "9": {
-            actions.respondWithTwiml(callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Main menu. Alarm is ' + AlarmSystem.state.toString() + '. ' +
-                'Press 1 to arm. Press 2 to disarm. Press 3 for sensors. Press 4 for temperature.</Say>' +
-                '</Gather></Response>')
-        }
-        default: {
-            actions.respondWithTwiml(callSid,
-                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-                '<Say>Invalid option. Press 9 for main menu.</Say></Gather></Response>')
-        }
-    }
-end
-```
-
-:::
-
-::::
-
-### Example: Outgoing Alert Call with Confirmation
-
-:::: tabs
-
-::: tab JavaScript
-
-```javascript
-rules.when().item('SmokeDetector').changed().to('ON').then(event => {
-    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
-    twilioActions.makeCall('+15559876543',
-        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-        '<Say>Emergency! Smoke detected in your home. Press 1 to acknowledge.</Say>' +
-        '</Gather><Say>No response received. We will call again.</Say></Response>');
-}).build('Fire alarm call');
-
-rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
-    var payload = JSON.parse(event.receivedEvent);
-    if (payload.digits === '1') {
-        items.FireAlarmAcknowledged.postUpdate('ON');
-        var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
-        twilioActions.respondWithTwiml(payload.callSid,
-            '<Response><Say>Acknowledged. Stay safe.</Say></Response>');
-    }
-}).build('Fire alarm confirmation');
-```
-
-:::
-
-::: tab DSL
-
-```java
-rule "Fire alarm - call and confirm"
-when
-    Item SmokeDetector changed to ON
-then
-    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
-    actions.makeCall("+15559876543",
-        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-        '<Say>Emergency! Smoke detected in your home. Press 1 to acknowledge.</Say>' +
-        '</Gather><Say>No response received. We will call again.</Say></Response>')
-end
-
-rule "Handle fire alarm confirmation"
-when
-    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
-then
-    val json = receivedEvent.getEvent()
-    val digits = transform("JSONPATH", "$.digits", json)
-    val callSid = transform("JSONPATH", "$.callSid", json)
-    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
-
-    if (digits == "1") {
-        FireAlarmAcknowledged.postUpdate(ON)
-        actions.respondWithTwiml(callSid,
-            '<Response><Say>Acknowledged. Stay safe.</Say></Response>')
-    }
-end
-```
-
-:::
-
-::::
-
-### Example: Query Room Temperatures by Phone
-
-:::: tabs
-
-::: tab JavaScript
-
-```javascript
-rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().then(event => {
-    var payload = JSON.parse(event.receivedEvent);
-    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
-    twilioActions.respondWithTwiml(payload.callSid,
-        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-        '<Say>Press 1 for living room. Press 2 for bedroom. Press 3 for kitchen. Press 4 for outside.</Say>' +
-        '</Gather></Response>');
-}).build('Temperature menu');
-
-rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
-    var payload = JSON.parse(event.receivedEvent);
-    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
-
-    var temps = {
-        '1': 'Living room: ' + items.LivingRoomTemp.state,
-        '2': 'Bedroom: ' + items.BedroomTemp.state,
-        '3': 'Kitchen: ' + items.KitchenTemp.state,
-        '4': 'Outside: ' + items.OutdoorTemp.state
-    };
-
-    var temp = temps[payload.digits];
-    if (temp) {
-        twilioActions.respondWithTwiml(payload.callSid,
-            '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-            '<Say>' + temp + ' degrees. Press another number for a different room, or hang up.</Say>' +
-            '</Gather></Response>');
-    } else {
-        twilioActions.respondWithTwiml(payload.callSid,
-            '<Response><Say>Invalid room. Goodbye.</Say></Response>');
-    }
-}).build('Read temperature');
-```
-
-:::
-
-::: tab DSL
-
-```java
-rule "Temperature menu"
-when
-    Channel "twilio:phone:myaccount:myphone:callReceived" triggered
-then
-    val json = receivedEvent.getEvent()
-    val callSid = transform("JSONPATH", "$.callSid", json)
-    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
-
-    actions.respondWithTwiml(callSid,
-        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-        '<Say>Press 1 for living room. Press 2 for bedroom. Press 3 for kitchen. Press 4 for outside.</Say>' +
-        '</Gather></Response>')
-end
-
-rule "Read temperature"
-when
-    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
-then
-    val json = receivedEvent.getEvent()
-    val digits = transform("JSONPATH", "$.digits", json)
-    val callSid = transform("JSONPATH", "$.callSid", json)
-    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
-
-    var temp = ""
-    switch (digits) {
-        case "1": temp = "Living room: " + LivingRoomTemp.state.toString()
-        case "2": temp = "Bedroom: " + BedroomTemp.state.toString()
-        case "3": temp = "Kitchen: " + KitchenTemp.state.toString()
-        case "4": temp = "Outside: " + OutdoorTemp.state.toString()
-    }
-
-    if (temp != "") {
-        actions.respondWithTwiml(callSid,
-            '<Response><Gather numDigits="1" action="{gatherUrl}">' +
-            '<Say>' + temp + ' degrees. Press another number for a different room, or hang up.</Say>' +
-            '</Gather></Response>')
-    } else {
-        actions.respondWithTwiml(callSid,
-            '<Response><Say>Invalid room. Goodbye.</Say></Response>')
-    }
-end
-```
-
-:::
-
-::::
-
 ### Timeout Behavior
 
 If a rule does not call `respondWithTwiml` within the configured `responseTimeout` (default: 10 seconds), the binding returns the default TwiML from the thing configuration:
@@ -484,7 +170,6 @@ The timeout is configurable per phone thing via the `responseTimeout` advanced p
 ## Webhook Setup
 
 To receive incoming messages and calls, you need to configure webhooks so Twilio can reach your openHAB instance.
-There are three options, from simplest to most advanced.
 
 ### Option 1: openHAB Cloud Webhooks (Recommended)
 
@@ -498,33 +183,40 @@ This eliminates the need for port forwarding, reverse proxies, or a public IP ad
 **Setup:**
 
 1. Enable `useCloudWebhook` on the bridge (set to `true`)
-2. Optionally enable `autoConfigureWebhooks` to have the binding automatically set the webhook URLs on your Twilio phone numbers
-3. If not using auto-configure, copy the webhook URLs from the phone thing properties in the UI and paste them into the [Twilio Console](https://console.twilio.com/)
+2. If not using auto-configure, copy the webhook URLs from the phone thing properties in the UI and paste them into the [Twilio Console](https://console.twilio.com/)
 
 The binding will register cloud webhook URLs (e.g. `https://myopenhab.org/api/hooks/{uuid}`) for each endpoint.
 These URLs are shown in the phone thing properties.
 
-**Note:** Sending MMS or WhatsApp messages with media attachments still requires `publicUrl` to be set, since Twilio needs to download the media from your openHAB instance. Cloud webhooks handle incoming callbacks only.
-
 ```java
-Bridge twilio:account:myaccount "Twilio Account" [ accountSid="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", authToken="your_auth_token", useCloudWebhook=true, autoConfigureWebhooks=true ] {
+Bridge twilio:account:myaccount "Twilio Account" [ accountSid="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", authToken="your_auth_token", useCloudWebhook=true ] {
     Thing phone myphone "My Twilio Number" [ phoneNumber="+15551234567" ]
 }
 ```
+
+### Option 2: Public URL
+
+1. Set the `publicUrl` on the bridge (e.g. `https://my.domain.com`)
+2. The binding will automatically configure the webhook URLs on your Twilio phone numbers via the API
+
+If you disable `autoConfigureWebhooks`, you can manually copy the webhook URLs from the phone thing properties in the UI and paste them into the [Twilio Console](https://console.twilio.com/):
+
+- **Messaging > A Message Comes In**: paste the `smsWebhookUrl` property value
+- **Voice & Fax > A Call Comes In**: paste the `voiceWebhookUrl` property value
 
 ### URL Structure
 
 All webhook and media endpoints are served under `/twilio/callback/` on your openHAB instance.
 If using a reverse proxy, you must forward this entire path prefix.
 
-| Path | Method | Purpose |
-|------|--------|---------|
-| `/twilio/callback/{thingUID}/sms` | POST | Incoming SMS/MMS messages |
-| `/twilio/callback/{thingUID}/whatsapp` | POST | Incoming WhatsApp messages |
-| `/twilio/callback/{thingUID}/voice` | POST | Incoming voice calls |
-| `/twilio/callback/{thingUID}/gather` | POST | DTMF digit gather callbacks |
-| `/twilio/callback/{thingUID}/status` | POST | Message/call status updates |
-| `/twilio/callback/media/{uuid}` | GET | Temporary media serving (for MMS/WhatsApp attachments) |
+| Path                                   | Method | Purpose                                                |
+| -------------------------------------- | ------ | ------------------------------------------------------ |
+| `/twilio/callback/{thingUID}/sms`      | POST   | Incoming SMS/MMS messages                              |
+| `/twilio/callback/{thingUID}/whatsapp` | POST   | Incoming WhatsApp messages                             |
+| `/twilio/callback/{thingUID}/voice`    | POST   | Incoming voice calls                                   |
+| `/twilio/callback/{thingUID}/gather`   | POST   | DTMF digit gather callbacks                            |
+| `/twilio/callback/{thingUID}/status`   | POST   | Message/call status updates                            |
+| `/twilio/callback/media/{uuid}`        | GET    | Temporary media serving (for MMS/WhatsApp attachments) |
 
 The `{thingUID}` is the full thing UID (e.g. `twilio:phone:myaccount:myphone`).
 The `{uuid}` is a randomly generated identifier for temporary media entries.
@@ -536,36 +228,6 @@ https://my.domain.com/twilio/callback/twilio:phone:myaccount:myphone/sms
 https://my.domain.com/twilio/callback/twilio:phone:myaccount:myphone/voice
 https://my.domain.com/twilio/callback/media/550e8400-e29b-41d4-a716-446655440000
 ```
-
-### Reverse Proxy Configuration
-
-If you use a reverse proxy (nginx, Apache, Caddy, etc.), you must forward all requests under `/twilio/callback/` to openHAB.
-
-**nginx example:**
-
-```nginx
-location /twilio/callback/ {
-    proxy_pass http://localhost:8080/twilio/callback/;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
-```
-
-### Option 2: Manual Configuration (Public URL)
-
-1. Set the `publicUrl` on the bridge (e.g. `https://my.domain.com`)
-2. Create a phone thing — the webhook URLs will appear as thing properties in the UI
-3. Copy the URLs and paste them into the [Twilio Console](https://console.twilio.com/) under your phone number's configuration:
-   - **Messaging > A Message Comes In**: paste the `smsWebhookUrl` property value
-   - **Voice & Fax > A Call Comes In**: paste the `voiceWebhookUrl` property value
-
-### Option 3: Auto-Configure (Public URL)
-
-1. Set the `publicUrl` on the bridge
-2. Enable `autoConfigureWebhooks` on the bridge
-3. When a phone thing initializes, it will automatically configure the webhook URLs on the Twilio phone number via the API
 
 ## Full Example
 
@@ -731,38 +393,6 @@ end
 
 ::::
 
-#### Make TTS Call for Critical Alert
-
-:::: tabs
-
-::: tab JavaScript
-
-```javascript
-rules.when().item('SmokeDetector').changed().to('ON').then(event => {
-    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
-    twilioActions.makeTTSCall('+15559876543',
-        'Warning. Smoke has been detected in your home. Please check immediately.');
-}).build('Smoke alarm call');
-```
-
-:::
-
-::: tab DSL
-
-```java
-rule "Smoke alarm"
-when
-    Item SmokeDetector changed to ON
-then
-    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
-    actions.makeTTSCall("+15559876543", "Warning. Smoke has been detected in your home. Please check immediately.")
-end
-```
-
-:::
-
-::::
-
 #### Receive SMS and Reply
 
 :::: tabs
@@ -770,8 +400,13 @@ end
 ::: tab JavaScript
 
 ```javascript
+var ALLOWED_NUMBERS = ['+15559876543', '+15551112222'];
+
 rules.when().channel('twilio:phone:myaccount:myphone:smsReceived').triggered().then(event => {
     var payload = JSON.parse(event.receivedEvent);
+    if (ALLOWED_NUMBERS.indexOf(payload.from) === -1) {
+        return;
+    }
     if (payload.body.toLowerCase().includes('status')) {
         var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
         twilioActions.sendSMS(payload.from,
@@ -792,10 +427,101 @@ then
     val json = receivedEvent.getEvent()
     val body = transform("JSONPATH", "$.body", json)
     val from = transform("JSONPATH", "$.from", json)
+    val allowedNumbers = newArrayList("+15559876543", "+15551112222")
 
+    if (!allowedNumbers.contains(from)) {
+        return
+    }
     if (body.toLowerCase().contains("status")) {
         val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
         actions.sendSMS(from, "All systems normal. Temperature: " + IndoorTemp.state + " F")
+    }
+end
+```
+
+:::
+
+::::
+
+#### SMS Command Menu
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+var ALLOWED_NUMBERS = ['+15559876543', '+15551112222'];
+
+rules.when().channel('twilio:phone:myaccount:myphone:smsReceived').triggered().then(event => {
+    var payload = JSON.parse(event.receivedEvent);
+    if (ALLOWED_NUMBERS.indexOf(payload.from) === -1) {
+        return;
+    }
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+
+    switch (payload.body.trim().toUpperCase()) {
+        case 'STATUS':
+            twilioActions.sendSMS(payload.from,
+                'Alarm: ' + items.AlarmSystem.state +
+                '\nFront door: ' + items.FrontDoor.state +
+                '\nTemp: ' + items.IndoorTemp.state + ' F');
+            break;
+        case 'CAMERA':
+            var mediaUrl = twilioActions.createItemMediaUrl('SecurityCamera');
+            if (mediaUrl !== null) {
+                twilioActions.sendSMS(payload.from, 'Latest snapshot:', mediaUrl);
+            }
+            break;
+        case 'LIGHTS ON':
+            items.AllLights.sendCommand('ON');
+            twilioActions.sendSMS(payload.from, 'All lights turned on.');
+            break;
+        default:
+            twilioActions.sendSMS(payload.from,
+                'Commands: STATUS, CAMERA, LIGHTS ON');
+    }
+}).build('SMS command menu');
+```
+
+:::
+
+::: tab DSL
+
+```java
+rule "SMS command menu"
+when
+    Channel "twilio:phone:myaccount:myphone:smsReceived" triggered
+then
+    val json = receivedEvent.getEvent()
+    val body = transform("JSONPATH", "$.body", json)
+    val from = transform("JSONPATH", "$.from", json)
+    val allowedNumbers = newArrayList("+15559876543", "+15551112222")
+
+    if (!allowedNumbers.contains(from)) {
+        return
+    }
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+
+    switch (body.trim().toUpperCase()) {
+        case "STATUS": {
+            actions.sendSMS(from,
+                "Alarm: " + AlarmSystem.state.toString() +
+                "\nFront door: " + FrontDoor.state.toString() +
+                "\nTemp: " + IndoorTemp.state.toString() + " F")
+        }
+        case "CAMERA": {
+            val mediaUrl = actions.createItemMediaUrl("SecurityCamera")
+            if (mediaUrl !== null) {
+                actions.sendSMS(from, "Latest snapshot:", mediaUrl)
+            }
+        }
+        case "LIGHTS ON": {
+            AllLights.sendCommand(ON)
+            actions.sendSMS(from, "All lights turned on.")
+        }
+        default: {
+            actions.sendSMS(from, "Commands: STATUS, CAMERA, LIGHTS ON")
+        }
     }
 end
 ```
@@ -875,6 +601,38 @@ end
 
 ::::
 
+#### Make TTS Call for Critical Alert
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+rules.when().item('SmokeDetector').changed().to('ON').then(event => {
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+    twilioActions.makeTTSCall('+15559876543',
+        'Warning. Smoke has been detected in your home. Please check immediately.');
+}).build('Smoke alarm call');
+```
+
+:::
+
+::: tab DSL
+
+```java
+rule "Smoke alarm"
+when
+    Item SmokeDetector changed to ON
+then
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+    actions.makeTTSCall("+15559876543", "Warning. Smoke has been detected in your home. Please check immediately.")
+end
+```
+
+:::
+
+::::
+
 #### Outgoing Emergency Call with Confirmation
 
 :::: tabs
@@ -905,6 +663,320 @@ then
         '<Response><Gather numDigits="1" action="{gatherUrl}">' +
         '<Say>Emergency alert from your home. Press 1 to acknowledge. Press 2 to trigger siren.</Say>' +
         '</Gather><Say>No response. Calling again.</Say></Response>')
+end
+```
+
+:::
+
+::::
+
+#### Security Panel IVR
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().then(event => {
+    var payload = JSON.parse(event.receivedEvent);
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+
+    if (payload.from !== '+15559876543' && payload.from !== '+15551112222') {
+        twilioActions.respondWithTwiml(payload.callSid,
+            '<Response><Say>Access denied.</Say></Response>');
+        return;
+    }
+
+    var alarmState = items.AlarmSystem.state;
+    twilioActions.respondWithTwiml(payload.callSid,
+        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+        '<Say>Security panel. Alarm is ' + alarmState + '. ' +
+        'Press 1 to arm. Press 2 to disarm. Press 3 for sensor status. ' +
+        'Press 4 for temperature. Press 9 to repeat.</Say>' +
+        '</Gather><Say>No input. Goodbye.</Say></Response>');
+}).build('Security panel - incoming call');
+
+rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
+    var payload = JSON.parse(event.receivedEvent);
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+
+    switch (payload.digits) {
+        case '1':
+            items.AlarmSystem.sendCommand('ARM');
+            twilioActions.respondWithTwiml(payload.callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Alarm armed. Press 9 for main menu.</Say></Gather></Response>');
+            break;
+        case '2':
+            items.AlarmSystem.sendCommand('DISARM');
+            twilioActions.respondWithTwiml(payload.callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Alarm disarmed. Press 9 for main menu.</Say></Gather></Response>');
+            break;
+        case '3':
+            twilioActions.respondWithTwiml(payload.callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Front door is ' + items.FrontDoor.state + '. ' +
+                'Back door is ' + items.BackDoor.state + '. ' +
+                'Motion sensor is ' + items.MotionSensor.state + '. Press 9 for main menu.</Say>' +
+                '</Gather></Response>');
+            break;
+        case '4':
+            twilioActions.respondWithTwiml(payload.callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Temperature is ' + items.IndoorTemp.state + ' degrees. ' +
+                'Humidity is ' + items.IndoorHumidity.state + ' percent. Press 9 for main menu.</Say>' +
+                '</Gather></Response>');
+            break;
+        case '9':
+            twilioActions.respondWithTwiml(payload.callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Main menu. Alarm is ' + items.AlarmSystem.state + '. ' +
+                'Press 1 to arm. Press 2 to disarm. Press 3 for sensors. Press 4 for temperature.</Say>' +
+                '</Gather></Response>');
+            break;
+        default:
+            twilioActions.respondWithTwiml(payload.callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Invalid option. Press 9 for main menu.</Say></Gather></Response>');
+    }
+}).build('Security panel - DTMF handler');
+```
+
+:::
+
+::: tab DSL
+
+```java
+rule "Handle incoming call - security panel"
+when
+    Channel "twilio:phone:myaccount:myphone:callReceived" triggered
+then
+    val json = receivedEvent.getEvent()
+    val callSid = transform("JSONPATH", "$.callSid", json)
+    val from = transform("JSONPATH", "$.from", json)
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+
+    if (from != "+15559876543" && from != "+15551112222") {
+        actions.respondWithTwiml(callSid,
+            '<Response><Say>Access denied.</Say></Response>')
+        return
+    }
+
+    val alarmState = AlarmSystem.state.toString()
+    actions.respondWithTwiml(callSid,
+        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+        '<Say>Security panel. Alarm is ' + alarmState + '. ' +
+        'Press 1 to arm. Press 2 to disarm. Press 3 for sensor status. ' +
+        'Press 4 for temperature. Press 9 to repeat.</Say>' +
+        '</Gather><Say>No input. Goodbye.</Say></Response>')
+end
+
+rule "Handle DTMF - security panel"
+when
+    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
+then
+    val json = receivedEvent.getEvent()
+    val digits = transform("JSONPATH", "$.digits", json)
+    val callSid = transform("JSONPATH", "$.callSid", json)
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+
+    switch (digits) {
+        case "1": {
+            AlarmSystem.sendCommand("ARM")
+            actions.respondWithTwiml(callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Alarm armed. Press 9 for main menu.</Say></Gather></Response>')
+        }
+        case "2": {
+            AlarmSystem.sendCommand("DISARM")
+            actions.respondWithTwiml(callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Alarm disarmed. Press 9 for main menu.</Say></Gather></Response>')
+        }
+        case "3": {
+            actions.respondWithTwiml(callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Front door is ' + FrontDoor.state.toString() + '. ' +
+                'Back door is ' + BackDoor.state.toString() + '. ' +
+                'Motion sensor is ' + MotionSensor.state.toString() + '. Press 9 for main menu.</Say>' +
+                '</Gather></Response>')
+        }
+        case "4": {
+            actions.respondWithTwiml(callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Temperature is ' + IndoorTemp.state.toString() + ' degrees. ' +
+                'Humidity is ' + IndoorHumidity.state.toString() + ' percent. Press 9 for main menu.</Say>' +
+                '</Gather></Response>')
+        }
+        case "9": {
+            actions.respondWithTwiml(callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Main menu. Alarm is ' + AlarmSystem.state.toString() + '. ' +
+                'Press 1 to arm. Press 2 to disarm. Press 3 for sensors. Press 4 for temperature.</Say>' +
+                '</Gather></Response>')
+        }
+        default: {
+            actions.respondWithTwiml(callSid,
+                '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+                '<Say>Invalid option. Press 9 for main menu.</Say></Gather></Response>')
+        }
+    }
+end
+```
+
+:::
+
+::::
+
+#### Outgoing Alert Call with Confirmation
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+rules.when().item('SmokeDetector').changed().to('ON').then(event => {
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+    twilioActions.makeCall('+15559876543',
+        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+        '<Say>Emergency! Smoke detected in your home. Press 1 to acknowledge.</Say>' +
+        '</Gather><Say>No response received. We will call again.</Say></Response>');
+}).build('Fire alarm call');
+
+rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
+    var payload = JSON.parse(event.receivedEvent);
+    if (payload.digits === '1') {
+        items.FireAlarmAcknowledged.postUpdate('ON');
+        var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+        twilioActions.respondWithTwiml(payload.callSid,
+            '<Response><Say>Acknowledged. Stay safe.</Say></Response>');
+    }
+}).build('Fire alarm confirmation');
+```
+
+:::
+
+::: tab DSL
+
+```java
+rule "Fire alarm - call and confirm"
+when
+    Item SmokeDetector changed to ON
+then
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+    actions.makeCall("+15559876543",
+        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+        '<Say>Emergency! Smoke detected in your home. Press 1 to acknowledge.</Say>' +
+        '</Gather><Say>No response received. We will call again.</Say></Response>')
+end
+
+rule "Handle fire alarm confirmation"
+when
+    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
+then
+    val json = receivedEvent.getEvent()
+    val digits = transform("JSONPATH", "$.digits", json)
+    val callSid = transform("JSONPATH", "$.callSid", json)
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+
+    if (digits == "1") {
+        FireAlarmAcknowledged.postUpdate(ON)
+        actions.respondWithTwiml(callSid,
+            '<Response><Say>Acknowledged. Stay safe.</Say></Response>')
+    }
+end
+```
+
+:::
+
+::::
+
+#### Query Room Temperatures by Phone
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+rules.when().channel('twilio:phone:myaccount:myphone:callReceived').triggered().then(event => {
+    var payload = JSON.parse(event.receivedEvent);
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+    twilioActions.respondWithTwiml(payload.callSid,
+        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+        '<Say>Press 1 for living room. Press 2 for bedroom. Press 3 for kitchen. Press 4 for outside.</Say>' +
+        '</Gather></Response>');
+}).build('Temperature menu');
+
+rules.when().channel('twilio:phone:myaccount:myphone:dtmfReceived').triggered().then(event => {
+    var payload = JSON.parse(event.receivedEvent);
+    var twilioActions = actions.thingActions('twilio', 'twilio:phone:myaccount:myphone');
+
+    var temps = {
+        '1': 'Living room: ' + items.LivingRoomTemp.state,
+        '2': 'Bedroom: ' + items.BedroomTemp.state,
+        '3': 'Kitchen: ' + items.KitchenTemp.state,
+        '4': 'Outside: ' + items.OutdoorTemp.state
+    };
+
+    var temp = temps[payload.digits];
+    if (temp) {
+        twilioActions.respondWithTwiml(payload.callSid,
+            '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+            '<Say>' + temp + ' degrees. Press another number for a different room, or hang up.</Say>' +
+            '</Gather></Response>');
+    } else {
+        twilioActions.respondWithTwiml(payload.callSid,
+            '<Response><Say>Invalid room. Goodbye.</Say></Response>');
+    }
+}).build('Read temperature');
+```
+
+:::
+
+::: tab DSL
+
+```java
+rule "Temperature menu"
+when
+    Channel "twilio:phone:myaccount:myphone:callReceived" triggered
+then
+    val json = receivedEvent.getEvent()
+    val callSid = transform("JSONPATH", "$.callSid", json)
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+
+    actions.respondWithTwiml(callSid,
+        '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+        '<Say>Press 1 for living room. Press 2 for bedroom. Press 3 for kitchen. Press 4 for outside.</Say>' +
+        '</Gather></Response>')
+end
+
+rule "Read temperature"
+when
+    Channel "twilio:phone:myaccount:myphone:dtmfReceived" triggered
+then
+    val json = receivedEvent.getEvent()
+    val digits = transform("JSONPATH", "$.digits", json)
+    val callSid = transform("JSONPATH", "$.callSid", json)
+    val actions = getActions("twilio", "twilio:phone:myaccount:myphone")
+
+    var temp = ""
+    switch (digits) {
+        case "1": temp = "Living room: " + LivingRoomTemp.state.toString()
+        case "2": temp = "Bedroom: " + BedroomTemp.state.toString()
+        case "3": temp = "Kitchen: " + KitchenTemp.state.toString()
+        case "4": temp = "Outside: " + OutdoorTemp.state.toString()
+    }
+
+    if (temp != "") {
+        actions.respondWithTwiml(callSid,
+            '<Response><Gather numDigits="1" action="{gatherUrl}">' +
+            '<Say>' + temp + ' degrees. Press another number for a different room, or hang up.</Say>' +
+            '</Gather></Response>')
+    } else {
+        actions.respondWithTwiml(callSid,
+            '<Response><Say>Invalid room. Goodbye.</Say></Response>')
+    }
 end
 ```
 
