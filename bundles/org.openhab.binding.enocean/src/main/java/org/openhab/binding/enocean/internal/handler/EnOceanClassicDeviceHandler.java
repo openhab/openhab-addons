@@ -33,6 +33,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.CommonTriggerEvents;
@@ -62,8 +63,9 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
     @Nullable
     ScheduledFuture<?> releaseFuture = null;
 
-    public EnOceanClassicDeviceHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry) {
-        super(thing, itemChannelLinkRegistry);
+    public EnOceanClassicDeviceHandler(Thing thing, ItemChannelLinkRegistry itemChannelLinkRegistry,
+            StorageService storageService) {
+        super(thing, itemChannelLinkRegistry, storageService);
     }
 
     @Override
@@ -222,7 +224,6 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             return;
         }
 
-        String channelId = channelUID.getId();
         Channel channel = getThing().getChannel(channelUID);
         if (channel == null) {
             return;
@@ -244,8 +245,8 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
             EEPType localSendType = sendingEEPType;
             if (localSendType != null) {
                 EEP eep = EEPFactory.createEEP(localSendType);
-                if (eep.setSenderId(senderId).setDestinationId(destinationId).convertFromCommand(channelId,
-                        channelTypeId, result, id -> this.getCurrentState(id), channel.getConfiguration()).hasData()) {
+                if (eep.setSenderId(senderId).setDestinationId(destinationId)
+                        .convertFromCommand(thing, channelUID, command, id -> getCurrentState(id), stm).hasData()) {
                     BasePacket press = eep.setSuppressRepeating(getConfiguration().suppressRepeating).getERP1Message();
                     if (press != null) {
                         EnOceanBridgeHandler handler = getBridgeHandler();
@@ -256,9 +257,8 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
                     if (channelConfig.duration > 0) {
                         releaseFuture = scheduler.schedule(() -> {
-                            if (eep.convertFromCommand(channelId, channelTypeId,
-                                    convertToReleasedCommand(lastTriggerEvent), id -> this.getCurrentState(id),
-                                    channel.getConfiguration()).hasData()) {
+                            if (eep.convertFromCommand(thing, channelUID, convertToReleasedCommand(lastTriggerEvent),
+                                    id -> getCurrentState(id), stm).hasData()) {
                                 BasePacket release = eep.getERP1Message();
                                 if (release != null) {
                                     EnOceanBridgeHandler handler = getBridgeHandler();
