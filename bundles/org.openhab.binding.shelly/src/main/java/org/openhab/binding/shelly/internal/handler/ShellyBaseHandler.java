@@ -307,7 +307,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
-        if (profile.alwaysOn || !profile.isInitialized() &&!isThingOnline()) {
+        if (profile.alwaysOn || !profile.isInitialized() && !isThingOnline()) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
