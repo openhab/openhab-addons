@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.upnpcontrol.internal;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,26 +37,32 @@ public class UpnpDynamicStateDescriptionProvider implements DynamicStateDescript
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<ChannelUID, @Nullable StateDescription> descriptions = new ConcurrentHashMap<>();
+    // All access must be guarded by "this"
+    // Don't use ConcurrentHashMap because it doesn't allow null values
+    private final Map<ChannelUID, @Nullable StateDescription> descriptions = new HashMap<>();
 
     public void setDescription(ChannelUID channelUID, @Nullable StateDescription description) {
         logger.debug("Adding state description for channel {}", channelUID);
-        descriptions.put(channelUID, description);
+        synchronized (this) {
+            descriptions.put(channelUID, description);
+        }
     }
 
     public void removeAllDescriptions() {
         logger.debug("Removing all state descriptions");
-        descriptions.clear();
+        synchronized (this) {
+            descriptions.clear();
+        }
     }
 
     @Override
-    public @Nullable StateDescription getStateDescription(Channel channel,
+    public synchronized @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         return descriptions.get(channel.getUID());
     }
 
     @Deactivate
-    public void deactivate() {
+    public synchronized void deactivate() {
         descriptions.clear();
     }
 }

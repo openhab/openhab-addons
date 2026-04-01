@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOParticipant {
 
+    public final static String UNDEFINED_UDN = "undefined";
     private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
     private final UpnpIOService service;
     private final ApiController apiController;
@@ -112,8 +113,9 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     }
 
     @Override
-    public @Nullable String getUDN() {
-        return (String) this.getConfig().get(WemoBindingConstants.UDN);
+    public String getUDN() {
+        String result = (String) this.getConfig().get(WemoBindingConstants.UDN);
+        return result == null ? UNDEFINED_UDN : result;
     }
 
     protected boolean isUpnpDeviceRegistered() {
