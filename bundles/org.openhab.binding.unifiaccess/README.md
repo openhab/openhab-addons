@@ -5,11 +5,11 @@ It connects to your UniFi console using the internal API, providing real-time do
 
 ## Supported Things
 
-| Thing Type             | Description                                                                    |
-|------------------------|--------------------------------------------------------------------------------|
-| `unifiaccess:bridge`   | The UniFi console running UniFi Access. Required to discover and manage things. |
-| `unifiaccess:door`     | A door with lock control, position sensor, and access event triggers.           |
-| `unifiaccess:device`   | An access reader or intercom with access method toggles and doorbell events.    |
+| Thing Type | Description                                                                     |
+|------------|---------------------------------------------------------------------------------|
+| `bridge`   | The UniFi console running UniFi Access. Required to discover and manage things. |
+| `door`     | A door with lock control, position sensor, and access event triggers.           |
+| `device`   | An access reader or intercom with access method toggles and doorbell events.    |
 
 ## Discovery
 
@@ -59,55 +59,56 @@ A local user account is required; cloud-only accounts are not supported.
 ### Door Channels
 
 | Channel ID             | Item Type   | RW | Description                                                                      |
-|------------------------|-------------|----|----------------------------------------------------------------------------------|
-| lock                   | Switch      | RW | Lock state. ON = locked, OFF = unlocked.                                         |
-| position               | Contact     | R  | Door position sensor. OPEN or CLOSED.                                            |
-| last-unlock            | DateTime    | R  | Timestamp of the last unlock event.                                              |
-| last-actor             | String      | R  | Name of the person who last unlocked the door.                                   |
-| lock-rule              | String      | R  | Current lock rule: `schedule`, `custom`, `keep_unlock`, `keep_lock`, `none`, etc.|
-| keep-unlocked          | Switch      | RW | Keep door unlocked indefinitely. ON to activate, OFF to reset.                   |
-| keep-locked            | Switch      | RW | Keep door locked indefinitely. ON to activate, OFF to reset.                     |
-| unlock-minutes         | Number:Time | W  | Unlock for the specified number of minutes.                                      |
-| unlock-until           | DateTime    | W  | Unlock until the specified date/time.                                            |
-| thumbnail              | Image       | R  | Latest door camera thumbnail image.                                              |
-| access-attempt-success | Trigger     | -  | Fires on successful access. JSON payload with actor, credential provider, etc.   |
-| access-attempt-failure | Trigger     | -  | Fires on failed access attempt. JSON payload with actor details.                 |
-| remote-unlock          | Trigger     | -  | Fires when an admin remotely unlocks the door.                                   |
-| doorbell-status        | Trigger     | -  | Fires on doorbell status changes (timeout, answered, rejected, etc.).            |
-| alarm                  | Trigger     | -  | Fires on door alarms (e.g., `force_unlock` when door is forced open while locked). |
-| log-insight            | Trigger     | -  | Fires for insight log events referencing this door.                              |
+| ------------------------ | ------------- | ---- | ---------------------------------------------------------------------------------- |
+| lock                     | Switch        | RW   | Lock state. ON = locked, OFF = unlocked.                                           |
+| position                 | Contact       | R    | Door position sensor. OPEN or CLOSED.                                              |
+| last-unlock              | DateTime      | R    | Timestamp of the last unlock event.                                                |
+| last-actor               | String        | R    | Name of the person who last unlocked the door.                                     |
+| lock-rule                | String        | R    | Current lock rule: `schedule`, `custom`, `keep_unlock`, `keep_lock`, `none`, etc.  |
+| keep-unlocked            | Switch        | RW   | Keep door unlocked indefinitely. ON to activate, OFF to reset.                     |
+| keep-locked              | Switch        | RW   | Keep door locked indefinitely. ON to activate, OFF to reset.                       |
+| unlock-minutes           | Number:Time   | W    | Unlock for the specified number of minutes.                                        |
+| unlock-until             | DateTime      | W    | Unlock until the specified date/time.                                              |
+| thumbnail                | Image         | R    | Latest door camera thumbnail image.                                                |
+| access-attempt-success   | Trigger       | -    | Fires on successful access. JSON payload with actor, credential provider, etc.     |
+| access-attempt-failure   | Trigger       | -    | Fires on failed access attempt. JSON payload with actor details.                   |
+| remote-unlock            | Trigger       | -    | Fires when an admin remotely unlocks the door.                                     |
+| doorbell-status          | Trigger       | -    | Fires on doorbell status changes (timeout, answered, rejected, etc.).              |
+| alarm                    | Trigger       | -    | Fires on door alarms (e.g., `force_unlock` when door is forced open while locked). |
+| log-insight              | Trigger       | -    | Fires for insight log events referencing this door.                                |
+
 
 ### Device Channels
 
 Access method channels are populated for reader/intercom devices (e.g., G6 Entry Pro, UA-LITE, UA-G2-PRO).
 Hub devices are not discovered as device things — their lock and sensor state is on the door thing.
 
-| Channel ID            | Item Type | RW | Description                                                |
-|-----------------------|-----------|----|-------------------------------------------------------------|
-| nfc-enabled           | Switch    | RW | Enable/disable NFC card access.                             |
-| pin-enabled           | Switch    | RW | Enable/disable PIN code access.                             |
-| pin-shuffle           | Switch    | RW | Enable/disable PIN keypad shuffle.                          |
-| face-enabled          | Switch    | RW | Enable/disable face unlock.                                 |
-| mobile-tap-enabled    | Switch    | RW | Enable/disable mobile tap (Bluetooth).                      |
-| mobile-button-enabled | Switch    | RW | Enable/disable mobile app unlock button.                    |
-| mobile-shake-enabled  | Switch    | RW | Enable/disable mobile shake gesture.                        |
-| mobile-wave-enabled   | Switch    | RW | Enable/disable mobile wave gesture.                         |
-| wave-enabled          | Switch    | RW | Enable/disable hand wave gesture.                           |
-| qr-code-enabled       | Switch    | RW | Enable/disable QR code access.                              |
-| touch-pass-enabled    | Switch    | RW | Enable/disable Touch Pass / Apple Pass access.              |
-| face-anti-spoofing    | String    | RW | Face anti-spoofing level: `high`, `medium`, or `no`.        |
-| face-detect-distance  | String    | RW | Face detection distance: `near`, `medium`, or `far`.        |
-| door-sensor           | Contact   | R  | Door position sensor from the associated door.              |
-| doorbell-contact      | Contact   | R  | Doorbell contact state. OPEN during a ring, CLOSED otherwise.|
-| online                | Switch    | R  | Whether the device is currently online.                     |
+| Channel ID            | Item Type | RW | Description                                                   |
+|-----------------------|-----------|----|---------------------------------------------------------------|
+| nfc-enabled           | Switch    | RW | Enable/disable NFC card access.                               |
+| pin-enabled           | Switch    | RW | Enable/disable PIN code access.                               |
+| pin-shuffle           | Switch    | RW | Enable/disable PIN keypad shuffle.                            |
+| face-enabled          | Switch    | RW | Enable/disable face unlock.                                   |
+| mobile-tap-enabled    | Switch    | RW | Enable/disable mobile tap (Bluetooth).                        |
+| mobile-button-enabled | Switch    | RW | Enable/disable mobile app unlock button.                      |
+| mobile-shake-enabled  | Switch    | RW | Enable/disable mobile shake gesture.                          |
+| mobile-wave-enabled   | Switch    | RW | Enable/disable mobile wave gesture.                           |
+| wave-enabled          | Switch    | RW | Enable/disable hand wave gesture.                             |
+| qr-code-enabled       | Switch    | RW | Enable/disable QR code access.                                |
+| touch-pass-enabled    | Switch    | RW | Enable/disable Touch Pass / Apple Pass access.                |
+| face-anti-spoofing    | String    | RW | Face anti-spoofing level: `high`, `medium`, or `no`.          |
+| face-detect-distance  | String    | RW | Face detection distance: `near`, `medium`, or `far`.          |
+| door-sensor           | Contact   | R  | Door position sensor from the associated door.                |
+| doorbell-contact      | Contact   | R  | Doorbell contact state. OPEN during a ring, CLOSED otherwise. |
+| online                | Switch    | R  | Whether the device is currently online.                       |
 
 Device trigger channels:
 
-| Channel ID      | Events / Payload                                            | Description                               |
-|-----------------|-------------------------------------------------------------|-------------------------------------------|
-| doorbell        | `pressed`, `incoming`, `incoming-ren`, `completed`          | Fires on doorbell events (see below).      |
-| doorbell-status | `DOORBELL_TIMED_OUT`, `ADMIN_UNLOCK_SUCCEEDED`, etc.        | Fires on intercom call resolution.         |
-| log-insight     | JSON payload with logKey, eventType, message, result, etc.  | Fires for insight log events on this device.|
+| Channel ID      | Events / Payload                                           | Description                                  |
+|-----------------|------------------------------------------------------------|----------------------------------------------|
+| doorbell        | `pressed`, `incoming`, `incoming-ren`, `completed`         | Fires on doorbell events (see below).        |
+| doorbell-status | `DOORBELL_TIMED_OUT`, `ADMIN_UNLOCK_SUCCEEDED`, etc.       | Fires on intercom call resolution.           |
+| log-insight     | JSON payload with logKey, eventType, message, result, etc. | Fires for insight log events on this device. |
 
 ## Trigger Events — Detailed Reference
 
@@ -115,35 +116,35 @@ Device trigger channels:
 
 When someone presses the doorbell button on a reader/intercom, the following events fire in order on the **device** thing:
 
-| Step | Channel | Event | Description |
-|------|---------|-------|-------------|
-| 1 | `doorbell` | `pressed` | Hardware button physically pressed. Fires immediately. No corresponding "released" event. |
-| 2 | `doorbell` | `incoming` | Intercom call session started. Admins are notified and can answer. |
-| 2a | `doorbell` | `incoming-ren` | (Alternative) Request-to-Enter button pressed instead of regular doorbell. |
-| 3 | `doorbell-contact` | OPEN | Contact channel opens when intercom call is active. |
-| 4 | `doorbell-status` | (reason) | Intercom call resolved. See status events below. |
-| 5 | `doorbell` | `completed` | Intercom call session ended. |
-| 6 | `doorbell-contact` | CLOSED | Contact channel closes when call ends. |
+| Step | Channel            | Event          | Description                                                                               |
+|------|--------------------|----------------|-------------------------------------------------------------------------------------------|
+| 1    | `doorbell`         | `pressed`      | Hardware button physically pressed. Fires immediately. No corresponding "released" event. |
+| 2    | `doorbell`         | `incoming`     | Intercom call session started. Admins are notified and can answer.                        |
+| 2a   | `doorbell`         | `incoming-ren` | (Alternative) Request-to-Enter button pressed instead of regular doorbell.                |
+| 3    | `doorbell-contact` | `OPEN`         | Contact channel opens when intercom call is active.                                       |
+| 4    | `doorbell-status`  | (reason)       | Intercom call resolved. See status events below.                                          |
+| 5    | `doorbell`         | `completed`    | Intercom call session ended.                                                              |
+| 6    | `doorbell-contact` | `CLOSED`       | Contact channel closes when call ends.                                                    |
 
 **`pressed` vs `incoming`**: The `pressed` event is the raw hardware button press — it fires instantly with no follow-up. The `incoming` event is the intercom call session that follows, which has a full lifecycle (incoming → status → completed). Use `pressed` for instant doorbell notifications. Use `incoming`/`completed` to track the intercom call lifecycle.
 
 **`doorbell-status` events** (fired at step 4):
 
-| Event | Description |
-|-------|-------------|
-| `DOORBELL_TIMED_OUT` | No admin answered within the timeout period. |
-| `ADMIN_REJECTED_UNLOCK` | An admin declined to unlock the door. |
-| `ADMIN_UNLOCK_SUCCEEDED` | An admin unlocked the door via the intercom. |
+| Event                       | Description                                               |
+|-----------------------------|-----------------------------------------------------------|
+| `DOORBELL_TIMED_OUT`        | No admin answered within the timeout period.              |
+| `ADMIN_REJECTED_UNLOCK`     | An admin declined to unlock the door.                     |
+| `ADMIN_UNLOCK_SUCCEEDED`    | An admin unlocked the door via the intercom.              |
 | `VISITOR_CANCELED_DOORBELL` | The visitor canceled the doorbell before anyone answered. |
-| `ANSWERED_BY_ANOTHER_ADMIN` | Another admin already answered the call. |
-| `UNKNOWN` | Unrecognized reason code. |
+| `ANSWERED_BY_ANOTHER_ADMIN` | Another admin already answered the call.                  |
+| `UNKNOWN`                   | Unrecognized reason code.                                 |
 
 ### Door Alarm Events
 
 The `alarm` trigger channel fires on the **door** thing when a physical alarm condition is detected:
 
-| Event | Description |
-|-------|-------------|
+| Event          | Description                                                                                                                     |
+|----------------|---------------------------------------------------------------------------------------------------------------------------------|
 | `force_unlock` | Door was physically forced open while locked. This is a security event — the lock was engaged but the door was opened by force. |
 
 The alarm fires as part of the `access.data.v2.location.update` and `access.data.v2.device.update` WebSocket events. It will fire on every location update that includes the alarm, so you may want to debounce in your rule.
@@ -152,12 +153,12 @@ The alarm fires as part of the `access.data.v2.location.update` and `access.data
 
 These fire on the **door** thing when someone uses the door:
 
-| Channel | Payload | When |
-|---------|---------|------|
-| `access-attempt-success` | JSON: `actorName`, `credentialProvider`, `message` | Someone successfully accessed the door (NFC tap, PIN entry, face unlock, remote unlock, etc.) |
-| `access-attempt-failure` | JSON: `actorName`, `credentialProvider`, `message` | An access attempt was denied (invalid card, wrong PIN, etc.) |
-| `remote-unlock` | JSON: `deviceId`, `name`, `fullName`, `level`, `workTimeId` | An admin remotely unlocked the door from the UniFi app or API. |
-| `doorbell-status` | Same events as device doorbell-status | Doorbell status changes associated with this door. |
+| Channel                  | Payload                                                     | When                                                                                          |
+|--------------------------|-------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `access-attempt-success` | JSON: `actorName`, `credentialProvider`, `message`          | Someone successfully accessed the door (NFC tap, PIN entry, face unlock, remote unlock, etc.) |
+| `access-attempt-failure` | JSON: `actorName`, `credentialProvider`, `message`          | An access attempt was denied (invalid card, wrong PIN, etc.)                                  |
+| `remote-unlock`          | JSON: `deviceId`, `name`, `fullName`, `level`, `workTimeId` | An admin remotely unlocked the door from the UniFi app or API.                                |
+| `doorbell-status`        | Same events as device doorbell-status                       | Doorbell status changes associated with this door.                                            |
 
 The `credentialProvider` field in access events indicates how the person authenticated: `NFC`, `PIN_CODE`, `FACE`, `REMOTE_THROUGH_UAH`, `TOUCH_PASS`, etc.
 
@@ -165,10 +166,10 @@ The `credentialProvider` field in access events indicates how the person authent
 
 These fire on the **bridge** thing for all doors/devices:
 
-| Channel | Payload | When |
-|---------|---------|------|
+| Channel       | Payload                                                                                                                  | When                                                                                                                    |
+|---------------|--------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
 | `log-insight` | JSON: `logKey`, `eventType`, `message`, `published`, `result`, `actorName`, `doorId`, `doorName`, `deviceId`, `cameraId` | Any significant access event occurs (unlock, deny, doorbell, etc.). This is a superset — every access event fires here. |
-| `log` | JSON: `type`, `displayMessage`, `result`, `published`, `logKey`, `logCategory`, `actorName` | Raw access log entries. Lower-level than insight logs. |
+| `log`         | JSON: `type`, `displayMessage`, `result`, `published`, `logKey`, `logCategory`, `actorName`                              | Raw access log entries. Lower-level than insight logs.                                                                  |
 
 **Choosing which trigger to use:**
 
