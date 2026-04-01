@@ -13,16 +13,16 @@ It connects to your UniFi console using the internal API, providing real-time do
 
 ## Discovery
 
-1. Add the **Bridge** by entering your UniFi console hostname/IP and a local user account.
-1. Once the Bridge is ONLINE, doors and reader devices are discovered automatically and appear in the Inbox.
+1. Add the `bridge` by entering your UniFi console hostname/IP and a local user account.
+1. Once the `bridge` is ONLINE, `door`s and reader `device`s are discovered automatically and appear in the Inbox.
 1. Approve discovered items or create them manually using `deviceId`.
 
 Hub devices (UA-Hub, UA-Hub-Door-Mini, UA-Ultra, etc.) are not discovered as separate things because the door thing already represents the hub's lock and position sensor functions.
-Only reader/intercom devices (G6 Entry Pro, UA-LITE, UA-G2-PRO, etc.) appear as device things since they control access methods like NFC, face unlock, and PIN.
+Only reader/intercom devices (G6 Entry Pro, UA-LITE, UA-G2-PRO, etc.) appear as `device` things since they control access methods like NFC, face unlock, and PIN.
 
 ## Thing Configuration
 
-### Bridge (`unifiaccess:bridge`)
+### Bridge (`bridge`)
 
 | Parameter       | Type    | Description                                            | Default | Required | Advanced |
 |-----------------|---------|--------------------------------------------------------|---------|----------|----------|
@@ -34,13 +34,13 @@ Only reader/intercom devices (G6 Entry Pro, UA-LITE, UA-G2-PRO, etc.) appear as 
 The binding connects to the UniFi console's internal API (port 443) using session-based authentication.
 A local user account is required; cloud-only accounts are not supported.
 
-### Door (`unifiaccess:door`)
+### Door (`door`)
 
 | Parameter | Type | Description                                              | Required |
 |-----------|------|----------------------------------------------------------|----------|
 | deviceId  | text | Unique door identifier from the UniFi Access controller. | yes      |
 
-### Device (`unifiaccess:device`)
+### Device (`device`)
 
 | Parameter | Type | Description                                                | Required |
 |-----------|------|------------------------------------------------------------|----------|
@@ -58,7 +58,7 @@ A local user account is required; cloud-only accounts are not supported.
 
 ### Door Channels
 
-| Channel ID             | Item Type   | RW | Description                                                                      |
+| Channel ID               | Item Type     | RW   | Description                                                                        |
 | ------------------------ | ------------- | ---- | ---------------------------------------------------------------------------------- |
 | lock                     | Switch        | RW   | Lock state. ON = locked, OFF = unlocked.                                           |
 | position                 | Contact       | R    | Door position sensor. OPEN or CLOSED.                                              |
@@ -216,6 +216,32 @@ Switch      UA_Intercom_Online        "Intercom Online"                      { c
 
 // Bridge
 String      UA_Emergency              "Emergency Status [%s]"                { channel="unifiaccess:bridge:home:emergency-status" }
+```
+
+### Sitemap (`.sitemap`)
+
+```perl
+sitemap unifiaccess label="UniFi Access" {
+    Frame label="Front Door" {
+        Switch    item=UA_FrontDoor_Lock
+        Text      item=UA_FrontDoor_Position
+        Text      item=UA_FrontDoor_LastUnlock
+        Text      item=UA_FrontDoor_LastActor
+        Text      item=UA_FrontDoor_LockRule
+        Switch    item=UA_FrontDoor_KeepUnlocked
+        Switch    item=UA_FrontDoor_KeepLocked
+    }
+    Frame label="Intercom" {
+        Switch    item=UA_Intercom_NFC
+        Switch    item=UA_Intercom_Face
+        Switch    item=UA_Intercom_PIN
+        Switch    item=UA_Intercom_QR
+        Text      item=UA_Intercom_Online
+    }
+    Frame label="System" {
+        Text      item=UA_Emergency
+    }
+}
 ```
 
 ### Rules (JS Scripting)
