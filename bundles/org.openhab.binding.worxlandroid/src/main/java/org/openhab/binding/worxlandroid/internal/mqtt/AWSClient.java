@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.worxlandroid.internal.mqtt;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -56,7 +56,7 @@ public class AWSClient implements MqttClientConnectionEvents {
     private final AWSClientCallbackI clientCallback;
 
     private @Nullable MqttClientConnection mqttClient;
-    private LocalDateTime lastResumed = LocalDateTime.MIN;
+    private @Nullable Instant lastResumed;
     private boolean connected;
 
     public AWSClient(AWSClientCallbackI clientCallback) {
@@ -100,7 +100,7 @@ public class AWSClient implements MqttClientConnectionEvents {
     public void onConnectionResumed(boolean sessionPresent) {
         connected = sessionPresent;
         if (sessionPresent) {
-            lastResumed = LocalDateTime.now();
+            lastResumed = Instant.now();
             logger.debug("last connection resume {}", lastResumed);
             subscriptions.forEach(this::subscribe);
             clientCallback.onAWSConnectionSuccess();
@@ -111,7 +111,7 @@ public class AWSClient implements MqttClientConnectionEvents {
 
     @Override
     public void onConnectionInterrupted(int errorCode) {
-        LocalDateTime interrupted = LocalDateTime.now();
+        Instant interrupted = Instant.now();
         connected = false;
         String error = CRT.awsErrorString(errorCode);
         logger.debug("connection interrupted errorcode: {} : {}", errorCode, error);
@@ -121,7 +121,8 @@ public class AWSClient implements MqttClientConnectionEvents {
              * workaround -> after 20 minutes the connection is interrupted but immediately resumed (~0,5sec).
              * ConnectionBuilder with ".withKeepAliveSecs(300)" doesn't work
              */
-            boolean isBetween = lastResumed.isAfter(interrupted) && lastResumed.isBefore(LocalDateTime.now());
+            Instant resumed = lastResumed;
+            boolean isBetween = resumed != null && resumed.isAfter(interrupted) && resumed.isBefore(Instant.now());
             logger.debug("lastResumed: {}  interrupted: {} in: {}", lastResumed, interrupted, isBetween);
             if (!isBetween) {
                 clientCallback.onAWSConnectionClosed();

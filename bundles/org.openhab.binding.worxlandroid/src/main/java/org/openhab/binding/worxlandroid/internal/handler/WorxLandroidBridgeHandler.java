@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.worxlandroid.internal.handler;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -63,8 +62,8 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
     private String accessToken = "";
     private int retryCount = 3;
     private int retryDelayS = 1;
-    private Optional<ScheduledFuture<?>> tokenRefreshJob = Optional.empty();
-    private Optional<ScheduledFuture<?>> connectionJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> tokenRefreshJob;
+    private @Nullable ScheduledFuture<?> connectionJob;
 
     public WorxLandroidBridgeHandler(Bridge bridge, WorxApiHandler apiHandler, OAuthFactory oAuthFactory) {
         super(bridge);
@@ -97,13 +96,15 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
     private void initiateConnection(String username, String password) {
         stopConnectionJob();
         try {
-            accessToken = oAuthClientService.getAccessTokenByResourceOwnerPasswordCredentials(username, password, "*")
+            String token = oAuthClientService.getAccessTokenByResourceOwnerPasswordCredentials(username, password, "*")
                     .getAccessToken();
+            if (token != null) {
+                accessToken = token;
+                UsersMeResponse user = apiHandler.retrieveMe(accessToken);
+                updateProperties(apiHandler.getDeserializer().toMap(user));
 
-            UsersMeResponse user = apiHandler.retrieveMe(accessToken);
-            updateProperties(apiHandler.getDeserializer().toMap(user));
-
-            updateStatus(ThingStatus.ONLINE);
+                updateStatus(ThingStatus.ONLINE);
+            }
         } catch (IOException | WebApiException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OAuthResponseException e) {
@@ -115,8 +116,7 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
                 if (message != null && message.contains("http code 403")) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/oauth-connection-delayed");
-                    connectionJob = Optional
-                            .of(scheduler.schedule(() -> initiateConnection(username, password), 1, TimeUnit.HOURS));
+                    connectionJob = scheduler.schedule(() -> initiateConnection(username, password), 1, TimeUnit.HOURS);
                     return;
                 }
             }
@@ -140,22 +140,31 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
     }
 
     private void stopTokenRefreshJob() {
-        tokenRefreshJob.ifPresent(job -> job.cancel(true));
-        tokenRefreshJob = Optional.empty();
+        ScheduledFuture<?> job = tokenRefreshJob;
+        if (job != null) {
+            job.cancel(true);
+            tokenRefreshJob = null;
+        }
     }
 
     private void stopConnectionJob() {
-        connectionJob.ifPresent(job -> job.cancel(true));
-        connectionJob = Optional.empty();
+        ScheduledFuture<?> job = connectionJob;
+        if (job != null) {
+            job.cancel(true);
+            connectionJob = null;
+        }
     }
 
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        accessToken = tokenResponse.getAccessToken();
+        String token = tokenResponse.getAccessToken();
+        if (token != null) {
+            accessToken = token;
+        }
     }
 
     public void requestTokenRefresh() {
-        if (tokenRefreshJob.isPresent()) {
+        if (tokenRefreshJob != null) {
             return;
         }
 
@@ -167,10 +176,10 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (OAuthException e) {
             if (retryCount > 0) {
-                tokenRefreshJob = Optional.of(scheduler.schedule(() -> {
+                tokenRefreshJob = scheduler.schedule(() -> {
                     retryCount--;
                     requestTokenRefresh();
-                }, retryDelayS, TimeUnit.MINUTES));
+                }, retryDelayS, TimeUnit.MINUTES);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/oauth-refresh-error");
             }

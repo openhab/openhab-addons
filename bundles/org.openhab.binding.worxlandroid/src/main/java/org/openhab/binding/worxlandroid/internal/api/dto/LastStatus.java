@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,18 @@
  */
 package org.openhab.binding.worxlandroid.internal.api.dto;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 /**
  *
  * @author Gaël L'hopital - Initial contribution
  */
 public class LastStatus {
-    public ZonedDateTime timestamp;
+    public Instant timestamp;
     public Payload payload;
 
     public LastStatus(Payload payload) {
         this.payload = payload;
-        this.timestamp = ZonedDateTime.now();
+        this.timestamp = Instant.now();
     }
 }

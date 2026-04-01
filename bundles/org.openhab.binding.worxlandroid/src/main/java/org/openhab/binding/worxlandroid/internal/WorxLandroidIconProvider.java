@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,14 +95,14 @@ public class WorxLandroidIconProvider implements IconProvider {
         }
 
         if (state != null) {
-            String withState = "%s-%s".formatted(category, state.toString().toLowerCase());
+            String withState = "%s-%s".formatted(category, state.toString().toLowerCase(Locale.ROOT));
             String iconWithState = getResource(withState, false);
             if (!iconWithState.isEmpty()) {
                 icon = iconWithState;
             }
         }
 
-        return new ByteArrayInputStream(icon.getBytes());
+        return new ByteArrayInputStream(icon.getBytes(StandardCharsets.UTF_8));
     }
 
     private String getResource(String iconName, boolean shouldExist) {

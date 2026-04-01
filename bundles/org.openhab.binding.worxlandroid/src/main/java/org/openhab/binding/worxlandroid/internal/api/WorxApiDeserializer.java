@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,7 +57,7 @@ public class WorxApiDeserializer {
                                 .parse(json.getAsJsonPrimitive().getAsString() + "Z", WORX_FORMATTER)
                                 .withZoneSameInstant(timeZoneProvider.getTimeZone()))
                 .registerTypeAdapter(Boolean.class, (JsonDeserializer<Boolean>) (json, type, context) -> {
-                    String value = json.getAsJsonPrimitive().getAsString().toUpperCase();
+                    String value = json.getAsJsonPrimitive().getAsString().toUpperCase(Locale.ROOT);
                     return "1".equals(value);
                 }).create();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -181,7 +181,10 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
 
     @Override
     public void onAccessTokenResponse(AccessTokenResponse tokenResponse) {
-        setAccessToken(tokenResponse.getAccessToken());
+        String token = tokenResponse.getAccessToken();
+        if (token != null) {
+            setAccessToken(token);
+        }
     }
 
     private void setAccessToken(String token) {

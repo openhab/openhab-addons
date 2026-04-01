@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+ * Copyright (c) 2010-2026 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -78,10 +77,9 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
     private static final String EMPTY_PAYLOAD = "{}";
 
     private final Logger logger = LoggerFactory.getLogger(WorxLandroidMowerHandler.class);
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-    private Optional<ScheduledFuture<?>> pollingJob = Optional.empty();
-
-    private Optional<Mower> mower = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
+    private @Nullable Mower mower;
 
     public WorxLandroidMowerHandler(Thing thing, WorxApiDeserializer deserializer) {
         super(thing, deserializer);
@@ -105,11 +103,17 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
 
     @Override
     public void dispose() {
-        refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.empty();
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
+            refreshJob = null;
+        }
 
-        pollingJob.ifPresent(job -> job.cancel(true));
-        pollingJob = Optional.empty();
+        job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
+            pollingJob = null;
+        }
 
         super.dispose();
     }
@@ -121,12 +125,13 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
             ProductItemStatus product = bridgeHandler.retrieveDeviceStatus(config.serialNumber);
             if (product != null) {
                 connectAws(product.mqttEndpoint, product.uuid, product.userId, product.mqttTopics.commandOut);
-                mower = Optional.of(new Mower(this, product));
-                setChannelsAndProperties(mower.get());
-                processStatusMessage(mower.get());
+                Mower newMower = new Mower(this, product);
+                mower = newMower;
+                setChannelsAndProperties(newMower);
+                processStatusMessage(newMower);
 
                 updateStatus(product.online ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
-                startScheduledJobs(bridgeHandler, mower.get(), config);
+                startScheduledJobs(bridgeHandler, newMower, config);
             }
         } catch (WebApiException e) {
             logger.warn("initialize mower: id {} - {}::{}", config.serialNumber, getThing().getLabel(),
@@ -192,7 +197,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
     private void startScheduledJobs(WorxLandroidBridgeHandler bridgeHandler, Mower theMower,
             MowerConfiguration config) {
         if (config.refreshStatusInterval > 0) {
-            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> {
+            refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     ProductItemStatus product = bridgeHandler.retrieveDeviceStatus(config.serialNumber);
                     updateChannelDateTime(GROUP_COMMON, CHANNEL_ONLINE_TIMESTAMP, ZonedDateTime.now());
@@ -201,12 +206,12 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
                 } catch (WebApiException e) {
                     logger.debug("Refreshing Thing {} failed, handler might be OFFLINE", config.serialNumber);
                 }
-            }, 3, config.refreshStatusInterval, TimeUnit.SECONDS));
+            }, 3, config.refreshStatusInterval, TimeUnit.SECONDS);
         }
 
         if (config.pollingInterval > 0) {
-            pollingJob = Optional.of(scheduler.scheduleWithFixedDelay(() -> sendCommand(theMower, EMPTY_PAYLOAD), 5,
-                    config.pollingInterval, TimeUnit.SECONDS));
+            pollingJob = scheduler.scheduleWithFixedDelay(() -> sendCommand(theMower, EMPTY_PAYLOAD), 5,
+                    config.pollingInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -221,33 +226,36 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
 
     @Override
     protected void internalHandleCommand(@Nullable String groupId, String channelId, Command command) {
-        mower.ifPresent(theMower -> {
-            if (GROUP_MULTI_ZONES.equals(groupId)) {
-                handleMultiZonesCommand(theMower, channelId, command);
-            } else if (GROUP_AWS.equals(groupId)) {
-                handleAWSCommand(theMower, channelId);
-            } else if (GROUP_SCHEDULE.equals(groupId)) {
-                handleScheduleCommand(theMower, channelId, Integer.parseInt(command.toString()));
-            } else if (GROUP_ONE_TIME.equals(groupId)) {
-                handleOneTimeSchedule(theMower, channelId, command);
-            } else if (GROUP_COMMON.equals(groupId)) {
-                handleCommonGroup(theMower, channelId, command);
-            } else if (groupId != null && groupId.contains("day")) {
-                setScheduledDays(theMower, groupId, channelId, command);
-                sendCommand(theMower,
-                        theMower.scheduler2Supported()
-                                ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1(),
-                                        theMower.getScheduleArray2())
-                                : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1()));
-            } else if (CHANNEL_DELAY.equals(channelId)) {
-                int delaySec = commandToInt(command, Units.SECOND);
-                sendCommand(theMower, new SetRainDelay(delaySec));
-            } else if (CHANNEL_BLADE_TIME.equals(channelId) || CHANNEL_CHARGE_CYCLES.equals(channelId)) {
-                resetStat(channelId, theMower.getSerialNumber());
-            } else {
-                logger.debug("command for channel {} not supported: {}", channelId, command);
-            }
-        });
+        Mower theMower = mower;
+        if (theMower == null) {
+            return;
+        }
+
+        if (GROUP_MULTI_ZONES.equals(groupId)) {
+            handleMultiZonesCommand(theMower, channelId, command);
+        } else if (GROUP_AWS.equals(groupId)) {
+            handleAWSCommand(theMower, channelId);
+        } else if (GROUP_SCHEDULE.equals(groupId)) {
+            handleScheduleCommand(theMower, channelId, Integer.parseInt(command.toString()));
+        } else if (GROUP_ONE_TIME.equals(groupId)) {
+            handleOneTimeSchedule(theMower, channelId, command);
+        } else if (GROUP_COMMON.equals(groupId)) {
+            handleCommonGroup(theMower, channelId, command);
+        } else if (groupId != null && groupId.contains("day")) {
+            setScheduledDays(theMower, groupId, channelId, command);
+            sendCommand(theMower,
+                    theMower.scheduler2Supported()
+                            ? new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1(),
+                                    theMower.getScheduleArray2())
+                            : new ScheduleDaysCommand(theMower.getTimeExtension(), theMower.getScheduleArray1()));
+        } else if (CHANNEL_DELAY.equals(channelId)) {
+            int delaySec = commandToInt(command, Units.SECOND);
+            sendCommand(theMower, new SetRainDelay(delaySec));
+        } else if (CHANNEL_BLADE_TIME.equals(channelId) || CHANNEL_CHARGE_CYCLES.equals(channelId)) {
+            resetStat(channelId, theMower.getSerialNumber());
+        } else {
+            logger.debug("command for channel {} not supported: {}", channelId, command);
+        }
     }
 
     private void handleAWSCommand(Mower theMower, String channel) {
@@ -552,11 +560,14 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
 
     @Override
     protected void internalHandlePayload(Payload payload) {
-        mower.ifPresent(theMower -> {
-            theMower.setStatus(payload);
-            updateStateCfg(theMower);
-            updateStateDat(theMower);
-        });
+        Mower theMower = mower;
+        if (theMower == null) {
+            return;
+        }
+
+        theMower.setStatus(payload);
+        updateStateCfg(theMower);
+        updateStateDat(theMower);
     }
 
     private boolean resetStat(String channelId, String serialNumber) {
