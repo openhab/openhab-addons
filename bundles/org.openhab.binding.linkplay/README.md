@@ -274,7 +274,7 @@ Groups use a leader/member architecture where one device acts as the group leade
 The binding automatically populates the `join` and `manage` channels with labeled options for all discovered LinkPlay devices, allowing you to select devices by their friendly names to add or remove from a group.
 In the MainUI this allows you to use an Item tied to a `join` or `manage` channel to display an options menu to select from (use the "Command Options" action type) thats automatically populated with available players.
 
-![Group Management UI](doc/group_menu.png)
+<img src="doc/group_menu.jpg" width="300" alt="Group Management UI">
 
 The command options are dynamically updated as:
 
