@@ -418,12 +418,8 @@ public class Shelly2RpcSocket implements WriteCallback {
             cleanup();
         }
 
-        if (inbound) {
-            // Ignore disconnect: Device establishes the socket, sends NotifyxFullStatus and disconnects
-            return;
-        }
         if (handler != null) {
-            handler.onClose(statusCode, reason);
+            handler.onClose(inbound, statusCode, reason);
         }
     }
 

@@ -307,7 +307,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             return false;
         }
 
-        if (profile.alwaysOn || !profile.isInitialized()) {
+        if (profile.alwaysOn || !profile.isInitialized() &&!isThingOnline()) {
             ThingStatusDetail detail = getThingStatusDetail();
             if (detail != ThingStatusDetail.DUTY_CYCLE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
@@ -695,6 +695,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     @Override
     public void setThingOnline() {
         if (!isThingOnline()) {
+            if (!profile.isInitialized()) {
+                // First time wake-up from a battery powered sensor device
+                profile.initFromThingType(thing.getThingTypeUID());
+            }
             updateStatus(ThingStatus.ONLINE);
 
             // request 3 updates in a row (during the first 2+3*3 sec)
