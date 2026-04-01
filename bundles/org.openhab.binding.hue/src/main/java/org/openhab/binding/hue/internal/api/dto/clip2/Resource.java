@@ -1049,7 +1049,7 @@ public class Resource {
     }
 
     /**
-     * Depending on the returned value from getSoftwareUpdateStatus() this method returns a StringType of the status
+     * Depending on the returned value from getUpdateStatus() this method returns a StringType of the status
      * name, or 'UnDefType.NULL' if there is no such status.
      */
     public State getUpdateState() {

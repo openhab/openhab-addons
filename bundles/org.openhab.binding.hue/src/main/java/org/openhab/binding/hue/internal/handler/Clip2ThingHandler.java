@@ -1656,11 +1656,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateUpdateStatus(Resource resource) {
         UpdateStatusV2 updateStatus = resource.getUpdateStatus();
-        String property = updateStatus != null ? updateStatus.toString() : null;
+        if (updateStatus == null) {
+            return;
+        }
+        String property = updateStatus.toString();
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
         ThingStatusInfo status = thing.getStatusInfo();
         if (status.getStatus() == ThingStatus.ONLINE && status.getStatusDetail() == ThingStatusDetail.NONE) {
-            String description = updateStatus != null && updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
+            String description = updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
             thing.setStatusInfo(new ThingStatusInfo(status.getStatus(), status.getStatusDetail(), description));
         }
     }

@@ -28,7 +28,7 @@ public enum UpdateStatusV1 {
     INSTALLING,
     READYTOINSTALL;
 
-    public static UpdateStatusV1 of(@Nullable String value) {
+    public static @Nullable UpdateStatusV1 of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
@@ -36,6 +36,6 @@ public enum UpdateStatusV1 {
                 // fall through
             }
         }
-        return NOUPDATES;
+        return null;
     }
 }

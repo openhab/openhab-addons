@@ -29,7 +29,7 @@ public class BridgeSwUpdateBridge {
     /**
      * Reads the update status of the bridge in v1 protocol form and converts it to v2 protocol form.
      */
-    public UpdateStatusV2 getUpdateStatus() {
+    public @Nullable UpdateStatusV2 getUpdateStatus() {
         return UpdateStatusV2.of(UpdateStatusV1.of(state));
     }
 }

@@ -27,7 +27,7 @@ public enum UpdateStatusV2 {
     READY_TO_INSTALL,
     INSTALLING;
 
-    public static UpdateStatusV2 of(@Nullable String value) {
+    public static @Nullable UpdateStatusV2 of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
@@ -35,10 +35,13 @@ public enum UpdateStatusV2 {
                 // fall through
             }
         }
-        return NO_UPDATE;
+        return null;
     }
 
-    public static UpdateStatusV2 of(UpdateStatusV1 statusV1) {
+    public static @Nullable UpdateStatusV2 of(@Nullable UpdateStatusV1 statusV1) {
+        if (statusV1 == null) {
+            return null;
+        }
         return switch (statusV1) {
             case READYTOINSTALL -> READY_TO_INSTALL;
             case AVAILABLE, DOWNLOADING -> UPDATE_PENDING;

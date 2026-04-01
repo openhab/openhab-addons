@@ -587,7 +587,7 @@ public class Clip2Bridge implements Closeable {
             return new Gson().fromJson(response, BridgeConfig.class);
         } catch (JsonParseException e) {
             LOGGER.debug("getBridgeConfig() error '{}' parsing response", e.getMessage());
-            throw new IOException("getBridgeConfig() error connecting to bridge", e);
+            throw new IOException("getBridgeConfig() parsing response", e);
         }
     }
 

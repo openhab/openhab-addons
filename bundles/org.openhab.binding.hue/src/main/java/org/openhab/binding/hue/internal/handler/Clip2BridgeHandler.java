@@ -562,6 +562,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Called when the connection goes offline. Schedule a reconnection.
      */
     public void onConnectionOffline() {
+        cancelTask(updateUpdateStatusTask, false);
+        updateUpdateStatusTask = null;
         if (assetsLoaded) {
             cancelTask(checkConnectionTask, false);
             checkConnectionTask = scheduler.schedule(() -> checkConnection(), RECONNECT_DELAY_SECONDS,
@@ -573,6 +575,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Called when the connection goes online. Schedule a general state update.
      */
     public void onConnectionOnline() {
+        cancelTask(updateUpdateStatusTask, false);
+        updateUpdateStatusTask = scheduler.scheduleWithFixedDelay(() -> updateUpdateStatus(), 1,
+                POLL_UPDATE_STATUS_INTERVAL_MINUTES, TimeUnit.MINUTES);
         cancelTask(updateOnlineStateTask, false);
         updateOnlineStateTask = scheduler.schedule(() -> updateOnlineState(), 0, TimeUnit.MILLISECONDS);
     }
@@ -677,8 +682,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             if (Objects.nonNull(discoveryService)) {
                 discoveryService.startScan(null);
             }
-            updateUpdateStatusTask = scheduler.scheduleWithFixedDelay(() -> updateUpdateStatus(), 1,
-                    POLL_UPDATE_STATUS_INTERVAL_MINUTES, TimeUnit.MINUTES);
         }
     }
 
@@ -874,11 +877,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * description text (allows displaying a dynamic info badge in Main UI).
      */
     private void updateUpdateStatus(@Nullable UpdateStatusV2 updateStatus) {
-        String property = updateStatus != null ? updateStatus.toString() : null;
+        if (updateStatus == null) {
+            return;
+        }
+        String property = updateStatus.toString();
         thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
         ThingStatusInfo info = thing.getStatusInfo();
         if (info.getStatus() == ThingStatus.ONLINE && info.getStatusDetail() == ThingStatusDetail.NONE) {
-            String description = updateStatus != null && updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
+            String description = updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
             thing.setStatusInfo(new ThingStatusInfo(info.getStatus(), info.getStatusDetail(), description));
         }
         logger.debug("Software update status changed to: {}", property);
