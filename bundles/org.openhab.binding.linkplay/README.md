@@ -55,16 +55,16 @@ The binding provides the following channel groups and channels:
 
 Controls and monitors playback state and volume.
 
-| Channel ID         | Item Type    | Read/Write | Description                                          |
-|--------------------|--------------|------------|------------------------------------------------------|
-| control            | Player       | RW         | Control playback (PLAY, PAUSE, NEXT, PREVIOUS)       |
-| state              | String       | R          | Current playback state (PLAYING, PAUSED, STOPPED, BUFFERING) |
-| position           | Number:Time  | R          | Current track position                               |
-| duration           | Number:Time  | R          | Total track duration                                 |
-| repeat-shuffle-mode| Number       | RW         | Loop, shuffle or single-track mode (-1=Off, 0=Repeat One, 1=Repeat All, 2=Shuffle All) |
-| eq-preset          | String       | R          | Name of the active EQ preset                         |
-| volume             | Dimmer       | RW         | Main volume (0-100%)                                 |
-| mute               | Switch       | RW         | Mutes or unmutes the device                          |
+| Channel ID          | Item Type   | Read/Write | Description                                                                            |
+|---------------------|-------------|------------|----------------------------------------------------------------------------------------|
+| control             | Player      | RW         | Control playback (PLAY, PAUSE, NEXT, PREVIOUS)                                         |
+| state               | String      | R          | Current playback state (PLAYING, PAUSED, STOPPED, BUFFERING)                           |
+| position            | Number:Time | R          | Current track position                                                                 |
+| duration            | Number:Time | R          | Total track duration                                                                   |
+| repeat-shuffle-mode | Number      | RW         | Loop, shuffle or single-track mode (-1=Off, 0=Repeat One, 1=Repeat All, 2=Shuffle All) |
+| eq-preset           | String      | R          | Name of the active EQ preset                                                           |
+| volume              | Dimmer      | RW         | Main volume (0-100%)                                                                   |
+| mute                | Switch      | RW         | Mutes or unmutes the device                                                            |
 
 ### Track Metadata Channel Group
 
