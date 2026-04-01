@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.worxlandroid.internal.api.dto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -127,9 +127,13 @@ public class Payload {
         public int tq;
         public Modules modules;
 
-        public ZonedDateTime getDateTime(ZoneId zoneId) {
-            return dt.isEmpty() || tm.isEmpty() ? null
-                    : ZonedDateTime.of(LocalDateTime.parse("%s %s".formatted(dt, tm), FORMATTER), zoneId);
+        public Instant getDateTime() {
+            if (dt.isEmpty() || tm.isEmpty()) {
+                return null;
+            }
+
+            LocalDateTime localDateTime = LocalDateTime.parse("%s %s".formatted(dt, tm), FORMATTER);
+            return localDateTime.atZone(ZoneOffset.UTC).toInstant();
         }
     }
 

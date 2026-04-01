@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.worxlandroid.internal.handler;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,8 +52,7 @@ public interface ThingHandlerHelper {
     public default @Nullable <T extends BaseBridgeHandler> T getBridgeHandler(@Nullable Bridge bridge,
             Class<T> expected) {
         if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler != null) {
+            if (bridge.getHandler() instanceof BridgeHandler handler) {
                 try {
                     T expectedBridge = expected.cast(handler);
                     if (expectedBridge.getThing().getStatus() == ThingStatus.ONLINE) {
@@ -95,17 +95,21 @@ public interface ThingHandlerHelper {
         updateIfActive(group, channelId, OnOffType.from(value));
     }
 
-    public default void updateChannelDateTime(String group, String channelId, @Nullable ZonedDateTime timestamp) {
-        updateIfActive(group, channelId, timestamp == null ? UnDefType.NULL : new DateTimeType(timestamp));
+    public default void updateChannelDateTime(String group, String channelId, Instant timestamp) {
+        updateIfActive(group, channelId, new DateTimeType(timestamp));
+    }
+
+    public default void updateChannelDateTime(String group, String channelId, ZonedDateTime timestamp) {
+        updateIfActive(group, channelId, new DateTimeType(timestamp));
     }
 
     public default void updateChannelString(String group, String channelId, @Nullable String value) {
         updateIfActive(group, channelId, value == null || value.isEmpty() ? UnDefType.NULL : new StringType(value));
     }
 
-    public default void updateChannelEnum(String group, String channelId, @Nullable Enum<?> value) {
-        String name = value != null ? value.name() : null;
-        updateChannelString(group, channelId, name == null || "UNKNOWN".equals(name) ? null : name);
+    public default void updateChannelEnum(String group, String channelId, Enum<?> value) {
+        String name = value.name();
+        updateChannelString(group, channelId, "UNKNOWN".equals(name) ? null : name);
     }
 
     public default void updateChannelDecimal(String group, String channelId, @Nullable Number value) {

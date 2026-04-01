@@ -27,6 +27,7 @@ import org.openhab.binding.worxlandroid.internal.handler.WorxLandroidBridgeHandl
 import org.openhab.binding.worxlandroid.internal.handler.WorxLandroidMowerHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -54,12 +55,14 @@ public class WorxLandroidHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final OAuthFactory oAuthFactory;
     private final WorxApiHandler worxApiHandler;
+    private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public WorxLandroidHandlerFactory(final @Reference OAuthFactory oAuthFactory,
-            final @Reference WorxApiHandler worxApiHandler) {
+            final @Reference WorxApiHandler worxApiHandler, final @Reference TimeZoneProvider timeZoneProvider) {
         this.oAuthFactory = oAuthFactory;
         this.worxApiHandler = worxApiHandler;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -80,7 +83,7 @@ public class WorxLandroidHandlerFactory extends BaseThingHandlerFactory {
 
             return bridgeHandler;
         } else if (THING_TYPE_MOWER.equals(thingTypeUID)) {
-            return new WorxLandroidMowerHandler(thing, worxApiHandler.getDeserializer());
+            return new WorxLandroidMowerHandler(thing, worxApiHandler.getDeserializer(), timeZoneProvider);
         }
         return null;
     }

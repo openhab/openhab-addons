@@ -14,6 +14,7 @@ package org.openhab.binding.worxlandroid.internal.handler;
 
 import static org.openhab.binding.worxlandroid.internal.WorxLandroidBindingConstants.*;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -49,6 +51,7 @@ import org.openhab.binding.worxlandroid.internal.codes.WorxLandroidStatusCodes;
 import org.openhab.binding.worxlandroid.internal.config.MowerConfiguration;
 import org.openhab.binding.worxlandroid.internal.vo.Mower;
 import org.openhab.binding.worxlandroid.internal.vo.ScheduledDay;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -77,12 +80,14 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
     private static final String EMPTY_PAYLOAD = "{}";
 
     private final Logger logger = LoggerFactory.getLogger(WorxLandroidMowerHandler.class);
+    private final TimeZoneProvider timeZoneProvider;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable Mower mower;
 
-    public WorxLandroidMowerHandler(Thing thing, WorxApiDeserializer deserializer) {
+    public WorxLandroidMowerHandler(Thing thing, WorxApiDeserializer deserializer, TimeZoneProvider timeZoneProvider) {
         super(thing, deserializer);
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -172,7 +177,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
 
         if (!mower.scheduler2Supported()) { // Scheduler 2 channels only when supported version
             EnumSet.allOf(WorxLandroidDayCodes.class).stream()
-                    .map(dayCode -> "%s2".formatted(dayCode.getDescription().toLowerCase()))
+                    .map(dayCode -> "%s2".formatted(dayCode.getDescription().toLowerCase(Locale.ROOT)))
                     .forEach(groupName -> toRemove.addAll(getChannelUIDs(groupName,
                             Set.of(CHANNEL_ENABLE, CHANNEL_DURATION, CHANNEL_EDGECUT, CHANNEL_TIME))));
         }
@@ -200,7 +205,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
             refreshJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     ProductItemStatus product = bridgeHandler.retrieveDeviceStatus(config.serialNumber);
-                    updateChannelDateTime(GROUP_COMMON, CHANNEL_ONLINE_TIMESTAMP, ZonedDateTime.now());
+                    updateChannelDateTime(GROUP_COMMON, CHANNEL_ONLINE_TIMESTAMP, Instant.now());
                     updateChannelOnOff(GROUP_COMMON, CHANNEL_ONLINE, product != null && product.online);
                     updateStatus(product != null ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
                 } catch (WebApiException e) {
@@ -364,7 +369,8 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
      */
     private void setScheduledDays(Mower theMower, String groupId, String channelId, Command command) {
         int scDaysSlot = groupId.endsWith("2") ? 2 : 1;
-        WorxLandroidDayCodes dayCodeUpdated = WorxLandroidDayCodes.valueOf(groupId.replace("2", "").toUpperCase());
+        WorxLandroidDayCodes dayCodeUpdated = WorxLandroidDayCodes
+                .valueOf(groupId.replace("2", "").toUpperCase(Locale.ROOT));
 
         ScheduledDay scheduledDayUpdated = theMower.getScheduledDay(scDaysSlot, dayCodeUpdated);
         if (scheduledDayUpdated == null) {
@@ -375,8 +381,7 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
             scheduledDayUpdated.setEnable(OnOffType.ON.equals(command));
         } else if (CHANNEL_TIME.equals(channelId)) {
             if (command instanceof DateTimeType dateTime) {
-                ZonedDateTime zdt = dateTime.getZonedDateTime();
-                scheduledDayUpdated.setStartTime(zdt);
+                scheduledDayUpdated.setStartTime(dateTime.getInstant());
             } else if (command instanceof StringType stringType) {
                 scheduledDayUpdated.setStartTime(stringType.toString());
             } else {
@@ -518,23 +523,23 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
                 return;
             }
 
-            String groupName = "%s%s".formatted(dayCode.getDescription().toLowerCase(),
+            String groupName = "%s%s".formatted(dayCode.getDescription().toLowerCase(Locale.ROOT),
                     scDSlot == 1 ? "" : String.valueOf(scDSlot));
 
             updateChannelOnOff(groupName, CHANNEL_ENABLE, scheduledDay.isEnabled());
             updateChannelOnOff(groupName, CHANNEL_EDGECUT, scheduledDay.isEdgecut());
             updateChannelQuantity(groupName, CHANNEL_DURATION, scheduledDay.getDuration(), Units.MINUTE);
 
+            ZonedDateTime now = ZonedDateTime.now(timeZoneProvider.getTimeZone());
             if (scheduledDay.isEnabled()) {
-                ZonedDateTime scheduleStart = ZonedDateTime.now().truncatedTo(ChronoUnit.MINUTES)
-                        .with(scheduledDay.getStartTime());
+                ZonedDateTime scheduleStart = now.truncatedTo(ChronoUnit.MINUTES).with(scheduledDay.getStartTime());
                 scheduleStart = ZonedDateTime.from(dayCode.dayOfWeek.adjustInto(scheduleStart));
                 updateChannelDateTime(groupName, CHANNEL_TIME, scheduleStart);
                 ZonedDateTime scheduleEnd = scheduleStart.plusMinutes(scheduledDay.getDuration());
-                if (scheduleStart.isBefore(ZonedDateTime.now())) {
+                if (scheduleStart.isBefore(now)) {
                     scheduleStart = scheduleStart.plusDays(7);
                 }
-                if (scheduleEnd.isBefore(ZonedDateTime.now())) {
+                if (scheduleEnd.isBefore(now)) {
                     scheduleEnd = scheduleEnd.plusDays(7);
                 }
 

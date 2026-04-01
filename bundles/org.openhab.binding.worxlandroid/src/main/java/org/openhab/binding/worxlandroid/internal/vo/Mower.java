@@ -400,7 +400,7 @@ public class Mower {
     }
 
     public ZonedDateTime getLastUpdate() {
-        return getPayloadCfg().getDateTime(product.timeZone);
+        return getPayloadCfg().getDateTime().atZone(product.timeZone);
     }
 
     public Optional<Schedule> getSchedule() {

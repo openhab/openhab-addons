@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.worxlandroid.internal.api.dto;
 
+import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -58,10 +58,10 @@ public class ProductItemStatus {
         public String iccid;
         public String simStatus;
         public boolean pendingActivation;
-        public ZonedDateTime contractStartsAt;
-        public ZonedDateTime contractEndsAt;
-        public ZonedDateTime createdAt;
-        public ZonedDateTime updatedAt;
+        public Instant contractStartsAt;
+        public Instant contractEndsAt;
+        public Instant createdAt;
+        public Instant updatedAt;
     }
 
     public class AutoSchedule {
@@ -116,13 +116,13 @@ public class ProductItemStatus {
 
     public long bladeWorkTime;
     public long bladeWorkTimeReset;
-    public ZonedDateTime bladeWorkTimeResetAt;
+    public Instant bladeWorkTimeResetAt;
 
     public int batteryChargeCycles;
     public int batteryChargeCyclesReset;
-    public ZonedDateTime batteryChargeCyclesResetAt;
+    public Instant batteryChargeCyclesResetAt;
 
-    public ZonedDateTime createdAt;
-    public ZonedDateTime updatedAt;
+    public Instant createdAt;
+    public Instant updatedAt;
     public LastStatus lastStatus;
 }

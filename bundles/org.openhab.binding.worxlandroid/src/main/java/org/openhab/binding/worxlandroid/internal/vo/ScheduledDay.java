@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.worxlandroid.internal.vo;
 
+import java.time.Instant;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -26,10 +27,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ScheduledDay {
-    public static final ScheduledDay BLANK = new ScheduledDay("00:00", 0, false);
-
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     private static final int DEFAULT_DURATION = 15;
+
+    public static final ScheduledDay BLANK = new ScheduledDay("00:00", 0, false);
 
     private LocalTime startTime = LocalTime.MIN;
     private boolean edgecut;
@@ -50,8 +51,8 @@ public class ScheduledDay {
         startTime = LocalTime.parse(hhMm);
     }
 
-    public void setStartTime(ZonedDateTime zdt) {
-        startTime = zdt.toLocalTime();
+    public void setStartTime(Instant instant) {
+        startTime = instant.atZone(ZoneOffset.UTC).toLocalTime();
     }
 
     public int getDuration() {

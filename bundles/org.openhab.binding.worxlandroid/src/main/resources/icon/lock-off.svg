@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg enable-background="new 0 0 64 64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
- <path d="m9 25v-5c0-5.52 4.48-10 10-10s10 4.48 10 10v12.73" fill="none" stroke="#b4b4b4" stroke-miterlimit="10" stroke-width="4"/>
- <path d="m23.5 29.5h29v25h-29z" fill="#f8cf99"/>
- <path d="m52 30v24h-28v-24h28m1-1h-30v26h30v-26z" fill="#cb9d61"/>
+<svg height="32" width="32" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+   <path d="M9 25v-5c0-5.52 4.48-10 10-10s10 4.48 10 10v12.73" fill="none" stroke="#b4b4b4" stroke-miterlimit="10"
+      stroke-width="4" />
+   <path d="M23.5 29.5h29v25h-29z" fill="#f8cf99" />
+   <path d="M52 30v24H24V30h28m1-1H23v26h30V29z" fill="#cb9d61" />
 </svg>
