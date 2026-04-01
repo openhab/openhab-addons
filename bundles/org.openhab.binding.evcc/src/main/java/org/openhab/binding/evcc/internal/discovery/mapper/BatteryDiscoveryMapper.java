@@ -62,10 +62,11 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
     }
 
     private Optional<JsonArray> getBatteryArray(JsonObject state) {
-        return Optional.ofNullable(state.get(JSON_KEY_BATTERY)).map(battElement -> battElement.isJsonArray()
-                // for up to version 0.300.0
-                ? (JsonArray) battElement
-                // for version 0.300.0+
-                : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES));
+        return Optional.ofNullable(state.get(JSON_KEY_BATTERY)).filter(battElement -> !battElement.isJsonNull())
+                .map(battElement -> battElement.isJsonArray()
+                        // for up to version 0.300.0
+                        ? (JsonArray) battElement
+                        // for version 0.300.0+
+                        : ((JsonObject) battElement).getAsJsonArray(JSON_KEY_DEVICES));
     }
 }
