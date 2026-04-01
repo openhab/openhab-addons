@@ -8,5 +8,6 @@
 	<description>Integrates Ubiquiti UniFi Access door access control systems, providing real-time door
 		events, lock
 		control, and access method management.</description>
+	<connection>local</connection>
 
 </addon:addon>

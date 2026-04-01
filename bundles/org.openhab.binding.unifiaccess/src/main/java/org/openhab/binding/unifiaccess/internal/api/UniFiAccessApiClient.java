@@ -744,7 +744,8 @@ public final class UniFiAccessApiClient implements Closeable {
         ContentResponse resp = execGet(thumbnailPath);
         ensure2xx(resp, "getDoorThumbnail");
         Image image = new Image();
-        image.mediaType = resp.getMediaType();
+        String mediaType = resp.getMediaType();
+        image.mediaType = mediaType != null ? mediaType : "application/octet-stream";
         image.data = resp.getContent();
         return image;
     }

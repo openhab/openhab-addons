@@ -77,7 +77,6 @@ A local user account is required; cloud-only accounts are not supported.
 | alarm                    | Trigger       | -    | Fires on door alarms (e.g., `force_unlock` when door is forced open while locked). |
 | log-insight              | Trigger       | -    | Fires for insight log events referencing this door.                                |
 
-
 ### Device Channels
 
 Access method channels are populated for reader/intercom devices (e.g., G6 Entry Pro, UA-LITE, UA-G2-PRO).

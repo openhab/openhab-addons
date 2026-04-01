@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifiaccess.internal.api.UniFiAccessApiClient;
 import org.openhab.binding.unifiaccess.internal.dto.Device;
 import org.openhab.binding.unifiaccess.internal.dto.Door;
+import org.openhab.binding.unifiaccess.internal.dto.UniFiAccessApiException;
 import org.openhab.binding.unifiaccess.internal.handler.UnifiAccessBridgeHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -68,7 +69,7 @@ public class UnifiAccessDiscoveryService extends AbstractThingHandlerDiscoverySe
             discoverDoors(doors);
             List<Device> devices = client.getDevices();
             discoverDevices(devices);
-        } catch (Exception e) {
+        } catch (UniFiAccessApiException e) {
             logger.debug("Error discovering doors: {}", e.getMessage());
         }
     }

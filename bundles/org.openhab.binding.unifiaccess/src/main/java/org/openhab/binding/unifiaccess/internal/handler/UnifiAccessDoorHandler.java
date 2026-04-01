@@ -34,10 +34,13 @@ import org.openhab.binding.unifiaccess.internal.dto.Notification.LocationUpdateV
 import org.openhab.binding.unifiaccess.internal.dto.Notification.RemoteViewChangeData;
 import org.openhab.binding.unifiaccess.internal.dto.UniFiAccessApiException;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -136,7 +139,15 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
                     }
                     break;
                 case UnifiAccessBindingConstants.CHANNEL_UNLOCK_MINUTES: {
-                    int minutes = Integer.parseInt(command.toString());
+                    int minutes;
+                    if (command instanceof QuantityType<?> qty) {
+                        QuantityType<?> inMinutes = qty.toUnit(Units.MINUTE);
+                        minutes = inMinutes != null ? inMinutes.intValue() : qty.intValue();
+                    } else if (command instanceof DecimalType decimal) {
+                        minutes = decimal.intValue();
+                    } else {
+                        minutes = Integer.parseInt(command.toString());
+                    }
                     if (minutes > 0) {
                         api.unlockForMinutes(getHubDeviceId(), minutes);
                     } else {
