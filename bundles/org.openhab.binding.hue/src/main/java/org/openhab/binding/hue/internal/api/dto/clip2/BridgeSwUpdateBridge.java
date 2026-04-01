@@ -14,24 +14,22 @@ package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV1;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 
 /**
- * A 'special' DTO for bridge discovery to read the configuration from a bridge using the v1 API.
+ * DTO for a v1 protocol bridge configuration response's software update bridge part.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class BridgeConfig {
-    private @Nullable String swversion;
-    private @Nullable BridgeSwUpdate swupdate2;
+public class BridgeSwUpdateBridge {
+    private @Nullable String state;
 
-    public @Nullable String getSoftwareVersion() {
-        return swversion;
-    }
-
-    public @Nullable UpdateStatusV2 getUpdateStatus() {
-        return (swupdate2 instanceof BridgeSwUpdate update)
-                && (update.getBridge() instanceof BridgeSwUpdateBridge bridge) ? bridge.getUpdateStatus() : null;
+    /**
+     * Reads the update status of the bridge in v1 protocol form and converts it to v2 protocol form.
+     */
+    public UpdateStatusV2 getUpdateStatus() {
+        return UpdateStatusV2.of(UpdateStatusV1.of(state));
     }
 }

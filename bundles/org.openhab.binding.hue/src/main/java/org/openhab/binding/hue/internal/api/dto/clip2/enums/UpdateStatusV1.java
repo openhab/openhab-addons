@@ -16,18 +16,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for device software update status.
+ * Enum for bridge v1 software update status values.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum SoftwareUpdateStatusType {
-    NO_UPDATE,
-    UPDATE_PENDING,
-    READY_TO_INSTALL,
-    INSTALLING;
+public enum UpdateStatusV1 {
+    NOUPDATES,
+    AVAILABLE,
+    DOWNLOADING,
+    INSTALLING,
+    READYTOINSTALL;
 
-    public static SoftwareUpdateStatusType of(@Nullable String value) {
+    public static UpdateStatusV1 of(@Nullable String value) {
         if (value != null) {
             try {
                 return valueOf(value.toUpperCase());
@@ -35,6 +36,6 @@ public enum SoftwareUpdateStatusType {
                 // fall through
             }
         }
-        return NO_UPDATE;
+        return NOUPDATES;
     }
 }

@@ -61,6 +61,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoundValue;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2ThingConfig;
@@ -86,6 +87,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -804,13 +806,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 putResourceToCache(resource);
                 switch (resource.getType()) {
                     case DEVICE_SOFTWARE_UPDATE:
-                        State softwareUpdateState = resource.getSoftwareUpdateState();
-                        if (softwareUpdateState != UnDefType.NULL) {
-                            String fwState = softwareUpdateState.toString().replaceAll("_", " ");
-                            fwState = fwState.isEmpty() ? "?"
-                                    : Character.toUpperCase(fwState.charAt(0)) + fwState.substring(1).toLowerCase();
-                            thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, fwState);
-                        }
+                        updateUpdateStatus(resource);
                         break;
                     case LIGHT:
                         if (!updateLightPropertiesDone) {
@@ -1651,6 +1647,21 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 logger.debug("{} -> updateEquipmentTag({})", resourceId, equipmentTag.getName());
                 updateThing(editThing().withSemanticEquipmentTag(equipmentTag).build());
             }
+        }
+    }
+
+    /**
+     * Read the update status of the thing from the given resource and update its property and, if it is online,
+     * also update its status info description text (allows displaying a dynamic info badge in Main UI).
+     */
+    private void updateUpdateStatus(Resource resource) {
+        UpdateStatusV2 updateStatus = resource.getUpdateStatus();
+        String property = updateStatus != null ? updateStatus.toString() : null;
+        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
+        ThingStatusInfo status = thing.getStatusInfo();
+        if (status.getStatus() == ThingStatus.ONLINE && status.getStatusDetail() == ThingStatusDetail.NONE) {
+            String description = updateStatus != null && updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
+            thing.setStatusInfo(new ThingStatusInfo(status.getStatus(), status.getStatusDetail(), description));
         }
     }
 }

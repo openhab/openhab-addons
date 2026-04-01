@@ -86,6 +86,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
@@ -518,7 +519,7 @@ public class Clip2Bridge implements Closeable {
     private static final String APPLICATION_KEY = "hue-application-key";
 
     private static final String EVENT_STREAM_ID = "eventStream";
-    private static final String FORMAT_URL_CONFIG = "http://%s/api/0/config";
+    private static final String FORMAT_URL_CONFIG_2 = "http://%s/api/%s/config";
     private static final String FORMAT_URL_RESOURCE = "https://%s/clip/v2/resource/";
     private static final String FORMAT_URL_REGISTER = "http://%s/api";
     private static final String FORMAT_URL_EVENTS = "https://%s/eventstream/clip/v2";
@@ -533,21 +534,21 @@ public class Clip2Bridge implements Closeable {
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
 
     /**
-     * Static method to attempt to connect to a Hue Bridge, get its software version, and check if it is high enough to
-     * support the CLIP 2 API. The bridge may redirect HTTP to HTTPS, but since we do not yet have the certificate
-     * configuration parameters for a real bridge, we implement a trustAll policy and disable host name verification.
+     * Get the bridge configuration. The call may redirect HTTP to HTTPS, but since we may not yet have the
+     * certificate configuration parameters for a real bridge we implement a trustAll policy and disable
+     * host name verification.
      *
      * @param hostName the bridge IP address.
-     * @return true if bridge is online and it supports CLIP 2, or false if it is online and does not support CLIP 2.
+     * @param applicationKey the application key (it must be '0' when the bridge is not yet paired).
+     * @return the bridge configuration (with limited fields if application key is '0').
      * @throws IOException if unable to communicate with the bridge.
-     * @throws NumberFormatException if the bridge firmware version is invalid.
      */
-    public static boolean isClip2Supported(String hostName) throws IOException {
+    private static @Nullable BridgeConfig getBridgeConfig(String hostName, String applicationKey) throws IOException {
         String response = null;
         HttpURLConnection httpConnection = null;
         HttpsURLConnection httpsConnection = null;
         try {
-            URL url = new URI(String.format(FORMAT_URL_CONFIG, hostName)).toURL();
+            URL url = new URI(FORMAT_URL_CONFIG_2.formatted(hostName, applicationKey)).toURL();
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setInstanceFollowRedirects(false);
             int status = httpConnection.getResponseCode();
@@ -570,7 +571,8 @@ public class Clip2Bridge implements Closeable {
                 }
             }
         } catch (NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
-            throw new IOException("isClip2Supported() error connecting to bridge", e);
+            LOGGER.debug("getBridgeConfig() error '{}' connecting to bridge", e.getMessage());
+            throw new IOException("getBridgeConfig() error connecting to bridge", e);
         } finally {
             if (httpConnection != null) {
                 httpConnection.disconnect();
@@ -580,9 +582,26 @@ public class Clip2Bridge implements Closeable {
             }
         }
 
-        BridgeConfig config = new Gson().fromJson(response, BridgeConfig.class);
-        if (Objects.nonNull(config)) {
-            String swVersion = config.swversion;
+        LOGGER.trace("getBridgeConfig() response: {}", response);
+        try {
+            return new Gson().fromJson(response, BridgeConfig.class);
+        } catch (JsonParseException e) {
+            LOGGER.debug("getBridgeConfig() error '{}' parsing response", e.getMessage());
+            throw new IOException("getBridgeConfig() error connecting to bridge", e);
+        }
+    }
+
+    /**
+     * Get the bridge software version, and check if it is high enough to support the CLIP 2 API.
+     *
+     * @param hostName the bridge IP address.
+     * @return true if bridge is online and it supports CLIP 2, or false if it is online and does not support CLIP 2.
+     * @throws IOException if unable to communicate with the bridge.
+     */
+    public static boolean isClip2Supported(String hostName) throws IOException {
+        BridgeConfig bridgeConfig = getBridgeConfig(hostName, "0");
+        if (Objects.nonNull(bridgeConfig)) {
+            String swVersion = bridgeConfig.getSoftwareVersion();
             if (Objects.nonNull(swVersion)) {
                 try {
                     if (Long.parseLong(swVersion) >= CLIP2_MINIMUM_VERSION) {
@@ -1316,5 +1335,20 @@ public class Clip2Bridge implements Closeable {
             close2();
             throw e;
         }
+    }
+
+    /**
+     * Get the bridge update status.
+     *
+     * @return the update status or null if unable to determine it.
+     */
+    public @Nullable UpdateStatusV2 getUpdateStatus() {
+        try {
+            BridgeConfig bridgeConfig = getBridgeConfig(hostName, applicationKey);
+            return bridgeConfig != null ? bridgeConfig.getUpdateStatus() : null;
+        } catch (IOException e) {
+            LOGGER.debug("getUpdateStatus() error '{}'", e.getMessage());
+        }
+        return null;
     }
 }

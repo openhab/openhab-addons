@@ -41,6 +41,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
@@ -63,6 +64,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -93,6 +95,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final int APPLICATION_KEY_MAX_TRIES = 600; // i.e. 300 seconds, 5 minutes
     private static final int RECONNECT_DELAY_SECONDS = 10;
     private static final int RECONNECT_MAX_TRIES = 5;
+    private static final int POLL_UPDATE_STATUS_INTERVAL_MINUTES = 720; // i.e. 12 hours
 
     private static final ResourceReference DEVICE = new ResourceReference().setType(ResourceType.DEVICE);
     private static final ResourceReference ROOM = new ResourceReference().setType(ResourceType.ROOM);
@@ -142,6 +145,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private @Nullable Future<?> checkConnectionTask;
     private @Nullable Future<?> updateOnlineStateTask;
     private @Nullable ScheduledFuture<?> scheduledUpdateTask;
+    private @Nullable ScheduledFuture<?> updateUpdateStatusTask;
     private Map<Integer, Future<?>> resourcesEventTasks = new ConcurrentHashMap<>();
 
     private boolean assetsLoaded;
@@ -309,10 +313,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             cancelTask(checkConnectionTask, true);
             cancelTask(updateOnlineStateTask, true);
             cancelTask(scheduledUpdateTask, true);
+            cancelTask(updateUpdateStatusTask, true);
             updateAutomationChannelsTask = null;
             checkConnectionTask = null;
             updateOnlineStateTask = null;
             scheduledUpdateTask = null;
+            updateUpdateStatusTask = null;
             synchronized (resourcesEventTasks) {
                 resourcesEventTasks.values().forEach(task -> cancelTask(task, true));
                 resourcesEventTasks.clear();
@@ -671,6 +677,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             if (Objects.nonNull(discoveryService)) {
                 discoveryService.startScan(null);
             }
+            updateUpdateStatusTask = scheduler.scheduleWithFixedDelay(() -> updateUpdateStatus(), 1,
+                    POLL_UPDATE_STATUS_INTERVAL_MINUTES, TimeUnit.MINUTES);
         }
     }
 
@@ -685,9 +693,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         logger.debug("updateProperties()");
         Map<String, String> properties = new HashMap<>(thing.getProperties());
 
-        for (Resource device : getClip2Bridge().getResources(BRIDGE).getResources()) {
+        for (Resource bridge : getClip2Bridge().getResources(BRIDGE).getResources()) {
             // set the serial number
-            String bridgeId = device.getBridgeId();
+            String bridgeId = bridge.getBridgeId();
             if (Objects.nonNull(bridgeId)) {
                 properties.put(Thing.PROPERTY_SERIAL_NUMBER, bridgeId);
             }
@@ -848,6 +856,35 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Task called periodically on a scheduler thread to make a bridge v1 API call (which continues to be
+     * supported on BSB002 and BSB003 models) to read and update the software update status. Makes an inner
+     * call to 'updateUpdateStatus(UpdateStatusV2 updateStatus)' to do the actual update.
+     */
+    private void updateUpdateStatus() {
+        try {
+            UpdateStatusV2 updateStatus = getClip2Bridge().getUpdateStatus();
+            updateUpdateStatus(updateStatus);
+        } catch (AssetNotLoadedException e) {
+            logger.debug("updateUpdateStatus() {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Update the thing's firmware update status property and also, if it is online, update its status info
+     * description text (allows displaying a dynamic info badge in Main UI).
+     */
+    private void updateUpdateStatus(@Nullable UpdateStatusV2 updateStatus) {
+        String property = updateStatus != null ? updateStatus.toString() : null;
+        thing.setProperty(PROPERTY_FIRMWARE_UPDATE_STATE, property);
+        ThingStatusInfo info = thing.getStatusInfo();
+        if (info.getStatus() == ThingStatus.ONLINE && info.getStatusDetail() == ThingStatusDetail.NONE) {
+            String description = updateStatus != null && updateStatus != UpdateStatusV2.NO_UPDATE ? property : null;
+            thing.setStatusInfo(new ThingStatusInfo(info.getStatus(), info.getStatusDetail(), description));
+        }
+        logger.debug("Software update status changed to: {}", property);
+    }
+
+    /**
      * Load the set of automation script ids.
      */
     private void loadAutomationScriptIds() {
@@ -935,32 +972,37 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     public boolean onResources(List<Resource> resources) {
         boolean requireUpdateChannels = false;
         for (Resource resource : resources) {
-            if (ResourceType.BEHAVIOR_INSTANCE != resource.getType()) {
-                continue;
-            }
-            String resourceId = resource.getId();
-            switch (resource.getContentType()) {
-                case ADD:
-                    requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
-                    break;
-                case DELETE:
-                    requireUpdateChannels |= automationsCache.containsKey(resourceId);
-                    break;
-                case UPDATE:
-                case FULL_STATE:
-                    Resource cachedAutomation = automationsCache.get(resourceId);
-                    if (Objects.isNull(cachedAutomation)) {
-                        requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
-                    } else {
-                        if (resource.hasName() && !resource.getName().equals(cachedAutomation.getName())) {
-                            requireUpdateChannels = true;
-                        } else if (Objects.nonNull(resource.getEnabled())) {
-                            updateState(new ChannelUID(automationChannelGroupUID, resourceId),
-                                    resource.getEnabledState());
-                        }
+            switch (resource.getType()) {
+
+                case BEHAVIOR_INSTANCE:
+                    String resourceId = resource.getId();
+                    switch (resource.getContentType()) {
+                        case ADD:
+                            requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
+                            break;
+                        case DELETE:
+                            requireUpdateChannels |= automationsCache.containsKey(resourceId);
+                            break;
+                        case UPDATE:
+                        case FULL_STATE:
+                            Resource cachedAutomation = automationsCache.get(resourceId);
+                            if (Objects.isNull(cachedAutomation)) {
+                                requireUpdateChannels |= automationScriptIds.contains(resource.getScriptId());
+                            } else {
+                                if (resource.hasName() && !resource.getName().equals(cachedAutomation.getName())) {
+                                    requireUpdateChannels = true;
+                                } else if (Objects.nonNull(resource.getEnabled())) {
+                                    updateState(new ChannelUID(automationChannelGroupUID, resourceId),
+                                            resource.getEnabledState());
+                                }
+                            }
+                            break;
+                        default:
                     }
                     break;
+
                 default:
+                    break;
             }
         }
         return requireUpdateChannels;
