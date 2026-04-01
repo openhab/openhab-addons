@@ -215,4 +215,9 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
     public void updateState(ChannelUID channelUID, State state) {
         super.updateState(channelUID, state);
     }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+    }
 }

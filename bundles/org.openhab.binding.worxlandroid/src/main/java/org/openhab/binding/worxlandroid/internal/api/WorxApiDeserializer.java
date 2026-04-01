@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -52,8 +53,13 @@ public class WorxApiDeserializer {
                                 .of(json.getAsJsonPrimitive().getAsString()))
                 .registerTypeAdapter(Instant.class, (JsonDeserializer<Instant>) (json, type, context) -> {
                     String value = json.getAsString();
-                    Instant instant = OffsetDateTime.parse(value, WORX_FORMATTER).toInstant();
-                    return instant;
+                    OffsetDateTime odt;
+                    try {
+                        odt = OffsetDateTime.parse(value, WORX_FORMATTER);
+                    } catch (DateTimeParseException exc) {
+                        odt = OffsetDateTime.parse(value + 'Z', WORX_FORMATTER);
+                    }
+                    return odt.toInstant();
                 }).registerTypeAdapter(Boolean.class, (JsonDeserializer<Boolean>) (json, type, context) -> {
                     String value = json.getAsJsonPrimitive().getAsString().toUpperCase(Locale.ROOT);
                     return "1".equals(value);

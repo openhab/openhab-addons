@@ -68,7 +68,6 @@ public class AWSClient implements MqttClientConnectionEvents {
 
         try {
             MqttClientConnection connection = AwsIotMqttConnectionBuilder.newDefaultBuilder()
-                    // .withCustomAuthorizer(MQTT_USERNAME, AUTHORIZER_NAME, tok[2], null, MQTT_USERNAME, token)
                     .withClientId("WX/USER/%s/%s/%s".formatted(userId, MQTT_USERNAME, productUuid))
                     .withEndpoint(endpoint).withUsername(MQTT_USERNAME).withCleanSession(false).withKeepAliveSecs(300)
                     .withConnectionEventCallbacks(this).withWebsockets(true)

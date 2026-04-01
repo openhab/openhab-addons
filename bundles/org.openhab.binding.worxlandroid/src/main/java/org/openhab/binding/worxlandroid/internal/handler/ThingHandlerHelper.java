@@ -31,7 +31,7 @@ import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -49,18 +49,18 @@ public interface ThingHandlerHelper {
 
     public void updateState(ChannelUID channelUID, State state);
 
-    public default @Nullable <T extends BaseBridgeHandler> T getBridgeHandler(@Nullable Bridge bridge,
-            Class<T> expected) {
-        if (bridge != null) {
-            if (bridge.getHandler() instanceof BridgeHandler handler) {
-                try {
-                    T expectedBridge = expected.cast(handler);
-                    if (expectedBridge.getThing().getStatus() == ThingStatus.ONLINE) {
-                        return expectedBridge;
-                    }
-                } catch (ClassCastException exc) {
+    void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+
+    default @Nullable <T extends BridgeHandler> T getBridgeHandler(@Nullable Bridge bridge, Class<T> clazz) {
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            if (bridge.getHandler() instanceof BridgeHandler bridgeHandler) {
+                if (bridgeHandler.getClass() == clazz) {
+                    return clazz.cast(bridgeHandler);
                 }
             }
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/incorrect-bridge");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "");
         }
         return null;
     }

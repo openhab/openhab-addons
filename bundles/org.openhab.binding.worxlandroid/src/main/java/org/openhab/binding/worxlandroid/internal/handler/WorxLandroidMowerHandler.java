@@ -479,11 +479,12 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
                 updateChannelOnOff(GROUP_COMMON, CHANNEL_ENABLE, theMower.isEnable());
             }
 
+            if (schedule.dd != null) {
+                updateStateCfgScDays(theMower, 2, schedule.dd);
+            }
+
             if (schedule.d != null) {
                 updateStateCfgScDays(theMower, 1, schedule.d);
-                if (schedule.dd != null) {
-                    updateStateCfgScDays(theMower, 2, schedule.dd);
-                }
             }
         });
 

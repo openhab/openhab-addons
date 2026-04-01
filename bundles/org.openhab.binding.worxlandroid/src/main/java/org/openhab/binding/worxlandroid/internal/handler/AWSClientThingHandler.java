@@ -86,8 +86,6 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
         if (bridgeHandler != null) {
             setAccessToken(bridgeHandler.getAccessToken());
             bridgeHandler.oAuthClientService.addAccessTokenRefreshListener(this);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
@@ -109,17 +107,18 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
     @Override
     public void onAWSConnectionSuccess() {
         logger.debug("AWS connection is available");
+
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected to AWS");
+        }
+        updateChannelOnOff(GROUP_AWS, CHANNEL_CONNECTED, awsClient.isConnected());
+
         if (!topic.isEmpty()) {
             awsClient.subscribe(topic, this::onMqttMessage);
             logger.debug("subscribed to topic: {}", topic);
         } else {
             logger.warn("Connected but no topic to subscribe to");
         }
-
-        if (getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-        updateChannelOnOff(GROUP_AWS, CHANNEL_CONNECTED, awsClient.isConnected());
     }
 
     @Override
@@ -207,8 +206,6 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
             return;
         }
         awsClient.connect(endpoint, userId, uuid, token);
-        updateStatus(ThingStatus.ONLINE);
-        updateChannelOnOff(GROUP_AWS, CHANNEL_CONNECTED, awsClient.isConnected());
     }
 
     @Override
@@ -228,6 +225,11 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
         String groupId = channelUID.getGroupId();
         String channelId = channelUID.getIdWithoutGroup();
         internalHandleCommand(groupId, channelId, command);
+    }
+
+    @Override
+    public void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
     }
 
     protected abstract void internalHandleCommand(@Nullable String groupId, String channelId, Command command);
