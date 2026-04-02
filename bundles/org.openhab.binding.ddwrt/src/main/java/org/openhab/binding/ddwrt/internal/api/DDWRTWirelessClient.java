@@ -13,6 +13,7 @@
 package org.openhab.binding.ddwrt.internal.api;
 
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,7 +44,7 @@ public class DDWRTWirelessClient {
     private @Nullable Instant lastSeen;
 
     public DDWRTWirelessClient(String mac) {
-        this.mac = Objects.requireNonNull(mac.toLowerCase().trim());
+        this.mac = Objects.requireNonNull(mac.toLowerCase(Locale.ROOT).trim());
     }
 
     // ---- Getters ----
@@ -111,7 +112,7 @@ public class DDWRTWirelessClient {
     // ---- Setters ----
 
     public void setMac(String mac) {
-        this.mac = Objects.requireNonNull(mac.toLowerCase().trim());
+        this.mac = Objects.requireNonNull(mac.toLowerCase(Locale.ROOT).trim());
     }
 
     public void setHostname(String hostname) {
@@ -123,7 +124,7 @@ public class DDWRTWirelessClient {
     }
 
     public void setApMac(String apMac) {
-        this.apMac = Objects.requireNonNull(apMac.toLowerCase().trim());
+        this.apMac = Objects.requireNonNull(apMac.toLowerCase(Locale.ROOT).trim());
     }
 
     public void setRadioName(String radioName) {

@@ -20,6 +20,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_M
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.CHANNEL_SSID;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -110,7 +111,7 @@ public class DDWRTRadioThingHandler extends DDWRTBaseHandler<DDWRTRadio, DDWRTRa
     @Override
     protected List<String> getCacheKeys() {
         if (!config.interfaceId.isEmpty()) {
-            return List.of(config.interfaceId.toLowerCase());
+            return List.of(config.interfaceId.toLowerCase(Locale.ROOT));
         }
         return List.of();
     }

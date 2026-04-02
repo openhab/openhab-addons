@@ -15,6 +15,7 @@ package org.openhab.binding.ddwrt.internal.api;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.time.Year;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -114,7 +115,8 @@ public class SshLogFollower implements Runnable, AutoCloseable {
 
                 ch.open().verify();
                 logger.debug("Syslog follower connected: {}", command);
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(ch.getInvertedOut()))) {
+                try (BufferedReader br = new BufferedReader(
+                        new InputStreamReader(ch.getInvertedOut(), java.nio.charset.StandardCharsets.UTF_8))) {
                     for (String line; running && (line = br.readLine()) != null;) {
                         dispatchLine(line);
                         backoffMs = 1000; // reset on successful read
@@ -159,7 +161,8 @@ public class SshLogFollower implements Runnable, AutoCloseable {
             // Try to cast to InputStream - if it fails, we'll just return empty string
             java.io.InputStream errStream = (java.io.InputStream) ch.getAsyncErr();
             if (errStream != null) {
-                BufferedReader errReader = new BufferedReader(new InputStreamReader(errStream));
+                BufferedReader errReader = new BufferedReader(
+                        new InputStreamReader(errStream, java.nio.charset.StandardCharsets.UTF_8));
                 StringBuilder stderr = new StringBuilder();
                 String line;
                 while ((line = errReader.readLine()) != null) {
@@ -222,12 +225,13 @@ public class SshLogFollower implements Runnable, AutoCloseable {
         }
 
         try {
-            SyslogEvent event = parser.parseLine(line, Year.now().getValue(), devicePattern);
+            SyslogEvent event = parser.parseLine(line, Year.now(java.time.ZoneId.systemDefault()).getValue(),
+                    devicePattern);
             if (event == null) {
                 return;
             }
 
-            String proc = event.process.toLowerCase();
+            String proc = event.process.toLowerCase(Locale.ROOT);
             String msg = event.message;
 
             // Classify by process name and message content
