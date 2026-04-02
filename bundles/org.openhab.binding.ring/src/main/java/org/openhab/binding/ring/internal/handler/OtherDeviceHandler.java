@@ -12,15 +12,21 @@
  */
 package org.openhab.binding.ring.internal.handler;
 
-import static org.openhab.binding.ring.RingBindingConstants.CHANNEL_STATUS_BATTERY;
+import static org.openhab.binding.ring.RingBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ring.internal.api.RingDeviceTO;
 import org.openhab.binding.ring.internal.device.OtherDevice;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 /**
  * The handler for a Ring Other Device.
@@ -32,6 +38,8 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class OtherDeviceHandler extends RingDeviceHandler {
     private int lastBattery = -1;
+    private boolean batterySupport = false;
+    private boolean openDoorSupport = false;
 
     public OtherDeviceHandler(Thing thing) {
         super(thing);
@@ -41,11 +49,37 @@ public class OtherDeviceHandler extends RingDeviceHandler {
     public void initialize() {
         logger.debug("Initializing Other Device handler");
         super.initialize(OtherDevice.class);
+        String kind = thing.getProperties().get(THING_PROPERTY_KIND);
+        if (kind != null && !kind.isEmpty()) {
+            if (BATTERY_KINDS.contains(kind)) {
+                batterySupport = true;
+            }
+            if (INTERCOM_KINDS.contains(kind)) {
+                openDoorSupport = true;
+                ChannelUID channelUID = new ChannelUID(getThing().getUID(), CHANNEL_STATUS_OPENDOOR);
+                Channel channel = thing.getChannel(channelUID);
+                if (channel == null) {
+                    logger.debug("Adding channel for opendoor, on device {}", getThing().getUID());
+                    ThingBuilder thingBuilder = editThing();
+                    channel = ChannelBuilder.create(channelUID, "switch").withLabel("Open Door")
+                            .withType(new ChannelTypeUID(BINDING_ID, "opendoor")).build();
+                    thingBuilder.withChannel(channel);
+                    updateThing(thingBuilder.build());
+                }
+            }
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // Do Nothing
+        if (RefreshType.REFRESH == command) {
+            return;
+        }
+        if (channelUID.getId().equals(CHANNEL_STATUS_OPENDOOR)) {
+            if (command instanceof OnOffType onOffCommand) {
+                openDoorCommand(onOffCommand == OnOffType.ON);
+            }
+        }
     }
 
     @Override
@@ -71,5 +105,9 @@ public class OtherDeviceHandler extends RingDeviceHandler {
                     deviceTO.health.batteryPercentage, lastBattery);
 
         }
+    }
+
+    protected void openDoorCommand(boolean b) {
+        logger.info("Sending command to openDoor (Stub only)");
     }
 }
