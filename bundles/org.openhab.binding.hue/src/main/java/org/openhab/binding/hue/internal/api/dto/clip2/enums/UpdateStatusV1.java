@@ -22,10 +22,14 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum UpdateStatusV1 {
+    NOTUPDATABLE,
+    UNKNOWN,
     NOUPDATES,
-    AVAILABLE,
+    TRANSFERRING,
     DOWNLOADING,
     INSTALLING,
+    ALLREADYTOINSTALL,
+    ANYREADYTOINSTALL,
     READYTOINSTALL;
 
     public static @Nullable UpdateStatusV1 of(@Nullable String value) {

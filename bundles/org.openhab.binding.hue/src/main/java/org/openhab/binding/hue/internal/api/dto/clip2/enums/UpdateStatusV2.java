@@ -43,8 +43,8 @@ public enum UpdateStatusV2 {
             return null;
         }
         return switch (statusV1) {
-            case READYTOINSTALL -> READY_TO_INSTALL;
-            case AVAILABLE, DOWNLOADING -> UPDATE_PENDING;
+            case ALLREADYTOINSTALL, ANYREADYTOINSTALL, READYTOINSTALL -> READY_TO_INSTALL;
+            case TRANSFERRING, DOWNLOADING -> UPDATE_PENDING;
             case INSTALLING -> INSTALLING;
             default -> NO_UPDATE;
         };
