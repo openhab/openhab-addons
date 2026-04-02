@@ -25,7 +25,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 @NonNullByDefault
 public class BridgeConfig {
     private @Nullable String swversion;
-    private @Nullable BridgeSwUpdate swupdate2; // for API v1.20+
+    private @Nullable BridgeSwUpdate swupdate2; // for API v1.20+ ('swupdate' is deprecated)
 
     public @Nullable String getSoftwareVersion() {
         return swversion;
@@ -34,5 +34,21 @@ public class BridgeConfig {
     public @Nullable UpdateStatusV2 getUpdateStatus() {
         return (swupdate2 instanceof BridgeSwUpdate update)
                 && (update.getBridge() instanceof BridgeSwUpdateBridge bridge) ? bridge.getUpdateStatus() : null;
+    }
+
+    /**
+     * Creates a swupdate2 field with check for update flag set. Triggers the bridge to check for updates.
+     */
+    public BridgeConfig setCheckForUpdate() {
+        swupdate2 = new BridgeSwUpdate().setCheckForUpdate();
+        return this;
+    }
+
+    /**
+     * Creates a swupdate2 field with install update flag set. Triggers the bridge to do an update.
+     */
+    public BridgeConfig setInstallUpdate() {
+        swupdate2 = new BridgeSwUpdate().setInstallUpdate();
+        return this;
     }
 }
