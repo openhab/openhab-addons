@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -162,13 +163,15 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
      * @return the content of the PEM file as a string, or null if the file is not found or cannot be read
      */
     private @Nullable String readPEMCertificatesStringFromResource(String fileName) {
-        URL resource = HueTlsTrustManagerProvider.class.getClassLoader().getResource(fileName);
-        if (resource != null) {
+        if (HueTlsTrustManagerProvider.class.getClassLoader() instanceof URLClassLoader classLoader
+                && classLoader.getResource(fileName) instanceof URL resource) {
             try (InputStream certInputStream = resource.openStream()) {
                 return new String(certInputStream.readAllBytes(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 logger.error("An unexpected exception occurred: ", e);
             }
+        } else {
+            logger.error("Resource '{}' not found", fileName);
         }
         return null;
     }
