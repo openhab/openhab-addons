@@ -818,7 +818,7 @@
             <phase>validate</phase>
             <configuration>
               <workingDirectory>${project.basedir}</workingDirectory>
-              <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config ${maven.multiModuleProjectDirectory}/.github/markdownlint.yaml</arguments>
+              <arguments>exec --yes markdownlint-cli2 -- **/*.md !**/target/** !**/node_modules/** --config "${maven.multiModuleProjectDirectory}/.github/markdownlint.yaml"</arguments>
             </configuration>
           </execution>
         </executions>
