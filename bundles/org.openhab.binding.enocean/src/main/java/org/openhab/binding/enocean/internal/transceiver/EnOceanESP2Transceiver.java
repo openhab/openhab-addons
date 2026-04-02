@@ -28,6 +28,7 @@ import org.openhab.binding.enocean.internal.messages.ESP2Packet;
 import org.openhab.binding.enocean.internal.messages.ESP2Packet.ESP2PacketType;
 import org.openhab.binding.enocean.internal.messages.ESP2PacketConverter;
 import org.openhab.binding.enocean.internal.messages.Response;
+import org.openhab.binding.enocean.internal.util.EnOceanUtil;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.util.HexUtils;
 
@@ -40,8 +41,6 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
 
     private static final String RX_THREAD_NAME_PREFIX = "OH-binding-enocean-ESP2-RX-";
     private static final AtomicInteger THREAD_NUM = new AtomicInteger();
-
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
 
     // All access must be guarded by "this"
     private @Nullable Thread worker;
@@ -151,7 +150,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                     logger.trace("", e);
                     TransceiverErrorListener errorListener = this.errorListener;
                     if (errorListener != null && !thread.isInterrupted()) {
-                        // We don't want to take the Thing offline if an IOException is thrown then the port is closed,
+                        // We don't want to take the Thing offline if an IOException is thrown when the port is closed,
                         // which is why we check isInterrupted()
                         errorListener.errorOccurred(e);
                     }
@@ -187,7 +186,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                                 state = ReadingState.WAIT_FIRST_SYNCBYTE;
                                 logger.trace(
                                         "Received non-matching second sync byte ({}) - first sync byte was a false positive",
-                                        byteToHex(bytes[pos]));
+                                        EnOceanUtil.byteToHex(bytes[pos]));
                             }
                             doRead = 1;
                             break;
@@ -207,7 +206,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                             break;
                         case READ_DATA:
                             try {
-                                packetBytes = subArray(bytes, packetStart, packetLength + 1);
+                                packetBytes = EnOceanUtil.subArray(bytes, packetStart, packetLength + 1);
                                 if (ESP2Packet.validateCheckSum(packetBytes, 0, packetLength)) {
                                     if (packetBytes[1] == ESP2Packet.ENOCEAN_ESP2_INTERNAL_COMMAND_BYTE) {
                                         // Internal commands have a structure that we can't decode,
@@ -241,7 +240,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
                                                             packet.getPacketType().name(),
                                                             response.getResponseType().name());
 
-                                                    handleResponse(response);
+                                                    handleResponse(response, scheduler);
                                                     break;
                                                 default:
                                                     logger.debug("Not handling packet of type {}",
@@ -285,30 +284,7 @@ public class EnOceanESP2Transceiver extends EnOceanTransceiver {
     }
 
     @Override
-    protected void processMessage(byte firstByte) {
-        // Not in use anymore, but mandated
-    }
-
-    private byte[] subArray(byte[] bytes, int start, int length) {
-        if (start == 0 && length == bytes.length) {
-            return bytes;
-        }
-        int len = Math.min(length, bytes.length - start);
-        if (len < length) {
-            logger.debug("Packet is shorter ({}) than expected: {}", len, length);
-        }
-        byte[] result = new byte[len];
-        System.arraycopy(bytes, start, result, 0, len);
-        return result;
-    }
-
-    @Override
     protected byte[] serializePacket(BasePacket packet) throws EnOceanException {
         return new ESP2Packet(packet).serialize();
-    }
-
-    private static String byteToHex(byte b) {
-        int i = b & 0xFF;
-        return new StringBuilder(4).append("0x").append(HEX_ARRAY[i >>> 4]).append(HEX_ARRAY[i & 0x0F]).toString();
     }
 }

@@ -59,7 +59,6 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     public static final int ENOCEAN_MAX_DATA = 65790;
 
     // Thread management
-    protected @Nullable Future<?> readingTask = null;
     private @Nullable Future<?> timeOutTask = null;
 
     protected Logger logger = LoggerFactory.getLogger(EnOceanTransceiver.class);
@@ -75,12 +74,12 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         @Nullable
         Response responsePacket;
         @Nullable
-        ResponseListener<? extends @Nullable Response> responseListener;
+        ResponseListener<? extends Response> responseListener;
     }
 
     private class RequestQueue {
-        private Queue<Request> queue = new LinkedBlockingQueue<>();
-        private ScheduledExecutorService scheduler;
+        private final Queue<Request> queue = new LinkedBlockingQueue<>();
+        private final ScheduledExecutorService scheduler;
 
         public RequestQueue(ScheduledExecutorService scheduler) {
             this.scheduler = scheduler;
@@ -221,19 +220,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.info("EnOceanSerialTransceiver initialized");
     }
 
-    public void startReceiving(ScheduledExecutorService scheduler) {
-        @Nullable
-        Future<?> readingTask = this.readingTask;
-        if (readingTask == null || readingTask.isCancelled()) {
-            this.readingTask = scheduler.submit(new Runnable() {
-                @Override
-                public void run() {
-                    receivePackets();
-                }
-            });
-        }
-        logger.info("EnOceanSerialTransceiver RX thread started");
-    }
+    public abstract void startReceiving(ScheduledExecutorService scheduler);
 
     public void shutDown() {
         logger.debug("shutting down transceiver");
@@ -283,55 +270,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         logger.info("Transceiver shutdown");
     }
 
-    protected void shutDownRx() {
-        Future<?> readingTask = this.readingTask;
-        if (readingTask != null) {
-            readingTask.cancel(true);
-            this.readingTask = null;
-        }
-    }
-
-    protected void receivePackets() {
-        byte[] buffer = new byte[1];
-
-        Future<?> readingTask = this.readingTask;
-        while (readingTask != null && !readingTask.isCancelled()) {
-            int bytesRead = read(buffer, 1);
-            if (bytesRead > 0) {
-                processMessage(buffer[0]);
-            }
-        }
-    }
-
-    protected abstract void processMessage(byte firstByte);
-
-    protected int read(byte[] buffer, int length) {
-        InputStream localInputStream = inputStream;
-        if (localInputStream != null) {
-            try {
-                return localInputStream.read(buffer, 0, length);
-            } catch (IOException e) {
-                logger.debug("IOException occurred while reading the input stream", e);
-                return 0;
-            }
-        } else {
-            logger.warn("Cannot read from null stream");
-            Future<?> readingTask = this.readingTask;
-            if (readingTask != null) {
-                readingTask.cancel(true);
-                this.readingTask = null;
-            }
-            TransceiverErrorListener localListener = errorListener;
-            if (localListener != null) {
-                localListener.errorOccurred(new IOException("Cannot read from null stream"));
-            }
-            return 0;
-        }
-    }
-
-    protected void informListeners(BasePacket packet) {
-        informListeners(packet, null);
-    }
+    protected abstract void shutDownRx();
 
     protected void informListeners(BasePacket packet, @Nullable ScheduledExecutorService scheduler) {
         try {
@@ -429,18 +368,30 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
         }
     }
 
-    protected void handleResponse(Response response) {
+    protected void handleResponse(Response response, @Nullable ScheduledExecutorService scheduler) {
         Request localCurrentRequest = currentRequest;
         if (localCurrentRequest != null) {
-            ResponseListener<? extends @Nullable Response> listener = localCurrentRequest.responseListener;
+            ResponseListener<? extends Response> listener = localCurrentRequest.responseListener;
+            localCurrentRequest.responsePacket = response;
             if (listener != null) {
-                localCurrentRequest.responsePacket = response;
-                try {
-                    listener.handleResponse(response);
-                } catch (Exception e) {
-                    logger.debug("Exception during response handling");
-                } finally {
-                    logger.trace("Response handled");
+                if (scheduler != null) {
+                    scheduler.execute(() -> {
+                        try {
+                            listener.handleResponse(response);
+                            logger.trace("Response handled");
+                        } catch (Exception e) {
+                            logger.debug("Exception during response handling: {}", e.getMessage());
+                            logger.trace("", e);
+                        }
+                    });
+                } else {
+                    try {
+                        listener.handleResponse(response);
+                        logger.trace("Response handled");
+                    } catch (Exception e) {
+                        logger.debug("Exception during response handling: {}", e.getMessage());
+                        logger.trace("", e);
+                    }
                 }
             } else {
                 logger.trace("Response without listener");
@@ -451,7 +402,7 @@ public abstract class EnOceanTransceiver implements SerialPortEventListener {
     }
 
     public void sendBasePacket(@Nullable BasePacket packet,
-            @Nullable ResponseListener<? extends @Nullable Response> responseCallback) throws IOException {
+            @Nullable ResponseListener<? extends Response> responseCallback) throws IOException {
         if (packet == null) {
             return;
         }

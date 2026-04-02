@@ -40,8 +40,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.enocean.internal.messages.BasePacket;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
-import org.openhab.binding.enocean.internal.messages.ESP2Packet.ESP2PacketType;
-import org.openhab.binding.enocean.internal.messages.ESP2PacketConverter;
+import org.openhab.binding.enocean.internal.messages.ESP3PacketFactory;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
@@ -49,14 +48,14 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.util.SameThreadExecutorService;
 
 /**
- * Tests for {@link EnOceanESP2Transceiver}.
+ * Tests for {@link EnOceanESP3Transceiver}.
  *
  * @author Ravi Nadahar - Initial contribution
  */
 @NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class EnOceanESP2TransceiverTest {
+public class EnOceanESP3TransceiverTest {
 
     private @NonNullByDefault({}) @Mock TransceiverErrorListener errorListener;
     private @NonNullByDefault({}) @Mock SerialPortManager portManager;
@@ -91,64 +90,86 @@ public class EnOceanESP2TransceiverTest {
 
     @Test
     public void testReceiver1() throws Exception {
-        String hexBytes = Files.readString(Path.of("src/test/resources/ESP2Stream1.txt"));
+        String hexBytes = Files.readString(Path.of("src/test/resources/ESP3Stream1.txt"));
         ByteArrayInputStream bis = new ByteArrayInputStream(HexFormat.of().parseHex(hexBytes));
         when(port.getInputStream()).thenReturn(bis);
 
-        CapturingPacketListener sender2Listener = new CapturingPacketListener(2L);
-        CapturingPacketListener sender5Listener = new CapturingPacketListener(5L);
-        EnOceanESP2Transceiver trans = new EnOceanESP2Transceiver("", errorListener, scheduler, portManager);
-        trans.addPacketListener(sender2Listener, 2L);
-        trans.addPacketListener(sender5Listener, 5L);
+        CapturingPacketListener sender1Listener = new CapturingPacketListener(0x058DF435L);
+        CapturingPacketListener sender2Listener = new CapturingPacketListener(0x0582D29DL);
+        EnOceanESP3Transceiver trans = new EnOceanESP3Transceiver("", errorListener, scheduler, portManager);
+        trans.addPacketListener(sender1Listener, 0x058DF435L);
+        trans.addPacketListener(sender2Listener, 0x0582D29DL);
         trans.initialize();
         trans.startReceiving(scheduler);
         try {
-            assertThat(sender2Listener.packets, waitUntil(hasSize(31), 10000L));
-            assertThat(sender5Listener.packets, waitUntil(hasSize(31), 10000L));
+            assertThat(sender1Listener.packets, waitUntil(hasSize(4), 10000L));
+            assertThat(sender2Listener.packets, waitUntil(hasSize(4), 10000L));
         } finally {
             trans.shutDownRx();
         }
-        assertThat(sender2Listener.packets,
-                hasItem(equalPacket(
-                        Objects.requireNonNull(ESP2PacketConverter.buildPacket(ESP2PacketType.RECEIVE_MESSAGE_TELEGRAM,
-                                HexFormat.of().parseHex("8B0550000000000000023012"))))));
-        assertThat(sender5Listener.packets,
-                hasItem(equalPacket(
-                        Objects.requireNonNull(ESP2PacketConverter.buildPacket(ESP2PacketType.RECEIVE_MESSAGE_TELEGRAM,
-                                HexFormat.of().parseHex("8B0550000000000000053015"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(7,
+                7, (byte) 1, HexFormat.of().parseHex("F6E0058DF4352001FFFFFFFF5B00"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(7,
+                7, (byte) 1, HexFormat.of().parseHex("F6D0058DF4352001FFFFFFFF5900"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(7,
+                7, (byte) 1, HexFormat.of().parseHex("F6C0058DF4352001FFFFFFFF5B00"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(7,
+                7, (byte) 1, HexFormat.of().parseHex("F6F0058DF4352101FFFFFFFF5C00"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A59E16000F0582D29D0001FFFFFFFF5500"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A59E14000F0582D29D0001FFFFFFFF5500"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A59E13000F0582D29D0001FFFFFFFF5500"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A59E11000F0582D29D0001FFFFFFFF5500"))))));
     }
 
     @Test
     public void testReceiver2() throws Exception {
-        String hexBytes = Files.readString(Path.of("src/test/resources/ESP2Stream2.txt"));
+        String hexBytes = Files.readString(Path.of("src/test/resources/ESP3Stream2.txt"));
         ByteArrayInputStream bis = new ByteArrayInputStream(HexFormat.of().parseHex(hexBytes));
         when(port.getInputStream()).thenReturn(bis);
 
-        CapturingPacketListener sender1Listener = new CapturingPacketListener(0x33221118L);
-        CapturingPacketListener sender2Listener = new CapturingPacketListener(0x33221320L);
-        EnOceanESP2Transceiver trans = new EnOceanESP2Transceiver("", errorListener, scheduler, portManager);
-        trans.addPacketListener(sender1Listener, 0x33221118L);
-        trans.addPacketListener(sender2Listener, 0x33221320L);
+        CapturingPacketListener sender1Listener = new CapturingPacketListener(0x0582D29DL);
+        CapturingPacketListener sender2Listener = new CapturingPacketListener(0x05194A1DL);
+        EnOceanESP3Transceiver trans = new EnOceanESP3Transceiver("", errorListener, scheduler, portManager);
+        trans.addPacketListener(sender1Listener, 0x0582D29DL);
+        trans.addPacketListener(sender2Listener, 0x05194A1DL);
         trans.initialize();
         trans.startReceiving(scheduler);
         try {
-            assertThat(sender1Listener.packets, waitUntil(hasSize(6), 10000L));
-            assertThat(sender2Listener.packets, waitUntil(hasSize(3), 10000L));
+            assertThat(sender1Listener.packets, waitUntil(hasSize(35), 10000L));
+            assertThat(sender2Listener.packets, waitUntil(hasSize(11), 10000L));
         } finally {
             trans.shutDownRx();
         }
-        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
-                ESP2PacketType.RECEIVE_RADIO_TELEGRAM, HexFormat.of().parseHex("0B05000000003322111820AE"))))));
-        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
-                ESP2PacketType.RECEIVE_RADIO_TELEGRAM, HexFormat.of().parseHex("0B05100000003322111830CE"))))));
-        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
-                ESP2PacketType.RECEIVE_RADIO_TELEGRAM, HexFormat.of().parseHex("0B05300000003322111830EE"))))));
-        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
-                ESP2PacketType.RECEIVE_RADIO_TELEGRAM, HexFormat.of().parseHex("0B0700A0800F3322132000C9"))))));
-        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
-                ESP2PacketType.RECEIVE_RADIO_TELEGRAM, HexFormat.of().parseHex("0B07009D800F3322132000C6"))))));
-        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP2PacketConverter.buildPacket(
-                ESP2PacketType.RECEIVE_RADIO_TELEGRAM, HexFormat.of().parseHex("0B07009B800F3322132000C4"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A59F27000F0582D29D0001FFFFFFFF5C00"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A59F27000F0582D29D0001FFFFFFFF5C00"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A59F27000F0582D29D0001FFFFFFFF5C00"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A5A029000F0582D29D0001FFFFFFFF5800"))))));
+        assertThat(sender1Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A5A02B000F0582D29D0001FFFFFFFF5800"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A56D01C30905194A1D0001FFFFFFFF5300"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A56901E20905194A1D0001FFFFFFFF5800"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A56901EB0905194A1D0001FFFFFFFF5600"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A56901F50905194A1D0001FFFFFFFF5600"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A56901FE0905194A1D0001FFFFFFFF5600"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A56902060905194A1D0001FFFFFFFF5900"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(10,
+                7, (byte) 1, HexFormat.of().parseHex("A569020D0905194A1D0001FFFFFFFF5C00"))))));
+        assertThat(sender2Listener.packets, hasItem(equalPacket(Objects.requireNonNull(ESP3PacketFactory.buildPacket(8,
+                7, (byte) 1, HexFormat.of().parseHex("D0066405194A1D0001FFFFFFFF5C00"))))));
     }
 
     public static <T> Matcher<T> waitUntil(Matcher<T> matcher, long timeoutMs) {
