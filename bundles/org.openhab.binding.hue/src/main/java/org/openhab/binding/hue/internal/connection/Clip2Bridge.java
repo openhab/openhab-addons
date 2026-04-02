@@ -519,7 +519,7 @@ public class Clip2Bridge implements Closeable {
     private static final String APPLICATION_KEY = "hue-application-key";
 
     private static final String EVENT_STREAM_ID = "eventStream";
-    private static final String FORMAT_URL_CONFIG_2 = "http://%s/api/%s/config";
+    private static final String FORMAT_URL_CONFIG = "http://%s/api/%s/config";
     private static final String FORMAT_URL_RESOURCE = "https://%s/clip/v2/resource/";
     private static final String FORMAT_URL_REGISTER = "http://%s/api";
     private static final String FORMAT_URL_EVENTS = "https://%s/eventstream/clip/v2";
@@ -548,7 +548,7 @@ public class Clip2Bridge implements Closeable {
         HttpURLConnection httpConnection = null;
         HttpsURLConnection httpsConnection = null;
         try {
-            URL url = new URI(FORMAT_URL_CONFIG_2.formatted(hostName, applicationKey)).toURL();
+            URL url = new URI(FORMAT_URL_CONFIG.formatted(hostName, applicationKey)).toURL();
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setInstanceFollowRedirects(false);
             int status = httpConnection.getResponseCode();
