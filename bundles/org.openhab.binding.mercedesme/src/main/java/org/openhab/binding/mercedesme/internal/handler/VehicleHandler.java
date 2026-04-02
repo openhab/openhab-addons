@@ -211,7 +211,7 @@ public class VehicleHandler extends BaseThingHandler {
 
         AccountHandler localAccountHandler = accountHandler;
         if (localAccountHandler == null) {
-            logger.info("Sending command not possible without active account");
+            logger.warn("Sending command not possible without active account");
             return;
         }
         var crBuilder = CommandRequest.newBuilder().setVin(config.vin).setRequestId(UUID.randomUUID().toString());
@@ -1162,7 +1162,7 @@ public class VehicleHandler extends BaseThingHandler {
     public void sendPoi(JSONObject poi) {
         AccountHandler localAccountHandler = accountHandler;
         if (localAccountHandler == null) {
-            logger.info("Sending POI not possible without active account");
+            logger.warn("Sending POI not possible without active account");
             return;
         }
         localAccountHandler.sendPoi(config.vin, poi);

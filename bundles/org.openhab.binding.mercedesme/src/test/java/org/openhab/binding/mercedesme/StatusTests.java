@@ -54,6 +54,7 @@ public class StatusTests {
         try {
             Thread.sleep(250);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             fail();
         }
     }
@@ -76,7 +77,10 @@ public class StatusTests {
             String tokenResponse = FileReader.readFileInString("src/test/resources/json/TokenResponse.json");
             when(response.getContentAsString()).thenReturn(tokenResponse);
             when(clientRequest.send()).thenReturn(response);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            fail(e.getMessage());
+        } catch (TimeoutException | ExecutionException e) {
             fail(e.getMessage());
         }
         return httpClient;
