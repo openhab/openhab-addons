@@ -112,13 +112,10 @@ public class PriceInfo {
 
                     // percentage error
                     double percentageError = 0;
-                    if (marketPrice == 0) {
-                        // cannot use UNDEF here, a value is mandatory
-                        percentageError = Double.MIN_VALUE;
-                    } else {
+                    if (marketPrice != 0) {
                         percentageError = (forecastError / marketPrice) * 100;
-                    }
-                    percentErrorSeries.put(time, percentageError);
+                        percentErrorSeries.put(time, percentageError);
+                    } // omit undefined percentage error when market price is zero
                 }
             }
         });
