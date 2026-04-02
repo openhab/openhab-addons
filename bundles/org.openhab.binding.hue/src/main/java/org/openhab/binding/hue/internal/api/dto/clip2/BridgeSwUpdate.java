@@ -16,8 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * DTO for a v1 protocol bridge configuration response's software update part.
+ * DTO for an API v1.20+ bridge configuration response's software update part.
  * 
+ * @see <a href="https://developers.meethue.com/develop/software-update/">Developer documentation</a>
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault

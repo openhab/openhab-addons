@@ -16,8 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Enum for bridge v1 software update status values.
+ * Enum for bridge API v1.20+ software update status values.
  *
+ * @see <a href="https://developers.meethue.com/develop/software-update/">Developer documentation</a>
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault

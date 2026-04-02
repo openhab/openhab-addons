@@ -17,14 +17,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 
 /**
- * A 'special' DTO for bridge discovery to read the configuration from a bridge using the v1 API.
+ * A 'special' DTO for bridge discovery to read the configuration from a bridge using API v1.0+
  *
+ * @see <a href="https://developers.meethue.com/develop/software-update/">Developer documentation</a>
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 public class BridgeConfig {
     private @Nullable String swversion;
-    private @Nullable BridgeSwUpdate swupdate2;
+    private @Nullable BridgeSwUpdate swupdate2; // for API v1.20+
 
     public @Nullable String getSoftwareVersion() {
         return swversion;

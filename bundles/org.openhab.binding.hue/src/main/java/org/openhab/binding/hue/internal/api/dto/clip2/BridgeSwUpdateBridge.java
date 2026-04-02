@@ -18,7 +18,9 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV1;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.UpdateStatusV2;
 
 /**
- * DTO for a v1 protocol bridge configuration response's software update bridge part.
+ * DTO for an API v1.20+ protocol bridge configuration response's software update bridge part.
+ * 
+ * @see <a href="https://developers.meethue.com/develop/software-update/">Developer documentation</a>
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
