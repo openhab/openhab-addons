@@ -24,7 +24,7 @@ import org.openhab.binding.mail.internal.ServerSecurity;
 @NonNullByDefault
 public class BaseConfig {
     public @Nullable String hostname;
-    public Integer port = 0;
+    public int port = 0;
     public String username = "";
     public String password = "";
     public ServerSecurity security = ServerSecurity.PLAIN;
