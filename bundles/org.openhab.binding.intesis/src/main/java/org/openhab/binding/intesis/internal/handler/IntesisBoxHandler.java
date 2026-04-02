@@ -174,7 +174,9 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                     if (celsiusTemperature != null) {
                         double doubleValue = celsiusTemperature.doubleValue();
                         logger.trace("targetTemp double value = {}", doubleValue);
-                        doubleValue = Math.max(minTemp, Math.min(maxTemp, doubleValue));
+                        if (maxTemp > minTemp) {
+                            doubleValue = Math.max(minTemp, Math.min(maxTemp, doubleValue));
+                        }
                         value = String.format("%.0f", doubleValue * 10);
                         function = "SETPTEMP";
                         logger.trace("targetTemp raw string = {}", value);
@@ -297,7 +299,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                         logger.trace("Property target temperatures {} added", message.getValue());
                         properties.put("targetTemperature limits", "[" + minTemp + "," + maxTemp + "]");
                         addChannel(CHANNEL_TYPE_TARGETTEMP, "Number:Temperature");
-                    } else if (message.getLimitsValue().size() > 0) {
+                    } else if (!message.getLimitsValue().isEmpty()) {
                         switch (function) {
                             case "MODE":
                                 properties.put("supported modes", message.getValue());
