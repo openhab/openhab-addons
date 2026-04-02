@@ -42,8 +42,8 @@ The binding connects to devices using Apache MINA SSHD.
 Authentication is attempted in this order:
 
 1. **SSH keys** from `$OPENHAB_USERDATA/ddwrt/keys/` (any files in this directory)
-2. **SSH keys** from `~/.ssh/` (standard OpenSSH key files)
-3. **Password** from thing configuration
+1. **SSH keys** from `~/.ssh/` (standard OpenSSH key files)
+1. **Password** from thing configuration
 
 The binding also respects `~/.ssh/config` for per-host settings including `HostName`, `User`, `Port`, `ProxyJump`, and `IdentityFile`.
 This means you can use jump hosts (ProxyJump) to reach devices behind NAT.
