@@ -15,6 +15,7 @@ package org.openhab.binding.ddwrt.internal.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -125,7 +126,7 @@ public final class IwinfoParser {
         for (String line : output.split("\n")) {
             Matcher macMatcher = MAC_LINE.matcher(line.trim());
             if (macMatcher.find()) {
-                macs.add(Objects.requireNonNull(macMatcher.group(1)).toLowerCase());
+                macs.add(Objects.requireNonNull(macMatcher.group(1)).toLowerCase(Locale.ROOT));
             }
         }
         logger.debug("Parsed {} MAC addresses from iwinfo {} assoclist", macs.size(), iface);

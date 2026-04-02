@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -285,7 +286,7 @@ public final class OuiDatabase {
         if (mac.length() < 8) {
             return null;
         }
-        String prefix = mac.substring(0, 8).toLowerCase();
+        String prefix = mac.substring(0, 8).toLowerCase(Locale.ROOT);
         return OUI_MAP.get(prefix);
     }
 

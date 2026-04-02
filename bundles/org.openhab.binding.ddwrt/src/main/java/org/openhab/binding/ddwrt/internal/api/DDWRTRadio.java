@@ -15,6 +15,7 @@ package org.openhab.binding.ddwrt.internal.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +41,7 @@ public class DDWRTRadio {
     private List<String> assoclist = new ArrayList<>();
 
     public DDWRTRadio(String parentDeviceMac, String ifaceName) {
-        this.parentDeviceMac = Objects.requireNonNull(parentDeviceMac.toLowerCase().trim());
+        this.parentDeviceMac = Objects.requireNonNull(parentDeviceMac.toLowerCase(Locale.ROOT).trim());
         this.ifaceName = ifaceName;
         this.interfaceId = this.parentDeviceMac + ":" + ifaceName;
     }

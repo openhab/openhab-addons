@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.ddwrt.internal.api;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,7 +34,7 @@ public class DDWRTDhcpLease {
     private long expiry = 0;
 
     public DDWRTDhcpLease(String mac) {
-        this.mac = Objects.requireNonNull(mac.toLowerCase().trim());
+        this.mac = Objects.requireNonNull(mac.toLowerCase(Locale.ROOT).trim());
     }
 
     // ---- Getters ----

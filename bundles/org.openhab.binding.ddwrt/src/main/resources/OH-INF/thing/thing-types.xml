@@ -10,6 +10,7 @@
 
 		<label>DD-WRT Network</label>
 		<description>A network of DD-WRT compatible devices managed via SSH</description>
+		<category>Network</category>
 
 		<channels>
 			<channel id="total-clients" typeId="total-clients"/>
@@ -58,6 +59,7 @@
 
 		<label>DD-WRT Device</label>
 		<description>A DD-WRT, OpenWrt, or compatible Linux device managed via SSH</description>
+		<category>NetworkAppliance</category>
 
 		<channels>
 			<channel id="online" typeId="online"/>
@@ -88,6 +90,8 @@
 			<property name="firmware">unknown</property>
 			<property name="chipset">unknown</property>
 		</properties>
+
+		<representation-property>hostname</representation-property>
 
 		<config-description>
 			<parameter-group name="connection">
@@ -153,6 +157,7 @@
 
 		<label>Wireless Radio</label>
 		<description>A wireless radio interface on a DD-WRT device</description>
+		<category>Network</category>
 
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
@@ -162,6 +167,8 @@
 			<channel id="client-count" typeId="client-count"/>
 			<channel id="assoclist" typeId="assoclist"/>
 		</channels>
+
+		<representation-property>interfaceId</representation-property>
 
 		<config-description>
 			<parameter name="interfaceId" type="text" required="true">
@@ -186,6 +193,7 @@
 
 		<label>Wireless Client</label>
 		<description>A wireless client associated with a DD-WRT network device</description>
+		<category>Network</category>
 
 		<channels>
 			<channel id="online" typeId="online"/>
@@ -202,10 +210,17 @@
 			<channel id="last-seen" typeId="last-seen"/>
 		</channels>
 
+		<representation-property>hostname</representation-property>
+
 		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname</label>
+				<description>Hostname of the wireless client (stable identifier even with MAC randomization)</description>
+			</parameter>
 			<parameter name="mac" type="text" required="false">
 				<label>MAC Address</label>
 				<description>MAC address of the wireless client (may change due to MAC randomization)</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -220,11 +235,14 @@
 
 		<label>Firewall Rule</label>
 		<description>A GUI-configured firewall filter rule from nvram</description>
+		<category>Shield</category>
 
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
 			<channel id="description" typeId="description"/>
 		</channels>
+
+		<representation-property>ruleId</representation-property>
 
 		<config-description>
 			<parameter name="ruleId" type="text" required="true">
@@ -243,6 +261,7 @@
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>Whether the device or client is currently online</description>
+		<category>Status</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -250,6 +269,7 @@
 		<item-type>DateTime</item-type>
 		<label>Uptime Since</label>
 		<description>System boot time (updates only on reboot)</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -282,6 +302,7 @@
 		<item-type>Number</item-type>
 		<label>CPU Load</label>
 		<description>1-minute load average</description>
+		<category>Number</category>
 		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
@@ -289,6 +310,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>CPU Temperature</label>
 		<description>CPU temperature in degrees Celsius</description>
+		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -296,6 +318,7 @@
 		<item-type>String</item-type>
 		<label>WAN IP</label>
 		<description>External WAN IP address (only available on gateway devices)</description>
+		<category>Network</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -303,6 +326,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>WAN In</label>
 		<description>Total bytes received on the WAN interface (only available on gateway devices)</description>
+		<category>Network</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -310,6 +334,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>WAN Out</label>
 		<description>Total bytes sent on the WAN interface (only available on gateway devices)</description>
+		<category>Network</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -317,6 +342,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>LAN In</label>
 		<description>Total bytes received on the LAN bridge interface (br0)</description>
+		<category>Network</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -324,6 +350,7 @@
 		<item-type>Number:DataAmount</item-type>
 		<label>LAN Out</label>
 		<description>Total bytes sent on the LAN bridge interface (br0)</description>
+		<category>Network</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -331,6 +358,7 @@
 		<item-type>Switch</item-type>
 		<label>Reboot</label>
 		<description>Turn ON to reboot the device; automatically resets to OFF</description>
+		<category>Switch</category>
 	</channel-type>
 
 	<!-- Radio -->
@@ -339,12 +367,14 @@
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Whether the radio or rule is enabled</description>
+		<category>Switch</category>
 	</channel-type>
 
 	<channel-type id="ssid">
 		<item-type>String</item-type>
 		<label>SSID</label>
 		<description>Wireless network name</description>
+		<category>Network</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -352,6 +382,7 @@
 		<item-type>Number</item-type>
 		<label>Channel</label>
 		<description>Wireless channel number</description>
+		<category>Number</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -366,6 +397,7 @@
 		<item-type>Number</item-type>
 		<label>Client Count</label>
 		<description>Number of clients associated with this radio</description>
+		<category>Number</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -417,6 +449,7 @@
 		<item-type>Number</item-type>
 		<label>Signal</label>
 		<description>Signal strength in dBm</description>
+		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 
@@ -424,6 +457,7 @@
 		<item-type>Number</item-type>
 		<label>Signal-to-Noise Ratio</label>
 		<description>Signal-to-noise ratio in dB</description>
+		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%d dB"/>
 	</channel-type>
 
@@ -445,6 +479,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Timestamp when the client was last seen online</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 

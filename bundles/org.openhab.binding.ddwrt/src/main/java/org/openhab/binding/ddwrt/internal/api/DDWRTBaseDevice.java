@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -228,7 +229,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 return null;
             }
 
-            mac = Objects.requireNonNull(mac.toLowerCase().trim());
+            mac = Objects.requireNonNull(mac.toLowerCase(Locale.ROOT).trim());
             device.mac = mac;
 
             // Check if device already exists in cache
@@ -322,7 +323,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
     private static DetectionResult detectFWandChipset(SshRunner runner, String motd) {
         // First try to detect from MOTD
         if (!motd.isEmpty()) {
-            String motdLower = motd.toLowerCase();
+            String motdLower = motd.toLowerCase(Locale.ROOT);
 
             // Check for OpenWrt in MOTD
             if (motdLower.contains("openwrt")) {
@@ -386,7 +387,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                         // Extract hardware name after "Hardware :"
                         String hwName = hwLine.replaceFirst("^.*Hardware\s*:\s*(.*)$", "$1").trim();
                         // Check if hardware contains Marvell
-                        if (hwLine.toLowerCase().contains("marvell")) {
+                        if (hwLine.toLowerCase(Locale.ROOT).contains("marvell")) {
                             return new DetectionResult("dd-wrt", "marvell", hwName);
                         }
                     }
@@ -434,7 +435,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 // Extract hardware name after "Hardware :"
                 String hwName = hwLine.replaceFirst("^.*Hardware\s*:\s*(.*)$", "$1").trim();
                 // Check if hardware contains Marvell
-                if (hwLine.toLowerCase().contains("marvell")) {
+                if (hwLine.toLowerCase(Locale.ROOT).contains("marvell")) {
                     return new DetectionResult("dd-wrt", "marvell", hwName);
                 }
             }
@@ -485,7 +486,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
         // Try Tomato detection (check for Tomato-specific files or nvram)
         try {
             result = runner.execResult("nvram get os_name");
-            if (result.isSuccess() && result.getStdout().toLowerCase().contains("tomato")) {
+            if (result.isSuccess() && result.getStdout().toLowerCase(Locale.ROOT).contains("tomato")) {
                 return new DetectionResult("tomato", "generic", "");
             }
         } catch (Exception e) {
@@ -612,6 +613,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             // Create and start dedicated refresh thread
             refreshThreadStopped = false;
             refreshThread = new Thread(new RefreshRunnable(refreshInterval), "DDWRT-Refresh-" + hostname);
+            refreshThread.setDaemon(true);
             refreshThread.start();
 
             logger.info("Started device refresh every {} seconds", refreshInterval);
@@ -694,6 +696,12 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
+                } catch (Exception e) {
+                    // Catch-all: prevent unchecked exceptions (e.g. from dead SSH session)
+                    // from killing the refresh thread. Log and continue so the device can
+                    // recover on the next refresh cycle via ensureSession().
+                    logger.warn("Refresh failed for {}, will retry next cycle: {}", hostname, e.getMessage());
+                    logger.debug("Refresh exception details", e);
                 } finally {
                     refreshLock.unlock();
                 }
@@ -721,7 +729,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      * {@code logread -f}. Tomato defaults to {@code /var/log/messages}.
      */
     protected String buildSyslogCommand(SshRunner runner) {
-        String fwLower = firmware.toLowerCase();
+        String fwLower = firmware.toLowerCase(Locale.ROOT);
 
         // OpenWrt: prefer ubus subscribe for real-time log streaming (no orphans)
         if (fwLower.contains("openwrt")) {
@@ -792,7 +800,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             Matcher m = DHCPACK_EVENT.matcher(event.message);
             if (m.find()) {
                 String ip = Objects.requireNonNull(m.group(1));
-                String clientMac = Objects.requireNonNull(m.group(2)).toLowerCase();
+                String clientMac = Objects.requireNonNull(m.group(2)).toLowerCase(Locale.ROOT);
                 String dhcpHostname = m.group(3); // may be null if hostname not in ACK
 
                 // Handle MAC randomization: merge if this hostname exists under a different MAC
@@ -842,7 +850,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             if (m.find()) {
                 String iface = Objects.requireNonNull(m.group(1));
                 String action = Objects.requireNonNull(m.group(2));
-                String clientMac = Objects.requireNonNull(m.group(3)).toLowerCase();
+                String clientMac = Objects.requireNonNull(m.group(3)).toLowerCase(Locale.ROOT);
                 String radioName = (hostname.isEmpty() ? mac : hostname) + "-" + iface;
 
                 if ("CONNECTED".equalsIgnoreCase(action)) {
@@ -889,8 +897,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             Matcher mlme = MLME_STA_EVENT.matcher(event.message);
             if (mlme.find()) {
                 String iface = Objects.requireNonNull(mlme.group(1));
-                String clientMac = Objects.requireNonNull(mlme.group(2)).toLowerCase();
-                String action = Objects.requireNonNull(mlme.group(3)).toLowerCase();
+                String clientMac = Objects.requireNonNull(mlme.group(2)).toLowerCase(Locale.ROOT);
+                String action = Objects.requireNonNull(mlme.group(3)).toLowerCase(Locale.ROOT);
                 String radioName = (hostname.isEmpty() ? mac : hostname) + "-" + iface;
 
                 boolean isConnect = "assoc".equals(action) || "authenticated".equals(action);
@@ -1293,7 +1301,7 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
             String[] parts = trimmed.split("\\s+");
             // Format: expiry mac ip hostname [clientid]
             if (parts.length >= 4) {
-                String leaseMac = Objects.requireNonNull(parts[1].toLowerCase().trim());
+                String leaseMac = Objects.requireNonNull(parts[1].toLowerCase(Locale.ROOT).trim());
                 String ip = Objects.requireNonNull(parts[2]);
                 String hostname = Objects.requireNonNull(parts[3]);
                 if ("*".equals(hostname)) {
@@ -1534,8 +1542,8 @@ public abstract class DDWRTBaseDevice implements SyslogListener {
      * OpenWrt uses UCI instead.
      */
     protected boolean supportsNvram() {
-        String fwLower = firmware.toLowerCase();
-        String modelLower = model.toLowerCase();
+        String fwLower = firmware.toLowerCase(Locale.ROOT);
+        String modelLower = model.toLowerCase(Locale.ROOT);
         return fwLower.contains("dd-wrt") || modelLower.contains("dd-wrt") || fwLower.contains("tomato")
                 || modelLower.contains("tomato");
     }

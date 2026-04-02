@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -62,18 +63,18 @@ public class DDWRTNetworkCache {
      * The key should be a lowercase hostname (for MAC-randomizing clients) or normalized MAC.
      */
     public void addChangeListener(String key, CacheChangeListener listener) {
-        listenersByKey.computeIfAbsent(key.toLowerCase(), k -> new CopyOnWriteArrayList<>()).add(listener);
+        listenersByKey.computeIfAbsent(key.toLowerCase(Locale.ROOT), k -> new CopyOnWriteArrayList<>()).add(listener);
     }
 
     /**
      * Unregister a previously registered listener.
      */
     public void removeChangeListener(String key, CacheChangeListener listener) {
-        List<CacheChangeListener> listeners = listenersByKey.get(key.toLowerCase());
+        List<CacheChangeListener> listeners = listenersByKey.get(key.toLowerCase(Locale.ROOT));
         if (listeners != null) {
             listeners.remove(listener);
             if (listeners.isEmpty()) {
-                listenersByKey.remove(key.toLowerCase(), listeners);
+                listenersByKey.remove(key.toLowerCase(Locale.ROOT), listeners);
             }
         }
     }
@@ -88,9 +89,9 @@ public class DDWRTNetworkCache {
         Set<CacheChangeListener> unique = Collections.newSetFromMap(new IdentityHashMap<>());
         collectListeners(mac, unique);
         if (!hostname.isEmpty()) {
-            String sanitized = hostname.toLowerCase().replaceAll("[^a-z0-9]", "");
-            collectListeners(hostname.toLowerCase(), unique);
-            if (!sanitized.equals(hostname.toLowerCase())) {
+            String sanitized = hostname.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+            collectListeners(hostname.toLowerCase(Locale.ROOT), unique);
+            if (!sanitized.equals(hostname.toLowerCase(Locale.ROOT))) {
                 collectListeners(sanitized, unique);
             }
         }
@@ -158,7 +159,7 @@ public class DDWRTNetworkCache {
         wirelessClientsByMac.put(normalizedMac, client);
         // Maintain hostname index
         if (!client.getHostname().isEmpty()) {
-            hostnameToMac.put(Objects.requireNonNull(client.getHostname().toLowerCase()), normalizedMac);
+            hostnameToMac.put(Objects.requireNonNull(client.getHostname().toLowerCase(Locale.ROOT)), normalizedMac);
         }
         fireChange(normalizedMac, client.getHostname());
     }
@@ -175,7 +176,7 @@ public class DDWRTNetworkCache {
                     DDWRTWirelessClient updated = mappingFunction.apply(client);
                     // Maintain hostname index
                     if (!updated.getHostname().isEmpty()) {
-                        hostnameToMac.put(Objects.requireNonNull(updated.getHostname().toLowerCase()), key);
+                        hostnameToMac.put(Objects.requireNonNull(updated.getHostname().toLowerCase(Locale.ROOT)), key);
                     }
                     return updated;
                 }));
@@ -193,13 +194,13 @@ public class DDWRTNetworkCache {
             return null;
         }
         // Try exact lowercase match first (e.g., "lee-pixel-8a")
-        String mac = hostnameToMac.get(hostname.toLowerCase());
+        String mac = hostnameToMac.get(hostname.toLowerCase(Locale.ROOT));
         if (mac != null) {
             return wirelessClientsByMac.get(mac);
         }
         // Try sanitized form to match thing IDs (e.g., "leepixel8a" -> "lee-pixel-8a")
         for (Map.Entry<String, String> entry : hostnameToMac.entrySet()) {
-            if (entry.getKey().replaceAll("[^a-z0-9]", "").equals(hostname.toLowerCase())) {
+            if (entry.getKey().replaceAll("[^a-z0-9]", "").equals(hostname.toLowerCase(Locale.ROOT))) {
                 return wirelessClientsByMac.get(entry.getValue());
             }
         }
@@ -213,7 +214,7 @@ public class DDWRTNetworkCache {
         if (hostname.isEmpty()) {
             return null;
         }
-        return hostnameToMac.get(hostname.toLowerCase());
+        return hostnameToMac.get(hostname.toLowerCase(Locale.ROOT));
     }
 
     /**
@@ -226,7 +227,7 @@ public class DDWRTNetworkCache {
             return null;
         }
         String normalizedNewMac = normalizeMac(newMac);
-        String oldMac = hostnameToMac.get(hostname.toLowerCase());
+        String oldMac = hostnameToMac.get(hostname.toLowerCase(Locale.ROOT));
         if (oldMac != null && !oldMac.equals(normalizedNewMac)) {
             DDWRTWirelessClient oldClient = wirelessClientsByMac.get(oldMac);
             if (oldClient != null && hostname.equalsIgnoreCase(oldClient.getHostname())) {
@@ -254,7 +255,7 @@ public class DDWRTNetworkCache {
 
                 // Remove old entry and update hostname index
                 wirelessClientsByMac.remove(oldMac);
-                hostnameToMac.put(Objects.requireNonNull(hostname.toLowerCase()), normalizedNewMac);
+                hostnameToMac.put(Objects.requireNonNull(hostname.toLowerCase(Locale.ROOT)), normalizedNewMac);
 
                 // Notify listeners under both old and new MAC, and hostname
                 fireChange(oldMac, hostname);
@@ -281,19 +282,19 @@ public class DDWRTNetworkCache {
         DDWRTWirelessClient removed = wirelessClientsByMac.remove(normalizeMac(mac));
         if (removed != null && !removed.getHostname().isEmpty()) {
             // Only remove from hostname index if it still points to this MAC
-            hostnameToMac.remove(removed.getHostname().toLowerCase(), normalizeMac(mac));
+            hostnameToMac.remove(removed.getHostname().toLowerCase(Locale.ROOT), normalizeMac(mac));
         }
     }
 
     // ---- Radios ----
 
     public @Nullable DDWRTRadio getRadio(String interfaceId) {
-        return radiosByInterfaceId.get(interfaceId.toLowerCase());
+        return radiosByInterfaceId.get(interfaceId.toLowerCase(Locale.ROOT));
     }
 
     public void putRadio(String interfaceId, DDWRTRadio radio) {
-        radiosByInterfaceId.put(Objects.requireNonNull(interfaceId.toLowerCase()), radio);
-        notifyListenersForKey(interfaceId.toLowerCase());
+        radiosByInterfaceId.put(Objects.requireNonNull(interfaceId.toLowerCase(Locale.ROOT)), radio);
+        notifyListenersForKey(interfaceId.toLowerCase(Locale.ROOT));
     }
 
     public List<DDWRTRadio> getRadios() {
@@ -301,7 +302,7 @@ public class DDWRTNetworkCache {
     }
 
     public void removeRadio(String interfaceId) {
-        radiosByInterfaceId.remove(interfaceId.toLowerCase());
+        radiosByInterfaceId.remove(interfaceId.toLowerCase(Locale.ROOT));
     }
 
     // ---- Firewall Rules ----
@@ -333,7 +334,7 @@ public class DDWRTNetworkCache {
         dhcpLeasesByMac.put(normalizedMac, lease);
         // Maintain hostname index for DHCP leases
         if (!lease.getHostname().isEmpty()) {
-            dhcpHostnameToMac.put(Objects.requireNonNull(lease.getHostname().toLowerCase()), normalizedMac);
+            dhcpHostnameToMac.put(Objects.requireNonNull(lease.getHostname().toLowerCase(Locale.ROOT)), normalizedMac);
         }
     }
 
@@ -344,7 +345,7 @@ public class DDWRTNetworkCache {
         if (hostname.isEmpty()) {
             return null;
         }
-        String mac = dhcpHostnameToMac.get(hostname.toLowerCase());
+        String mac = dhcpHostnameToMac.get(hostname.toLowerCase(Locale.ROOT));
         return mac != null ? dhcpLeasesByMac.get(mac) : null;
     }
 
@@ -380,6 +381,6 @@ public class DDWRTNetworkCache {
     }
 
     private static String normalizeMac(String mac) {
-        return Objects.requireNonNull(mac.trim().toLowerCase());
+        return Objects.requireNonNull(mac.trim().toLowerCase(Locale.ROOT));
     }
 }

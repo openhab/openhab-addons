@@ -18,6 +18,7 @@ import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYP
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_RADIO;
 import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.THING_TYPE_WIRELESS_CLIENT;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -138,7 +139,7 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
         net.getDevices().forEach(device -> {
             final DDWRTDeviceConfiguration devCfg = device.getConfig();
             final String label = device.getHostname().isEmpty() ? device.getMac() : device.getHostname();
-            final String macClean = device.getMac().toLowerCase().replace(":", "");
+            final String macClean = device.getMac().toLowerCase(Locale.ROOT).replace(":", "");
 
             final ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID,
                     macClean.isEmpty() ? devCfg.hostname : macClean);
@@ -190,20 +191,18 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
         final DDWRTNetworkCache cache = net.getCache();
 
         cache.getWirelessClients().forEach(client -> {
-            final boolean hasHostname = !client.getHostname().isEmpty();
-            // Use hostname for thing ID when available to handle MAC randomization;
-            // fall back to MAC for devices without a hostname
-            final String thingId = hasHostname ? client.getHostname().toLowerCase().replaceAll("[^a-z0-9]", "")
-                    : client.getMac().replace(":", "");
+            if (client.getHostname().isEmpty()) {
+                // Skip clients without a hostname — hostname is required for wireless client things
+                logger.debug("Skipping wireless client without hostname: MAC={}", client.getMac());
+                return;
+            }
+            final String thingId = client.getHostname().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
             final ThingUID thingUID = new ThingUID(THING_TYPE_WIRELESS_CLIENT, bridgeUID, thingId);
-
-            final String label = hasHostname ? client.getHostname() : client.getMac();
-            // Use hostname as representationProperty when available for deduplication
-            final String reprProp = hasHostname ? "hostname" : "mac";
 
             logger.debug("Discovered wireless client: '{}'", thingUID);
 
             final Map<String, Object> props = new java.util.HashMap<>();
+            props.put("hostname", client.getHostname());
             props.put("mac", client.getMac());
             props.put("apMac", client.getApMac());
             props.put("ssid", client.getSsid());
@@ -213,17 +212,15 @@ public class DDWRTDiscoveryService extends AbstractThingHandlerDiscoveryService<
             props.put("channel", client.getChannel());
             props.put("signal", client.getSignalDbm());
             props.put("snr", client.getSnr());
-            if (hasHostname) {
-                props.put("hostname", client.getHostname());
-            }
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel(label).withProperties(props).withRepresentationProperty(reprProp).build();
+                    .withLabel(client.getHostname()).withProperties(props).withRepresentationProperty("hostname")
+                    .build();
 
             logger.debug(
                     "Submitting discovery result for wireless client: {} ({}) - AP: {}, SSID: {}, Channel: {}, Signal: {}dBm, SNR: {}",
-                    thingUID, label, client.getApMac(), client.getSsid(), client.getChannel(), client.getSignalDbm(),
-                    client.getSnr());
+                    thingUID, client.getHostname(), client.getApMac(), client.getSsid(), client.getChannel(),
+                    client.getSignalDbm(), client.getSnr());
             logger.debug("Wireless client properties: MAC={}, IP={}, Hostname={}, Interface={}, Radio={}",
                     client.getMac(), client.getIpAddress(), client.getHostname(), client.getIface(),
                     client.getRadioName());

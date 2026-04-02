@@ -29,6 +29,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,14 +70,17 @@ public class DDWRTWirelessClientHandler
     @Override
     protected boolean initialize(DDWRTWirelessClientConfiguration config) {
         this.config = config;
-        // MAC address is optional due to MAC randomization
+        if (config.hostname.isEmpty()) {
+            logger.warn("Hostname is required for wireless client thing");
+            return false;
+        }
         return true;
     }
 
     @Override
     protected @Nullable DDWRTWirelessClient getEntity(DDWRTNetworkCache cache) {
-        String thingId = getThing().getUID().getId();
-        logger.debug("Looking up wireless client for thing ID: {}, config MAC: {}", thingId, config.mac);
+        String hostname = config.hostname;
+        logger.debug("Looking up wireless client for hostname: {}, config MAC: {}", hostname, config.mac);
 
         // Try MAC first if available
         if (!config.mac.isEmpty()) {
@@ -88,12 +92,12 @@ public class DDWRTWirelessClientHandler
             logger.debug("Client not found by MAC: {}", config.mac);
         }
 
-        // Try hostname lookup (for MAC randomization support)
-        DDWRTWirelessClient client = cache.getWirelessClientByHostname(thingId);
+        // Try hostname lookup (primary identifier, stable across MAC randomization)
+        DDWRTWirelessClient client = cache.getWirelessClientByHostname(hostname);
         if (client != null) {
-            logger.debug("Found client by hostname: {}", thingId);
+            logger.debug("Found client by hostname: {}", hostname);
         } else {
-            logger.debug("Client not found by hostname: {}", thingId);
+            logger.debug("Client not found by hostname: {}", hostname);
         }
         return client;
     }
@@ -146,12 +150,13 @@ public class DDWRTWirelessClientHandler
     @Override
     protected List<String> getCacheKeys() {
         List<String> keys = new ArrayList<>();
-        // Register by thing ID (sanitized hostname) — primary key for MAC-randomizing clients
-        String thingId = getThing().getUID().getId();
-        keys.add(thingId);
+        // Register by configured hostname — primary key for MAC-randomizing clients
+        if (!config.hostname.isEmpty()) {
+            keys.add(config.hostname.toLowerCase(Locale.ROOT));
+        }
         // Also register by configured MAC if available
         if (!config.mac.isEmpty()) {
-            keys.add(config.mac.toLowerCase());
+            keys.add(config.mac.toLowerCase(Locale.ROOT));
         }
         return keys;
     }
