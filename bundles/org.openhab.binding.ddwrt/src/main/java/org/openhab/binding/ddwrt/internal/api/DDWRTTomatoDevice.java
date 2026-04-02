@@ -15,6 +15,7 @@ package org.openhab.binding.ddwrt.internal.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,7 +47,7 @@ public class DDWRTTomatoDevice extends DDWRTBaseDevice {
             String trimmed = line.trim();
             // Format: "assoclist XX:XX:XX:XX:XX:XX"
             if (trimmed.startsWith("assoclist ") && trimmed.length() >= 27) {
-                String clientMac = Objects.requireNonNull(trimmed.substring(10).trim().toLowerCase());
+                String clientMac = Objects.requireNonNull(trimmed.substring(10).trim().toLowerCase(Locale.ROOT));
                 DDWRTWirelessClient client = new DDWRTWirelessClient(clientMac);
                 client.setApMac(Objects.requireNonNull(mac));
                 client.setIface(iface);

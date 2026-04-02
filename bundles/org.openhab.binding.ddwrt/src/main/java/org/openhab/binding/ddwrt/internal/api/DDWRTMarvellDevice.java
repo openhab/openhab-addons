@@ -15,6 +15,7 @@ package org.openhab.binding.ddwrt.internal.api;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +56,7 @@ public class DDWRTMarvellDevice extends DDWRTBaseDevice {
         for (String line : output.split("\n")) {
             Matcher m = STATION_MAC_PATTERN.matcher(line.trim());
             if (m.find()) {
-                macs.add(Objects.requireNonNull(m.group(1)).toLowerCase());
+                macs.add(Objects.requireNonNull(m.group(1)).toLowerCase(Locale.ROOT));
             }
         }
         return macs;

@@ -64,6 +64,20 @@ public class SshClientManager {
             ohPrivateKeyDir.mkdirs();
         }
 
+        // In OSGi, JCA ServiceLoader doesn't auto-discover providers from other bundles.
+        // Explicitly register the EdDSA provider so Ed25519 keys work.
+        try {
+            Class<?> providerClass = Class.forName("net.i2p.crypto.eddsa.EdDSASecurityProvider");
+            java.security.Provider eddsaProvider = (java.security.Provider) providerClass.getDeclaredConstructor()
+                    .newInstance();
+            if (java.security.Security.getProvider(eddsaProvider.getName()) == null) {
+                java.security.Security.addProvider(eddsaProvider);
+                logger.debug("Registered EdDSA security provider for Ed25519 support");
+            }
+        } catch (ReflectiveOperationException e) {
+            logger.debug("EdDSA provider not available, Ed25519 keys will not be supported: {}", e.getMessage());
+        }
+
         client = Objects.requireNonNull(SshClient.setUpDefaultClient());
         logger.debug("SSH Client Key Verifier Accept All");
         client.setServerKeyVerifier(AcceptAllServerKeyVerifier.INSTANCE); // MVP only; replace with pinning

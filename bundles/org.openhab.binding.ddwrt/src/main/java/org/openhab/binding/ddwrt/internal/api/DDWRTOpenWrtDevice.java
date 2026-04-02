@@ -14,6 +14,7 @@ package org.openhab.binding.ddwrt.internal.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -289,7 +290,7 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     private DDWRTFirewallRule.RuleType convertTargetToRuleType(String target) {
-        switch (target.toLowerCase()) {
+        switch (target.toLowerCase(Locale.ROOT)) {
             case "accept":
                 return DDWRTFirewallRule.RuleType.ACCEPT;
             case "drop":
@@ -304,7 +305,7 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     private DDWRTFirewallRule.Direction convertChainToDirection(String chain) {
-        switch (chain.toLowerCase()) {
+        switch (chain.toLowerCase(Locale.ROOT)) {
             case "input":
                 return DDWRTFirewallRule.Direction.INPUT;
             case "output":
@@ -317,7 +318,7 @@ public class DDWRTOpenWrtDevice extends DDWRTBaseDevice {
     }
 
     private DDWRTFirewallRule.Protocol convertProtocol(String protocol) {
-        switch (protocol.toLowerCase()) {
+        switch (protocol.toLowerCase(Locale.ROOT)) {
             case "tcp":
                 return DDWRTFirewallRule.Protocol.TCP;
             case "udp":
