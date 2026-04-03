@@ -22,7 +22,7 @@ import org.osgi.framework.ServiceReference;
 /**
  * 
  * @author Patrik Gfeller - Initial Contribution
- * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
+ * @author Patrik Gfeller - Issue #18376, Exception message is not resolved using language resource strings
  */
 @NonNullByDefault
 public class ResourceHelper {
