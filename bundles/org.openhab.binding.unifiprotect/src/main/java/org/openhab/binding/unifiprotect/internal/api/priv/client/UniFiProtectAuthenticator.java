@@ -122,7 +122,7 @@ public class UniFiProtectAuthenticator {
                 }
 
                 String responseBody = response.getContentAsString();
-                logger.debug("Login response body: {}", responseBody);
+                logger.trace("Login response body: {}", responseBody);
                 try {
                     LoginResponse loginResponse = JsonUtil.getGson().fromJson(responseBody, LoginResponse.class);
                     if (loginResponse != null && loginResponse.id != null) {
@@ -138,7 +138,7 @@ public class UniFiProtectAuthenticator {
                 String csrfHeader = response.getHeaders().get("x-csrf-token");
                 if (csrfHeader != null) {
                     this.csrfToken = csrfHeader;
-                    logger.debug("Got CSRF token: {}", csrfToken);
+                    logger.debug("Got CSRF token");
                 }
 
                 List<String> setCookieHeaders = response.getHeaders().getValuesList("Set-Cookie");

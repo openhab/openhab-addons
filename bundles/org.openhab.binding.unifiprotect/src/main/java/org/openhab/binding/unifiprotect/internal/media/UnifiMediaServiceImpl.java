@@ -104,14 +104,14 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             nativeHelper.ensureFfmpeg();
             nativeHelper.ensureGo2Rtc();
         } catch (IOException e) {
-            logger.debug("Failed to pre-download binaries, will retry per-NVR: {}", e.getMessage());
+            logger.debug("Failed to pre-download binaries, will retry per-NVR: {}", e.getMessage(), e);
         }
         try {
             httpService.registerServlet(playBasePath, new PlayStreamServlet(this, httpClient), null, null);
             httpService.registerServlet(imageBasePath, new ImageServlet(this), null, null);
         } catch (ServletException | NamespaceException e) {
-            logger.debug("Failed to activate WebRtcMediaServiceImpl", e);
-            throw new IllegalStateException("Failed to activate WebRtcMediaServiceImpl", e);
+            logger.debug("Failed to activate UnifiMediaServiceImpl", e);
+            throw new IllegalStateException("Failed to activate UnifiMediaServiceImpl", e);
         }
         logger.debug("UnifiMediaServiceImpl activated");
     }

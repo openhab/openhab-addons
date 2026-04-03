@@ -12,8 +12,13 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.priv.dto.system;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,25 +27,35 @@ import com.google.gson.annotations.SerializedName;
  * @author Dan Cunningham - Initial contribution
  */
 public class ApiKeyResponse {
+    private static final Gson GSON = new Gson();
+
     public int code;
 
     @SerializedName("codeS")
-    public String codeString;
+    public @Nullable String codeString;
 
-    public String msg;
-    public Object data; // Can be single ApiKey or List<ApiKey>
+    public @Nullable String msg;
+    public @Nullable Object data; // Gson deserializes as Map or List<Map>, converted via helper methods
 
-    public ApiKey getApiKey() {
-        if (data instanceof ApiKey) {
-            return (ApiKey) data;
+    public @Nullable ApiKey getApiKey() {
+        if (data instanceof Map) {
+            return GSON.fromJson(GSON.toJsonTree(data), ApiKey.class);
         }
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public List<ApiKey> getApiKeys() {
-        if (data instanceof List) {
-            return (List<ApiKey>) data;
+        if (data instanceof List<?> list) {
+            List<ApiKey> keys = new ArrayList<>();
+            for (Object item : list) {
+                if (item instanceof Map) {
+                    ApiKey key = GSON.fromJson(GSON.toJsonTree(item), ApiKey.class);
+                    if (key != null) {
+                        keys.add(key);
+                    }
+                }
+            }
+            return keys;
         }
         return List.of();
     }

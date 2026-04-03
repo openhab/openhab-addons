@@ -14,6 +14,7 @@ package org.openhab.binding.unifiprotect.internal.api.priv.dto.system;
 
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.base.UniFiProtectObject;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.AiPort;
 import org.openhab.binding.unifiprotect.internal.api.priv.dto.devices.Bridge;
@@ -49,23 +50,23 @@ public class Bootstrap extends UniFiProtectObject {
     public Map<String, Event> events;
     public String lastUpdateId;
 
-    public User getAuthUser() {
+    public @Nullable User getAuthUser() {
         return users != null ? users.get(authUserId) : null;
     }
 
-    public Camera getCamera(String id) {
+    public @Nullable Camera getCamera(String id) {
         return cameras != null ? cameras.get(id) : null;
     }
 
-    public Light getLight(String id) {
+    public @Nullable Light getLight(String id) {
         return lights != null ? lights.get(id) : null;
     }
 
-    public Sensor getSensor(String id) {
+    public @Nullable Sensor getSensor(String id) {
         return sensors != null ? sensors.get(id) : null;
     }
 
-    public Doorlock getDoorlock(String id) {
+    public @Nullable Doorlock getDoorlock(String id) {
         return doorlocks != null ? doorlocks.get(id) : null;
     }
 }

@@ -45,7 +45,6 @@ public class UniFiProtectHybridClient implements Closeable {
      * Create a hybrid client with both public and private API support
      *
      * @param httpClient The HTTP client
-     * @param baseUri The base URI for public API
      * @param gson Gson instance for JSON serialization
      * @param apiToken The API token for public API
      * @param executorService Scheduled executor for background tasks
