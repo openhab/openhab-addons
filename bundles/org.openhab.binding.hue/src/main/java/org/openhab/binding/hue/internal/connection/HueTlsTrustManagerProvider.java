@@ -16,7 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -116,12 +115,12 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
      * @throws CertificateException
      */
     private X509ExtendedTrustManager getInstanceFromResource(String fileName) throws CertificateException {
-        String certificatesString = readPEMCertificatesStringFromResource(fileName);
+        byte[] certificatesBytes = readPEMCertificatesStringFromResource(fileName);
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             // load all certificates from the PEM file
             Collection<? extends Certificate> certificates;
-            try (InputStream input = new ByteArrayInputStream(certificatesString.getBytes(StandardCharsets.UTF_8))) {
+            try (InputStream input = new ByteArrayInputStream(certificatesBytes)) {
                 certificates = certificateFactory.generateCertificates(input);
             }
             if (certificates.isEmpty()) {
@@ -157,12 +156,12 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
      * @param fileName name of the PEM file located in the resources folder
      * @return the content of the PEM file as a string, or null if the file is not found or cannot be read
      */
-    private String readPEMCertificatesStringFromResource(String fileName) throws CertificateException {
+    private byte[] readPEMCertificatesStringFromResource(String fileName) throws CertificateException {
         try (InputStream inputStream = HueTlsTrustManagerProvider.class.getResourceAsStream(fileName)) {
             if (inputStream == null) {
                 throw new CertificateException("Certificate resource not found: " + fileName);
             }
-            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            return inputStream.readAllBytes();
         } catch (IOException e) {
             throw new CertificateException("Certificate resource cannot be read: " + fileName, e);
         }
