@@ -182,8 +182,8 @@ public class VeSyncV2ApiHelper {
 
             @Nullable
             VeSyncUserSession session = loggedInSession;
-            if (session != null && !url.startsWith(session.getServerUrl())) {
-                url = session.getServerUrl() + url;
+            if (session != null && session.serverUrl != null) {
+                url = session.serverUrl + url;
             } else {
                 url = US_SERVER + url; // Fallback
             }
