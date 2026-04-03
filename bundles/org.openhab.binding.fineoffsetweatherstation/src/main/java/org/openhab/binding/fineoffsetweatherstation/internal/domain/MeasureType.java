@@ -21,8 +21,10 @@ import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWe
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_LIGHTNING_COUNTER;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_LIGHTNING_DISTANCE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_LIGHTNING_TIME;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PM1;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PM10;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PM25;
+import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PM4;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_PRESSURE;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_RAIN;
 import static org.openhab.binding.fineoffsetweatherstation.internal.FineOffsetWeatherStationBindingConstants.CHANNEL_TYPE_RAIN_RATE;
@@ -43,6 +45,7 @@ import static org.openhab.core.library.unit.Units.MICROGRAM_PER_CUBICMETRE;
 import static org.openhab.core.library.unit.Units.MILLIMETRE_PER_HOUR;
 import static org.openhab.core.library.unit.Units.PARTS_PER_MILLION;
 import static org.openhab.core.library.unit.Units.PERCENT;
+import static org.openhab.core.thing.DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_BATTERY_LEVEL;
 
 import java.time.Instant;
 import java.util.function.BiFunction;
@@ -52,6 +55,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fineoffsetweatherstation.internal.Utils;
+import org.openhab.binding.fineoffsetweatherstation.internal.domain.response.BatteryStatus;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -89,7 +93,11 @@ public enum MeasureType {
 
     LUX(Units.LUX, 4, CHANNEL_TYPE_ILLUMINATION, (data, offset) -> toUInt32(data, offset) / 10.),
 
+    PM1(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_TYPE_PM1, (data, offset) -> toUInt16(data, offset) / 10.),
+
     PM25(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_TYPE_PM25, (data, offset) -> toUInt16(data, offset) / 10.),
+
+    PM4(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_TYPE_PM4, (data, offset) -> toUInt16(data, offset) / 10.),
 
     PM10(MICROGRAM_PER_CUBICMETRE, 2, CHANNEL_TYPE_PM10, (data, offset) -> toUInt16(data, offset) / 10.),
 
@@ -122,7 +130,13 @@ public enum MeasureType {
     BYTE(1, null, (data, offset) -> new DecimalType(toUInt8(data[offset]))),
     MEMORY(Units.BYTE, 4, null, Utils::toUInt32),
 
-    DATE_TIME2(6, null, (data, offset) -> new DateTimeType(Instant.ofEpochSecond(toUInt32(data, offset))));
+    DATE_TIME2(6, null, (data, offset) -> new DateTimeType(Instant.ofEpochSecond(toUInt32(data, offset)))),
+
+    BATTERY_LEVEL(1, SYSTEM_CHANNEL_TYPE_UID_BATTERY_LEVEL, (data, offset) -> {
+        @Nullable
+        Integer level = new BatteryStatus(BatteryStatus.Type.LEVEL, data[offset]).getPercentage();
+        return level == null ? null : new QuantityType<>(level, PERCENT);
+    });
 
     private final int byteSize;
     private final @Nullable ChannelTypeUID channelTypeUID;
