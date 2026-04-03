@@ -16,7 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
-    private static final String PEM_CACERT_FILENAME = "huebridge_cacert.pem";
+    private static final String PEM_CACERT_FILENAME = "/huebridge_cacert.pem";
     private final String hostname;
     private final boolean useSelfSignedCertificate;
 
@@ -118,9 +117,6 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
      */
     private X509ExtendedTrustManager getInstanceFromResource(String fileName) throws CertificateException {
         String certificatesString = readPEMCertificatesStringFromResource(fileName);
-        if (certificatesString == null) {
-            throw new CertificateException("Certificate resource '" + fileName + "' not found or not accessible.");
-        }
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             // load all certificates from the PEM file
@@ -161,15 +157,14 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
      * @param fileName name of the PEM file located in the resources folder
      * @return the content of the PEM file as a string, or null if the file is not found or cannot be read
      */
-    private @Nullable String readPEMCertificatesStringFromResource(String fileName) {
-        URL resource = HueTlsTrustManagerProvider.class.getClassLoader().getResource(fileName);
-        if (resource != null) {
-            try (InputStream certInputStream = resource.openStream()) {
-                return new String(certInputStream.readAllBytes(), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                logger.error("An unexpected exception occurred: ", e);
+    private String readPEMCertificatesStringFromResource(String fileName) throws CertificateException {
+        try (InputStream inputStream = HueTlsTrustManagerProvider.class.getResourceAsStream(fileName)) {
+            if (inputStream == null) {
+                throw new CertificateException("Certificate resource not found: " + fileName);
             }
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new CertificateException("Certificate resource cannot be read: " + fileName, e);
         }
-        return null;
     }
 }
